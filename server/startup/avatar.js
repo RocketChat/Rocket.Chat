@@ -1,4 +1,5 @@
 /* globals FileUpload */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	unmuteUserInRoom(data) {
 		const fromId = Meteor.userId();

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	let sort;
 	if (this.queryParams.sort) {

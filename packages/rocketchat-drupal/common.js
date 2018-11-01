@@ -1,4 +1,5 @@
 /* global CustomOAuth */
+import { Meteor } from 'meteor/meteor';
 
 // Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
 // In RocketChat -> Administration the URL needs to be http(s)://{drupal.server}/

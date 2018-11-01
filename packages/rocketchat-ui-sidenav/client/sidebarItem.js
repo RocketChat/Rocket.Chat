@@ -1,4 +1,5 @@
 /* globals menu popover renderMessageBody */
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 Template.sidebarItem.helpers({

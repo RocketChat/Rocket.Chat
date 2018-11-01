@@ -1,4 +1,5 @@
 /* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
 import { UiTextContext } from 'meteor/rocketchat:lib';
 
 Template.roomList.helpers({

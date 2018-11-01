@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	setAvatarFromService(dataURI, contentType, service) {
 		check(dataURI, String);

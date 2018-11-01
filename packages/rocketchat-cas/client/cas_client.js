@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const openCenteredPopup = function(url, width, height) {
 
 	const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;

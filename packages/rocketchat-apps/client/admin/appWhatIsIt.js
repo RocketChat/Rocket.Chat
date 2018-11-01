@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.appWhatIsIt.onCreated(function() {
 	this.isLoading = new ReactiveVar(false);
 	this.hasError = new ReactiveVar(false);

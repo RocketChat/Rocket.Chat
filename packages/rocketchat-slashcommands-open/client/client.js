@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 function Open(command, params /* , item*/) {
 	const dict = {
 		'#': ['c', 'p'],

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.avatar.helpers({
 	src() {
 		let { url } = Template.instance().data;

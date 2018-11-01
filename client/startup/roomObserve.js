@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 Meteor.startup(function() {
 	ChatRoom.find().observe({
 		added(data) {

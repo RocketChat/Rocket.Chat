@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import * as Mailer from 'meteor/rocketchat:mailer';
+
 let html = '';
 Meteor.startup(() => {
 	Mailer.getTemplate('Invitation_Email', (value) => {

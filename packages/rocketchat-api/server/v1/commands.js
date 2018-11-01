@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.API.v1.addRoute('commands.get', { authRequired: true }, {
 	get() {
 		const params = this.queryParams;

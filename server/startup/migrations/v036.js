@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import url from 'url';
 
 RocketChat.Migrations.add({

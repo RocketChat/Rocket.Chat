@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	const roomSettingsChangedCallback = (msg) => {
 		Tracker.nonreactive(() => {

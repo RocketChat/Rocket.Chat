@@ -1,4 +1,6 @@
 /* globals modal, RocketChat */
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',
 	icon: 'plus',

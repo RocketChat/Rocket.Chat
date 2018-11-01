@@ -1,4 +1,5 @@
 /* globals popover */
+import { Meteor } from 'meteor/meteor';
 
 import moment from 'moment';
 import { drawLineChart } from '../../../lib/chartHandler';

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 // Track logins and when they login, get the commands
 (() => {
 	let oldUserId = null;

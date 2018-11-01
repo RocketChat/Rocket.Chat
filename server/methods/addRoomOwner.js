@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	addRoomOwner(rid, userId) {
 		check(rid, String);

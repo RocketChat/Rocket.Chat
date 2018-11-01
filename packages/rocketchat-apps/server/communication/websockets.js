@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 export const AppEvents = Object.freeze({

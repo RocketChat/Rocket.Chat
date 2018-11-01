@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
+
 Template.livechatCustomFieldForm.helpers({
 	customField() {
 		return Template.instance().customField.get();

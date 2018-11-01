@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import './lazyloadImage';
 export const fixCordova = function(url) {

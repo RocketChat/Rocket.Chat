@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'auto-translate')) {

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {
 	if (!'WebSocket' in window) { // eslint-disable-line no-negated-in-lhs

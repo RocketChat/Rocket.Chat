@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.tokenChannelsList.helpers({
 	rooms() {
 		return Template.instance().tokenpassRooms.get().filter((room) => RocketChat.models.Subscriptions.find({ rid: room._id }).count() === 0);

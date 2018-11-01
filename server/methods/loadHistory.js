@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const hideMessagesOfType = [];
 
 RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {

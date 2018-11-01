@@ -1,4 +1,5 @@
 /* eslint new-cap: 0 */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {

@@ -1,5 +1,6 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 /* globals popout */
+import { Meteor } from 'meteor/meteor';
 
 Template.videoFlexTabBbb.helpers({
 	openInNewWindow() {

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.API.v1.addRoute('integrations.create', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, Match.ObjectIncluding({

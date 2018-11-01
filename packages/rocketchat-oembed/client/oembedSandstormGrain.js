@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.oembedSandstormGrain.helpers({
 	token() {
 		return this.meta.sandstorm.grain.token;

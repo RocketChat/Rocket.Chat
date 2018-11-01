@@ -1,4 +1,5 @@
 /* globals modal, RocketChat*/
+import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(function() {
 

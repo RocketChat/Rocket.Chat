@@ -1,4 +1,6 @@
 /* global CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+
 const config = {
 	serverURL: 'https://gitlab.com',
 	identityPath: '/api/v3/user',

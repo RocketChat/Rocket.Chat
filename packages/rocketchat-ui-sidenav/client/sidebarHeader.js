@@ -1,4 +1,6 @@
 /* globals popover menu */
+import { Meteor } from 'meteor/meteor';
+
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
 	RocketChat.callbacks.run('userStatusManuallySet', status);

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 // Action Links Handler. This method will be called off the client.
 
 Meteor.methods({

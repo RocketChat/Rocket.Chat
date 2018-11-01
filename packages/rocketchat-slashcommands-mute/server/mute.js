@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 
 /*
 * Mute is a named function that will replace /mute commands

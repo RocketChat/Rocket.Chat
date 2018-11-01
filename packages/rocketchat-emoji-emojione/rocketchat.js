@@ -1,4 +1,6 @@
 /* globals emojione, emojisByCategory, emojiCategories, toneList */
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.emoji.packages.emojione = emojione;
 RocketChat.emoji.packages.emojione.imageType = 'png';
 RocketChat.emoji.packages.emojione.sprites = true;

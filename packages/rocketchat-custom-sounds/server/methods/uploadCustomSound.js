@@ -1,4 +1,6 @@
 /* globals RocketChatFileCustomSoundsInstance */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	uploadCustomSound(binaryContent, contentType, soundData) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-sounds')) {

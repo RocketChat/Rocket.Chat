@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('messages', function(rid/* , start*/) {
 	if (!this.userId) {
 		return this.ready();

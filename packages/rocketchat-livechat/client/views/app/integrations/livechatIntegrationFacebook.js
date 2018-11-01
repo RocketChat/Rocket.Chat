@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.livechatIntegrationFacebook.helpers({
 	pages() {
 		return Template.instance().pages.get();

@@ -1,4 +1,5 @@
 /* globals ReactiveVar, TAPi18n */
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 import _ from 'underscore';
 

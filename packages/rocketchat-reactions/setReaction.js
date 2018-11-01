@@ -1,4 +1,5 @@
 /* globals msgStream */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 const removeUserReaction = (message, reaction, username) => {

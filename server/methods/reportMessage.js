@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	reportMessage(messageId, description) {
 		check(messageId, String);

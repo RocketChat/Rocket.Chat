@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.MessageTypes.registerType({
 	id: 'livechat_navigation_history',
 	system: true,

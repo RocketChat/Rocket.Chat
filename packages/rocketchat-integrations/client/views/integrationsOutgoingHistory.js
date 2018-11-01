@@ -1,5 +1,6 @@
 /* global ChatIntegrations, ChatIntegrationHistory */
 
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import hljs from 'highlight.js';
 import moment from 'moment';

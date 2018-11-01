@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.publish('livechat:visitors', function(date) {

@@ -1,4 +1,5 @@
 /* global SyncedCron */
+import { Meteor } from 'meteor/meteor';
 
 const logger = new Logger('SyncedCron');
 

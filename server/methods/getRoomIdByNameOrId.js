@@ -1,4 +1,6 @@
 // DEPRECATE
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	getRoomIdByNameOrId(rid) {
 		check(rid, String);

@@ -1,4 +1,5 @@
 /* global slugify */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 function slug(text) {

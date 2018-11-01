@@ -1,5 +1,6 @@
 /* globals UploadFS, InstanceStatus */
 
+import { Meteor } from 'meteor/meteor';
 import http from 'http';
 import URL from 'url';
 

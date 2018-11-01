@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 class OTR {
 	constructor() {
 		this.enabled = new ReactiveVar(false);

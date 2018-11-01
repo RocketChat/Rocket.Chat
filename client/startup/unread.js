@@ -1,5 +1,5 @@
 /* globals fireGlobalEvent, readMessage, Favico, favico, menu */
-
+import { Meteor } from 'meteor/meteor';
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		let unreadCount = 0;

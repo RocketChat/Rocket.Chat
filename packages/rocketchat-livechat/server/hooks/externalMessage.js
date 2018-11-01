@@ -1,4 +1,5 @@
 /* globals HTTP, SystemLogger */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 let knowledgeEnabled = false;

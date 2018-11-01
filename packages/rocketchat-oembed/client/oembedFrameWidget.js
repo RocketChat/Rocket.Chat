@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.oembedFrameWidget.helpers({
 	collapsed() {
 		if (this.collapsed) {

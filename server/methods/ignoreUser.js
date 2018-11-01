@@ -1,4 +1,5 @@
 /* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
 	ignoreUser({ rid, userId: ignoredUser, ignore = true }) {

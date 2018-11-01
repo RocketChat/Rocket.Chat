@@ -3,7 +3,7 @@
 * Join is a named function that will replace /join commands
 * @param {Object} message - The message object
 */
-
+import { Meteor } from 'meteor/meteor';
 
 RocketChat.slashCommands.add('join', function Join(command, params, item) {
 

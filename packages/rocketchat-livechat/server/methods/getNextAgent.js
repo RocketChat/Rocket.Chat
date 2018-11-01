@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'livechat:getNextAgent'({ token, department }) {
 		check(token, String);

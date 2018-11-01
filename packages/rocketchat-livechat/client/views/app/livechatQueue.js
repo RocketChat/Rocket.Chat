@@ -1,4 +1,5 @@
 /* globals LivechatQueueUser */
+import { Meteor } from 'meteor/meteor';
 
 Template.livechatQueue.helpers({
 	departments() {

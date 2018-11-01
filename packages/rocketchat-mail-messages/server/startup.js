@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	return RocketChat.models.Permissions.upsert('access-mailer', {
 		$setOnInsert: {

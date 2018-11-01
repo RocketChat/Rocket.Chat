@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('pinnedMessages', function(rid, limit = 50) {
 	if (!this.userId) {
 		return this.ready();

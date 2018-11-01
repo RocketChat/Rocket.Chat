@@ -1,4 +1,5 @@
 /* globals Livechat */
+import { Meteor } from 'meteor/meteor';
 import visitor from '../../imports/client/visitor';
 
 const firedTriggers = JSON.parse(localStorage.getItem('rocketChatFiredTriggers')) || [];

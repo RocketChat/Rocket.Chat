@@ -1,4 +1,5 @@
 /* globals Slingshot */
+import { Meteor } from 'meteor/meteor';
 
 import filesize from 'filesize';
 

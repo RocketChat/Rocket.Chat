@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);

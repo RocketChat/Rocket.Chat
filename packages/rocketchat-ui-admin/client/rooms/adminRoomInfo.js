@@ -1,4 +1,5 @@
 /* globals AdminChatRoom */
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 Template.adminRoomInfo.helpers({
 	selectedRoom() {

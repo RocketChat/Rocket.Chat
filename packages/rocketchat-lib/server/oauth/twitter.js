@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Twit from 'twit';
 import _ from 'underscore';
 

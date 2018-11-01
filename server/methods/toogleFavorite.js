@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	toggleFavorite(rid, f) {
 		check(rid, String);

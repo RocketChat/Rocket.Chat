@@ -1,4 +1,5 @@
 /* globals Department, Livechat */
+import { Meteor } from 'meteor/meteor';
 import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
 

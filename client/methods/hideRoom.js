@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 Meteor.methods({
 	hideRoom(rid) {
 		if (!Meteor.userId()) {

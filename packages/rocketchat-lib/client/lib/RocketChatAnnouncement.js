@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export class RocketChatAnnouncement {
 	constructor(args = {}) {
 		this.room = new ReactiveVar(args.room);

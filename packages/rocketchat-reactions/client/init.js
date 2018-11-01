@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.room.events({
 	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
 		event.preventDefault();

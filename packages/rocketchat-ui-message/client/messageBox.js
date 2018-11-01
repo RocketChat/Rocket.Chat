@@ -1,4 +1,5 @@
 /* globals fileUpload KonchatNotification chatMessages popover AudioRecorder chatMessages fileUploadHandler*/
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	joinRoom(rid, code) {
 		check(rid, String);

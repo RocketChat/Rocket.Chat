@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const msgStream = new Meteor.Streamer('room-messages');
 this.msgStream = msgStream;
 

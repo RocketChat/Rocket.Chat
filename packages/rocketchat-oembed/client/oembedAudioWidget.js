@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Template.oembedAudioWidget.helpers({
 	collapsed() {
 		if (this.collapsed) {

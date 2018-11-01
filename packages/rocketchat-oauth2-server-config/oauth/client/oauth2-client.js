@@ -1,5 +1,7 @@
 // @ChatOAuthApps = new Mongo.Collection 'rocketchat_oauth_apps'
 /* globals ChatOAuthApps */
+import { Meteor } from 'meteor/meteor';
+
 FlowRouter.route('/oauth/authorize', {
 	action(params, queryParams) {
 		BlazeLayout.render('main', {
