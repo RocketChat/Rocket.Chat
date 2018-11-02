@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',
+		'mizzao:autocomplete',
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -145,5 +146,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/components/contextualBar.js', 'client');
 
 	api.export('fileUpload');
-	api.export('t');
+	api.export('t', 'client');
+	api.export('modal', 'client');
+	api.export('fireGlobalEvent', 'client');
+	api.export('ChatRoom', 'client');
 });

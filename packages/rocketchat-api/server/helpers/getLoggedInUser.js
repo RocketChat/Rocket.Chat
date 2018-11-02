@@ -1,4 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.API.helperMethods.set('getLoggedInUser', function _getLoggedInUser() {
 	let user;

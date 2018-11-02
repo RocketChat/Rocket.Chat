@@ -12,7 +12,6 @@ Package.onUse(function(api) {
 	api.use('babel-compiler');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
-	api.use('rocketchat:api');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:logger');
 
@@ -70,4 +69,5 @@ Package.onUse(function(api) {
 	api.addFiles('server/triggers.js', 'server');
 
 	api.addFiles('server/processWebhookMessage.js', 'server');
+	api.export('processWebhookMessage', 'server');
 });

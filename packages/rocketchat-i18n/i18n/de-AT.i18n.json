@@ -264,7 +264,7 @@
   "API_EmbedCacheExpirationDays": "Einbetten von Cache-Ablauftagen",
   "API_EmbedDisabledFor": "Einbettungen für Benutzer deaktivieren",
   "API_EmbedDisabledFor_Description": "Durch Kommata getrennte Liste von Benutzernamen",
-  "API_EmbedIgnoredHosts": "Ignorierte Hosts einbetten",
+  "API_EmbedIgnoredHosts": "Einbettungen für Hosts deaktivieren",
   "API_EmbedIgnoredHosts_Description": "Kommagetrennte Liste von Hosts oder CIDR-Adressen, z. B. localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedSafePorts": "Sichere Ports",
   "API_EmbedSafePorts_Description": "Kommagetrennte Liste der Ports für die eine Vorschau erlaubt ist.",
