@@ -24,7 +24,7 @@ Template.body.onRendered(function() {
 			toolbarSearch.focus(true);
 		}
 		const unread = Session.get('unread');
-		if (e.keyCode === 27 && e.shiftKey === true && (unread != null) && unread !== '') {
+		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
 			modal.open({
