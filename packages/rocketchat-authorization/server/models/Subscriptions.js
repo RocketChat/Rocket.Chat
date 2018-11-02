@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 RocketChat.models.Subscriptions.roleBaseQuery = function(userId, scope) {
