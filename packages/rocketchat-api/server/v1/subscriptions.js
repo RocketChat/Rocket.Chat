@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;

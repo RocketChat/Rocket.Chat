@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+
 const logger = new Logger('steffo:meteor-accounts-saml', {
 	methods: {
 		updated: {

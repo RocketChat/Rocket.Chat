@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { TimeSync } from 'meteor/mizzao:timesync';
 import s from 'underscore.string';
 
 Meteor.methods({

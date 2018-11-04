@@ -1,3 +1,6 @@
+
+import { Meteor } from 'meteor/meteor';
+
 class RoomStreamer extends Meteor.Streamer {
 	_publish(publication, eventName, options) {
 		super._publish(publication, eventName, options);

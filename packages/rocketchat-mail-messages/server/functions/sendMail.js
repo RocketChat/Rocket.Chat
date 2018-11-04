@@ -1,4 +1,7 @@
 /* globals */
+import { Meteor } from 'meteor/meteor';
+import { EJSON } from 'meteor/ejson';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 

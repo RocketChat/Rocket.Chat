@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 RocketChat.Notifications = new class {
 	constructor(...args) {
 		this.logged = Meteor.userId() !== null;

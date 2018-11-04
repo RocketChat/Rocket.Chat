@@ -1,4 +1,7 @@
 /* global Push, SystemLogger */
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 Meteor.methods({
 	// log() {

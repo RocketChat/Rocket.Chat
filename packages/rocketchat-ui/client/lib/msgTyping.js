@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 
 export const MsgTyping = (function() {

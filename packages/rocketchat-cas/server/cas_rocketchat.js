@@ -1,5 +1,7 @@
 /* globals logger:true */
 
+import { Meteor } from 'meteor/meteor';
+
 logger = new Logger('CAS', {});
 
 Meteor.startup(function() {

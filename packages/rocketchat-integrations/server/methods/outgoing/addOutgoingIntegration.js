@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	addOutgoingIntegration(integration) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')
