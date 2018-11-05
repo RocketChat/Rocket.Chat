@@ -129,7 +129,7 @@ this.ChatMessages = class ChatMessages {
 					showError(error.reason);
 				}
 
-				Livechat.room = result.rid;
+				Livechat.room = result && result.rid;
 
 				if (result && result.rid && !visitor.isSubscribed(result.rid)) {
 					Livechat.connecting = result.showConnecting;
@@ -271,7 +271,7 @@ this.ChatMessages = class ChatMessages {
 			// 	event.preventDefault()
 			// 	event.stopPropagation()
 
-		// ctrl (command) + shift + k -> clear room messages
+			// ctrl (command) + shift + k -> clear room messages
 		} else if (k === 75 && ((navigator.platform.indexOf('Mac') !== -1 && event.metaKey && event.shiftKey) || (navigator.platform.indexOf('Mac') === -1 && event.ctrlKey && event.shiftKey))) {
 			RoomHistoryManager.clear(rid);
 		}

@@ -1,5 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 
+const queryStatusAgentOnline = () => {
+	const filter = {
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		statusLivechat: 'available',
+		roles: 'livechat-agent',
+	};
+
+	if (RocketChat.settings.get('Livechat_enabled_when_agent_idle') === true) {
+		return filter;
+	}
+
+	const query = Object.assign({ statusConnection: { $ne: 'away' } }, filter);
+
+	return query;
+};
+
 /**
  * Sets an user as (non)operator
  * @param {string} _id - User's _id
@@ -20,14 +39,7 @@ RocketChat.models.Users.setOperator = function(_id, operator) {
  * @return
  */
 RocketChat.models.Users.findOnlineAgents = function() {
-	const query = {
-		status: {
-			$exists: true,
-			$ne: 'offline',
-		},
-		statusLivechat: 'available',
-		roles: 'livechat-agent',
-	};
+	const query = queryStatusAgentOnline();
 
 	return this.find(query);
 };
@@ -37,15 +49,9 @@ RocketChat.models.Users.findOnlineAgents = function() {
  * @return
  */
 RocketChat.models.Users.findOneOnlineAgentByUsername = function(username) {
-	const query = {
-		username,
-		status: {
-			$exists: true,
-			$ne: 'offline',
-		},
-		statusLivechat: 'available',
-		roles: 'livechat-agent',
-	};
+	const filter = queryStatusAgentOnline();
+
+	const query = Object.assign(filter, { username });
 
 	return this.findOne(query);
 };
@@ -68,17 +74,9 @@ RocketChat.models.Users.findAgents = function() {
  * @return
  */
 RocketChat.models.Users.findOnlineUserFromList = function(userList) {
-	const query = {
-		status: {
-			$exists: true,
-			$ne: 'offline',
-		},
-		statusLivechat: 'available',
-		roles: 'livechat-agent',
-		username: {
-			$in: [].concat(userList),
-		},
-	};
+	const filter = queryStatusAgentOnline();
+
+	const query = Object.assign(filter, { username: { $in: [].concat(userList) } });
 
 	return this.find(query);
 };
@@ -88,14 +86,7 @@ RocketChat.models.Users.findOnlineUserFromList = function(userList) {
  * @return {object} User from db
  */
 RocketChat.models.Users.getNextAgent = function() {
-	const query = {
-		status: {
-			$exists: true,
-			$ne: 'offline',
-		},
-		statusLivechat: 'available',
-		roles: 'livechat-agent',
-	};
+	const query = queryStatusAgentOnline();
 
 	const collectionObj = this.model.rawCollection();
 	const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
