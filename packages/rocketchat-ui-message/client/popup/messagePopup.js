@@ -100,6 +100,9 @@ Template.messagePopup.onCreated(function() {
 		}
 	};
 	template.verifySelection = () => {
+		if (!template.open.curValue) {
+			return;
+		}
 		const current = template.find('.popup-item.selected');
 		if (current == null) {
 			const first = template.find('.popup-item');
@@ -149,7 +152,7 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			$('.toolbar').css('display', 'none');
+			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -301,7 +304,6 @@ Template.messagePopup.events({
 		template.value.set(this._id);
 		template.enterValue();
 		template.open.set(false);
-		return toolbarSearch.clear();
 	},
 });
 
