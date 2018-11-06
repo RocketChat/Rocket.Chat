@@ -22,15 +22,12 @@ Tracker.autorun(() => {
 	if (!Meteor.userId()) {
 		return;
 	}
-	Meteor.call('getActiveUsers', (error, result) => {
-		if (error) {
-			return;
-		}
-
-		result.users.forEach((user) => {
-			updateUser(user);
+	RocketChat.API.v1.get('users.actives')
+		.then((result) => {
+			result.users.forEach((user) => {
+				updateUser(user);
+			});
 		});
-	});
 });
 
 RocketChat.Notifications.onLogged('user-status', (user) => {
