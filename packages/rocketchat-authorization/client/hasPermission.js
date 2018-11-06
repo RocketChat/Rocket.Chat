@@ -1,6 +1,7 @@
-/* globals ChatPermissions */
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatPermissions } from './lib/ChatPermissions';
 
 function atLeastOne(permissions = [], scope) {
 	return permissions.some((permissionId) => {
