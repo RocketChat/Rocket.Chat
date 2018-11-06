@@ -345,10 +345,11 @@ Meteor.Streamer = class Streamer extends EventEmitter {
 
 			args = stream.applyTransformers(methodScope, eventName, args);
 
-			stream.emit(eventName, ...args);
 
 			if (stream.retransmit === true) {
-				stream._emit(eventName, args, this.connection, true);
+				stream.emit(eventName, ...args);
+			} else {
+				stream.emitWithoutBroadcast(eventName, ...args);
 			}
 		};
 

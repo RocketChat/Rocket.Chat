@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 const MY_MESSAGES = '__my_messages__';
+const MY_MESSAGES_STREAM = '_m_';
 
 class MsgStream extends Meteor.Streamer {
 	_publish(publication, eventName, options) {
@@ -32,7 +33,7 @@ class MsgStream extends Meteor.Streamer {
 			switch (clientAction) {
 				case 'inserted':
 					rooms.push({ rid });
-					this.on(rid, sendMyMessage);
+					this.on(`${ MY_MESSAGES_STREAM }${ rid }`, sendMyMessage);
 					break;
 
 				case 'removed':
@@ -42,14 +43,14 @@ class MsgStream extends Meteor.Streamer {
 		};
 
 		rooms.forEach(({ rid }) => {
-			this.on(rid, sendMyMessage);
+			this.on(`${ MY_MESSAGES_STREAM }${ rid }`, sendMyMessage);
 		});
 
 		this.on(uid, userEvent);
 
 		publication.onStop(() => {
 			this.removeListener(uid, userEvent);
-			rooms.forEach(({ rid }) => this.removeListener(rid, sendMyMessage));
+			rooms.forEach(({ rid }) => this.removeListener(`${ MY_MESSAGES_STREAM }${ rid }`, sendMyMessage));
 		});
 	}
 }
@@ -108,7 +109,7 @@ Meteor.startup(function() {
 				mention.name = user && user.name;
 			});
 		}
-		msgStream.__emit(record.rid, msgStream.changedPayload({ eventName: MY_MESSAGES, args:[record] }));
+		msgStream.__emit(`${ MY_MESSAGES_STREAM }${ record.rid }`, msgStream.changedPayload({ eventName: MY_MESSAGES, args:[record] }));
 		return msgStream.emitWithoutBroadcast(record.rid, record);
 	}
 
