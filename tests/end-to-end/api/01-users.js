@@ -330,6 +330,18 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
+		it('should prevent from updating someone else\'s avatar', (done) => {
+			request.post(api('users.setAvatar'))
+				.set(userCredentials)
+				.attach('image', imgURL)
+				.field({ userId: credentials['X-User-Id'] })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
 		it('should set the avatar of another user by username and local image', (done) => {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
