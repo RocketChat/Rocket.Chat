@@ -146,6 +146,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/oauth/proxy.js', 'server');
 
 	api.addFiles('server/startup/statsTracker.js', 'server');
+	api.addFiles('server/startup/robots.js', 'server');
 
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.js', 'server');
