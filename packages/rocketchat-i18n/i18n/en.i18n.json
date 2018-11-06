@@ -2240,6 +2240,7 @@
   "RetentionPolicyRoom_OverrideGlobal": "Override global retention policy",
   "RetentionPolicyRoom_ReadTheDocs": "Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on <a href='https://rocket.chat/docs/administrator-guides/retention-policies/'>here</a>.",
   "Retry_Count": "Retry Count",
+  "Robot_Instructions_File_Content": "Robots.txt File Contents",
   "Role": "Role",
   "Role_Editing": "Role Editing",
   "Role_removed": "Role removed",
