@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 function atLeastOne(userId, permissions = [], scope) {
 	return permissions.some((permissionId) => {
 		const permission = RocketChat.models.Permissions.findOne(permissionId);
