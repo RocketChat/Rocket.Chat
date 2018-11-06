@@ -151,4 +151,5 @@ Package.onUse(function(api) {
 	api.export('fireGlobalEvent', 'client');
 	api.export('ChatRoom', 'client');
 	api.export('ChatSubscription', 'client');
+	api.export('RoomRoles', 'client');
 });

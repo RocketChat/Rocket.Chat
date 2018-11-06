@@ -812,6 +812,11 @@ RocketChat.settings.addGroup('General', function() {
 		public: true,
 		i18nDescription: 'Store_Last_Message_Sent_per_Room',
 	});
+	this.add('Robot_Instructions_File_Content', 'User-agent: *\nDisallow: /', {
+		type: 'string',
+		public: true,
+		multiline: true,
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
