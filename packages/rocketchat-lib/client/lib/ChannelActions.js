@@ -30,20 +30,6 @@ export function hide(type, rid, name) {
 	return false;
 }
 
-const leaveRoom = async(rid) => {
-	if (!Meteor.userId()) {
-		return false;
-	}
-	const tmp = ChatSubscription.findOne({ rid, 'u._id': Meteor.userId() });
-	ChatSubscription.remove({ rid, 'u._id': Meteor.userId() });
-	try {
-		await call('leaveRoom', rid);
-	} catch (error) {
-		ChatSubscription.insert(tmp);
-		throw error;
-	}
-};
-
 export function leave(type, rid, name) {
 	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.LEAVE_WARNING);
 
@@ -62,7 +48,7 @@ export function leave(type, rid, name) {
 			return;
 		}
 		try {
-			await leaveRoom(rid);
+			await call('leaveRoom', rid);
 			modal.close();
 			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 				FlowRouter.go('home');

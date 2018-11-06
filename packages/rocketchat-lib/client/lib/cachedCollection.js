@@ -1,3 +1,4 @@
+/* globals CachedChatRoom */
 import localforage from 'localforage';
 import _ from 'underscore';
 
@@ -332,16 +333,27 @@ class CachedCollection {
 		this.collection.remove({});
 	}
 
+	removeRoomFromCacheWhenUserLeaves(roomId) {
+		ChatRoom.remove(roomId);
+		CachedChatRoom.saveCache();
+	}
+
 	setupListener(eventType, eventName) {
 		RocketChat.Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
 			RocketChat.callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
 			if (t === 'removed') {
-				const room = this.collection.findOne({ _id: record._id });
-				this.collection.remove(record._id);
+				let room;
+				if (this.eventName === 'subscriptions-changed') {
+					room = ChatRoom.findOne(this.collection.findOne({ _id: record._id }).rid);
+					this.removeRoomFromCacheWhenUserLeaves(room._id);
+				} else {
+					room = this.collection.findOne({ _id: record._id });
+				}
 				if (room) {
 					RoomManager.close(room.t + room.name);
 				}
+				this.collection.remove(record._id);
 			} else {
 				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 			}
