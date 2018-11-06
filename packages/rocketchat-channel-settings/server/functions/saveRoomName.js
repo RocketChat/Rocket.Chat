@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 
 RocketChat.saveRoomName = function(rid, displayName, user, sendMessage = true) {
 	const room = RocketChat.models.Rooms.findOneById(rid);

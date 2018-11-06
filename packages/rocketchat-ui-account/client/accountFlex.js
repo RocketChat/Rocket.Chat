@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.accountFlex.events({
 	'click [data-action="close"]'() {
 		SideNav.closeFlex();
@@ -14,6 +16,9 @@ Template.accountFlex.helpers({
 	},
 	accessTokensEnabled() {
 		return RocketChat.settings.get('API_Enable_Personal_Access_Tokens');
+	},
+	encryptionEnabled() {
+		return RocketChat.settings.get('E2E_Enable');
 	},
 	menuItem(name, icon, section, group) {
 		return {

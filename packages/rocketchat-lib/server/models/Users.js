@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -80,6 +82,16 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findByRoomId(rid, options) {
+		const data = RocketChat.models.Subscriptions.findByRoomId(rid).fetch().map((item) => item.u._id);
+		const query = {
+			_id: {
+				$in: data,
+			},
+		};
+
+		return this.find(query, options);
+	}
 
 	findByUsername(username, options) {
 		const query = { username };
@@ -249,6 +261,23 @@ class ModelUsers extends RocketChat.models._Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	getOldest(fields = { _id: 1 }) {
+		const query = {
+			_id: {
+				$ne: 'rocket.cat',
+			},
+		};
+
+		const options = {
+			fields,
+			sort: {
+				createdAt: 1,
+			},
+		};
+
+		return this.findOne(query, options);
 	}
 
 	// UPDATE
@@ -465,7 +494,7 @@ class ModelUsers extends RocketChat.models._Base {
 		const update = {
 			$set: settings,
 		};
-		if (![1, 2].includes(parseInt(settings.preferences.clockMode))) {
+		if (parseInt(preferences.clockMode) === 0) {
 			delete update.$set['settings.preferences.clockMode'];
 			update.$unset = { 'settings.preferences.clockMode': 1 };
 		}

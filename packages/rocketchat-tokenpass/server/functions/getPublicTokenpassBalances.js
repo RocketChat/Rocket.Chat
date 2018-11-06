@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+
 let userAgent = 'Meteor';
 if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
 

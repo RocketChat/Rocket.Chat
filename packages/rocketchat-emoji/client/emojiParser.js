@@ -1,4 +1,5 @@
 /* globals isSetNotNull */
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 /*
@@ -6,8 +7,8 @@ import s from 'underscore.string';
  * @param {Object} message - The message object
  */
 RocketChat.callbacks.add('renderMessage', (message) => {
-	if (isSetNotNull(() => RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) &&
-		!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+	if (isSetNotNull(() => RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) &&
+		!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
 		return message;
 	}
 

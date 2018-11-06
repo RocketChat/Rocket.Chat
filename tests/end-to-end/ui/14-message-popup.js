@@ -1,4 +1,6 @@
 /* eslint-env mocha */
+/* globals Meteor */
+
 import {
 	api,
 	request,

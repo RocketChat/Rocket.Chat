@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.removeUserFromRoom = function(rid, user) {
 	const room = RocketChat.models.Rooms.findOneById(rid);
 

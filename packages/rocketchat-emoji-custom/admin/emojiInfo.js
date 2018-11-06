@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+
 Template.emojiInfo.helpers({
 	name() {
 		const emoji = Template.instance().emoji.get();
