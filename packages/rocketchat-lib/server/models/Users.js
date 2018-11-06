@@ -602,6 +602,16 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
+	removeResumeService(_id) {
+		const update = {
+			$unset: {
+				'services.resume': '',
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
 	// INSERT
 	create(data) {
 		const user = {

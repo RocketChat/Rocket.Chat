@@ -236,9 +236,13 @@ const loadMissedMessages = function(rid) {
 		return;
 	}
 	const subscription = ChatSubscription.findOne({ rid });
-	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) =>
-		Array.from(result).map((item) => RocketChat.promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })))
-	);
+	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) => {
+		if (result) {
+			return Array.from(result).map((item) => RocketChat.promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })));
+		} else {
+			return [];
+		}
+	});
 };
 
 let connectionWasOnline = true;

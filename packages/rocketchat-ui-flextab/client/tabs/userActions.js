@@ -490,7 +490,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				icon: 'key',
 				id: 'reset-e2e',
 				name: t('Reset_E2E_Key'),
-				action: prevent(getUser, ({ _id }) => Meteor.call('resetUserE2EKey', _id, success(() => toastr.success(t('User_e2e_key_was_reset'))))),
+				action: prevent(getUser, ({ _id }) => Meteor.call('e2e.resetUserE2EKey', _id, success(() => toastr.success(t('User_e2e_key_was_reset'))))),
 			};
 		}];
 	return actions;
