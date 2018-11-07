@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 /*
  * Join is a named function that will replace /topic commands
  * @param {Object} message - The message object

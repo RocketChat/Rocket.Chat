@@ -1,4 +1,6 @@
 /* globals RocketChatFileEmojiCustomInstance */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	deleteEmojiCustom(emojiID) {
 		let emoji = null;

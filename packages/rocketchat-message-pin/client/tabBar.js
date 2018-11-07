@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 Meteor.startup(function() {
 	return Tracker.autorun(function() {
 		if (RocketChat.settings.get('Message_AllowPinning')) {

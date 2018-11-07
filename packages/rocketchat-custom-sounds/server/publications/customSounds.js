@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 Meteor.publish('customSounds', function(filter, limit) {

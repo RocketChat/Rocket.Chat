@@ -1,6 +1,10 @@
-/* globals Deps, getCaretCoordinates*/
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Blaze } from 'meteor/blaze';
+import { Deps } from 'meteor/deps';
 import _ from 'underscore';
 import AutoCompleteRecords from './collection';
+import { getCaretCoordinates } from 'meteor/dandv:caret-position';
 
 const isServerSearch = function(rule) {
 	return _.isString(rule.collection);
@@ -69,7 +73,7 @@ const getField = function(obj, str) {
 	return obj;
 };
 
-this.AutoComplete = class {
+export default class AutoComplete {
 	constructor(settings) {
 		this.KEYS = [40, 38, 13, 27, 9];
 		this.limit = settings.limit || 5;
@@ -451,4 +455,4 @@ this.AutoComplete = class {
 		return this.rules[this.matched].template;
 	}
 
-};
+}

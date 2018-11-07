@@ -1,4 +1,6 @@
 /* global CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 const config = {
 	serverURL: '',

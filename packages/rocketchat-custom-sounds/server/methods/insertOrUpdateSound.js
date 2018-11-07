@@ -1,4 +1,5 @@
 /* globals RocketChatFileCustomSoundsInstance */
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 Meteor.methods({

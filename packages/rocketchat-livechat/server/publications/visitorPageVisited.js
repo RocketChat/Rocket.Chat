@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 
 	if (!this.userId) {
