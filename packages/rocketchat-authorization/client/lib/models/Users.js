@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 if (_.isUndefined(RocketChat.models.Users)) {

@@ -172,7 +172,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			$('.toolbar').css('display', 'none');
+			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -297,7 +297,6 @@ Template.messagePopupSlashCommandPreview.events({
 		const template = Template.instance();
 		template.clickingItem = false;
 		template.enterKeyAction();
-		toolbarSearch.clear();
 	},
 });
 

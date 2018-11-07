@@ -21,10 +21,10 @@ Template.body.onRendered(function() {
 		if ((e.keyCode === 80 || e.keyCode === 75) && (e.ctrlKey === true || e.metaKey === true) && e.shiftKey === false) {
 			e.preventDefault();
 			e.stopPropagation();
-			toolbarSearch.focus(true);
+			toolbarSearch.show(true);
 		}
 		const unread = Session.get('unread');
-		if (e.keyCode === 27 && e.shiftKey === true && (unread != null) && unread !== '') {
+		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
 			modal.open({
