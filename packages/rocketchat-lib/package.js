@@ -238,6 +238,7 @@ Package.onUse(function(api) {
 	// CLIENT MODELS
 	api.addFiles('client/models/_Base.js', 'client');
 	api.addFiles('client/models/Avatars.js', 'client');
+	api.addFiles('client/models/FullUser.js', 'client');
 	api.addFiles('client/models/Uploads.js', 'client');
 
 	// CLIENT VIEWS

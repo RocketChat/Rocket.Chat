@@ -284,7 +284,7 @@ Template.userInfo.onCreated(function() {
 		} else if (data && data._id != null) {
 			filter = { _id: data._id };
 		}
-		const user = Meteor.users.findOne(filter);
+		const user = RocketChat.models.FullUser.findOne(filter);
 
 		return this.user.set(user);
 	});
