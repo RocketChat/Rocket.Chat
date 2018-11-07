@@ -1,4 +1,6 @@
 /* global fileUploadHandler, Handlebars */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 import { Session } from 'meteor/session';

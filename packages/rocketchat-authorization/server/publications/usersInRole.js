@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.publish('usersInRole', function(roleName, scope, limit = 50) {
 	if (!this.userId) {
 		return this.ready();

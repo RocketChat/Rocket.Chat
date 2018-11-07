@@ -1,4 +1,6 @@
 /* global OAuth2Server */
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 
 const oauth2server = new OAuth2Server({
 	accessTokensCollectionName: 'rocketchat_oauth_access_tokens',

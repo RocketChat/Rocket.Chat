@@ -1,4 +1,7 @@
 // import resetSelection from '../resetSelection';
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(() => {
 	RocketChat.TabBar.addButton({
 		groups: ['channel', 'group', 'direct'],

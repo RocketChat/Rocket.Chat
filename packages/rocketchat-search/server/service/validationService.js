@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import SearchLogger from '../logger/logger';
 
 class ValidationService {

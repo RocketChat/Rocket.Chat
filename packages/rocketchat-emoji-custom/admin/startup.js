@@ -3,6 +3,6 @@ RocketChat.AdminBox.addOption({
 	i18nLabel: 'Custom_Emoji',
 	icon: 'emoji',
 	permissionGranted() {
-		return RocketChat.authz.hasAtLeastOnePermission(['manage-emoji']);
+		return RocketChat.authz.hasPermission('manage-emoji');
 	},
 });

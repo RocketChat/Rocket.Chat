@@ -1,3 +1,4 @@
+import { Match, check } from 'meteor/check';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
 RocketChat.API.v1.addRoute('livechat/visitor', {
@@ -35,7 +36,7 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 				customFields.forEach((field) => {
 					const customField = RocketChat.models.LivechatCustomField.findOneById(field.key);
 					if (!customField) {
-						throw new Meteor.Error('invalid-custom-field');
+						return;
 					}
 					const { key, value, overwrite } = field;
 					if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {

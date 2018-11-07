@@ -1,4 +1,7 @@
-/* global processWebhookMessage */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Match, check } from 'meteor/check';
+import { processWebhookMessage } from 'meteor/rocketchat:integrations';
 
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -18,7 +21,7 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The room id provided does not match where the message is from.');
 		}
 
-		if (this.bodyParams.asUser && msg.u._id !== this.userId && !RocketChat.authz.hasPermission(Meteor.userId(), 'force-delete-message', msg.rid)) {
+		if (this.bodyParams.asUser && msg.u._id !== this.userId && !RocketChat.authz.hasPermission(this.userId, 'force-delete-message', msg.rid)) {
 			return RocketChat.API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 		}
 

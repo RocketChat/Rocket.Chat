@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'ddp-rate-limiter',
 		'kadira:flow-router',
+		'kadira:blaze-layout',
 		'rocketchat:lib',
 		'rocketchat:authorization',
 	]);

@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.accountFlex.events({
 	'click [data-action="close"]'() {
 		SideNav.closeFlex();

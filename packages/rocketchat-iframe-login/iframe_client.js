@@ -1,5 +1,7 @@
-/* globals Accounts, Tracker, ReactiveVar, FlowRouter, Accounts, HTTP, facebookConnectPlugin, TwitterConnect, OAuth */
+/* globals Accounts, Tracker, ReactiveVar, Accounts, HTTP, facebookConnectPlugin, TwitterConnect, OAuth */
 
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 const { _unstoreLoginToken } = Accounts;
