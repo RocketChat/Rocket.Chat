@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('integrations', function _integrationPublication() {
 	if (!this.userId) {
 		return this.ready();

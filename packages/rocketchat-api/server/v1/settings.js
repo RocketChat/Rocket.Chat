@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 // settings endpoints

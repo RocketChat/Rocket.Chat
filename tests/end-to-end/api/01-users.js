@@ -334,7 +334,7 @@ describe('[Users]', function() {
 			request.post(api('users.setAvatar'))
 				.set(userCredentials)
 				.attach('image', imgURL)
-				.field({ userId: targetUser._id })
+				.field({ userId: credentials['X-User-Id'] })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	return RocketChat.settings.add('Message_AllowStarring', true, {
 		type: 'boolean',

@@ -1,4 +1,6 @@
 /* globals DDPRateLimiter */
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
 Meteor.methods({
 	'livechat:sendTranscript'(token, rid, email) {

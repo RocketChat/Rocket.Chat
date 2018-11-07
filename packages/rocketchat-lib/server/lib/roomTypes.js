@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
 
 RocketChat.roomTypes = new class roomTypesServer extends RoomTypesCommon {

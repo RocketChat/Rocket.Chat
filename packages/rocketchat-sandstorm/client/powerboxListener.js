@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.Sandstorm = RocketChat.Sandstorm || {};
 
 RocketChat.Sandstorm.request = function() {};

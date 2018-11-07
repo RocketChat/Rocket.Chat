@@ -1,3 +1,7 @@
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+
 Template.chatRoomItem.helpers({
 	roomData() {
 		let { name } = this;

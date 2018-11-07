@@ -1,5 +1,6 @@
 /* eslint new-cap:0 */
 
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';

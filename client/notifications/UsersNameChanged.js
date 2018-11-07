@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	RocketChat.Notifications.onLogged('Users:NameChanged', function({ _id, name, username }) {
 		RocketChat.models.Messages.update({

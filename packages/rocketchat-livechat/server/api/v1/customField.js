@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import { findGuest } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/custom.field', {

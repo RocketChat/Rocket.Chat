@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('IRC_Federation', function() {
 		this.add('IRC_Enabled', false, {

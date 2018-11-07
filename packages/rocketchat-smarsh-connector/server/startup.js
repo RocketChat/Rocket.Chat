@@ -1,4 +1,5 @@
 /* globals SyncedCron */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 const smarshJobName = 'Smarsh EML Connector';
