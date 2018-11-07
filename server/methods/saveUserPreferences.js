@@ -10,6 +10,7 @@ Meteor.methods({
 			saveMobileBandwidth: Match.Optional(Boolean),
 			collapseMediaByDefault: Match.Optional(Boolean),
 			autoImageLoad: Match.Optional(Boolean),
+			disableUserTyping: Match.Optional(Boolean),
 			emailNotificationMode: Match.Optional(String),
 			unreadAlert: Match.Optional(Boolean),
 			notificationsSoundVolume: Match.Optional(Number),

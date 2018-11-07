@@ -909,6 +909,10 @@ RocketChat.settings.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Allow_DisableUserTyping', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Message_AllowEditing_BlockEditInMinutes', 0, {
 		type: 'int',
 		public: true,

@@ -375,6 +375,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				saveMobileBandwidth: Match.Maybe(Boolean),
 				collapseMediaByDefault: Match.Maybe(Boolean),
 				autoImageLoad: Match.Maybe(Boolean),
+				disableUserTyping: Match.Maybe(Boolean),
 				emailNotificationMode: Match.Maybe(String),
 				unreadAlert: Match.Maybe(Boolean),
 				notificationsSoundVolume: Match.Maybe(Number),

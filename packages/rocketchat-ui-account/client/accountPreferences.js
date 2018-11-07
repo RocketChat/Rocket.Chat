@@ -152,6 +152,7 @@ Template.accountPreferences.onCreated(function() {
 		data.hideAvatars = JSON.parse($('#hideAvatars').find('input:checked').val());
 		data.sendOnEnter = $('#sendOnEnter').find('select').val();
 		data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
+		data.disableUserTyping = RocketChat.settings.get('Allow_DisableUserTyping') === true ? JSON.parse($('input[name=disableUserTyping]:checked').val()) : false;
 		data.emailNotificationMode = $('select[name=emailNotificationMode]').val();
 		data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
