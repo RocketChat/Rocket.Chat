@@ -1,21 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-const updateUser = ({
-	_id,
-	username,
-	name,
-	utcOffset,
-	status,
-}) => {
-	Meteor.users._collection.upsert({ _id }, {
-		$set: {
-			username,
-			name,
-			utcOffset,
-			status,
-		},
-	});
+const updateUser = (user, force = false) => {
+	if (force) {
+		return Meteor.users._collection.upsert({ _id: user._id }, {
+			$set: {
+				username: user.username,
+				name: user.name,
+				utcOffset: user.utcOffset,
+				status: user.status,
+			},
+		});
+	}
+
+	const found = Meteor.users.findOne(user._id, { fields: { _id: 1 } });
+	if (found) {
+		return;
+	}
+
+	Meteor.users._collection.insert(user);
 };
 
 Tracker.autorun(() => {
@@ -31,5 +34,5 @@ Tracker.autorun(() => {
 });
 
 RocketChat.Notifications.onLogged('user-status', (user) => {
-	updateUser(user);
+	updateUser(user, true);
 });
