@@ -57,7 +57,7 @@ class ModelSettings extends RocketChat.models._Base {
 				{ $in: ids };
 		}
 
-		return this.find(filter, { fields: { _id: 1, value: 1 } });
+		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1 } });
 	}
 
 	findNotHiddenPublicUpdatedAfter(updatedAt) {
@@ -69,7 +69,7 @@ class ModelSettings extends RocketChat.models._Base {
 			},
 		};
 
-		return this.find(filter, { fields: { _id: 1, value: 1 } });
+		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1 } });
 	}
 
 	findNotHiddenPrivate() {
