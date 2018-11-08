@@ -85,11 +85,11 @@ class ModelUsers extends RocketChat.models._Base {
 	findUsersNotOfflineInSubscribedRooms(username, options) {
 		const query = {
 			username: {
-				$in: RocketChat.models.Rooms.findByContainingUsername(username).fetch()
+				$in: RocketChat.models.Rooms.findByContainingUsername(username).fetch(),
 			},
 			status: {
 				$in: ['online', 'away', 'busy'],
-			}
+			},
 		};
 
 		return this.find(query, options);
