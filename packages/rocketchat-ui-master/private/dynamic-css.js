@@ -172,7 +172,7 @@
 
 				return '--' + _id.replace('theme-color-', '') + ': ' + value + ';';
 			}).join('\n');
-			document.querySelector('#css-variables').innerHTML = ':root {' + css + '}';
+			document.querySelector('#css-variables').innerHTML = ':root {\n' + css + '\n}';
 		}
 
 		cssVarPoly.init();

@@ -191,14 +191,14 @@
 	--sidebar-item-thumb-size: 18px;
 	--sidebar-item-thumb-size-medium: 27px;
 	--sidebar-item-thumb-size-extended: 36px;
-	--sidebar-item-text-color: var(--color-gray);
+	--sidebar-item-text-color: var(--rc-color-primary-light);
 	--sidebar-item-background: inherit;
 	--sidebar-item-hover-background: var(--rc-color-primary-darkest);
 	--sidebar-item-active-background: var(--rc-color-primary-dark);
 	--sidebar-item-active-color: var(--sidebar-item-text-color);
-	--sidebar-item-unread-color: var(--color-white);
+	--sidebar-item-unread-color: var(--rc-color-content);
 	--sidebar-item-unread-font-weight: 600;
-	--sidebar-item-popup-background: var(--color-dark-medium);
+	--sidebar-item-popup-background: var(--rc-color-primary-dark);
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-item-user-status-radius: 50%;
 	--sidebar-item-text-size: 0.875rem;
@@ -227,9 +227,9 @@
 	/*
 	* Rooms list
 	*/
-	--rooms-list-title-color: var(--color-gray);
+	--rooms-list-title-color: var(--rc-color-primary-light);
 	--rooms-list-title-text-size: 0.75rem;
-	--rooms-list-empty-text-color: var(--color-gray);
+	--rooms-list-empty-text-color: var(--rc-color-primary-light);
 	--rooms-list-empty-text-size: 0.75rem;
 	--rooms-list-padding: var(--sidebar-default-padding);
 	--rooms-list-small-padding: var(--sidebar-small-default-padding);
