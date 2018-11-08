@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
-	getUsersOfRoom(rid, showAll) {
+	async getUsersOfRoom(rid, showAll) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
@@ -16,17 +16,32 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid, { fields: { 'u._id': 1 } }).fetch();
-		const userIds = subscriptions.map((s) => s.u._id); // TODO: CACHE: expensive
-		const options = { fields: { username: 1, name: 1 } };
-
-		const users = showAll === true
-			? RocketChat.models.Users.findUsersWithUsernameByIds(userIds, options).fetch()
-			: RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(userIds, options).fetch();
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid, { fields: { 'u._id': 1 } });
 
 		return {
-			total: userIds.length,
-			records: users,
+			total: subscriptions.count(),
+			records: await RocketChat.models.Subscriptions.model.rawCollection().aggregate([
+				{ $match: { rid: 'GENERAL' } },
+
+				{
+					$lookup:
+						{
+							from: 'users',
+							localField: 'u._id',
+							foreignField: '_id',
+							as: 'u',
+						},
+				},
+				...(showAll ? [{ $match: { 'u.status': 'online' } }] : []),
+				{
+					$project: {
+						_id: { $arrayElemAt: ['$u._id', 0] },
+						name: { $arrayElemAt: ['$u.name', 0] },
+						username: { $arrayElemAt: ['$u.username', 0] },
+					},
+				},
+
+			]).toArray(),
 		};
 	},
 });
