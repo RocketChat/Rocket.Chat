@@ -16,7 +16,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid, { fields: { 'u._id': 1 } });
+		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid);
 
 		return {
 			total: subscriptions.count(),
