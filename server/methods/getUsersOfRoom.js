@@ -21,7 +21,7 @@ Meteor.methods({
 		return {
 			total: subscriptions.count(),
 			records: await RocketChat.models.Subscriptions.model.rawCollection().aggregate([
-				{ $match: { rid: 'GENERAL' } },
+				{ $match: { rid } },
 
 				{
 					$lookup:
