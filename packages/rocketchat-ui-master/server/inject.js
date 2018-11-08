@@ -3,30 +3,30 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
-	const colors = RocketChat.models.Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1, editor: 1 } })
-		.fetch().filter((color) => color && color.value);
 
-	if (!colors) {
-		return;
-	}
+const fetchDynamicCssVariablesList = () => {
+	const query = { _id: /theme-color-rc/i };
+	const projection = { fields: { value: 1, editor: 1 } };
+	return RocketChat.models.Settings.find(query, projection);
+};
 
-	const css = colors.map(({ _id, value, editor }) => {
-		if (editor === 'expression') {
-			return `--${ _id.replace('theme-color-', '') }: var(--${ value });`;
-		}
+const renderDynamicCssVariablesList = _.debounce(Meteor.bindEnvironment(() => {
+	const cssVariables = fetchDynamicCssVariablesList()
+		.fetch()
+		.filter(({ value }) => value)
+		.map(({ _id, value, editor }) => {
+			const propertyName = _id.replace('theme-color-', '');
+			const propertyValue = editor === 'expression' ? value = `var(--${ value })` : value;
 
-		return `--${ _id.replace('theme-color-', '') }: ${ value };`;
-	}).join('\n');
+			return `--${ propertyName }: ${ propertyValue };`;
+		})
+		.join('\n');
 
-	Inject.rawBody('dynamic-variables', `<style id='css-variables'>\n:root {\n${ css }\n}\n</style>`);
+	Inject.rawBody('css-variables', `<style id="css-variables">\n:root {\n${ cssVariables }\n}\n</style>`);
 }), 500);
 
-renderDynamicCssList();
-
-RocketChat.models.Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1 } }).observe({
-	changed: renderDynamicCssList,
-});
+renderDynamicCssVariablesList();
+fetchDynamicCssVariablesList().observe({ changed: renderDynamicCssVariablesList });
 
 Inject.rawHead('noreferrer', '<meta name="referrer" content="origin-when-crossorigin">');
 Inject.rawHead('dynamic', `<script>${ Assets.getText('private/dynamic-css.js') }</script>`);

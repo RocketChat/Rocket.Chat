@@ -1,4 +1,4 @@
-/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss, popover */
+/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, popover */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -10,15 +10,13 @@ import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
 
-RocketChat.settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } })
-	.observe({
-		changed: () => DynamicCss.run(true),
-	});
-
 this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
 this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
+	RocketChat.settings.collection.find({ _id: /theme-color-rc/i }, { fields: { value: 1, editor: 1 } })
+		.observe({ changed: () => window.DynamicCss.run(true) });
+
 	new Clipboard('.clipboard');
 
 	$(document.body).on('keydown', function(e) {
