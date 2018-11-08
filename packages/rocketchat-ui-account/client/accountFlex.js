@@ -20,6 +20,9 @@ Template.accountFlex.helpers({
 	encryptionEnabled() {
 		return RocketChat.settings.get('E2E_Enable');
 	},
+	webdavIntegrationEnabled() {
+		return RocketChat.settings.get('Webdav_Integration_Enabled');
+	},
 	menuItem(name, icon, section, group) {
 		return {
 			name: t(name),
