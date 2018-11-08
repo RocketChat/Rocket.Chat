@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/main.js', 'client');
 
 	api.addFiles('server/inject.js', 'server');
-	api.addAssets('server/dynamic-css.js', 'server');
+
+	api.addAssets('private/dynamic-css.js', 'server');
 	api.addAssets('public/icons.svg', 'server');
 });

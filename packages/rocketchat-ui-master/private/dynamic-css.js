@@ -177,4 +177,6 @@
 
 		cssVarPoly.init();
 	}, 1000);
+
+	window.DynamicCss = DynamicCss;
 })();

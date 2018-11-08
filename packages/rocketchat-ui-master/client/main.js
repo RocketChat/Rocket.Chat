@@ -9,7 +9,11 @@ import { Template } from 'meteor/templating';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
-RocketChat.settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true); } });
+
+RocketChat.settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } })
+	.observe({
+		changed: () => DynamicCss.run(true),
+	});
 
 this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
 this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
