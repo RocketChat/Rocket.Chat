@@ -21,10 +21,14 @@
 			{{/with}}
 			{{#if allowedToSend}}
 				{{> messagePopupConfig getPopupConfig}}
+				{{> messagePopupSlashCommandPreview getPopupConfig}}
+
 				{{#if dataReply}}
 					{{#with dataReply}}
 							<div class="reply-preview message-popup">
-								{{> messageAttachment text=msg author_name=u.username}}
+								<div class="message">
+									{{> messageAttachment text=msg author_name=u.username}}
+								</div>
 								<div class="rc-message-box__icon cancel-reply">
 									{{> icon block="rc-input__icon-svg" icon="cross"}}
 								</div>

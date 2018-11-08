@@ -10,7 +10,7 @@ RocketChat.emoji.packages.emojione.render = function(emoji) {
 	return emojione.toImage(emoji);
 };
 
-//http://stackoverflow.com/a/26990347 function isSet() from Gajus
+// http://stackoverflow.com/a/26990347 function isSet() from Gajus
 function isSetNotNull(fn) {
 	let value;
 	try {
@@ -35,8 +35,8 @@ for (const key in emojione.emojioneList) {
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (isSetNotNull(() => RocketChat.emoji.packages.emojione)) {
-			if (isSetNotNull(() => RocketChat.getUserPreference(Meteor.user(), 'convertAsciiEmoji'))) {
-				RocketChat.emoji.packages.emojione.ascii = RocketChat.getUserPreference(Meteor.user(), 'convertAsciiEmoji');
+			if (isSetNotNull(() => RocketChat.getUserPreference(Meteor.userId(), 'convertAsciiEmoji'))) {
+				RocketChat.emoji.packages.emojione.ascii = RocketChat.getUserPreference(Meteor.userId(), 'convertAsciiEmoji');
 			} else {
 				RocketChat.emoji.packages.emojione.ascii = true;
 			}

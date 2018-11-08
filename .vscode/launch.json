@@ -38,10 +38,7 @@
 			"sourceMapPathOverrides": {
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*"
 			},
-			"protocol": "inspector",
-			"env": {
-				"USE_UNRELEASED_ROCKETAPPS_FRAMEWORK": "true"
-			}
+			"protocol": "inspector"
 		},
 		{
 			"type": "node",
@@ -57,10 +54,7 @@
 			"sourceMapPathOverrides": {
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*"
 			},
-			"protocol": "inspector",
-			"env": {
-				"USE_UNRELEASED_ROCKETAPPS_FRAMEWORK": "true"
-			}
+			"protocol": "inspector"
 		},
 		{
 			"type": "node",

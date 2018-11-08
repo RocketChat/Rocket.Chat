@@ -1,4 +1,5 @@
-/* globals Department, Livechat, swal */
+/* globals Department, Livechat */
+import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
 
 Template.options.helpers({
@@ -10,7 +11,7 @@ Template.options.helpers({
 	},
 	selectedDepartment() {
 		return this._id === Livechat.department;
-	}
+	},
 });
 
 Template.options.events({
@@ -23,22 +24,18 @@ Template.options.events({
 			confirmButtonColor: '#DD6B55',
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('No'),
-			closeOnConfirm: true,
-			html: false
-		}, () => {
-			Meteor.call('livechat:closeByVisitor', { roomId: visitor.getRoom(), token: visitor.getToken() }, (error) => {
-				if (error) {
-					return console.log('Error ->', error);
-				}
-				swal({
-					title: t('Chat_ended'),
-					type: 'success',
-					timer: 2000
+			html: false,
+		}).then((result) => {
+			if (result.value) {
+				Meteor.call('livechat:closeByVisitor', { roomId: visitor.getRoom(), token: visitor.getToken() }, (error) => {
+					if (error) {
+						return console.log('Error ->', error);
+					}
 				});
-			});
+			}
 		});
 	},
 	'click .switch-department'() {
 		Livechat.showSwitchDepartmentForm = true;
-	}
+	},
 });

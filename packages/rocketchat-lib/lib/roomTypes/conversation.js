@@ -5,12 +5,12 @@ export class ConversationRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'merged',
 			order: 30,
-			label: 'Conversations'
+			label: 'Conversations',
 		});
 	}
 
 	condition() {
-		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'mergeChannels');
+		// returns true only if sidebarGroupByType is not set
+		return !RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 	}
 }

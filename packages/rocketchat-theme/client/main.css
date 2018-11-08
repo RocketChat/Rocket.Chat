@@ -15,6 +15,10 @@
 @import 'imports/forms/select-avatar.css';
 @import 'imports/forms/switch.css';
 @import 'imports/forms/tags.css';
+@import 'imports/forms/checkbox.css';
+
+/* Typography */
+@import 'imports/general/typography.css';
 
 /* Sidebar */
 @import 'imports/components/sidebar/sidebar.css';
@@ -44,15 +48,13 @@
 @import 'imports/components/contextual-bar.css';
 @import 'imports/components/emojiPicker.css';
 @import 'imports/components/table.css';
-@import 'imports/components/file-list.css';
-
-
-
+@import 'imports/components/tabs.css';
 
 /* Modal */
 @import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
 @import 'imports/components/modal/directory.css';
+
 /* User Info */
 @import 'imports/components/userInfo.css';
 

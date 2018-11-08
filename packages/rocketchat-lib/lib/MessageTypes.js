@@ -26,9 +26,9 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				room_name: message.msg,
-				user_by: message.u.username
+				user_by: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'au',
@@ -37,9 +37,9 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_added: message.msg,
-				user_by: message.u.username
+				user_by: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'ru',
@@ -48,9 +48,9 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_removed: message.msg,
-				user_by: message.u.username
+				user_by: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'ul',
@@ -58,9 +58,9 @@ Meteor.startup(function() {
 		message: 'User_left',
 		data(message) {
 			return {
-				user_left: message.u.username
+				user_left: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'uj',
@@ -68,9 +68,9 @@ Meteor.startup(function() {
 		message: 'User_joined_channel',
 		data(message) {
 			return {
-				user: message.u.username
+				user: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'wm',
@@ -78,9 +78,9 @@ Meteor.startup(function() {
 		message: 'Welcome',
 		data(message) {
 			return {
-				user: message.u.username
+				user: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'rm',
@@ -88,15 +88,15 @@ Meteor.startup(function() {
 		message: 'Message_removed',
 		data(message) {
 			return {
-				user: message.u.username
+				user: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'rtc',
 		render(message) {
 			return RocketChat.callbacks.run('renderRtcMessage', message);
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'user-muted',
@@ -105,9 +105,9 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_muted: message.msg,
-				user_by: message.u.username
+				user_by: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'user-unmuted',
@@ -116,9 +116,9 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_unmuted: message.msg,
-				user_by: message.u.username
+				user_by: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'subscription-role-added',
@@ -128,9 +128,9 @@ Meteor.startup(function() {
 			return {
 				username: message.msg,
 				role: message.role,
-				user_by: message.u.username
+				user_by: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'subscription-role-removed',
@@ -140,9 +140,9 @@ Meteor.startup(function() {
 			return {
 				username: message.msg,
 				role: message.role,
-				user_by: message.u.username
+				user_by: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'room-archived',
@@ -150,9 +150,9 @@ Meteor.startup(function() {
 		message: 'This_room_has_been_archived_by__username_',
 		data(message) {
 			return {
-				username: message.u.username
+				username: message.u.username,
 			};
-		}
+		},
 	});
 	RocketChat.MessageTypes.registerType({
 		id: 'room-unarchived',
@@ -160,8 +160,8 @@ Meteor.startup(function() {
 		message: 'This_room_has_been_unarchived_by__username_',
 		data(message) {
 			return {
-				username: message.u.username
+				username: message.u.username,
 			};
-		}
+		},
 	});
 });

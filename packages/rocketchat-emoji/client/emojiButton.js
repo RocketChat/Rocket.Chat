@@ -4,7 +4,7 @@ Template.messageBox.events({
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+		if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
 			return false;
 		}
 
@@ -12,7 +12,7 @@ Template.messageBox.events({
 			RocketChat.EmojiPicker.close();
 		} else {
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				const {input} = chatMessages[RocketChat.openedRoom];
+				const { input } = chatMessages[RocketChat.openedRoom];
 
 				const emojiValue = `:${ emoji }:`;
 
@@ -29,7 +29,7 @@ Template.messageBox.events({
 				input.selectionEnd = caretPos + emojiValue.length;
 			});
 		}
-	}
+	},
 });
 
 Template.messageBox.onCreated(function() {

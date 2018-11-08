@@ -16,7 +16,7 @@ apps:
     rocketchat-server:
         command: startRocketChat
         daemon: simple
-        plugs: [network, network-bind, desktop]
+        plugs: [network, network-bind]
     rocketchat-mongo:
         command: startmongo
         daemon: simple
@@ -32,14 +32,14 @@ apps:
         command: env LC_ALL=C restoredb
         plugs: [network]
     backupdb:
-        command: env LC_ALL=c rcbackup
+        command: env LC_ALL=C backupdb
         plugs: [network]
     initcaddy:
-        command: env LC_ALL=c initcaddy
+        command: env LC_ALL=C initcaddy
 parts:
     node:
         plugin: dump 
-        prepare: wget https://nodejs.org/dist/v8.9.4/node-v8.9.4-linux-x64.tar.xz; tar xvf node-v8.9.4-linux-x64.tar.xz --strip 1; 
+        prepare: ./resources/preparenode  
         build-packages:
             # For fibers
             - python
@@ -54,10 +54,13 @@ parts:
         source: .
         stage-packages:
             - execstack
+            - fontconfig-config
         stage:
             - programs
             - main.js
             - .node_version.txt
+            - etc
+            - usr
     mongodb:
         build-packages:
             - wget
@@ -74,7 +77,7 @@ parts:
         plugin: dump
         source: resources/
         organize:
-            rcbackup: bin/rcbackup
+            backupdb: bin/backupdb
             restoredb: bin/restoredb
             startmongo: bin/startmongo
             startRocketChat: bin/startRocketChat

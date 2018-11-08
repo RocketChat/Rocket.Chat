@@ -5,9 +5,9 @@ import sideNav from '../../pageobjects/side-nav.page';
 import flexTab from '../../pageobjects/flex-tab.page';
 import admin from '../../pageobjects/administration.page';
 
-//test data imports
-import {checkIfUserIsAdmin} from '../../data/checks';
-import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+// test data imports
+import { checkIfUserIsAdmin } from '../../data/checks';
+import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
 describe('[Administration]', () => {
 	before(() => {
@@ -34,7 +34,7 @@ describe('[Administration]', () => {
 		});
 
 		describe('info:', () => {
-			before(() =>{
+			before(() => {
 				admin.infoLink.waitForVisible(5000);
 				admin.infoLink.click();
 				admin.infoRocketChatTable.waitForVisible(5000);
@@ -147,7 +147,7 @@ describe('[Administration]', () => {
 				let checkbox = 1;
 				before(() => {
 					admin.roomsFilter.setValue('');
-					//add value triggers a key event that changes search±±±±±±±±±
+					// add value triggers a key event that changes search±±±±±±±±±
 					admin.roomsFilter.addValue(' ');
 					admin.roomsGeneralChannel.waitForVisible(5000);
 				});
@@ -212,7 +212,7 @@ describe('[Administration]', () => {
 
 
 			it('it should show rocket.cat', () => {
-			//it cant find the user if there is too many users
+			// it cant find the user if there is too many users
 				admin.usersRocketCat.isVisible().should.be.true;
 			});
 
@@ -347,7 +347,7 @@ describe('[Administration]', () => {
 		});
 
 		describe('[Roles]', () => {
-			before(() =>{
+			before(() => {
 				admin.permissionsLink.waitForVisible(5000);
 				admin.permissionsLink.click();
 				admin.rolesPermissionGrid.waitForVisible(5000);
@@ -736,11 +736,11 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the idle timeout limit field', () => {
-					admin.accountsIdleTimeoutLimit.click();
-					admin.accountsIdleTimeoutLimit.isVisible().should.be.true;
+					admin.accountsidleTimeLimit.click();
+					admin.accountsidleTimeLimit.isVisible().should.be.true;
 				});
 				it('the idle timeout limit field value should be 300', () => {
-					admin.accountsIdleTimeoutLimit.getValue().should.equal('300');
+					admin.accountsidleTimeLimit.getValue().should.equal('300');
 				});
 
 				it('it should show the notifications durations field', () => {
@@ -873,14 +873,6 @@ describe('[Administration]', () => {
 				it('the hide avatars field value should be false', () => {
 					admin.accountsHideAvatarsTrue.isSelected().should.be.false;
 					admin.accountsHideAvatarsFalse.isSelected().should.be.true;
-				});
-
-				it('it should show the sidebar channel list mode field', () => {
-					admin.accountsRoomsListExhibitionMode.click();
-					admin.accountsRoomsListExhibitionMode.isVisible().should.be.true;
-				});
-				it('the sidebar channel list mode field value should be category', () => {
-					admin.accountsRoomsListExhibitionMode.getValue().should.equal('category');
 				});
 
 				it('it should show the enter key behavior field', () => {
