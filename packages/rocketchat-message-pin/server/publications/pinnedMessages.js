@@ -10,6 +10,9 @@ Meteor.publish('pinnedMessages', function(rid, limit = 50) {
 	if (!user) {
 		return this.ready();
 	}
+	if (!Meteor.call('canAccessRoom', rid, this.userId)) {
+		return this.ready();
+	}
 	const cursorHandle = RocketChat.models.Messages.findPinnedByRoom(rid, { sort: { ts: -1 }, limit }).observeChanges({
 		added(_id, record) {
 			return publication.added('rocketchat_pinned_message', _id, record);

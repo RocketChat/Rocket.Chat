@@ -6,6 +6,7 @@ import './lib/models/Subscriptions';
 import './hasPermission';
 import './hasRole';
 import './usersNameChanged';
+import './requiresPermission.html';
 import './route';
 import './startup';
 import './views/permissions.html';
