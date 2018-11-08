@@ -300,6 +300,13 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_enable_transcript', value: true },
 	});
 
+	RocketChat.settings.add('Livechat_welcome_message', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Welcome_message',
+	});
+
 	RocketChat.settings.add('Livechat_open_inquiery_show_connecting', false, {
 		type: 'boolean',
 		group: 'Livechat',
