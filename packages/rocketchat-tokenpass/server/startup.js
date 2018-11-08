@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+
 RocketChat.settings.addGroup('OAuth', function() {
 	this.section('Tokenpass', function() {
 		const enableQuery = {

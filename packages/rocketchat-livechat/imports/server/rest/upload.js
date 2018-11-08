@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Busboy from 'busboy';
 import filesize from 'filesize';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';

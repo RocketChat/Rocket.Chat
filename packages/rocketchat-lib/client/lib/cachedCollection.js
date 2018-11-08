@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Mongo } from 'meteor/mongo';
+import { Accounts } from 'meteor/accounts-base';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import localforage from 'localforage';
 import _ from 'underscore';
 

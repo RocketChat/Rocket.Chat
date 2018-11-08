@@ -1,4 +1,12 @@
 /* globals jscolor, i18nDefaultQuery */
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -474,7 +482,7 @@ Template.admin.events({
 			}
 		});
 	},
-	'click .rc-header__section-button .remove-custom-oauth'() {
+	'click .remove-custom-oauth'() {
 		const name = this.section.replace('Custom OAuth: ', '');
 		const config = {
 			title: TAPi18n.__('Are_you_sure'),

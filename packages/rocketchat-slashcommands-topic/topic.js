@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 /*
  * Join is a named function that will replace /topic commands
  * @param {Object} message - The message object
@@ -5,7 +7,7 @@
 
 function Topic(command, params, item) {
 	if (command === 'topic') {
-		if ((Meteor.isClient && RocketChat.authz.hasAtLeastOnePermission('edit-room', item.rid)) || (Meteor.isServer && RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', item.rid))) {
+		if ((Meteor.isClient && RocketChat.authz.hasPermission('edit-room', item.rid)) || (Meteor.isServer && RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', item.rid))) {
 			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err) => {
 				if (err) {
 					if (Meteor.isClient) {

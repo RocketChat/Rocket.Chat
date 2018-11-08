@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.MessageTypes = new class {
 	constructor() {
 		this.types = {};

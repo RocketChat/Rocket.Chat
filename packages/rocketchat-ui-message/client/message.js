@@ -1,10 +1,23 @@
 /* globals renderEmoji renderMessageBody */
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
-	if (!pdfLink || !pdfLink.endsWith('.pdf')) { return; }
+
+	if (navigator.userAgent.toLowerCase().indexOf('safari/') > -1) {
+		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
+		if (version <= 12) {
+			return;
+		}
+	}
+
+	if (!pdfLink || /\.pdf$/i.test(pdfLink)) { return; }
 	const canvas = document.getElementById(canvasId);
 	if (!canvas) { return; }
 	const pdfjsLib = await import('pdfjs-dist');

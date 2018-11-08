@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.models.IntegrationHistory = new class IntegrationHistory extends RocketChat.models._Base {
 	constructor() {
 		super('integration_history');

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Grid from 'gridfs-stream';
 import stream from 'stream';
 import fs from 'fs';

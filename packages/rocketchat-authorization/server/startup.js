@@ -1,4 +1,6 @@
 /* eslint no-multi-spaces: 0 */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(function() {
 	// Note:

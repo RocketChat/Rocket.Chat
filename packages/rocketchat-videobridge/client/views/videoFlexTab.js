@@ -1,5 +1,8 @@
 /* globals JitsiMeetExternalAPI */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {
@@ -104,7 +107,7 @@ Template.videoFlexTab.onRendered(function() {
 						// Lets make sure its loaded before we try to show it.
 						} else if (typeof JitsiMeetExternalAPI !== 'undefined') {
 
-						// Keep it from showing duplicates when re-evaluated on variable change.
+							// Keep it from showing duplicates when re-evaluated on variable change.
 							if (!$('[id^=jitsiConference]').length) {
 								this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl);
 

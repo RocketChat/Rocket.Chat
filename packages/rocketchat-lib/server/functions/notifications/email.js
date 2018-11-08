@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 

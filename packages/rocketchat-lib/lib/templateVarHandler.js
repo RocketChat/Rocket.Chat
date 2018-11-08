@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 let logger;
 
 if (Meteor.isServer) {

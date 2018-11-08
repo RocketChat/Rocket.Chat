@@ -1,5 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
+import { Template } from 'meteor/templating';
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',

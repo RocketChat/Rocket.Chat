@@ -1,4 +1,6 @@
 /* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.SMS = {
 	enabled: false,
 	services: {},
