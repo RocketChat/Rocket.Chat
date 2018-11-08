@@ -13,9 +13,31 @@ import s from 'underscore.string';
 this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
 this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
+const fetchDynamicCssVariablesList = () => {
+	const query = { _id: /theme-color-rc/i };
+	const projection = { fields: { value: 1, editor: 1 } };
+	return RocketChat.settings.collection.find(query, projection);
+};
+
+const updateDynamicCssVariablesList = () => {
+	const cssVariables = fetchDynamicCssVariablesList()
+		.fetch()
+		.filter(({ value }) => value)
+		.map(({ _id, value, editor }) => {
+			const propertyName = _id.replace('theme-color-', '');
+			const propertyValue = editor === 'expression' ? value = `var(--${ value })` : value;
+
+			return `--${ propertyName }: ${ propertyValue };`;
+		})
+		.join('\n');
+
+	document.querySelector('#css-variables').innerHTML = `\n:root {\n${ cssVariables }\n}\n`;
+
+	window.cssVarPoly && window.cssVarPoly.init();
+};
+
 Template.body.onRendered(function() {
-	RocketChat.settings.collection.find({ _id: /theme-color-rc/i }, { fields: { value: 1, editor: 1 } })
-		.observe({ changed: () => window.DynamicCss.run(true) });
+	fetchDynamicCssVariablesList().observe({ changed: updateDynamicCssVariablesList });
 
 	new Clipboard('.clipboard');
 

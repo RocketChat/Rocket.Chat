@@ -27,6 +27,7 @@
 		test: function test() {
 			return window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)');
 		},
+
 		init: function init() {
 			if (this.test()) {
 				return;
@@ -40,6 +41,7 @@
 			cssVarPoly.updateCSS();
 			console.timeEnd('cssVarPoly');
 		},
+
 		findCSS: function findCSS() {
 			var styleBlocks = Array.prototype.concat.apply([], document.querySelectorAll('#css-variables, link[type="text/css"].__meteor-css__'));
 			var counter = 1;
@@ -59,10 +61,10 @@
 				}
 			});
 		},
+
 		findSetters: function findSetters(theCSS, counter) {
 			cssVarPoly.varsByBlock[counter] = theCSS.match(/(--[^:; ]+:..*?;)/g);
 		},
-
 
 		updateCSS: debounce(function () {
 			cssVarPoly.ratifySetters(cssVarPoly.varsByBlock);
@@ -90,6 +92,7 @@
 				return varList[variable];
 			});
 		},
+
 		ratifySetters: function ratifySetters(varList) {
 			varList.filter(function (curVars) {
 				return curVars;
@@ -107,6 +110,7 @@
 				});
 			});
 		},
+
 		getLink: function getLink(url, counter, success) {
 			var request = new XMLHttpRequest();
 			request.open('GET', url, true);
@@ -129,6 +133,7 @@
 			request.send();
 		}
 	};
+
 	var stateCheck = setInterval(function () {
 		if (document.readyState === 'complete' && typeof Meteor !== 'undefined') {
 			clearInterval(stateCheck);
@@ -178,5 +183,6 @@
 		cssVarPoly.init();
 	}, 1000);
 
+	window.cssVarPoly = cssVarPoly;
 	window.DynamicCss = DynamicCss;
 })();
