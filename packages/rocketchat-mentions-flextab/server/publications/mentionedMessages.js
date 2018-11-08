@@ -9,6 +9,9 @@ Meteor.publish('mentionedMessages', function(rid, limit = 50) {
 	if (!user) {
 		return this.ready();
 	}
+	if (!Meteor.call('canAccessRoom', rid, this.userId)) {
+		return this.ready();
+	}
 	const cursorHandle = RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, rid, {
 		sort: {
 			ts: -1,
