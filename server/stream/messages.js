@@ -28,17 +28,7 @@ msgStream.allowRead('__my_messages__', 'all');
 
 msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 	try {
-		const room = Meteor.call('canAccessRoom', msg.rid, this.userId);
-
-		if (!room) {
-			return false;
-		}
-
-		options.roomParticipant = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null;
-		options.roomType = room.t;
-		options.roomName = room.name;
-
-		return true;
+		return Meteor.call('canAccessRoom', msg.rid, this.userId);
 	} catch (error) {
 		/* error*/
 		return false;
@@ -61,7 +51,16 @@ Meteor.startup(function() {
 					mention.name = user && user.name;
 				});
 			}
-			msgStream.emitWithoutBroadcast('__my_messages__', record, {});
+
+			const room = RocketChat.models.Rooms.findOneById(record.rid)
+			const meta = {}
+			if (room) {
+				meta.roomParticipant = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null;
+				meta.roomType = room.t;
+				meta.roomName = room.name;
+			}
+
+			msgStream.emitWithoutBroadcast('__my_messages__', record, meta);
 			return msgStream.emitWithoutBroadcast(record.rid, record);
 		}
 	}
