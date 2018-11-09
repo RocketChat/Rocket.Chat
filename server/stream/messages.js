@@ -52,10 +52,12 @@ Meteor.startup(function() {
 				});
 			}
 
-			const room = RocketChat.models.Rooms.findOneById(record.rid)
-			const meta = {}
+			const room = RocketChat.models.Rooms.findOneById(record.rid);
+			const meta = {};
 			if (room) {
-				meta.roomParticipant = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null;
+				meta.roomParticipant = (record.u)
+					? RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, record.u._id, { fields: { _id: 1 } }) != null
+					: false;
 				meta.roomType = room.t;
 				meta.roomName = room.name;
 			}
