@@ -30,7 +30,7 @@ export class CustomOAuth {
 
 		this.userAgent = 'Meteor';
 		if (Meteor.release) {
-			this.userAgent += `/${ Meteor.release }`;
+			this.userAgent += `/${Meteor.release}`;
 		}
 
 		Accounts.oauth.registerService(this.name);
@@ -103,7 +103,7 @@ export class CustomOAuth {
 
 		// Only send clientID / secret once on header or payload.
 		if (this.tokenSentVia === 'header') {
-			allOptions.auth = `${ config.clientId }:${ OAuth.openSecret(config.secret) }`;
+			allOptions.auth = `${config.clientId}:${OAuth.openSecret(config.secret)}`;
 		} else {
 			allOptions.params.client_secret = OAuth.openSecret(config.secret);
 			allOptions.params.client_id = config.clientId;
@@ -112,7 +112,7 @@ export class CustomOAuth {
 		try {
 			response = HTTP.post(this.tokenPath, allOptions);
 		} catch (err) {
-			const error = new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ err.message }`);
+			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
 		}
 
@@ -124,7 +124,7 @@ export class CustomOAuth {
 		}
 
 		if (data.error) { // if the http response was a json object with an error attribute
-			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
+			throw new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${data.error}`);
 		} else {
 			return data.access_token;
 		}
@@ -137,7 +137,7 @@ export class CustomOAuth {
 		};
 
 		if (this.identityTokenSentVia === 'header') {
-			headers.Authorization = `Bearer ${ accessToken }`;
+			headers.Authorization = `Bearer ${accessToken}`;
 		} else {
 			params.access_token = accessToken;
 		}
@@ -160,7 +160,7 @@ export class CustomOAuth {
 
 			return data;
 		} catch (err) {
-			const error = new Error(`Failed to fetch identity from ${ this.name } at ${ this.identityPath }. ${ err.message }`);
+			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
 		}
 	}
@@ -238,6 +238,18 @@ export class CustomOAuth {
 				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
 					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 				}
+
+				console.log(identity)
+				// Adding roles
+				if (identity.roles) {
+					let user = RocketChat.models.Users.findOneByEmailAddress(identity.email);
+					if (user) {
+						identity.roles.forEach(function (role) {
+							RocketChat.authz.addUserRoles(user._id, role);
+						});
+					}
+					RocketChat.authz.addUserRoles(user._id, 'livechat-manager');
+				}
 			}
 
 			// console.log 'id:', JSON.stringify identity, null, '  '
@@ -271,11 +283,11 @@ export class CustomOAuth {
 	getUsername(data) {
 		let username = '';
 
-		username = this.usernameField.split('.').reduce(function(prev, curr) {
+		username = this.usernameField.split('.').reduce(function (prev, curr) {
 			return prev ? prev[curr] : undefined;
 		}, data);
 		if (!username) {
-			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
+			throw new Meteor.Error('field_not_found', `Username field "${this.usernameField}" not found in data`, data);
 		}
 		return username;
 	}
@@ -300,10 +312,10 @@ export class CustomOAuth {
 				}
 
 				if (this.mergeUsers !== true) {
-					throw new Meteor.Error('CustomOAuth', `User with username ${ user.username } already exists`);
+					throw new Meteor.Error('CustomOAuth', `User with username ${user.username} already exists`);
 				}
 
-				const serviceIdKey = `services.${ serviceName }.id`;
+				const serviceIdKey = `services.${serviceName}.id`;
 				const update = {
 					$set: {
 						[serviceIdKey]: serviceData.id,
@@ -331,7 +343,7 @@ export class CustomOAuth {
 
 
 const { updateOrCreateUserFromExternalService } = Accounts;
-Accounts.updateOrCreateUserFromExternalService = function(...args /* serviceName, serviceData, options*/) {
+Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		hook.apply(this, args);
 	}
