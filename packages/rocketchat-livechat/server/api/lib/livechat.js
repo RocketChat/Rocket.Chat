@@ -89,6 +89,7 @@ export function settings() {
 			offlineUnavailableMessage: initSettings.Livechat_offline_form_unavailable,
 			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
 			transcriptMessage: initSettings.Livechat_transcript_message,
+			registrationFormMessage: initSettings.Livechat_registration_form_message,
 		},
 		survey: {
 			items: ['satisfaction', 'agentKnowledge', 'agentResposiveness', 'agentFriendliness'],

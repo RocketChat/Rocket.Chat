@@ -36,6 +36,7 @@ this.Livechat = new (class Livechat {
 		this._widgetOpened = new ReactiveVar(false);
 		this._ready = new ReactiveVar(false);
 		this._agent = new ReactiveVar();
+		this._registrationFormMessage = new ReactiveVar('');
 
 		this.stream = new Meteor.Streamer('livechat-room');
 
@@ -141,6 +142,9 @@ this.Livechat = new (class Livechat {
 	get room() {
 		return this._room.get();
 	}
+	get registrationFormMessage() {
+		return this._registrationFormMessage.get();
+	}
 
 	set online(value) {
 		this._online.set(value);
@@ -223,6 +227,9 @@ this.Livechat = new (class Livechat {
 	}
 	set guestEmail(email) {
 		return this._guestEmail.set(email);
+	}
+	set registrationFormMessage(value) {
+		this._registrationFormMessage.set(value);
 	}
 
 	ready() {
