@@ -1,5 +1,6 @@
-/* globals RocketChatFileCustomSoundsInstance */
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({
 	deleteCustomSound(_id) {

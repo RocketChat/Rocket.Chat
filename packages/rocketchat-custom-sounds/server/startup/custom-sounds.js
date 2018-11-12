@@ -1,34 +1,35 @@
-/* globals RocketChatFileCustomSoundsInstance */
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
-Meteor.startup(function() {
-	let storeType = 'GridFS';
+let storeType = 'GridFS';
 
-	if (RocketChat.settings.get('CustomSounds_Storage_Type')) {
-		storeType = RocketChat.settings.get('CustomSounds_Storage_Type');
+if (RocketChat.settings.get('CustomSounds_Storage_Type')) {
+	storeType = RocketChat.settings.get('CustomSounds_Storage_Type');
+}
+
+const RocketChatStore = RocketChatFile[storeType];
+
+let path = '~/uploads';
+if (RocketChat.settings.get('CustomSounds_FileSystemPath') != null) {
+	if (RocketChat.settings.get('CustomSounds_FileSystemPath').trim() !== '') {
+		path = RocketChat.settings.get('CustomSounds_FileSystemPath');
 	}
+}
 
-	const RocketChatStore = RocketChatFile[storeType];
+export const RocketChatFileCustomSoundsInstance = new RocketChatStore({
+	name: 'custom_sounds',
+	absolutePath: path,
+});
 
+Meteor.startup(function() {
 	if (RocketChatStore == null) {
 		throw new Error(`Invalid RocketChatStore type [${ storeType }]`);
 	}
 
 	console.log(`Using ${ storeType } for custom sounds storage`.green);
-
-	let path = '~/uploads';
-	if (RocketChat.settings.get('CustomSounds_FileSystemPath') != null) {
-		if (RocketChat.settings.get('CustomSounds_FileSystemPath').trim() !== '') {
-			path = RocketChat.settings.get('CustomSounds_FileSystemPath');
-		}
-	}
-
-	this.RocketChatFileCustomSoundsInstance = new RocketChatStore({
-		name: 'custom_sounds',
-		absolutePath: path,
-	});
 
 	self = this;
 
