@@ -1,4 +1,5 @@
 import s from 'underscore.string';
+import { Accounts } from 'meteor/accounts-base';
 
 RocketChat._setUsername = function(userId, u) {
 	const username = s.trim(u);
@@ -26,7 +27,7 @@ RocketChat._setUsername = function(userId, u) {
 			return false;
 		}
 	}
-	//If first time setting username, send Enrollment Email
+	// If first time setting username, send Enrollment Email
 	try {
 		if (!previousUsername && user.emails && user.emails.length > 0 && RocketChat.settings.get('Accounts_Enrollment_Email')) {
 			Accounts.sendEnrollmentEmail(user._id);
@@ -39,15 +40,15 @@ RocketChat._setUsername = function(userId, u) {
 	if (!previousUsername && RocketChat.settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = getAvatarSuggestionForUser(user);
 		let gravatar;
-		Object.keys(avatarSuggestions).some(service => {
+		Object.keys(avatarSuggestions).some((service) => {
 			const avatarData = avatarSuggestions[service];
 			if (service !== 'gravatar') {
 				RocketChat.setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
 				gravatar = null;
 				return true;
-			} else {
-				gravatar = avatarData;
 			}
+			gravatar = avatarData;
+			return false;
 		});
 		if (gravatar != null) {
 			RocketChat.setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
@@ -82,5 +83,5 @@ RocketChat._setUsername = function(userId, u) {
 RocketChat.setUsername = RocketChat.RateLimiter.limitFunction(RocketChat._setUsername, 1, 60000, {
 	[0](userId) {
 		return !userId || !RocketChat.authz.hasPermission(userId, 'edit-other-user-info');
-	}
+	},
 });

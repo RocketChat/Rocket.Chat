@@ -1,7 +1,10 @@
 /* globals HTML, isSetNotNull, renderEmoji:true */
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+
 renderEmoji = function(emoji) {
 	if (isSetNotNull(() => RocketChat.emoji.list[emoji].emojiPackage)) {
-		const emojiPackage = RocketChat.emoji.list[emoji].emojiPackage;
+		const { emojiPackage } = RocketChat.emoji.list[emoji];
 		return RocketChat.emoji.packages[emojiPackage].render(emoji);
 	}
 };
@@ -13,7 +16,7 @@ Template.registerHelper('renderEmoji', new Template('renderEmoji', function() {
 	const emoji = Blaze.getData(view);
 
 	if (isSetNotNull(() => RocketChat.emoji.list[emoji].emojiPackage)) {
-		const emojiPackage = RocketChat.emoji.list[emoji].emojiPackage;
+		const { emojiPackage } = RocketChat.emoji.list[emoji];
 		return new HTML.Raw(RocketChat.emoji.packages[emojiPackage].render(emoji));
 	}
 

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const waitToLoad = function(orch) {
 	return new Promise((resolve) => {
 		let id = setInterval(() => {
@@ -52,13 +54,13 @@ export class AppMethods {
 			'apps/go-enable'() {
 				if (!Meteor.userId()) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-						method: 'apps/go-enable'
+						method: 'apps/go-enable',
 					});
 				}
 
 				if (!RocketChat.authz.hasPermission(Meteor.userId(), 'manage-apps')) {
 					throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
-						method: 'apps/go-enable'
+						method: 'apps/go-enable',
 					});
 				}
 
@@ -70,20 +72,20 @@ export class AppMethods {
 			'apps/go-disable'() {
 				if (!Meteor.userId()) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-						method: 'apps/go-enable'
+						method: 'apps/go-enable',
 					});
 				}
 
 				if (!RocketChat.authz.hasPermission(Meteor.userId(), 'manage-apps')) {
 					throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
-						method: 'apps/go-enable'
+						method: 'apps/go-enable',
 					});
 				}
 
 				RocketChat.settings.set('Apps_Framework_enabled', false);
 
 				Promise.await(waitToUnload(instance._orch));
-			}
+			},
 		});
 	}
 }

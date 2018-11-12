@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('livechat:inquiry', function() {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:inquiry' }));
@@ -9,7 +11,7 @@ Meteor.publish('livechat:inquiry', function() {
 
 	const query = {
 		agents: this.userId,
-		status: 'open'
+		status: 'open',
 	};
 
 	return RocketChat.models.LivechatInquiry.find(query);

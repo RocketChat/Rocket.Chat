@@ -11,6 +11,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
 
+* [**NEW!** Help Wanted](#help-wanted)
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -55,6 +56,21 @@
 * [Credits](#credits)
 * [Donate](#donate)
 
+# Help Wanted
+
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
+
+If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
+
+Explore current openings below:
+
+- [Lead Security Researcher and Developer](https://rocketchat.recruitee.com/o/lead-security-researcher-and-developer)
+
+- [Sales Engineer](https://rocketchat.recruitee.com/o/sales-engineer)
+
+- [Business Developer/Sales/Channel](https://rocketchat.recruitee.com/o/business-developer-sales-channel)
+
+- [Front-End Developer](https://rocketchat.recruitee.com/o/frontend-developer)
 
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
@@ -95,7 +111,7 @@ sudo snap install rocketchat-server
 
 [![Rocket.Chat Snap is recommended for Linux deployments](https://github.com/Sing-Li/bbug/raw/master/images/ubuntulogo.png)](https://uappexplorer.com/snap/ubuntu/rocketchat-server)
 
-Installing snaps is very quick. By running that command you have your full Rocket.Chat server up and running. Snaps are secure. They are isolated with all of their dependencies. Snaps also auto update when we release new versions.
+Installing snaps is very quick. By running that command you have your full Rocket.Chat server up and running. Snaps are secure. They are isolated with all of their dependencies. Snaps also auto-update when we release new versions.
 
 Our snap features a built-in reverse proxy that can request and maintain free Let's Encrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
@@ -127,7 +143,7 @@ Host your own Rocket.Chat server in a few seconds.
 
 ## DPlatform
 
-Easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS.
+The easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS.
 
 [![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)](https://dfabric.github.io/DPlatform-ShellCore)
 
@@ -197,7 +213,7 @@ Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 
 [![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/installation/automation-tools/ansible/)
 
 ## Raspberry Pi 2
-Run Rocket.Chat on this world famous $30 quad core server.
+Run Rocket.Chat on this world famous $30 quad-core server.
 
 [![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
@@ -294,7 +310,7 @@ It is a great solution for communities and companies wanting to privately host t
 - (Beta) Jitsi integration
 - Audio calls
 - Multi-users Audio Conference
-- Screensharing
+- Screen sharing
 - Drupal 7.x and 8.x Plug-in (both stable and development flavours) ([download](https://www.drupal.org/project/rocket_chat)  and [source code](https://git.drupal.org/project/rocket_chat.git) )
 - XMPP bridge ([try it](https://open.rocket.chat/channel/general))
 - REST APIs
@@ -351,7 +367,7 @@ Read about [how it all started](https://blog.blackducksoftware.com/rocket-chat-e
 
 ## Feature Requests
 
-[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions. 
+[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions.
 
 ### Stack Overflow
 
@@ -378,7 +394,7 @@ We are developing the APIs based on the competition, so stay tuned and you will 
 
 ## Documentation
 
-Checkout [Rocket.Chat documentation](https://rocket.chat/docs/).
+Check out [Rocket.Chat documentation](https://rocket.chat/docs/).
 
 ## License
 
@@ -391,6 +407,8 @@ Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Meteor](https://www.meteor.com/install)
+
+> Meteor automatically installs a hidden [NodeJS v8](https://nodejs.org/download/release/v8.9.3/), [Python v2.7](https://www.python.org/downloads/release/python-270/) and [MongoDB v3.6](https://www.mongodb.com/mongodb-3.6) to be used when you run your app in development mode using the `meteor` command.
 
 Now just clone and start the app:
 
@@ -411,7 +429,7 @@ It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branchi
 See also this [Git Workflows Comparison](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for more details.
 
 ## Translations
-We are experimenting [Lingohub](https://translate.lingohub.com/engelgabriel/rocket-dot-chat/dashboard).
+We are experimenting with [Lingohub](https://translate.lingohub.com/rocketchat/dashboard).
 If you want to help, send an email to support at rocket.chat to be invited to the translation project.
 
 ## How to Contribute
@@ -448,7 +466,7 @@ Testing with [BrowserStack](https://www.browserstack.com)
 
 # Donate
 
-Rocket.Chat will be free forever, but you can help us speed-up the development!
+Rocket.Chat will be free forever, but you can help us speed up the development!
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZL94ZE6LGVUSN)
 

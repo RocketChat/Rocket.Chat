@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.roomSearch.helpers({
 	roomIcon() {
 		if (this.type === 'u') {
@@ -11,5 +13,5 @@ Template.roomSearch.helpers({
 		if (this.type === 'u') {
 			return `status-${ this.status }`;
 		}
-	}
+	},
 });

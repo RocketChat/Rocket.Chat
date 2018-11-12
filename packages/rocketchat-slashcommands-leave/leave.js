@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 /*
 * Leave is a named function that will replace /leave commands
@@ -10,12 +13,12 @@ function Leave(command, params, item) {
 
 	try {
 		Meteor.call('leaveRoom', item.rid);
-	} catch ({error}) {
+	} catch ({ error }) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
-			msg: TAPi18n.__(error, null, Meteor.user().language)
+			msg: TAPi18n.__(error, null, Meteor.user().language),
 		});
 	}
 }

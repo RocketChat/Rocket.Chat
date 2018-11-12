@@ -1,4 +1,6 @@
 /* global ChatIntegrations */
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import moment from 'moment';
 
 Template.integrations.helpers({
@@ -13,5 +15,5 @@ Template.integrations.helpers({
 	},
 	eventTypeI18n(event) {
 		return TAPi18n.__(RocketChat.integrations.outgoingEvents[event].label);
-	}
+	},
 });

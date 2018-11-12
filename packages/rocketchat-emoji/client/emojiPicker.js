@@ -1,4 +1,7 @@
 /* globals Template, isSetNotNull */
+import { ReactiveVar } from 'meteor/reactive-var';
+import { TAPi18n } from 'meteor/tap:i18n';
+
 const emojiCategories = {};
 /**
  * Turns category hash to a nice readable translated name
@@ -37,7 +40,7 @@ function getEmojisByCategory(category) {
 						tone = `_tone${ actualTone }`;
 					}
 
-					//set correctPackage here to allow for recent emojis to work properly
+					// set correctPackage here to allow for recent emojis to work properly
 					if (isSetNotNull(() => RocketChat.emoji.list[`:${ emoji }:`].emojiPackage)) {
 						const correctPackage = RocketChat.emoji.list[`:${ emoji }:`].emojiPackage;
 						const image = RocketChat.emoji.packages[correctPackage].render(`:${ emoji }${ tone }:`);
@@ -65,7 +68,7 @@ function getEmojisBySearchTerm(searchTerm) {
 
 		if (searchRegExp.test(emoji)) {
 			const emojiObject = RocketChat.emoji.list[emoji];
-			const emojiPackage = emojiObject.emojiPackage;
+			const { emojiPackage } = emojiObject;
 			let tone = '';
 			emoji = emoji.replace(/:/g, '');
 
@@ -127,10 +130,10 @@ Template.emojiPicker.helpers({
 		const t = Template.instance();
 		const searchTerm = t.currentSearchTerm.get();
 		const activeCategory = t.currentCategory.get();
-		//this will cause the reflow when recent list gets updated
+		// this will cause the reflow when recent list gets updated
 		t.recentNeedsUpdate.get();
 
-		//we only need to replace the active category, since switching tabs resets the filter
+		// we only need to replace the active category, since switching tabs resets the filter
 		if (activeCategory !== category) {
 			return;
 		}
@@ -169,7 +172,7 @@ Template.emojiPicker.helpers({
 		} else {
 			return categoryName(hash);
 		}
-	}
+	},
 });
 
 Template.emojiPicker.events({
@@ -228,7 +231,7 @@ Template.emojiPicker.events({
 	'click .emoji-list li'(event, instance) {
 		event.stopPropagation();
 
-		const emoji = event.currentTarget.dataset.emoji;
+		const { emoji } = event.currentTarget.dataset;
 		const actualTone = instance.tone;
 		let tone = '';
 
@@ -255,7 +258,7 @@ Template.emojiPicker.events({
 			return;
 		}
 		cst.set(value);
-	}
+	},
 });
 
 Template.emojiPicker.onCreated(function() {

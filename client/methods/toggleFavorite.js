@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 Meteor.methods({
 	toggleFavorite(rid, f) {
 		if (!Meteor.userId()) {
@@ -6,11 +7,11 @@ Meteor.methods({
 
 		ChatSubscription.update({
 			rid,
-			'u._id': Meteor.userId()
+			'u._id': Meteor.userId(),
 		}, {
 			$set: {
-				f
-			}
+				f,
+			},
 		});
-	}
+	},
 });

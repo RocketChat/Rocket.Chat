@@ -1,18 +1,22 @@
-/* globals Livechat, LivechatVideoCall, MsgTyping */
+/* globals Livechat, LivechatVideoCall, MsgTyping, fileUpload */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
+import mime from 'mime-type/with-db';
 
 Template.messages.helpers({
 	messages() {
 		return ChatMessage.find({
 			rid: visitor.getRoom(),
 			t: {
-				'$nin': ['t', 'livechat_navigation_history']
-			}
+				$nin: ['t', 'livechat_navigation_history'],
+			},
 		}, {
 			sort: {
-				ts: 1
-			}
+				ts: 1,
+			},
 		});
 	},
 	showOptions() {
@@ -32,6 +36,9 @@ Template.messages.helpers({
 	videoCallEnabled() {
 		return Livechat.videoCall;
 	},
+	fileUploadEnabled() {
+		return Livechat.fileUpload && Template.instance().isMessageFieldEmpty.get();
+	},
 	showConnecting() {
 		return Livechat.connecting;
 	},
@@ -44,7 +51,7 @@ Template.messages.helpers({
 			return {
 				multi: false,
 				selfTyping: MsgTyping.selfTyping.get(),
-				users: users[0]
+				users: users[0],
 			};
 		}
 		// usernames = _.map messages, (message) -> return message.u.username
@@ -58,17 +65,17 @@ Template.messages.helpers({
 		return {
 			multi: true,
 			selfTyping: MsgTyping.selfTyping.get(),
-			users: usernames.join(` ${ t('and') } `)
+			users: usernames.join(` ${ t('and') } `),
 		};
 	},
 	agentData() {
-		const agent = Livechat.agent;
+		const { agent } = Livechat;
 		if (!agent) {
 			return null;
 		}
 
 		const agentData = {
-			avatar: getAvatarUrlFromUsername(agent.username)
+			avatar: getAvatarUrlFromUsername(agent.username),
 		};
 
 		if (agent.name) {
@@ -86,13 +93,14 @@ Template.messages.helpers({
 		}
 
 		return agentData;
-	}
+	},
 });
 
 Template.messages.events({
 	'keyup .input-message'(event, instance) {
 		instance.chatMessages.keyup(visitor.getRoom(), event, instance);
 		instance.updateMessageInputHeight(event.currentTarget);
+		instance.isMessageFieldEmpty.set(event.target.value === '');
 	},
 	'keydown .input-message'(event, instance) {
 		return instance.chatMessages.keydown(visitor.getRoom(), event, instance);
@@ -102,6 +110,7 @@ Template.messages.events({
 		const sent = instance.chatMessages.send(visitor.getRoom(), input);
 		input.focus();
 		instance.updateMessageInputHeight(input);
+		instance.isMessageFieldEmpty.set(input.value === '');
 
 		return sent;
 	},
@@ -130,12 +139,42 @@ Template.messages.events({
 		} else {
 			LivechatVideoCall.request();
 		}
-	}
+	},
+	'click .upload-button'(event) {
+		event.preventDefault();
+
+		const $input = $(document.createElement('input'));
+		$input.css('display', 'none');
+		$input.attr({
+			id: 'fileupload-input',
+			type: 'file',
+		});
+
+		$(document.body).append($input);
+
+		$input.one('change', function(e) {
+			const { files } = e.target;
+			if (files && (files.length > 0)) {
+				const file = files[0];
+				Object.defineProperty(file, 'type', {
+					value: mime.lookup(file.name),
+				});
+
+				fileUpload({
+					file,
+					name: file.name,
+				});
+			}
+			$input.remove();
+		});
+
+		$input.click();
+	},
 });
 
 Template.messages.onCreated(function() {
 	this.atBottom = true;
-
+	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.showOptions = new ReactiveVar(false);
 
 	this.updateMessageInputHeight = function(input) {
@@ -146,11 +185,12 @@ Template.messages.onCreated(function() {
 		// If there is no text, reset the height.
 		const inputScrollHeight = $(input).prop('scrollHeight');
 		if (inputScrollHeight > 28) {
-			return $(input).height($(input).val() === '' ? '15px' : (inputScrollHeight >= 200 ? inputScrollHeight - 50 : inputScrollHeight - 20));
+			const scrollHeight = inputScrollHeight >= 200 ? inputScrollHeight - 50 : inputScrollHeight - 20;
+			return $(input).height($(input).val() === '' ? '15px' : scrollHeight);
 		}
 	};
 
-	$(document).click((/*event*/) => {
+	$(document).click((/* event*/) => {
 		if (!this.showOptions.get()) {
 			return;
 		}

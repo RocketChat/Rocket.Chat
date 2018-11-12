@@ -1,5 +1,6 @@
 /* globals SyncedCron */
 
+import { Meteor } from 'meteor/meteor';
 import checkVersionUpdate from './functions/checkVersionUpdate';
 import './methods/banner_dismiss';
 import './addSettings';
@@ -12,10 +13,10 @@ if (SyncedCron.nextScheduledAtDate(jobName)) {
 
 SyncedCron.add({
 	name: jobName,
-	schedule: parser => parser.text('at 2:00 am'),
+	schedule: (parser) => parser.text('at 2:00 am'),
 	job() {
 		checkVersionUpdate();
-	}
+	},
 });
 
 SyncedCron.start();

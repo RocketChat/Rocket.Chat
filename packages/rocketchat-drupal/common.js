@@ -1,4 +1,6 @@
 /* global CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 // Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
 // In RocketChat -> Administration the URL needs to be http(s)://{drupal.server}/
@@ -14,8 +16,8 @@ const config = {
 	mergeUsers: true,
 	addAutopublishFields: {
 		forLoggedInUser: ['services.drupal'],
-		forOtherUsers: ['services.drupal.name']
-	}
+		forOtherUsers: ['services.drupal.name'],
+	},
 };
 
 const Drupal = new CustomOAuth('drupal', config);

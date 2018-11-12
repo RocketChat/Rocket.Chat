@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 
 /* globals menu*/
 
@@ -12,21 +16,19 @@ Template.sideNav.helpers({
 	},
 
 	footer() {
-		return RocketChat.settings.get('Layout_Sidenav_Footer');
+		return String(RocketChat.settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
 	roomType() {
-		return RocketChat.roomTypes.getTypes().map((roomType) => {
-			return {
-				template: roomType.customTemplate || 'roomList',
-				data: {
-					header: roomType.header,
-					identifier: roomType.identifier,
-					isCombined: roomType.isCombined,
-					label: roomType.label
-				}
-			};
-		});
+		return RocketChat.roomTypes.getTypes().map((roomType) => ({
+			template: roomType.customTemplate || 'roomList',
+			data: {
+				header: roomType.header,
+				identifier: roomType.identifier,
+				isCombined: roomType.isCombined,
+				label: roomType.label,
+			},
+		}));
 	},
 
 	loggedInUser() {
@@ -39,8 +41,8 @@ Template.sideNav.helpers({
 	},
 
 	sidebarHideAvatar() {
-		return RocketChat.getUserPreference(Meteor.user(), 'sidebarHideAvatar');
-	}
+		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarHideAvatar');
+	},
 });
 
 Template.sideNav.events({
@@ -59,7 +61,7 @@ Template.sideNav.events({
 
 	'dropped .sidebar'(e) {
 		return e.preventDefault();
-	}
+	},
 });
 
 Template.sideNav.onRendered(function() {
@@ -81,8 +83,8 @@ Template.sideNav.onCreated(function() {
 	this.autorun(() => {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
-				'settings.preferences.sidebarGroupByType': 1
-			}
+				'settings.preferences.sidebarGroupByType': 1,
+			},
 		});
 		const userPref = RocketChat.getUserPreference(user, 'sidebarGroupByType');
 		this.groupedByType.set(userPref ? userPref : RocketChat.settings.get('UI_Group_Channels_By_Type'));

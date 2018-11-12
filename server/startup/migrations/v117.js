@@ -7,11 +7,11 @@ RocketChat.Migrations.add({
 		RocketChat.authz.getUsersInRole('admin').count()) {
 			RocketChat.models.Settings.upsert(
 				{
-					_id: 'Show_Setup_Wizard'
+					_id: 'Show_Setup_Wizard',
 				}, {
-					$set: { value: 'completed' }
+					$set: { value: 'completed' },
 				}
 			);
 		}
-	}
+	},
 });

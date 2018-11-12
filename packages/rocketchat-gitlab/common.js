@@ -1,12 +1,15 @@
 /* global CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 const config = {
 	serverURL: 'https://gitlab.com',
 	identityPath: '/api/v3/user',
 	scope: 'read_user',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.gitlab'],
-		forOtherUsers: ['services.gitlab.username']
-	}
+		forOtherUsers: ['services.gitlab.username'],
+	},
 };
 
 const Gitlab = new CustomOAuth('gitlab', config);

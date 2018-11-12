@@ -1,6 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import {
 	Importers,
-	ProgressStep
+	ProgressStep,
 } from 'meteor/rocketchat:importer';
 
 Meteor.methods({
@@ -10,7 +11,7 @@ Meteor.methods({
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter'});
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter' });
 		}
 
 		const importer = Importers.get(key);
@@ -27,5 +28,5 @@ Meteor.methods({
 			default:
 				return undefined;
 		}
-	}
+	},
 });

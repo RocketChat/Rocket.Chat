@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import './settings.js';
 import './models/Rooms.js';
 import googleLanguage from '@google-cloud/language';
@@ -8,7 +9,7 @@ RocketChat.settings.get('GoogleNaturalLanguage_ServiceAccount', (key, value) => 
 	if (value) {
 		try {
 			languageClient = googleLanguage({
-				credentials: JSON.parse(value)
+				credentials: JSON.parse(value),
 			});
 		} catch (e) {
 			languageClient = null;

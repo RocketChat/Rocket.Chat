@@ -1,4 +1,6 @@
 /* globals RocketChatFileEmojiCustomInstance */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	deleteEmojiCustom(emojiID) {
 		let emoji = null;
@@ -15,8 +17,8 @@ Meteor.methods({
 
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emoji.name }.${ emoji.extension }`));
 		RocketChat.models.EmojiCustom.removeByID(emojiID);
-		RocketChat.Notifications.notifyLogged('deleteEmojiCustom', {emojiData: emoji});
+		RocketChat.Notifications.notifyLogged('deleteEmojiCustom', { emojiData: emoji });
 
 		return true;
-	}
+	},
 });

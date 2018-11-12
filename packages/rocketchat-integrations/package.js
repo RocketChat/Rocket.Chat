@@ -3,7 +3,7 @@ Package.describe({
 	version: '0.0.1',
 	summary: 'Integrations with services and WebHooks',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -12,11 +12,11 @@ Package.onUse(function(api) {
 	api.use('babel-compiler');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
-	api.use('rocketchat:api');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:logger');
 
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 	api.use('templating', 'client');
 
 	api.addFiles('lib/rocketchat.js', ['server', 'client']);
@@ -69,4 +69,5 @@ Package.onUse(function(api) {
 	api.addFiles('server/triggers.js', 'server');
 
 	api.addFiles('server/processWebhookMessage.js', 'server');
+	api.export('processWebhookMessage', 'server');
 });

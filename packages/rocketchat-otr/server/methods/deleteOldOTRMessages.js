@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	deleteOldOTRMessages(roomId) {
 		if (!Meteor.userId()) {
@@ -11,5 +13,5 @@ Meteor.methods({
 		} else {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'deleteOldOTRMessages' });
 		}
-	}
+	},
 });

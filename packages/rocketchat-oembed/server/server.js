@@ -1,4 +1,5 @@
-/*globals HTTPInternals, changeCase */
+/* globals HTTPInternals, changeCase */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import URL from 'url';
 import querystring from 'querystring';
@@ -71,7 +72,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 
 	const data = RocketChat.callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
-		parsedUrl
+		parsedUrl,
 	});
 	if (data.attachments != null) {
 		return callback(null, data);
@@ -83,8 +84,8 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		gzip: true,
 		maxRedirects: redirectCount,
 		headers: {
-			'User-Agent': RocketChat.settings.get('API_Embed_UserAgent')
-		}
+			'User-Agent': RocketChat.settings.get('API_Embed_UserAgent'),
+		},
 	};
 	let headers = null;
 	let statusCode = null;
@@ -110,7 +111,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		if (error != null) {
 			return callback(null, {
 				error,
-				parsedUrl
+				parsedUrl,
 			});
 		}
 		const buffer = Buffer.concat(chunks);
@@ -118,7 +119,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 			headers,
 			body: toUtf8(headers['content-type'], buffer),
 			parsedUrl,
-			statusCode
+			statusCode,
 		});
 	}));
 	return stream.on('error', function(err) {
@@ -190,7 +191,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		meta: metas,
 		headers,
 		parsedUrl: content.parsedUrl,
-		content
+		content,
 	});
 	return data;
 };
@@ -252,8 +253,8 @@ OEmbed.rocketUrlParser = function(message) {
 				changed = true;
 				item.meta = {
 					sandstorm: {
-						grain: item.sandstormViewInfo
-					}
+						grain: item.sandstormViewInfo,
+					},
 				};
 				return;
 			}

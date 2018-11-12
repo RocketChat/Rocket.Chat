@@ -1,13 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 let audio = null;
 
-const stop = audio => {
+const stop = (audio) => {
 	if (!audio) {
 		return;
 	}
 	audio.loop = false;
 	return audio.pause && audio.pause();
 };
-const play = audio => {
+const play = (audio) => {
 	if (!audio) {
 		return;
 	}
@@ -31,8 +34,8 @@ Meteor.startup(function() {
 
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
-				'settings.preferences.newRoomNotification': 1
-			}
+				'settings.preferences.newRoomNotification': 1,
+			},
 		});
 
 		const newRoomNotification = RocketChat.getUserPreference(user, 'newRoomNotification');

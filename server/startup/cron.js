@@ -1,4 +1,6 @@
 /* global SyncedCron */
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 
 const logger = new Logger('SyncedCron');
 
@@ -6,7 +8,7 @@ SyncedCron.config({
 	logger(opts) {
 		return logger[opts.level].call(logger, opts.message);
 	},
-	collectionName: 'rocketchat_cron_history'
+	collectionName: 'rocketchat_cron_history',
 });
 
 function generateStatistics() {
@@ -17,10 +19,10 @@ function generateStatistics() {
 	if (RocketChat.settings.get('Statistics_reporting')) {
 		try {
 			HTTP.post('https://collector.rocket.chat/', {
-				data: statistics
+				data: statistics,
 			});
 		} catch (error) {
-			/*error*/
+			/* error*/
 			logger.warn('Failed to send usage report');
 		}
 	}
@@ -39,7 +41,7 @@ Meteor.startup(function() {
 			schedule(parser) {
 				return parser.cron(`${ new Date().getMinutes() } * * * *`);
 			},
-			job: generateStatistics
+			job: generateStatistics,
 		});
 
 		SyncedCron.add({
@@ -48,7 +50,7 @@ Meteor.startup(function() {
 				const now = new Date();
 				return parser.cron(`${ now.getMinutes() } ${ now.getHours() } * * *`);
 			},
-			job: cleanupOEmbedCache
+			job: cleanupOEmbedCache,
 		});
 
 		return SyncedCron.start();

@@ -1,4 +1,6 @@
 /* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.SMS = {
 	enabled: false,
 	services: {},
@@ -15,7 +17,7 @@ RocketChat.SMS = {
 			throw new Meteor.Error('error-sms-service-not-configured');
 		}
 		return new this.services[name](this.accountSid, this.authToken, this.fromNumber);
-	}
+	},
 };
 
 RocketChat.settings.get('SMS_Enabled', function(key, value) {

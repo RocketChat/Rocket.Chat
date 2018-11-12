@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('livechat:agents', function() {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:agents' }));
@@ -18,7 +20,7 @@ Meteor.publish('livechat:agents', function() {
 		},
 		removed(id) {
 			self.removed('agentUsers', id);
-		}
+		},
 	});
 
 	self.ready();

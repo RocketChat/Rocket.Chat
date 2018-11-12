@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
 	APP_REMOVED: 'app/removed',
@@ -7,7 +9,7 @@ export const AppEvents = Object.freeze({
 	COMMAND_ADDED: 'command/added',
 	COMMAND_DISABLED: 'command/disabled',
 	COMMAND_UPDATED: 'command/updated',
-	COMMAND_REMOVED: 'command/removed'
+	COMMAND_REMOVED: 'command/removed',
 });
 
 export class AppWebsocketReceiver {
@@ -48,7 +50,7 @@ export class AppWebsocketReceiver {
 
 	onAppAdded(appId) {
 		RocketChat.API.get(`apps/${ appId }/languages`).then((result) => {
-			this.orch.parseAndLoadLanguages(result.languages);
+			this.orch.parseAndLoadLanguages(result.languages, appId);
 		});
 
 		this.listeners[AppEvents.APP_ADDED].forEach((listener) => listener(appId));

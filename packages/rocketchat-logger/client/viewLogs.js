@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 this.stdout = new Mongo.Collection('stdout');
 
@@ -8,7 +12,7 @@ Meteor.startup(function() {
 		icon: 'post',
 		permissionGranted() {
 			return RocketChat.authz.hasAllPermission('view-logs');
-		}
+		},
 	});
 });
 
@@ -19,7 +23,7 @@ FlowRouter.route('/admin/view-logs', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('View_Logs'),
 			pageTemplate: 'viewLogs',
-			noScroll: true
+			noScroll: true,
 		});
-	}
+	},
 });

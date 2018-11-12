@@ -1,4 +1,5 @@
 /* globals ChatOAuthApps */
+import { Template } from 'meteor/templating';
 import moment from 'moment';
 
 Template.oauthApps.onCreated(function() {
@@ -14,5 +15,5 @@ Template.oauthApps.helpers({
 	},
 	dateFormated(date) {
 		return moment(date).format('L LT');
-	}
+	},
 });

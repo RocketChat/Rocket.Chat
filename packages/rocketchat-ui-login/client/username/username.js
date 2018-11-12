@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 Template.username.onCreated(function() {
@@ -7,7 +10,7 @@ Template.username.onCreated(function() {
 	return Meteor.call('getUsernameSuggestion', function(error, username) {
 		self.username.set({
 			ready: true,
-			username
+			username,
 		});
 		return Meteor.defer(() => self.find('input').focus());
 	});
@@ -16,7 +19,15 @@ Template.username.onCreated(function() {
 Template.username.helpers({
 	username() {
 		return Template.instance().username.get();
-	}
+	},
+
+	backgroundUrl() {
+		const asset = RocketChat.settings.get('Assets_background');
+		const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+		if (asset && (asset.url || asset.defaultUrl)) {
+			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
+		}
+	},
 });
 
 Template.username.events({
@@ -66,5 +77,5 @@ Template.username.events({
 			instance.username.set(username);
 			return RocketChat.callbacks.run('usernameSet');
 		});
-	}
+	},
 });

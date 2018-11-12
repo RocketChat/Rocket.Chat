@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -25,13 +26,13 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 			topic: 1,
 			msgs: 1,
 			archived: 1,
-			tokenpass: 1
+			tokenpass: 1,
 		},
 		limit,
 		sort: {
 			default: -1,
-			name: 1
-		}
+			name: 1,
+		},
 	};
 
 	filter = s.trim(filter);

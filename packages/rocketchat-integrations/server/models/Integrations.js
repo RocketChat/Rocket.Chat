@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.models.Integrations = new class Integrations extends RocketChat.models._Base {
 	constructor() {
 		super('integrations');
@@ -12,6 +14,6 @@ RocketChat.models.Integrations = new class Integrations extends RocketChat.model
 	}
 
 	disableByUserId(userId) {
-		return this.update({ userId }, { $set: { enabled: false }}, { multi: true });
+		return this.update({ userId }, { $set: { enabled: false } }, { multi: true });
 	}
 };

@@ -1,8 +1,10 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 class ModelRoles extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
-		this.tryEnsureIndex({ 'name': 1 });
-		this.tryEnsureIndex({ 'scope': 1 });
+	constructor(...args) {
+		super(...args);
+		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ scope: 1 });
 	}
 
 	findUsersInRole(name, scope, options) {
@@ -63,7 +65,18 @@ class ModelRoles extends RocketChat.models._Base {
 		}
 		return true;
 	}
+
+	findOneByIdOrName(_idOrName, options) {
+		const query = {
+			$or: [{
+				_id: _idOrName,
+			}, {
+				name: _idOrName,
+			}],
+		};
+
+		return this.findOne(query, options);
+	}
 }
 
-RocketChat.models.Roles = new ModelRoles('roles', true);
-RocketChat.models.Roles.cache.load();
+RocketChat.models.Roles = new ModelRoles('roles');

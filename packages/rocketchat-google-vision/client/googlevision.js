@@ -1,9 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 RocketChat.GoogleVision = {
 	getVisionAttributes(attachment) {
 		const attributes = {};
 		const labels = [];
 		if (attachment.labels && attachment.labels.length > 0) {
-			attachment.labels.forEach(label => {
+			attachment.labels.forEach((label) => {
 				labels.push({ label });
 			});
 		}
@@ -21,7 +24,7 @@ RocketChat.GoogleVision = {
 		}
 		if (attachment.faces && attachment.faces.length > 0) {
 			let faceCount = 0;
-			attachment.faces.forEach(face => {
+			attachment.faces.forEach((face) => {
 				const faceAttributes = [];
 				if (face.joy) {
 					faceAttributes.push('Joy');
@@ -76,7 +79,7 @@ RocketChat.GoogleVision = {
 				RocketChat.callbacks.remove('streamMessage', 'googlevision-stream');
 			}
 		});
-	}
+	},
 };
 
 Meteor.startup(function() {

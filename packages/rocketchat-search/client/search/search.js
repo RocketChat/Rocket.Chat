@@ -1,4 +1,7 @@
 /* globals ReactiveVar, TAPi18n */
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 import _ from 'underscore';
 
@@ -28,7 +31,7 @@ Template.RocketSearch.onCreated(function() {
 
 			this.scope.searching.set(true);
 
-			Meteor.call('rocketchatSearch.search', this.scope.text.get(), {rid:Session.get('openedRoom'), uid:Meteor.userId()}, _p, (err, result) => {
+			Meteor.call('rocketchatSearch.search', this.scope.text.get(), { rid:Session.get('openedRoom'), uid:Meteor.userId() }, _p, (err, result) => {
 				if (err) {
 					toastr.error(TAPi18n.__('Search_message_search_failed'));
 					this.scope.searching.set(false);
@@ -47,7 +50,7 @@ Template.RocketSearch.onCreated(function() {
 		settings: {},
 		parentPayload: {},
 		payload: {},
-		search: _search
+		search: _search,
 	};
 
 	this.search = (value) => {
@@ -62,9 +65,9 @@ Template.RocketSearch.onCreated(function() {
 
 		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
 
-		Meteor.call('rocketchatSearch.suggest', value, {rid:Session.get('openedRoom'), uid:Meteor.userId()}, this.scope.parentPayload, _p, (err, result) => {
+		Meteor.call('rocketchatSearch.suggest', value, { rid:Session.get('openedRoom'), uid:Meteor.userId() }, this.scope.parentPayload, _p, (err, result) => {
 			if (err) {
-				//TODO what should happen
+				// TODO what should happen
 			} else {
 				this.suggestionActive.set(undefined);
 				if (value !== this.scope.text.get()) {
@@ -100,12 +103,12 @@ Template.RocketSearch.events = {
 		const suggestionActive = t.suggestionActive.get();
 
 		if (evt.keyCode === 40 && suggestions) {
-			t.suggestionActive.set((suggestionActive !== undefined && suggestionActive < suggestions.length-1) ? suggestionActive +1 : 0);
+			t.suggestionActive.set((suggestionActive !== undefined && suggestionActive < suggestions.length - 1) ? suggestionActive + 1 : 0);
 			return;
 		}
 
 		if (evt.keyCode === 38 && suggestions) {
-			t.suggestionActive.set((suggestionActive !== undefined && suggestionActive === 0) ? suggestions.length-1 : suggestionActive-1);
+			t.suggestionActive.set((suggestionActive !== undefined && suggestionActive === 0) ? suggestions.length - 1 : suggestionActive - 1);
 			return;
 		}
 	},
@@ -115,7 +118,7 @@ Template.RocketSearch.events = {
 			return evt.preventDefault();
 		}
 
-		const value = evt.target.value;
+		const { value } = evt.target;
 
 		if (evt.keyCode === 40 || evt.keyCode === 38) {
 			return evt.preventDefault();
@@ -142,7 +145,7 @@ Template.RocketSearch.events = {
 	},
 	'mouseenter .rocket-search-suggestion-item'(e, t) {
 		t.suggestionActive.set(t.suggestions.get().indexOf(this));
-	}
+	},
 };
 
 Template.RocketSearch.helpers({
@@ -169,16 +172,16 @@ Template.RocketSearch.helpers({
 	},
 	suggestionSelected(index) {
 		return Template.instance().suggestionActive.get() === index ? 'active' : '';
-	}
+	},
 
 });
 
-//add closer to suggestions
+// add closer to suggestions
 Template.RocketSearch.onRendered(function() {
-	$(document).on(`click.suggestionclose.${ this.data.rid }`, ()=>{
-		//if (e.target.id !== 'rocket-search-suggestions' && !$(e.target).parents('#rocket-search-suggestions').length) {
+	$(document).on(`click.suggestionclose.${ this.data.rid }`, () => {
+		// if (e.target.id !== 'rocket-search-suggestions' && !$(e.target).parents('#rocket-search-suggestions').length) {
 		this.suggestions.set();
-		//}
+		// }
 	});
 });
 

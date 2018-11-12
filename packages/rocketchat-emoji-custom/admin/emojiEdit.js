@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
@@ -8,7 +11,7 @@ Template.emojiEdit.helpers({
 
 	name() {
 		return this.name || this._id;
-	}
+	},
 });
 
 Template.emojiEdit.events({
@@ -27,7 +30,7 @@ Template.emojiEdit.events({
 
 	'change input[type=file]'(ev) {
 		const e = ev.originalEvent != null ? ev.originalEvent : ev;
-		let files = e.target.files;
+		let { files } = e.target;
 		if (files == null || files.length === 0) {
 			if (e.dataTransfer != null && e.dataTransfer.files != null) {
 				files = e.dataTransfer.files;
@@ -36,13 +39,13 @@ Template.emojiEdit.events({
 			}
 		}
 
-		//using let x of y here seems to have incompatibility with some phones
+		// using let x of y here seems to have incompatibility with some phones
 		for (const file in files) {
 			if (files.hasOwnProperty(file)) {
 				Template.instance().emojiFile = files[file];
 			}
 		}
-	}
+	},
 });
 
 Template.emojiEdit.onCreated(function() {
@@ -121,7 +124,7 @@ Template.emojiEdit.onCreated(function() {
 						const reader = new FileReader();
 						reader.readAsBinaryString(this.emojiFile);
 						reader.onloadend = () => {
-							Meteor.call('uploadEmojiCustom', reader.result, this.emojiFile.type, emojiData, (uploadError/*, data*/) => {
+							Meteor.call('uploadEmojiCustom', reader.result, this.emojiFile.type, emojiData, (uploadError/* , data*/) => {
 								if (uploadError != null) {
 									handleError(uploadError);
 									console.log(uploadError);

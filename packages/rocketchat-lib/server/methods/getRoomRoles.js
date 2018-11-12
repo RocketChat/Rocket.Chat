@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -12,13 +14,13 @@ Meteor.methods({
 
 		const options = {
 			sort: {
-				'u.username': 1
+				'u.username': 1,
 			},
 			fields: {
 				rid: 1,
 				u: 1,
-				roles: 1
-			}
+				roles: 1,
+			},
 		};
 
 		const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
@@ -29,11 +31,11 @@ Meteor.methods({
 		if (!UI_Use_Real_Name) {
 			return subscriptions;
 		} else {
-			return subscriptions.map(subscription => {
+			return subscriptions.map((subscription) => {
 				const user = RocketChat.models.Users.findOneById(subscription.u._id);
 				subscription.u.name = user && user.name;
 				return subscription;
 			});
 		}
-	}
+	},
 });

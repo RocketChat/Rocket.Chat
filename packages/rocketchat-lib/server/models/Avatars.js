@@ -23,7 +23,7 @@ RocketChat.models.Avatars = new class extends RocketChat.models._Base {
 			uploading: true,
 			progress: 0,
 			extension: s.strRightBack(file.name, '.'),
-			uploadedAt: new Date()
+			uploadedAt: new Date(),
 		};
 
 		_.extend(fileData, file, extra);
@@ -38,15 +38,15 @@ RocketChat.models.Avatars = new class extends RocketChat.models._Base {
 
 		const filter = {
 			_id: fileId,
-			userId
+			userId,
 		};
 
 		const update = {
 			$set: {
 				complete: true,
 				uploading: false,
-				progress: 1
-			}
+				progress: 1,
+			},
 		};
 
 		update.$set = _.extend(file, update.$set);
@@ -66,8 +66,8 @@ RocketChat.models.Avatars = new class extends RocketChat.models._Base {
 		const filter = { _id: fileId };
 		const update = {
 			$set: {
-				name
-			}
+				name,
+			},
 		};
 		if (this.model.direct && this.model.direct.update) {
 			return this.model.direct.update(filter, update);
@@ -84,7 +84,7 @@ RocketChat.models.Avatars = new class extends RocketChat.models._Base {
 
 		const filter = {
 			name,
-			userId
+			userId,
 		};
 
 		const update = {
@@ -92,8 +92,8 @@ RocketChat.models.Avatars = new class extends RocketChat.models._Base {
 				complete: true,
 				uploading: false,
 				progress: 1,
-				url
-			}
+				url,
+			},
 		};
 
 		if (this.model.direct && this.model.direct.update) {

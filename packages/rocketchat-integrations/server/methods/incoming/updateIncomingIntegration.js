@@ -1,4 +1,5 @@
 /* global Babel */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 const validChannelChars = ['@', '#'];
@@ -53,17 +54,17 @@ Meteor.methods({
 				case '#':
 					record = RocketChat.models.Rooms.findOne({
 						$or: [
-							{_id: channel},
-							{name: channel}
-						]
+							{ _id: channel },
+							{ name: channel },
+						],
 					});
 					break;
 				case '@':
 					record = RocketChat.models.Users.findOne({
 						$or: [
-							{_id: channel},
-							{username: channel}
-						]
+							{ _id: channel },
+							{ username: channel },
+						],
 					});
 					break;
 			}
@@ -72,7 +73,7 @@ Meteor.methods({
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'updateIncomingIntegration' });
 			}
 
-			if (record.usernames && !RocketChat.authz.hasPermission(this.userId, 'manage-integrations') && RocketChat.authz.hasPermission(this.userId, 'manage-own-integrations') && !record.usernames.includes(Meteor.user().username)) {
+			if (!RocketChat.authz.hasAllPermission(this.userId, ['manage-integrations', 'manage-own-integrations']) && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'updateIncomingIntegration' });
 			}
 		}
@@ -98,10 +99,10 @@ Meteor.methods({
 				scriptCompiled: integration.scriptCompiled,
 				scriptError: integration.scriptError,
 				_updatedAt: new Date(),
-				_updatedBy: RocketChat.models.Users.findOne(this.userId, {fields: {username: 1}})
-			}
+				_updatedBy: RocketChat.models.Users.findOne(this.userId, { fields: { username: 1 } }),
+			},
 		});
 
 		return RocketChat.models.Integrations.findOne(integrationId);
-	}
+	},
 });

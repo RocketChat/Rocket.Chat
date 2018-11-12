@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('roomSubscriptionsByRole', function(rid, role) {
 	if (!this.userId) {
 		return this.ready();
@@ -12,10 +14,10 @@ Meteor.publish('roomSubscriptionsByRole', function(rid, role) {
 			rid: 1,
 			name: 1,
 			roles: 1,
-			u: 1
+			u: 1,
 		},
 		sort: {
-			name: 1
-		}
+			name: 1,
+		},
 	});
 });

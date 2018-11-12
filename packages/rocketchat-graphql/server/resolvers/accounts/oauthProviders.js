@@ -29,11 +29,11 @@ const resolver = {
 			} catch (e) {
 				throw new Error('rocketchat:grant not installed');
 			}
-		}
-	}
+		},
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

@@ -7,7 +7,7 @@
 		</div>
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
-				{{#unless embeddedVersion}}
+				{{# unless embeddedVersion}}
 					{{# header}}
 						{{#with flexData}}
 							<div class="rc-header__block rc-header__block-action">
@@ -16,12 +16,13 @@
 						{{/with}}
 					{{/header}}
 				{{/unless}}
+
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
 						{{#unless embeddedVersion}}
 							{{#if showAnnouncement}}
-							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdown roomAnnouncement}}">
-								<p>{{{RocketChatMarkdown roomAnnouncement}}}</p>
+							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline roomAnnouncement}}">
+								<p>{{{RocketChatMarkdownInline roomAnnouncement}}}</p>
 							</div>
 							{{/if}}
 						{{/unless}}
@@ -108,6 +109,25 @@
 											</li>
 										{{else}}
 											<li class="start color-info-font-color">
+												{{#if hasPurge}}
+													<div class="start__purge-warning error-background error-border error-color">
+														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
+														{{#unless filesOnly}}
+															{{#unless excludePinned}}
+																{{_ "RetentionPolicy_RoomWarning" time=purgeTimeout}}
+															{{else}}
+																{{_ "RetentionPolicy_RoomWarning_Unpinned" time=purgeTimeout}}
+															{{/unless}}
+														{{else}}
+															{{#unless excludePinned}}
+																{{_ "RetentionPolicy_RoomWarning_FilesOnly" time=purgeTimeout}}
+															{{else}}
+																{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
+															{{/unless}}
+														{{/unless}}
+														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
+													</div>
+												{{/if}}
 												{{_ "Start_of_conversation"}}
 											</li>
 										{{/if}}

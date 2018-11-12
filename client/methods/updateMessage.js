@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -48,11 +51,11 @@ Meteor.methods({
 
 			message.editedBy = {
 				_id: Meteor.userId(),
-				username: me.username
+				username: me.username,
 			};
 
 			message = RocketChat.callbacks.run('beforeSaveMessage', message);
-			const messageObject = {'editedAt': message.editedAt, 'editedBy': message.editedBy, msg: message.msg};
+			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg };
 
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {
@@ -61,8 +64,8 @@ Meteor.methods({
 			}
 			ChatMessage.update({
 				_id: message._id,
-				'u._id': Meteor.userId()
-			}, {$set : messageObject});
+				'u._id': Meteor.userId(),
+			}, { $set : messageObject });
 		});
-	}
+	},
 });

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 
 	if (!this.userId) {
@@ -21,7 +23,7 @@ Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 			},
 			removed(id) {
 				self.removed('visitor_navigation_history', id);
-			}
+			},
 		});
 
 		self.ready();

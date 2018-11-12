@@ -1,4 +1,9 @@
 /* globals WebRTC */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+
 Template.videoCall.onCreated(function() {
 	return this.mainVideo = new ReactiveVar('$auto');
 });
@@ -88,7 +93,7 @@ Template.videoCall.helpers({
 	usernameByUserId(userId) {
 		const user = Meteor.users.findOne(userId);
 		return user != null ? user.username : undefined;
-	}
+	},
 });
 
 Template.videoCall.events({
@@ -125,5 +130,5 @@ Template.videoCall.events({
 	'loadstart video[muted]'(e) {
 		e.currentTarget.muted = true;
 		return e.currentTarget.volume = 0;
-	}
+	},
 });
