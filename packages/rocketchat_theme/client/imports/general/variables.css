@@ -38,32 +38,27 @@
 	/*
 	* Dark versions
 	*/
-
-	--rc-color-darktheme-error: #CC243A;
-	--rc-color-darktheme-error-light: #A6303F;
-	--rc-color-darktheme-alert: #E8BE19;
-	--rc-color-darktheme-alert-light: #CEAB20;
-	--rc-color-darktheme-success: #20CE41;
-	--rc-color-darktheme-success-light: #0FA224;
-
+	--rc-color-darktheme-error: #cc243a;
+	--rc-color-darktheme-error-light: #a6303f;
+	--rc-color-darktheme-alert: #e8be19;
+	--rc-color-darktheme-alert-light: #ceab20;
+	--rc-color-darktheme-success: #20ce41;
+	--rc-color-darktheme-success-light: #0fa224;
 	--rc-color-darktheme-button-primary: #1d74f5;
 	--rc-color-darktheme-button-primary-light: #175cc4;
-
 	--rc-color-darktheme-alert-message-primary: var(--rc-color-darktheme-button-primary);
-	--rc-color-darktheme-alert-message-primary-background: #2E2F30;
-	--rc-color-darktheme-alert-message-secondary: #556F22;
+	--rc-color-darktheme-alert-message-primary-background: #2e2f30;
+	--rc-color-darktheme-alert-message-secondary: #556f22;
 	--rc-color-darktheme-alert-message-secondary-background: #272825;
 	--rc-color-darktheme-alert-message-warning: #d52d24;
 	--rc-color-darktheme-alert-message-warning-background: #341818;
-
-	--rc-color-darktheme-primary: #1A1A1A;
+	--rc-color-darktheme-primary: #1a1a1a;
 	--rc-color-darktheme-primary-darkest: #060606;
 	--rc-color-darktheme-primary-dark: #151515;
 	--rc-color-darktheme-primary-light: #242424;
 	--rc-color-darktheme-primary-light-medium: #282828;
-	--rc-color-darktheme-primary-lightest: #3D3D3D;
-	--rc-color-darktheme-content: #CCCCCC;
-
+	--rc-color-darktheme-primary-lightest: #3d3d3d;
+	--rc-color-darktheme-content: #cccccc;
 	--rc-color-darktheme-link-active: var(--rc-color-darktheme-button-primary);
 
 	/*
@@ -365,9 +360,9 @@
 
 #rocket-chat.dark-theme {
 	--rc-color-alert-message-primary: var(--rc-color-darktheme-button-primary);
-	--rc-color-alert-message-primary-background: #282F3D;
+	--rc-color-alert-message-primary-background: #282f3d;
 	--rc-color-alert-message-secondary: #7ca52b;
-	--rc-color-alert-message-secondary-background: #2F4011;
+	--rc-color-alert-message-secondary-background: #2f4011;
 	--rc-color-alert-message-warning: #d52d24;
 	--rc-color-alert-message-warning-background: #582626;
 
@@ -395,7 +390,7 @@
 	* Forms - Input
 	*/
 	--input-title-color: #737373;
-	--input-text-color: #C9C9C9;
+	--input-text-color: #c9c9c9;
 	--input-placeholder-color: #444444;
 	--input-icon-color: #444444;
 	--input-border-color: #444444;
@@ -408,20 +403,20 @@
 	--popup-list-background: #181818;
 	--popup-list-background-hover: #212121;
 	--popup-list-selected-background: #313131;
-	--popup-list-name-color: #C9C9C9;
+	--popup-list-name-color: #c9c9c9;
 
 	/*
 	* Forms - tags
 	*/
 	--tags-border-color: #202020;
-	--tags-text-color: #AAAAAA;
+	--tags-text-color: #aaaaaa;
 	--tags-background: #141414;
 
 	/*
 	* Forms - select avatar
 	*/
 	--select-avatar-upload-background: #202020;
-	--select-avatar-upload-color: #C9C9C9;
+	--select-avatar-upload-color: #c9c9c9;
 
 	/*
 	* Sidebar
@@ -462,7 +457,7 @@
 	/*
 	* Modal - Create Channel
 	*/
-	--create-channel-title-color: #DDDDDD;
+	--create-channel-title-color: #dddddd;
 	--create-channel-description-color: var(--color-gray);
 
 	/*
@@ -495,7 +490,7 @@
 	--message-box-markdown-color: var(--color-gray);
 	--message-box-markdown-hover-color: #999999;
 	--message-box-user-typing-color: #888888;
-	--message-box-user-typing-user-color: #AAAAAA;
+	--message-box-user-typing-user-color: #aaaaaa;
 	--message-box-container-border-color: #444444;
 	--message-box-editing-color: #604408;
 	--message-box-popover-title-text-color: var(--color-gray);
@@ -505,7 +500,7 @@
 	*/
 	--header-toggle-favorite-color: #444444;
 	--header-toggle-favorite-star-color: var(--rc-color-darktheme-alert-light);
-	--header-title-username-color-darker: #CCCCCC;
+	--header-title-username-color-darker: #cccccc;
 	--header-title-status-color: var(--color-gray);
 	--header-background-color: #222222;
 
@@ -532,8 +527,8 @@
 	& ~ .rc-popover__content,
 	& ~ .rc-popover {
 		--popover-background: #242424;
-		--popover-title-color: #DDDDDD;
-		--popover-item-color: #DDDDDD;
+		--popover-title-color: #dddddd;
+		--popover-item-color: #dddddd;
 		--popover-divider-color: #333333;
 	}
 }

@@ -61,7 +61,7 @@ const minorColors = {
 };
 
 // Dark theme
-const majorDarkColors= {
+const majorDarkColors = {
 	'darktheme-content-background-color': '#1E1E1E',
 	'darktheme-primary-background-color': '#224D79',
 	'darktheme-primary-font-color': '#CCCCCC',
@@ -74,11 +74,11 @@ const majorDarkColors= {
 	'darktheme-pending-color': '#FCB316',
 	'darktheme-error-color': '#BC2031',
 	'darktheme-selection-color': '#066C92',
-	'darktheme-attention-color': '#913CA0'
+	'darktheme-attention-color': '#913CA0',
 };
 
 // Minor colours implement major colours by default, but can be overruled
-const minorDarkColors= {
+const minorDarkColors = {
 	'darktheme-tertiary-background-color': '@darktheme-component-color',
 	'darktheme-tertiary-font-color': '@transparent-lightest',
 	'darktheme-link-font-color': '@darktheme-primary-action-color',
@@ -87,7 +87,7 @@ const minorDarkColors= {
 	'darktheme-status-online': '@darktheme-success-color',
 	'darktheme-status-away': '@darktheme-pending-color',
 	'darktheme-status-busy': '@darktheme-error-color',
-	'darktheme-status-offline': '@transparent-darker'
+	'darktheme-status-offline': '@transparent-darker',
 };
 
 // Bulk-add settings for color scheme

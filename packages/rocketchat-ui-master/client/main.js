@@ -195,7 +195,7 @@ Template.main.helpers({
 	},
 	usedTheme() {
 		return RocketChat.getUserPreference(Meteor.user(), 'usedTheme', 0) === 1 ? 'dark-theme' : '';
-	}
+	},
 });
 
 Template.main.events({
