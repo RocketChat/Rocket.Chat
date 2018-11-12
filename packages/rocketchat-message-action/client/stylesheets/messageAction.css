@@ -1,5 +1,6 @@
 .attachment {
 	& .action {
+		display: inline;
 		margin-top: 2px;
 	}
 
