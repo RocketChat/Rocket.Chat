@@ -73,15 +73,17 @@ const CROWD = class CROWD {
 		}
 
 		logger.info('Going to crowd:', username);
+		const auth = this.crowdClient.user.authenticateSync(username, password);
 
-		if (this.crowdClient.user.authenticateSync(username, password)) {
-
-			const crowdUser = this.fetchCrowdUser(username);
-
-			crowdUser.password = password;
-
-			return crowdUser;
+		if (!auth) {
+			return;
 		}
+
+		const crowdUser = this.fetchCrowdUser(username);
+
+		crowdUser.password = password;
+
+		return crowdUser;
 	}
 
 	syncDataToUser(crowdUser, id) {
@@ -120,46 +122,40 @@ const CROWD = class CROWD {
 			return;
 		}
 
-		return new Promise((resolve, reject) => {
+		const self = this;
+		const users = RocketChat.models.Users.findCrowdUsers() || [];
 
-			const self = this;
-			const users = RocketChat.models.Users.findCrowdUsers() || [];
+		logger.info('Sync started...');
 
-			logger.info('Sync started...');
+		users.forEach(function(user) {
 
-			users.forEach(function(user) {
+			let username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
 
-				let username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
+			try {
+				logger.info('Syncing user', username);
 
-				try {
-					logger.info('Syncing user', username);
+				const crowdUser = self.fetchCrowdUser(username);
 
-					const crowdUser = self.fetchCrowdUser(username);
+				self.syncDataToUser(crowdUser, user._id);
+			} catch (error) {
+				logger.debug(error);
+				logger.error('Could not sync user with username', username);
+
+				const email = user.emails[0].address;
+				logger.info('Attempting to find for user by email', email);
+
+				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
+				if (response.users && response.users.length === 1) {
+					username = response.users[0].name;
+					logger.info('User found. Syncing user', username);
+
+					const crowdUser = self.fetchCrowdUser(response.users[0].name);
 
 					self.syncDataToUser(crowdUser, user._id);
-					resolve();
-				} catch (error) {
-					logger.debug(error);
-					logger.error('Could not sync user with username', username);
-
-					const email = user.emails[0].address;
-					logger.info('Attempting to find for user by email', email);
-
-					const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
-					if (response.users && response.users.length === 1) {
-						username = response.users[0].name;
-						logger.info('User found. Syncing user', username);
-
-						const crowdUser = self.fetchCrowdUser(response.users[0].name);
-
-						self.syncDataToUser(crowdUser, user._id);
-						resolve();
-					} else {
-						reject();
-						throw new Error('User does not exist or email is not unique');
-					}
+				} else {
+					throw new Error('User does not exist or email is not unique');
 				}
-			});
+			}
 		});
 	}
 
@@ -213,25 +209,26 @@ const CROWD = class CROWD {
 };
 
 Accounts.registerLoginHandler('crowd', function(loginRequest) {
-	if (loginRequest.crowd) {
-		logger.info('Init CROWD login', loginRequest.username);
-
-		if (RocketChat.settings.get('CROWD_Enable') !== true) {
-			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
-		}
-
-		try {
-			const crowd = new CROWD();
-			const user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
-
-			return crowd.updateUserCollection(user);
-		} catch (error) {
-			logger.debug(error);
-			logger.error('Crowd user not authenticated due to an error, falling back');
-			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
-		}
+	if (!loginRequest.crowd) {
+		return undefined;
 	}
-	return undefined;
+
+	logger.info('Init CROWD login', loginRequest.username);
+
+	if (RocketChat.settings.get('CROWD_Enable') !== true) {
+		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
+	}
+
+	try {
+		const crowd = new CROWD();
+		const user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
+
+		return crowd.updateUserCollection(user);
+	} catch (error) {
+		logger.debug(error);
+		logger.error('Crowd user not authenticated due to an error, falling back');
+		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
+	}
 });
 
 let interval;
@@ -311,7 +308,7 @@ Meteor.methods({
 		try {
 			const crowd = new CROWD();
 			const startTime = (new Date()).valueOf();
-			Promise.await(crowd.sync());
+			crowd.sync();
 			const stopeTime = (new Date()).valueOf();
 			const actual = Math.ceil((stopeTime - startTime) / 1000);
 
