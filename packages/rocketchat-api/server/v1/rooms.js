@@ -196,3 +196,12 @@ RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 	},
 });
 
+RocketChat.API.v1.addRoute('rooms.info', { authRequired: true }, {
+	get() {
+		const room = findRoomByIdOrName({ params: this.requestParams() });
+		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
+			return RocketChat.API.v1.failure('not-allowed', 'Not Allowed');
+		}
+		return RocketChat.API.v1.success({ room });
+	},
+});

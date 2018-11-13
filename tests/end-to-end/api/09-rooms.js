@@ -295,4 +295,226 @@ describe('[Rooms]', function() {
 				.end(done);
 		});
 	});
+
+	describe('/rooms.info', () => {
+		let testChannel;
+		let testGroup;
+		let testDM;
+		const expectedKeys = ['_id', 'name', 'fname', 't', 'msgs', 'usersCount', 'u', 'customFields', 'ts', 'ro', 'sysMes', 'default', '_updatedAt', 'lm'];
+		const testChannelName = `channel.test.${ Date.now() }`;
+		const testGroupName = `group.test.${ Date.now() }`;
+		it('create an channel', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: testChannelName,
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('create a group', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: testGroupName,
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+		it('create a Direct message room with rocket.cat', (done) => {
+			request.post(api('im.create'))
+				.set(credentials)
+				.send({
+					username: 'rocket.cat',
+				})
+				.end((err, res) => {
+					testDM = res.body.room;
+					done();
+				});
+		});
+		it('should return the info about the created channel correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created channel correctly searching by roomName', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomName: testChannel.name,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created group correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created group correctly searching by roomName', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomName: testGroup.name,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created DM correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testDM._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/rooms.info', () => {
+		let testChannel;
+		let testGroup;
+		let testDM;
+		const expectedKeys = ['_id', 'name', 'fname', 't', 'msgs', 'usersCount', 'u', 'customFields', 'ts', 'ro', 'sysMes', 'default', '_updatedAt', 'lm'];
+		const testChannelName = `channel.test.${ Date.now() }`;
+		const testGroupName = `group.test.${ Date.now() }`;
+		it('create an channel', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: testChannelName,
+				})
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('create a group', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: testGroupName,
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+		it('create a Direct message room with rocket.cat', (done) => {
+			request.post(api('im.create'))
+				.set(credentials)
+				.send({
+					username: 'rocket.cat',
+				})
+				.end((err, res) => {
+					testDM = res.body.room;
+					done();
+				});
+		});
+		it('should return the info about the created channel correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created channel correctly searching by roomName', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomName: testChannel.name,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created group correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created group correctly searching by roomName', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomName: testGroup.name,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created DM correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testDM._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+				})
+				.end(done);
+		});
+	});
 });
