@@ -370,13 +370,14 @@
 		& > div {
 
 			width: 60%;
+			min-height: 2.5rem;
 
 			& label {
 				display: inline-block;
 
 				margin-right: 4px;
 
-				line-height: 35px;
+				line-height: 2.5rem;
 
 				&:nth-last-child(1) {
 					margin-right: 0;
