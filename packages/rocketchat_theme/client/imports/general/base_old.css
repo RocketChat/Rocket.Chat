@@ -1812,9 +1812,9 @@ rc-old select,
 			font-size: 1rem;
 			font-weight: 500;
 
-			flex-grow: 1;
-
 			line-height: 3rem;
+
+			flex-grow: 1;
 		}
 
 		& .section-title-right {
@@ -5390,9 +5390,10 @@ body:not(.is-cordova) {
 		right: 0;
 		bottom: 0;
 		left: 0;
+		display: flex;
+
 		padding: 40px;
 
-		display: flex;
 		flex-direction: column;
 
 		width: auto;
@@ -5405,6 +5406,7 @@ body:not(.is-cordova) {
 
 		& .title {
 			display: initial;
+
 			font-size: 16px;
 			line-height: 50px;
 		}
