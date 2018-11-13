@@ -371,7 +371,7 @@
 		& > div {
 			float: left;
 
-			width: 67%;
+			width: 70%;
 
 			& label {
 				display: inline-block;
@@ -1777,8 +1777,6 @@ rc-old select,
 
 .rc-old .page-settings {
 	& .content {
-		padding: 20px 0;
-
 		& h2 {
 			margin-bottom: 2rem;
 		}
@@ -1798,12 +1796,9 @@ rc-old select,
 	}
 
 	& .section {
-		margin: 20px;
-		padding: 20px;
+		padding: 20px 0;
 
-		border: 1px solid #dddddd;
-		border-radius: 4px;
-		background-color: var(--color-white);
+		border-bottom: 2px solid #dddddd;
 
 		&.section-collapsed .section-content {
 			display: none;
@@ -1813,11 +1808,12 @@ rc-old select,
 	& .section-title {
 		display: flex;
 
-		font-size: 24px;
-		font-weight: 600;
-		line-height: 40px;
-
 		& .section-title-text {
+			font-size: 1rem;
+			font-weight: 500;
+
+			line-height: 3rem;
+
 			flex-grow: 1;
 		}
 
@@ -1836,9 +1832,8 @@ rc-old select,
 			display: flex;
 
 			margin-bottom: 0;
-			padding: 20px 0;
+			padding: 10px 0;
 
-			border-bottom: 1px solid #eeeeee;
 			align-items: flex-start;
 
 			&:last-child {
@@ -1865,13 +1860,12 @@ rc-old select,
 		}
 
 		& .setting-label {
-			width: 25%;
+			width: 30%;
 
 			text-align: left;
 
-			font-size: 16px;
 			font-weight: 500;
-			line-height: 20px;
+			line-height: 16px;
 		}
 
 		& .settings-description {
@@ -5383,19 +5377,29 @@ body:not(.is-cordova) {
 		text-align: right;
 	}
 
+	& .CodeMirror {
+		border-width: var(--input-border-width);
+		border-color: var(--input-border-color);
+		border-radius: var(--input-border-radius);
+	}
+
 	&.code-mirror-box-fullscreen {
 		position: fixed;
 		z-index: 100;
-		top: 61px;
-		right: 40px;
+		top: 0;
+		right: 0;
 		bottom: 0;
-		left: 260px;
+		left: 0;
 
 		display: flex;
+
 		flex-direction: column;
 
 		width: auto;
 		height: auto;
+
+		padding: 40px;
+
 		align-items: stretch;
 
 		& .buttons {
@@ -5405,10 +5409,8 @@ body:not(.is-cordova) {
 		& .title {
 			display: initial;
 
-			padding-left: 10px;
-
 			font-size: 16px;
-			line-height: 30px;
+			line-height: 50px;
 		}
 
 		& .button-fullscreen {
