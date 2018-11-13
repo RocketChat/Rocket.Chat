@@ -357,7 +357,6 @@
 
 	&.double-col {
 		& > label {
-			float: left;
 
 			width: 30%;
 			margin-bottom: 0;
@@ -369,9 +368,8 @@
 		}
 
 		& > div {
-			float: left;
 
-			width: 70%;
+			width: 60%;
 
 			& label {
 				display: inline-block;
@@ -393,15 +391,6 @@
 }
 
 /* input & form styles */
-
-.rc-old input,
-.rc-old button,
-.rc-old select,
-.rc-old textarea {
-	font-family: inherit;
-	font-size: inherit;
-	line-height: inherit;
-}
 
 .rc-old input:focus {
 	outline: none;
@@ -1817,13 +1806,13 @@ rc-old select,
 			flex-grow: 1;
 		}
 
-		& .section-title-right {
-			line-height: 0;
+		& .section-title-right > .rc-button {
+			font-size: 1.25rem;
 		}
 	}
 
 	& .section-content {
-		padding: 20px 0 0 !important;
+		padding: 20px 0 !important;
 
 		border: none !important;
 		border-radius: 0 !important;
@@ -1856,13 +1845,12 @@ rc-old select,
 		}
 
 		& .reset-setting {
-			margin-left: 20px;
+			margin-left: 0.75rem;
+			padding: 0.75rem;
 		}
 
 		& .setting-label {
-			width: 30%;
-
-			text-align: left;
+			min-width: 30%;
 
 			font-weight: 500;
 			line-height: 16px;
@@ -1871,15 +1859,19 @@ rc-old select,
 		& .settings-description {
 			padding: 5px;
 
-			line-height: 20px;
+			line-height: 1.2rem;
 		}
 
 		& .settings-alert {
-			padding: 5px;
 
-			border-width: 1px;
+			margin-top: 0.75rem;
+			padding: 1rem;
+
+			border-width: 2px;
 
 			font-weight: bold;
+
+			line-height: 1.2rem;
 		}
 
 		& .color-editor {
@@ -1929,18 +1921,21 @@ rc-old select,
 			overflow: hidden;
 
 			width: 100px;
-			height: 50px;
+			height: 40px;
 
-			border-radius: 4px;
+			margin-right: 0.75rem;
+
+			border-width: var(--input-border-width);
+			border-color: var(--input-border-color);
+			border-radius: var(--input-border-radius);
+
 			background-repeat: no-repeat;
 			background-position: center center;
 			background-size: contain;
-			box-shadow: 0 0 1px rgba(0, 0, 0, 0.5) inset;
 
 			&.no-file {
 				display: flex;
 
-				font-size: 24px;
 				align-items: center;
 				justify-content: center;
 			}
@@ -3075,6 +3070,8 @@ rc-old select,
 		display: inline-block;
 
 		margin-right: 5px;
+
+		font-size: inherit;
 
 		font-weight: 600;
 	}
