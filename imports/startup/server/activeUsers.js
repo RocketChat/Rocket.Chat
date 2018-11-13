@@ -1,8 +1,8 @@
 import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
 import memoize from 'mem';
 
-const emitStatus = memoize(({ _id, username, name, utcOffset, status }) => {
-	RocketChat.Notifications.notifyLogged('user-status', {
+const emitStatus = memoize((_id, username, name, utcOffset, status) => {
+	RocketChat.Notifications.notifyLoggedInThisInstance('user-status', {
 		_id,
 		username,
 		name,
@@ -18,5 +18,5 @@ UserPresenceMonitor.onSetUserStatus((user, status/* , statusConnection*/) => {
 		name,
 		utcOffset,
 	} = user;
-	emitStatus({ _id, username, name, utcOffset, status });
+	emitStatus(_id, username, name, utcOffset, status);
 });
