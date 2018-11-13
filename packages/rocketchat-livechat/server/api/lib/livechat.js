@@ -7,7 +7,7 @@ export function online() {
 }
 
 export function findTriggers() {
-	return RocketChat.models.LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions'));
+	return RocketChat.models.LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 }
 
 export function findDepartments() {
@@ -58,6 +58,8 @@ export function findAgent(agentId) {
 
 export function settings() {
 	const initSettings = RocketChat.Livechat.getInitSettings();
+	const triggers = findTriggers();
+	const departments = findDepartments();
 
 	return {
 		enabled: initSettings.Livechat_enabled,
@@ -95,6 +97,8 @@ export function settings() {
 			items: ['satisfaction', 'agentKnowledge', 'agentResposiveness', 'agentFriendliness'],
 			values: ['1', '2', '3', '4', '5'],
 		},
+		triggers,
+		departments,
 	};
 }
 
