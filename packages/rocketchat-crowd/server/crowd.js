@@ -1,8 +1,9 @@
-/* globals:CROWD:true */
+/* globals SyncedCron */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
 import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import _ from 'underscore';
 const logger = new Logger('CROWD', {});
 
 function fallbackDefaultAccountSystem(bind, username, password) {
@@ -160,7 +161,7 @@ const CROWD = class CROWD {
 	}
 
 	cleanUsername(username) {
-		if (RocketChat.settings.get('CROWD_CLEAN_USERNAMES') === true) {
+		if (RocketChat.settings.get('CROWD_Clean_Usernames') === true) {
 			return username.split('@')[0];
 		}
 		return username;
@@ -231,40 +232,45 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 	}
 });
 
-let interval;
+
+const jobName = 'CROWD_Sync';
 let timeout;
 
-RocketChat.settings.get('CROWD_SYNC_INTERVAL', function(key, value) {
-	Meteor.clearInterval(interval);
-
-	logger.info('Setting CROWD sync interval to', value, 'minutes');
-
-	const crowd = new CROWD();
-	interval = Meteor.setInterval(function() {
-		crowd.sync();
-	}, value * 60 * 1000);
-});
-
-RocketChat.settings.get('CROWD_Sync_User_Data', function(key, value) {
-	Meteor.clearInterval(interval);
+const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
 	Meteor.clearTimeout(timeout);
 
-	if (value === true) {
-		const crowd = new CROWD();
-		const syncInterval = RocketChat.settings.get('CROWD_SYNC_INTERVAL');
-
-		logger.info('Enabling CROWD user sync');
-
-		interval = Meteor.setInterval(function() {
-			crowd.sync();
-		}, syncInterval * 60 * 1000);
-
-		timeout = Meteor.setTimeout(function() {
-			crowd.sync();
-		}, 1000 * 30);
-	} else {
-		logger.info('Disabling CROWD user sync');
+	if (RocketChat.settings.get('CROWD_Sync_User_Data') !== true) {
+		logger.info('Disabling CROWD Background Sync');
+		if (SyncedCron.nextScheduledAtDate(jobName)) {
+			SyncedCron.remove(jobName);
+		}
+		return;
 	}
+
+	const crowd = new CROWD();
+
+	if (RocketChat.settings.get('CROWD_Sync_Interval')) {
+		logger.info('Enabling CROWD Background Sync');
+		SyncedCron.add({
+			name: jobName,
+			schedule: (parser) => parser.text(RocketChat.settings.get('CROWD_Sync_Interval')),
+			job() {
+				crowd.sync();
+			},
+		});
+		SyncedCron.start();
+	}
+
+	timeout = Meteor.setTimeout(function() {
+		crowd.sync();
+	}, 1000 * 30);
+}), 500);
+
+Meteor.startup(() => {
+	Meteor.defer(() => {
+		RocketChat.settings.get('CROWD_Sync_Interval', addCronJob);
+		RocketChat.settings.get('CROWD_Sync_User_Data', addCronJob);
+	});
 });
 
 Meteor.methods({
