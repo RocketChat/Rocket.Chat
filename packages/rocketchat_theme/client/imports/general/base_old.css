@@ -1777,7 +1777,6 @@ rc-old select,
 
 .rc-old .page-settings {
 	& .content {
-
 		& h2 {
 			margin-bottom: 2rem;
 		}
@@ -1810,11 +1809,12 @@ rc-old select,
 		display: flex;
 
 		& .section-title-text {
+			font-size: 1rem;
+			font-weight: 500;
+
 			flex-grow: 1;
 
-			font-size: 1rem;
-    		font-weight: 500;
-		    line-height: 3rem;
+			line-height: 3rem;
 		}
 
 		& .section-title-right {
