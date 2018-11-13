@@ -137,7 +137,7 @@ jobs:
     docker:
       - image: circleci/node:8.9-browsers
       - image: mongo:4.0
-        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
     environment:
       TEST_MODE: "true"
