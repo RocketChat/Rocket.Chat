@@ -5397,9 +5397,10 @@ body:not(.is-cordova) {
 
 		width: auto;
 		height: auto;
-		align-items: stretch;
 
 		padding: 40px;
+
+		align-items: stretch;
 
 		& .buttons {
 			border-width: 0;
