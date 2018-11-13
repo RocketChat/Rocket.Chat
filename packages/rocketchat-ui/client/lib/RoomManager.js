@@ -19,7 +19,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 	ChatMessage.remove(query);
 };
 
-const RoomManager = new function() {
+RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
 	const onlineUsers = new ReactiveVar({});
@@ -309,8 +309,6 @@ Tracker.autorun(function() {
 	}
 });
 
-export { RoomManager };
-this.RoomManager = RoomManager;
 RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
 
 RocketChat.CachedCollectionManager.onLogin(() => {
