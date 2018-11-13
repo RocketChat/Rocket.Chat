@@ -5390,16 +5390,15 @@ body:not(.is-cordova) {
 		right: 0;
 		bottom: 0;
 		left: 0;
-
 		display: flex;
-
-		flex-direction: column;
-
-		padding: 40px;
 
 		width: auto;
 		height: auto;
 		align-items: stretch;
+
+		flex-direction: column;
+
+		padding: 40px;
 
 		& .buttons {
 			border-width: 0;
