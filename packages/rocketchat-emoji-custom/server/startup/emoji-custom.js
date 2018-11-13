@@ -1,34 +1,35 @@
-/* globals RocketChatFileEmojiCustomInstance */
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RocketChatFile } from 'meteor/rocketchat:file';
 import _ from 'underscore';
 
+let storeType = 'GridFS';
+
+if (RocketChat.settings.get('EmojiUpload_Storage_Type')) {
+	storeType = RocketChat.settings.get('EmojiUpload_Storage_Type');
+}
+
+const RocketChatStore = RocketChatFile[storeType];
+
+if (RocketChatStore == null) {
+	throw new Error(`Invalid RocketChatStore type [${ storeType }]`);
+}
+
+let path = '~/uploads';
+if (RocketChat.settings.get('EmojiUpload_FileSystemPath') != null) {
+	if (RocketChat.settings.get('EmojiUpload_FileSystemPath').trim() !== '') {
+		path = RocketChat.settings.get('EmojiUpload_FileSystemPath');
+	}
+}
+
+export const RocketChatFileEmojiCustomInstance = new RocketChatStore({
+	name: 'custom_emoji',
+	absolutePath: path,
+});
+
 Meteor.startup(function() {
-	let storeType = 'GridFS';
-
-	if (RocketChat.settings.get('EmojiUpload_Storage_Type')) {
-		storeType = RocketChat.settings.get('EmojiUpload_Storage_Type');
-	}
-
-	const RocketChatStore = RocketChatFile[storeType];
-
-	if (RocketChatStore == null) {
-		throw new Error(`Invalid RocketChatStore type [${ storeType }]`);
-	}
-
 	console.log(`Using ${ storeType } for custom emoji storage`.green);
-
-	let path = '~/uploads';
-	if (RocketChat.settings.get('EmojiUpload_FileSystemPath') != null) {
-		if (RocketChat.settings.get('EmojiUpload_FileSystemPath').trim() !== '') {
-			path = RocketChat.settings.get('EmojiUpload_FileSystemPath');
-		}
-	}
-
-	this.RocketChatFileEmojiCustomInstance = new RocketChatStore({
-		name: 'custom_emoji',
-		absolutePath: path,
-	});
 
 	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/* , next*/) {
 		const params =

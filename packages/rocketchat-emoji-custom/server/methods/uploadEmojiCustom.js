@@ -1,5 +1,7 @@
-/* globals RocketChatFileEmojiCustomInstance */
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 Meteor.methods({
 	uploadEmojiCustom(binaryContent, contentType, emojiData) {

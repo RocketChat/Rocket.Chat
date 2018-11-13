@@ -19,7 +19,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 	ChatMessage.remove(query);
 };
 
-RoomManager = new function() {
+RoomManager = new function() { //eslint-disable-line
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
 	const onlineUsers = new ReactiveVar({});
