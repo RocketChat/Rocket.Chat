@@ -13,6 +13,10 @@ Meteor.publish('snippetedMessages', function(rid, limit = 50) {
 		return this.ready();
 	}
 
+	if (!Meteor.call('canAccessRoom', rid, this.userId)) {
+		return this.ready();
+	}
+
 	const cursorHandle = RocketChat.models.Messages.findSnippetedByRoom(
 		rid,
 		{
