@@ -1,4 +1,6 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import memoize from 'mem';
+
 const CACHE_TTL = { maxAge: process.env.TEST_MODE ? 0 : 1000 };
 
 const findPermission = memoize((permissionId) => RocketChat.models.Permissions.findOne(permissionId), CACHE_TTL);

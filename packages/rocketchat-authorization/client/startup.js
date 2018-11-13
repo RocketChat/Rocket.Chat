@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.CachedCollectionManager.onLogin(() => {
 	Meteor.subscribe('roles');
