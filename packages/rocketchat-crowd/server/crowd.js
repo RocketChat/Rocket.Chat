@@ -234,11 +234,8 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 
 
 const jobName = 'CROWD_Sync';
-let timeout;
 
 const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
-	Meteor.clearTimeout(timeout);
-
 	if (RocketChat.settings.get('CROWD_Sync_User_Data') !== true) {
 		logger.info('Disabling CROWD Background Sync');
 		if (SyncedCron.nextScheduledAtDate(jobName)) {
@@ -260,10 +257,6 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 		});
 		SyncedCron.start();
 	}
-
-	timeout = Meteor.setTimeout(function() {
-		crowd.sync();
-	}, 1000 * 30);
 }), 500);
 
 Meteor.startup(() => {
