@@ -528,14 +528,14 @@ Template.admin.events({
 	},
 	'click .expand'(e) {
 		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
-		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__('Collapse'));
+		$(e.currentTarget).closest('button').attr('title', TAPi18n.__('Collapse')).removeClass('expand').addClass('collapse').find('i').attr('class', 'icon-angle-up');
 		$('.CodeMirror').each(function(index, codeMirror) {
 			codeMirror.CodeMirror.refresh();
 		});
 	},
 	'click .collapse'(e) {
 		$(e.currentTarget).closest('.section').addClass('section-collapsed');
-		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
+		$(e.currentTarget).closest('button').attr('title', TAPi18n.__('Expand')).addClass('expand').removeClass('collapse').find('i').attr('class', 'icon-angle-down');
 	},
 	'click button.action'() {
 		if (this.type !== 'action') {
