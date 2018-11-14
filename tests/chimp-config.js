@@ -2,7 +2,7 @@
 // import {isCI} from '../lib/ci';
 
 module.exports = {
-	// 	// - - - - CHIMP - - - -
+	// - - - - CHIMP - - - -
 	// 	watch: false,
 	// 	watchTags: '@watch,@focus',
 	// 	domainSteps: null,
@@ -18,7 +18,7 @@ module.exports = {
 	// 	offline: false,
 	// 	showXolvioMessages: true,
 
-	// 	// - - - - CUCUMBER - - - -
+	// - - - - CUCUMBER - - - -
 	path: 'tests/end-to-end',
 	// 	format: 'pretty',
 	// 	tags: '~@ignore',
@@ -37,7 +37,7 @@ module.exports = {
 	// 	compiler: 'js:' + path.resolve(__dirname, '../lib/babel-register.js'),
 	// 	conditionOutput: true,
 
-	// 	// - - - - SELENIUM  - - - -
+	// - - - - SELENIUM  - - - -
 	// 	browser: null,
 	// 	platform: 'ANY',
 	// 	name: '',
@@ -47,7 +47,7 @@ module.exports = {
 	// 	host: null,
 	// 	// deviceName: null,
 
-	// 	// - - - - WEBDRIVER-IO  - - - -
+	// - - - - WEBDRIVER-IO  - - - -
 	// 	webdriverio: {
 	// 		desiredCapabilities: {},
 	// 		logLevel: 'silent',
@@ -62,7 +62,7 @@ module.exports = {
 	// 		waitforInterval: 250,
 	// 	},
 
-	// 	// - - - - SELENIUM-STANDALONE
+	// - - - - SELENIUM-STANDALONE
 	// 	seleniumStandaloneOptions: {
 	// 		// check for more recent versions of selenium here:
 	// 		// http://selenium-release.storage.googleapis.com/index.html
@@ -93,16 +93,16 @@ module.exports = {
 	// 		}
 	// 	},
 
-	// 	// - - - - SESSION-MANAGER  - - - -
+	// - - - - SESSION-MANAGER  - - - -
 	// 	noSessionReuse: false,
 
-	// 	// - - - - SIMIAN  - - - -
+	// - - - - SIMIAN  - - - -
 	// 	simianResultEndPoint: 'api.simian.io/v1.0/result',
 	// 	simianAccessToken: false,
 	// 	simianResultBranch: null,
 	// 	simianRepositoryId: null,
 
-	// 	// - - - - MOCHA  - - - -
+	// - - - - MOCHA  - - - -
 	mocha: true,
 	mochaCommandLineOptions: ['--color'],
 	mochaConfig: {
@@ -116,7 +116,7 @@ module.exports = {
 		bail: true, // bail after first test failure
 	},
 
-	// 	// - - - - JASMINE  - - - -
+	// - - - - JASMINE  - - - -
 	// 	jasmine: false,
 	// 	jasmineConfig: {
 	// 		specDir: '.',
@@ -134,16 +134,16 @@ module.exports = {
 	// 		// See: http://jasmine.github.io/2.4/node.html#section-Reporters
 	// 	},
 
-	// 	// - - - - METEOR  - - - -
+	// - - - - METEOR  - - - -
 	ddp: 'http://localhost:3000',
 	// 	serverExecuteTimeout: 10000,
 
-	// 	// - - - - PHANTOM  - - - -
+	// - - - - PHANTOM  - - - -
 	// 	phantom_w: 1280,
 	// 	phantom_h: 1024,
 	// 	phantom_ignoreSSLErrors: false,
 
-	// 	// - - - - DEBUGGING  - - - -
+	// - - - - DEBUGGING  - - - -
 	// 	log: 'info',
 	// 	debug: false,
 	// 	seleniumDebug: null,
