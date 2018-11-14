@@ -375,6 +375,22 @@ describe('[Rooms]', function() {
 				})
 				.end(done);
 		});
+		it('should return name and _id of public channel when it has the "fields" query parameter limiting by name', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					fields: JSON.stringify({ name: 1 }),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.property('name').and.to.be.equal(testChannelName);
+					expect(res.body.room).to.have.all.keys(['_id', 'name']);
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/rooms.leave]', () => {
