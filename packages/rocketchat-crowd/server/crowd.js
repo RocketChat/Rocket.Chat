@@ -313,10 +313,10 @@ Meteor.methods({
 
 		try {
 			const crowd = new CROWD();
-			const startTime = (new Date()).valueOf();
+			const startTime = Date.now();
 			crowd.sync();
-			const stopeTime = (new Date()).valueOf();
-			const actual = Math.ceil((stopeTime - startTime) / 1000);
+			const stopTime = Date.now();
+			const actual = Math.ceil((stopTime - startTime) / 1000);
 
 			return {
 				message: `User data synced in ${ actual } seconds`,
