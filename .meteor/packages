@@ -82,7 +82,6 @@ rocketchat:importer-hipchat-enterprise
 rocketchat:importer-slack
 rocketchat:importer-slack-users
 rocketchat:integrations
-rocketchat:internal-hubot
 rocketchat:irc
 rocketchat:issuelinks
 rocketchat:katex
