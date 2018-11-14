@@ -1,5 +1,6 @@
 /* globals Slingshot, FileUpload */
 import _ from 'underscore';
+import { Random } from 'meteor/random';
 
 const configureSlingshot = _.debounce(() => {
 	const type = RocketChat.settings.get('FileUpload_Storage_Type');

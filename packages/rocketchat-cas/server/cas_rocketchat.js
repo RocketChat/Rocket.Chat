@@ -1,6 +1,8 @@
-/* globals logger:true */
-
-logger = new Logger('CAS', {});
+import { Meteor } from 'meteor/meteor';
+import { Logger } from 'meteor/rocketchat:logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+export const logger = new Logger('CAS', {});
 
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('CAS', function() {

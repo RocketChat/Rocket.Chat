@@ -1,4 +1,10 @@
 // @TODO implementar 'clicar na notificacao' abre a janela do chat
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { e2e } from 'meteor/rocketchat:e2e';
@@ -30,8 +36,7 @@ const KonchatNotification = {
 					canReply: true,
 				});
 
-				const user = Meteor.user();
-				const notificationDuration = notification.duration - 0 || RocketChat.getUserPreference(user, 'desktopNotificationDuration') - 0;
+				const notificationDuration = notification.duration - 0 || RocketChat.getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
 				if (notificationDuration > 0) {
 					setTimeout((() => n.close()), notificationDuration * 1000);
 				}
@@ -89,9 +94,9 @@ const KonchatNotification = {
 
 	newMessage(rid) {
 		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
-			const user = Meteor.user();
-			const newMessageNotification = RocketChat.getUserPreference(user, 'newMessageNotification');
-			const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
+			const userId = Meteor.userId();
+			const newMessageNotification = RocketChat.getUserPreference(userId, 'newMessageNotification');
+			const audioVolume = RocketChat.getUserPreference(userId, 'notificationsSoundVolume');
 
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 

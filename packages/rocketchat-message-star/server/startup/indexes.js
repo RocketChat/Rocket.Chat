@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	return Meteor.defer(function() {
 		return RocketChat.models.Messages.tryEnsureIndex({

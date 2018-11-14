@@ -8,6 +8,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RocketChat, call } from 'meteor/rocketchat:lib';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { E2ERoom } from './rocketchat.e2e.room';
@@ -26,7 +27,12 @@ import {
 	deriveKey,
 } from './helper';
 
+import './events.js';
+import './accountEncryption.html';
+import './accountEncryption.js';
+
 let failedToDecodeKey = false;
+let showingE2EAlert = false;
 
 class E2E {
 	constructor() {
@@ -108,7 +114,7 @@ class E2E {
 			} catch (error) {
 				this.started = false;
 				failedToDecodeKey = true;
-				alerts.open({
+				this.openAlert({
 					title: TAPi18n.__('Wasn\'t possible to decode your encryption key to be imported.'),
 					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
 					modifiers: ['large', 'danger'],
@@ -116,7 +122,7 @@ class E2E {
 					icon: 'key',
 					action: () => {
 						this.startClient();
-						alerts.close();
+						this.closeAlert();
 					},
 				});
 				return;
@@ -131,7 +137,7 @@ class E2E {
 
 		// TODO: Split in 2 methods to persist keys
 		if (!this.db_public_key || !this.db_private_key) {
-			await call('addKeyToChain', {
+			await call('e2e.setUserPublicAndPivateKeys', {
 				public_key: localStorage.getItem('public_key'),
 				private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), this.createRandomPassword()),
 			});
@@ -144,13 +150,13 @@ class E2E {
 				sprintf: [randomPassword],
 			});
 
-			alerts.open({
+			this.openAlert({
 				title: TAPi18n.__('Save_your_encryption_password'),
 				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
-				action() {
+				action: () => {
 					modal.open({
 						title: TAPi18n.__('Save_your_encryption_password'),
 						html: true,
@@ -164,7 +170,7 @@ class E2E {
 							return;
 						}
 						localStorage.removeItem('e2e.randomPassword');
-						alerts.close();
+						this.closeAlert();
 					});
 				},
 			});
@@ -176,6 +182,17 @@ class E2E {
 
 		this.decryptPendingMessages();
 		this.decryptPendingSubscriptions();
+	}
+
+	async stopClient() {
+		// This flag is used to avoid closing unrelated alerts.
+		if (showingE2EAlert) {
+			alerts.close();
+		}
+
+		localStorage.removeItem('public_key');
+		localStorage.removeItem('private_key');
+		this.started = false;
 	}
 
 	setupListeners() {
@@ -206,7 +223,7 @@ class E2E {
 	}
 
 	async changePassword(newPassword) {
-		await call('addKeyToChain', {
+		await call('e2e.setUserPublicAndPivateKeys', {
 			public_key: localStorage.getItem('public_key'),
 			private_key: await this.encodePrivateKey(localStorage.getItem('private_key'), newPassword),
 		});
@@ -218,7 +235,7 @@ class E2E {
 
 	async loadKeysFromDB() {
 		try {
-			const { public_key, private_key } = await call('fetchMyKeys');
+			const { public_key, private_key } = await call('e2e.fetchMyKeys');
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 		} catch (error) {
@@ -322,7 +339,7 @@ class E2E {
 					cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
 				}, (password) => {
 					if (password) {
-						alerts.close();
+						this.closeAlert();
 						resolve(password);
 					}
 				}, () => {
@@ -332,7 +349,7 @@ class E2E {
 			};
 
 			showAlert = () => {
-				alerts.open({
+				this.openAlert({
 					title: TAPi18n.__('Enter_your_E2E_password'),
 					html: TAPi18n.__('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
@@ -443,6 +460,16 @@ class E2E {
 			},
 		}).forEach(this.decryptSubscription.bind(this));
 	}
+
+	openAlert(config) {
+		showingE2EAlert = true;
+		alerts.open(config);
+	}
+
+	closeAlert() {
+		showingE2EAlert = false;
+		alerts.close();
+	}
 }
 
 export const e2e = new E2E();
@@ -450,7 +477,9 @@ export const e2e = new E2E();
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			if (RocketChat.settings.get('E2E_Enable') && window.crypto) {
+			const adminEmbedded = RocketChat.Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
+
+			if (!adminEmbedded && RocketChat.settings.get('E2E_Enable') && window.crypto) {
 				e2e.startClient();
 				e2e.enabled.set(true);
 			} else {

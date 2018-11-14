@@ -1,4 +1,5 @@
 import { findRoom, findGuest, settings, online } from '../lib/livechat';
+import { Match, check } from 'meteor/check';
 
 RocketChat.API.v1.addRoute('livechat/config', {
 	get() {
@@ -12,7 +13,7 @@ RocketChat.API.v1.addRoute('livechat/config', {
 				return RocketChat.API.v1.success({ config: { enabled: false } });
 			}
 
-			const { status } = online();
+			const status = online();
 
 			let guest;
 			let room;

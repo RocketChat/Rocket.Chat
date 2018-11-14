@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 	], 'client');
 
 	api.addFiles([
+		'server/models/Rooms.js',
 		'server/settings.js',
 		'server/pinMessage.js',
 		'server/publications/pinnedMessages.js',

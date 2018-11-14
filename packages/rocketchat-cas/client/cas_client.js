@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 const openCenteredPopup = function(url, width, height) {
 
 	const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;

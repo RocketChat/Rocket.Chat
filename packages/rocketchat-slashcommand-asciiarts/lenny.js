@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 /*
 * Lenny is a named function that will replace /lenny commands
 * @param {Object} message - The message object

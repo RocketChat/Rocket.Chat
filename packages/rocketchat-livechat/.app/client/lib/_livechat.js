@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { TAPi18n } from 'meteor/tap:i18n';
 import visitor from '../../imports/client/visitor';
 
 this.Livechat = new (class Livechat {
@@ -209,10 +213,7 @@ this.Livechat = new (class Livechat {
 	}
 	set department(departmentId) {
 		const dept = Department.findOne({ _id: departmentId }) || Department.findOne({ name: departmentId });
-
-		if (dept) {
-			this._department.set(dept._id);
-		}
+		this._department.set(dept && dept._id);
 	}
 	set agent(agentData) {
 		this._agent.set(agentData);

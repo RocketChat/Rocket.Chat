@@ -1,4 +1,7 @@
 /* globals facebookConnectPlugin Facebook*/
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+
 Meteor.loginWithFacebookCordova = function(options, callback) {
 	if (!callback && typeof options === 'function') {
 		callback = options;

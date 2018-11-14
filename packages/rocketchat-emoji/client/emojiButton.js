@@ -1,10 +1,12 @@
 /* globals Template chatMessages*/
+import { Meteor } from 'meteor/meteor';
+
 Template.messageBox.events({
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+		if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
 			return false;
 		}
 

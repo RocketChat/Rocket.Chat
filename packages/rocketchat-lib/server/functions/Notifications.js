@@ -1,3 +1,41 @@
+
+import { Meteor } from 'meteor/meteor';
+
+class RoomStreamer extends Meteor.Streamer {
+	_publish(publication, eventName, options) {
+		super._publish(publication, eventName, options);
+		const uid = Meteor.userId();
+		if (/rooms-changed/.test(eventName)) {
+			const roomEvent = (...args) => {
+				RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
+			};
+			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
+			rooms.forEach(({ rid }) => {
+				this.on(rid, roomEvent);
+			});
+
+			const userEvent = (clientAction, { rid }) => {
+				switch (clientAction) {
+					case 'inserted':
+						rooms.push({ rid });
+						this.on(rid, roomEvent);
+						break;
+
+					case 'removed':
+						this.removeListener(rid, roomEvent);
+						break;
+				}
+			};
+			this.on(uid, userEvent);
+
+			publication.onStop(() => {
+				this.removeListener(uid, userEvent);
+				rooms.forEach(({ rid }) => this.removeListener(rid, roomEvent));
+			});
+		}
+	}
+}
+
 RocketChat.Notifications = new class {
 	constructor() {
 		this.debug = false;
@@ -5,7 +43,7 @@ RocketChat.Notifications = new class {
 		this.streamLogged = new Meteor.Streamer('notify-logged');
 		this.streamRoom = new Meteor.Streamer('notify-room');
 		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
-		this.streamUser = new Meteor.Streamer('notify-user');
+		this.streamUser = new RoomStreamer('notify-user');
 		this.streamAll.allowWrite('none');
 		this.streamLogged.allowWrite('none');
 		this.streamRoom.allowWrite('none');

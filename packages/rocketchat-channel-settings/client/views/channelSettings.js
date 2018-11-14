@@ -1,4 +1,8 @@
 /* globals popover */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
@@ -118,7 +122,20 @@ function roomMaxAge(room) {
 	return roomMaxAgeDefault(room.t);
 }
 
+const fixRoomName = (old) => {
+	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+		return old;
+	}
+	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
+};
+
 Template.channelSettingsEditing.events({
+	'input [name="name"]'(e) {
+		const input = e.currentTarget;
+		const modified = fixRoomName(input.value);
+		input.value = modified;
+	},
 	'input .js-input'(e) {
 		this.value.set(e.currentTarget.value);
 	},

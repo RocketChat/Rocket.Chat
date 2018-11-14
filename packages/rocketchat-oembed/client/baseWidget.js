@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.oembedBaseWidget.helpers({
 	template() {
 		let contentType;

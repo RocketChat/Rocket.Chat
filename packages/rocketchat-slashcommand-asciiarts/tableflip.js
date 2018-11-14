@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 /*
 * Tableflip is a named function that will replace /Tableflip commands
 * @param {Object} message - The message object

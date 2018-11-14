@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.roomSearch.helpers({
 	roomIcon() {
 		if (this.type === 'u') {

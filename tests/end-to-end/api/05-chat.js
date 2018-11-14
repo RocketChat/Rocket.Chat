@@ -9,6 +9,7 @@ import {
 	credentials,
 	message,
 } from '../../data/api-data.js';
+import { password } from '../../data/user';
 
 describe('[Chat]', function() {
 	this.retries(0);
@@ -341,6 +342,107 @@ describe('[Chat]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/chat.delete]', () => {
+		let msgId;
+		let user;
+		let userCredentials;
+		before((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
+		before((done) => {
+			request.post(api('login'))
+				.send({
+					user: user.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		after((done) => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id,
+			}).end(done);
+			user = undefined;
+		});
+		beforeEach((done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					msgId = res.body.message._id;
+				})
+				.end(done);
+		});
+		it('should delete a message successfully', (done) => {
+			request.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('sending message as another user...', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(userCredentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					msgId = res.body.message._id;
+				})
+				.end(done);
+		});
+		it('should delete a message successfully when the user deletes a message send by another user', (done) => {
+			request.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId,
+					asUser: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});

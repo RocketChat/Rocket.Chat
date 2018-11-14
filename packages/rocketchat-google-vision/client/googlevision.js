@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 RocketChat.GoogleVision = {
 	getVisionAttributes(attachment) {
 		const attributes = {};

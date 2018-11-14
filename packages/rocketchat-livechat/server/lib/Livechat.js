@@ -1,9 +1,15 @@
-/* globals HTTP, emailSettings */
+/* globals HTTP */
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import dns from 'dns';
 import UAParser from 'ua-parser-js';
+import * as Mailer from 'meteor/rocketchat:mailer';
+
 import LivechatVisitors from '../models/LivechatVisitors';
 import { Analytics } from './Analytics';
 
@@ -54,16 +60,14 @@ RocketChat.Livechat = {
 	getAgents(department) {
 		if (department) {
 			return RocketChat.models.LivechatDepartmentAgents.findByDepartmentId(department);
-		} else {
-			return RocketChat.models.Users.findAgents();
 		}
+		return RocketChat.models.Users.findAgents();
 	},
 	getOnlineAgents(department) {
 		if (department) {
 			return RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(department);
-		} else {
-			return RocketChat.models.Users.findOnlineAgents();
 		}
+		return RocketChat.models.Users.findOnlineAgents();
 	},
 	getRequiredDepartment(onlineRequired = true) {
 		const departments = RocketChat.models.LivechatDepartment.findEnabledWithAgents();
@@ -221,7 +225,8 @@ RocketChat.Livechat = {
 		}
 
 		if (department) {
-			updateUser.$set.department = department;
+			const dep = RocketChat.models.LivechatDepartment.findOneByIdOrName(department);
+			updateUser.$set.department = dep && dep._id;
 		}
 
 		LivechatVisitors.updateById(userId, updateUser);
@@ -267,6 +272,10 @@ RocketChat.Livechat = {
 	},
 
 	closeRoom({ user, visitor, room, comment }) {
+		if (!room || room.t !== 'l' || !room.open) {
+			return false;
+		}
+
 		const now = new Date();
 
 		const closeData = {
@@ -750,19 +759,12 @@ RocketChat.Livechat = {
 	},
 
 	sendEmail(from, to, replyTo, subject, html) {
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-
-		emailSettings = {
+		Mailer.send({
 			to,
 			from,
 			replyTo,
 			subject,
-			html: header + html + footer,
-		};
-
-		Meteor.defer(() => {
-			Email.send(emailSettings);
+			html,
 		});
 	},
 
