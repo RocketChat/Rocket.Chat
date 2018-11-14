@@ -85,7 +85,6 @@ git.status()
 	})
 	.then(() =>
 		// execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
-
 		inquirer.prompt([{
 			type: 'confirm',
 			message: 'Commit files?',

@@ -2,23 +2,23 @@
 // import {isCI} from '../lib/ci';
 
 module.exports = {
-// 	// - - - - CHIMP - - - -
-// 	watch: false,
-// 	watchTags: '@watch,@focus',
-// 	domainSteps: null,
-// 	e2eSteps: null,
-// 	fullDomain: false,
-// 	domainOnly: false,
-// 	e2eTags: '@e2e',
-// 	watchWithPolling: false,
-// 	server: false,
-// 	serverPort: 8060,
-// 	serverHost: 'localhost',
-// 	sync: true,
-// 	offline: false,
-// 	showXolvioMessages: true,
+	// 	// - - - - CHIMP - - - -
+	// 	watch: false,
+	// 	watchTags: '@watch,@focus',
+	// 	domainSteps: null,
+	// 	e2eSteps: null,
+	// 	fullDomain: false,
+	// 	domainOnly: false,
+	// 	e2eTags: '@e2e',
+	// 	watchWithPolling: false,
+	// 	server: false,
+	// 	serverPort: 8060,
+	// 	serverHost: 'localhost',
+	// 	sync: true,
+	// 	offline: false,
+	// 	showXolvioMessages: true,
 
-// 	// - - - - CUCUMBER - - - -
+	// 	// - - - - CUCUMBER - - - -
 	path: 'tests/end-to-end',
 	// 	format: 'pretty',
 	// 	tags: '~@ignore',
@@ -136,19 +136,19 @@ module.exports = {
 
 	// 	// - - - - METEOR  - - - -
 	ddp: 'http://localhost:3000',
-// 	serverExecuteTimeout: 10000,
+	// 	serverExecuteTimeout: 10000,
 
-// 	// - - - - PHANTOM  - - - -
-// 	phantom_w: 1280,
-// 	phantom_h: 1024,
-// 	phantom_ignoreSSLErrors: false,
+	// 	// - - - - PHANTOM  - - - -
+	// 	phantom_w: 1280,
+	// 	phantom_h: 1024,
+	// 	phantom_ignoreSSLErrors: false,
 
-// 	// - - - - DEBUGGING  - - - -
-// 	log: 'info',
-// 	debug: false,
-// 	seleniumDebug: null,
-// 	debugCucumber: null,
-// 	debugBrkCucumber: null,
-// 	debugMocha: null,
-// 	debugBrkMocha: null,
+	// 	// - - - - DEBUGGING  - - - -
+	// 	log: 'info',
+	// 	debug: false,
+	// 	seleniumDebug: null,
+	// 	debugCucumber: null,
+	// 	debugBrkCucumber: null,
+	// 	debugMocha: null,
+	// 	debugBrkMocha: null,
 };
