@@ -205,3 +205,14 @@ RocketChat.API.v1.addRoute('rooms.info', { authRequired: true }, {
 		return RocketChat.API.v1.success({ room });
 	},
 });
+
+RocketChat.API.v1.addRoute('rooms.leave', { authRequired: true }, {
+	post() {
+		const room = findRoomByIdOrName({ params: this.bodyParams });
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('leaveRoom', room._id);
+		});
+
+		return RocketChat.API.v1.success();
+	},
+});
