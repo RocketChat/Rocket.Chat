@@ -44,10 +44,6 @@ export default class LDAP {
 			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
 			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name'),
 			find_user_after_login: RocketChat.settings.get('LDAP_Find_User_After_Login'),
-			group_sync_enabled: RocketChat.settings.get('LDAP_Group_Sync_Enable'),
-			group_sync_member_association: RocketChat.settings.get('LDAP_Group_Sync_Member_Association'),
-			group_sync_member_attribute: RocketChat.settings.get('LDAP_Group_Sync_Member_Attribute'),
-			group_sync_channel_type: RocketChat.settings.get('LDAP_Group_Sync_Channel_Type'),
 		};
 	}
 
