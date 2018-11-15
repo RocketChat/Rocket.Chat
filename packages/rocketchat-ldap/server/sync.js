@@ -315,6 +315,8 @@ export function importNewUsers(ldap) {
 				addLdapUser(ldapUser, username);
 			}
 
+			syncUserGroups(ldapUser, user);
+
 			if (count % 100 === 0) {
 				logger.info('Import running. Users imported until now:', count);
 			}
@@ -326,6 +328,91 @@ export function importNewUsers(ldap) {
 
 		next(count);
 	}));
+}
+
+export function syncUserGroups(ldapUser, user) {
+	logger.info(user);
+	if (RocketChat.settings.get('LDAP_Group_Sync_Enable') !== true) {
+		logger.error('Can\'t run LDAP Group Sync/Import, LDAP Group Sync/Import is disabled');
+		return;
+	}
+
+	if (!ldap) {
+		ldap = new LDAP();
+		ldap.connectSync();
+	}
+
+	const filter = ['(&'];
+
+	if (RocketChat.settings.get('LDAP_Group_Sync_ObjectClass') !== '') {
+		filter.push(`(objectclass=${ RocketChat.settings.get('LDAP_Group_Sync_ObjectClass') })`);
+	}
+
+	if (RocketChat.settings.get('LDAP_Group_Sync_Member_Association') !== 'memberUid') {
+		filter.push(`(${ RocketChat.settings.get('LDAP_Group_Sync_Member_Association') }=${ 'memberFormat' })`);
+	}
+	else {
+		filter.push(`(${ RocketChat.settings.get('LDAP_Group_Sync_Member_Association') }=${ 'uid' })`);
+	}
+
+	filter.push(')');
+
+	const searchOptions = {
+		filter: filter.join('').replace(/#{username}/g, user.username).replace(/#{memberFormat}/g, ldapUser._raw[RocketChat.settings.get('LDAP_Group_Sync_Member_Attribute')]),
+		scope: 'sub',
+	};
+
+	logger.debug('Group membership filter LDAP:', searchOptions.filter);
+	
+	const currentChannelNames=[];
+	const result = ldap.searchAllSync(RocketChat.settings.get('LDAP_BaseDN'), searchOptions);
+
+	
+
+	if (Array.isArray(result) || result.length !== 0) {
+		result.forEach((ldapGroup) => {
+
+			const channelName = slug(ldapGroup.cn);
+			if (channelName !== null) {
+				currentChannelNames.push(channelName);
+				const room = RocketChat.models.Rooms.findOneByDisplayName(channelName);
+				if (room) {
+					//check if user is present in the channel
+					const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+					if (subscription) {
+						logger.info('User ', user.username, ' already in room ', channelName);
+						return;
+					} else {
+						logger.info('Added user ', user.username, ' to room ', channelName);
+						RocketChat.addUserToRoom(room._id, user);
+	
+					}
+				} else {
+					logger.info('Created new room: ', channelName);
+					// if room does not exist, create one
+					RocketChat.createRoom(RocketChat.settings.get('LDAP_Group_Sync_Channel_Type'), channelName, RocketChat.settings.get('LDAP_Group_Sync_Channel_Admin'), [user.username], false, { customFields: {ldap: true}});
+				}
+			}
+			
+		});
+	}
+	// remove user from previously added automatic channels
+	removeUserFromOtherLDAPChannels(user, currentChannelNames);
+
+}
+
+function removeUserFromOtherLDAPChannels(user, currentChannelNames) {
+	if (currentChannelNames.length === 0) {
+		return;
+	}
+	const userSubscriptions = RocketChat.models.Subscriptions.findByTypeAndUserId(RocketChat.settings.get('LDAP_Group_Sync_Channel_Type'), user._id).fetch();
+	userSubscriptions.forEach((arrayItem) => {
+		if (!currentChannelNames.includes(arrayItem.name) && arrayItem.customFields.ldap) {
+			// Remove the user from this other channel.
+			RocketChat.removeUserFromRoom(arrayItem.rid, user);
+			logger.info('User ', user.username, ' removed from group ', arrayItem.name);
+		}
+	});
 }
 
 function sync() {

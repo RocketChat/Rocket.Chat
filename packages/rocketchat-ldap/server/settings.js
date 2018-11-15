@@ -20,6 +20,10 @@ RocketChat.settings.addGroup('LDAP', function() {
 		enableQuery,
 		{ _id: 'LDAP_Background_Sync', value: true },
 	];
+	const syncGroupDataQuery = [
+		enableQuery,
+		{ _id: 'LDAP_Group_Sync_Enable', value: true },
+	];
 
 	this.add('LDAP_Enable', false, { type: 'boolean', public: true });
 	this.add('LDAP_Login_Fallback', true, { type: 'boolean', enableQuery });
@@ -90,5 +94,31 @@ RocketChat.settings.addGroup('LDAP', function() {
 		this.add('LDAP_Background_Sync_Keep_Existant_Users_Updated', true, { type: 'boolean', enableQuery: backgroundSyncQuery });
 
 		this.add('LDAP_Sync_Now', 'ldap_sync_now', { type: 'action', actionText: 'Execute_Synchronization_Now' });
+	});
+
+	this.section('Group Sync / Import', function() {
+		this.add
+		this.add('LDAP_Group_Sync_Enable', false, {type: 'boolean', enableQuery});
+		this.add('LDAP_Group_Sync_ObjectClass', 'groupOfUniqueNames', { type: 'string', enableQuery: syncGroupDataQuery });
+		this.add('LDAP_Group_Sync_Member_Association', 'uniqueMember', { 
+			type: 'select',
+			values: [
+				{ key: 'uniqueMember', i18nLabel: 'uniqueMember'},
+				{ key: 'memberUid', i18nLabel: 'memberUid'},
+				{ key: 'member', i18nLabel: 'member (AD)'},
+				{ key: 'gidNumber', i18nLabel: 'gidNumber'},
+			],
+			enableQuery: syncGroupDataQuery
+	    });
+		this.add('LDAP_Group_Sync_Member_Attribute', 'uid', { type: 'string', enableQuery: syncGroupDataQuery})
+		this.add('LDAP_Group_Sync_Channel_Admin', 'rocket.cat', { type: 'string', enableQuery: syncGroupDataQuery})
+		this.add('LDAP_Group_Sync_Channel_Type', 'p', { 
+			type: 'select',
+			values: [
+				{ key: 'p', i18nLabel: 'Private Group'},
+				{ key: 'c', i18nLabel: 'Public Channel'},
+			],
+			enableQuery: syncGroupDataQuery 
+	    });
 	});
 });
