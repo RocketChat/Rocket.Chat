@@ -6,7 +6,7 @@
 
 	flex: 0 0 auto;
 
-	margin: 0.5rem 0;
+	height: 2.5rem;
 
 	color: var(--input-text-color);
 
@@ -37,26 +37,29 @@
 
 	&__element {
 		width: 100%;
-		padding: 0.75rem 2rem 0.75rem 1rem;
+
+		height: 100%;
+		padding: 0 2rem 0 1rem;
 
 		text-transform: capitalize;
 
 		border: none;
+		border-radius: 0;
 
-		line-height: 1rem !important;
+		font-size: inherit;
 
 		appearance: none;
 
 		&::-ms-expand {
 			display: none;
 		}
+	}
 
-		.rc-select__small & {
-			padding: 0.5rem 1rem;
-		}
+	&--small {
+		height: 1.75rem;
 	}
 }
 
 .rtl .rc-select__element {
-	padding: 0.75rem 1rem 0.75rem 2rem;
+	padding: 0 1rem 0 2rem;
 }
