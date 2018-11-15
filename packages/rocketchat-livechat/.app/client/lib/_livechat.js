@@ -134,6 +134,9 @@ this.Livechat = new (class Livechat {
 	get guestEmail() {
 		return this._guestEmail.get();
 	}
+	get room() {
+		return this._room.get();
+	}
 
 	set online(value) {
 		this._online.set(value);

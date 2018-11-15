@@ -6,9 +6,9 @@ import global from './global';
 
 
 const Keys = {
-	'TAB': '\uE004',
-	'ENTER': '\uE007',
-	'ESCAPE': 'u\ue00c'
+	TAB: '\uE004',
+	ENTER: '\uE007',
+	ESCAPE: 'u\ue00c',
 };
 
 class Assistify extends Page {
@@ -150,7 +150,6 @@ class Assistify extends Page {
 	}
 	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
 	get admin() { return browser.element('[data-id="administration"][data-type="open"]'); }
-
 
 
 	// admin ui

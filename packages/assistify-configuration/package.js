@@ -3,7 +3,7 @@ Package.describe({
 	version: '0.0.2',
 	summary: 'Default configuration of Rocket.Chat for Assistify',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {

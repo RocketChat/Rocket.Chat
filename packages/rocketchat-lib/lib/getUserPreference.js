@@ -2,10 +2,10 @@
  * Tries to retrieve the user preference falling back to a default system
  * value or to a default value if it is passed as argument
 */
-RocketChat.getUserPreference = function(user, key, defaultValue=undefined) {
+RocketChat.getUserPreference = function(user, key, defaultValue = undefined) {
 	let preference;
 	if (typeof user === typeof '') {
-		user = RocketChat.models.Users.findOne(user, {fields: {[`settings.preferences.${ key }`]: 1}});
+		user = RocketChat.models.Users.findOne(user, { fields: { [`settings.preferences.${ key }`]: 1 } });
 	}
 	if (user && user.settings && user.settings.preferences &&
 		user.settings.preferences.hasOwnProperty(key)) {

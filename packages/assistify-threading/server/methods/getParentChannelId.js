@@ -4,8 +4,8 @@ Meteor.methods({
 		const options = {
 			fields: {
 				name: 1,
-				t: 1
-			}
+				t: 1,
+			},
 		};
 
 		const cursorHandle = RocketChat.models.Rooms.findByNameAndTypesNotInIds(channelName, ['c', 'p'], '', options);
@@ -14,5 +14,5 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-channel', 'Invalid channel', { method: 'assistify:getParentChannelId' });
 		}
 		return room[0]._id;
-	}
+	},
 });

@@ -11,7 +11,7 @@ Template.resetPassword.helpers({
 		if (user) {
 			return user.requirePasswordChangeReason;
 		}
-	}
+	},
 });
 
 Template.resetPassword.events({
@@ -29,13 +29,13 @@ Template.resetPassword.events({
 		const button = instance.$('button.resetpass');
 		RocketChat.Button.loading(button);
 
-		if (Meteor.userId()) {
+		if (Meteor.userId() && !FlowRouter.getParam('token')) {
 			Meteor.call('setUserPassword', instance.find('[name=newPassword]').value, function(error) {
 				if (error) {
 					console.log(error);
 					modal.open({
 						title: t('Error_changing_password'),
-						type: 'error'
+						type: 'error',
 					});
 				}
 			});
@@ -51,7 +51,7 @@ Template.resetPassword.events({
 					} else {
 						modal.open({
 							title: t('Error_changing_password'),
-							type: 'error'
+							type: 'error',
 						});
 					}
 				} else {
@@ -61,7 +61,7 @@ Template.resetPassword.events({
 				}
 			});
 		}
-	}
+	},
 });
 
 Template.resetPassword.onRendered(function() {

@@ -3,7 +3,7 @@ Package.describe({
 	version: '0.0.1',
 	summary: 'Integrations with services and WebHooks',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {

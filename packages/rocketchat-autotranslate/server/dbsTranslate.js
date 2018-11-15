@@ -2,7 +2,7 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import {TranslationProviderRegistry, AutoTranslate} from 'meteor/rocketchat:autotranslate';
+import { TranslationProviderRegistry, AutoTranslate } from 'meteor/rocketchat:autotranslate';
 import { SystemLogger } from 'meteor/rocketchat:logger';
 import { Promise } from 'meteor/promise';
 import _ from 'underscore';
@@ -33,7 +33,7 @@ class DBSAutoTranslate extends AutoTranslate {
 		return {
 			name: this.name,
 			displayName: TAPi18n.__('AutoTranslate_DBS'),
-			settings: this._getSettings()
+			settings: this._getSettings(),
 		};
 	}
 
@@ -45,7 +45,7 @@ class DBSAutoTranslate extends AutoTranslate {
 	_getSettings() {
 		return {
 			apiKey: this.apiKey,
-			apiEndPointUrl: this.apiEndPointUrl
+			apiEndPointUrl: this.apiEndPointUrl,
 		};
 	}
 
@@ -62,49 +62,49 @@ class DBSAutoTranslate extends AutoTranslate {
 			}
 			return this.supportedLanguages[target] = [
 				{
-					'language': 'de',
-					'name': TAPi18n.__('German', {lng: target})
+					language: 'de',
+					name: TAPi18n.__('German', { lng: target }),
 				},
 				{
-					'language': 'en',
-					'name': TAPi18n.__('English', {lng: target})
+					language: 'en',
+					name: TAPi18n.__('English', { lng: target }),
 				},
 				{
-					'language': 'fr',
-					'name': TAPi18n.__('French', {lng: target})
+					language: 'fr',
+					name: TAPi18n.__('French', { lng: target }),
 				},
 				{
-					'language': 'es',
-					'name': TAPi18n.__('Spanish', {lng: target})
+					language: 'es',
+					name: TAPi18n.__('Spanish', { lng: target }),
 				},
 				{
-					'language': 'it',
-					'name': TAPi18n.__('Italian', {lng: target})
+					language: 'it',
+					name: TAPi18n.__('Italian', { lng: target }),
 				},
 				{
-					'language': 'nl',
-					'name': TAPi18n.__('Dutch', {lng: target})
+					language: 'nl',
+					name: TAPi18n.__('Dutch', { lng: target }),
 				},
 				{
-					'language': 'pl',
-					'name': TAPi18n.__('Polish', {lng: target})
+					language: 'pl',
+					name: TAPi18n.__('Polish', { lng: target }),
 				},
 				{
-					'language': 'ro',
-					'name': TAPi18n.__('Romanian', {lng: target})
+					language: 'ro',
+					name: TAPi18n.__('Romanian', { lng: target }),
 				},
 				{
-					'language': 'sk',
-					'name': TAPi18n.__('Slovak', {lng: target})
+					language: 'sk',
+					name: TAPi18n.__('Slovak', { lng: target }),
 				},
 				{
-					'language': 'ja',
-					'name': TAPi18n.__('Japanese', {lng: target})
+					language: 'ja',
+					name: TAPi18n.__('Japanese', { lng: target }),
 				},
 				{
-					'language': 'zh',
-					'name': TAPi18n.__('Chinese', {lng: target})
-				}
+					language: 'zh',
+					name: TAPi18n.__('Chinese', { lng: target }),
+				},
 			];
 		}
 	}
@@ -121,31 +121,28 @@ class DBSAutoTranslate extends AutoTranslate {
 		const translations = {};
 		const msgs = message.msg.split('\n');
 		const query = msgs.join();
-		let sourceLanguage;
 		/**
 		 * Service provider do not handle the text language detection automatically rather it requires the source language to be specified
 		 * explicitly. To automate this language detection process we used the cld language detector.
 		 * When the language detector fails, log it.
 		 */
 		cld.detect(query, (err, result) => {
-			if (result) {
-				result.languages.map((language) => {
-					sourceLanguage = language.code;
-				});
+			if (result && result.languages && result.languages[0]) {
+				const sourceLanguage = result.languages[0].code;
 				const supportedLanguages = this.getSupportedLanguages('en');
-				targetLanguages.forEach(language => {
+				targetLanguages.forEach((language) => {
 					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 						language = language.substr(0, 2);
 					}
 					try {
 						const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
 							params: {
-								key: this.apiKey
+								key: this.apiKey,
 							}, data: {
 								text: query,
 								to: language,
-								from: sourceLanguage
-							}
+								from: sourceLanguage,
+							},
 						});
 						if (result.statusCode === 200 && result.data && result.data.translation && result.data.translation.length > 0) {
 							translations[language] = this.deTokenize(Object.assign({}, message, { msg: decodeURIComponent(result.data.translation) }));
@@ -171,31 +168,28 @@ class DBSAutoTranslate extends AutoTranslate {
 	_translateAtachment(attachment, targetLanguages) {
 		const translations = {};
 		const query = attachment.description || attachment.text;
-		let sourceLanguage;
 		/**
 		 * Service provider do not handle the text language detection automatically rather it requires the source language to be specified
 		 * explicitly. To automate this language detection process we used the cld language detector.
 		 * When the language detector fails, log it.
 		 */
 		Promise.await(cld.detect(query, (err, result) => {
-			if (result) {
-				result.languages.map((language) => {
-					sourceLanguage = language.code;
-				});
+			if (result && result.languages && result.languages[0]) {
+				const sourceLanguage = result.languages[0].code;
 				const supportedLanguages = this.getSupportedLanguages('en');
-				targetLanguages.forEach(language => {
+				targetLanguages.forEach((language) => {
 					if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 						language = language.substr(0, 2);
 					}
 					try {
 						const result = HTTP.call('POST', `${ this.apiEndPointUrl }/translate`, {
 							params: {
-								key: this.apiKey
+								key: this.apiKey,
 							}, data: {
 								text: query,
 								to: language,
-								from: sourceLanguage
-							}
+								from: sourceLanguage,
+							},
 						});
 						if (result.statusCode === 200 && result.data && result.data.translation && result.data.translation.length > 0) {
 							translations[language] = decodeURIComponent(result.data.translation);

@@ -21,7 +21,7 @@ Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 			},
 			removed(id) {
 				self.removed('visitor_navigation_history', id);
-			}
+			},
 		});
 
 		self.ready();

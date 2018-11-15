@@ -31,9 +31,9 @@ Template.AssistifySmarti.onRendered(function() {
 	const instance = this;
 
 	/* in order to avoid duplicated scrollbars, have the outer one hidden */
-	//const parentContainer = this.$(':parent').parent();
-	//parentContainer.css('overflow-y', 'initial');
-	//this.$('.smarti-widget').css('overflow-y', 'auto');
+	// const parentContainer = this.$(':parent').parent();
+	// parentContainer.css('overflow-y', 'initial');
+	// this.$('.smarti-widget').css('overflow-y', 'auto');
 
 	function createSmarti() {
 		if (window.SmartiWidget === undefined) {
@@ -56,12 +56,12 @@ Template.AssistifySmarti.onRendered(function() {
 				channel: instance.data.rid,
 				postings: {
 					type: WIDGET_POSTING_TYPE,
-					cssInputSelector: '.rc-message-box .js-input-message'
+					cssInputSelector: '.rc-message-box .js-input-message',
 				},
-				lang: localStorage.getItem('userLanguage').split('-')[0]
+				lang: localStorage.getItem('userLanguage').split('-')[0],
 			};
 
-			//propagate i18n - support formatted strings while doing that
+			// propagate i18n - support formatted strings while doing that
 			const i18nSetting = RocketChat.settings.get('Assistify_AI_Smarti_Widget_i18n');
 			const i18n = i18nSetting.search('\n') > -1 ? JSON.parse(i18nSetting) : i18nSetting;
 			if (i18n) {
@@ -112,7 +112,7 @@ Template.AssistifySmarti.helpers({
 		} else if (instance.currentTryLoading.get() === instance.maxTriesLoading) {
 			return TAPi18n.__('Widget_could_not_load');
 		}
-	}
+	},
 });
 
 Template.AssistifySmarti.events({
@@ -120,5 +120,5 @@ Template.AssistifySmarti.events({
 		if (instance.data.rid) {
 			Meteor.call('resyncRoom', instance.data.rid);
 		}
-	}
+	},
 });

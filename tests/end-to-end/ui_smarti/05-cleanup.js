@@ -5,14 +5,14 @@ export const request = supertest.agent('http://localhost:8080');
 
 export const credentials = {
 	username: 'admin',
-	password: 'admin'
+	password: 'admin',
 };
 
 describe('[Smarti Cleanup]', () => {
 	let clientid;
 	it('get Client Id', function(done) {
 		request.get('/client')
-			.auth(credentials['username'], credentials['password'])
+			.auth(credentials.username, credentials.password)
 			.expect(200)
 			.expect(function(res) {
 				clientid = res.body[0].id;

@@ -1,4 +1,4 @@
-import {getKnowledgeAdapter as getAdapter} from './server/lib/KnowledgeAdapterProvider';
+import { getKnowledgeAdapter as getAdapter } from './server/lib/KnowledgeAdapterProvider';
 
 export const name = 'assistify:ai';
 
