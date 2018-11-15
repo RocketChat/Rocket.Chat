@@ -846,6 +846,18 @@ Template.room.events({
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
+	'click .js-actionButton-respondWithMessage'(event) {
+		const msg = event.currentTarget.value;
+		if (!msg) {
+			return;
+		}
+
+		const input = $('.messages-container .rc-message-box .rc-message-box__textarea').get(0);
+		input.value = msg;
+		setTimeout(() => {
+			input.focus();
+		}, 5);
+	},
 });
 
 
