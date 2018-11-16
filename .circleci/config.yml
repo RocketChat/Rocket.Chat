@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:8.11
 
     steps:
       - checkout
@@ -135,7 +135,7 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9-browsers
+      - image: circleci/node:8.11-browsers
       - image: mongo:4.0
         command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
@@ -182,7 +182,7 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9-browsers
+      - image: circleci/node:8.11-browsers
       - image: circleci/mongo:4.0
 
     environment:
@@ -221,7 +221,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:8.11
 
     steps:
       - attach_workspace:

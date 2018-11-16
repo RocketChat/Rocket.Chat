@@ -1,6 +1,5 @@
-/* globals isSet:true, isSetNotNull:true */
 // http://stackoverflow.com/a/26990347 function isSet() from Gajus
-isSet = function(fn) {
+export const isSet = function(fn) {
 	let value;
 	try {
 		value = fn();
@@ -11,7 +10,7 @@ isSet = function(fn) {
 	}
 };
 
-isSetNotNull = function(fn) {
+export const isSetNotNull = function(fn) {
 	let value;
 	try {
 		value = fn();
@@ -21,5 +20,3 @@ isSetNotNull = function(fn) {
 		return value !== null && value !== undefined;
 	}
 };
-
-/* exported isSet, isSetNotNull */
