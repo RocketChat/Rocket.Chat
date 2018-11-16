@@ -23,9 +23,8 @@
  * });
  */
 /* eslint-disable */
-(function() {
 
-	var Favico = (function(opt) {
+	export const Favico = (function(opt) {
 		'use strict';
 		opt = (opt) ? opt : {};
 		var _def = {
@@ -843,5 +842,3 @@
 			}
 		};
 	});
-	export { Favico };
-})();
