@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.settings.addGroup('OAuth', function() {
 	this.section('GitHub Enterprise', function() {
 		const enableQuery = {
