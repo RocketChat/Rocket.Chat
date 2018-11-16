@@ -9,8 +9,8 @@ import mkdirp from 'mkdirp';
 Grid.prototype.tryParseObjectId = function() {
 	return false;
 };
-// TODO: REMOVE RocketChatFile from globals
-RocketChatFile = {};
+
+const RocketChatFile = {};
 
 RocketChatFile.bufferToStream = function(buffer) {
 	const bufferStream = new stream.PassThrough();
@@ -229,3 +229,5 @@ RocketChatFile.FileSystem = class {
 		}
 	}
 };
+
+export { RocketChatFile };
