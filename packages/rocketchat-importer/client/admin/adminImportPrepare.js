@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Importers } from 'meteor/rocketchat:importer';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({
@@ -28,6 +29,30 @@ Template.adminImportPrepare.helpers({
 	},
 	message_count() {
 		return Template.instance().message_count.get();
+	},
+	fileSizeLimitMessage() {
+		const maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize');
+		let message;
+
+		if (maxFileSize > 0) {
+			const sizeInKb = maxFileSize / 1024;
+			const sizeInMb = sizeInKb / 1024;
+
+			let fileSizeMessage;
+			if (sizeInMb > 0) {
+				fileSizeMessage = TAPi18n.__('FileSize_MB', { fileSize: sizeInMb.toFixed(2) });
+			} else if (sizeInKb > 0) {
+				fileSizeMessage = TAPi18n.__('FileSize_KB', { fileSize: sizeInKb.toFixed(2) });
+			} else {
+				fileSizeMessage = TAPi18n.__('FileSize_Bytes', { fileSize: maxFileSize.toFixed(0) });
+			}
+
+			message = TAPi18n.__('Importer_Upload_FileSize_Message2', { maxFileSize: fileSizeMessage });
+		} else {
+			message = t('Importer_Upload_Unlimited_FileSize');
+		}
+
+		return message;
 	},
 });
 
