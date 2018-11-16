@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:ui',
 	], 'client');
-	
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
