@@ -1,9 +1,11 @@
-/* globals SyncedCron */
-/* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
-import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
+import { SHA256 } from 'meteor/sha';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
+import { Logger } from 'meteor/rocketchat:logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
+
 const logger = new Logger('CROWD', {});
 
 function fallbackDefaultAccountSystem(bind, username, password) {
@@ -28,7 +30,7 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 	return Accounts._runLoginHandlers(bind, loginRequest);
 }
 
-const CROWD = class CROWD {
+export class CROWD {
 	constructor() {
 		const AtlassianCrowd = require('atlassian-crowd');
 		let url = RocketChat.settings.get('CROWD_URL');
@@ -207,7 +209,7 @@ const CROWD = class CROWD {
 			logger.error('Error creating new crowd user.', error.message);
 		}
 	}
-};
+}
 
 Accounts.registerLoginHandler('crowd', function(loginRequest) {
 	if (!loginRequest.crowd) {
