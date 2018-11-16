@@ -153,5 +153,6 @@ Package.onUse(function(api) {
 	api.export('ChatSubscription', 'client');
 	api.export('RoomRoles', 'client');
 	api.export('SideNav', 'client');
+	api.export('ChatMessages', 'client');
 	api.export('RoomManager', 'client');
 });
