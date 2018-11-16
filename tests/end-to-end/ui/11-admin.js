@@ -522,6 +522,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show open first channel field', () => {
+					admin.generalOpenFirstChannel.waitForVisible(5000);
 					admin.generalOpenFirstChannel.isVisible().should.be.true;
 				});
 
