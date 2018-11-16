@@ -1,9 +1,7 @@
-/* globals emojisByCategory:true, emojiCategories:true, toneList:true */
-
 /*
  * Mapping category hashes into human readable and translated names
  */
-emojiCategories = {
+export const emojiCategories = {
 	people: 'Smileys_and_People',
 	nature: 'Animals_and_Nature',
 	food: 'Food_and_Drink',
@@ -14,7 +12,7 @@ emojiCategories = {
 	flags: 'Flags',
 };
 
-toneList = {
+export const toneList = {
 	raised_hands: 1,
 	clap: 1,
 	wave: 1,
@@ -101,7 +99,7 @@ toneList = {
 	juggling: 1,
 };
 
-emojisByCategory = {
+export const emojisByCategory = {
 	people: [
 		'grinning',
 		'grimacing',
@@ -1525,5 +1523,3 @@ emojisByCategory = {
 		'flag_mf',
 	],
 };
-
-/* exported emojisByCategory, emojiCategories, toneList */
