@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 
 Meteor.publish('fullEmojiData', function(filter, limit) {
