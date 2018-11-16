@@ -1,4 +1,7 @@
 /* global logger, processWebhookMessage */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import session from 'express-session';
 import Grant from 'grant-express';

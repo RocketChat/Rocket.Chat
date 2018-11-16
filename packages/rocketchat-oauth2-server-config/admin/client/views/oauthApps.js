@@ -1,4 +1,5 @@
 /* globals ChatOAuthApps */
+import { Template } from 'meteor/templating';
 import moment from 'moment';
 
 Template.oauthApps.onCreated(function() {

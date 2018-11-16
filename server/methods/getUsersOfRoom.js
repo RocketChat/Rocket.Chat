@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	getUsersOfRoom(rid, showAll) {
 		const userId = Meteor.userId();

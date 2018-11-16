@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+
 export class AppMessageBridge {
 	constructor(orch) {
 		this.orch = orch;

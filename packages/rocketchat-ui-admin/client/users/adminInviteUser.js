@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 

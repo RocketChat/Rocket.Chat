@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { Random } from 'meteor/random';
 
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 

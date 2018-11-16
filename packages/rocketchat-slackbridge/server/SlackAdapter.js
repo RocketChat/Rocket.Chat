@@ -1,4 +1,6 @@
 /* globals logger*/
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import url from 'url';
 import http from 'http';

@@ -1,4 +1,6 @@
 /* globals HTTP */
+import { Meteor } from 'meteor/meteor';
+
 const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
 	HTTP.post(url, options, function(err, res) {
 		if (err) {

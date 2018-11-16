@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 /*
 * Help is a named function that will replace /join commands
@@ -9,6 +12,9 @@ RocketChat.slashCommands.add('help', function Help(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 	const keys = [{
 		Open_channel_user_search: 'Command (or Ctrl) + p OR Command (or Ctrl) + k',
+	},
+	{
+		Mark_all_as_read: 'Shift (or Ctrl) + ESC',
 	},
 	{
 		Edit_previous_message: 'Up Arrow',

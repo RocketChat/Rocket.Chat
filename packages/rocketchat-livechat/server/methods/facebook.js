@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import OmniChannel from '../lib/OmniChannel';
 
 Meteor.methods({

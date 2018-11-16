@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 

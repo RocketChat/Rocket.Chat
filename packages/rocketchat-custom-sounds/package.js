@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 	]);
 
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 
 	api.addFiles('server/startup/custom-sounds.js', 'server');
 	api.addFiles('server/startup/permissions.js', 'server');

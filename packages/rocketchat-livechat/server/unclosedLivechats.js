@@ -1,4 +1,5 @@
 /* globals UserPresenceMonitor */
+import { Meteor } from 'meteor/meteor';
 
 let agentsHandler;
 let monitorAgents = false;

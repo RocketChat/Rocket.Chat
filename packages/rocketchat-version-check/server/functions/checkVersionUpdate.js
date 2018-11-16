@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 import semver from 'semver';
 import getNewUpdates from './getNewUpdates';
 import logger from '../logger';

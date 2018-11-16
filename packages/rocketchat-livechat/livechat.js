@@ -1,8 +1,8 @@
-/* globals WebApp:true */
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 import url from 'url';
 
-const { WebApp } = Package.webapp;
 const { Autoupdate } = Package.autoupdate;
 
 WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {
