@@ -1,6 +1,8 @@
-/* globals emojione, emojisByCategory, emojiCategories, toneList */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { emojione } from 'meteor/emojione:emojione';
+import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 
 RocketChat.emoji.packages.emojione = emojione;
 RocketChat.emoji.packages.emojione.imageType = 'png';

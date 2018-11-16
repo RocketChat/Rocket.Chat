@@ -10,8 +10,9 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'webapp',
 		'mongo',
+		'rocketchat:lib',
 	]);
 
-	api.addFiles('cors.js', 'server');
-	api.addFiles('common.js');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
