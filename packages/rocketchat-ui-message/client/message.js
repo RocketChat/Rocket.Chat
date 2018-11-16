@@ -17,7 +17,7 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 		}
 	}
 
-	if (!pdfLink || /\.pdf$/i.test(pdfLink)) { return; }
+	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) { return; }
 	const canvas = document.getElementById(canvasId);
 	if (!canvas) { return; }
 	const pdfjsLib = await import('pdfjs-dist');
