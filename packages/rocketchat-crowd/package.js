@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 		'templating',
 		'accounts-base',
 		'accounts-password',
+		'littledata:synced-cron',
 	]);
 
 	api.mainModule('client/index.js', 'client');
