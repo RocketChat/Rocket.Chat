@@ -1279,7 +1279,7 @@
   "How_responsive_was_the_chat_agent": "Wie reaktionsschnell war der Chat-Agent?",
   "How_satisfied_were_you_with_this_chat": "Wie zufrieden waren Sie mit diesem Chat?",
   "How_to_handle_open_sessions_when_agent_goes_offline": "Wie man offene Sitzungen behandelt, wenn der Agent offline geht",
-  "Idle_Time_Limit": "Abwesend nach Inaktivität (in ms)",
+  "Idle_Time_Limit": "Abwesend nach Inaktivität",
   "Idle_Time_Limit_Description": "Zeitraum bis sich der Status in away ändert. Der Wert muss in Sekunden angegeben werden.",
   "if_they_are_from": "(wenn sie von% s sind)",
   "If_this_email_is_registered": "Wenn diese E-Mail registriert ist, senden wir Ihnen Anweisungen zum Zurücksetzen Ihres Passworts. Wenn Sie in Kürze keine E-Mail erhalten, kommen Sie bitte zurück und versuchen Sie es erneut.",
