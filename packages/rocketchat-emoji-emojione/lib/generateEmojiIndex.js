@@ -1,3 +1,4 @@
+/* eslint-disable */
 // emoji.json from emojione@2.2.6
 import fs from 'fs';
 
