@@ -6,7 +6,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:8.11
 
     steps:
       - checkout
@@ -135,9 +135,9 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9-browsers
-      - image: mongo:3.4
-        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+      - image: circleci/node:8.11-browsers
+      - image: mongo:4.0
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
     environment:
       TEST_MODE: "true"
@@ -154,9 +154,9 @@ jobs:
           name: Install dependencies
           command: |
             wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
             echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
             sudo apt-get update
             sudo apt-get install -y mongodb-org-shell google-chrome-stable
 
@@ -182,8 +182,8 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9-browsers
-      - image: circleci/mongo:3.4
+      - image: circleci/node:8.11-browsers
+      - image: circleci/mongo:4.0
 
     environment:
       TEST_MODE: "true"
@@ -199,9 +199,9 @@ jobs:
           name: Install dependencies
           command: |
             wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
             echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
             sudo apt-get update
             sudo apt-get install -y mongodb-org-shell google-chrome-stable
 
@@ -221,7 +221,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:8.11
 
     steps:
       - attach_workspace:

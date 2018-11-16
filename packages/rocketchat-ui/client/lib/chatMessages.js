@@ -20,7 +20,7 @@ Meteor.startup(() => {
 	});
 });
 
-this.ChatMessages = class ChatMessages {
+ChatMessages = class ChatMessages { //eslint-disable-line
 	constructor() {
 
 		this.saveTextMessageBox = _.debounce((rid, value) => { // eslint
