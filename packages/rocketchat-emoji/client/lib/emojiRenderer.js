@@ -1,8 +1,10 @@
-/* globals HTML, isSetNotNull, renderEmoji:true */
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { isSetNotNull } from '../function-isSet';
+import { HTML } from 'meteor/htmljs';
 
-renderEmoji = function(emoji) {
+export const renderEmoji = function(emoji) {
 	if (isSetNotNull(() => RocketChat.emoji.list[emoji].emojiPackage)) {
 		const { emojiPackage } = RocketChat.emoji.list[emoji];
 		return RocketChat.emoji.packages[emojiPackage].render(emoji);
@@ -22,5 +24,3 @@ Template.registerHelper('renderEmoji', new Template('renderEmoji', function() {
 
 	return '';
 }));
-
-/* exported renderEmoji */
