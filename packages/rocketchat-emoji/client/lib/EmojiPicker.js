@@ -1,4 +1,7 @@
-/* globals Blaze, Template */
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+
 import _ from 'underscore';
 
 RocketChat.EmojiPicker = {
