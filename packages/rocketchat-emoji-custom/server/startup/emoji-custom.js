@@ -1,7 +1,10 @@
-/* globals RocketChatFileEmojiCustomInstance */
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RocketChatFile } from 'meteor/rocketchat:file';
 import _ from 'underscore';
+
+export let RocketChatFileEmojiCustomInstance;
 
 Meteor.startup(function() {
 	let storeType = 'GridFS';
@@ -25,10 +28,11 @@ Meteor.startup(function() {
 		}
 	}
 
-	this.RocketChatFileEmojiCustomInstance = new RocketChatStore({
+	RocketChatFileEmojiCustomInstance = new RocketChatStore({
 		name: 'custom_emoji',
 		absolutePath: path,
 	});
+
 
 	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/* , next*/) {
 		const params =
