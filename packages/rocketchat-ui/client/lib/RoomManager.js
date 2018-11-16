@@ -309,7 +309,6 @@ Tracker.autorun(function() {
 	}
 });
 
-export { RoomManager };
 RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
 
 RocketChat.CachedCollectionManager.onLogin(() => {
