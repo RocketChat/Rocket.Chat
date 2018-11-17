@@ -171,3 +171,14 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('query.contacts', { authRequired: true }, {
+	post() {
+		const hashes = this.bodyParams.weakHashes;
+		if (!hashes) {
+			return RocketChat.API.v1.failure('weakHashes param not present.');
+		}
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('queryContacts', hashes));
+		return RocketChat.API.v1.success({ strongHashes:result });
+	},
+});
