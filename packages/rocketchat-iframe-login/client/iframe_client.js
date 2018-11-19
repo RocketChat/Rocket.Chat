@@ -1,7 +1,11 @@
-/* globals Accounts, Tracker, ReactiveVar, Accounts, HTTP, facebookConnectPlugin, TwitterConnect, OAuth */
-
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Accounts } from 'meteor/accounts-base';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { HTTP } from 'meteor/http';
+import { OAuth } from 'meteor/oauth';
 import _ from 'underscore';
 
 const { _unstoreLoginToken } = Accounts;
@@ -209,12 +213,12 @@ window.addEventListener('message', (e) => {
 				break;
 			}
 
-			facebookConnectPlugin.getLoginStatus((response) => {
+			window.facebookConnectPlugin.getLoginStatus((response) => {
 				if (response.status === 'connected') {
 					return fbLoginSuccess(response);
 				}
 
-				facebookConnectPlugin.login(e.data.permissions, fbLoginSuccess, (error) => fbLoginError('login-error', error));
+				window.facebookConnectPlugin.login(e.data.permissions, fbLoginSuccess, (error) => fbLoginError('login-error', error));
 			}, (error) => fbLoginError('get-status-error', error));
 			break;
 
@@ -257,7 +261,7 @@ window.addEventListener('message', (e) => {
 				break;
 			}
 
-			TwitterConnect.login(twitterLoginSuccess, twitterLoginFailure);
+			window.TwitterConnect.login(twitterLoginSuccess, twitterLoginFailure);
 			break;
 
 		case 'call-google-login':
