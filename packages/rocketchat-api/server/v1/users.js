@@ -255,7 +255,8 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 								if (!user) {
 									return callback(new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users'));
 								}
-								if (!RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+								const isAnotherUser = this.userId !== user._id;
+								if (isAnotherUser && !RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
 									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
 								}
 							}
