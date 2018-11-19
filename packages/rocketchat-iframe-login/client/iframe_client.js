@@ -1,3 +1,4 @@
+/* globals facebookConnectPlugin, TwitterConnect */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
@@ -213,12 +214,12 @@ window.addEventListener('message', (e) => {
 				break;
 			}
 
-			window.facebookConnectPlugin.getLoginStatus((response) => {
+			facebookConnectPlugin.getLoginStatus((response) => {
 				if (response.status === 'connected') {
 					return fbLoginSuccess(response);
 				}
 
-				window.facebookConnectPlugin.login(e.data.permissions, fbLoginSuccess, (error) => fbLoginError('login-error', error));
+				facebookConnectPlugin.login(e.data.permissions, fbLoginSuccess, (error) => fbLoginError('login-error', error));
 			}, (error) => fbLoginError('get-status-error', error));
 			break;
 
@@ -261,7 +262,7 @@ window.addEventListener('message', (e) => {
 				break;
 			}
 
-			window.TwitterConnect.login(twitterLoginSuccess, twitterLoginFailure);
+			TwitterConnect.login(twitterLoginSuccess, twitterLoginFailure);
 			break;
 
 		case 'call-google-login':
