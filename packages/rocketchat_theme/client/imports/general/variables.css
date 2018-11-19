@@ -359,6 +359,29 @@
 */
 
 #rocket-chat.dark-theme {
+	--rc-color-error: --rc-color-darktheme-error;
+	--rc-color-error-light: --rc-color-darktheme-error-light;
+	--rc-color-alert: --rc-color-darktheme-alert;
+	--rc-color-alert-light: --rc-color-darktheme-alert-light;
+	--rc-color-success: --rc-color-darktheme-success;
+	--rc-color-success-light: --rc-color-darktheme-success-light;
+	--rc-color-button-primary: --rc-color-darktheme-button-primary;
+	--rc-color-button-primary-light: --rc-color-darktheme-button-primary-light;
+	--rc-color-alert-message-primary: --rc-color-darktheme-alert-message-primary;
+	--rc-color-alert-message-primary-background: --rc-color-darktheme-alert-message-primary-background;
+	--rc-color-alert-message-secondary: --rc-color-darktheme-alert-message-secondary;
+	--rc-color-alert-message-secondary-background: --rc-color-darktheme-alert-message-secondary-background;
+	--rc-color-alert-message-warning: --rc-color-darktheme-alert-message-warning;
+	--rc-color-alert-message-warning-background: --rc-color-darktheme-alert-message-warning-background;
+	--rc-color-primary: --rc-color-darktheme-primary;
+	--rc-color-primary-darkest: --rc-color-darktheme-primary-darkest;
+	--rc-color-primary-dark: --rc-color-darktheme-primary-dark;
+	--rc-color-primary-light: --rc-color-darktheme-primary-light;
+	--rc-color-primary-light-medium: --rc-color-darktheme-primary-light-medium;
+	--rc-color-primary-lightest: --rc-color-darktheme-primary-lightest;
+	--rc-color-content: --rc-color-darktheme-content;
+	--rc-color-link-active: --rc-color-darktheme-link-active;
+
 	--rc-color-alert-message-primary: var(--rc-color-darktheme-button-primary);
 	--rc-color-alert-message-primary-background: #282f3d;
 	--rc-color-alert-message-secondary: #7ca52b;
