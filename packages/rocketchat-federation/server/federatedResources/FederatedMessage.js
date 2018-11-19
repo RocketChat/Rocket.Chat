@@ -12,26 +12,6 @@ class FederatedMessage extends FederatedResource {
 
 		this.localPeerIdentifier = localPeerIdentifier;
 
-		// if (messageOrFederatedMessage.resourceName) {
-		// 	// If resourceName exists, it means it is a federated resource
-		// 	const federatedMessageObject = messageOrFederatedMessage;
-
-		// 	const { federatedAuthor: federatedAuthorObject } = federatedMessageObject;
-
-		// 	// This is a federated message resource
-		// 	const { message } = federatedMessageObject;
-
-		// 	// Make sure room dates are correct
-		// 	message.ts = new Date(message.ts);
-		// 	message._updatedAt = new Date(message._updatedAt);
-
-		// 	// Load the author
-		// 	this.federatedAuthor = new FederatedUser(localPeerIdentifier, federatedAuthorObject);
-
-		// 	// Set message property
-		// 	this.message = message;
-		// } else {
-
 		// Make sure room dates are correct
 		message.ts = new Date(message.ts);
 		message._updatedAt = new Date(message._updatedAt);
@@ -67,6 +47,33 @@ class FederatedMessage extends FederatedResource {
 
 			// Update the user
 			RocketChat.models.Messages.update(message._id, { $set: { federation } });
+
+			// Prepare mentions
+			for (const mention of message.mentions) {
+
+				mention.federation = mention.federation || {};
+
+				if (mention.username.indexOf('@') === -1) {
+					mention.federation.peer = localPeerIdentifier;
+				} else {
+					const [username, peer] = mention.username.split('@');
+
+					mention.username = username;
+					mention.federation.peer = peer;
+				}
+			}
+
+			// Prepare channels
+			for (const channel of message.channels) {
+				channel.federation = channel.federation || {};
+
+				if (channel.name.indexOf('@') === -1) {
+					channel.federation.peer = localPeerIdentifier;
+				} else {
+					channel.name = channel.name.split('@')[0];
+					channel.federation.peer = channel.name.split('@')[1];
+				}
+			}
 		}
 
 		// Set message property
@@ -133,6 +140,28 @@ class FederatedMessage extends FederatedResource {
 			localMessage = localMessageObject;
 
 			const localRoom = { _id: localMessage.rid };
+
+			// Normalize mentions
+			for (const mention of localMessage.mentions) {
+				let usernameToReplace = '';
+
+				if (mention.federation.peer !== this.localPeerIdentifier) {
+					usernameToReplace = mention.username;
+
+					mention.username = `${ mention.username }@${ mention.federation.peer }`;
+				} else {
+					usernameToReplace = `${ mention.username }@${ mention.federation.peer }`;
+				}
+
+				localMessage.msg = localMessage.msg.split(usernameToReplace).join(mention.username);
+			}
+
+			// Normalize channels
+			for (const channel of localMessage.channels) {
+				if (channel.federation.peer !== this.localPeerIdentifier) {
+					channel.name = `${ channel.name }@${ channel.federation.peer }`;
+				}
+			}
 
 			// Create the message
 			const { _id } = RocketChat.sendMessage(localMessage.u, localMessage, localRoom, false);

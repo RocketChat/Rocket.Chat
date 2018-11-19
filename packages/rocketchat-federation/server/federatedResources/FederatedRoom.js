@@ -12,30 +12,6 @@ class FederatedRoom extends FederatedResource {
 
 		this.localPeerIdentifier = localPeerIdentifier;
 
-		// if (roomOrFederatedRoom.resourceName) {
-		// 	// If resourceName exists, it means it is a federated resource
-		// 	const federatedRoomObject = roomOrFederatedRoom;
-
-		// 	const { room, federatedOwner: federatedOwnerObject, federatedUsers } = federatedRoomObject;
-
-		// 	// Make sure room dates are correct
-		// 	room.ts = new Date(room.ts);
-		// 	room._updatedAt = new Date(room._updatedAt);
-
-		// 	// Set room property
-		// 	this.room = room;
-
-		// 	// Set the owner
-		// 	this.federatedOwner = new FederatedUser(localPeerIdentifier, federatedOwnerObject);
-
-		// 	// Set the users
-		// 	this.federatedUsers = [];
-
-		// 	for (const federatedUserObject of federatedUsers) {
-		// 		this.federatedUsers.push(new FederatedUser(localPeerIdentifier, federatedUserObject));
-		// 	}
-		// } else {
-
 		// Make sure room dates are correct
 		room.ts = new Date(room.ts);
 		room._updatedAt = new Date(room._updatedAt);

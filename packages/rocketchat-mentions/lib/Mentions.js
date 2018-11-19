@@ -28,10 +28,10 @@ export default class {
 		return typeof this._useRealName === 'function' ? this._useRealName() : this._useRealName;
 	}
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|<p>|<br> ?)@(${ this.pattern })`, 'gm');
+		return new RegExp(`(^|\\s|<p>|<br> ?)@(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
 	}
 	get channelMentionRegex() {
-		return new RegExp(`(^|\\s|<p>)#(${ this.pattern })`, 'gm');
+		return new RegExp(`(^|\\s|<p>)#(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
 	}
 	replaceUsers(str, message, me) {
 		return str.replace(this.userMentionRegex, (match, prefix, username) => {
@@ -40,9 +40,11 @@ export default class {
 			}
 
 			const mentionObj = message.mentions && message.mentions.find((m) => m.username === username);
+
 			if (message.temp == null && mentionObj == null) {
 				return match;
 			}
+
 			const name = this.useRealName && mentionObj && s.escapeHTML(mentionObj.name);
 
 			return `${ prefix }<a class="mention-link ${ username === me ? 'mention-link-me' : '' }" data-username="${ username }" title="${ name ? username : '' }">${ name || `@${ username }` }</a>`;

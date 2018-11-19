@@ -10,21 +10,6 @@ class FederatedUser extends FederatedResource {
 
 		this.localPeerIdentifier = localPeerIdentifier;
 
-		// if (userOrFederatedUser.resourceName) {
-		// 	// If resourceName exists, it means it is a federated resource
-		// 	const federatedUserObject = userOrFederatedUser;
-
-		// 	// This is a federated user resource
-		// 	const { user } = federatedUserObject;
-
-		// 	// Make sure user dates are correct
-		// 	user.createdAt = new Date(user.createdAt);
-		// 	user.lastLogin = new Date(user.lastLogin);
-		// 	user._updatedAt = new Date(user._updatedAt);
-
-		// 	this.user = user;
-		// } else {
-
 		// Make sure all properties are normalized
 		// Prepare the federation property
 		if (!user.federation) {
