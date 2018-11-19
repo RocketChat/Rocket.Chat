@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import LivechatVisitors from '../../models/LivechatVisitors';
