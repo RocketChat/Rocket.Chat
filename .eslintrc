@@ -30,7 +30,6 @@
 		"Package"                     : false,
 		"parentCall"                  : false,
 		"RocketChat"                  : true,
-		"RocketChatFile"              : false,
 		"RoomHistoryManager"          : false,
 		"RoomManager"                 : false,
 		"ServiceConfiguration"        : false,
