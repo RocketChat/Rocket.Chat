@@ -356,6 +356,8 @@ class PeerClient {
 	afterReadMessages(roomId, userId) {
 		this.log('afterReadMessages');
 
+		if (!RocketChat.settings.get('Message_Read_Receipt_Enabled')) { this.log('Skipping: read receipts are not enabled'); return; }
+
 		const room = RocketChat.models.Rooms.findOneById(roomId);
 
 		const { peer: { identifier: localPeerIdentifier } } = this;
