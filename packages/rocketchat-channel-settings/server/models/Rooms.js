@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Rooms.setDescriptionById = function(_id, description) {
 	const query = {
 		_id,

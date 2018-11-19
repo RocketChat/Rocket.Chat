@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 RocketChat.ChannelSettings = new class {
