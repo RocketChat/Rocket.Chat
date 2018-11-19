@@ -412,6 +412,9 @@ Meteor.Streamer = class Streamer extends EventEmitter {
 	}
 
 	emit(eventName, ...args) {
+		if (this.serverOnly) {
+			return super.emit(eventName, ...args);
+		}
 		this._emit(eventName, args, undefined, true);
 	}
 
