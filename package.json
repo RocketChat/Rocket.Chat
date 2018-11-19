@@ -176,6 +176,7 @@
 		"mkdirp": "^0.5.1",
 		"moment": "^2.22.2",
 		"moment-timezone": "^0.5.23",
+		"nats": "^1.0.1",
 		"node-dogstatsd": "^0.0.7",
 		"object-path": "^0.11.4",
 		"pdfjs-dist": "^2.0.550",

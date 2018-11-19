@@ -2,7 +2,8 @@
 /* eslint new-cap: false */
 import _ from 'underscore';
 import EventEmitter from 'events';
-class StreamerCentral extends EventEmitter {
+
+const StreamerCentral = new class extends EventEmitter {
 	constructor() {
 		super();
 
@@ -11,28 +12,25 @@ class StreamerCentral extends EventEmitter {
 		this.instances = {};
 	}
 }
-
-Meteor.StreamerCentral = new StreamerCentral;
+Meteor.StreamerCentral = StreamerCentral;
 
 Meteor.Streamer = class Streamer extends EventEmitter {
 	constructor(name, {retransmit = true, retransmitToSelf = false} = {}) {
-		if (Meteor.StreamerCentral.instances[name]) {
+		if (StreamerCentral.instances[name]) {
 			console.warn('Streamer instance already exists:', name);
-			return Meteor.StreamerCentral.instances[name];
+			return StreamerCentral.instances[name];
 		}
 
 		super();
 
 		this.setMaxListeners(Infinity);
 
-		Meteor.StreamerCentral.instances[name] = this;
+		StreamerCentral.instances[name] = this;
 
 		this.name = name;
 		this.retransmit = retransmit;
 		this.retransmitToSelf = retransmitToSelf;
 
-		this.subscriptions = [];
-		this.subscriptionsByEventName = {};
 		this.transformers = {};
 
 		this.iniPublication();
@@ -268,6 +266,7 @@ Meteor.Streamer = class Streamer extends EventEmitter {
 
 
 	_publish(publication, eventName, options) {
+
 		check(eventName, String);
 		check(options, Match.OneOf(Boolean, {
 			useCollection: Boolean,
@@ -293,7 +292,7 @@ Meteor.Streamer = class Streamer extends EventEmitter {
 			throw new Meteor.Error('invalid-event-name');
 		}
 
-		if (this.isReadAllowed(publication, eventName, args) !== true) {
+		if (this.isReadAllowed(publication, eventName, ...args) !== true) {
 			publication.stop();
 			throw new Meteor.Error('not-allowed');
 		}
@@ -362,7 +361,7 @@ Meteor.Streamer = class Streamer extends EventEmitter {
 
 	_emit(eventName, args, origin, broadcast) {
 		if (broadcast === true) {
-			Meteor.StreamerCentral.emit('broadcast', this.name, eventName, args);
+			StreamerCentral.emit('broadcast', this.name, eventName, args);
 		}
 
 		const msg = this.changedPayload({

@@ -149,10 +149,9 @@ Meteor.methods({
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			instance.emitWithScope(eventName, scope, ...args);
+			instance.__emit(eventName, args);
 		} else {
-			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+			instance._emit(eventName, args);
 		}
 	},
 });
@@ -199,6 +198,10 @@ function startStreamCastBroadcast(value) {
 }
 
 function startStreamBroadcast() {
+	if (process.env.STREAMER_TYPE) {
+		return logger.info(`streamer using ${ process.env.STREAMER_TYPE }`);
+	}
+
 	if (!process.env.INSTANCE_IP) {
 		process.env.INSTANCE_IP = 'localhost';
 	}
@@ -224,7 +227,7 @@ function startStreamBroadcast() {
 		}
 	});
 
-	function broadcast(streamName, eventName, args/* , userId*/) {
+	Meteor.StreamerCentral.on('broadcast', function broadcast(streamName, eventName, args/* , userId*/) {
 		const fromInstance = `${ process.env.INSTANCE_IP }:${ process.env.PORT }`;
 		const results = [];
 
@@ -259,10 +262,6 @@ function startStreamBroadcast() {
 			}
 		}
 		return results;
-	}
-
-	return Meteor.StreamerCentral.on('broadcast', function(streamName, eventName, args) {
-		return broadcast(streamName, eventName, args);
 	});
 }
 
