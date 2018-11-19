@@ -7,6 +7,7 @@ import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
 import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
+import { modal, t, ChatRoom } from 'meteor/rocketchat:ui';
 
 const common = {
 	canLeaveRoom() {
