@@ -60,6 +60,7 @@ export function settings() {
 	const initSettings = RocketChat.Livechat.getInitSettings();
 	const triggers = findTriggers();
 	const departments = findDepartments();
+	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 
 	return {
 		enabled: initSettings.Livechat_enabled,
@@ -99,6 +100,9 @@ export function settings() {
 		},
 		triggers,
 		departments,
+		resources: {
+			sound,
+		},
 	};
 }
 
