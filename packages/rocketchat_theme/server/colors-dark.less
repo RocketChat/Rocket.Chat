@@ -17,6 +17,9 @@
 @darktheme-pending-border: lighten(@darktheme-pending-color, 30%);
 
 #rocket-chat.dark-theme {
+	// Workaround: primary font color is setted at body element
+	color: @darktheme-primary-font-color;
+
 	/** ----------------------------------------------------------------------------
 	 * Classes for variables
 	 */
