@@ -1,24 +1,24 @@
 /** ----------------------------------------------------------------------------
  * Derivative colours (fixed variants of inherited variables)
  */
-@darktheme-default-action-color: darken(@secondary-background-color, 15%);
-@darktheme-default-action-contrast: contrast(@darktheme-default-action-color, #444444);
-@darktheme-primary-background-contrast: contrast(@darktheme-primary-background-color, #444444);
-@darktheme-primary-action-contrast: contrast(@darktheme-primary-action-color, #444444);
-@darktheme-secondary-background-contrast: contrast(@darktheme-secondary-background-color, #444444);
-@darktheme-secondary-action-contrast: contrast(@darktheme-secondary-action-color, #444444);
-@darktheme-selection-background: darken(@darktheme-selection-color, 30%);
-@darktheme-success-background: darken(@darktheme-success-color, 45%);
-@darktheme-success-border: lighten(@darktheme-success-color, 30%);
-@darktheme-error-background: darken(@darktheme-error-color, 45%);
-@darktheme-error-border: lighten(@darktheme-error-color, 30%);
-@darktheme-error-contrast: contrast(@darktheme-error-color);
-@darktheme-pending-background: darken(@darktheme-pending-color, 45%);
-@darktheme-pending-border: lighten(@darktheme-pending-color, 30%);
+@darkmode-default-action-color: darken(@secondary-background-color, 15%);
+@darkmode-default-action-contrast: contrast(@darkmode-default-action-color, #444444);
+@darkmode-primary-background-contrast: contrast(@darkmode-primary-background-color, #444444);
+@darkmode-primary-action-contrast: contrast(@darkmode-primary-action-color, #444444);
+@darkmode-secondary-background-contrast: contrast(@darkmode-secondary-background-color, #444444);
+@darkmode-secondary-action-contrast: contrast(@darkmode-secondary-action-color, #444444);
+@darkmode-selection-background: darken(@darkmode-selection-color, 30%);
+@darkmode-success-background: darken(@darkmode-success-color, 45%);
+@darkmode-success-border: lighten(@darkmode-success-color, 30%);
+@darkmode-error-background: darken(@darkmode-error-color, 45%);
+@darkmode-error-border: lighten(@darkmode-error-color, 30%);
+@darkmode-error-contrast: contrast(@darkmode-error-color);
+@darkmode-pending-background: darken(@darkmode-pending-color, 45%);
+@darkmode-pending-border: lighten(@darkmode-pending-color, 30%);
 
-#rocket-chat.dark-theme {
+#rocket-chat.darkmode {
 	// Workaround: primary font color is setted at body element
-	color: @darktheme-primary-font-color;
+	color: @darkmode-primary-font-color;
 
 	/** ----------------------------------------------------------------------------
 	 * Classes for variables
@@ -27,119 +27,119 @@
 	// Major colors
 
 	.content-background-color {
-		background-color: @darktheme-content-background-color;
+		background-color: @darkmode-content-background-color;
 	}
 
 	.color-content-background-color {
-		color: @darktheme-content-background-color;
+		color: @darkmode-content-background-color;
 	}
 
 	.primary-background-color {
-		background-color: @darktheme-primary-background-color;
+		background-color: @darkmode-primary-background-color;
 	}
 
 	.color-primary-font-color {
-		color: @darktheme-primary-font-color;
+		color: @darkmode-primary-font-color;
 	}
 
 	&.color-primary-font-color {
-		color: @darktheme-primary-font-color;
+		color: @darkmode-primary-font-color;
 	}
 
 	.color-primary-action-color {
-		color: @darktheme-primary-action-color;
+		color: @darkmode-primary-action-color;
 	}
 
 	.background-primary-action-color {
-		background-color: @darktheme-primary-action-color;
+		background-color: @darkmode-primary-action-color;
 	}
 
 	.secondary-background-color {
-		background-color: @darktheme-secondary-background-color;
+		background-color: @darkmode-secondary-background-color;
 	}
 
 	.border-secondary-background-color {
-		border-color: @darktheme-secondary-background-color;
+		border-color: @darkmode-secondary-background-color;
 	}
 
 	.secondary-font-color {
-		color: @darktheme-secondary-font-color;
+		color: @darkmode-secondary-font-color;
 	}
 
 	.border-component-color {
-		border-color: @darktheme-component-color;
+		border-color: @darkmode-component-color;
 	}
 
 	.background-component-color {
-		background-color: @darktheme-component-color;
+		background-color: @darkmode-component-color;
 	}
 
 	.color-component-color {
-		color: @darktheme-component-color;
+		color: @darkmode-component-color;
 	}
 
 	.success-color {
-		color: @darktheme-success-color;
+		color: @darkmode-success-color;
 	}
 
 	.pending-color {
-		color: @darktheme-pending-color;
+		color: @darkmode-pending-color;
 	}
 
 	.pending-background {
-		background-color: @darktheme-pending-background;
+		background-color: @darkmode-pending-background;
 	}
 
 	.pending-border {
-		border-color: @darktheme-pending-border;
+		border-color: @darkmode-pending-border;
 	}
 
 	.error-color {
-		color: @darktheme-error-color;
+		color: @darkmode-error-color;
 	}
 
 	.background-error-color {
-		background-color: @darktheme-error-color;
+		background-color: @darkmode-error-color;
 	}
 
 	.color-info-font-color {
-		color: @darktheme-info-font-color;
+		color: @darkmode-info-font-color;
 	}
 
 	.background-info-font-color {
-		background-color: @darktheme-info-font-color;
+		background-color: @darkmode-info-font-color;
 	}
 
 	.background-attention-color {
-		background-color: @darktheme-attention-color;
+		background-color: @darkmode-attention-color;
 	}
 
 	// Minor Colors
 
 	.tertiary-background-color {
-		background-color: @darktheme-tertiary-background-color;
+		background-color: @darkmode-tertiary-background-color;
 	}
 
 	.border-tertiary-background-color {
-		border-color: @darktheme-tertiary-background-color;
+		border-color: @darkmode-tertiary-background-color;
 	}
 
 	// Derivative Colors
 
 	.color-tertiary-font-color {
-		color: @darktheme-tertiary-font-color;
+		color: @darkmode-tertiary-font-color;
 	}
 
 	.error-background {
-		background-color: @darktheme-error-background;
+		background-color: @darkmode-error-background;
 	}
 
 	.error-border {
-		border-color: @darktheme-error-border;
+		border-color: @darkmode-error-border;
 	}
 
 	.color-error-contrast {
-		color: @darktheme-error-contrast;
+		color: @darkmode-error-contrast;
 	}
 
 	/** ----------------------------------------------------------------------------
@@ -158,7 +158,7 @@
 		background-color: #101010;
 
 		.rc-user-info-details__info {
-			color: @darktheme-primary-font-color;
+			color: @darkmode-primary-font-color;
 		}
 	}
 
@@ -178,7 +178,7 @@
 	}
 
 	.rc-switch-double {
-		color: @darktheme-primary-font-color;
+		color: @darkmode-primary-font-color;
 	}
 
 	.rc-switch--blue .rc-switch__button {
@@ -190,7 +190,7 @@
 	}
 
 	.rc-switch__text {
-		color: @darktheme-primary-font-color;
+		color: @darkmode-primary-font-color;
 	}
 
 	.rc-old blockquote::before {
@@ -210,7 +210,7 @@
 	}
 
 	.rc-table {
-		color: @darktheme-primary-font-color;
+		color: @darkmode-primary-font-color;
 	}
 
 	.rc-table-body .rc-table-tr:hover {
@@ -261,11 +261,11 @@
 	}
 
 	.message.new-day.first-unread::after {
-		border-color: @darktheme-error-color;
+		border-color: @darkmode-error-color;
 	}
 
 	.first-unread .body::after {
-		background-color: @darktheme-content-background-color;
+		background-color: @darkmode-content-background-color;
 	}
 
 	.messages-box .new-message {
@@ -279,7 +279,7 @@
 		&.selected {
 			color: #ffffff;
 			border-color: #ffffff;
-			background-color: @darktheme-primary-action-color;
+			background-color: @darkmode-primary-action-color;
 		}
 	}
 
@@ -303,7 +303,7 @@
 		}
 
 		&.active {
-			border-color: @darktheme-primary-action-color;
+			border-color: @darkmode-primary-action-color;
 		}
 	}
 
@@ -340,11 +340,11 @@
 
 	.filter-item {
 		&:hover {
-			border-color: @darktheme-info-font-color;
+			border-color: @darkmode-info-font-color;
 		}
 
 		&.active {
-			border-color: @darktheme-primary-background-color;
+			border-color: @darkmode-primary-background-color;
 		}
 	}
 
@@ -354,12 +354,12 @@
 
 	.page-container {
 		tr:hover td {
-			background-color: @darktheme-content-background-color;
+			background-color: @darkmode-content-background-color;
 		}
 	}
 
 	.burger i {
-		background-color: @darktheme-primary-font-color;
+		background-color: @darkmode-primary-font-color;
 	}
 
 	/** ----------------------------------------------------------------------------
@@ -369,93 +369,93 @@
 	input,
 	select,
 	textarea {
-		color: @darktheme-primary-font-color;
-		border-color: mix(contrast(@darktheme-content-background-color), @darktheme-content-background-color, 10%);
+		color: @darkmode-primary-font-color;
+		border-color: mix(contrast(@darkmode-content-background-color), @darkmode-content-background-color, 10%);
 
 		&::placeholder {
-			color: mix(@darktheme-primary-font-color, @darktheme-content-background-color, 75%);
+			color: mix(@darkmode-primary-font-color, @darkmode-content-background-color, 75%);
 		}
 
 		&[disabled] {
-			background-color: mix(contrast(@darktheme-content-background-color), @darktheme-content-background-color, 10%);
+			background-color: mix(contrast(@darkmode-content-background-color), @darkmode-content-background-color, 10%);
 		}
 	}
 
 	.disabled label,
 	[disabled] label {
-		color: mix(@darktheme-primary-font-color, @darktheme-content-background-color, 75%);
+		color: mix(@darkmode-primary-font-color, @darkmode-content-background-color, 75%);
 	}
 
 	.-autocomplete-container {
-		background-color: mix(contrast(@darktheme-content-background-color), @darktheme-content-background-color, 10%);
+		background-color: mix(contrast(@darkmode-content-background-color), @darkmode-content-background-color, 10%);
 	}
 
 	.-autocomplete-item.selected {
-		background-color: mix(contrast(@darktheme-content-background-color), @darktheme-content-background-color, 20%);
+		background-color: mix(contrast(@darkmode-content-background-color), @darkmode-content-background-color, 20%);
 	}
 
 	.rc-old input[type="button"],
 	.rc-old input[type="submit"] {
-		color: @darktheme-primary-font-color;
-		border-color: mix(contrast(@darktheme-content-background-color), @darktheme-content-background-color, 10%);
-		background: mix(contrast(@darktheme-content-background-color), @darktheme-content-background-color, 10%);
+		color: @darkmode-primary-font-color;
+		border-color: mix(contrast(@darkmode-content-background-color), @darkmode-content-background-color, 10%);
+		background: mix(contrast(@darkmode-content-background-color), @darkmode-content-background-color, 10%);
 	}
 
 	.toolbar-search__input {
 		&:focus {
-			border-color: fade(@darktheme-primary-background-contrast, 50%);
+			border-color: fade(@darkmode-primary-background-contrast, 50%);
 		}
 	}
 
 	.toolbar-search__buttons i:hover {
-		color: fade(@darktheme-primary-background-contrast, 50%);
+		color: fade(@darkmode-primary-background-contrast, 50%);
 	}
 
 	.input-line {
 		&.setting-changed > label {
-			color: @darktheme-selection-color;
+			color: @darkmode-selection-color;
 		}
 	}
 
 	input:-webkit-autofill {
-		color: @darktheme-primary-font-color !important;
+		color: @darkmode-primary-font-color !important;
 	}
 
 	.input {
 		&.radio {
 			label {
 				&::before {
-					border-color: lighten(@darktheme-secondary-background-contrast, 30%);
-					background-color: @darktheme-content-background-color;
+					border-color: lighten(@darkmode-secondary-background-contrast, 30%);
+					background-color: @darkmode-content-background-color;
 				}
 
 				&::after {
-					background-color: @darktheme-secondary-background-contrast;
+					background-color: @darkmode-secondary-background-contrast;
 				}
 			}
 		}
 
 		&.checkbox.toggle {
 			input:checked + label::before {
-				background-color: @darktheme-secondary-background-contrast;
+				background-color: @darkmode-secondary-background-contrast;
 			}
 
 			input:disabled + label::before {
-				background-color: lighten(@darktheme-secondary-background-contrast, 50%) !important;
+				background-color: lighten(@darkmode-secondary-background-contrast, 50%) !important;
 			}
 
 			label {
 				&::before {
-					background-color: lighten(@darktheme-secondary-background-contrast, 30%);
+					background-color: lighten(@darkmode-secondary-background-contrast, 30%);
 				}
 
 				&::after {
-					background-color: @darktheme-content-background-color;
+					background-color: @darkmode-content-background-color;
 				}
 
 				&:hover {
 					&::before {
-						background-color: lighten(@darktheme-secondary-background-contrast, 20%);
+						background-color: lighten(@darkmode-secondary-background-contrast, 20%);
 					}
 				}
 			}
@@ -470,16 +470,16 @@
 	.flex-tab {
 		a i,
 		a[class^="icon-"] {
-			color: @darktheme-primary-font-color;
+			color: @darkmode-primary-font-color;
 
 			&:hover {
-				color: darken(@darktheme-primary-font-color, 10%);
+				color: darken(@darkmode-primary-font-color, 10%);
 			}
 		}
 	}
 
 	.error {
-		border-color: @darktheme-error-color;
+		border-color: @darkmode-error-color;
 	}
 
 	/** ----------------------------------------------------------------------------
@@ -489,21 +489,21 @@
 	.page-list,
 	.page-settings {
 		a:not(.rc-button) {
-			color: @darktheme-primary-font-color;
+			color: @darkmode-primary-font-color;
 
 			&:hover {
-				color: @darktheme-primary-action-color;
+				color: @darkmode-primary-action-color;
 			}
 		}
 	}
 
 	.new-logs {
-		background: @darktheme-primary-action-contrast;
+		background: @darkmode-primary-action-contrast;
 	}
 
 	.avatar-suggestion-item {
 		.question-mark::before {
-			color: @darktheme-secondary-font-color;
+			color: @darkmode-secondary-font-color;
 		}
 	}
 
@@ -514,18 +514,18 @@
 	.full-page,
 	.page-loading {
 		a {
-			color: @darktheme-tertiary-font-color;
+			color: @darkmode-tertiary-font-color;
 		}
 
 		a:hover {
-			color: @darktheme-primary-background-contrast;
+			color: @darkmode-primary-background-contrast;
 		}
 	}
 
 	#login-card {
 		.input-text {
 			input:-webkit-autofill {
-				box-shadow: 0 0 0 20px @darktheme-content-background-color inset;
+				box-shadow: 0 0 0 20px @darkmode-content-background-color inset;
 			}
 		}
 	}
@@ -535,39 +535,39 @@
 	 */
 
 	.toggle-favorite {
-		color: @darktheme-component-color;
+		color: @darkmode-component-color;
 	}
 
 	.upload-progress-progress {
-		background-color: @darktheme-success-background;
+		background-color: @darkmode-success-background;
 	}
 
 	.messages-container {
 		.edit-room-title {
-			color: @darktheme-secondary-font-color;
+			color: @darkmode-secondary-font-color;
 
 			&:hover {
-				color: @darktheme-primary-font-color;
+				color: @darkmode-primary-font-color;
 			}
 		}
 
 		.footer {
-			background: @darktheme-content-background-color;
+			background: @darkmode-content-background-color;
 		}
 	}
 
 	.message-form {
 		.message-buttons {
-			.buttonColors(lighten(@darktheme-primary-font-color, 25%), @darktheme-secondary-background-color);
+			.buttonColors(lighten(@darkmode-primary-font-color, 25%), @darkmode-secondary-background-color);
 
 			&:hover {
-				background-color: mix(@darktheme-secondary-background-color, contrast(@darktheme-primary-font-color), 20%);
+				background-color: mix(@darkmode-secondary-background-color, contrast(@darkmode-primary-font-color), 20%);
 			}
 		}
 
 		.message-form-text {
 			&.editing {
-				background-color: lighten(@darktheme-pending-color, 40%);
+				background-color: lighten(@darkmode-pending-color, 40%);
 			}
 		}
 	}
@@ -579,15 +579,15 @@
 	.rc-old {
 		& .popup-item {
 			&.selected {
-				color: @darktheme-primary-action-contrast;
-				background-color: @darktheme-primary-action-color;
+				color: @darkmode-primary-action-contrast;
+				background-color: @darkmode-primary-action-color;
 			}
 		}
 	}
 
 	.messages-box {
 		&.selectable .selected {
-			background-color: @darktheme-selection-background;
+			background-color: @darkmode-selection-background;
 		}
 	}
 
@@ -597,7 +597,7 @@
 
 	.message {
 		&.new-day::before {
-			background-color: @darktheme-content-background-color;
+			background-color: @darkmode-content-background-color;
 		}
 
 		&.new-day::after {
@@ -606,38 +606,38 @@
 
 		.message-dropdown,
 		.options-menu {
-			color: lighten(@darktheme-primary-font-color, 13%);
+			color: lighten(@darkmode-primary-font-color, 13%);
 
 			ul li:hover {
-				background-color: @darktheme-tertiary-background-color;
+				background-color: @darkmode-tertiary-background-color;
 			}
 		}
 
 		.is-bot,
 		.role-tag {
-			color: contrast(@darktheme-info-font-color);
+			color: contrast(@darkmode-info-font-color);
 		}
 
 		a {
-			color: @darktheme-link-font-color;
+			color: @darkmode-link-font-color;
 
 			&:hover {
-				color: darken(@darktheme-link-font-color, 10%);
+				color: darken(@darkmode-link-font-color, 10%);
 			}
 		}
 
 		.mention-link {
 			&.mention-link-me {
-				color: @darktheme-primary-action-contrast;
+				color: @darkmode-primary-action-contrast;
 			}
 
 			&.mention-link-all {
-				color: @darktheme-primary-action-contrast;
+				color: @darkmode-primary-action-contrast;
 			}
 		}
 
 		.highlight-text {
-			background-color: @darktheme-selection-background;
+			background-color: @darkmode-selection-background;
 		}
 	}
 
@@ -647,44 +647,44 @@
 	.side-nav {
 		.arrow::before,
 		.arrow::after {
-			background-color: @darktheme-tertiary-font-color;
+			background-color: @darkmode-tertiary-font-color;
 		}
 
 		.has-alert .name {
-			color: @darktheme-primary-background-contrast;
+			color: @darkmode-primary-background-contrast;
 		}
 
 		.unread {
-			color: @darktheme-success-color;
-			border: 1px solid @darktheme-success-color;
+			color: @darkmode-success-color;
+			border: 1px solid @darkmode-success-color;
 		}
 
 		.unread.unread-mention {
-			color: contrast(@darktheme-success-color, #000000, #ffffff, 50%);
-			background-color: @darktheme-success-color;
+			color: contrast(@darkmode-success-color, #000000, #ffffff, 50%);
+			background-color: @darkmode-success-color;
 		}
 
 		.button {
-			.buttonColors(@darktheme-tertiary-font-color, mix(@darktheme-primary-action-color, @darktheme-primary-background-color));
+			.buttonColors(@darkmode-tertiary-font-color, mix(@darkmode-primary-action-color, @darkmode-primary-background-color));
 		}
 
 		.options button {
-			.buttonColors(@darktheme-tertiary-font-color, @darktheme-primary-background-color);
+			.buttonColors(@darkmode-tertiary-font-color, @darkmode-primary-background-color);
 		}
 	}
 
 	.sidebar-item__last-message {
 		a:not(.mention-link) {
-			color: @darktheme-link-font-color;
+			color: @darkmode-link-font-color;
 
 			&:hover {
-				color: darken(@darktheme-link-font-color, 10%);
+				color: darken(@darkmode-link-font-color, 10%);
 			}
 		}
 	}
 
 	.message-popup.search-results-list {
-		background-color: lighten(@darktheme-primary-background-color, 2.5%);
+		background-color: lighten(@darkmode-primary-background-color, 2.5%);
 	}
 
 	.rc-member-list__counter {
@@ -708,13 +708,13 @@
 		.channel-settings {
 			.buttons {
 				.button {
-					.buttonColors(lighten(@darktheme-primary-font-color, 25%), @darktheme-secondary-background-color);
+					.buttonColors(lighten(@darkmode-primary-font-color, 25%), @darkmode-secondary-background-color);
 				}
 			}
 
 			.input.checkbox.toggle {
 				input:checked + label::before {
-					background-color: @darktheme-primary-background-color;
+					background-color: @darkmode-primary-background-color;
 				}
 			}
 		}
@@ -723,18 +723,18 @@
 	.flex-tab-bar {
 		.tab-button {
 			&:hover {
-				background-color: @darktheme-secondary-background-color;
+				background-color: @darkmode-secondary-background-color;
 			}
 
 			&.active {
-				border-right-color: @darktheme-selection-color;
-				background-color: @darktheme-secondary-background-color;
+				border-right-color: @darkmode-selection-color;
+				background-color: @darkmode-secondary-background-color;
 			}
 		}
 
 		.counter {
 			color: #111111;
-			background: @darktheme-secondary-font-color;
+			background: @darkmode-secondary-font-color;
 		}
 	}
 
@@ -742,11 +742,11 @@
 	 * User status / user meta
 	 */
 	i.status-online {
-		color: @darktheme-status-online;
+		color: @darkmode-status-online;
 	}
 
 	.status-bg-online {
-		background-color: @darktheme-status-online;
+		background-color: @darkmode-status-online;
 	}
 
 	.account-box .status-online .thumb::after,
@@ -754,16 +754,16 @@
 	.popup-user-status-online,
 	.status-online::after,
 	.user-image.status-online .avatar::after {
-		border-color: darken(@darktheme-status-online, 10%);
-		background-color: @darktheme-status-online;
+		border-color: darken(@darkmode-status-online, 10%);
+		background-color: @darkmode-status-online;
 	}
 
 	i.status-away {
-		color: @darktheme-status-away;
+		color: @darkmode-status-away;
 	}
 
 	.status-bg-away {
-		background-color: @darktheme-status-away;
+		background-color: @darkmode-status-away;
 	}
 
 	.account-box .status-away .thumb::after,
@@ -772,16 +772,16 @@
 	.status-away::after,
 	.status-pending::after,
 	.user-image.status-away .avatar::after {
-		border-color: darken(@darktheme-status-away, 10%);
-		background-color: @darktheme-status-away;
+		border-color: darken(@darkmode-status-away, 10%);
+		background-color: @darkmode-status-away;
 	}
 
 	i.status-busy {
-		color: @darktheme-status-busy;
+		color: @darkmode-status-busy;
 	}
 
 	.status-bg-busy {
-		background-color: @darktheme-status-busy;
+		background-color: @darkmode-status-busy;
 	}
 
 	.account-box .status-busy .thumb::after,
@@ -789,66 +789,66 @@
 	.popup-user-status-busy,
 	.status-busy::after,
 	.user-image.status-busy .avatar::after {
-		border-color: darken(@darktheme-status-busy, 10%);
-		background-color: @darktheme-status-busy;
+		border-color: darken(@darkmode-status-busy, 10%);
+		background-color: @darkmode-status-busy;
 	}
 
 	i.status-offline {
-		color: @darktheme-status-offline;
+		color: @darkmode-status-offline;
 	}
 
 	.status-bg-offline {
-		background-color: @darktheme-status-offline;
+		background-color: @darkmode-status-offline;
 	}
 
 	.popup-user-status-offline,
 	.status-offline::after,
 	.user-image.status-offline .avatar::after {
-		border-color: darken(@darktheme-status-offline, 10%);
-		background-color: @darktheme-status-offline;
+		border-color: darken(@darkmode-status-offline, 10%);
+		background-color: @darkmode-status-offline;
 	}
 
 	/** ----------------------------------------------------------------------------
 	 * Buttons!
 	 */
 	.actionLinks li .action-link {
-		.buttonColors(@darktheme-primary-action-contrast, @darktheme-primary-action-color);
+		.buttonColors(@darkmode-primary-action-contrast, @darkmode-primary-action-color);
 	}
 
 	// new layout buttons
 
 	.button {
-		.buttonColors(@darktheme-default-action-contrast, @darktheme-default-action-color);
+		.buttonColors(@darkmode-default-action-contrast, @darkmode-default-action-color);
 
 		&.primary {
-			.buttonColors(@darktheme-primary-action-contrast, @darktheme-primary-action-color);
+			.buttonColors(@darkmode-primary-action-contrast, @darkmode-primary-action-color);
 
 			&[disabled] {
-				background-color: lighten(desaturate(@darktheme-primary-action-color, 50%), 30%);
+				background-color: lighten(desaturate(@darkmode-primary-action-color, 50%), 30%);
 			}
 		}
 
 		&.secondary {
-			.buttonColors(@darktheme-secondary-action-contrast, @darktheme-secondary-action-color);
+			.buttonColors(@darkmode-secondary-action-contrast, @darkmode-secondary-action-color);
 
 			&[disabled] {
-				background-color: lighten(desaturate(@darktheme-secondary-action-color, 50%), 30%);
+				background-color: lighten(desaturate(@darkmode-secondary-action-color, 50%), 30%);
 			}
 		}
 
 		&.tertiary {
-			.buttonColors(@darktheme-primary-action-contrast, @darktheme-selection-color);
+			.buttonColors(@darkmode-primary-action-contrast, @darkmode-selection-color);
 
 			&[disabled] {
-				background-color: lighten(desaturate(@darktheme-selection-color, 50%), 30%);
+				background-color: lighten(desaturate(@darkmode-selection-color, 50%), 30%);
 			}
 		}
 
 		&.danger {
-			.buttonColors(@darktheme-error-contrast, @darktheme-error-color);
+			.buttonColors(@darkmode-error-contrast, @darkmode-error-color);
 
 			&[disabled] {
-				background-color: lighten(desaturate(@darktheme-error-color, 50%), 30%);
+				background-color: lighten(desaturate(@darkmode-error-color, 50%), 30%);
 			}
 		}
 	}
@@ -858,20 +858,20 @@
 	 */
 
 	.alert-warning {
-		color: darken(@darktheme-pending-color, 25%);
-		background-color: @darktheme-pending-background;
+		color: darken(@darkmode-pending-color, 25%);
+		background-color: @darkmode-pending-background;
 	}
 
 	.alert-link {
-		color: @darktheme-link-font-color;
+		color: @darkmode-link-font-color;
 
 		&:hover {
-			color: darken(@darktheme-link-font-color, 10%);
+			color: darken(@darkmode-link-font-color, 10%);
 		}
 	}
 
 	label.required::after {
-		color: @darktheme-error-color;
+		color: @darkmode-error-color;
 	}
 
 	/** ----------------------------------------------------------------------------
@@ -881,17 +881,17 @@
 	.main-content,
 	.flex-tab {
 		.loading-animation > .bounce {
-			background-color: @darktheme-primary-font-color;
+			background-color: @darkmode-primary-font-color;
 		}
 	}
 
 	.loading-animation.loading-animation--primary > .bounce {
-		background-color: @darktheme-primary-font-color;
+		background-color: @darkmode-primary-font-color;
 	}
 
 	@keyframes blink {
 		from {
-			color: @darktheme-selection-color;
+			color: @darkmode-selection-color;
 		}
 
 		to {
@@ -904,52 +904,52 @@
 	 */
 
 	.range-slider-range::-webkit-slider-thumb {
-		background-color: @darktheme-primary-background-color;
+		background-color: @darkmode-primary-background-color;
 	}
 
 	.range-slider-range::-webkit-slider-thumb:hover {
-		background-color: darken(@darktheme-success-color, 30%);
+		background-color: darken(@darkmode-success-color, 30%);
 	}
 
 	.range-slider-range:active::-webkit-slider-thumb {
-		background-color: darken(@darktheme-success-color, 10%);
+		background-color: darken(@darkmode-success-color, 10%);
 	}
 
 	.range-slider-range::-moz-range-thumb {
-		background-color: @darktheme-primary-background-color;
+		background-color: @darkmode-primary-background-color;
 	}
 
 	.range-slider-range::-moz-range-thumb:hover {
-		background-color: darken(@darktheme-success-color, 30%);
+		background-color: darken(@darkmode-success-color, 30%);
 	}
 
 	.range-slider-range:active::-moz-range-thumb {
-		background-color: darken(@darktheme-success-color, 10%);
+		background-color: darken(@darkmode-success-color, 10%);
 	}
 
 	.range-slider-value {
-		color: lighten(@darktheme-tertiary-background-color, 50%);
-		background-color: @darktheme-primary-background-color;
+		color: lighten(@darkmode-tertiary-background-color, 50%);
+		background-color: @darkmode-primary-background-color;
 	}
 
 	.range-slider-value::after {
-		border-right-color: @darktheme-primary-background-color;
+		border-right-color: @darkmode-primary-background-color;
 	}
 
 	.range-slider-range::-moz-range-track {
-		background-color: @darktheme-tertiary-background-color;
+		background-color: @darkmode-tertiary-background-color;
 	}
 
 	.announcement {
-		border-color: @darktheme-primary-action-color;
-		background-color: @darktheme-primary-background-color;
+		border-color: @darkmode-primary-action-color;
+		background-color: @darkmode-primary-background-color;
 
 		&.warning {
-			background-color: var(--rc-color-darktheme-alert);
+			background-color: var(--rc-color-darkmode-alert);
 		}
 
 		&.error {
-			background-color: var(--rc-color-darktheme-alert-message-warning);
+			background-color: var(--rc-color-darkmode-alert-message-warning);
 		}
 	}
 }

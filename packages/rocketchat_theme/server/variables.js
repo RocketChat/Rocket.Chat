@@ -20,8 +20,8 @@ const colors = [...Assets.getText('client/imports/general/variables.css').match(
 
 colors.forEach(([key, color]) => 	{
 	let category = 'Colors';
-	if (/darktheme/.test(key)) {
-		category = 'Colors (dark theme)';
+	if (/darkmode/.test(key)) {
+		category = 'Colors (dark mode)';
 	}
 
 	if (/var/.test(color)) {
@@ -60,34 +60,34 @@ const minorColors = {
 	'status-offline': '@transparent-darker',
 };
 
-// Dark theme
+// Dark mode
 const majorDarkColors = {
-	'darktheme-content-background-color': '#1E1E1E',
-	'darktheme-primary-background-color': '#224D79',
-	'darktheme-primary-font-color': '#CCCCCC',
-	'darktheme-primary-action-color': '#13679A', // was action-buttons-color
-	'darktheme-secondary-background-color': '#323232',
-	'darktheme-secondary-font-color': '#606060',
-	'darktheme-secondary-action-color': '#222222',
-	'darktheme-component-color': '#1F1F1F',
-	'darktheme-success-color': '#0CAC0C',
-	'darktheme-pending-color': '#FCB316',
-	'darktheme-error-color': '#BC2031',
-	'darktheme-selection-color': '#066C92',
-	'darktheme-attention-color': '#913CA0',
+	'darkmode-content-background-color': '#1E1E1E',
+	'darkmode-primary-background-color': '#224D79',
+	'darkmode-primary-font-color': '#CCCCCC',
+	'darkmode-primary-action-color': '#13679A', // was action-buttons-color
+	'darkmode-secondary-background-color': '#323232',
+	'darkmode-secondary-font-color': '#606060',
+	'darkmode-secondary-action-color': '#222222',
+	'darkmode-component-color': '#1F1F1F',
+	'darkmode-success-color': '#0CAC0C',
+	'darkmode-pending-color': '#FCB316',
+	'darkmode-error-color': '#BC2031',
+	'darkmode-selection-color': '#066C92',
+	'darkmode-attention-color': '#913CA0',
 };
 
 // Minor colours implement major colours by default, but can be overruled
 const minorDarkColors = {
-	'darktheme-tertiary-background-color': '@darktheme-component-color',
-	'darktheme-tertiary-font-color': '@transparent-lightest',
-	'darktheme-link-font-color': '@darktheme-primary-action-color',
-	'darktheme-info-font-color': '@darktheme-secondary-font-color',
-	'darktheme-custom-scrollbar-color': '@transparent-darker',
-	'darktheme-status-online': '@darktheme-success-color',
-	'darktheme-status-away': '@darktheme-pending-color',
-	'darktheme-status-busy': '@darktheme-error-color',
-	'darktheme-status-offline': '@transparent-darker',
+	'darkmode-tertiary-background-color': '@darkmode-component-color',
+	'darkmode-tertiary-font-color': '@transparent-lightest',
+	'darkmode-link-font-color': '@darkmode-primary-action-color',
+	'darkmode-info-font-color': '@darkmode-secondary-font-color',
+	'darkmode-custom-scrollbar-color': '@transparent-darker',
+	'darkmode-status-online': '@darkmode-success-color',
+	'darkmode-status-away': '@darkmode-pending-color',
+	'darkmode-status-busy': '@darkmode-error-color',
+	'darkmode-status-offline': '@transparent-darker',
 };
 
 // Bulk-add settings for color scheme
@@ -103,12 +103,12 @@ Object.keys(minorColors).forEach((key) => {
 
 Object.keys(majorDarkColors).forEach((key) => {
 	const value = majorDarkColors[key];
-	RocketChat.theme.addPublicColor(key, value, 'Old Colors (dark theme)');
+	RocketChat.theme.addPublicColor(key, value, 'Old Colors (dark mode)');
 });
 
 Object.keys(minorDarkColors).forEach((key) => {
 	const value = minorDarkColors[key];
-	RocketChat.theme.addPublicColor(key, value, 'Old Colors (dark theme, minor)', 'expression');
+	RocketChat.theme.addPublicColor(key, value, 'Old Colors (dark mode, minor)', 'expression');
 });
 
 RocketChat.theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Helvetica Neue\', \'Apple Color Emoji\', \'Segoe UI Emoji\', \'Segoe UI Symbol\', \'Meiryo UI\', Arial, sans-serif');

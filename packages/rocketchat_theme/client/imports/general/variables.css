@@ -38,28 +38,28 @@
 	/*
 	* Dark versions
 	*/
-	--rc-color-darktheme-error: #cc243a;
-	--rc-color-darktheme-error-light: #a6303f;
-	--rc-color-darktheme-alert: #e8be19;
-	--rc-color-darktheme-alert-light: #ceab20;
-	--rc-color-darktheme-success: #20ce41;
-	--rc-color-darktheme-success-light: #0fa224;
-	--rc-color-darktheme-button-primary: #1d74f5;
-	--rc-color-darktheme-button-primary-light: #175cc4;
-	--rc-color-darktheme-alert-message-primary: var(--rc-color-darktheme-button-primary);
-	--rc-color-darktheme-alert-message-primary-background: #2e2f30;
-	--rc-color-darktheme-alert-message-secondary: #556f22;
-	--rc-color-darktheme-alert-message-secondary-background: #272825;
-	--rc-color-darktheme-alert-message-warning: #d52d24;
-	--rc-color-darktheme-alert-message-warning-background: #341818;
-	--rc-color-darktheme-primary: #1a1a1a;
-	--rc-color-darktheme-primary-darkest: #060606;
-	--rc-color-darktheme-primary-dark: #151515;
-	--rc-color-darktheme-primary-light: #242424;
-	--rc-color-darktheme-primary-light-medium: #282828;
-	--rc-color-darktheme-primary-lightest: #3d3d3d;
-	--rc-color-darktheme-content: #cccccc;
-	--rc-color-darktheme-link-active: var(--rc-color-darktheme-button-primary);
+	--rc-color-darkmode-error: #cc243a;
+	--rc-color-darkmode-error-light: #a6303f;
+	--rc-color-darkmode-alert: #e8be19;
+	--rc-color-darkmode-alert-light: #ceab20;
+	--rc-color-darkmode-success: #20ce41;
+	--rc-color-darkmode-success-light: #0fa224;
+	--rc-color-darkmode-button-primary: #1d74f5;
+	--rc-color-darkmode-button-primary-light: #175cc4;
+	--rc-color-darkmode-alert-message-primary: var(--rc-color-darkmode-button-primary);
+	--rc-color-darkmode-alert-message-primary-background: #2e2f30;
+	--rc-color-darkmode-alert-message-secondary: #556f22;
+	--rc-color-darkmode-alert-message-secondary-background: #272825;
+	--rc-color-darkmode-alert-message-warning: #d52d24;
+	--rc-color-darkmode-alert-message-warning-background: #341818;
+	--rc-color-darkmode-primary: #1a1a1a;
+	--rc-color-darkmode-primary-darkest: #060606;
+	--rc-color-darkmode-primary-dark: #151515;
+	--rc-color-darkmode-primary-light: #242424;
+	--rc-color-darkmode-primary-light-medium: #282828;
+	--rc-color-darkmode-primary-lightest: #3d3d3d;
+	--rc-color-darkmode-content: #cccccc;
+	--rc-color-darkmode-link-active: var(--rc-color-darkmode-button-primary);
 
 	/*
 	* General
@@ -355,34 +355,33 @@
 }
 
 /*
-* Dark theme overrides
+* Dark mode overrides
 */
 
-#rocket-chat.dark-theme {
-	--rc-color-error: --rc-color-darktheme-error;
-	--rc-color-error-light: --rc-color-darktheme-error-light;
-	--rc-color-alert: --rc-color-darktheme-alert;
-	--rc-color-alert-light: --rc-color-darktheme-alert-light;
-	--rc-color-success: --rc-color-darktheme-success;
-	--rc-color-success-light: --rc-color-darktheme-success-light;
-	--rc-color-button-primary: --rc-color-darktheme-button-primary;
-	--rc-color-button-primary-light: --rc-color-darktheme-button-primary-light;
-	--rc-color-alert-message-primary: --rc-color-darktheme-alert-message-primary;
-	--rc-color-alert-message-primary-background: --rc-color-darktheme-alert-message-primary-background;
-	--rc-color-alert-message-secondary: --rc-color-darktheme-alert-message-secondary;
-	--rc-color-alert-message-secondary-background: --rc-color-darktheme-alert-message-secondary-background;
-	--rc-color-alert-message-warning: --rc-color-darktheme-alert-message-warning;
-	--rc-color-alert-message-warning-background: --rc-color-darktheme-alert-message-warning-background;
-	--rc-color-primary: --rc-color-darktheme-primary;
-	--rc-color-primary-darkest: --rc-color-darktheme-primary-darkest;
-	--rc-color-primary-dark: --rc-color-darktheme-primary-dark;
-	--rc-color-primary-light: --rc-color-darktheme-primary-light;
-	--rc-color-primary-light-medium: --rc-color-darktheme-primary-light-medium;
-	--rc-color-primary-lightest: --rc-color-darktheme-primary-lightest;
-	--rc-color-content: --rc-color-darktheme-content;
-	--rc-color-link-active: --rc-color-darktheme-link-active;
-
-	--rc-color-alert-message-primary: var(--rc-color-darktheme-button-primary);
+#rocket-chat.darkmode {
+	--rc-color-error: --rc-color-darkmode-error;
+	--rc-color-error-light: --rc-color-darkmode-error-light;
+	--rc-color-alert: --rc-color-darkmode-alert;
+	--rc-color-alert-light: --rc-color-darkmode-alert-light;
+	--rc-color-success: --rc-color-darkmode-success;
+	--rc-color-success-light: --rc-color-darkmode-success-light;
+	--rc-color-button-primary: --rc-color-darkmode-button-primary;
+	--rc-color-button-primary-light: --rc-color-darkmode-button-primary-light;
+	--rc-color-alert-message-primary: --rc-color-darkmode-alert-message-primary;
+	--rc-color-alert-message-primary-background: --rc-color-darkmode-alert-message-primary-background;
+	--rc-color-alert-message-secondary: --rc-color-darkmode-alert-message-secondary;
+	--rc-color-alert-message-secondary-background: --rc-color-darkmode-alert-message-secondary-background;
+	--rc-color-alert-message-warning: --rc-color-darkmode-alert-message-warning;
+	--rc-color-alert-message-warning-background: --rc-color-darkmode-alert-message-warning-background;
+	--rc-color-primary: --rc-color-darkmode-primary;
+	--rc-color-primary-darkest: --rc-color-darkmode-primary-darkest;
+	--rc-color-primary-dark: --rc-color-darkmode-primary-dark;
+	--rc-color-primary-light: --rc-color-darkmode-primary-light;
+	--rc-color-primary-light-medium: --rc-color-darkmode-primary-light-medium;
+	--rc-color-primary-lightest: --rc-color-darkmode-primary-lightest;
+	--rc-color-content: --rc-color-darkmode-content;
+	--rc-color-link-active: --rc-color-darkmode-link-active;
+	--rc-color-alert-message-primary: var(--rc-color-darkmode-button-primary);
 	--rc-color-alert-message-primary-background: #282f3d;
 	--rc-color-alert-message-secondary: #7ca52b;
 	--rc-color-alert-message-secondary-background: #2f4011;
@@ -392,20 +391,20 @@
 	/*
 	* General
 	*/
-	--status-online: var(--rc-color-darktheme-success);
-	--status-away: var(--rc-color-darktheme-alert);
-	--status-busy: var(--rc-color-darktheme-error);
+	--status-online: var(--rc-color-darkmode-success);
+	--status-away: var(--rc-color-darkmode-alert);
+	--status-busy: var(--rc-color-darkmode-error);
 	--status-invisible: var(--color-gray-medium);
-	--status-invisible-sidebar: var(--rc-color-darktheme-primary-darkest);
+	--status-invisible-sidebar: var(--rc-color-darkmode-primary-darkest);
 
 	/*
 	* Forms - Button
 	*/
 	--button-disabled-background: #060606;
 	--button-disabled-text-color: #555555;
-	--button-primary-background: var(--rc-color-darktheme-button-primary);
+	--button-primary-background: var(--rc-color-darkmode-button-primary);
 	--button-primary-text-color: var(--color-white);
-	--button-cancel-color: var(--rc-color-darktheme-error);
+	--button-cancel-color: var(--rc-color-darkmode-error);
 	--button-secondary-background: #323232;
 	--button-secondary-text-color: var(--color-dark-medium);
 
@@ -418,7 +417,7 @@
 	--input-icon-color: #444444;
 	--input-border-color: #444444;
 	--input-description-text-color: #666666;
-	--input-error-color: var(--rc-color-darktheme-error);
+	--input-error-color: var(--rc-color-darkmode-error);
 
 	/*
 	* Forms - popup list
@@ -444,10 +443,10 @@
 	/*
 	* Sidebar
 	*/
-	--sidebar-background: var(--rc-color-darktheme-primary);
-	--sidebar-background-hover: var(--rc-color-darktheme-primary-dark);
-	--sidebar-background-light: var(--rc-color-darktheme-primary-lightest);
-	--sidebar-background-light-hover: var(--rc-color-darktheme-primary-light);
+	--sidebar-background: var(--rc-color-darkmode-primary);
+	--sidebar-background-hover: var(--rc-color-darkmode-primary-dark);
+	--sidebar-background-light: var(--rc-color-darkmode-primary-lightest);
+	--sidebar-background-light-hover: var(--rc-color-darkmode-primary-light);
 
 	/*
 	* Sidebar flex
@@ -466,8 +465,8 @@
 	* Sidebar Item
 	*/
 	--sidebar-item-text-color: var(--color-gray);
-	--sidebar-item-hover-background: var(--rc-color-darktheme-primary-darkest);
-	--sidebar-item-active-background: var(--rc-color-darktheme-primary-dark);
+	--sidebar-item-hover-background: var(--rc-color-darkmode-primary-darkest);
+	--sidebar-item-active-background: var(--rc-color-darkmode-primary-dark);
 	--sidebar-item-active-color: var(--sidebar-item-text-color);
 	--sidebar-item-unread-color: var(--color-white);
 	--sidebar-item-popup-background: #555555;
@@ -503,8 +502,8 @@
 	* Badge
 	*/
 	--badge-text-color: var(--color-white);
-	--badge-background: var(--rc-color-darktheme-primary-dark);
-	--badge-unread-background: var(--rc-color-darktheme-button-primary);
+	--badge-background: var(--rc-color-darkmode-primary-dark);
+	--badge-unread-background: var(--rc-color-darkmode-button-primary);
 
 	/*
 	* Message box
@@ -522,7 +521,7 @@
 	* Header
 	*/
 	--header-toggle-favorite-color: #444444;
-	--header-toggle-favorite-star-color: var(--rc-color-darktheme-alert-light);
+	--header-toggle-favorite-star-color: var(--rc-color-darkmode-alert-light);
 	--header-title-username-color-darker: #cccccc;
 	--header-title-status-color: var(--color-gray);
 	--header-background-color: #222222;
