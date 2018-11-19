@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { UiTextContext } from 'meteor/rocketchat:lib';
 import { Template } from 'meteor/templating';
 import { rooms } from './roomsHelpers';
+import { attachEvents } from './channelSwitchHotkey';
 
 Template.roomList.helpers({
 	rooms,
@@ -35,6 +36,10 @@ Template.roomList.helpers({
 	showRoomCounter() {
 		return RocketChat.getUserPreference(Meteor.userId(), 'roomCounterSidebar');
 	},
+});
+
+Template.roomList.onCreated(function() {
+	attachEvents();
 });
 
 const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
