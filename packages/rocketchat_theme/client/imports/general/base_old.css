@@ -3133,7 +3133,7 @@ rc-old select,
 			border-width: 1px;
 
 			border-radius: 4px;
-			background: #ffffff;
+			background-color: var(--rc-color-content);
 		}
 	}
 
