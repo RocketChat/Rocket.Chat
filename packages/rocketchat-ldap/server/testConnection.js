@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import LDAP from './ldap';
 
 Meteor.methods({

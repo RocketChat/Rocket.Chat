@@ -1,3 +1,5 @@
+import { Match } from 'meteor/check';
+
 class ModelSubscriptions extends RocketChat.models._Base {
 	constructor(...args) {
 		super(...args);

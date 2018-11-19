@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 Template.table.onRendered(function() {

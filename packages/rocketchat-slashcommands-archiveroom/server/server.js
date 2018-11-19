@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+
 function Archive(command, params, item) {
 	if (command !== 'archive' || !Match.test(params, String)) {
 		return;

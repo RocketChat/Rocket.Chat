@@ -1,4 +1,6 @@
 /* eslint new-cap: 0 */
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {

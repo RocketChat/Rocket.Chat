@@ -435,9 +435,9 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	resetLastMessageById(_id) {
+	resetLastMessageById(_id, messageId) {
 		const query = { _id };
-		const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id);
+		const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
 		const update = lastMessage ? {
 			$set: {

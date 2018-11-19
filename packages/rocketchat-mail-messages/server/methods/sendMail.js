@@ -1,4 +1,6 @@
 /* globals Mailer */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {
 		const userId = Meteor.userId();

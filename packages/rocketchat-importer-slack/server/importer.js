@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import {
 	Base,
 	ProgressStep,
@@ -5,6 +7,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
+import { RocketChatFile } from 'meteor/rocketchat:file';
 
 import _ from 'underscore';
 
@@ -304,6 +307,13 @@ export class SlackImporter extends Base {
 								}
 
 								if (message.type === 'message') {
+									if (message.files && message.files[0].url_private_download !== undefined) {
+										const msgObj = {
+											...msgDataDefaults,
+											msg: this.convertSlackMessageToRocketChat(message.files[0].url_private_download),
+										};
+										RocketChat.sendMessage(this.getRocketUser(message.user), msgObj, room, true);
+									}
 									if (message.subtype) {
 										if (message.subtype === 'channel_join') {
 											if (this.getRocketUser(message.user)) {

@@ -1,4 +1,6 @@
 /* global Cookies */
+import { WebApp } from 'meteor/webapp';
+
 WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 	let rawCookies;
 	let token;

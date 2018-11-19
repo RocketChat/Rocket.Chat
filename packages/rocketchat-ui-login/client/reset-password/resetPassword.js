@@ -1,4 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
+
 Template.resetPassword.helpers({
 	requirePasswordChange() {
 		const user = Meteor.user();

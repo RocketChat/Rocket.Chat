@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.loginHeader.helpers({
 	logoUrl() {
 		const asset = RocketChat.settings.get('Assets_logo');

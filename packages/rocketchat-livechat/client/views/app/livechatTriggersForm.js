@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
+
 Template.livechatTriggersForm.helpers({
 	name() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+
 Meteor.startup(() => {
 	RocketChat.roomTypes.setRoomFind('l', (_id) => RocketChat.models.Rooms.findLivechatById(_id).fetch());
 

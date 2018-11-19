@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export default async function handleUserRegistered(args) {
 	// Check if there is an user with the given username
 	let user = RocketChat.models.Users.findOne({

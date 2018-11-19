@@ -1,5 +1,8 @@
 /* globals slugify, SyncedCron */
 
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChatFile } from 'meteor/rocketchat:file';
 import _ from 'underscore';
 import LDAP from './ldap';
 

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	deleteOAuthApp(applicationId) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-oauth-apps')) {

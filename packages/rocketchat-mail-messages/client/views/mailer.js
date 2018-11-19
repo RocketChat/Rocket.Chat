@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
+
 Template.mailer.helpers({
 	fromEmail() {
 		return RocketChat.settings.get('From_Email');

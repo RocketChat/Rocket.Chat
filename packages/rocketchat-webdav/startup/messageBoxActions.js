@@ -1,4 +1,7 @@
 /* globals modal, RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',
 	icon: 'plus',
@@ -12,6 +15,7 @@ RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 			showFooter: false,
 			closeOnCancel: true,
 			html: true,
+			confirmOnEnter: false,
 		});
 	},
 });
@@ -47,6 +51,7 @@ Meteor.startup(function() {
 						showConfirmButton: false,
 						closeOnCancel: true,
 						html: true,
+						confirmOnEnter: false,
 					});
 				},
 			});

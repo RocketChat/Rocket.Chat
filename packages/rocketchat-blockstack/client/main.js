@@ -2,9 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { check, Match } from 'meteor/check';
 import { Session } from 'meteor/session';
-
 import './routes';
-import { redirectToSignIn, signUserOut } from 'blockstack';
 
 const handleError = (error) => error && Session.set('errorMessage', error.reason || 'Unknown error');
 
@@ -29,7 +27,8 @@ Meteor.loginWithBlockstack = (options, callback = handleError) => {
 			manifestURI: String,
 		}));
 
-		return redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes);
+		import('blockstack/dist/blockstack').then(({ redirectToSignIn }) =>
+			redirectToSignIn(options.redirectURI, options.manifestURI, options.scopes));
 	} catch (err) {
 		callback.call(Meteor, err);
 	}
@@ -45,7 +44,8 @@ Meteor.logout = (...args) => {
 
 	if (serviceConfig && blockstackAuth) {
 		Session.delete('blockstack_auth');
-		signUserOut(window.location.href);
+		import('blockstack/dist/blockstack').then(({ signUserOut }) =>
+			signUserOut(window.location.href));
 	}
 
 	return meteorLogout(...args);

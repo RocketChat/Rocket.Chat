@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import {
 	Base,
 	ProgressStep,
@@ -5,6 +7,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
+import { RocketChatFile } from 'meteor/rocketchat:file';
 
 export class CsvImporter extends Base {
 	constructor(info) {
