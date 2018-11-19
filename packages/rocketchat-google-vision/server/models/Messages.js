@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Messages.setGoogleVisionData = function(messageId, visionData) {
 	const updateObj = {};
 	for (const index in visionData) {

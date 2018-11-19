@@ -7,7 +7,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
-
+import { RocketChatFile } from 'meteor/rocketchat:file';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
