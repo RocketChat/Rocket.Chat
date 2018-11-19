@@ -218,14 +218,15 @@
 	-webkit-overflow-scrolling: touch;
 
 	&::-webkit-scrollbar {
-		height: 8px;
 		width: 8px;
+		height: 8px;
+
 		background: @transparent-dark;
 	}
 
 	&::-webkit-scrollbar-thumb {
+		border-radius: 50px;
 		background-color: @custom-scrollbar-color;
-		-webkit-border-radius: 50px;
 	}
 
 	&::-webkit-scrollbar-corner {
@@ -265,9 +266,9 @@ input,
 select,
 textarea {
 	color: @primary-font-color;
-	background-color: transparent;
-	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
 	border-style: solid;
+	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+	background-color: transparent;
 
 	&::placeholder {
 		color: mix(@primary-font-color, @content-background-color, 75%);
@@ -294,8 +295,8 @@ textarea {
 .rc-old input[type="button"],
 .rc-old input[type="submit"] {
 	color: @primary-font-color;
-	background: mix(contrast(@content-background-color), @content-background-color, 10%);
 	border-color: mix(contrast(@content-background-color), @content-background-color, 10%);
+	background: mix(contrast(@content-background-color), @content-background-color, 10%);
 }
 
 .toolbar-search__input {
@@ -491,7 +492,7 @@ input:-webkit-autofill {
 #login-card {
 	.input-text {
 		input:-webkit-autofill {
-			-webkit-box-shadow: 0 0 0 20px @content-background-color inset;
+			box-shadow: 0 0 0 20px @content-background-color inset;
 		}
 	}
 }
@@ -596,13 +597,13 @@ input:-webkit-autofill {
 		background-color: fade(@rc-color-button-primary, 20%);
 
 		&.mention-link-me {
-			background: @primary-action-color;
 			color: @primary-action-contrast;
+			background: @primary-action-color;
 		}
 
 		&.mention-link-all {
-			background: @attention-color;
 			color: @primary-action-contrast;
+			background: @attention-color;
 		}
 	}
 
@@ -646,8 +647,8 @@ input:-webkit-autofill {
 	}
 
 	.unread.unread-mention {
-		background-color: @success-color;
 		color: contrast(@success-color, #000000, #ffffff, 50%);
+		background-color: @success-color;
 	}
 
 	.button {
@@ -709,21 +710,21 @@ input:-webkit-autofill {
 		}
 
 		&.active {
-			background-color: @secondary-background-color;
 			border-right-color: @selection-color;
+			background-color: @secondary-background-color;
 		}
 
 		&.attention {
-			animation-duration: 1000ms;
 			animation-name: blink;
+			animation-duration: 1000ms;
 			animation-iteration-count: infinite;
 			animation-direction: alternate;
 		}
 	}
 
 	.counter {
-		background: @secondary-font-color;
 		color: white;
+		background: @secondary-font-color;
 	}
 }
 
@@ -743,8 +744,8 @@ i.status-online {
 .popup-user-status-online,
 .status-online::after,
 .user-image.status-online .avatar::after {
-	background-color: @status-online;
 	border-color: darken(@status-online, 10%);
+	background-color: @status-online;
 }
 
 .account-box .status-offline .thumb::after,
@@ -766,8 +767,8 @@ i.status-away {
 .status-away::after,
 .status-pending::after,
 .user-image.status-away .avatar::after {
-	background-color: @status-away;
 	border-color: darken(@status-away, 10%);
+	background-color: @status-away;
 }
 
 i.status-busy {
@@ -783,8 +784,8 @@ i.status-busy {
 .popup-user-status-busy,
 .status-busy::after,
 .user-image.status-busy .avatar::after {
-	background-color: @status-busy;
 	border-color: darken(@status-busy, 10%);
+	background-color: @status-busy;
 }
 
 i.status-offline {
@@ -798,8 +799,8 @@ i.status-offline {
 .popup-user-status-offline,
 .status-offline::after,
 .user-image.status-offline .avatar::after {
-	background-color: @status-offline;
 	border-color: darken(@status-offline, 10%);
+	background-color: @status-offline;
 }
 
 // .popup-user-status-system {
@@ -950,9 +951,11 @@ label.required::after {
 
 .announcement {
 	background-color: @primary-background-color;
+
 	&.warning {
 		background-color: var(--rc-color-alert);
 	}
+
 	&.error {
 		background-color: var(--rc-color-alert-message-warning);
 	}

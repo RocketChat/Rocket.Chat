@@ -2,31 +2,18 @@
  * Derivative colours (fixed variants of inherited variables)
  */
 @darktheme-default-action-color: darken(@secondary-background-color, 15%);
-
 @darktheme-default-action-contrast: contrast(@darktheme-default-action-color, #444444);
-
 @darktheme-primary-background-contrast: contrast(@darktheme-primary-background-color, #444444);
-
 @darktheme-primary-action-contrast: contrast(@darktheme-primary-action-color, #444444);
-
 @darktheme-secondary-background-contrast: contrast(@darktheme-secondary-background-color, #444444);
-
 @darktheme-secondary-action-contrast: contrast(@darktheme-secondary-action-color, #444444);
-
 @darktheme-selection-background: darken(@darktheme-selection-color, 30%);
-
 @darktheme-success-background: darken(@darktheme-success-color, 45%);
-
 @darktheme-success-border: lighten(@darktheme-success-color, 30%);
-
 @darktheme-error-background: darken(@darktheme-error-color, 45%);
-
 @darktheme-error-border: lighten(@darktheme-error-color, 30%);
-
 @darktheme-error-contrast: contrast(@darktheme-error-color);
-
 @darktheme-pending-background: darken(@darktheme-pending-color, 45%);
-
 @darktheme-pending-border: lighten(@darktheme-pending-color, 30%);
 
 #rocket-chat.dark-theme {
@@ -535,7 +522,7 @@
 	#login-card {
 		.input-text {
 			input:-webkit-autofill {
-				-webkit-box-shadow: 0 0 0 20px @darktheme-content-background-color inset;
+				box-shadow: 0 0 0 20px @darktheme-content-background-color inset;
 			}
 		}
 	}
@@ -568,7 +555,7 @@
 
 	.message-form {
 		.message-buttons {
-			.buttoncolors(lighten(@darktheme-primary-font-color, 25%), @darktheme-secondary-background-color);
+			.buttonColors(lighten(@darktheme-primary-font-color, 25%), @darktheme-secondary-background-color);
 
 			&:hover {
 				background-color: mix(@darktheme-secondary-background-color, contrast(@darktheme-primary-font-color), 20%);
@@ -675,11 +662,11 @@
 		}
 
 		.button {
-			.buttoncolors(@darktheme-tertiary-font-color, mix(@darktheme-primary-action-color, @darktheme-primary-background-color));
+			.buttonColors(@darktheme-tertiary-font-color, mix(@darktheme-primary-action-color, @darktheme-primary-background-color));
 		}
 
 		.options button {
-			.buttoncolors(@darktheme-tertiary-font-color, @darktheme-primary-background-color);
+			.buttonColors(@darktheme-tertiary-font-color, @darktheme-primary-background-color);
 		}
 	}
 
@@ -718,7 +705,7 @@
 		.channel-settings {
 			.buttons {
 				.button {
-					.buttoncolors(lighten(@darktheme-primary-font-color, 25%), @darktheme-secondary-background-color);
+					.buttonColors(lighten(@darktheme-primary-font-color, 25%), @darktheme-secondary-background-color);
 				}
 			}
 
@@ -822,16 +809,16 @@
 	 * Buttons!
 	 */
 	.actionLinks li .action-link {
-		.buttoncolors(@darktheme-primary-action-contrast, @darktheme-primary-action-color);
+		.buttonColors(@darktheme-primary-action-contrast, @darktheme-primary-action-color);
 	}
 
 	// new layout buttons
 
 	.button {
-		.buttoncolors(@darktheme-default-action-contrast, @darktheme-default-action-color);
+		.buttonColors(@darktheme-default-action-contrast, @darktheme-default-action-color);
 
 		&.primary {
-			.buttoncolors(@darktheme-primary-action-contrast, @darktheme-primary-action-color);
+			.buttonColors(@darktheme-primary-action-contrast, @darktheme-primary-action-color);
 
 			&[disabled] {
 				background-color: lighten(desaturate(@darktheme-primary-action-color, 50%), 30%);
@@ -839,7 +826,7 @@
 		}
 
 		&.secondary {
-			.buttoncolors(@darktheme-secondary-action-contrast, @darktheme-secondary-action-color);
+			.buttonColors(@darktheme-secondary-action-contrast, @darktheme-secondary-action-color);
 
 			&[disabled] {
 				background-color: lighten(desaturate(@darktheme-secondary-action-color, 50%), 30%);
@@ -847,7 +834,7 @@
 		}
 
 		&.tertiary {
-			.buttoncolors(@darktheme-primary-action-contrast, @darktheme-selection-color);
+			.buttonColors(@darktheme-primary-action-contrast, @darktheme-selection-color);
 
 			&[disabled] {
 				background-color: lighten(desaturate(@darktheme-selection-color, 50%), 30%);
@@ -855,7 +842,7 @@
 		}
 
 		&.danger {
-			.buttoncolors(@darktheme-error-contrast, @darktheme-error-color);
+			.buttonColors(@darktheme-error-contrast, @darktheme-error-color);
 
 			&[disabled] {
 				background-color: lighten(desaturate(@darktheme-error-color, 50%), 30%);
