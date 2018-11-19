@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -259,6 +261,23 @@ class ModelUsers extends RocketChat.models._Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	getOldest(fields = { _id: 1 }) {
+		const query = {
+			_id: {
+				$ne: 'rocket.cat',
+			},
+		};
+
+		const options = {
+			fields,
+			sort: {
+				createdAt: 1,
+			},
+		};
+
+		return this.findOne(query, options);
 	}
 
 	// UPDATE

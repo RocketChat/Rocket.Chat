@@ -1,4 +1,5 @@
 import s from 'underscore.string';
+import { Accounts } from 'meteor/accounts-base';
 
 RocketChat._setUsername = function(userId, u) {
 	const username = s.trim(u);

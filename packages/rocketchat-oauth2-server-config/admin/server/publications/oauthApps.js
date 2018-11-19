@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('oauthApps', function() {
 	if (!this.userId) {
 		return this.ready();

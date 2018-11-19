@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Bridge from '../irc-bridge';
 
 Meteor.methods({

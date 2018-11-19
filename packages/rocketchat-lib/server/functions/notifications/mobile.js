@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 

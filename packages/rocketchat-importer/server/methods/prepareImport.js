@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import { Importers } from 'meteor/rocketchat:importer';
 
 Meteor.methods({

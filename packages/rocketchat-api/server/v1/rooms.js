@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import Busboy from 'busboy';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
@@ -46,7 +49,10 @@ RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
 			};
 		}
 
-		return RocketChat.API.v1.success(result);
+		return RocketChat.API.v1.success({
+			update: result.update.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+			remove: result.remove.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+		});
 	},
 });
 
@@ -190,3 +196,24 @@ RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 	},
 });
 
+RocketChat.API.v1.addRoute('rooms.info', { authRequired: true }, {
+	get() {
+		const room = findRoomByIdOrName({ params: this.requestParams() });
+		const { fields } = this.parseJsonQuery();
+		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
+			return RocketChat.API.v1.failure('not-allowed', 'Not Allowed');
+		}
+		return RocketChat.API.v1.success({ room: RocketChat.models.Rooms.findOneByIdOrName(room._id, { fields }) });
+	},
+});
+
+RocketChat.API.v1.addRoute('rooms.leave', { authRequired: true }, {
+	post() {
+		const room = findRoomByIdOrName({ params: this.bodyParams });
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('leaveRoom', room._id);
+		});
+
+		return RocketChat.API.v1.success();
+	},
+});
