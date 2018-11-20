@@ -156,4 +156,5 @@ Package.onUse(function(api) {
 	api.export('ChatMessages', 'client');
 	api.export('RoomManager', 'client');
 	api.export('getAvatarUrlFromUsername');
+	api.export('popout', 'client');
 });
