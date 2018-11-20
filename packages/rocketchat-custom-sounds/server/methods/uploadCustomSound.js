@@ -1,5 +1,7 @@
-/* globals RocketChatFileCustomSoundsInstance */
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({
 	uploadCustomSound(binaryContent, contentType, soundData) {
