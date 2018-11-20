@@ -88,6 +88,15 @@ export class AppRoomBridge {
 		return subscriptions.map((sub) => this.orch.getConverters().get('users').convertById(sub.u && sub.u._id));
 	}
 
+	async getDirectByUsernames(usernames, appId) {
+		console.log(`The App ${ appId } is getting direct room by usernames: "${ usernames }"`);
+		const room = await RocketChat.models.Rooms.findDirectRoomContainingAllUsernames(usernames);
+		if (!room) {
+			return undefined;
+		}
+		return this.orch.getConverters().get('rooms').convertRoom(room);
+	}
+
 	async update(room, members = [], appId) {
 		console.log(`The App ${ appId } is updating a room.`);
 
