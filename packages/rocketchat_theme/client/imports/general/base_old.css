@@ -5192,14 +5192,14 @@ body:not(.is-cordova) {
 
 .rc-old .colorpicker-swatch {
 	position: absolute;
-	top: 2px;
-	left: 2px;
+	top: 4px;
+	left: 4px;
 
 	display: block;
 	overflow: hidden;
 
-	width: 41px;
-	height: 41px;
+	width: 32px;
+	height: 32px;
 
 	border-radius: 2px;
 }
