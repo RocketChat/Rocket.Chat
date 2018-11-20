@@ -19,6 +19,7 @@
 
 	&__button {
 		margin: 0 0.2rem;
+
 		font-size: inherit;
 
 		&:hover {
