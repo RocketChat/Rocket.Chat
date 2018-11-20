@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 export default function handleOnSaveMessage(message, to) {
 	let toIdentification = '';
 	// Direct message
