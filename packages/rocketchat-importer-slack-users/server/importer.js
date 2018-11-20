@@ -8,6 +8,7 @@ import {
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
 import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 export class SlackUsersImporter extends Base {
 	constructor(info) {
