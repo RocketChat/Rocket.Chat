@@ -23,7 +23,7 @@
 	word-wrap: break-word;
 
 	border-width: 1px;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 
 	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	font-size: 13px;
@@ -34,8 +34,7 @@
 	&.inline {
 		display: inline;
 
-		margin: 0 0.1em;
-		padding: 0 0.5em;
+		padding: 0.1rem 0.2rem;
 
 		line-height: 16px;
 	}
@@ -164,7 +163,7 @@
 	margin-bottom: 20px;
 
 	border-width: 1px;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 }
 
 .rc-old .full-page .hidden {
@@ -542,7 +541,7 @@ rc-old select,
 	text-transform: uppercase;
 
 	border-width: 0;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 
 	font-size: 14px;
 	font-weight: 500;
@@ -824,7 +823,7 @@ rc-old select,
 
 				content: " ";
 
-				border-radius: 4px;
+				border-radius: var(--border-radius);
 			}
 
 			& .avatar-initials {
@@ -1127,7 +1126,7 @@ rc-old select,
 			padding: 0 8px 0 30px;
 
 			border-width: 1px;
-			border-radius: 4px;
+			border-radius: var(--border-radius);
 			box-shadow: 0 0 0;
 			appearance: none;
 		}
@@ -1737,7 +1736,7 @@ rc-old select,
 	margin: 40px auto;
 	padding: 20px;
 
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 	box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
 
 	& .cms-page-close {
@@ -1858,8 +1857,6 @@ rc-old select,
 		}
 
 		& .settings-description {
-			padding: 5px;
-
 			line-height: 1.2rem;
 		}
 
@@ -1978,7 +1975,7 @@ rc-old select,
 			padding: 20px;
 
 			border-width: 1px;
-			border-radius: 4px;
+			border-radius: var(--border-radius);
 
 			& .section-helper {
 				padding: 20px 20px 40px;
@@ -2148,7 +2145,7 @@ rc-old select,
 	transform: translateY(-10px);
 
 	opacity: 0;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 	box-shadow:
 		0 1px 1px 0 rgba(0, 0, 0, 0.2),
 		0 2px 10px 0 rgba(0, 0, 0, 0.16);
@@ -2909,7 +2906,7 @@ rc-old select,
 	}
 
 	& .editing .body {
-		border-radius: 4px;
+		border-radius: var(--border-radius);
 	}
 
 	&.selectable .message {
@@ -3031,7 +3028,7 @@ rc-old select,
 		transition: transform 0.15s ease-in-out, opacity 0.15s ease-in-out;
 		animation: dropdown-in 0.15s ease-in-out;
 
-		border-radius: 4px;
+		border-radius: var(--border-radius);
 		box-shadow:
 			0 1px 1px 0 rgba(0, 0, 0, 0.2),
 			0 2px 10px 0 rgba(0, 0, 0, 0.16);
@@ -3124,7 +3121,7 @@ rc-old select,
 
 			border-width: 1px;
 
-			border-radius: 4px;
+			border-radius: var(--border-radius);
 			background: #ffffff;
 		}
 	}
@@ -3604,7 +3601,7 @@ body:not(.is-cordova) {
 				padding: 20px;
 
 				border: 1px solid #dddddd;
-				border-radius: 4px;
+				border-radius: var(--border-radius);
 				background-color: #ffffff;
 			}
 
@@ -3870,7 +3867,7 @@ body:not(.is-cordova) {
 				content: " ";
 				vertical-align: middle;
 
-				border-radius: 4px;
+				border-radius: var(--border-radius);
 			}
 		}
 
@@ -4358,7 +4355,7 @@ body:not(.is-cordova) {
 		text-align: left;
 
 		opacity: 0;
-		border-radius: 4px;
+		border-radius: var(--border-radius);
 		box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.15);
 
 		& header {
@@ -4819,7 +4816,7 @@ body:not(.is-cordova) {
 
 	padding: 0 4px 2px;
 
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 
 	font-weight: bold;
 }
@@ -4827,7 +4824,7 @@ body:not(.is-cordova) {
 .rc-old .highlight-text {
 	padding: 2px;
 
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 }
 
 .rc-old .avatar-suggestions {
@@ -4846,7 +4843,7 @@ body:not(.is-cordova) {
 	text-align: left;
 
 	border-width: 1px;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 	align-items: center;
 	flex-flow: row nowrap;
 
@@ -5370,9 +5367,7 @@ body:not(.is-cordova) {
 	}
 
 	& .buttons {
-		margin-top: 10px;
-
-		text-align: right;
+		margin: 10px 0;
 	}
 
 	& .CodeMirror {
@@ -5728,7 +5723,7 @@ body:not(.is-cordova) {
 
 	color: #555555;
 	border: 1px solid #eaeaea;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 
 	font-family: arial;
 	font-size: 14px;
