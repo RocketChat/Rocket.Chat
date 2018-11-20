@@ -1,8 +1,9 @@
+/* eslint-disable */
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-popout = { //eslint-disable-line
+popout = {
 	context: null,
 	isAudioOnly: false,
 	showVideoControls: true,
