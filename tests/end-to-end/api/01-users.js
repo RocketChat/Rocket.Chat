@@ -238,6 +238,35 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
+		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: targetUser._id,
+					fields: JSON.stringify({ userRooms: 1 }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should NOT return "rooms" property when user NOT request it but the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.nested.property('user.rooms');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/users.getPresence]', () => {
