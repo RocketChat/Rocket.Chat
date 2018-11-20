@@ -10,11 +10,9 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'underscore',
 		'rocketchat:lib',
+		'rocketchat:ui',
 	]);
-
-	api.addFiles('server/irc.js', 'server');
-	api.addFiles('server/methods/resetIrcConnection.js', 'server');
-	api.addFiles('server/irc-settings.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });
 
 Npm.depends({
