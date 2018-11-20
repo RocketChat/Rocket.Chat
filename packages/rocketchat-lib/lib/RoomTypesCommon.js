@@ -1,5 +1,7 @@
 /* globals roomExit */
+import { Meteor } from 'meteor/meteor';
 import { RoomTypeConfig } from './RoomTypeConfig';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 export class RoomTypesCommon {
 	constructor() {

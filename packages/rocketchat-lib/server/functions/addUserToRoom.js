@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
 	const room = RocketChat.models.Rooms.findOneById(rid);

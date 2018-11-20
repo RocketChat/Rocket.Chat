@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
+
 Template.tokenChannelsList.helpers({
 	rooms() {
 		return Template.instance().tokenpassRooms.get().filter((room) => RocketChat.models.Subscriptions.find({ rid: room._id }).count() === 0);

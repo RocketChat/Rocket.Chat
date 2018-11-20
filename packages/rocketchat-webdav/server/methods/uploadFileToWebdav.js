@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 import Webdav from 'webdav';
 import stream from 'stream';

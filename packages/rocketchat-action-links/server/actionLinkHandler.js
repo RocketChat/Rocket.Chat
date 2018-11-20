@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 // Action Links Handler. This method will be called off the client.
 
 Meteor.methods({

@@ -1,4 +1,9 @@
-/* globals Template, isSetNotNull */
+import { ReactiveVar } from 'meteor/reactive-var';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { isSetNotNull } from './function-isSet';
+
 const emojiCategories = {};
 /**
  * Turns category hash to a nice readable translated name

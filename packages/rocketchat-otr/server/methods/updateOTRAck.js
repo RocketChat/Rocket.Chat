@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	updateOTRAck(_id, ack) {
 		if (!Meteor.userId()) {

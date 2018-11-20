@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 // Action Links namespace creation.
 RocketChat.actionLinks = {
 	actions: {},

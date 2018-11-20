@@ -1,4 +1,5 @@
 /* globals openRoom */
+import { Meteor } from 'meteor/meteor';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../RoomTypeConfig';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
@@ -44,7 +45,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	condition() {
 		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && RocketChat.authz.hasAllPermission('view-p-room');
+		return groupByType && RocketChat.authz.hasPermission('view-p-room');
 	}
 
 	isGroupChat() {

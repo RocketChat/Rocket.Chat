@@ -1,3 +1,5 @@
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 export const VRecDialog = new class {

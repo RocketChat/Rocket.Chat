@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('SlackBridge', function() {
 		this.add('SlackBridge_Enabled', false, {
