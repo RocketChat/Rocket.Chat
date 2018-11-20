@@ -51,6 +51,12 @@ export default function eventsRoutes() {
 					case 'msr':
 						self.handleMessagesReadEvent(e);
 						break;
+					case 'mrs':
+						self.handleMessagesSetReactionEvent(e);
+						break;
+					case 'mru':
+						self.handleMessagesUnsetReactionEvent(e);
+						break;
 					default:
 						throw new Error(`Invalid event:${ e.t }`);
 				}

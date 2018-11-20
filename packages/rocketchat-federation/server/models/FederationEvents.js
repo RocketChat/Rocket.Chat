@@ -176,7 +176,7 @@ class FederationEvents extends RocketChat.models._Base {
 		return this.createEventForPeers('msu', payload, peers);
 	}
 
-	// Create a `deleteMessage(dm)` event
+	// Create a `deleteMessage(msd)` event
 	messageDeleted(federatedRoom, federatedMessage, options = {}) {
 		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
 
@@ -197,6 +197,36 @@ class FederationEvents extends RocketChat.models._Base {
 		};
 
 		return this.createEventForPeers('msr', payload, peers);
+	}
+
+	// Create a `messagesSetReaction(mrs)` event
+	messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
+		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+
+		const payload = {
+			federated_room_id: federatedRoom.getFederationId(),
+			federated_message_id: federatedMessage.getFederationId(),
+			federated_user_id: federatedUser.getFederationId(),
+			reaction,
+			shouldReact,
+		};
+
+		return this.createEventForPeers('mrs', payload, peers);
+	}
+
+	// Create a `messagesUnsetReaction(mru)` event
+	messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
+		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+
+		const payload = {
+			federated_room_id: federatedRoom.getFederationId(),
+			federated_message_id: federatedMessage.getFederationId(),
+			federated_user_id: federatedUser.getFederationId(),
+			reaction,
+			shouldReact,
+		};
+
+		return this.createEventForPeers('mru', payload, peers);
 	}
 
 	// Get all unfulfilled events

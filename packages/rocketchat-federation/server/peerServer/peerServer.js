@@ -313,6 +313,58 @@ class PeerServer {
 		RocketChat.readMessages(federatedRoom.room._id, localUser._id);
 	}
 
+	handleMessagesSetReactionEvent(e) {
+		this.log('handleMessagesSetReactionEvent');
+
+		const { identifier: localPeerIdentifier } = this.config;
+
+		const { payload: { federated_room_id, federated_message_id, federated_user_id, reaction, shouldReact } } = e;
+
+		// Load the federated room
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, federated_room_id);
+		const localRoom = federatedRoom.getLocalRoom();
+
+		// Load the user who reacted
+		const federatedUser = FederatedUser.loadByFederationId(localPeerIdentifier, federated_user_id);
+		const localUser = federatedUser.getLocalUser();
+
+		// Load the message
+		const federatedMessage = FederatedMessage.loadByFederationId(localPeerIdentifier, federated_message_id);
+		const localMessage = federatedMessage.getLocalMessage();
+
+		// Callback management
+		Meteor.federationPeerClient.addCallbackToSkip('afterSetReaction', federatedMessage.getFederationId());
+
+		// Set message reaction
+		RocketChat.setReaction(localRoom, localUser, localMessage, reaction, shouldReact);
+	}
+
+	handleMessagesUnsetReactionEvent(e) {
+		this.log('handleMessagesUnsetReactionEvent');
+
+		const { identifier: localPeerIdentifier } = this.config;
+
+		const { payload: { federated_room_id, federated_message_id, federated_user_id, reaction, shouldReact } } = e;
+
+		// Load the federated room
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, federated_room_id);
+		const localRoom = federatedRoom.getLocalRoom();
+
+		// Load the user who reacted
+		const federatedUser = FederatedUser.loadByFederationId(localPeerIdentifier, federated_user_id);
+		const localUser = federatedUser.getLocalUser();
+
+		// Load the message
+		const federatedMessage = FederatedMessage.loadByFederationId(localPeerIdentifier, federated_message_id);
+		const localMessage = federatedMessage.getLocalMessage();
+
+		// Callback management
+		Meteor.federationPeerClient.addCallbackToSkip('afterUnsetReaction', federatedMessage.getFederationId());
+
+		// Unset message reaction
+		RocketChat.setReaction(localRoom, localUser, localMessage, reaction, shouldReact);
+	}
+
 }
 
 export default PeerServer;

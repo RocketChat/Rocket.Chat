@@ -374,6 +374,44 @@ class PeerClient {
 		RocketChat.models.FederationEvents.messagesRead(federatedRoom, federatedUser, { skipPeers: [localPeerIdentifier] });
 	}
 
+	afterSetReaction(message, { user, reaction, shouldReact }) {
+		this.log('afterSetReaction');
+
+		const room = RocketChat.models.Rooms.findOneById(message.rid);
+
+		const { peer: { identifier: localPeerIdentifier } } = this;
+
+		// Check if room is federated
+		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
+
+		const federatedUser = FederatedUser.loadByFederationId(localPeerIdentifier, user.federation._id);
+
+		const federatedMessage = FederatedMessage.loadByFederationId(localPeerIdentifier, message.federation._id);
+
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
+
+		RocketChat.models.FederationEvents.messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerIdentifier] });
+	}
+
+	afterUnsetReaction(message, { user, reaction, shouldReact }) {
+		this.log('afterUnsetReaction');
+
+		const room = RocketChat.models.Rooms.findOneById(message.rid);
+
+		const { peer: { identifier: localPeerIdentifier } } = this;
+
+		// Check if room is federated
+		if (!FederatedRoom.isFederated(localPeerIdentifier, room)) { return; }
+
+		const federatedUser = FederatedUser.loadByFederationId(localPeerIdentifier, user.federation._id);
+
+		const federatedMessage = FederatedMessage.loadByFederationId(localPeerIdentifier, message.federation._id);
+
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerIdentifier, room.federation._id);
+
+		RocketChat.models.FederationEvents.messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerIdentifier] });
+	}
+
 	afterMuteUser({ mutedUser, fromUser }, room) {
 		this.log('afterMuteUser');
 
@@ -459,6 +497,8 @@ class PeerClient {
 		RocketChat.callbacks.add('afterSaveMessage', this.afterSaveMessage.bind(this), RocketChat.callbacks.priority.LOW, 'federation-save-message');
 		RocketChat.callbacks.add('afterDeleteMessage', this.afterDeleteMessage.bind(this), RocketChat.callbacks.priority.LOW, 'federation-delete-message');
 		RocketChat.callbacks.add('afterReadMessages', this.afterReadMessages.bind(this), RocketChat.callbacks.priority.LOW, 'federation-read-messages');
+		RocketChat.callbacks.add('afterSetReaction', this.afterSetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'federation-after-set-reaction');
+		RocketChat.callbacks.add('afterUnsetReaction', this.afterUnsetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'federation-after-unset-reaction');
 		RocketChat.callbacks.add('afterMuteUser', this.afterMuteUser.bind(this), RocketChat.callbacks.priority.LOW, 'federation-mute-user');
 		RocketChat.callbacks.add('afterUnmuteUser', this.afterUnmuteUser.bind(this), RocketChat.callbacks.priority.LOW, 'federation-unmute-user');
 
