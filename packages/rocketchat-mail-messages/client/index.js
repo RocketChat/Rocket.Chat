@@ -1,4 +1,4 @@
-import './startup'
+import './startup';
 import './router';
 import './views/mailer.html';
 import './views/mailer';
