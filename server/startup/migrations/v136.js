@@ -7,7 +7,7 @@ RocketChat.Migrations.add({
 		if (personalTokensEnabled) {
 			RocketChat.models.Permissions.upsert({ _id: 'create-personal-access-tokens' }, { $set: { roles } });
 		}
-		
+
 		RocketChat.models.Settings.remove({
 			_id: 'API_Enable_Personal_Access_Tokens',
 		});
