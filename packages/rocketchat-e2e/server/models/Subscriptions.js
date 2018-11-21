@@ -17,3 +17,13 @@ RocketChat.models.Subscriptions.findByRidWithoutE2EKey = function(rid, options) 
 
 	return this.find(query, options);
 };
+
+RocketChat.models.Subscriptions.resetUserE2EKey = function(userId) {
+	this.update({ 'u._id': userId }, {
+		$unset: {
+			E2EKey: '',
+		},
+	}, {
+		multi: true,
+	});
+};
