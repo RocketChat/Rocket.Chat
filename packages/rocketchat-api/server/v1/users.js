@@ -498,8 +498,8 @@ RocketChat.API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired
 
 RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
 	get() {
-		if (!RocketChat.settings.get('API_Enable_Personal_Access_Tokens')) {
-			throw new Meteor.Error('error-personal-access-tokens-are-current-disabled', 'Personal Access Tokens are currently disabled');
+		if (!RocketChat.authz.hasPermission(this.userId, 'create-personal-access-tokens')) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized');
 		}
 		const loginTokens = RocketChat.models.Users.getLoginTokensByUserId(this.userId).fetch()[0];
 		const getPersonalAccessTokens = () => loginTokens.services.resume.loginTokens
