@@ -282,6 +282,12 @@ function sendAllNotifications(message, room) {
 	return message;
 }
 
-RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
+if (process.env.EXPERIMENTAL || process.env.EXPERIMENTAL_QUEUES) {
+	RocketChat.callbacks.add('afterSaveMessage', (message, room) => {
+		Meteor.Services.emit('message.sent', { message, room });
+	}, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage_test');
+} else {
+	RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
+}
 
 export { sendNotification };
