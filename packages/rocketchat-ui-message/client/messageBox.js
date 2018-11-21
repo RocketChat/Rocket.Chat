@@ -368,9 +368,9 @@ Template.messageBox.events({
 	'click .register-anonymous'(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		return Meteor.call('registerUser', {}, function(error, loginData) {
-			if (loginData && loginData.token) {
-				return Meteor.loginWithToken(loginData.token);
+		return Meteor.call('registerUser', {}, function(error, result) {
+			if (!error) {
+				Meteor.loginWithToken(result.token);
 			}
 		});
 	},
