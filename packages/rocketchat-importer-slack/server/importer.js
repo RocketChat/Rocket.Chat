@@ -8,6 +8,8 @@ import {
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
 import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui';
 
 import _ from 'underscore';
 

@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.settings.addGroup('InternalHubot', function() {
 	this.add('InternalHubot_Enabled', false, { type: 'boolean', i18nLabel: 'Enabled' });
 	this.add('InternalHubot_Username', 'rocket.cat', { type: 'string', i18nLabel: 'Username', i18nDescription: 'InternalHubot_Username_Description', public: true });
