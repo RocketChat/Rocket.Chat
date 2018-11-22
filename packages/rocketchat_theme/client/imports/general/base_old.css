@@ -1859,6 +1859,7 @@ rc-old select,
 		& .settings-description {
 
 			padding-top: 2px;
+
 			line-height: 1.2rem;
 		}
 
