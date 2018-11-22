@@ -230,6 +230,7 @@ function sendAllNotifications(message, room) {
 	// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(query);
+
 	subscriptions.forEach((subscription) => sendNotification({
 		subscription,
 		sender,
@@ -290,4 +291,4 @@ if (process.env.EXPERIMENTAL || process.env.EXPERIMENTAL_QUEUES) {
 	RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
 }
 
-export { sendNotification };
+export { sendNotification, sendAllNotifications };

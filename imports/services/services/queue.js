@@ -1,5 +1,7 @@
-import { sendNotificationOnMessage } from 'meteor/rocketchat:lib';
-const USE_REDIS = false;
+import { sendAllNotifications } from 'meteor/rocketchat:lib';
+const USE_REDIS = process.env.EXPERIMENTAL_REDIS;
+
+import { applyMeteor } from '../utils';
 
 function createMemoryQueue() {
 	const Queue = require('better-queue');
@@ -44,7 +46,14 @@ function createMemoryQueue() {
 			if (this.schema.queues) {
 				Object.entries(this.schema.queues).forEach(([name, fn]) => {
 					this.logger.debug(`queue ${ name } created`);
-					this.getQueue(name, fn.bind(this));
+					this.getQueue(name, async(args, cb) => { // TODO remove
+						try {
+							cb(null, await fn(this, args));
+						} catch (error) {
+							console.log(error);
+							cb(error);
+						}
+					});
 				});
 			}
 
@@ -57,12 +66,6 @@ function createRedisQueue(queueOpts) {
 	if (USE_REDIS) { throw 'redis not done yet'; }
 	const Kue = require('kue');
 
-	/**
-	 * Task queue mixin service for Bee-Queue
-	 *
-	 * @name moleculer-bee-queue
-	 * @module Service
-	 */
 	return {
 
 		/**
@@ -103,7 +106,7 @@ function createRedisQueue(queueOpts) {
 
 			if (this.schema.queues) {
 				Object.entries(this.schema.queues).forEach(([name, fn]) => {
-					this.getQueue(name).process(fn.bind(this));
+					this.getQueue(name).process((...args) => fn(this, ...args));
 				});
 			}
 
@@ -118,7 +121,7 @@ export default {
 		$noVersionPrefix: true,
 	},
 	name:'notifications',
-	mixins: [USE_REDIS ? createRedisQueue() : createMemoryQueue()],
+	mixins: [USE_REDIS ? createRedisQueue() : createMemoryQueue(), applyMeteor(undefined, ['queues'])],
 	events: {
 		'message.sent': {
 			handler(args) {
@@ -133,8 +136,9 @@ export default {
 		},
 	},
 	queues: {
-		'sendNotificationOnMessage'({ message, room }, cb) {
-			cb(sendNotificationOnMessage(message, room));
+		sendNotificationOnMessage(ctx, { message, room }) {
+			sendAllNotifications(message, room);
+			ctx.logger.debug(`sendNotificationOnMessage done msg:${ message._id } room: ${ room._id }`);
 		},
 	},
 };

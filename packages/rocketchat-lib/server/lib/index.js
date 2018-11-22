@@ -7,11 +7,12 @@
 */
 
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../../lib/RoomTypeConfig';
-import { sendNotification } from './sendNotificationsOnMessage.js';
+import { sendNotification, sendAllNotifications } from './sendNotificationsOnMessage.js';
 
 export {
 	RoomSettingsEnum,
 	RoomTypeConfig,
 	RoomTypeRouteConfig,
 	sendNotification,
+	sendAllNotifications,
 };
