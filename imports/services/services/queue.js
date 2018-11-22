@@ -54,7 +54,7 @@ function createMemoryQueue() {
 }
 function createRedisQueue(queueOpts) {
 
-	throw 'redis not done yet';
+	if (USE_REDIS) { throw 'redis not done yet'; }
 	const Kue = require('kue');
 
 	/**

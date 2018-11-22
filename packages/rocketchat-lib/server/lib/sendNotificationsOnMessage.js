@@ -284,7 +284,7 @@ function sendAllNotifications(message, room) {
 
 if (process.env.EXPERIMENTAL || process.env.EXPERIMENTAL_QUEUES) {
 	RocketChat.callbacks.add('afterSaveMessage', (message, room) => {
-		Meteor.Services.emit('message.sent', { message, room });
+		RocketChat.Services.emit('message.sent', { message, room });
 	}, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage_test');
 } else {
 	RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
