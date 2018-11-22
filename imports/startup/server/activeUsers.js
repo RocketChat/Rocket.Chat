@@ -1,5 +1,6 @@
-import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
-import memoize from 'mem';
+import memoize from 'fast-memoize';
+import { Meteor } from 'meteor/meteor';
+import { PresenceStream } from 'meteor/konecty:user-presence';
 
 const emitStatus = memoize((_id, username, name, utcOffset, status) => {
 	RocketChat.Notifications.notifyLoggedInThisInstance('user-status', {
@@ -11,12 +12,14 @@ const emitStatus = memoize((_id, username, name, utcOffset, status) => {
 	});
 }, { maxAge: 5000 });
 
-UserPresenceMonitor.onSetUserStatus((user, status/* , statusConnection*/) => {
-	const {
+Meteor.startup(() => {
+	PresenceStream.on('change', ({
 		_id,
 		username,
 		name,
+		status,
 		utcOffset,
-	} = user;
-	emitStatus(_id, username, name, utcOffset, status);
+	}) => {
+		emitStatus(_id, username, name, utcOffset, status);
+	});
 });

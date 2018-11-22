@@ -147,6 +147,7 @@
 		"csv-parse": "^2.5.0",
 		"emailreplyparser": "^0.0.5",
 		"express": "^4.16.4",
+		"fast-memoize": "^2.5.1",
 		"fibers": "^3.0.0",
 		"file-type": "^8.1.0",
 		"filesize": "^3.6.1",

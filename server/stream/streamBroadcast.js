@@ -188,11 +188,17 @@ function startStreamCastBroadcast(value) {
 			return 'not-authorized';
 		}
 
-		if (!Meteor.StreamerCentral.instances[streamName]) {
+		const instance = Meteor.StreamerCentral.instances[streamName];
+		if (!instance) {
 			return 'stream-not-exists';
 		}
 
-		return Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+		if (instance.serverOnly) {
+			const scope = {};
+			return instance.emitWithScope(eventName, scope, args);
+		} else {
+			return instance._emit(eventName, args);
+		}
 	});
 
 	return connection.subscribe('stream');

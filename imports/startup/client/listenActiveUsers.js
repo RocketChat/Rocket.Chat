@@ -2,6 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 const updateUser = (user, force = false) => {
+	// do not update my own user, my user's status will come from a subscription
+	if (user._id === Meteor.userId()) {
+		return;
+	}
 	if (force) {
 		return Meteor.users._collection.upsert({ _id: user._id }, {
 			$set: {
