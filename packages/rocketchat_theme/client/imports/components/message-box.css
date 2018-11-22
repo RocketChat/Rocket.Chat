@@ -168,6 +168,8 @@
 
 			cursor: pointer;
 
+			animation: spin 1s linear infinite;
+
 			&.active {
 				display: flex;
 			}

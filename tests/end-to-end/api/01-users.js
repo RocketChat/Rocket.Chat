@@ -238,6 +238,35 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
+		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: targetUser._id,
+					fields: JSON.stringify({ userRooms: 1 }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should NOT return "rooms" property when user NOT request it but the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
+			request.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.nested.property('user.rooms');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/users.getPresence]', () => {
@@ -1218,17 +1247,7 @@ describe('[Users]', function() {
 	describe('Personal Access Tokens', () => {
 		const tokenName = `${ Date.now() }token`;
 		describe('successful cases', () => {
-			it('Enable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
-				request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
-					.set(credentials)
-					.send({ value: true })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
+			it('Grant necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', ['admin']).then(done));
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
@@ -1330,18 +1349,8 @@ describe('[Users]', function() {
 			});
 		});
 		describe('unsuccessful cases', () => {
-			it('disable "API_Enable_Personal_Access_Tokens" setting...', (done) => {
-				request.post('/api/v1/settings/API_Enable_Personal_Access_Tokens')
-					.set(credentials)
-					.send({ value: false })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
-			describe('should return an error when setting "API_Enable_Personal_Access_Tokens" is disabled for the following routes', () => {
+			it('Remove necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', []).then(done));
+			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
 				it('/users.generatePersonalAccessToken', (done) => {
 					request.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
@@ -1352,7 +1361,7 @@ describe('[Users]', function() {
 						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+							expect(res.body.errorType).to.be.equal('not-authorized');
 						})
 						.end(done);
 				});
@@ -1366,7 +1375,7 @@ describe('[Users]', function() {
 						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+							expect(res.body.errorType).to.be.equal('not-authorized');
 						})
 						.end(done);
 				});
@@ -1377,7 +1386,7 @@ describe('[Users]', function() {
 						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+							expect(res.body.errorType).to.be.equal('not-authorized');
 						})
 						.end(done);
 				});
@@ -1391,7 +1400,7 @@ describe('[Users]', function() {
 						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+							expect(res.body.errorType).to.be.equal('not-authorized');
 						})
 						.end(done);
 				});
@@ -1405,7 +1414,7 @@ describe('[Users]', function() {
 						.expect(400)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('error-personal-access-tokens-are-current-disabled');
+							expect(res.body.errorType).to.be.equal('not-authorized');
 						})
 						.end(done);
 				});
