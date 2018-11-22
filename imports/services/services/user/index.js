@@ -69,12 +69,13 @@ function generateSuggestion(user) {
 
 	usernames.push(RocketChat.settings.get('Accounts_DefaultUsernamePrefixSuggestion'));
 
-	let index = RocketChat.models.Users.find({ username: new RegExp(`${ usernames[0] }-[0-9]+`) }).count();
+	let index = RocketChat.models.Users.find({ username: new RegExp(`^${ usernames[0] }-[0-9]+`) }).count();
 	const username = '';
 	while (!username) {
 		if (usernameIsAvaliable(`${ usernames[0] }-${ index }`)) {
-			return `${ usernames[0] }-${ index++ }`;
+			return `${ usernames[0] }-${ index }`;
 		}
+		index++;
 	}
 }
 RocketChat.generateUsernameSuggestion = generateSuggestion;
