@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import Bridge from './irc-bridge';
 
 if (!!RocketChat.settings.get('IRC_Enabled') === true) {

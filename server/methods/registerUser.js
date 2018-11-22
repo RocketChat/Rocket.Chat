@@ -21,9 +21,10 @@ Meteor.methods({
 				],
 			});
 
-			const { id, token } = Accounts._loginUser(this, userId);
+			const stampedLoginToken = Accounts._generateStampedLoginToken();
 
-			return { id, token };
+			Accounts._insertLoginToken(userId, stampedLoginToken);
+			return stampedLoginToken;
 		} else {
 			check(formData, Match.ObjectIncluding({
 				email: String,

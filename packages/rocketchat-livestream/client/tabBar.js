@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

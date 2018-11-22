@@ -1,6 +1,7 @@
-/* global Babel */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { Babel } from 'meteor/babel-compiler';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];

@@ -8,6 +8,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { Readable } from 'stream';
 import path from 'path';
 import s from 'underscore.string';
