@@ -1,0 +1,39 @@
+{
+  "name": "services",
+  "version": "1.0.0",
+  "description": "My Moleculer microservice",
+  "scripts": {
+    "dev": "moleculer-runner --repl --hot service.js",
+    "start": "moleculer-runner service.js",
+    "ci": "jest --watch",
+    "test": "jest --coverage",
+    "lint": "eslint services"
+  },
+  "keywords": [
+    "microservices",
+    "moleculer"
+  ],
+  "author": "",
+  "devDependencies": {
+    "eslint": "^5.0.1",
+    "jest": "^23.3.0",
+    "jest-cli": "^23.3.0",
+    "moleculer-repl": "^0.5.0"
+  },
+  "dependencies": {
+		"better-queue": "^3.8.10",
+		"nats": "^1.0.0",
+    "moleculer": "^0.13.0"
+  },
+  "engines": {
+    "node": ">= 8.x.x"
+  },
+  "jest": {
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node",
+    "rootDir": "./services",
+    "roots": [
+      "../test"
+    ]
+  }
+}

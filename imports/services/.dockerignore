@@ -1,0 +1,6 @@
+.env
+Dockerfile
+node_modules
+test
+.vscode
+.eslintrc.js
