@@ -10,4 +10,5 @@ Package.onUse(function(api) {
 
 	api.addFiles('server/index.js', 'server');
 	api.addFiles('server/service.js', 'server');
+	api.addFiles('server/startup.js', 'server');
 });

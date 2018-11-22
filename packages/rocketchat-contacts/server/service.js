@@ -19,6 +19,47 @@ class ContactsProvider {
 		}
 	}
 
+	generateHashedMap(contacts) {
+		const contactsWeakHashMap = {};
+		contacts.forEach((contact) => {
+
+			const weakHash = this.getWeakHash(contact);
+			const strongHash = this.getStrongHash(contact);
+
+			if (weakHash in contactsWeakHashMap) {
+				if (contactsWeakHashMap[weakHash].indexOf(strongHash) === -1) {
+					contactsWeakHashMap[weakHash].push(strongHash);
+				}
+			} else {
+				contactsWeakHashMap[weakHash] = [strongHash];
+			}
+		});
+		return contactsWeakHashMap;
+
+	}
+
+	setHashedMap(contactsWeakHashMap) {
+		this.contactsWeakHashMap = contactsWeakHashMap;
+	}
+
+	getStrongHash(contact) {
+		return crypto.createHash('sha1').update(contact).digest('hex');
+	}
+
+	getWeakHash(contact) {
+		return crypto.createHash('sha1').update(contact).digest('hex').substr(3, 6);
+	}
+
+	queryContacts(contactWeakHashList) {
+		let result = [];
+		contactWeakHashList.forEach((weakHash) => {
+			if (weakHash in this.contactsWeakHashMap) {
+				result = result.concat(this.contactsWeakHashMap[weakHash]);
+			}
+		});
+		return result;
+	}
+
 	removeContact(contact) {
 		const weakHash = this.getWeakHash(contact);
 		const strongHash = this.getStrongHash(contact);
@@ -30,22 +71,8 @@ class ContactsProvider {
 		}
 	}
 
-	getWeakHash(contact) {
-		return crypto.createHash('sha1').update(contact).digest('hex').substr(3, 6);
-	}
-
-	getStrongHash(contact) {
-		return crypto.createHash('sha1').update(contact).digest('hex');
-	}
-
-	queryContacts(contactWeakHashList) {
-		let result = [];
-		contactWeakHashList.forEach((weakHash) => {
-			if (weakHash in this.contactsWeakHashMap) {
-				result = result.concat(this.contactsWeakHashMap[weakHash]);
-			}
-		});
-		return result;
+	reset() {
+		this.contactsWeakHashMap = {};
 	}
 }
 

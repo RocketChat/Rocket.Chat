@@ -1,17 +1,22 @@
+/* globals SyncedCron */
+
 const service = require('./service.js');
 const provider = new service.Provider();
 
-const cursor = Meteor.users.find({ active:true });
-cursor.forEach((user) => {
-	if ('emails' in user) {
-		user.emails.forEach((email) => {
-			if (email.verified) {
-				provider.addContact(email.address);
-			}
-		});
-	}
-});
-console.log(provider);
+function refreshContactsHashMap() {
+	const contacts = [];
+	const cursor = Meteor.users.find({ active:true });
+	cursor.forEach((user) => {
+		if ('emails' in user) {
+			user.emails.forEach((email) => {
+				if (email.verified) {
+					contacts.push(email.address);
+				}
+			});
+		}
+	});
+	provider.setHashedMap(provider.generateHashedMap(contacts));
+}
 
 Meteor.methods({
 	queryContacts(weakHashes) {
@@ -22,4 +27,21 @@ Meteor.methods({
 		}
 		return provider.queryContacts(weakHashes);
 	},
+});
+
+const jobName = 'Refresh_Contacts_Hashes';
+
+Meteor.startup(() => {
+	Meteor.defer(() => {
+		refreshContactsHashMap();
+
+		RocketChat.settings.get('Contacts_Background_Sync_Interval', function(name, processingFrequency) {
+			SyncedCron.remove(jobName);
+			SyncedCron.add({
+				name: jobName,
+				schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
+				job: refreshContactsHashMap,
+			});
+		});
+	});
 });
