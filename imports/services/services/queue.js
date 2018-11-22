@@ -50,7 +50,6 @@ function createMemoryQueue() {
 						try {
 							cb(null, await fn(this, args));
 						} catch (error) {
-							console.log(error);
 							cb(error);
 						}
 					});
