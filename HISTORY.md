@@ -1,6 +1,6 @@
 
 # 0.72.0
-`2018-11-20  ·  1 ️️️⚠️  ·  6 🎉  ·  13 🚀  ·  21 🐛  ·  69 🔍  ·  22 👩‍💻👨‍💻`
+`2018-11-23  ·  1 ️️️⚠️  ·  6 🎉  ·  16 🚀  ·  22 🐛  ·  74 🔍  ·  25 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -30,6 +30,9 @@
 - Emoji search on messageBox behaving like emojiPicker's search (#9607) ([#12452](https://github.com/RocketChat/Rocket.Chat/pull/12452) by [@vinade](https://github.com/vinade))
 - German translations ([#12471](https://github.com/RocketChat/Rocket.Chat/pull/12471))
 - Limit the number of typing users shown (#8722) ([#12400](https://github.com/RocketChat/Rocket.Chat/pull/12400) by [@vinade](https://github.com/vinade))
+- Allow apps to update persistence by association ([#12714](https://github.com/RocketChat/Rocket.Chat/pull/12714))
+- Add more methods to deal with rooms via Rocket.Chat.Apps ([#12680](https://github.com/RocketChat/Rocket.Chat/pull/12680))
+- Better query for finding subscriptions that need a new E2E Key ([#12692](https://github.com/RocketChat/Rocket.Chat/pull/12692))
 
 ### 🐛 Bug fixes
 
@@ -47,13 +50,14 @@
 - German translation for for API_EmbedIgnoredHosts label ([#12518](https://github.com/RocketChat/Rocket.Chat/pull/12518) by [@mbrodala](https://github.com/mbrodala))
 - Handle all events for enter key in message box ([#12507](https://github.com/RocketChat/Rocket.Chat/pull/12507))
 - Fix wrong parameter in chat.delete endpoint and add some test cases ([#12408](https://github.com/RocketChat/Rocket.Chat/pull/12408))
-- Email sending with GDPR user data ([#12487](https://github.com/RocketChat/Rocket.Chat/pull/12487))
 - Manage own integrations permissions check ([#12397](https://github.com/RocketChat/Rocket.Chat/pull/12397))
 - stream room-changed ([#12411](https://github.com/RocketChat/Rocket.Chat/pull/12411))
 - Emoji picker is not in viewport on small screens ([#12457](https://github.com/RocketChat/Rocket.Chat/pull/12457) by [@ramrami](https://github.com/ramrami))
 - `Disabled` word translation to Spanish ([#12406](https://github.com/RocketChat/Rocket.Chat/pull/12406) by [@Ismaw34](https://github.com/Ismaw34))
 - `Disabled` word translation to Chinese ([#12260](https://github.com/RocketChat/Rocket.Chat/pull/12260) by [@AndreamApp](https://github.com/AndreamApp))
 - Correct roomName value in Mail Messages (#12363) ([#12453](https://github.com/RocketChat/Rocket.Chat/pull/12453) by [@vinade](https://github.com/vinade))
+- Update caret position on insert a new line in message box ([#12713](https://github.com/RocketChat/Rocket.Chat/pull/12713))
+- DE translation for idle-time-limit ([#12637](https://github.com/RocketChat/Rocket.Chat/pull/12637) by [@pfuender](https://github.com/pfuender))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -127,6 +131,11 @@
 - Update npm dependencies ([#12465](https://github.com/RocketChat/Rocket.Chat/pull/12465))
 - Fix: Developers not being able to debug root files in VSCode ([#12440](https://github.com/RocketChat/Rocket.Chat/pull/12440))
 - Merge master into develop & Set version to 0.72.0-develop ([#12460](https://github.com/RocketChat/Rocket.Chat/pull/12460))
+- Fix some Ukrainian translations ([#12712](https://github.com/RocketChat/Rocket.Chat/pull/12712) by [@zdumitru](https://github.com/zdumitru))
+- Improve: Add missing translation keys. ([#12708](https://github.com/RocketChat/Rocket.Chat/pull/12708) by [@ura14h](https://github.com/ura14h))
+- Bump Apps Engine to 1.3.0 ([#12705](https://github.com/RocketChat/Rocket.Chat/pull/12705))
+- Fix: Exception when registering a user with gravatar ([#12699](https://github.com/RocketChat/Rocket.Chat/pull/12699))
+- Fix: Fix tests by increasing window size ([#12707](https://github.com/RocketChat/Rocket.Chat/pull/12707))
 
 </details>
 
@@ -138,11 +147,13 @@
 - [@karlprieb](https://github.com/karlprieb)
 - [@mbrodala](https://github.com/mbrodala)
 - [@nicolasbock](https://github.com/nicolasbock)
+- [@pfuender](https://github.com/pfuender)
 - [@ph1p](https://github.com/ph1p)
 - [@ramrami](https://github.com/ramrami)
 - [@ura14h](https://github.com/ura14h)
 - [@vinade](https://github.com/vinade)
 - [@wreiske](https://github.com/wreiske)
+- [@zdumitru](https://github.com/zdumitru)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -151,12 +162,35 @@
 - [@cardoso](https://github.com/cardoso)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@ggazzo](https://github.com/ggazzo)
+- [@marceloschmidt](https://github.com/marceloschmidt)
 - [@mrsimpson](https://github.com/mrsimpson)
 - [@rafaelks](https://github.com/rafaelks)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 0.71.1
+`2018-10-31  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Email sending with GDPR user data ([#12487](https://github.com/RocketChat/Rocket.Chat/pull/12487))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.71.1 ([#12499](https://github.com/RocketChat/Rocket.Chat/pull/12499))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 0.71.0
 `2018-10-27  ·  2 ️️️⚠️  ·  5 🎉  ·  5 🚀  ·  21 🐛  ·  8 🔍  ·  20 👩‍💻👨‍💻`

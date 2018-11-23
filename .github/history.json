@@ -20366,6 +20366,28 @@
         }
       ]
     },
+    "0.71.1": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12499",
+          "title": "Release 0.71.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12487",
+          "title": "[FIX] Email sending with GDPR user data",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
     "0.72.0-rc.0": {
       "pull_requests": [
         {
@@ -21422,6 +21444,127 @@
           "contributors": [
             "sampaiodiego",
             "web-flow",
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12499",
+          "title": "Release 0.71.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12487",
+          "title": "[FIX] Email sending with GDPR user data",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.72.0-rc.1": {
+      "pull_requests": [
+        {
+          "pr": "12712",
+          "title": "Fix some Ukrainian translations",
+          "userLogin": "zdumitru",
+          "milestone": "0.72.0",
+          "contributors": [
+            "zdumitru",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12713",
+          "title": "[FIX] Update caret position on insert a new line in message box",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12714",
+          "title": "[IMPROVE] Allow apps to update persistence by association",
+          "userLogin": "marceloschmidt",
+          "contributors": [
+            "marceloschmidt",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12708",
+          "title": "Improve: Add missing translation keys.",
+          "userLogin": "ura14h",
+          "milestone": "0.72.0",
+          "contributors": [
+            "ura14h",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12705",
+          "title": "Bump Apps Engine to 1.3.0",
+          "userLogin": "rodrigok",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12699",
+          "title": "Fix: Exception when registering a user with gravatar",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "engelgabriel",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12637",
+          "title": "[FIX] DE translation for idle-time-limit",
+          "userLogin": "pfuender",
+          "milestone": "0.72.0",
+          "contributors": [
+            null,
+            "engelgabriel",
+            "web-flow",
+            "pfuender"
+          ]
+        },
+        {
+          "pr": "12707",
+          "title": "Fix: Fix tests by increasing window size",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12680",
+          "title": "[IMPROVE] Add more methods to deal with rooms via Rocket.Chat.Apps",
+          "userLogin": "marceloschmidt",
+          "milestone": "0.72.0",
+          "contributors": [
+            "marceloschmidt"
+          ]
+        },
+        {
+          "pr": "12692",
+          "title": "[IMPROVE] Better query for finding subscriptions that need a new E2E Key",
+          "userLogin": "Hudell",
+          "milestone": "0.72.0",
+          "contributors": [
             "Hudell"
           ]
         }
