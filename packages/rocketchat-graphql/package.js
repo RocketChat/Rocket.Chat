@@ -15,8 +15,7 @@ Package.onUse(function(api) {
 		'rocketchat:accounts',
 		'swydo:graphql',
 	]);
-	api.addFiles('server/settings.js', 'server');
-	api.mainModule('server/api.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });
 
 Npm.depends({

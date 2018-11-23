@@ -511,7 +511,6 @@
   "Invitation_HTML": "HTMLتەكلىپ قىلىش ئىلخىتى",
   "Instructions_to_your_visitor_fill_the_form_to_send_a_message": "سىزنىڭ زىيارەت قىلغۇچىڭىزغا جەدىۋەلنى تولدۇرۇپ ئىلخەت يوللىغاننى چۈشەندۈرۈڭ",
   "Invitation_HTML_Default": "</p> ھازىرقى قەدەر ئەڭ ئىلغار بولغان ئوچۇق كود پاراڭلىشىش ھەل قىلىش پىلانىنى سىناپ كۆرۈڭ !<p>يۆتكىلىپ[Site_URL]<h1>سىز ئاللىبۇرۇن تەكلىپ قىلىندىڭىز<strong>[Site_Name]</strong></h1>",
-  "Invitation_HTML_Description": "ئايرىم ھالدا ئەپنىڭ ئىسمى ۋە تور بەت ئادرېسى بولىدۇ [Site_URL]ۋە </li><li> [Site_Name] بولسا قوبۇل قىلغۇچىنىڭ ئىلخىتى بولىدۇ .</li></ul> <br/><ul><li> [email]سىز تۆۋەنكى ئورۇن ئېلىش بەلگىسىنى ئىشلىتەلەيسىز :",
   "Integration_added": "توپلاشتۇرۇش ئاللىبۇرۇن قېتىلدى",
   "Integration_Incoming_WebHook": "توپلاشتۇرغۇچ WebHook قوللىماقچى بولغان",
   "Integration_New": "يېڭى توپلاشتۇرۇش",
