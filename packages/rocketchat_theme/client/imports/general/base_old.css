@@ -34,9 +34,9 @@
 	&.inline {
 		display: inline;
 
-		padding: 0.1rem 0.2rem;
+		padding: 0.05rem 0.2rem;
 
-		line-height: 16px;
+		line-height: 1rem;
 	}
 }
 
@@ -1857,6 +1857,9 @@ rc-old select,
 		}
 
 		& .settings-description {
+
+			padding-top: 2px;
+
 			line-height: 1.2rem;
 		}
 

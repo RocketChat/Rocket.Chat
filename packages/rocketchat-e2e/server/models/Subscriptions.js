@@ -27,3 +27,14 @@ RocketChat.models.Subscriptions.resetUserE2EKey = function(userId) {
 		multi: true,
 	});
 };
+
+RocketChat.models.Subscriptions.findByUserIdWithoutE2E = function(userId, options) {
+	const query = {
+		'u._id': userId,
+		E2EKey: {
+			$exists: false,
+		},
+	};
+
+	return this.find(query, options);
+};
