@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export class AppPersistenceBridge {
 	constructor(orch) {
 		this.orch = orch;
@@ -106,5 +108,35 @@ export class AppPersistenceBridge {
 		};
 
 		return this.orch.getPersistenceModel().upsert(query, { $set: { data } }, { upsert });
+	}
+
+	async findAndUpdateByAssociation(association, update, upsert, returnNew, appId) {
+		console.log(`The App ${ appId } is running findAndUpdateByAssociation with association to data as follows:`, association, update);
+		const persistenceRaw = this.orch.getPersistenceModel().model.rawCollection();
+		const findAndModify = Meteor.wrapAsync(persistenceRaw.findAndModify, persistenceRaw);
+
+		if (typeof update !== 'object') {
+			throw new Error('Attempted to store an invalid data type, it must be an object.');
+		}
+
+		const query = {
+			appId,
+			associations: association,
+		};
+
+		return findAndModify(query, null, update, { upsert, returnNew });
+	}
+
+	async findAndRemoveByAssociation(association, appId) {
+		console.log(`The App ${ appId } is running findAndRemoveByAssociation with association:`, association);
+		const persistenceRaw = this.orch.getPersistenceModel().model.rawCollection();
+		const findAndModify = Meteor.wrapAsync(persistenceRaw.findAndModify, persistenceRaw);
+
+		const query = {
+			appId,
+			associations: association,
+		};
+
+		return findAndModify(query, null, null, { remove: true });
 	}
 }
