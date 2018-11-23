@@ -251,6 +251,15 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findDirectRoomContainingAllUsernames(usernames, options) {
+		const query = {
+			t: 'd',
+			usernames: { $size: usernames.length, $all: usernames },
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByTypeAndName(type, name, options) {
 		const query = {
 			name,
