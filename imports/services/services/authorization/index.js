@@ -1,4 +1,4 @@
-import { applyMeteor } from '../../utils';
+import { applyMeteorMixin } from '../../utils';
 
 import hasPermissions from './hasPermissions';
 import canAccessRoom from './canAccessRoom';
@@ -17,7 +17,7 @@ export default {
 		$noVersionPrefix: true,
 	},
 	name: 'authorization',
-	mixins: [applyMeteor()], // TODO remove
+	mixins: [applyMeteorMixin()], // TODO remove
 	actions: {
 		...hasPermissions,
 		...canAccessRoom,

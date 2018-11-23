@@ -16,7 +16,7 @@ Meteor.methods({
 			throw new Error('The \'rid\' property on the message object is missing.');
 		}
 
-		return RocketChat.Services.call('chat.sendMessage', { uid, message });
+		return RocketChat.Services.call('core.sendMessage', { uid, message });
 	},
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second

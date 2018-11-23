@@ -1,5 +1,5 @@
 /* global slugify */
-import { applyMeteor } from '../../utils';
+import { applyMeteorMixin } from '../../utils';
 
 function slug(text) {
 	return slugify(text, '.').replace(/[^0-9a-z-_.]/g, '');
@@ -85,7 +85,7 @@ export default {
 		$noVersionPrefix: true,
 	},
 	name: 'users',
-	mixins: [applyMeteor()], // TODO remove
+	mixins: [applyMeteorMixin()], // TODO remove
 	actions: {
 		getUsernameSuggestion(ctx) {
 			const { user } = ctx.params;

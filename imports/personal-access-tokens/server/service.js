@@ -1,4 +1,4 @@
-import { applyMeteor } from '../../services/utils';
+import { applyMeteorMixin } from '../../services/utils';
 import actions from './api/actions';
 export default {
 	version: 1,
@@ -6,6 +6,6 @@ export default {
 		$noVersionPrefix: true,
 	},
 	name: 'personalAccessTokens',
-	mixins: [applyMeteor()], // TODO remove
+	mixins: [applyMeteorMixin()], // TODO remove
 	actions,
 };
