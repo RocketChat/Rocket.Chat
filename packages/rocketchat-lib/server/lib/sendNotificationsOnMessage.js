@@ -7,7 +7,7 @@ import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/m
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
-const sendNotification = ({
+const sendNotification = async({
 	subscription,
 	sender,
 	hasMentionToAll,
@@ -49,7 +49,7 @@ const sendNotification = ({
 
 	const roomType = room.t;
 	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
-	if (roomType === 'd' && !RocketChat.authz.hasPermission(subscription.u._id, 'view-d-room')) {
+	if (roomType === 'd' && !(await RocketChat.Services.call('authorization.hasPermission', { uid :subscription.u._id, permission: 'view-d-room' }))) {
 		return;
 	}
 

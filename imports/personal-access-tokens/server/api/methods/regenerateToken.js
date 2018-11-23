@@ -2,22 +2,12 @@ import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
 	'personalAccessTokens:regenerateToken'({ tokenName }) {
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:regenerateToken' });
-		}
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-personal-access-tokens')) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:regenerateToken' });
 		}
 
-		const tokenExist = RocketChat.models.Users.findPersonalAccessTokenByTokenNameAndUserId({
-			userId: Meteor.userId(),
-			tokenName,
-		});
-		if (!tokenExist) {
-			throw new Meteor.Error('error-token-does-not-exists', 'Token does not exist', { method: 'personalAccessTokens:regenerateToken' });
-		}
-
-		Meteor.call('personalAccessTokens:removeToken', { tokenName });
-		return Meteor.call('personalAccessTokens:generateToken', { tokenName });
+		return RocketChat.Services.call('personalAccessTokens.regenerateToken', { tokenName, uid });
 	},
 });

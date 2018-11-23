@@ -118,7 +118,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	}
 
 	// For the Rocket.Chat Apps :)
-	if (message && Apps && Apps.isLoaded()) {
+	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
@@ -151,11 +151,8 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	message = RocketChat.callbacks.run('beforeSaveMessage', message);
 	if (message) {
 		// Avoid saving sandstormSessionId to the database
-		let sandstormSessionId = null;
-		if (message.sandstormSessionId) {
-			sandstormSessionId = message.sandstormSessionId;
-			delete message.sandstormSessionId;
-		}
+		const { sandstormSessionId } = message;
+		delete message.sandstormSessionId;
 
 		if (message._id && upsert) {
 			const { _id } = message;
@@ -178,11 +175,10 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		/*
 		Defer other updates as their return is not interesting to the user
 		*/
-		Meteor.defer(() => {
-			// Execute all callbacks
-			message.sandstormSessionId = sandstormSessionId;
-			return RocketChat.callbacks.run('afterSaveMessage', message, room, user._id);
-		});
+
+		// Execute all callbacks
+		message.sandstormSessionId = sandstormSessionId;
+		RocketChat.callbacks.run('afterSaveMessage', message, room, user._id);
 		return message;
 	}
 };
