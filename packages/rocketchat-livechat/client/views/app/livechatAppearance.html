@@ -74,16 +74,16 @@
 				<fieldset>
 					<legend>{{_ "Livechat_registration_form"}}</legend>
 					<!--
-						<label class="rc-switch__label">
-							<input class="rc-switch__input" type="checkbox" name="registrationFormEnabled" checked="{{registrationFormEnabled}}"/>
-							<span class="rc-switch__button">
-								<span class="rc-switch__button-inside"></span>
-							</span>
-							<span class="rc-switch__text">
-								{{_ "Show_preregistration_form"}}
-							</span>
-						</label>
-						-->
+					<label class="rc-switch__label">
+						<input class="rc-switch__input" type="checkbox" name="registrationFormEnabled" checked="{{registrationFormEnabled}}"/>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+						<span class="rc-switch__text">
+							{{_ "Show_preregistration_form"}}
+						</span>
+					</label>
+					-->
 					<label class="rc-switch__label">
 						<input class="rc-switch__input js-input-check" type="checkbox" name="registrationFormEnabled"
 						{{registrationFormEnabled}} />
@@ -146,71 +146,71 @@
 			<div class="livechat-preview {{previewState}}">
 				<div class="preview-wrapper">
 					{{#with sampleData}}
-					<div class="livechat-room">
-						<div class="title" style="background-color:{{sampleColor}}">
-							<div class="toolbar">
-								&nbsp;
-								<i class="popout icon-link-ext" title="Open in a new window"></i>
-							</div>
-							<h1>{{sampleTitle}}</h1>
-						</div>
-						{{#if showOnline}}
-						<div class="messages">
-							<div class="wrapper">
-								<ul>
-									{{#each messages}}
-									<li id="{{_id}}" class="message {{sequential}}" data-username="{{u.username}}" data-date="{{date}}">
-										<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
-										<span class="user" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
-										<span class="info">
-											<span class="time">{{time}}</span>
-										</span>
-										<div class="body" dir="auto">
-											{{{body}}}
-										</div>
-									</li>
-									{{/each}}
-								</ul>
-							</div>
-						</div>
-						<div class="footer">
-							<div class="input-wrapper">
-								<textarea class="input-message rc-input__element" placeholder="Type your message"></textarea>
-							</div>
-							<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
-						</div>
-						{{/if}}
-
-						{{#if showOfflineForm}}
-						<div class="offline">
-							<p class="offline-message">{{{sampleOfflineMessage}}}</p>
-
-							<form>
-								<input type="text" class="rc-input__element" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
-
-								<input type="email" class="rc-input__element" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
-
-								<textarea id="message" class="rc-input__element" name="message" placeholder="{{_"Type_your_message"}}" rows="2"></textarea>
-
-								<div class="buttons">
-									<button class="button primary send">{{_ "Send"}}</button>
+						<div class="livechat-room">
+							<div class="title" style="background-color:{{sampleColor}}">
+								<div class="toolbar">
+									&nbsp;
+									<i class="popout icon-link-ext" title="Open in a new window"></i>
 								</div>
-							</form>
-						</div>
-						{{/if}}
+								<h1>{{sampleTitle}}</h1>
+							</div>
+							{{#if showOnline}}
+								<div class="messages">
+									<div class="wrapper">
+										<ul>
+											{{#each messages}}
+												<li id="{{_id}}" class="message {{sequential}}" data-username="{{u.username}}" data-date="{{date}}">
+													<span class="thumb thumb-small" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</span>
+													<span class="user" data-username="{{u.username}}" tabindex="1">{{u.username}}</span>
+													<span class="info">
+														<span class="time">{{time}}</span>
+													</span>
+													<div class="body" dir="auto">
+														{{{body}}}
+													</div>
+												</li>
+											{{/each}}
+										</ul>
+									</div>
+								</div>
+								<div class="footer">
+									<div class="input-wrapper">
+										<textarea class="input-message rc-input__element" placeholder="Type your message"></textarea>
+									</div>
+									<i class="send-button icon-paper-plane" aria-label="{{_ "Send"}}"></i>
+								</div>
+							{{/if}}
 
-						{{#if showOfflineSuccess}}
-						<div class="offline">
-							<p class="message-sent">{{{sampleOfflineSuccessMessage}}}</p>
-						</div>
-						{{/if}}
+							{{#if showOfflineForm}}
+								<div class="offline">
+									<p class="offline-message">{{{sampleOfflineMessage}}}</p>
 
-						{{#if showOfflineUnavailable}}
-						<div class="offline">
-							<p class="offline-message">{{{sampleOfflineUnavailableMessage}}}</p>
+									<form>
+										<input type="text" class="rc-input__element" id="name" name="name" placeholder="{{_ "Type_your_name"}}">
+
+										<input type="email" class="rc-input__element" id="email" name="email" placeholder="{{_ "Type_your_email"}}">
+
+										<textarea id="message" class="rc-input__element" name="message" placeholder="{{_"Type_your_message"}}" rows="2"></textarea>
+
+										<div class="buttons">
+											<button class="button primary send">{{_ "Send"}}</button>
+										</div>
+									</form>
+								</div>
+							{{/if}}
+
+							{{#if showOfflineSuccess}}
+								<div class="offline">
+									<p class="message-sent">{{{sampleOfflineSuccessMessage}}}</p>
+								</div>
+							{{/if}}
+
+							{{#if showOfflineUnavailable}}
+								<div class="offline">
+									<p class="offline-message">{{{sampleOfflineUnavailableMessage}}}</p>
+								</div>
+							{{/if}}
 						</div>
-						{{/if}}
-					</div>
 					{{/with}}
 				</div>
 			</div>
