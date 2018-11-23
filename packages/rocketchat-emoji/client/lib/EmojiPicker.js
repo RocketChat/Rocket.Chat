@@ -1,4 +1,7 @@
-/* globals Blaze, Template */
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+
 import _ from 'underscore';
 
 RocketChat.EmojiPicker = {
@@ -55,22 +58,23 @@ RocketChat.EmojiPicker = {
 	},
 	setPosition() {
 		const windowHeight = window.innerHeight;
+		const windowWidth = window.innerWidth;
 		const windowBorder = 10;
 		const sourcePos = $(this.source).offset();
-		const left = sourcePos.left;
-		const top = sourcePos.top;
-		const cssProperties = {top, left};
+		const { left, top } = sourcePos;
+		const cssProperties = { top, left };
+		const isLargerThanWindow = this.width + windowBorder > windowWidth;
 
 		if (top + this.height >= windowHeight) {
 			cssProperties.top = windowHeight - this.height - windowBorder;
 		}
 
 		if (left < windowBorder) {
-			cssProperties.left = windowBorder;
+			cssProperties.left = isLargerThanWindow ? 0 : windowBorder;
 		}
 
-		if (left + this.width >= window.innerWidth) {
-			cssProperties.left = left - this.width - windowBorder;
+		if (left + this.width >= windowWidth) {
+			cssProperties.left = isLargerThanWindow ? 0 : windowWidth - this.width - windowBorder;
 		}
 
 		return $('.emoji-picker').css(cssProperties);
@@ -125,7 +129,7 @@ RocketChat.EmojiPicker = {
 	refreshDynamicEmojiLists() {
 		const dynamicEmojiLists = [
 			RocketChat.emoji.packages.base.emojisByCategory.recent,
-			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket
+			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket,
 		];
 
 		dynamicEmojiLists.forEach((category) => {
@@ -138,5 +142,5 @@ RocketChat.EmojiPicker = {
 				}
 			}
 		});
-	}
+	},
 };

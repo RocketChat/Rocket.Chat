@@ -1,10 +1,13 @@
-/* globals Template chatMessages*/
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Template } from 'meteor/templating';
+
 Template.messageBox.events({
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!RocketChat.getUserPreference(Meteor.user(), 'useEmojis')) {
+		if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
 			return false;
 		}
 
@@ -12,7 +15,7 @@ Template.messageBox.events({
 			RocketChat.EmojiPicker.close();
 		} else {
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				const {input} = chatMessages[RocketChat.openedRoom];
+				const { input } = window.chatMessages[RocketChat.openedRoom];
 
 				const emojiValue = `:${ emoji }:`;
 
@@ -29,7 +32,7 @@ Template.messageBox.events({
 				input.selectionEnd = caretPos + emojiValue.length;
 			});
 		}
-	}
+	},
 });
 
 Template.messageBox.onCreated(function() {

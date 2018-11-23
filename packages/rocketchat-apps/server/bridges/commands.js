@@ -1,4 +1,6 @@
-import { SlashCommandContext } from '@rocket.chat/apps-ts-definition/slashcommands';
+import { Meteor } from 'meteor/meteor';
+import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import { Utilities } from '../../lib/misc/Utilities';
 
 export class AppCommandsBridge {
 	constructor(orch) {
@@ -82,18 +84,18 @@ export class AppCommandsBridge {
 	}
 
 	registerCommand(command, appId) {
-		console.log(`The App ${ appId } is registerin the command: "${ command.command }"`);
+		console.log(`The App ${ appId } is registering the command: "${ command.command }"`);
 
 		this._verifyCommand(command);
 
 		const item = {
 			command: command.command.toLowerCase(),
-			params: command.paramsExample,
-			description: command.i18nDescription,
+			params: Utilities.getI18nKeyForApp(command.i18nParamsExample, appId),
+			description: Utilities.getI18nKeyForApp(command.i18nDescription, appId),
 			callback: this._appCommandExecutor.bind(this),
 			providesPreview: command.providesPreview,
 			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
-			previewCallback: !command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this)
+			previewCallback: !command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this),
 		};
 
 		RocketChat.slashCommands.commands[command.command.toLowerCase()] = item;

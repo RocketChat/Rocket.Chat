@@ -1,6 +1,8 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 export default function handleLeftChannel(args) {
 	const user = RocketChat.models.Users.findOne({
-		'profile.irc.nick': args.nick
+		'profile.irc.nick': args.nick,
 	});
 
 	if (!user) {

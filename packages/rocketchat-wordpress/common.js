@@ -1,4 +1,6 @@
 /* globals CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
 const config = {
@@ -7,8 +9,8 @@ const config = {
 
 	addAutopublishFields: {
 		forLoggedInUser: ['services.wordpress'],
-		forOtherUsers: ['services.wordpress.user_login']
-	}
+		forOtherUsers: ['services.wordpress.user_login'],
+	},
 };
 
 const WordPress = new CustomOAuth('wordpress', config);
@@ -68,13 +70,13 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 		const enabled = RocketChat.settings.get('Accounts_OAuth_Wordpress');
 		if (enabled) {
 			ServiceConfiguration.configurations.upsert({
-				service: 'wordpress'
+				service: 'wordpress',
 			}, {
-				$set: config
+				$set: config,
 			});
 		} else {
 			ServiceConfiguration.configurations.remove({
-				service: 'wordpress'
+				service: 'wordpress',
 			});
 		}
 	}

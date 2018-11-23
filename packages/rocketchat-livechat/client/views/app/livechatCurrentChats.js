@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import moment from 'moment';
 
@@ -24,7 +29,7 @@ Template.livechatCurrentChats.helpers({
 	},
 	isClosed() {
 		return !this.open;
-	}
+	},
 });
 
 Template.livechatCurrentChats.events({
@@ -71,9 +76,9 @@ Template.livechatCurrentChats.events({
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, () => {
-			Meteor.call('livechat:removeRoom', this._id, function(error/*, result*/) {
+			Meteor.call('livechat:removeRoom', this._id, function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -82,11 +87,11 @@ Template.livechatCurrentChats.events({
 					text: t('Room_has_been_deleted'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 			});
 		});
-	}
+	},
 });
 
 Template.livechatCurrentChats.onCreated(function() {
@@ -104,6 +109,6 @@ Template.livechatCurrentChats.onRendered(function() {
 	this.$('.input-daterange').datepicker({
 		autoclose: true,
 		todayHighlight: true,
-		format: moment.localeData().longDateFormat('L').toLowerCase()
+		format: moment.localeData().longDateFormat('L').toLowerCase(),
 	});
 });

@@ -4,6 +4,7 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
@@ -30,25 +31,23 @@ graphQLServer.use('/api/graphql', (req, res, next) => {
 graphQLServer.use(
 	'/api/graphql',
 	bodyParser.json(),
-	graphqlExpress(request => {
-		return {
-			schema: executableSchema,
-			context: jsAccountsContext(request),
-			formatError: e => ({
-				message: e.message,
-				locations: e.locations,
-				path: e.path
-			}),
-			debug: Meteor.isDevelopment
-		};
-	})
+	graphqlExpress((request) => ({
+		schema: executableSchema,
+		context: jsAccountsContext(request),
+		formatError: (e) => ({
+			message: e.message,
+			locations: e.locations,
+			path: e.path,
+		}),
+		debug: Meteor.isDevelopment,
+	}))
 );
 
 graphQLServer.use(
 	'/graphiql',
 	graphiqlExpress({
 		endpointURL: '/api/graphql',
-		subscriptionsEndpoint: `ws://localhost:${ subscriptionPort }`
+		subscriptionsEndpoint: `ws://localhost:${ subscriptionPort }`,
 	})
 );
 
@@ -58,11 +57,11 @@ const startSubscriptionServer = () => {
 			schema: executableSchema,
 			execute,
 			subscribe,
-			onConnect: (connectionParams) => ({ authToken: connectionParams.Authorization })
+			onConnect: (connectionParams) => ({ authToken: connectionParams.Authorization }),
 		},
 		{
 			port: subscriptionPort,
-			host: process.env.BIND_IP || '0.0.0.0'
+			host: process.env.BIND_IP || '0.0.0.0',
 		});
 
 		console.log('GraphQL Subscription server runs on port:', subscriptionPort);

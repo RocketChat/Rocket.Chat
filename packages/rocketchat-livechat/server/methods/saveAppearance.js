@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
@@ -18,12 +20,10 @@ Meteor.methods({
 			'Livechat_conversation_finished_message',
 			'Livechat_registration_form',
 			'Livechat_name_field_registration_form',
-			'Livechat_email_field_registration_form'
+			'Livechat_email_field_registration_form',
 		];
 
-		const valid = settings.every((setting) => {
-			return validSettings.indexOf(setting._id) !== -1;
-		});
+		const valid = settings.every((setting) => validSettings.indexOf(setting._id) !== -1);
 
 		if (!valid) {
 			throw new Meteor.Error('invalid-setting');
@@ -34,5 +34,5 @@ Meteor.methods({
 		});
 
 		return;
-	}
+	},
 });

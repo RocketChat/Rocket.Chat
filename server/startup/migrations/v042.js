@@ -1,3 +1,5 @@
+import { Mongo } from 'meteor/mongo';
+
 RocketChat.Migrations.add({
 	version: 42,
 	up() {
@@ -10,19 +12,19 @@ RocketChat.Migrations.add({
 			'favicon_96.png': 'favicon_96',
 			'favicon_128.png': 'favicon_128',
 			'favicon_192.png': 'favicon_192',
-			'favicon_256.png': 'favicon_256'
+			'favicon_256.png': 'favicon_256',
 		};
 
 		for (const from of Object.keys(list)) {
 			const to = list[from];
 
 			const query = {
-				_id: to
+				_id: to,
 			};
 
 			if (!files.findOne(query)) {
 				const oldFile = files.findOne({
-					_id: from
+					_id: from,
 				});
 
 				if (oldFile) {
@@ -30,27 +32,27 @@ RocketChat.Migrations.add({
 					RocketChat.settings.removeById(`Assets_${ from }`);
 					RocketChat.settings.updateById(`Assets_${ to }`, {
 						url: `/assets/${ to }.${ extension }`,
-						defaultUrl: RocketChat.Assets.assets[to].defaultUrl
+						defaultUrl: RocketChat.Assets.assets[to].defaultUrl,
 					});
 
 					oldFile._id = to;
 					oldFile.filename = to;
 					files.insert(oldFile);
 					files.remove({
-						_id: from
+						_id: from,
 					});
 
 					chunks.update({
-						files_id: from
+						files_id: from,
 					}, {
 						$set: {
-							files_id: to
-						}
+							files_id: to,
+						},
 					}, {
-						multi: true
+						multi: true,
 					});
 				}
 			}
 		}
-	}
+	},
 });

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	getChannelTokenpass(rid) {
 		check(rid, String);
@@ -13,5 +16,5 @@ Meteor.methods({
 		}
 
 		return room.tokenpass;
-	}
+	},
 });

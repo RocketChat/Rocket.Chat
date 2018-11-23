@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 /*
  *
  * Get direct chat room helper
@@ -5,20 +6,17 @@
  *
  */
 const getDirectRoom = (source, target) => {
-	const rid = [ source._id, target._id ].sort().join('');
+	const rid = [source._id, target._id].sort().join('');
 
 	RocketChat.models.Rooms.upsert({ _id: rid }, {
-		$set: {
-			usernames: [source.username, target.username]
-		},
 		$setOnInsert: {
 			t: 'd',
 			msgs: 0,
-			ts: new Date()
-		}
+			ts: new Date(),
+		},
 	});
 
-	RocketChat.models.Subscriptions.upsert({rid, 'u._id': target._id}, {
+	RocketChat.models.Subscriptions.upsert({ rid, 'u._id': target._id }, {
 		$setOnInsert: {
 			name: source.username,
 			t: 'd',
@@ -27,12 +25,12 @@ const getDirectRoom = (source, target) => {
 			unread: 0,
 			u: {
 				_id: target._id,
-				username: target.username
-			}
-		}
+				username: target.username,
+			},
+		},
 	});
 
-	RocketChat.models.Subscriptions.upsert({rid, 'u._id': source._id}, {
+	RocketChat.models.Subscriptions.upsert({ rid, 'u._id': source._id }, {
 		$setOnInsert: {
 			name: target.username,
 			t: 'd',
@@ -41,20 +39,20 @@ const getDirectRoom = (source, target) => {
 			unread: 0,
 			u: {
 				_id: source._id,
-				username: source.username
-			}
-		}
+				username: source.username,
+			},
+		},
 	});
 
 	return {
 		_id: rid,
-		t: 'd'
+		t: 'd',
 	};
 };
 
 export default function handleSentMessage(args) {
 	const user = RocketChat.models.Users.findOne({
-		'profile.irc.nick': args.nick
+		'profile.irc.nick': args.nick,
 	});
 
 	if (!user) {
@@ -67,7 +65,7 @@ export default function handleSentMessage(args) {
 		room = RocketChat.models.Rooms.findOneByName(args.roomName);
 	} else {
 		const recipientUser = RocketChat.models.Users.findOne({
-			'profile.irc.nick': args.recipientNick
+			'profile.irc.nick': args.recipientNick,
 		});
 
 		room = getDirectRoom(user, recipientUser);
@@ -75,7 +73,7 @@ export default function handleSentMessage(args) {
 
 	const message = {
 		msg: args.message,
-		ts: new Date()
+		ts: new Date(),
 	};
 
 	RocketChat.sendMessage(user, message, room);

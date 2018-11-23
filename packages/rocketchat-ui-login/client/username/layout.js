@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.usernameLayout.helpers({
 	backgroundUrl() {
 		const asset = RocketChat.settings.get('Assets_background');
@@ -5,5 +7,5 @@ Template.usernameLayout.helpers({
 		if (asset && (asset.url || asset.defaultUrl)) {
 			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
 		}
-	}
+	},
 });

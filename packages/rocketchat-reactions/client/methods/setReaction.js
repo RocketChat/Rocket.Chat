@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -42,7 +43,7 @@ Meteor.methods({
 			}
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
-					usernames: []
+					usernames: [],
 				};
 			}
 			message.reactions[reaction].usernames.push(user.username);
@@ -52,5 +53,5 @@ Meteor.methods({
 		}
 
 		return;
-	}
+	},
 });

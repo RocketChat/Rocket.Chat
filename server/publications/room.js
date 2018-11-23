@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 const fields = {
@@ -19,6 +20,7 @@ const fields = {
 	default: 1,
 	customFields: 1,
 	lastMessage: 1,
+	retention: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,
@@ -36,20 +38,21 @@ const fields = {
 	sentiment: 1,
 	tokenpass: 1,
 	streamingOptions: 1,
-	broadcast: 1
+	broadcast: 1,
+	encrypted: 1,
+	e2eKeyId: 1,
 };
 
 const roomMap = (record) => {
-	if (record._room) {
-		return _.pick(record._room, ...Object.keys(fields));
+	if (record) {
+		return _.pick(record, ...Object.keys(fields));
 	}
-	console.log('Empty Room for Subscription', record);
 	return {};
 };
 
 Meteor.methods({
 	'rooms/get'(updatedAt) {
-		let options = {fields};
+		let options = { fields };
 
 		if (!Meteor.userId()) {
 			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
@@ -61,13 +64,13 @@ Meteor.methods({
 		this.unblock();
 
 		options = {
-			fields
+			fields,
 		};
 
 		if (updatedAt instanceof Date) {
 			return {
 				update: RocketChat.models.Rooms.findBySubscriptionUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch(),
-				remove: RocketChat.models.Rooms.trashFindDeletedAfter(updatedAt, {}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+				remove: RocketChat.models.Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
@@ -75,7 +78,9 @@ Meteor.methods({
 	},
 
 	getRoomByTypeAndName(type, name) {
-		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
+		const userId = Meteor.userId();
+
+		if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
 		}
 
@@ -89,36 +94,38 @@ Meteor.methods({
 			room = RocketChat.models.Rooms.findByTypeAndName(type, name).fetch();
 		}
 
-		if (!room) {
+		if (!room || room.length === 0) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
 		}
 
-		if (!Meteor.call('canAccessRoom', room._id, Meteor.userId())) {
+		room = room[0];
+
+		if (!Meteor.call('canAccessRoom', room._id, userId)) {
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
 		}
 
-		if (RocketChat.settings.get('Store_Last_Message') && !RocketChat.authz.hasPermission(Meteor.userId(), 'preview-c-room')) {
+		if (RocketChat.settings.get('Store_Last_Message') && !RocketChat.authz.hasPermission(userId, 'preview-c-room')) {
 			delete room.lastMessage;
 		}
 
-		return roomMap({ _room: room });
-	}
+		return roomMap(room);
+	},
 });
 
-RocketChat.models.Rooms.cache.on('sync', (type, room/*, diff*/) => {
-	const records = RocketChat.models.Subscriptions.findByRoomId(room._id).fetch();
+RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			// Override data cuz we do not publish all fields
+			data = RocketChat.models.Rooms.findOneById(id, { fields });
+			break;
 
-	const _room = roomMap({_room: room});
-	for (const record of records) {
-		RocketChat.Notifications.notifyUserInThisInstance(record.u._id, 'rooms-changed', type, _room);
+		case 'removed':
+			data = { _id: id };
+			break;
 	}
-});
 
-RocketChat.models.Subscriptions.on('changed', (type, subscription/*, diff*/) => {
-	if (type === 'inserted' || type === 'removed') {
-		const room = RocketChat.models.Rooms.findOneById(subscription.rid);
-		if (room) {
-			RocketChat.Notifications.notifyUserInThisInstance(subscription.u._id, 'rooms-changed', type, roomMap({_room: room}));
-		}
+	if (data) {
+		RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
 	}
 });

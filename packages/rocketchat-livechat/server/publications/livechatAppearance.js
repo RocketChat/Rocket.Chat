@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('livechat:appearance', function() {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:appearance' }));
@@ -23,9 +25,9 @@ Meteor.publish('livechat:appearance', function() {
 				'Livechat_conversation_finished_message',
 				'Livechat_registration_form',
 				'Livechat_name_field_registration_form',
-				'Livechat_email_field_registration_form'
-			]
-		}
+				'Livechat_email_field_registration_form',
+			],
+		},
 	};
 
 	const self = this;
@@ -39,7 +41,7 @@ Meteor.publish('livechat:appearance', function() {
 		},
 		removed(id) {
 			self.removed('livechatAppearance', id);
-		}
+		},
 	});
 
 	this.ready();

@@ -1,4 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Importers } from 'meteor/rocketchat:importer';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:ui';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({
@@ -24,7 +30,7 @@ Template.adminImportPrepare.helpers({
 	},
 	message_count() {
 		return Template.instance().message_count.get();
-	}
+	},
 });
 
 Template.adminImportPrepare.events({
@@ -38,7 +44,7 @@ Template.adminImportPrepare.events({
 			files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
 		}
 
-		return Array.from(files).map((file) => {
+		Array.from(files).forEach((file) => {
 			template.preparing.set(true);
 
 			const reader = new FileReader();
@@ -118,7 +124,7 @@ Template.adminImportPrepare.events({
 	'click .button.uncheck-archived-channels'(event, template) {
 		Array.from(template.channels.get()).filter((channel) => channel.is_archived).map((channel) =>
 			$(`[name=${ channel.channel_id }]`).attr('checked', false));
-	}
+	},
 });
 
 
@@ -133,7 +139,7 @@ Template.adminImportPrepare.onCreated(function() {
 	function loadSelection(progress) {
 		if ((progress != null ? progress.step : undefined)) {
 			switch (progress.step) {
-				//When the import is running, take the user to the progress page
+				// When the import is running, take the user to the progress page
 				case 'importer_importing_started':
 				case 'importer_importing_users':
 				case 'importer_importing_channels':

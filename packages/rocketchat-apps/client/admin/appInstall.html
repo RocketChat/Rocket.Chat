@@ -1,6 +1,6 @@
 <template name="appInstall">
-	<section class="preferences-page">
-		{{> header sectionName="App_Installation" hideHelp=true  fixedHeight=true}}
+	<section class="preferences-page preferences-page--new">
+		{{> header sectionName="App_Installation" hideHelp=true fullpage=true}}
 		<div class="preferences-page__content">
 			{{#if isInstalling}}
 				{{> loading}}

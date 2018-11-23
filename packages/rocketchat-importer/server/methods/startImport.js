@@ -1,9 +1,11 @@
+import { Meteor } from 'meteor/meteor';
 import {
 	Importers,
 	Selection,
 	SelectionChannel,
-	SelectionUser
+	SelectionUser,
 } from 'meteor/rocketchat:importer';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	startImport(key, input) {
@@ -13,7 +15,7 @@ Meteor.methods({
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'startImport'});
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'startImport' });
 		}
 
 		if (!key) {
@@ -26,10 +28,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-importer-not-defined', `The importer (${ key }) has no import class defined.`, { method: 'startImport' });
 		}
 
-		const usersSelection = input.users.map(user => new SelectionUser(user.user_id, user.username, user.email, user.is_deleted, user.is_bot, user.do_import));
-		const channelsSelection = input.channels.map(channel => new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import));
+		const usersSelection = input.users.map((user) => new SelectionUser(user.user_id, user.username, user.email, user.is_deleted, user.is_bot, user.do_import));
+		const channelsSelection = input.channels.map((channel) => new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import));
 
 		const selection = new Selection(importer.name, usersSelection, channelsSelection);
 		return importer.instance.startImport(selection);
-	}
+	},
 });

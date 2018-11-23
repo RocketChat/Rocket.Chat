@@ -1,12 +1,15 @@
+import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+
 FlowRouter.route('/admin/oauth-apps', {
 	name: 'admin-oauth-apps',
 	action() {
 		return BlazeLayout.render('main', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('OAuth_Applications'),
-			pageTemplate: 'oauthApps'
+			pageTemplate: 'oauthApps',
 		});
-	}
+	},
 });
 
 FlowRouter.route('/admin/oauth-app/:id?', {
@@ -16,7 +19,7 @@ FlowRouter.route('/admin/oauth-app/:id?', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('OAuth_Application'),
 			pageTemplate: 'oauthApp',
-			params
+			params,
 		});
-	}
+	},
 });

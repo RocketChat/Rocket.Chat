@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.loginLayout.onRendered(function() {
 	$('#initial-page-loading').remove();
 });
@@ -9,5 +11,5 @@ Template.loginLayout.helpers({
 		if (asset && (asset.url || asset.defaultUrl)) {
 			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
 		}
-	}
+	},
 });

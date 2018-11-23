@@ -1,3 +1,6 @@
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Template } from 'meteor/templating';
+
 Template.fxOsInstallPrompt.onRendered(function() {
 
 	const showPrompt = function() {
@@ -7,7 +10,7 @@ Template.fxOsInstallPrompt.onRendered(function() {
 		};
 		request.onerror = function() {
 			BlazeLayout.render('fxOsInstallError', {
-				installError: this.error.name
+				installError: this.error.name,
 			});
 		};
 	};

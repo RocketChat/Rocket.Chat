@@ -1,4 +1,6 @@
-/* globals RocketChatFileCustomSoundsInstance */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 import s from 'underscore.string';
 
 Meteor.methods({
@@ -11,13 +13,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateSound', field: 'Name' });
 		}
 
-		//let nameValidation = new RegExp('^[0-9a-zA-Z-_+;.]+$');
+		// let nameValidation = new RegExp('^[0-9a-zA-Z-_+;.]+$');
 
-		//allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
-		//more practical than allowing specific sets of characters; also allows foreign languages
+		// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
+		// more practical than allowing specific sets of characters; also allows foreign languages
 		const nameValidation = /[\s,:><&"'\/\\\(\)]/;
 
-		//silently strip colon; this allows for uploading :soundname: as soundname
+		// silently strip colon; this allows for uploading :soundname: as soundname
 		soundData.name = soundData.name.replace(/:/g, '');
 
 		if (nameValidation.test(soundData.name)) {
@@ -37,10 +39,10 @@ Meteor.methods({
 		}
 
 		if (!soundData._id) {
-			//insert sound
+			// insert sound
 			const createSound = {
 				name: soundData.name,
-				extension: soundData.extension
+				extension: soundData.extension,
 			};
 
 			const _id = RocketChat.models.CustomSounds.create(createSound);
@@ -48,17 +50,17 @@ Meteor.methods({
 
 			return _id;
 		} else {
-			//update sound
+			// update sound
 			if (soundData.newFile) {
 				RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.previousExtension }`);
 			}
 
 			if (soundData.name !== soundData.previousName) {
 				RocketChat.models.CustomSounds.setName(soundData._id, soundData.name);
-				RocketChat.Notifications.notifyAll('updateCustomSound', {soundData});
+				RocketChat.Notifications.notifyAll('updateCustomSound', { soundData });
 			}
 
 			return soundData._id;
 		}
-	}
+	},
 });

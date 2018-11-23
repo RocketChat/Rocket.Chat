@@ -1,12 +1,15 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import toastr from 'toastr';
 
 Template.ChatpalAdmin.onCreated(function() {
 
 	const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-	this.validateEmail = (email) => {
-		return re.test(email.toLowerCase());
-	};
+	this.validateEmail = (email) => re.test(email.toLowerCase());
 
 	this.apiKey = new ReactiveVar();
 
@@ -32,7 +35,7 @@ Template.ChatpalAdmin.events({
 		if (!email || email === '') { return toastr.error(TAPi18n.__('Chatpal_ERROR_Email_must_be_set')); }
 		if (!t.validateEmail(email)) { return toastr.error(TAPi18n.__('Chatpal_ERROR_Email_must_be_valid')); }
 
-		//TODO register
+		// TODO register
 		try {
 			Meteor.call('chatpalUtilsCreateKey', email, (err, key) => {
 				if (!key) { return toastr.error(TAPi18n.__('Chatpal_ERROR_username_already_exists')); }
@@ -44,12 +47,12 @@ Template.ChatpalAdmin.events({
 
 		} catch (e) {
 			console.log(e);
-			toastr.error(TAPi18n.__('Chatpal_ERROR_username_already_exists'));//TODO error messages
+			toastr.error(TAPi18n.__('Chatpal_ERROR_username_already_exists'));// TODO error messages
 		}
-	}
+	},
 });
 
-//template
+// template
 Template.ChatpalAdmin.helpers({
 	apiKey() {
 		return Template.instance().apiKey.get();
@@ -59,5 +62,5 @@ Template.ChatpalAdmin.helpers({
 	},
 	tac() {
 		return Template.instance().tac.get();
-	}
+	},
 });

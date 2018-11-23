@@ -1,52 +1,53 @@
-import {Meteor} from 'meteor/meteor';
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { createLiveStream, statusLiveStream, statusStreamLiveStream, getBroadcastStatus, setBroadcastStatus } from './functions/livestream';
 
 const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;
 
 Meteor.methods({
 
-	async livestreamStreamStatus({streamId}) {
+	async livestreamStreamStatus({ streamId }) {
 		if (!streamId) {
 			// TODO: change error
 			throw new Meteor.Error('error-not-allowed', 'Livestream ID not found', {
-				method: 'livestreamStreamStatus'
+				method: 'livestreamStreamStatus',
 			});
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
 			throw new Meteor.Error('error-not-allowed', 'You have no settings to stream', {
-				method: 'livestreamStreamStatus'
+				method: 'livestreamStreamStatus',
 			});
 		}
 
-		const {access_token, refresh_token} = livestreamSettings;
+		const { access_token, refresh_token } = livestreamSettings;
 
 		return await statusStreamLiveStream({
 			id: streamId,
 			access_token,
 			refresh_token,
 			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret')
+			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
 		});
 
 	},
-	async setLivestreamStatus({broadcastId, status}) {
+	async setLivestreamStatus({ broadcastId, status }) {
 		if (!broadcastId) {
 			// TODO: change error
 			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamStart'
+				method: 'livestreamStart',
 			});
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
 			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamStart'
+				method: 'livestreamStart',
 			});
 		}
 
-		const {access_token, refresh_token} = livestreamSettings;
+		const { access_token, refresh_token } = livestreamSettings;
 
 		return await statusLiveStream({
 			id: broadcastId,
@@ -54,79 +55,79 @@ Meteor.methods({
 			refresh_token,
 			status,
 			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret')
+			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
 		});
 
 	},
-	async livestreamGet({rid}) {
+	async livestreamGet({ rid }) {
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
 			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamGet'
+				method: 'livestreamGet',
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOne({_id: rid});
+		const room = RocketChat.models.Rooms.findOne({ _id: rid });
 
 		if (!room) {
 			// TODO: change error
 			throw new Meteor.Error('error-not-allowed', 'You have no settings to livestream', {
-				method: 'livestreamGet'
+				method: 'livestreamGet',
 			});
 		}
 
-		const {access_token, refresh_token} = livestreamSettings;
+		const { access_token, refresh_token } = livestreamSettings;
 		return await createLiveStream({
 			room,
 			access_token,
 			refresh_token,
 			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret')
+			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
 		});
 
 	},
-	async getBroadcastStatus({broadcastId}) {
+	async getBroadcastStatus({ broadcastId }) {
 		if (!broadcastId) {
 			// TODO: change error
 			throw new Meteor.Error('error-not-allowed', 'Broadcast ID not found', {
-				method: 'getBroadcastStatus'
+				method: 'getBroadcastStatus',
 			});
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
 			throw new Meteor.Error('error-not-allowed', 'You have no settings to stream', {
-				method: 'getBroadcastStatus'
+				method: 'getBroadcastStatus',
 			});
 		}
 
-		const {access_token, refresh_token} = livestreamSettings;
+		const { access_token, refresh_token } = livestreamSettings;
 
 		return await getBroadcastStatus({
 			id: broadcastId,
 			access_token,
 			refresh_token,
 			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret')
+			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
 		});
 	},
-	async setBroadcastStatus({broadcastId, status}) {
+	async setBroadcastStatus({ broadcastId, status }) {
 		if (!broadcastId) {
 			// TODO: change error
 			throw new Meteor.Error('error-not-allowed', 'Broadcast ID not found', {
-				method: 'setBroadcastStatus'
+				method: 'setBroadcastStatus',
 			});
 		}
 		const livestreamSettings = selectLivestreamSettings(Meteor.user());
 
 		if (!livestreamSettings) {
 			throw new Meteor.Error('error-not-allowed', 'You have no settings to stream', {
-				method: 'setBroadcastStatus'
+				method: 'setBroadcastStatus',
 			});
 		}
 
-		const {access_token, refresh_token} = livestreamSettings;
+		const { access_token, refresh_token } = livestreamSettings;
 
 		return await setBroadcastStatus({
 			id: broadcastId,
@@ -134,8 +135,8 @@ Meteor.methods({
 			refresh_token,
 			status,
 			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret')
+			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
 		});
 
-	}
+	},
 });

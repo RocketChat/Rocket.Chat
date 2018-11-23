@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	setRealName(name) {
 
@@ -16,9 +19,9 @@ Meteor.methods({
 		}
 
 		return name;
-	}
+	},
 });
 
 RocketChat.RateLimiter.limitMethod('setRealName', 1, 1000, {
-	userId: () => true
+	userId: () => true,
 });

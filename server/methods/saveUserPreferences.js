@@ -1,9 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 Meteor.methods({
 	saveUserPreferences(settings) {
 		const keys = {
 			language: Match.Optional(String),
 			newRoomNotification: Match.Optional(String),
 			newMessageNotification: Match.Optional(String),
+			clockMode: Match.Optional(Number),
 			useEmojis: Match.Optional(Boolean),
 			convertAsciiEmoji: Match.Optional(Boolean),
 			saveMobileBandwidth: Match.Optional(Boolean),
@@ -31,7 +35,7 @@ Meteor.methods({
 			sidebarViewMode: Match.Optional(String),
 			sidebarHideAvatar: Match.Optional(Boolean),
 			sidebarGroupByType: Match.Optional(Boolean),
-			muteFocusedConversations: Match.Optional(Boolean)
+			muteFocusedConversations: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
 		const user = Meteor.user();
@@ -43,7 +47,7 @@ Meteor.methods({
 		const {
 			desktopNotifications: oldDesktopNotifications,
 			mobileNotifications: oldMobileNotifications,
-			emailNotificationMode: oldEmailNotifications
+			emailNotificationMode: oldEmailNotifications,
 		} = (user.settings && user.settings.preferences) || {};
 
 		if (user.settings == null) {
@@ -69,7 +73,7 @@ Meteor.methods({
 
 		// propagate changed notification preferences
 		Meteor.defer(() => {
-			if (oldDesktopNotifications !== settings.desktopNotifications) {
+			if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
 				if (settings.desktopNotifications === 'default') {
 					RocketChat.models.Subscriptions.clearDesktopNotificationUserPreferences(user._id);
 				} else {
@@ -77,7 +81,7 @@ Meteor.methods({
 				}
 			}
 
-			if (oldMobileNotifications !== settings.mobileNotifications) {
+			if (settings.mobileNotifications && oldMobileNotifications !== settings.mobileNotifications) {
 				if (settings.mobileNotifications === 'default') {
 					RocketChat.models.Subscriptions.clearMobileNotificationUserPreferences(user._id);
 				} else {
@@ -85,7 +89,7 @@ Meteor.methods({
 				}
 			}
 
-			if (oldEmailNotifications !== settings.emailNotificationMode) {
+			if (settings.emailNotificationMode && oldEmailNotifications !== settings.emailNotificationMode) {
 				if (settings.emailNotificationMode === 'default') {
 					RocketChat.models.Subscriptions.clearEmailNotificationUserPreferences(user._id);
 				} else {
@@ -99,5 +103,5 @@ Meteor.methods({
 		});
 
 		return true;
-	}
+	},
 });

@@ -1,5 +1,7 @@
 /* globals FileUpload, WebApp */
 
+import { Meteor } from 'meteor/meteor';
+
 WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
 
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);

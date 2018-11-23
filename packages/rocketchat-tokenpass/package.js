@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:tokenpass',
 	version: '0.0.1',
-	summary: 'RocketChat settings for Tokenpass OAuth flow'
+	summary: 'RocketChat settings for Tokenpass OAuth flow',
 });
 
 Package.onUse(function(api) {
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('service-configuration');
 	api.use('templating', 'client');
-	api.use('percolate:synced-cron');
+	api.use('littledata:synced-cron');
 	api.use('rocketchat:lib');
 	api.use('rocketchat:authorization');
 	api.use('rocketchat:custom-oauth');

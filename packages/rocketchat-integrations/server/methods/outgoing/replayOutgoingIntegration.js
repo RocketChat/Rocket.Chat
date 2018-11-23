@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	replayOutgoingIntegration({ integrationId, historyId }) {
 		let integration;
@@ -5,7 +8,7 @@ Meteor.methods({
 		if (RocketChat.authz.hasPermission(this.userId, 'manage-integrations') || RocketChat.authz.hasPermission(this.userId, 'manage-integrations', 'bot')) {
 			integration = RocketChat.models.Integrations.findOne(integrationId);
 		} else if (RocketChat.authz.hasPermission(this.userId, 'manage-own-integrations') || RocketChat.authz.hasPermission(this.userId, 'manage-own-integrations', 'bot')) {
-			integration = RocketChat.models.Integrations.findOne(integrationId, { fields: { '_createdBy._id': this.userId }});
+			integration = RocketChat.models.Integrations.findOne(integrationId, { fields: { '_createdBy._id': this.userId } });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'replayOutgoingIntegration' });
 		}
@@ -23,5 +26,5 @@ Meteor.methods({
 		RocketChat.integrations.triggerHandler.replay(integration, history);
 
 		return true;
-	}
+	},
 });

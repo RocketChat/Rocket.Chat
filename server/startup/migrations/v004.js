@@ -1,3 +1,5 @@
+import { Random } from 'meteor/random';
+
 RocketChat.Migrations.add({
 	version: 4,
 	up() {
@@ -8,33 +10,33 @@ RocketChat.Migrations.add({
 
 		RocketChat.models.Subscriptions.update({
 			rn: {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}, {
 			$rename: {
-				rn: 'name'
-			}
+				rn: 'name',
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 
 		console.log('Adding names to rooms without name');
 
 		RocketChat.models.Rooms.find({
-			name: ''
+			name: '',
 		}).forEach((item) => {
 			const name = Random.id().toLowerCase();
 
 			RocketChat.models.Rooms.setNameById(item._id, name);
 
 			return RocketChat.models.Subscriptions.update({
-				rid: item._id
+				rid: item._id,
 			}, {
 				$set: {
-					name
-				}
+					name,
+				},
 			}, {
-				multi: true
+				multi: true,
 			});
 		});
 
@@ -45,25 +47,25 @@ RocketChat.Migrations.add({
 			return RocketChat.models.Rooms.find({
 				name: room.name,
 				_id: {
-					$ne: room._id
-				}
+					$ne: room._id,
+				},
 			}).forEach((item) => {
 				const name = `${ room.name }-${ Random.id(2).toLowerCase() }`;
 
 				RocketChat.models.Rooms.setNameById(item._id, name);
 
 				return RocketChat.models.Subscriptions.update({
-					rid: item._id
+					rid: item._id,
 				}, {
 					$set: {
-						name
-					}
+						name,
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 			});
 		});
 
 		return console.log('End');
-	}
+	},
 });
