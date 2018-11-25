@@ -63,6 +63,20 @@ RocketChat.API.v1.addRoute('users.delete', { authRequired: true }, {
 	},
 });
 
+RocketChat.API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
+       post() {
+               let result;
+               Meteor.runAsUser(this.userId, () => {
+                       result = Meteor.call('requestDataDownload', { fullExport: false });
+               });
+
+               return RocketChat.API.v1.success({
+                       requested: result.requested,
+                       status: result.exportOperation.status
+               });
+       },
+});
+
 RocketChat.API.v1.addRoute('users.deleteOwnAccount', { authRequired: true }, {
 	post() {
 		const { password } = this.bodyParams;
