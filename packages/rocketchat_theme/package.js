@@ -4,11 +4,29 @@ Package.describe({
 	summary: '',
 	git: '',
 });
+
+Package.registerBuildPlugin({
+	name: 'minifier-postcss',
+	use: [
+		'ecmascript@0.10.4',
+		'minifier-css@1.3.1',
+		'tmeasday:check-npm-versions@0.3.2',
+	],
+	npmDependencies: {
+		'source-map': '0.5.6',
+		'app-module-path': '2.2.0',
+	},
+	sources: [
+		'plugin/minify-css.js',
+	],
+});
+
+
 Package.onUse(function(api) {
 	api.use('rocketchat:lib');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:assets');
-	api.use('juliancwirko:postcss');
+	api.use('isobuild:minifier-plugin@1.0.0');
 	api.use('ecmascript');
 	api.use('less');
 	api.use('webapp');
