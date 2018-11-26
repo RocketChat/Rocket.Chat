@@ -1,3 +1,6 @@
+import { Mongo } from 'meteor/mongo';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Roles = new Mongo.Collection('rocketchat_roles');
 
 Object.assign(RocketChat.models.Roles, {
@@ -16,5 +19,5 @@ Object.assign(RocketChat.models.Roles, {
 			const model = RocketChat.models[roleScope];
 			return model && model.isUserInRole && model.isUserInRole(userId, roleName, scope);
 		});
-	}
+	},
 });

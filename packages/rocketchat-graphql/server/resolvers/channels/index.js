@@ -9,6 +9,7 @@ import * as channelsByUser from './channelsByUser';
 import * as createChannel from './createChannel';
 import * as leaveChannel from './leaveChannel';
 import * as hideChannel from './hideChannel';
+import * as deleteChannel from './deleteChannel';
 // types
 import * as ChannelType from './Channel-type';
 import * as ChannelSort from './ChannelSort-enum';
@@ -26,12 +27,13 @@ export const schema = mergeTypes([
 	createChannel.schema,
 	leaveChannel.schema,
 	hideChannel.schema,
+	deleteChannel.schema,
 	// types
 	ChannelType.schema,
 	ChannelSort.schema,
 	ChannelFilter.schema,
 	Privacy.schema,
-	ChannelNameAndDirect.schema
+	ChannelNameAndDirect.schema,
 ]);
 
 export const resolvers = mergeResolvers([
@@ -44,6 +46,7 @@ export const resolvers = mergeResolvers([
 	createChannel.resolver,
 	leaveChannel.resolver,
 	hideChannel.resolver,
+	deleteChannel.resolver,
 	// types
-	ChannelType.resolver
+	ChannelType.resolver,
 ]);

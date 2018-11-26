@@ -1,10 +1,12 @@
+import { Blaze } from 'meteor/blaze';
+
 this.Modal = (function() {
 
 	const self = {};
 	const win = $(window);
 
-	//mistérios da vida c.483: Pq a self.$window diz ter 100% da janela via css mas na verdade ocupa menos de 100% da tela?
-	//isso impede que o retorno da janela ao normal quando não mais necessária a classe fluid. (comportamento dançante)
+	// mistérios da vida c.483: Pq a self.$window diz ter 100% da janela via css mas na verdade ocupa menos de 100% da tela?
+	// isso impede que o retorno da janela ao normal quando não mais necessária a classe fluid. (comportamento dançante)
 
 	function focus() {
 		if (self.$modal) {
@@ -100,7 +102,7 @@ this.Modal = (function() {
 			self.$footer = self.$modal.find('footer');
 			self.$close.unbind('click').click(close);
 			win.unbind('resize.modal').bind('resize.modal', check);
-			return win.unbind('keydown.modal').bind('keydown.modal', e => keydown(e));
+			return win.unbind('keydown.modal').bind('keydown.modal', (e) => keydown(e));
 		}
 	}
 

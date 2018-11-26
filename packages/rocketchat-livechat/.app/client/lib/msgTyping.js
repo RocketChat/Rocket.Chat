@@ -1,4 +1,7 @@
-/* globals Notifications */
+/* globals Notifications, Livechat */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 
@@ -10,13 +13,14 @@ export const MsgTyping = (function() {
 	const selfTyping = new ReactiveVar(false);
 	const usersTyping = {};
 	const dep = new Tracker.Dependency;
+	let oldRoom;
 
 	const addStream = function(room) {
 		if (!_.isEmpty(usersTyping[room] && usersTyping[room].users)) {
 			return;
 		}
 		usersTyping[room] = { users: {} };
-		return Notifications.onRoom(room, 'typing', function(username, typing, extraData) {
+		return Notifications.onRoom(room, 'typing', function(username, typing/* , extraData*/) {
 			const user = Meteor.user();
 			if (username === (user && user.username)) {
 				return;
@@ -37,8 +41,12 @@ export const MsgTyping = (function() {
 	};
 
 	Tracker.autorun(() => {
-		if (visitor.getRoom() && visitor.getId()) {
-			addStream(visitor.getRoom());
+		if (Livechat.room && visitor.getId()) {
+			if (oldRoom) {
+				Notifications.unRoom(oldRoom, 'typing');
+			}
+			addStream(Livechat.room);
+			oldRoom = Livechat.room;
 		}
 	});
 

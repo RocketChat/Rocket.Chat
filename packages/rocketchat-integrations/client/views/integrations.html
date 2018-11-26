@@ -3,16 +3,25 @@
 		{{#header sectionName=pageTitle buttons=true}}
 			{{#if hasPermission}}
 			<div class="rc-header__section-button">
+				<a href="{{pathFor "admin-integrations-additional-zapier"}}" class="rc-button rc-button--primary zapier-btn">Zapier</a>
 				<a href="{{pathFor "admin-integrations-new"}}" class="rc-button rc-button--primary">{{_ "New_integration"}}</a>
 			</div>
 			{{/if}}
 		{{/header}}
 
-		<div class="content background-transparent-dark">
+		<div class="content">
 			{{#unless hasPermission}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
 				<div class="rocket-form">
+					<div class="section integrate-other-ways">
+						<h1>Zapier</h1>
+						<p>{{{_ "additional_integrations_Zapier"}}}</p>
+						<br>
+						<h1>{{_ "Bots"}}</h1>
+						<p>{{{_ "additional_integrations_Bots"}}}</p>
+					</div>
+
 					<div class="section">
 						<div class="admin-integrations-new-panel">
 							{{#each integrations}}

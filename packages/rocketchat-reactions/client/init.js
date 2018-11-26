@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+
 Template.room.events({
 	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
 		event.preventDefault();
@@ -32,7 +36,7 @@ Template.room.events({
 	'mouseleave .reactions > li:not(.add-reaction)'(event) {
 		event.stopPropagation();
 		RocketChat.tooltip.hide();
-	}
+	},
 });
 
 Meteor.startup(function() {
@@ -42,16 +46,11 @@ Meteor.startup(function() {
 		label: 'Reactions',
 		context: [
 			'message',
-			'message-mobile'
+			'message-mobile',
 		],
 		action(event) {
-			const data = Blaze.getData(event.currentTarget);
-
 			event.stopPropagation();
-
-			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				Meteor.call('setReaction', `:${ emoji }:`, data._arguments[1]._id);
-			});
+			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, this._arguments[1]._id));
 		},
 		condition(message) {
 			const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
@@ -70,6 +69,6 @@ Meteor.startup(function() {
 			return true;
 		},
 		order: 22,
-		group: 'message'
+		group: 'message',
 	});
 });

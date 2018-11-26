@@ -1,10 +1,16 @@
 /* globals fireGlobalEvent*/
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 
-const isSubscribed = _id => ChatSubscription.find({ rid: _id }).count() > 0;
+const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
 
 Template.header.helpers({
+	back() {
+		return Template.instance().data.back;
+	},
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
@@ -78,13 +84,26 @@ Template.header.helpers({
 		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 	},
 
+	encryptedChannel() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return roomData && roomData.encrypted;
+	},
+
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
+		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
 	},
 
 	showToggleFavorite() {
 		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
+	},
+
+	fixedHeight() {
+		return Template.instance().data.fixedHeight;
+	},
+
+	fullpage() {
+		return Template.instance().data.fullpage;
 	},
 
 	isChannel() {
@@ -93,32 +112,39 @@ Template.header.helpers({
 
 	isSection() {
 		return Template.instance().data.sectionName != null;
-	}
+	},
 });
 
 Template.header.events({
-	'click .iframe-toolbar button'() {
+	'click .iframe-toolbar .js-iframe-action'(e) {
 		fireGlobalEvent('click-toolbar-button', { id: this.id });
+		e.currentTarget.querySelector('button').blur();
+		return false;
 	},
 
 	'click .rc-header__toggle-favorite'(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		return Meteor.call('toggleFavorite', this._id, !$(event.currentTarget).hasClass('favorite-room'), function(err) {
-			if (err) {
-				return handleError(err);
-			}
-		});
+		return Meteor.call(
+			'toggleFavorite',
+			this._id,
+			!$(event.currentTarget).hasClass('favorite-room'),
+			(err) => err && handleError(err)
+		);
 	},
 
 	'click .edit-room-title'(event) {
 		event.preventDefault();
 		Session.set('editRoomTitle', true);
 		$('.rc-header').addClass('visible');
-		return Meteor.setTimeout(() => $('#room-title-field').focus().select(), 10);
-	}
+		return Meteor.setTimeout(() =>
+			$('#room-title-field')
+				.focus()
+				.select(),
+		10);
+	},
 });
 
 Template.header.onCreated(function() {
-	this.currentChannel = RocketChat.models.Rooms.findOne(this.data._id) || undefined;
+	this.currentChannel = (this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id)) || undefined;
 });

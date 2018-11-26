@@ -1,9 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.saveRoomName = function(rid, displayName, user, sendMessage = true) {
 	const room = RocketChat.models.Rooms.findOneById(rid);
 	if (RocketChat.roomTypes.roomTypes[room.t].preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-			'function': 'RocketChat.saveRoomdisplayName'
+			function: 'RocketChat.saveRoomdisplayName',
 		});
 	}
 	if (displayName === room.name) {

@@ -1,5 +1,5 @@
 <template name="livechatFlex">
-	<aside class="sidebar-light" role="navigation">
+	<aside class="sidebar-light sidebar--medium" role="navigation">
 		<header class="sidebar-flex__header">
 			<h1 class="sidebar-flex__title">{{_ "Livechat"}}</h1>
 			{{#unless embeddedVersion}}
@@ -11,6 +11,8 @@
 		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}">
 			<ul class="rooms-list__list">
 				{{> sidebarItem menuItem "Current_Chats" false "livechat-current-chats" }}
+				{{> sidebarItem menuItem "Analytics" false "livechat-analytics" }}
+				{{> sidebarItem menuItem "Real_Time_Monitoring" false "livechat-real-time-monitoring" }}
 				{{> sidebarItem menuItem "User_management" false "livechat-users" }}
 				{{> sidebarItem menuItem "Departments" false "livechat-departments" }}
 				{{> sidebarItem menuItem "Triggers" false "livechat-triggers" }}

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	'livechat:removeTrigger'(triggerId) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
@@ -7,5 +10,5 @@ Meteor.methods({
 		check(triggerId, String);
 
 		return RocketChat.models.LivechatTrigger.removeById(triggerId);
-	}
+	},
 });

@@ -8,8 +8,13 @@
 			{{#if state 'wait-activation'}}
 				<header>
 					<h2 data-i18n="Registration_Succeeded">{{{_ "Registration_Succeeded"}}}</h2>
-					<p>{{{_ "Wait_activation_warning"}}}</p>
-					<p>{{{_ "Please_wait_activation"}}}</p>
+					<p>{{_ "Wait_activation_warning"}}</p>
+					<p>{{_ "Please_wait_activation"}}</p>
+				</header>
+			{{else if state 'wait-email-activation'}}
+				<header>
+					<h2 data-i18n="Registration_Succeeded">{{{_ "Registration_Succeeded"}}}</h2>
+					<p>{{_ "We_have_sent_registration_email"}}</p>
 				</header>
 			{{else}}
 				{{> loginServices }}
@@ -28,11 +33,11 @@
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{emailOrUsernamePlaceholder}}" autofocus>
 										<div class="input-error"></div>
-										</div>
-									</label>
-									{{#if hasOnePassword}}
-										<div class="one-passsword"></div>
-									{{/if}}
+									</div>
+								</label>
+								{{#if hasOnePassword}}
+									<div class="one-passsword"></div>
+								{{/if}}
 							</div>
 							<div class="rc-input">
 								<label class="rc-input__label" for="pass">
@@ -40,9 +45,9 @@
 										<input name="pass" id="pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{passwordPlaceholder}}" autofocus>
-											<div class="input-error"></div>
-										</div>
-									</label>
+										<div class="input-error"></div>
+									</div>
+								</label>
 							</div>
 						{{/if}}
 						{{#if state 'register'}}
@@ -58,10 +63,10 @@
 						</div>
 						<div class="rc-input">
 							<label class="rc-input__label" for="email">
-							<div class="rc-input__wrapper">
-								<input name="email" id="email" type="text" class="rc-input__element"
-									autocapitalize="off" autocorrect="off"
-									placeholder="{{_ "Email"}}" autofocus>
+								<div class="rc-input__wrapper">
+									<input name="email" id="email" type="text" class="rc-input__element"
+										autocapitalize="off" autocorrect="off"
+										placeholder="{{_ "Email"}}" autofocus>
 									<div class="input-error"></div>
 								</div>
 							</label>
@@ -75,9 +80,9 @@
 										<input name="pass" id="pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
 											placeholder="{{passwordPlaceholder}}" autofocus>
-											<div class="input-error"></div>
-										</div>
-									</label>
+										<div class="input-error"></div>
+									</div>
+								</label>
 							</div>
 							{{#if requirePasswordConfirmation}}
 							<div class="rc-input">
@@ -85,11 +90,23 @@
 									<div class="rc-input__wrapper">
 										<input name="confirm-pass" id="confirm-pass" type="password" class="rc-input__element"
 											autocapitalize="off" autocorrect="off"
-											placeholder="{{passwordPlaceholder}}" autofocus>
+											placeholder="{{confirmPasswordPlaceholder}}" autofocus>
+										<div class="input-error"></div>
+									</div>
+								</label>
+							</div>
+							{{/if}}
+							{{#if manuallyApproveNewUsers}}
+								<div class="rc-input">
+									<label class="rc-input__label" for="confirm-pass">
+										<div class="rc-input__wrapper">
+											<input name="reason" id="reason" type="text" class="rc-input__element"
+												autocapitalize="off" autocorrect="off"
+												placeholder="{{_ 'Reason_To_Join'}}" autofocus>
 											<div class="input-error"></div>
 										</div>
 									</label>
-							</div>
+								</div>
 							{{/if}}
 						{{/if}}
 						{{#if state 'forgot-password' 'email-verification'}}

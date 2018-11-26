@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:logger',
 	version: '0.0.1',
-	summary: 'Logger for Rocket.Chat'
+	summary: 'Logger for Rocket.Chat',
 });
 
 Package.onUse(function(api) {
@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 	api.use('raix:eventemitter');
 	api.use('templating', 'client');
 	api.use('kadira:flow-router', 'client');
-
+	api.use('kadira:blaze-layout', 'client');
 	api.addFiles('client/ansispan.js', 'client');
 	api.addFiles('client/logger.js', 'client');
 	api.addFiles('client/viewLogs.js', 'client');

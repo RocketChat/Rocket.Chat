@@ -1,6 +1,8 @@
 /* globals FileUpload, WebApp */
 
-WebApp.connectHandlers.use(`${ __meteor_runtime_config__.ROOT_URL_PATH_PREFIX }/file-upload/`,	function(req, res, next) {
+import { Meteor } from 'meteor/meteor';
+
+WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
 
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 

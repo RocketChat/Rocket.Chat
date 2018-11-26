@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 /*
@@ -8,6 +9,7 @@ RocketChat.slashCommands.add('me', function Me(command, params, item) {
 	if (command !== 'me') {
 		return;
 	}
+
 	if (s.trim(params)) {
 		const msg = item;
 		msg.msg = `_${ params }_`;
@@ -15,5 +17,5 @@ RocketChat.slashCommands.add('me', function Me(command, params, item) {
 	}
 }, {
 	description: 'Displays_action_text',
-	params: 'your_message'
+	params: 'your_message',
 });

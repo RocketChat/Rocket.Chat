@@ -1,14 +1,14 @@
 class ModelSettings extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 
-		this.tryEnsureIndex({ 'blocked': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'hidden': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ blocked: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ hidden: 1 }, { sparse: 1 });
 	}
 
 	// FIND
 	findById(_id) {
-		const query = {_id};
+		const query = { _id };
 
 		return this.find(query);
 	}
@@ -16,7 +16,7 @@ class ModelSettings extends RocketChat.models._Base {
 	findOneNotHiddenById(_id) {
 		const query = {
 			_id,
-			hidden: { $ne: true }
+			hidden: { $ne: true },
 		};
 
 		return this.findOne(query);
@@ -27,21 +27,21 @@ class ModelSettings extends RocketChat.models._Base {
 
 		const query = {
 			_id: {
-				$in: _id
-			}
+				$in: _id,
+			},
 		};
 
 		return this.find(query);
 	}
 
 	findByRole(role, options) {
-		const query = {role};
+		const query = { role };
 
 		return this.find(query, options);
 	}
 
 	findPublic(options) {
-		const query = {public: true};
+		const query = { public: true };
 
 		return this.find(query, options);
 	}
@@ -49,15 +49,15 @@ class ModelSettings extends RocketChat.models._Base {
 	findNotHiddenPublic(ids = []) {
 		const filter = {
 			hidden: { $ne: true },
-			public: true
+			public: true,
 		};
 
 		if (ids.length > 0) {
 			filter._id =
-				{$in: ids};
+				{ $in: ids };
 		}
 
-		return this.find(filter, { fields: {_id: 1, value: 1} });
+		return this.find(filter, { fields: { _id: 1, value: 1 } });
 	}
 
 	findNotHiddenPublicUpdatedAfter(updatedAt) {
@@ -65,17 +65,17 @@ class ModelSettings extends RocketChat.models._Base {
 			hidden: { $ne: true },
 			public: true,
 			_updatedAt: {
-				$gt: updatedAt
-			}
+				$gt: updatedAt,
+			},
 		};
 
-		return this.find(filter, { fields: {_id: 1, value: 1} });
+		return this.find(filter, { fields: { _id: 1, value: 1 } });
 	}
 
 	findNotHiddenPrivate() {
 		return this.find({
 			hidden: { $ne: true },
-			public: { $ne: true }
+			public: { $ne: true },
 		});
 	}
 
@@ -87,9 +87,13 @@ class ModelSettings extends RocketChat.models._Base {
 		return this.find({
 			hidden: { $ne: true },
 			_updatedAt: {
-				$gt: updatedAt
-			}
+				$gt: updatedAt,
+			},
 		});
+	}
+
+	findSetupWizardSettings() {
+		return this.find({ wizard: { $exists: true, $ne: null } });
 	}
 
 	// UPDATE
@@ -97,13 +101,13 @@ class ModelSettings extends RocketChat.models._Base {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },
-			_id
+			_id,
 		};
 
 		const update = {
 			$set: {
-				value
-			}
+				value,
+			},
 		};
 
 		return this.update(query, update);
@@ -113,14 +117,14 @@ class ModelSettings extends RocketChat.models._Base {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },
-			_id
+			_id,
 		};
 
 		const update = {
 			$set: {
 				value,
-				editor
-			}
+				editor,
+			},
 		};
 
 		return this.update(query, update);
@@ -130,13 +134,13 @@ class ModelSettings extends RocketChat.models._Base {
 		const query = {
 			_id,
 			hidden: { $ne: true },
-			blocked: { $ne: true }
+			blocked: { $ne: true },
 		};
 
 		const update = {
 			$set: {
-				value
-			}
+				value,
+			},
 		};
 
 		return this.update(query, update);
@@ -145,10 +149,10 @@ class ModelSettings extends RocketChat.models._Base {
 	updateOptionsById(_id, options) {
 		const query = {
 			blocked: { $ne: true },
-			_id
+			_id,
 		};
 
-		const update = {$set: options};
+		const update = { $set: options };
 
 		return this.update(query, update);
 	}
@@ -158,7 +162,7 @@ class ModelSettings extends RocketChat.models._Base {
 		const record = {
 			_id,
 			value,
-			_createdAt: new Date
+			_createdAt: new Date,
 		};
 
 		return this.insert(record);
@@ -168,7 +172,7 @@ class ModelSettings extends RocketChat.models._Base {
 	removeById(_id) {
 		const query = {
 			blocked: { $ne: true },
-			_id
+			_id,
 		};
 
 		return this.remove(query);

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -16,6 +17,8 @@ Meteor.methods({
 		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 			return false;
 		} else if (message.private) {
+			return false;
+		} else if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
 			return false;
 		}
 
@@ -40,7 +43,7 @@ Meteor.methods({
 			}
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
-					usernames: []
+					usernames: [],
 				};
 			}
 			message.reactions[reaction].usernames.push(user.username);
@@ -50,5 +53,5 @@ Meteor.methods({
 		}
 
 		return;
-	}
+	},
 });

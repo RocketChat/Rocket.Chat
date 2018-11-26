@@ -1,10 +1,18 @@
-/* globals toolbarSearch, menu, isRtl, fireGlobalEvent, CachedChatSubscription, DynamicCss */
+/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss, popover */
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
-RocketChat.settings.collection.find({_id:/theme-color-rc/i}, {fields:{ value: 1 }}).observe({changed: () => { DynamicCss.run(true); }});
+RocketChat.settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true); } });
 
 this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
+this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -13,10 +21,10 @@ Template.body.onRendered(function() {
 		if ((e.keyCode === 80 || e.keyCode === 75) && (e.ctrlKey === true || e.metaKey === true) && e.shiftKey === false) {
 			e.preventDefault();
 			e.stopPropagation();
-			toolbarSearch.focus(true);
+			toolbarSearch.show(true);
 		}
 		const unread = Session.get('unread');
-		if (e.keyCode === 27 && e.shiftKey === true && (unread != null) && unread !== '') {
+		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
 			modal.open({
@@ -25,10 +33,10 @@ Template.body.onRendered(function() {
 				confirmButtonText: t('Yes_clear_all'),
 				showCancelButton: true,
 				cancelButtonText: t('Cancel'),
-				confirmButtonColor: '#DD6B55'
+				confirmButtonColor: '#DD6B55',
 			}, function() {
 				const subscriptions = ChatSubscription.find({
-					open: true
+					open: true,
 				}, {
 					fields: {
 						unread: 1,
@@ -36,11 +44,11 @@ Template.body.onRendered(function() {
 						rid: 1,
 						t: 1,
 						name: 1,
-						ls: 1
-					}
+						ls: 1,
+					},
 				});
 
-				subscriptions.forEach((subscription) =>{
+				subscriptions.forEach((subscription) => {
 					if (subscription.alert || subscription.unread > 0) {
 						Meteor.call('readMessages', subscription.rid);
 					}
@@ -50,13 +58,17 @@ Template.body.onRendered(function() {
 	});
 
 	$(document.body).on('keydown', function(e) {
-		const target = e.target;
+		const { target } = e;
 		if (e.ctrlKey === true || e.metaKey === true) {
+			popover.close();
 			return;
 		}
-		if (!(e.keyCode > 45 && e.keyCode < 91 || e.keyCode === 8)) {
+		if (!((e.keyCode > 45 && e.keyCode < 91) || e.keyCode === 8)) {
 			return;
 		}
+
+		popover.close();
+
 		if (/input|textarea|select/i.test(target.tagName)) {
 			return;
 		}
@@ -78,7 +90,7 @@ Template.body.onRendered(function() {
 				e.stopPropagation();
 				if (RocketChat.Layout.isEmbedded()) {
 					return fireGlobalEvent('click-message-link', {
-						link: link.pathname + link.search
+						link: link.pathname + link.search,
 					});
 				}
 				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
@@ -98,7 +110,7 @@ Template.body.onRendered(function() {
 				w[l] = w[l] || [];
 				w[l].push({
 					'gtm.start': new Date().getTime(),
-					event: 'gtm.js'
+					event: 'gtm.js',
 				});
 				const f = d.getElementsByTagName(s)[0];
 				const j = d.createElement(s);
@@ -116,6 +128,10 @@ Template.body.onRendered(function() {
 
 RocketChat.mainReady = new ReactiveVar(false);
 Template.main.helpers({
+	removeSidenav() {
+		const { modal } = this;
+		return (modal || typeof modal === 'function' ? modal() : modal); // || RocketChat.Layout.isEmbedded();
+	},
 	siteName() {
 		return RocketChat.settings.get('Site_Name');
 	},
@@ -170,17 +186,22 @@ Template.main.helpers({
 		if (RocketChat.Layout.isEmbedded()) {
 			return 'embedded-view';
 		}
-	}
+	},
+	showSetupWizard() {
+		const userId = Meteor.userId();
+		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
+
+		return (!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress');
+	},
 });
 
 Template.main.events({
 	'click .burger'() {
 		return menu.toggle();
-	}
+	},
 });
 
 Template.main.onRendered(function() {
-	document.body.classList[(isRtl(localStorage.getItem('userLanguage'))? 'add': 'remove')]('rtl');
 	$('#initial-page-loading').remove();
 	window.addEventListener('focus', function() {
 		return Meteor.setTimeout(function() {
@@ -190,8 +211,13 @@ Template.main.onRendered(function() {
 		}, 100);
 	});
 	return Tracker.autorun(function() {
-		const user = Meteor.user();
-		if (RocketChat.getUserPreference(user, 'hideUsernames')) {
+		const userId = Meteor.userId();
+		const Show_Setup_Wizard = RocketChat.settings.get('Show_Setup_Wizard');
+
+		if ((!userId && Show_Setup_Wizard === 'pending') || (userId && RocketChat.authz.hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress')) {
+			FlowRouter.go('setup-wizard');
+		}
+		if (RocketChat.getUserPreference(userId, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return RocketChat.tooltip.hide();
 			});

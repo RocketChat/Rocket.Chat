@@ -1,18 +1,24 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('snippetedMessage', function(_id) {
 	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
 	}
 
-	const snippet = RocketChat.models.Messages.findOne({_id, snippeted: true});
+	const snippet = RocketChat.models.Messages.findOne({ _id, snippeted: true });
 	const user = RocketChat.models.Users.findOneById(this.userId);
 	const roomSnippetQuery = {
-		'_id': snippet.rid,
-		'usernames': {
-			'$in': [
-				user.username
-			]
-		}
+		_id: snippet.rid,
+		usernames: {
+			$in: [
+				user.username,
+			],
+		},
 	};
+
+	if (!Meteor.call('canAccessRoom', snippet.rid, this.userId)) {
+		return this.ready();
+	}
 
 	if (RocketChat.models.Rooms.findOne(roomSnippetQuery) === undefined) {
 		return this.ready();
@@ -36,7 +42,7 @@ Meteor.publish('snippetedMessage', function(_id) {
 		},
 		removed(_id) {
 			publication.removed('rocketchat_snippeted_message', _id);
-		}
+		},
 	});
 
 	this.ready();

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	getSingleMessage(msgId) {
 		check(msgId, String);
@@ -15,5 +18,5 @@ Meteor.methods({
 		Meteor.call('canAccessRoom', msg.rid, Meteor.userId());
 
 		return msg;
-	}
+	},
 });

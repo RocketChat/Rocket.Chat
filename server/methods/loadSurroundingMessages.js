@@ -1,4 +1,5 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
@@ -7,7 +8,7 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadSurroundingMessages'
+				method: 'loadSurroundingMessages',
 			});
 		}
 
@@ -31,50 +32,38 @@ Meteor.methods({
 
 		const options = {
 			sort: {
-				ts: -1
+				ts: -1,
 			},
-			limit: Math.ceil(limit / 2)
+			limit: Math.ceil(limit / 2),
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
-				editedAt: 0
+				editedAt: 0,
 			};
 		}
 
-		const recordsBefore = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
-
-		const messages = recordsBefore.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId
-			});
-			return message;
-		});
+		const messages = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
 
 		const moreBefore = messages.length === options.limit;
 
 		messages.push(message);
 
 		options.sort = {
-			ts: 1
+			ts: 1,
 		};
 
 		options.limit = Math.floor(limit / 2);
 
-		const recordsAfter = RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
-		const afterMessages = recordsAfter.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId
-			});
-			return message;
-		});
+		const afterMessages = RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
 
 		const moreAfter = afterMessages.length === options.limit;
 
 		return {
-			messages: messages.concat(afterMessages),
+			messages: messages.concat(afterMessages)
+				.map((message) => RocketChat.composeMessageObjectWithUser(message, fromId)),
 			moreBefore,
-			moreAfter
+			moreAfter,
 		};
-	}
+	},
 });

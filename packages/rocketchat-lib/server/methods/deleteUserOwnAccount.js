@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
 
 Meteor.methods({
@@ -34,5 +37,5 @@ Meteor.methods({
 		});
 
 		return true;
-	}
+	},
 });

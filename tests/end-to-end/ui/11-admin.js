@@ -5,16 +5,16 @@ import sideNav from '../../pageobjects/side-nav.page';
 import flexTab from '../../pageobjects/flex-tab.page';
 import admin from '../../pageobjects/administration.page';
 
-//test data imports
-import {checkIfUserIsAdmin} from '../../data/checks';
-import {adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+// test data imports
+import { checkIfUserIsAdmin } from '../../data/checks';
+import { adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
 describe('[Administration]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
-		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.general.waitForVisible(5000);
-		sideNav.general.click();
+		// sideNav.spotlightSearch.waitForVisible(10000);
+		// sideNav.general.waitForVisible(5000);
+		// sideNav.general.click();
 	});
 
 	after(() => {
@@ -24,7 +24,7 @@ describe('[Administration]', () => {
 
 	describe('[Admin View]', () => {
 		before(() => {
-			sideNav.accountMenu.click();
+			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 		});
 
@@ -34,7 +34,7 @@ describe('[Administration]', () => {
 		});
 
 		describe('info:', () => {
-			before(() =>{
+			before(() => {
 				admin.infoLink.waitForVisible(5000);
 				admin.infoLink.click();
 				admin.infoRocketChatTable.waitForVisible(5000);
@@ -55,21 +55,21 @@ describe('[Administration]', () => {
 				admin.infoCommitTable.isVisible().should.be.true;
 			});
 
-			it('the first title should be Runtime_Environment', () => {
+			it('the first title should be Runtime Environment', () => {
 				admin.infoRuntimeTableTitle.moveToObject();
-				admin.infoRuntimeTableTitle.getText().should.equal('Runtime_Environment');
+				admin.infoRuntimeTableTitle.getText().should.equal('Runtime Environment');
 			});
 
-			it('it should show the Runtime_Environment table', () => {
+			it('it should show the Runtime Environment table', () => {
 				admin.infoRuntimeTable.isVisible().should.be.true;
 			});
 
-			it('the first title should be Build_Environment', () => {
+			it('the first title should be Build Environment', () => {
 				admin.infoBuildTableTitle.moveToObject();
-				admin.infoBuildTableTitle.getText().should.equal('Build_Environment');
+				admin.infoBuildTableTitle.getText().should.equal('Build Environment');
 			});
 
-			it('it should show the Build_Environment table', () => {
+			it('it should show the Build Environment table', () => {
 				admin.infoBuildTable.isVisible().should.be.true;
 			});
 		});
@@ -147,7 +147,7 @@ describe('[Administration]', () => {
 				let checkbox = 1;
 				before(() => {
 					admin.roomsFilter.setValue('');
-					//add value triggers a key event that changes search±±±±±±±±±
+					// add value triggers a key event that changes search±±±±±±±±±
 					admin.roomsFilter.addValue(' ');
 					admin.roomsGeneralChannel.waitForVisible(5000);
 				});
@@ -212,7 +212,7 @@ describe('[Administration]', () => {
 
 
 			it('it should show rocket.cat', () => {
-			//it cant find the user if there is too many users
+			// it cant find the user if there is too many users
 				admin.usersRocketCat.isVisible().should.be.true;
 			});
 
@@ -347,7 +347,7 @@ describe('[Administration]', () => {
 		});
 
 		describe('[Roles]', () => {
-			before(() =>{
+			before(() => {
 				admin.permissionsLink.waitForVisible(5000);
 				admin.permissionsLink.click();
 				admin.rolesPermissionGrid.waitForVisible(5000);
@@ -522,6 +522,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show open first channel field', () => {
+					admin.generalOpenFirstChannel.waitForVisible(5000);
 					admin.generalOpenFirstChannel.isVisible().should.be.true;
 				});
 
@@ -731,16 +732,16 @@ describe('[Administration]', () => {
 					admin.accountsEnableAutoAwayFalse.isVisible().should.be.true;
 				});
 				it('the enable auto away field value should be true', () => {
-					admin.accountsEnableAutoAwayTrue.isSelected().should.be.false;
-					admin.accountsEnableAutoAwayFalse.isSelected().should.be.true;
+					admin.accountsEnableAutoAwayTrue.isSelected().should.be.true;
+					admin.accountsEnableAutoAwayFalse.isSelected().should.be.false;
 				});
 
 				it('it should show the idle timeout limit field', () => {
-					admin.accountsIdleTimeoutLimit.click();
-					admin.accountsIdleTimeoutLimit.isVisible().should.be.true;
+					admin.accountsidleTimeLimit.click();
+					admin.accountsidleTimeLimit.isVisible().should.be.true;
 				});
-				it('the idle timeout limit field value should be 0', () => {
-					admin.accountsIdleTimeoutLimit.getValue().should.equal('300000');
+				it('the idle timeout limit field value should be 300', () => {
+					admin.accountsidleTimeLimit.getValue().should.equal('300');
 				});
 
 				it('it should show the notifications durations field', () => {
@@ -875,24 +876,6 @@ describe('[Administration]', () => {
 					admin.accountsHideAvatarsFalse.isSelected().should.be.true;
 				});
 
-				it('it should show the sidebar channel list mode field', () => {
-					admin.accountsRoomsListExhibitionMode.click();
-					admin.accountsRoomsListExhibitionMode.isVisible().should.be.true;
-				});
-				it('the sidebar channel list mode field value should be category', () => {
-					admin.accountsRoomsListExhibitionMode.getValue().should.equal('category');
-				});
-
-				it('it should show the merge channels field', () => {
-					admin.accountsMergeChannelsTrue.scroll();
-					admin.accountsMergeChannelsTrue.isVisible().should.be.true;
-					admin.accountsMergeChannelsFalse.isVisible().should.be.true;
-				});
-				it('the merge channels field value should be false', () => {
-					admin.accountsMergeChannelsTrue.isSelected().should.be.false;
-					admin.accountsMergeChannelsFalse.isSelected().should.be.true;
-				});
-
 				it('it should show the enter key behavior field', () => {
 					admin.accountsSendOnEnter.click();
 					admin.accountsSendOnEnter.isVisible().should.be.true;
@@ -901,12 +884,12 @@ describe('[Administration]', () => {
 					admin.accountsSendOnEnter.getValue().should.equal('normal');
 				});
 
-				it('it should show the view mode field', () => {
-					admin.accountsViewMode.click();
-					admin.accountsViewMode.isVisible().should.be.true;
+				it('it should show the messagebox view mode field', () => {
+					admin.accountsMessageViewMode.click();
+					admin.accountsMessageViewMode.isVisible().should.be.true;
 				});
 				it('the view mode field value should be 0', () => {
-					admin.accountsViewMode.getValue().should.equal('0');
+					admin.accountsMessageViewMode.getValue().should.equal('0');
 				});
 
 				it('it should show the offline email notification field', () => {
@@ -914,7 +897,7 @@ describe('[Administration]', () => {
 					admin.accountsEmailNotificationMode.isVisible().should.be.true;
 				});
 				it('the offline email notification field value should be all', () => {
-					admin.accountsEmailNotificationMode.getValue().should.equal('all');
+					admin.accountsEmailNotificationMode.getValue().should.equal('mentions');
 				});
 
 				it('it should show the room counter sidebar field', () => {

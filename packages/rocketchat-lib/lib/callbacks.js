@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import _ from 'underscore';
 
 /*
@@ -23,9 +25,10 @@ if (Meteor.isServer) {
 RocketChat.callbacks.priority = {
 	HIGH: -1000,
 	MEDIUM: 0,
-	LOW: 1000
+	LOW: 1000,
 };
 
+const getHooks = (hookName) => RocketChat.callbacks[hookName] || [];
 
 /*
 * Add a callback function to a hook
@@ -33,24 +36,26 @@ RocketChat.callbacks.priority = {
 * @param {Function} callback - The callback function
 */
 
-RocketChat.callbacks.add = function(hook, callback, priority, id) {
-	if (priority == null) {
-		priority = RocketChat.callbacks.priority.MEDIUM;
-	}
+RocketChat.callbacks.add = function(hook, callback, priority, id = Random.id()) {
 	if (!_.isNumber(priority)) {
 		priority = RocketChat.callbacks.priority.MEDIUM;
 	}
 	callback.priority = priority;
-	callback.id = id || Random.id();
-	RocketChat.callbacks[hook] = RocketChat.callbacks[hook] || [];
+	callback.id = id;
+	RocketChat.callbacks[hook] = getHooks(hook);
+
 	if (RocketChat.callbacks.showTime === true) {
 		const err = new Error;
 		callback.stack = err.stack;
 	}
+
 	if (RocketChat.callbacks[hook].find((cb) => cb.id === callback.id)) {
 		return;
 	}
 	RocketChat.callbacks[hook].push(callback);
+	RocketChat.callbacks[hook] = _.sortBy(RocketChat.callbacks[hook], function(callback) {
+		return callback.priority || RocketChat.callbacks.priority.MEDIUM;
+	});
 };
 
 
@@ -60,8 +65,8 @@ RocketChat.callbacks.add = function(hook, callback, priority, id) {
 * @param {string} id - The callback's id
 */
 
-RocketChat.callbacks.remove = function(hookName, id) {
-	RocketChat.callbacks[hookName] = _.reject(RocketChat.callbacks[hookName], (callback) => callback.id === id);
+RocketChat.callbacks.remove = function(hook, id) {
+	RocketChat.callbacks[hook] = getHooks(hook).filter((callback) => callback.id !== id);
 };
 
 
@@ -75,42 +80,56 @@ RocketChat.callbacks.remove = function(hookName, id) {
 
 RocketChat.callbacks.run = function(hook, item, constant) {
 	const callbacks = RocketChat.callbacks[hook];
-	if (callbacks && callbacks.length) {
-		let totalTime = 0;
-		const result = _.sortBy(callbacks, function(callback) {
-			return callback.priority || RocketChat.callbacks.priority.MEDIUM;
-		}).reduce(function(result, callback) {
-			let time = 0;
-			if (RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true) {
-				time = Date.now();
-			}
-			const callbackResult = callback(result, constant);
-			if (RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true) {
-				const currentTime = Date.now() - time;
-				totalTime += currentTime;
-				if (RocketChat.callbacks.showTime === true) {
-					if (Meteor.isServer) {
-						RocketChat.statsTracker.timing('callbacks.time', currentTime, [`hook:${ hook }`, `callback:${ callback.id }`]);
-					} else {
-						let stack = callback.stack && typeof callback.stack.split === 'function' && callback.stack.split('\n');
-						stack = stack && stack[2] && (stack[2].match(/\(.+\)/)||[])[0];
-						console.log(String(currentTime), hook, callback.id, stack);
-					}
-				}
-			}
-			return (typeof callbackResult === 'undefined') ? result : callbackResult;
-		}, item);
-		if (RocketChat.callbacks.showTotalTime === true) {
-			if (Meteor.isServer) {
-				RocketChat.statsTracker.timing('callbacks.totalTime', totalTime, [`hook:${ hook }`]);
-			} else {
-				console.log(`${ hook }:`, totalTime);
-			}
-		}
-		return result;
-	} else {
+	if (!callbacks || !callbacks.length) {
 		return item;
 	}
+
+	let rocketchatHooksEnd;
+	if (Meteor.isServer) {
+		rocketchatHooksEnd = RocketChat.metrics.rocketchatHooks.startTimer({ hook, callbacks_length: callbacks.length });
+	}
+
+	let totalTime = 0;
+	const result = callbacks.reduce(function(result, callback) {
+		let rocketchatCallbacksEnd;
+		if (Meteor.isServer) {
+			rocketchatCallbacksEnd = RocketChat.metrics.rocketchatCallbacks.startTimer({ hook, callback: callback.id });
+		}
+		const time = RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true ? Date.now() : 0;
+
+		const callbackResult = callback(result, constant);
+
+		if (RocketChat.callbacks.showTime === true || RocketChat.callbacks.showTotalTime === true) {
+			const currentTime = Date.now() - time;
+			totalTime += currentTime;
+			if (RocketChat.callbacks.showTime === true) {
+				if (Meteor.isServer) {
+					rocketchatCallbacksEnd();
+					RocketChat.statsTracker.timing('callbacks.time', currentTime, [`hook:${ hook }`, `callback:${ callback.id }`]);
+				} else {
+					let stack = callback.stack && typeof callback.stack.split === 'function' && callback.stack.split('\n');
+					stack = stack && stack[2] && (stack[2].match(/\(.+\)/) || [])[0];
+					console.log(String(currentTime), hook, callback.id, stack);
+				}
+			}
+		}
+		return (typeof callbackResult === 'undefined') ? result : callbackResult;
+	}, item);
+
+	if (Meteor.isServer) {
+		rocketchatHooksEnd();
+	}
+
+	if (RocketChat.callbacks.showTotalTime === true) {
+		if (Meteor.isServer) {
+			RocketChat.statsTracker.timing('callbacks.totalTime', totalTime, [`hook:${ hook }`]);
+		} else {
+			console.log(`${ hook }:`, totalTime);
+		}
+	}
+
+	return result;
+
 };
 
 
@@ -125,9 +144,8 @@ RocketChat.callbacks.runAsync = function(hook, item, constant) {
 	const callbacks = RocketChat.callbacks[hook];
 	if (Meteor.isServer && callbacks && callbacks.length) {
 		Meteor.defer(function() {
-			_.sortBy(callbacks, (callback) => callback.priority || RocketChat.callbacks.priority.MEDIUM).forEach((callback) => callback(item, constant));
+			callbacks.forEach((callback) => callback(item, constant));
 		});
-	} else {
-		return item;
 	}
+	return item;
 };

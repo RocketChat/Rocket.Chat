@@ -1,9 +1,12 @@
-/* globals Blaze, Template */
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+
 import _ from 'underscore';
 
 RocketChat.EmojiPicker = {
-	width: 390,
-	height: 238,
+	width: 365,
+	height: 290,
 	initiated: false,
 	input: null,
 	source: null,
@@ -54,27 +57,24 @@ RocketChat.EmojiPicker = {
 		return this.recent;
 	},
 	setPosition() {
+		const windowHeight = window.innerHeight;
+		const windowWidth = window.innerWidth;
+		const windowBorder = 10;
 		const sourcePos = $(this.source).offset();
-		const left = sourcePos.left;
-		const top = sourcePos.top - this.height - 60;
-		const cssProperties = {
-			top,
-			left
-		};
+		const { left, top } = sourcePos;
+		const cssProperties = { top, left };
+		const isLargerThanWindow = this.width + windowBorder > windowWidth;
 
-		if (top < 0) {
-			cssProperties.top = 10;
+		if (top + this.height >= windowHeight) {
+			cssProperties.top = windowHeight - this.height - windowBorder;
 		}
 
-		if (left < 35) {
-			cssProperties.left = 0;
-		} else {
-			const windowSize = $(window).width();
-			const pickerWidth = $('.emoji-picker').outerWidth();
+		if (left < windowBorder) {
+			cssProperties.left = isLargerThanWindow ? 0 : windowBorder;
+		}
 
-			if (left + pickerWidth > windowSize) {
-				cssProperties.left = left - pickerWidth;
-			}
+		if (left + this.width >= windowWidth) {
+			cssProperties.left = isLargerThanWindow ? 0 : windowWidth - this.width - windowBorder;
 		}
 
 		return $('.emoji-picker').css(cssProperties);
@@ -129,7 +129,7 @@ RocketChat.EmojiPicker = {
 	refreshDynamicEmojiLists() {
 		const dynamicEmojiLists = [
 			RocketChat.emoji.packages.base.emojisByCategory.recent,
-			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket
+			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket,
 		];
 
 		dynamicEmojiLists.forEach((category) => {
@@ -142,5 +142,5 @@ RocketChat.EmojiPicker = {
 				}
 			}
 		});
-	}
+	},
 };

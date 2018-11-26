@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:oauth2-server-config',
 	summary: 'Configure the OAuth2 Server',
-	version: '1.0.0'
+	version: '1.0.0',
 });
 
 Package.onUse(function(api) {
@@ -15,12 +15,13 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 
-	//// General //
+	// // General //
 	// Server
 	api.addFiles('server/models/OAuthApps.js', 'server');
 
-	//// OAuth //
+	// // OAuth //
 	// Server
 	api.addFiles('oauth/server/oauth2-server.js', 'server');
 	api.addFiles('oauth/server/default-services.js', 'server');
@@ -32,7 +33,7 @@ Package.onUse(function(api) {
 	api.addFiles('oauth/client/oauth2-client.js', 'client');
 
 
-	//// Admin //
+	// // Admin //
 	// Client
 	api.addFiles('admin/client/startup.js', 'client');
 	api.addFiles('admin/client/collection.js', 'client');
