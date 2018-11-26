@@ -114,6 +114,7 @@
 		border: 0;
 		background-color: transparent;
 
+		font-family: inherit;
 		font-size: var(--message-box-text-size);
 
 		&::placeholder {
