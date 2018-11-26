@@ -177,6 +177,7 @@
 		"mkdirp": "^0.5.1",
 		"moleculer": "^0.13.4",
 		"moment": "^2.22.2",
+		"msgpack5": "^4.2.1",
 		"moment-timezone": "^0.5.23",
 		"msgpack5": "^4.2.1",
 		"node-dogstatsd": "^0.0.7",
