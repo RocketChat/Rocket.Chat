@@ -1,4 +1,4 @@
-import EventEmitter from 'wolfy87-eventemitter';
+import EventEmitter from 'eventemitter3';
 
 RocketChat.messageBox = new EventEmitter;
 

@@ -1,6 +1,6 @@
 import { Session } from 'meteor/session';
 import _ from 'underscore';
-import EventEmitter from 'wolfy87-eventemitter';
+import EventEmitter from 'eventemitter3';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
 const sideNavW = 280;

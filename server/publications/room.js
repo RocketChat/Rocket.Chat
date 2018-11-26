@@ -112,20 +112,23 @@ Meteor.methods({
 	},
 });
 
-RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
-	switch (clientAction) {
-		case 'updated':
-		case 'inserted':
-			// Override data cuz we do not publish all fields
-			data = RocketChat.models.Rooms.findOneById(id, { fields });
-			break;
+const { EXPERIMENTAL_HUB, EXPERIMENTAL } = process.env;
+if (!EXPERIMENTAL_HUB && !EXPERIMENTAL) {
+	RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
+		switch (clientAction) {
+			case 'updated':
+			case 'inserted':
+				// Override data cuz we do not publish all fields
+				data = RocketChat.models.Rooms.findOneById(id, { fields });
+				break;
 
-		case 'removed':
-			data = { _id: id };
-			break;
-	}
+			case 'removed':
+				data = { _id: id };
+				break;
+		}
 
-	if (data) {
-		RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
-	}
-});
+		if (data) {
+			RocketChat.Notifications.streamUser.internals.emit(id, clientAction, data);
+		}
+	});
+}

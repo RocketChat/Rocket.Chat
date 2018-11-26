@@ -54,7 +54,7 @@ export default {
 	},
 	mixins: [database],
 	events: {
-		'cache.clean.settings'() {
+		'setting'() {
 			if (this.broker.cacher) {
 				this.broker.cacher.clean('settings.**');
 			}

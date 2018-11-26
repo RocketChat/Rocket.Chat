@@ -46,7 +46,6 @@ Meteor.methods({
 				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, {
 					ts: now,
 				});
-				Meteor.defer(function() {});
 				return RocketChat.callbacks.run('afterJoinRoom', user, room);
 			});
 			return true;

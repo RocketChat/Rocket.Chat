@@ -55,35 +55,36 @@ Meteor.methods({
 	},
 });
 
-RocketChat.models.Settings.on('change', ({ clientAction, id, data }) => {
-	switch (clientAction) {
-		case 'updated':
-		case 'inserted':
-			const setting = data || RocketChat.models.Settings.findOneById(id);
-			const value = {
-				_id: setting._id,
-				value: setting.value,
-				editor: setting.editor,
-				properties: setting.properties,
-			};
+Meteor.startup(() => {
+	RocketChat.models.Settings.on('change', ({ clientAction, id, data }) => {
+		switch (clientAction) {
+			case 'updated':
+			case 'inserted':
+				const setting = data || RocketChat.models.Settings.findOneById(id);
+				const value = {
+					_id: setting._id,
+					value: setting.value,
+					editor: setting.editor,
+					properties: setting.properties,
+				};
 
-			if (setting.public === true) {
-				RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
-			} else {
-				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);
-			}
-			break;
+				if (setting.public === true) {
+					RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
+				} else {
+					RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);
+				}
+				break;
 
-		case 'removed':
-			RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });
-			RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
-			break;
-	}
-});
-
-RocketChat.Notifications.streamAll.allowRead('private-settings-changed', function() {
-	if (this.userId == null) {
-		return false;
-	}
-	return RocketChat.authz.hasPermission(this.userId, 'view-privileged-setting');
+			case 'removed':
+				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });
+				RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
+				break;
+		}
+	});
+	RocketChat.Notifications.streamAll.allowRead('private-settings-changed', function() {
+		if (this.userId == null) {
+			return false;
+		}
+		return RocketChat.authz.hasPermission(this.userId, 'view-privileged-setting');
+	});
 });
