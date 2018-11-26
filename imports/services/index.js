@@ -28,13 +28,14 @@ broker.createService(GetReadReceipts);
 
 broker.createService(Streamer);
 
-const { EXPERIMENTAL_HUB, EXPERIMENTAL } = process.env;
-if (EXPERIMENTAL_HUB || EXPERIMENTAL) {
-	broker.createService(require('../rocketchat-streamer/hub').default);
-}
-
 RocketChat.Services = broker;
 
-Meteor.startup(() => broker.start());
+Meteor.startup(() => {
+	const { EXPERIMENTAL_HUB, EXPERIMENTAL } = process.env;
+	if (EXPERIMENTAL_HUB || EXPERIMENTAL) {
+		broker.createService(require('../rocketchat-hub/meteor').default);
+	}
+	broker.start();
+});
 
 export default broker;
