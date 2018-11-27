@@ -386,10 +386,6 @@
 				& input {
 					margin-right: 4px;
 				}
-
-				& button {
-					margin-right: 4px;
-				}
 			}
 		}
 	}
@@ -1863,6 +1859,10 @@ rc-old select,
 
 			font-weight: 500;
 			line-height: 16px;
+		}
+
+		.setting-action {
+			margin: 0 4px;
 		}
 
 		& .settings-description {
