@@ -8,6 +8,7 @@ import { RawImports } from '../models/RawImports';
 import { ImporterWebsocket } from './ImporterWebsocket';
 
 import http from 'http';
+import fs from 'fs';
 import https from 'https';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
@@ -96,8 +97,16 @@ export class Base {
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
-		const importId = Imports.insert({ type: this.info.name, ts: Date.now(), status: this.progress.step, valid: true, user: Meteor.user()._id });
-		this.importRecord = Imports.findOne(importId);
+		const userId = Meteor.user()._id;
+		const importRecord = Imports.findPendingImport(this.info.key);
+
+		if (importRecord) {
+			this.importRecord = importRecord;
+			this.progress.step = this.importRecord.status;
+		} else {
+			const importId = Imports.insert({ type: this.info.name, importerKey: this.info.key, ts: Date.now(), status: this.progress.step, valid: true, user: userId });
+			this.importRecord = Imports.findOne(importId);
+		}
 
 		this.users = {};
 		this.channels = {};
@@ -105,6 +114,36 @@ export class Base {
 		this.oldSettings = {};
 
 		this.logger.debug(`Constructed a new ${ info.name } Importer.`);
+	}
+
+	/**
+	 * Registers the file name and content type on the import operation
+	 *
+	 * @param {string} fileName The name of the uploaded file.
+	 * @param {string} contentType The sent file type.
+	 * @returns {Progress} The progress record of the import.
+	 */
+	startFileUpload(fileName, contentType) {
+		this.updateProgress(ProgressStep.UPLOADING);
+		return this.updateRecord({ file: fileName, contentType });
+	}
+
+	/**
+	 * Takes the uploaded file and extracts the users, channels, and messages from it.
+	 *
+	 * @param {string} fullFilePath the full path of the uploaded file
+	 * @returns {Progress} The progress record of the import.
+	 */
+	prepareUsingLocalFile(fullFilePath) {
+		const file = fs.readFileSync(fullFilePath);
+
+		const { contentType } = this.importRecord;
+		const fileName = this.importRecord.file;
+
+		const data = new Buffer(file).toString('base64');
+		const dataURI = `data:${ contentType };base64,${ data }`;
+
+		return this.prepare(dataURI, contentType, fileName, true);
 	}
 
 	/**

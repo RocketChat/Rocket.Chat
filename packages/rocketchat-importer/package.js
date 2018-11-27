@@ -39,6 +39,8 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/restartImport.js', 'server');
 	api.addFiles('server/methods/setupImporter.js', 'server');
 	api.addFiles('server/methods/startImport.js', 'server');
+	api.addFiles('server/methods/uploadImportFile.js', 'server');
+	api.addFiles('server/methods/getImportFileData.js', 'server');
 
 	// Client
 	api.addFiles('client/admin/adminImport.html', 'client');
@@ -50,6 +52,7 @@ Package.onUse(function(api) {
 
 	// Imports database records cleanup, mark all as not valid.
 	api.addFiles('server/startup/setImportsToInvalid.js', 'server');
+	api.addFiles('server/startup/store.js', 'server');
 
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

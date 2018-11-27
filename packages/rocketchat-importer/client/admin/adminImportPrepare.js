@@ -47,7 +47,7 @@ Template.adminImportPrepare.helpers({
 				fileSizeMessage = TAPi18n.__('FileSize_Bytes', { fileSize: maxFileSize.toFixed(0) });
 			}
 
-			message = TAPi18n.__('Importer_Upload_FileSize_Message2', { maxFileSize: fileSizeMessage });
+			message = TAPi18n.__('Importer_Upload_FileSize_Message', { maxFileSize: fileSizeMessage });
 		} else {
 			message = t('Importer_Upload_Unlimited_FileSize');
 		}
@@ -71,34 +71,46 @@ Template.adminImportPrepare.events({
 			template.preparing.set(true);
 
 			const reader = new FileReader();
-			reader.readAsDataURL(file);
+
+			reader.readAsBinaryString(file);
 			reader.onloadend = () => {
-				Meteor.call('prepareImport', importer.key, reader.result, file.type, file.name, function(error, data) {
+				RocketChat.API.post('v1/uploadImportFile', {
+					binaryContent: reader.result,
+					contentType: file.type,
+					fileName: file.name,
+					importerKey: importer.key,
+				}).then(() => {
+					RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
+						if (!data) {
+							console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
+							toastr.error(t('Importer_not_setup'));
+							template.preparing.set(false);
+							return;
+						}
+
+						if (data.step) {
+							console.warn('Invalid file, contains `data.step`.', data);
+							toastr.error(t('Invalid_Export_File', importer.key));
+							template.preparing.set(false);
+							return;
+						}
+
+						template.users.set(data.users);
+						template.channels.set(data.channels);
+						template.message_count.set(data.message_count);
+						template.loaded.set(true);
+						template.preparing.set(false);
+					}).catch((error) => {
+						if (error) {
+							toastr.error(t('Failed_To_Load_Import_Data'));
+							template.preparing.set(false);
+						}
+					});
+				}).catch((error) => {
 					if (error) {
-						toastr.error(t('Invalid_Import_File_Type'));
+						toastr.error(t('Failed_To_upload_Import_File'));
 						template.preparing.set(false);
-						return;
 					}
-
-					if (!data) {
-						console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
-						toastr.error(t('Importer_not_setup'));
-						template.preparing.set(false);
-						return;
-					}
-
-					if (data.step) {
-						console.warn('Invalid file, contains `data.step`.', data);
-						toastr.error(t('Invalid_Export_File', importer.key));
-						template.preparing.set(false);
-						return;
-					}
-
-					template.users.set(data.users);
-					template.channels.set(data.channels);
-					template.message_count.set(data.message_count);
-					template.loaded.set(true);
-					template.preparing.set(false);
 				});
 			};
 		});
@@ -149,7 +161,6 @@ Template.adminImportPrepare.events({
 			$(`[name=${ channel.channel_id }]`).attr('checked', false));
 	},
 });
-
 
 Template.adminImportPrepare.onCreated(function() {
 	const instance = this;

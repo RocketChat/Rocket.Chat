@@ -1,5 +1,6 @@
 /** The progress step that an importer is at. */
 export const ProgressStep = Object.freeze({
+	UPLOADING: 'importer_uploading',
 	NEW: 'importer_new',
 	PREPARING_STARTED: 'importer_preparing_started',
 	PREPARING_USERS: 'importer_preparing_users',
