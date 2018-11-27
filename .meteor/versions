@@ -35,7 +35,7 @@ deps@1.0.12
 diff-sequence@1.1.0
 dispatch:run-as-user@1.1.1
 dynamic-import@0.5.0
-ecmascript@0.12.1
+ecmascript@0.12.2
 ecmascript-runtime@0.7.0
 ecmascript-runtime-client@0.8.0
 ecmascript-runtime-server@0.7.1
@@ -73,7 +73,6 @@ konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
-konecty:user-presence@2.2.0
 launch-screen@1.1.1
 less@2.8.0
 littledata:synced-cron@1.5.1

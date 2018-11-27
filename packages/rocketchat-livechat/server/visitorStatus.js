@@ -1,11 +1,11 @@
-/* globals UserPresenceEvents */
-import { Meteor } from 'meteor/meteor';
+// /* globals UserPresenceEvents */
+// import { Meteor } from 'meteor/meteor';
 
-Meteor.startup(() => {
-	UserPresenceEvents.on('setStatus', (session, status, metadata) => {
-		if (metadata && metadata.visitor) {
-			RocketChat.models.LivechatInquiry.updateVisitorStatus(metadata.visitor, status);
-			RocketChat.models.Rooms.updateVisitorStatus(metadata.visitor, status);
-		}
-	});
-});
+// Meteor.startup(() => {
+// 	UserPresenceEvents.on('setStatus', (session, status, metadata) => {
+// 		if (metadata && metadata.visitor) {
+// 			RocketChat.models.LivechatInquiry.updateVisitorStatus(metadata.visitor, status);
+// 			RocketChat.models.Rooms.updateVisitorStatus(metadata.visitor, status);
+// 		}
+// 	});
+// });

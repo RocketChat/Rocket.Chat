@@ -29,7 +29,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:api');
 	api.use('rocketchat:theme');
 	api.use('rocketchat:streamer');
-	api.use('konecty:user-presence');
+	// api.use('konecty:user-presence');
 	api.use('rocketchat:ui');
 	api.use('kadira:flow-router', 'client');
 	api.use('kadira:blaze-layout', 'client');

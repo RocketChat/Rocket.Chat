@@ -1,8 +1,8 @@
-/* globals UserPresenceMonitor */
+// /* globals UserPresenceMonitor */
 import { Meteor } from 'meteor/meteor';
 
 let agentsHandler;
-let monitorAgents = false;
+// let monitorAgents = false;
 let actionTimeout = 60000;
 
 const onlineAgents = {
@@ -48,7 +48,7 @@ RocketChat.settings.get('Livechat_agent_leave_action_timeout', function(key, val
 });
 
 RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
-	monitorAgents = value;
+	// monitorAgents = value;
 	if (value !== 'none') {
 		if (!agentsHandler) {
 			agentsHandler = RocketChat.models.Users.findOnlineAgents().observeChanges({
@@ -77,15 +77,15 @@ RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
 	}
 });
 
-UserPresenceMonitor.onSetUserStatus((user, status/* , statusConnection*/) => {
-	if (!monitorAgents) {
-		return;
-	}
-	if (onlineAgents.exists(user._id)) {
-		if (status === 'offline' || user.statusLivechat === 'not-available') {
-			onlineAgents.remove(user._id, () => {
-				runAgentLeaveAction(user._id);
-			});
-		}
-	}
-});
+// UserPresenceMonitor.onSetUserStatus((user, status/* , statusConnection*/) => {
+// 	if (!monitorAgents) {
+// 		return;
+// 	}
+// 	if (onlineAgents.exists(user._id)) {
+// 		if (status === 'offline' || user.statusLivechat === 'not-available') {
+// 			onlineAgents.remove(user._id, () => {
+// 				runAgentLeaveAction(user._id);
+// 			});
+// 		}
+// 	}
+// });
