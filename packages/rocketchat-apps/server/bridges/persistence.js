@@ -64,7 +64,7 @@ export class AppPersistenceBridge {
 		return record.data;
 	}
 
-	async removeByAssociations(associations, appId) {
+	async removeByAssociations(associations, atomic = false, appId) {
 		console.log(`The App ${ appId } is removing records with the following associations:`, associations);
 
 		const query = {
@@ -74,15 +74,21 @@ export class AppPersistenceBridge {
 			},
 		};
 
-		const records = this.orch.getPersistenceModel().find(query).fetch();
+		if (atomic) {
+			const persistenceRaw = this.orch.getPersistenceModel().model.rawCollection();
+			const findAndModify = Meteor.wrapAsync(persistenceRaw.findAndModify, persistenceRaw);
+			return findAndModify(query, null, null, { remove: true });
+		} else {
+			const records = this.orch.getPersistenceModel().find(query).fetch();
 
-		if (!records) {
-			return undefined;
+			if (!records) {
+				return undefined;
+			}
+
+			this.orch.getPersistenceModel().remove(query);
+
+			return Array.isArray(records) ? records.map((r) => r.data) : [];
 		}
-
-		this.orch.getPersistenceModel().remove(query);
-
-		return Array.isArray(records) ? records.map((r) => r.data) : [];
 	}
 
 	async update(id, data, upsert, appId) {
@@ -95,7 +101,7 @@ export class AppPersistenceBridge {
 		throw new Error('Not implemented.');
 	}
 
-	async updateByAssociation(association, data, upsert, appId) {
+	async updateByAssociation(association, data, upsert, atomic = false, returnNew = true, appId) {
 		console.log(`The App ${ appId } is updating the record with association to data as follows:`, association, data);
 
 		if (typeof data !== 'object') {
@@ -107,36 +113,17 @@ export class AppPersistenceBridge {
 			associations: association,
 		};
 
-		return this.orch.getPersistenceModel().upsert(query, { $set: { data } }, { upsert });
-	}
-
-	async findAndUpdateByAssociation(association, update, upsert, returnNew, appId) {
-		console.log(`The App ${ appId } is running findAndUpdateByAssociation with association to data as follows:`, association, update);
-		const persistenceRaw = this.orch.getPersistenceModel().model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(persistenceRaw.findAndModify, persistenceRaw);
-
-		if (typeof update !== 'object') {
-			throw new Error('Attempted to store an invalid data type, it must be an object.');
+		if (atomic) {
+			const persistenceRaw = this.orch.getPersistenceModel().model.rawCollection();
+			const findAndModify = Meteor.wrapAsync(persistenceRaw.findAndModify, persistenceRaw);
+			const ret = findAndModify(query, null, { $set: { data } }, { upsert, returnNew });
+			return ret.value;
+		} else if (returnNew) {
+			return this.orch.getPersistenceModel().upsert(query, { $set: { data } }, { upsert });
+		} else {
+			const record = this.orch.getPersistenceModel().find(query).fetch();
+			this.orch.getPersistenceModel().upsert(query, { $set: { data } }, { upsert });
+			return record;
 		}
-
-		const query = {
-			appId,
-			associations: association,
-		};
-
-		return findAndModify(query, null, update, { upsert, returnNew });
-	}
-
-	async findAndRemoveByAssociation(association, appId) {
-		console.log(`The App ${ appId } is running findAndRemoveByAssociation with association:`, association);
-		const persistenceRaw = this.orch.getPersistenceModel().model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(persistenceRaw.findAndModify, persistenceRaw);
-
-		const query = {
-			appId,
-			associations: association,
-		};
-
-		return findAndModify(query, null, null, { remove: true });
 	}
 }
