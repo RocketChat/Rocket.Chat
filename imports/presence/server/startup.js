@@ -6,12 +6,10 @@ import broker from '../../services';
 // capture log in event
 Accounts.onLogin(async(login) => {
 	login.connection.presenceUserId = login.user._id;
-	const result = await broker.call('presence.newConnection', {
+	await broker.call('presence.newConnection', {
 		userId: login.user._id,
 		connection: login.connection,
 	});
-
-	console.log('Accounts.onLogin ->', result);
 });
 
 // capture browser close/refresh event
@@ -21,11 +19,10 @@ Meteor.onConnection((connection) => {
 		connection.closed = true;
 
 		if (connection.presenceUserId !== undefined && connection.presenceUserId !== null) {
-			const result = await broker.call('presence.removeConnection', {
+			broker.call('presence.removeConnection', {
+				userId: connection.presenceUserId,
 				connectionId: connection.id,
 			});
-
-			console.log('result ->', result);
 		}
 	});
 });
@@ -34,6 +31,7 @@ Meteor.onConnection((connection) => {
 Meteor.publish(null, function() {
 	if (this.userId == null && this.connection.presenceUserId !== undefined && this.connection.presenceUserId !== null) {
 		broker.call('presence.removeConnection', {
+			userId: this.connection.presenceUserId,
 			connectionId: this.connection.id,
 		});
 		delete this.connection.presenceUserId;

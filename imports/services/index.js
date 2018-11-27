@@ -32,7 +32,7 @@ RocketChat.Services = broker;
 Meteor.startup(() => {
 	const { EXPERIMENTAL_HUB, EXPERIMENTAL } = process.env;
 	if (EXPERIMENTAL_HUB || EXPERIMENTAL) {
-		broker.createService(require('../rocketchat-hub/meteor').default);
+		broker.createService(require('../rocketchat-hub/index').default);
 	}
 	broker.start();
 });
