@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.settings.add('IssueLinks_Enabled', false, {
 	type: 'boolean',
 	i18nLabel: 'Enabled',

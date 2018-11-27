@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Rooms.setStreamingOptionsById = function(_id, streamingOptions) {
 	const update = {
 		$set: {

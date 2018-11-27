@@ -453,7 +453,7 @@
         </g>
     </symbol>
     <symbol id="icon-loading" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-rolling">
-        <circle cx="50" cy="50" fill="none" stroke="currentColor" stroke-width="5" r="26" stroke-dasharray="122.52211349000194 42.840704496667314" transform="rotate(150 50 50)"><animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform></circle>
+        <circle cx="50" cy="50" fill="none" stroke="currentColor" stroke-width="5" r="26" stroke-dasharray="122.52211349000194 42.840704496667314" transform="rotate(150 50 50)"></circle>
     </symbol>
     <symbol id="icon-sort-down" viewBox="0 0 16 16"><g stroke-width="1.5" fill="none" fill-rule="evenodd"><path stroke="#CBCED1" d="M10.657 6L8 3.343 5.343 6"/><path stroke="#9EA2A8" d="M10.657 10L8 12.657 5.343 10"/></g></symbol>
     <symbol id="icon-sort-up" viewBox="0 0 16 16"><g stroke-width="1.5" fill="none" fill-rule="evenodd"><path stroke="#CBCED1" d="M10.657 10L8 12.657 5.343 10"/><path stroke="#9EA2A8" d="M10.657 6L8 3.343 5.343 6"/></g></symbol>

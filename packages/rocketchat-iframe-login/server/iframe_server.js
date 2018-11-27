@@ -1,6 +1,7 @@
-/* globals Accounts, OAuth */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import { OAuth } from 'meteor/oauth';
 
 Accounts.registerLoginHandler('iframe', function(result) {
 	if (!result.iframe) {
