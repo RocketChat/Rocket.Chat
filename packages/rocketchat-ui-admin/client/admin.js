@@ -527,15 +527,32 @@ Template.admin.events({
 		});
 	},
 	'click .expand'(e) {
-		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
-		$(e.currentTarget).closest('button').attr('title', TAPi18n.__('Collapse')).removeClass('expand').addClass('collapse').find('i').attr('class', 'icon-angle-up');
+		const sectionTitle = e.currentTarget;
+		const section = sectionTitle.closest('.section');
+		const button = sectionTitle.querySelector('button');
+		const i = button.querySelector('i');
+
+		sectionTitle.classList.remove('expand');
+		sectionTitle.classList.add('collapse');
+		section.classList.remove('section-collapsed');
+		button.setAttribute('title', TAPi18n.__('Collapse'));
+		i.className = 'icon-angle-up';
+
 		$('.CodeMirror').each(function(index, codeMirror) {
 			codeMirror.CodeMirror.refresh();
 		});
 	},
 	'click .collapse'(e) {
-		$(e.currentTarget).closest('.section').addClass('section-collapsed');
-		$(e.currentTarget).closest('button').attr('title', TAPi18n.__('Expand')).addClass('expand').removeClass('collapse').find('i').attr('class', 'icon-angle-down');
+		const sectionTitle = e.currentTarget;
+		const section = sectionTitle.closest('.section');
+		const button = sectionTitle.querySelector('button');
+		const i = button.querySelector('i');
+
+		sectionTitle.classList.remove('collapse');
+		sectionTitle.classList.add('expand');
+		section.classList.add('section-collapsed');
+		button.setAttribute('title', TAPi18n.__('Expand'));
+		i.className = 'icon-angle-down';
 	},
 	'click button.action'() {
 		if (this.type !== 'action') {

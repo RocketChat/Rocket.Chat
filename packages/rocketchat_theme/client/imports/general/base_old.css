@@ -1798,7 +1798,11 @@ rc-old select,
 	& .section-title {
 		display: flex;
 
+		cursor: pointer;
+
 		& .section-title-text {
+			user-select: none;
+
 			font-size: 1rem;
 			font-weight: 500;
 
