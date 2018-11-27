@@ -11,12 +11,9 @@ import { ServiceBroker } from 'moleculer';
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 
-const broker = new ServiceBroker({
-	logLevel: 'info',
-	sampleCount: 1,
-	metrics: true,
-	cacher: 'Memory',
-});
+import config from './moleculer.config';
+const broker = new ServiceBroker(config);
+
 
 broker.createService(Notifications);
 broker.createService(Authorization);

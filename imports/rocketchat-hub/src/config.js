@@ -1,11 +1,10 @@
-// More info about options: https://moleculer.services/docs/0.13/broker.html#Broker-options
 export default {
 
 
 	logLevel: 'info',
 	sampleCount: 1,
 	metrics: true,
-	transporter: 'NATS',
+	transporter: process.env.TRANSPORTER,
 	cacher: 'Memory',
 	serializer: 'MsgPack',
 

@@ -1,0 +1,40 @@
+{
+	"name": "rocketchat-hub",
+	"version": "1.0.0",
+	"description": "",
+	"main": "lib",
+	"scripts": {
+		"build": "babel src/ -d lib/",
+		"start": "npm run build && nodemon dist/index.js",
+		"serve": "npm run build && node dist/index.js",
+		"test": "npm run build && mocha --require babel-register"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"moleculer": "^0.13.4",
+		"mongodb": "^3.1.10",
+		"msgpack5": "^4.2.1",
+		"nats": "^1.0.1"
+	},
+	"devDependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-preset-env": "^1.7.0",
+		"babel-preset-stage-2": "^6.24.1"
+	},
+	"babel": {
+		"presets": [
+			[
+				"env",
+				{
+					"targets": {
+						"node": "current"
+					}
+				}
+			]
+		],
+		"plugins": [
+			"transform-object-rest-spread"
+		]
+	}
+}

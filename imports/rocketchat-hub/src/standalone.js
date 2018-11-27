@@ -3,17 +3,17 @@ const { MongoClient } = require('mongodb');
 import hub from './index';
 // Database Name
 
-const broker = new ServiceBroker({
-	logLevel: 'info',
-	sampleCount: 1,
-	metrics: true,
-	cacher: 'Memory',
-});
+import config from './config';
+const broker = new ServiceBroker(config);
 const { MONGO_URL } = process.env;
 
-const [, url,, name] = /mongodb:\/\/.*?:[0-9]+(\/)(.*)/.exec(MONGO_URL);
+const [, url, , name] = /(mongodb:\/\/.*?:[0-9]+)(\/)(.*)/.exec(MONGO_URL || 'mongodb://localhost:3001/meteor');
+
 // Connect using MongoClient
-MongoClient.connect(url, function(err, client) {
+MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
+	if (err) {
+		return console.error(err);
+	}
 	const db = client.db(name);
 	broker.createService(hub({
 		Trash: db.collection('rocketchat_trash'),
