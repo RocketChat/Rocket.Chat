@@ -1822,6 +1822,10 @@ rc-old select,
 		border: none !important;
 		border-radius: 0 !important;
 
+		p {
+			margin-bottom: 0.75rem;
+		}
+
 		& .input-line {
 			display: flex;
 
