@@ -13,23 +13,25 @@ export default ({ Messages, Subscriptions, Rooms, Settings, Trash }) => ({
 			Services: this.broker,
 		};
 
-		Messages.watch().on('change', async function({ operationType, documentKey/* , oplog*/ }) {
+		Messages.watch([], { fullDocument: 'updateLookup' }).on('change', async function({ operationType, /* documentKey,*/ fullDocument/* , oplog*/ }) {
 			switch (operationType) {
 				case 'insert':
 				case 'update':
-					const message = await Messages.findOne(documentKey);
+					// const message = await Messages.findOne(documentKey);
+					const message = fullDocument;
 					// Streamer.emitWithoutBroadcast('__my_messages__', message, {});
 					RocketChat.Services.broadcast('message', { action: normalize[operationType], message });
 						// return Streamer.broadcast({ stream: STREA	M_NAMES['room-messages'], eventName: message.rid, args: message });
 						// publishMessage(operationType, message);
 			}
 		});
-		Subscriptions.watch().on('change', async({ operationType, documentKey }) => {
+		Subscriptions.watch([], { fullDocument: 'updateLookup' }).on('change', async({ operationType, documentKey, fullDocument }) => {
 			let subscription;
 			switch (operationType) {
 				case 'insert':
 				case 'update':
-					subscription = await Subscriptions.findOne(documentKey/* , { fields }*/);
+					// subscription = await Subscriptions.findOne(documentKey/* , { fields }*/);
+					subscription = fullDocument;
 					break;
 
 				case 'remove':
@@ -41,12 +43,13 @@ export default ({ Messages, Subscriptions, Rooms, Settings, Trash }) => ({
 
 			RocketChat.Services.broadcast('subscription', { action: normalize[operationType], subscription });
 		});
-		Rooms.watch().on('change', async({ operationType, documentKey }) => {
+		Rooms.watch([], { fullDocument: 'updateLookup' }).on('change', async({ operationType, documentKey, fullDocument }) => {
 			let room;
 			switch (operationType) {
 				case 'insert':
 				case 'update':
-					room = await Rooms.findOne(documentKey/* , { fields }*/);
+					// room = await Rooms.findOne(documentKey/* , { fields }*/);
+					room = fullDocument;
 					break;
 
 				case 'remove':
@@ -59,12 +62,13 @@ export default ({ Messages, Subscriptions, Rooms, Settings, Trash }) => ({
 			RocketChat.Services.broadcast('room', { action: normalize[operationType], room });
 			// RocketChat.Notifications.streamUser.__emit(data._id, operationType, data);
 		});
-		Settings.watch().on('change', async({ operationType, documentKey }) => {
+		Settings.watch([], { fullDocument: 'updateLookup' }).on('change', async({ operationType, documentKey, fullDocument }) => {
 			let setting;
 			switch (operationType) {
 				case 'insert':
 				case 'update':
-					setting = Settings.findOne(documentKey/* , { fields }*/);
+					// setting = Settings.findOne(documentKey/* , { fields }*/);
+					setting = fullDocument;
 					break;
 				case 'remove':
 					setting = documentKey;
