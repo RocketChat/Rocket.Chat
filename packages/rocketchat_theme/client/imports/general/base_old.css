@@ -375,8 +375,9 @@
 				display: inline-block;
 
 				margin-right: 4px;
+				padding: 10px 20px 10px 0;
 
-				line-height: 2.5rem;
+				line-height: 15px;
 
 				&:nth-last-child(1) {
 					margin-right: 0;
@@ -1817,6 +1818,10 @@ rc-old select,
 		border: none !important;
 		border-radius: 0 !important;
 
+		p {
+			margin-bottom: 0.75rem;
+		}
+
 		& .input-line {
 			display: flex;
 
@@ -1854,6 +1859,10 @@ rc-old select,
 
 			font-weight: 500;
 			line-height: 16px;
+		}
+
+		.setting-action {
+			margin: 0 4px;
 		}
 
 		& .settings-description {
