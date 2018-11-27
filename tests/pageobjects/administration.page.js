@@ -123,8 +123,8 @@ class Administration extends Page {
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
 
 	// accounts
-	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) button.expand'); }
-	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) button.collapse'); }
+	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .expand'); }
+	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .collapse'); }
 
 	get accountsEnableAutoAwayTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 	get accountsEnableAutoAwayFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
