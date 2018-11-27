@@ -35,6 +35,10 @@ Meteor.methods({
 			});
 		}
 
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message')) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+		}
+
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			return false;
@@ -111,6 +115,10 @@ Meteor.methods({
 				method: 'unpinMessage',
 				action: 'Message_pinning',
 			});
+		}
+
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message')) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
