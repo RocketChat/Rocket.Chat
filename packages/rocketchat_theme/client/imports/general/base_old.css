@@ -1798,6 +1798,8 @@ rc-old select,
 		display: flex;
 
 		& .section-title-text {
+			padding: 0 1rem;
+
 			font-size: 1rem;
 			font-weight: 500;
 
