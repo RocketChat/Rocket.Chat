@@ -375,14 +375,19 @@
 				display: inline-block;
 
 				margin-right: 4px;
+				padding: 10px 20px 10px 0;
 
-				line-height: 2.5rem;
+				line-height: 15px;
 
 				&:nth-last-child(1) {
 					margin-right: 0;
 				}
 
 				& input {
+					margin-right: 4px;
+				}
+
+				& button {
 					margin-right: 4px;
 				}
 			}
