@@ -375,8 +375,9 @@
 				display: inline-block;
 
 				margin-right: 4px;
+				padding: 10px 20px 10px 0;
 
-				line-height: 2.5rem;
+				line-height: 15px;
 
 				&:nth-last-child(1) {
 					margin-right: 0;
@@ -1797,7 +1798,11 @@ rc-old select,
 	& .section-title {
 		display: flex;
 
+		cursor: pointer;
+
 		& .section-title-text {
+			user-select: none;
+
 			font-size: 1rem;
 			font-weight: 500;
 
@@ -1816,6 +1821,10 @@ rc-old select,
 
 		border: none !important;
 		border-radius: 0 !important;
+
+		p {
+			margin-bottom: 0.75rem;
+		}
 
 		& .input-line {
 			display: flex;
@@ -1856,9 +1865,15 @@ rc-old select,
 			line-height: 16px;
 		}
 
+		.setting-action {
+			margin: 0 4px;
+		}
+
 		& .settings-description {
-			line-height: 1.2rem;
+
 			padding-top: 2px;
+
+			line-height: 1.2rem;
 		}
 
 		& .settings-alert {
