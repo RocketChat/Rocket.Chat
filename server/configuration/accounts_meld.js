@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { Accounts } from 'meteor/accounts-base';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 

@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 class ModelRoles extends RocketChat.models._Base {
 	constructor(...args) {
 		super(...args);

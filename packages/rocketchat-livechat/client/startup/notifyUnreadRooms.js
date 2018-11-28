@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
 let audio = null;
 
 const stop = (audio) => {

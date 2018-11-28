@@ -1,4 +1,6 @@
-/* globals isSetNotNull */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { isSetNotNull } from './function-isSet';
 import s from 'underscore.string';
 
 /*

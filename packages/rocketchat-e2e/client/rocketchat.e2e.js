@@ -67,6 +67,10 @@ class E2E {
 			_id: roomId,
 		});
 
+		if (!room) {
+			return;
+		}
+
 		if (room.encrypted !== true) {
 			return;
 		}
@@ -185,6 +189,7 @@ class E2E {
 	}
 
 	async stopClient() {
+		console.log('E2E -> Stop Client');
 		// This flag is used to avoid closing unrelated alerts.
 		if (showingE2EAlert) {
 			alerts.close();
@@ -192,7 +197,16 @@ class E2E {
 
 		localStorage.removeItem('public_key');
 		localStorage.removeItem('private_key');
+		this.instancesByRoomId = {};
+		this.privateKey = null;
+		this.enabled.set(false);
+		this._ready.set(false);
 		this.started = false;
+
+		this.readyPromise = new Deferred();
+		this.readyPromise.then(() => {
+			this._ready.set(true);
+		});
 	}
 
 	setupListeners() {
@@ -236,6 +250,7 @@ class E2E {
 	async loadKeysFromDB() {
 		try {
 			const { public_key, private_key } = await call('e2e.fetchMyKeys');
+
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 		} catch (error) {
@@ -280,6 +295,12 @@ class E2E {
 		} catch (error) {
 			return console.error('E2E -> Error exporting private key: ', error);
 		}
+
+		this.requestSubscriptionKeys();
+	}
+
+	async requestSubscriptionKeys() {
+		call('e2e.requestSubscriptionKeys');
 	}
 
 	createRandomPassword() {

@@ -1,4 +1,7 @@
 /* globals readMessage UserRoles RoomRoles*/
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 
 export const upsertMessage = ({ msg, subscription }) => {

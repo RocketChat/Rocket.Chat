@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.saveRoomAnnouncement = function(rid, roomAnnouncement, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', { function: 'RocketChat.saveRoomAnnouncement' });

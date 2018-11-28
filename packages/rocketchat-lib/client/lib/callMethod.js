@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 /**
  * Wraps a Meteor method into a Promise.
  * This is particularly useful for creating information dialogs after execution of a Meteor method

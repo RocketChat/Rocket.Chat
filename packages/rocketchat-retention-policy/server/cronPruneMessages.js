@@ -1,4 +1,5 @@
 /* globals SyncedCron */
+import { Meteor } from 'meteor/meteor';
 
 let types = [];
 

@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { upsertMessage } from './RoomHistoryManager';
 
@@ -13,7 +19,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 	ChatMessage.remove(query);
 };
 
-const RoomManager = new function() {
+RoomManager = new function() { //eslint-disable-line
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
 	const onlineUsers = new ReactiveVar({});
@@ -236,9 +242,13 @@ const loadMissedMessages = function(rid) {
 		return;
 	}
 	const subscription = ChatSubscription.findOne({ rid });
-	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) =>
-		Array.from(result).map((item) => RocketChat.promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })))
-	);
+	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) => {
+		if (result) {
+			return Array.from(result).map((item) => RocketChat.promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })));
+		} else {
+			return [];
+		}
+	});
 };
 
 let connectionWasOnline = true;
@@ -303,8 +313,6 @@ Tracker.autorun(function() {
 	}
 });
 
-export { RoomManager };
-this.RoomManager = RoomManager;
 RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
 
 RocketChat.CachedCollectionManager.onLogin(() => {

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -596,6 +598,16 @@ class ModelUsers extends RocketChat.models._Base {
 		const update = {
 			$unset: {
 				[`banners.${ banner.id }`]: true,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	removeResumeService(_id) {
+		const update = {
+			$unset: {
+				'services.resume': '',
 			},
 		};
 

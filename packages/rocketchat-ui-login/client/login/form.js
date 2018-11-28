@@ -1,4 +1,10 @@
 /* globals OnePassword, device */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -115,8 +121,7 @@ Template.loginForm.events({
 					RocketChat.callbacks.run('userRegistered');
 					return Meteor.loginWithPassword(s.trim(formData.email), formData.pass, function(error) {
 						if (error && error.error === 'error-invalid-email') {
-							toastr.success(t('We_have_sent_registration_email'));
-							return instance.state.set('login');
+							return instance.state.set('wait-email-activation');
 						} else if (error && error.error === 'error-user-is-not-activated') {
 							return instance.state.set('wait-activation');
 						} else {

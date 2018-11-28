@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.livechatFlex.helpers({
 	menuItem(name, icon, section) {
 		return {

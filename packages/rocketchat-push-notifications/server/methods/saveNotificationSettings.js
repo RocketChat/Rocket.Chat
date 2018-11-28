@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	saveNotificationSettings(roomId, field, value) {
 		if (!Meteor.userId()) {

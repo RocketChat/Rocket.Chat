@@ -29,12 +29,15 @@ Package.onUse(function(api) {
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
 	api.use('rocketchat:mailer');
+	api.use('mizzao:timesync');
 	api.use('rocketchat:custom-oauth');
+	api.use('rocketchat:file');
 	api.use('rocketchat:authorization', { unordered: true });
 	api.use('rocketchat:push-notifications', { unordered: true });
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
+	api.use('kadira:blaze-layout', 'client');
 
 	api.addFiles('lib/core.js');
 
@@ -144,6 +147,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/oauth/proxy.js', 'server');
 
 	api.addFiles('server/startup/statsTracker.js', 'server');
+	api.addFiles('server/startup/robots.js', 'server');
 
 	// SERVER PUBLICATIONS
 	api.addFiles('server/publications/settings.js', 'server');
@@ -219,6 +223,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
+	api.addFiles('client/lib/handleError.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');
@@ -248,6 +253,7 @@ Package.onUse(function(api) {
 
 	// EXPORT
 	api.export('RocketChat');
+	api.export('handleError', 'client');
 
 	// exports
 	api.mainModule('server/lib/index.js', 'server');

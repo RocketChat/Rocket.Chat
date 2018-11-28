@@ -1,4 +1,6 @@
 import _ from 'underscore';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 
 /* global SnippetedMessages */
 Template.snippetedMessages.helpers({

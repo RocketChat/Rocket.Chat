@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';

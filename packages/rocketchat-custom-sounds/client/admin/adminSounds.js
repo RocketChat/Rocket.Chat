@@ -1,6 +1,11 @@
-import s from 'underscore.string';
-
+import { ReactiveVar } from 'meteor/reactive-var';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SideNav } from 'meteor/rocketchat:ui';
+import s from 'underscore.string';
 
 Template.adminSounds.helpers({
 	isReady() {
