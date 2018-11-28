@@ -13,7 +13,7 @@ export default ({ Users, Messages, Subscriptions, Rooms, Settings, Trash }) => (
 			Services: this.broker,
 		};
 
-		Users.watch([], { fullDocument: 'updateLookup' }).on('change', async function({ operationType, /* documentKey,*/ fullDocument/* , oplog*/, updateDescription, ...args }) {
+		Users.watch([], { fullDocument: 'updateLookup' }).on('change', async function({ operationType, /* documentKey,*/ fullDocument/* , oplog*/, updateDescription }) {
 			switch (operationType) {
 				case 'insert':
 				case 'update':
