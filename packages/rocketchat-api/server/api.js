@@ -1,5 +1,12 @@
-/* global Restivus, DDP, DDPCommon */
+import { Meteor } from 'meteor/meteor';
+import { DDPCommon } from 'meteor/ddp-common';
+import { DDP } from 'meteor/ddp';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Restivus } from 'meteor/nimble:restivus';
+import { Logger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
+
 const logger = new Logger('API', {});
 
 class API extends Restivus {
@@ -379,7 +386,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 		if (RocketChat.settings.get('API_Enable_CORS') === true) {
 			this.response.writeHead(200, {
 				'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token',
+				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
 			});
 		} else {
 			this.response.writeHead(405);

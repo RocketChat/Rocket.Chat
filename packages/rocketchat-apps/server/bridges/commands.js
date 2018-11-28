@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { Utilities } from '../../lib/misc/Utilities';
 

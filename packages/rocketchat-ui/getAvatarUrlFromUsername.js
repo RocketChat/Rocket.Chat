@@ -1,5 +1,8 @@
 // TODO: remove global
-this.getAvatarUrlFromUsername = function(username) {
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+
+getAvatarUrlFromUsername = function(username) { //eslint-disable-line
 	const key = `avatar_random_${ username }`;
 	const random = typeof Session !== 'undefined' && typeof Session.keys[key] !== 'undefined' ? Session.keys[key] : 0;
 	if (username == null) {

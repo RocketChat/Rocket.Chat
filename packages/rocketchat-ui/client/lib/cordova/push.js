@@ -1,4 +1,8 @@
 /* globals Push Servers*/
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 if (Meteor.isCordova) {
 	// Push.addListener 'token', (token) ->
 	// 	Meteor.call 'log', 'CLIENT', 'token', arguments

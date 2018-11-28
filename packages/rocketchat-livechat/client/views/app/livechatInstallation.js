@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating';
 import s from 'underscore.string';
 
 Template.livechatInstallation.helpers({

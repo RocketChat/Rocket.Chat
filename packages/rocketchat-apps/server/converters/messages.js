@@ -1,3 +1,5 @@
+import { Random } from 'meteor/random';
+
 export class AppMessagesConverter {
 	constructor(orch) {
 		this.orch = orch;

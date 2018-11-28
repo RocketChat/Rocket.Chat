@@ -1,6 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { searchProviderService, SearchProvider } from 'meteor/rocketchat:search';
 import Index from './index';
 import ChatpalLogger from '../utils/logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /**
  * The chatpal search provider enables chatpal search. An appropriate backedn has to be specified by settings.

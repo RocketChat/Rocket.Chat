@@ -1,4 +1,6 @@
 /* global device */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 if (Meteor.isCordova) {
 	window.addEventListener('native.keyboardshow', function() {

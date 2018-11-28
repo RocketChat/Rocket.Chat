@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 /*
 * RocketChat.settings holds all packages settings

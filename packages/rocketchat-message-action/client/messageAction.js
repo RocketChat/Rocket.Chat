@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.messageAction.helpers({
 	isButton() {
 		return this.type === 'button';

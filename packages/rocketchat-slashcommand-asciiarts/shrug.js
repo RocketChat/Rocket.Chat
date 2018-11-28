@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 /*
 * Shrug is a named function that will replace /shrug commands
 * @param {Object} message - The message object

@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+
 this.VideoRecorder = new class {
 	constructor() {
 		this.started = false;

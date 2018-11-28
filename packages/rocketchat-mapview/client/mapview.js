@@ -1,3 +1,4 @@
+import { TAPi18n } from 'meteor/tap:i18n';
 /*
  * MapView is a named function that will replace geolocation in messages with a Google Static Map
  * @param {Object} message - The message object

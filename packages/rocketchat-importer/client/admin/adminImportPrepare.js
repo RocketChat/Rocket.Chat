@@ -1,4 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Importers } from 'meteor/rocketchat:importer';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:ui';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({

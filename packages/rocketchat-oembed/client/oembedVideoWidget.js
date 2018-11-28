@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+
 const getTitle = function(self) {
 	if (self.meta == null) {
 		return;

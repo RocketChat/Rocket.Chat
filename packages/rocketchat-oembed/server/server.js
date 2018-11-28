@@ -1,4 +1,5 @@
 /* globals HTTPInternals, changeCase */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import URL from 'url';
 import querystring from 'querystring';

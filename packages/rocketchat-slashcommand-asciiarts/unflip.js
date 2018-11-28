@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 /*
 * Unflip is a named function that will replace /unflip commands
 * @param {Object} message - The message object

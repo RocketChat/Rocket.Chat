@@ -2,6 +2,8 @@
  * Highlights is a named function that will process Highlights
  * @param {Object} message - The message object
  */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
