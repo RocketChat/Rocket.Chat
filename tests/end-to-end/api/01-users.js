@@ -1031,7 +1031,7 @@ describe('[Users]', function() {
 				userId: credentials['X-User-Id'],
 				data: {
 					...preferences.data,
-					language: 'es',
+					language: 'en',
 				},
 			};
 			request.post(api('users.setPreferences'))
@@ -1041,7 +1041,7 @@ describe('[Users]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.user.settings.preferences).to.have.property('language', 'es');
+					expect(res.body.user.settings.preferences).to.have.property('language', 'en');
 				})
 				.end(done);
 		});
@@ -1051,7 +1051,7 @@ describe('[Users]', function() {
 		it('should return all preferences when execute successfully', (done) => {
 			const userPreferences = {
 				...preferences.data,
-				language: 'es',
+				language: 'en',
 			};
 			request.get(api('users.getPreferences'))
 				.set(credentials)
