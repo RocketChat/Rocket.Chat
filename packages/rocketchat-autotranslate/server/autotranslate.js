@@ -2,7 +2,7 @@
 
 import s from 'underscore.string';
 import _ from 'underscore';
-import {RocketChat} from 'meteor/rocketchat:lib';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /**
  * Generic auto translate base implementation.
@@ -66,7 +66,7 @@ export class AutoTranslate {
 			const token = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token,
-				text: match
+				text: match,
 			});
 			return token;
 		});
@@ -84,13 +84,13 @@ export class AutoTranslate {
 			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: pretoken,
-				text: pre
+				text: pre,
 			});
 
 			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: posttoken,
-				text: post
+				text: post,
 			});
 
 			return pretoken + text + posttoken;
@@ -101,13 +101,13 @@ export class AutoTranslate {
 			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: pretoken,
-				text: pre
+				text: pre,
 			});
 
 			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: posttoken,
-				text: post
+				text: post,
 			});
 
 			return pretoken + text + posttoken;
@@ -125,7 +125,7 @@ export class AutoTranslate {
 
 		for (const tokenIndex in message.tokens) {
 			if (message.tokens.hasOwnProperty(tokenIndex)) {
-				const token = message.tokens[tokenIndex].token;
+				const { token } = message.tokens[tokenIndex];
 				if (token.indexOf('notranslate') === -1) {
 					const newToken = `<i class=notranslate>{${ count++ }}</i>`;
 					message.msg = message.msg.replace(token, newToken);
@@ -141,12 +141,12 @@ export class AutoTranslate {
 		let count = message.tokens.length;
 
 		if (message.mentions && message.mentions.length > 0) {
-			message.mentions.forEach(mention => {
-				message.msg = message.msg.replace(new RegExp(`(@${ mention.username })`, 'gm'), match => {
+			message.mentions.forEach((mention) => {
+				message.msg = message.msg.replace(new RegExp(`(@${ mention.username })`, 'gm'), (match) => {
 					const token = `<i class=notranslate>{${ count++ }}</i>`;
 					message.tokens.push({
 						token,
-						text: match
+						text: match,
 					});
 					return token;
 				});
@@ -154,12 +154,12 @@ export class AutoTranslate {
 		}
 
 		if (message.channels && message.channels.length > 0) {
-			message.channels.forEach(channel => {
-				message.msg = message.msg.replace(new RegExp(`(#${ channel.name })`, 'gm'), match => {
+			message.channels.forEach((channel) => {
+				message.msg = message.msg.replace(new RegExp(`(#${ channel.name })`, 'gm'), (match) => {
 					const token = `<i class=notranslate>{${ count++ }}</i>`;
 					message.tokens.push({
 						token,
-						text: match
+						text: match,
 					});
 					return token;
 				});
@@ -171,8 +171,8 @@ export class AutoTranslate {
 
 	deTokenize(message) {
 		if (message.tokens && message.tokens.length > 0) {
-			for (const {token, text, noHtml} of message.tokens) {
-				message.msg = message.msg.replace(token, () => noHtml ? noHtml : text);
+			for (const { token, text, noHtml } of message.tokens) {
+				message.msg = message.msg.replace(token, () => (noHtml ? noHtml : text));
 			}
 		}
 		return message.msg;
@@ -298,7 +298,7 @@ export class AutoTranslate {
 
 export class TranslationProviderRegistry {
 	static registerProvider(provider) {
-		//get provider information
+		// get provider information
 		const metadata = provider._getProviderMetadata();
 		if (!TranslationProviderRegistry._providers) {
 			TranslationProviderRegistry._providers = {};

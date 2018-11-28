@@ -60,7 +60,6 @@ jobs:
           name: Lint
           command: |
             meteor npm run lint
-            meteor npm run stylelint
 
       - run:
           name: Unit Test

@@ -8,15 +8,15 @@ Object.assign(RocketChat.models.Rooms, {
 
 		const query = {
 			t: {
-				$in: ['c']
+				$in: ['c'],
 			},
 			name: nameRegex,
-			archived: {$ne: true},
+			archived: { $ne: true },
 			parentRoomId: {
-				$exists: false
-			}
+				$exists: false,
+			},
 		};
 
 		return this.find(query, options);
-	}
+	},
 });

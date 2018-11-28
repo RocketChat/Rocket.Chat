@@ -1,6 +1,6 @@
 /* globals SystemLogger, RocketChat */
 
-import {SmartiAdapter} from './lib/SmartiAdapter';
+import { SmartiAdapter } from './lib/SmartiAdapter';
 
 /**
  * The SmartiRouter handles all incoming HTTP requests from Smarti.
@@ -12,13 +12,13 @@ import {SmartiAdapter} from './lib/SmartiAdapter';
  * Add an incoming webhook '/newConversationResult' to receive answers from Smarti.
  * This allows asynchronous callback from Smarti, when analyzing the conversation has finished.
  */
-RocketChat.API.v1.addRoute('smarti.result/:_token', {authRequired: false}, {
+RocketChat.API.v1.addRoute('smarti.result/:_token', { authRequired: false }, {
 
 	post() {
 		SystemLogger.debug('Smarti - Incoming HTTP requests', JSON.stringify(this.bodyParams, null, 2));
 
 		check(this.bodyParams.data, Match.ObjectIncluding({
-			conversation: String
+			conversation: String,
 		}));
 
 		const rcWebhookToken = RocketChat.settings.get('Assistify_AI_RocketChat_Webhook_Token');
@@ -28,7 +28,7 @@ RocketChat.API.v1.addRoute('smarti.result/:_token', {authRequired: false}, {
 			SmartiAdapter.analysisCompleted(null, this.bodyParams.data.conversation, this.bodyParams.data);
 			return RocketChat.API.v1.success();
 		} else {
-			return RocketChat.API.v1.unauthorized({msg: 'token not valid'});
+			return RocketChat.API.v1.unauthorized({ msg: 'token not valid' });
 		}
-	}
+	},
 });

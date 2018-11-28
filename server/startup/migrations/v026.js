@@ -2,13 +2,13 @@ RocketChat.Migrations.add({
 	version: 26,
 	up() {
 		return RocketChat.models.Messages.update({
-			t: 'rm'
+			t: 'rm',
 		}, {
 			$set: {
-				mentions: []
-			}
+				mentions: [],
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
-	}
+	},
 });

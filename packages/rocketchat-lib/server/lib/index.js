@@ -13,5 +13,5 @@ export {
 	RoomSettingsEnum,
 	RoomTypeConfig,
 	RoomTypeRouteConfig,
-	sendNotification
+	sendNotification,
 };

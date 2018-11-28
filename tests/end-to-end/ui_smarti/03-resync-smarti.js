@@ -3,8 +3,8 @@
 import supertest from 'supertest';
 import { adminUsername, adminPassword } from '../../data/user.js';
 import { credentials } from '../ui_smarti/00-preparation.js';
-import {checkIfUserIsAdmin} from '../../data/checks';
-import {adminEmail} from '../../data/user';
+import { checkIfUserIsAdmin } from '../../data/checks';
+import { adminEmail } from '../../data/user';
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
 import mainContent from '../../pageobjects/main-content.page';
@@ -24,7 +24,7 @@ describe('[Smarti Configuration]', function() {
 		describe('[Client]', () => {
 			it('check if client already exists', function(done) {
 				request.get('/client')
-					.auth(credentials['username'], credentials['password'])
+					.auth(credentials.username, credentials.password)
 					.expect(200)
 					.expect(function(res) {
 						for (const cl in res.body) {
@@ -53,7 +53,7 @@ describe('[Smarti Configuration]', function() {
 					.send({
 						defaultClient: true,
 						description: '',
-						name: clientname
+						name: clientname,
 					})
 					.set('Accept', 'application/json')
 					.end(function(err, res) {
@@ -102,7 +102,7 @@ describe('[Smarti Configuration]', function() {
 				.set('Content-Type', 'application/json')
 				.send({
 					username: adminUsername,
-					password: adminPassword
+					password: adminPassword,
 				})
 				.end(function(err, res) {
 					authToken = res.body.data.authToken;
@@ -121,7 +121,7 @@ describe('[Smarti Configuration]', function() {
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
-					value: auto_token
+					value: auto_token,
 				})
 				.expect(200)
 				.end(done);
@@ -134,7 +134,7 @@ describe('[Smarti Configuration]', function() {
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
-					value: true
+					value: true,
 				})
 				.expect(200)
 				.end(done);
@@ -147,7 +147,7 @@ describe('[Smarti Configuration]', function() {
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
-					value: '0'
+					value: '0',
 				})
 				.expect(200)
 				.end(done);
@@ -160,7 +160,7 @@ describe('[Smarti Configuration]', function() {
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
-					value: clientname
+					value: clientname,
 				})
 				.expect(200)
 				.end(done);
@@ -173,7 +173,7 @@ describe('[Smarti Configuration]', function() {
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
-					value: 'key123'
+					value: 'key123',
 				})
 				.expect(200)
 				.end(done);
@@ -186,7 +186,7 @@ describe('[Smarti Configuration]', function() {
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
-					value: smarti_url_active
+					value: smarti_url_active,
 				})
 				.expect(200)
 				.end(done);
@@ -276,7 +276,7 @@ const messages = ['Nachricht im Thema wurde synchronisiert',
 	'Nachricht in der 2. Anfrage wurde nicht synchronisiert',
 	'1. Nachricht in der automatisch synchronisiert Anfrage wurde synchronisiert',
 	'2. Nachricht in der automatisch synchronisiert Anfrage wurde nicht synchronisiert',
-	'3. Nachricht in der automatisch synchronisiert Anfrage wurde synchronisiert'
+	'3. Nachricht in der automatisch synchronisiert Anfrage wurde synchronisiert',
 ];
 const sync_request1 = `sync_request1-${ Date.now() }`;
 const unsync_request1 = `unsync_request1-${ Date.now() }`;
@@ -285,16 +285,15 @@ const autosync_request1 = `autosync_request1-${ Date.now() }`;
 
 
 function loginRC() {
-	return new Promise(resolve => {
+	return new Promise((resolve) => {
 		rcrequest.post('/api/v1/login')
 			.set('Content-Type', 'application/json')
 			.send({
 				username: adminUsername,
-				password: adminPassword
+				password: adminPassword,
 			})
 			.end(function(err, res) {
-				const authToken = res.body.data.authToken;
-				const userId = res.body.data.userId;
+				const { authToken, userId } = res.body.data;
 				res.status.should.be.equal(200);
 				console.log('authToken', authToken);
 				console.log('userId', userId);
@@ -310,7 +309,7 @@ async function changeSmartiStatus(status, done) {
 		.set('X-Auth-Token', login_credentials[0])
 		.set('X-User-Id', login_credentials[1])
 		.send({
-			value: status
+			value: status,
 		})
 		.expect(200)
 		.then(rcrequest.post('/api/v1/logout')
@@ -319,7 +318,6 @@ async function changeSmartiStatus(status, done) {
 			.expect(200)
 			.end(done));
 }
-
 
 
 describe('[Test Sync]', function() {
@@ -334,25 +332,25 @@ describe('[Test Sync]', function() {
 		describe.skip('Test synced messaging', function() {
 			let conversationId;
 
-			after((done)=> {
+			after((done) => {
 				request.del(`/conversation/${ conversationId }`)
-					.auth(credentials['username'], credentials['password'])
+					.auth(credentials.username, credentials.password)
 					.expect(204)
 					.end(done);
 			});
 
-			it('Send synced message in Request', (done)=> {
+			it('Send synced message in Request', (done) => {
 				sideNav.createChannel(sync_request1, false, false);
 				mainContent.sendMessage(messages[1]);
 				browser.pause(500);
 				request.get('/conversation/')
-					.auth(credentials['username'], credentials['password'])
-					.query({client: auto_clientId})
+					.auth(credentials.username, credentials.password)
+					.query({ client: auto_clientId })
 					.expect(200)
 					.expect(function(res) {
 						const msgs = res.body.content[0].messages;
 						let found = false;
-						for (let i=0; i < msgs.length; i++) {
+						for (let i = 0; i < msgs.length; i++) {
 							if (msgs[i].content === messages[1]) {
 								found = true;
 								conversationId = res.body.content[0].id;
@@ -368,17 +366,17 @@ describe('[Test Sync]', function() {
 
 		describe('Test unsynced messaging', function() {
 
-			it('Make Smarti unavailable', (done)=> {
+			it('Make Smarti unavailable', (done) => {
 				changeSmartiStatus(smarti_url_inactive, done);
 			});
 
-			it('Send unsynced message in Request', (done)=> {
+			it('Send unsynced message in Request', (done) => {
 				sideNav.createChannel(unsync_request1, false, false);
 				mainContent.sendMessage(messages[2]);
 				browser.pause(500);
 				request.get('/conversation/')
-					.auth(credentials['username'], credentials['password'])
-					.query({client: auto_clientId})
+					.auth(credentials.username, credentials.password)
+					.query({ client: auto_clientId })
 					.expect(200)
 					.expect(function(res) {
 						const msgs = res.body.content;
@@ -387,12 +385,12 @@ describe('[Test Sync]', function() {
 					.end(done);
 			});
 
-			it('Send second unsynced message in Request', (done)=> {
+			it('Send second unsynced message in Request', (done) => {
 				mainContent.sendMessage(messages[3]);
 				browser.pause(500);
 				request.get('/conversation/')
-					.auth(credentials['username'], credentials['password'])
-					.query({client: auto_clientId})
+					.auth(credentials.username, credentials.password)
+					.query({ client: auto_clientId })
 					.expect(200)
 					.expect(function(res) {
 						const msgs = res.body.content;
@@ -401,13 +399,13 @@ describe('[Test Sync]', function() {
 					.end(done);
 			});
 
-			it.skip('Send unsynced message in second Request', (done)=> {
+			it.skip('Send unsynced message in second Request', (done) => {
 				sideNav.createChannel(unsync_request2, false, false);
 				mainContent.sendMessage(messages[4]);
 				browser.pause(500);
 				request.get('/conversation/')
-					.auth(credentials['username'], credentials['password'])
-					.query({client: auto_clientId})
+					.auth(credentials.username, credentials.password)
+					.query({ client: auto_clientId })
 					.expect(200)
 					.expect(function(res) {
 						const msgs = res.body.content;
@@ -416,11 +414,11 @@ describe('[Test Sync]', function() {
 					.end(done);
 			});
 
-			it('Make Smarti available', (done)=> {
+			it('Make Smarti available', (done) => {
 				changeSmartiStatus(smarti_url_active, done);
 			});
 
-			it('Trigger full resync', (done)=> {
+			it('Trigger full resync', (done) => {
 				assistify.openAdminView();
 				assistify.assistifyAdminUi.waitForVisible(5000);
 				assistify.assistifyAdminUi.click();
@@ -436,7 +434,7 @@ describe('[Test Sync]', function() {
 			});
 
 			it('shall find the conversation in Smarti', (done) => {
-				const roomId = assistify.roomId;
+				const { roomId } = assistify;
 				roomId.should.not.be.empty;
 				request.get('/conversation')
 					.set('X-Auth-Token', auto_token)
@@ -444,13 +442,11 @@ describe('[Test Sync]', function() {
 					.expect((res) => {
 						res.body.content.should.not.be.empty;
 
-						const currentConversation = res.body.content.filter((conversation) => {
-							return conversation.meta.channel_id[0] === roomId;
-						})[0];
+						const currentConversation = res.body.content.filter((conversation) => conversation.meta.channel_id[0] === roomId)[0];
 						currentConversation.should.not.be.empty;
 						const msgs = currentConversation.messages;
 						let found = false;
-						for (let i=0; i < msgs.length; i++) {
+						for (let i = 0; i < msgs.length; i++) {
 							if (msgs[i].content === messages[2]) {
 								found = true;
 								break;
@@ -462,17 +458,17 @@ describe('[Test Sync]', function() {
 			});
 		});
 
-		describe('[Cleanup Full Sync Test', ()=> {
-			it('Cleanup all Conversations in Smarti', (done)=> {
+		describe('[Cleanup Full Sync Test', () => {
+			it('Cleanup all Conversations in Smarti', (done) => {
 				request.get('/conversation/')
-					.auth(credentials['username'], credentials['password'])
-					.query({client: auto_clientId})
+					.auth(credentials.username, credentials.password)
+					.query({ client: auto_clientId })
 					.expect(200)
 					.expect(function(res) {
 						const msgs = res.body.content;
-						for (let i=0; i < msgs.length; i++) {
+						for (let i = 0; i < msgs.length; i++) {
 							request.del(`/conversation/${ msgs[i].id }`)
-								.auth(credentials['username'], credentials['password'])
+								.auth(credentials.username, credentials.password)
 								.expect(204)
 								.end();
 						}
@@ -484,19 +480,19 @@ describe('[Test Sync]', function() {
 	});
 
 	describe.skip('[Test auto Sync]', function() {
-		it('Send synced message in Request', (done)=> {
+		it('Send synced message in Request', (done) => {
 			browser.pause(500);
 			sideNav.createChannel(autosync_request1, false, false);
 			mainContent.sendMessage(messages[5]);
 			browser.pause(500);
 			request.get('/conversation/')
-				.auth(credentials['username'], credentials['password'])
-				.query({client: auto_clientId})
+				.auth(credentials.username, credentials.password)
+				.query({ client: auto_clientId })
 				.expect(200)
 				.expect(function(res) {
 					const msgs = res.body.content[0].messages;
 					let found = false;
-					for (let i=0; i < msgs.length; i++) {
+					for (let i = 0; i < msgs.length; i++) {
 						if (msgs[i].content === messages[5]) {
 							found = true;
 							break;
@@ -508,16 +504,16 @@ describe('[Test Sync]', function() {
 				.end(done);
 		});
 
-		it('Make Smarti unavailable', (done)=> {
+		it('Make Smarti unavailable', (done) => {
 			changeSmartiStatus(smarti_url_inactive, done);
 		});
 
-		it('Send unsynced message in Request', (done)=> {
+		it('Send unsynced message in Request', (done) => {
 			mainContent.sendMessage(messages[6]);
 			browser.pause(500);
 			request.get('/conversation/')
-				.auth(credentials['username'], credentials['password'])
-				.query({client: auto_clientId})
+				.auth(credentials.username, credentials.password)
+				.query({ client: auto_clientId })
 				.expect(200)
 				.expect(function(res) {
 					const conversations = res.body.content;
@@ -528,16 +524,16 @@ describe('[Test Sync]', function() {
 				.end(done);
 		});
 
-		it('Make Smarti available', (done)=> {
+		it('Make Smarti available', (done) => {
 			changeSmartiStatus(smarti_url_active, done);
 		});
 
-		it('Send last synced message in Request', (done)=> {
+		it('Send last synced message in Request', (done) => {
 			mainContent.sendMessage(messages[7]);
 			browser.pause(2000);
 			request.get('/conversation/')
-				.auth(credentials['username'], credentials['password'])
-				.query({client: auto_clientId})
+				.auth(credentials.username, credentials.password)
+				.query({ client: auto_clientId })
 				.expect(200)
 				.expect(function(res) {
 					const conversations = res.body.content;

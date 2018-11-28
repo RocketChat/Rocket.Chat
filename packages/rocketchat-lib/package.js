@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:lib',
 	version: '0.0.1',
 	summary: 'RocketChat libraries',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -28,9 +28,10 @@ Package.onUse(function(api) {
 	api.use('rocketchat:streamer');
 	api.use('rocketchat:version');
 	api.use('rocketchat:logger');
+	api.use('rocketchat:mailer');
 	api.use('rocketchat:custom-oauth');
-	api.use('rocketchat:authorization', {unordered: true});
-	api.use('rocketchat:push-notifications', {unordered: true});
+	api.use('rocketchat:authorization', { unordered: true });
+	api.use('rocketchat:push-notifications', { unordered: true });
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -51,7 +52,7 @@ Package.onUse(function(api) {
 		'lib/roomTypes/index.js',
 		'lib/roomTypes/private.js',
 		'lib/roomTypes/public.js',
-		'lib/roomTypes/unread.js'
+		'lib/roomTypes/unread.js',
 	]);
 
 	// COMMON LIB
@@ -238,6 +239,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/customFieldsForm.js', 'client');
 
 	api.addFiles('startup/defaultRoomTypes.js');
+	api.addFiles('startup/index.js', 'server');
 
 	// VERSION
 	api.addFiles('rocketchat.info');

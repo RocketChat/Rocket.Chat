@@ -5,7 +5,7 @@ export class ApiAiAdapter {
 		this.properties = adapterProps;
 		this.headers = {
 			'Content-Type': 'application/json; charset=utf-8',
-			'Authorization': `Bearer ${ this.properties.token }`
+			Authorization: `Bearer ${ this.properties.token }`,
 		};
 	}
 
@@ -13,21 +13,21 @@ export class ApiAiAdapter {
 		const responseAPIAI = HTTP.post(this.properties.url, {
 			data: {
 				query: message.msg,
-				lang: this.properties.language
+				lang: this.properties.language,
 			},
-			headers: this.headers
+			headers: this.headers,
 		});
 		if (responseAPIAI.data && responseAPIAI.data.status.code === 200 && !_.isEmpty(responseAPIAI.data.result.fulfillment.speech)) {
 			RocketChat.models.LivechatExternalMessage.insert({
 				rid: message.rid,
 				msg: responseAPIAI.data.result.fulfillment.speech,
 				orig: message._id,
-				ts: new Date()
+				ts: new Date(),
 			});
 		}
 	}
 
 	onClose() {
-		//do nothing, api.ai does not learn from us.
+		// do nothing, api.ai does not learn from us.
 	}
 }

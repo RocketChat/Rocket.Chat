@@ -21,17 +21,15 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
-		return RocketChat.roomTypes.getTypes().map((roomType) => {
-			return {
-				template: roomType.customTemplate || 'roomList',
-				data: {
-					header: roomType.header,
-					identifier: roomType.identifier,
-					isCombined: roomType.isCombined,
-					label: roomType.label
-				}
-			};
-		});
+		return RocketChat.roomTypes.getTypes().map((roomType) => ({
+			template: roomType.customTemplate || 'roomList',
+			data: {
+				header: roomType.header,
+				identifier: roomType.identifier,
+				isCombined: roomType.isCombined,
+				label: roomType.label,
+			},
+		}));
 	},
 
 	loggedInUser() {
@@ -45,7 +43,7 @@ Template.sideNav.helpers({
 
 	sidebarHideAvatar() {
 		return RocketChat.getUserPreference(Meteor.user(), 'sidebarHideAvatar');
-	}
+	},
 });
 
 Template.sideNav.events({
@@ -68,7 +66,7 @@ Template.sideNav.events({
 
 	'click .js-create-thread'() {
 		return FlowRouter.go('create-thread');
-	}
+	},
 });
 
 Template.sideNav.onRendered(function() {
@@ -90,8 +88,8 @@ Template.sideNav.onCreated(function() {
 	this.autorun(() => {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
-				'settings.preferences.sidebarGroupByType': 1
-			}
+				'settings.preferences.sidebarGroupByType': 1,
+			},
 		});
 		const userPref = RocketChat.getUserPreference(user, 'sidebarGroupByType');
 		this.groupedByType.set(userPref ? userPref : RocketChat.settings.get('UI_Group_Channels_By_Type'));

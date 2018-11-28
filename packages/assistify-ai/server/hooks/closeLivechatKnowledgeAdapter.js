@@ -1,10 +1,10 @@
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {SystemLogger} from 'meteor/rocketchat:logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SystemLogger } from 'meteor/rocketchat:logger';
 
 /**
  * Notifies the knowledgeProvider about the end of a livechat conversation
  */
-import {getKnowledgeAdapter} from 'meteor/assistify:ai';
+import { getKnowledgeAdapter } from 'meteor/assistify:ai';
 const _callbackOnClose = function(room) {
 	try {
 		const knowledgeAdapter = getKnowledgeAdapter();

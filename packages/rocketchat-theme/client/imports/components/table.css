@@ -3,16 +3,16 @@
 
 	color: var(--rc-color-primary-light);
 
-	font-weight: 500;
-
 	font-size: 0.875rem;
+
+	font-weight: 500;
 
 	&--fixed {
 		table-layout: fixed;
 	}
 
 	& tbody {
-		& tr:not(.table-loading) {
+		& tr:not(.table-no-click):not(.table-no-pointer) {
 			cursor: pointer;
 
 			&:hover {
@@ -31,7 +31,6 @@
 	}
 
 	& th {
-		font-size: 0.75rem;
 		height: 0;
 
 		padding-top: 0;
@@ -41,6 +40,8 @@
 
 		color: transparent;
 
+		font-size: 0.75rem;
+
 		line-height: 0;
 
 		& > .rc-icon {
@@ -49,14 +50,16 @@
 	}
 
 	& td {
+
+		overflow: hidden;
+
 		padding: 0.25rem 0;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
 
 		font-size: 0.9rem;
 		line-height: 1rem;
-
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
 	}
 
 	&-wrapper {
@@ -68,9 +71,11 @@
 	}
 
 	&-subtitle {
-		color: var(--rc-color-primary-light);
 		overflow: hidden;
+
 		text-overflow: ellipsis;
+
+		color: var(--rc-color-primary-light);
 	}
 
 	&-title {
@@ -83,10 +88,10 @@
 		color: var(--rc-color-primary);
 
 		& .rc-icon {
-			font-size: 1rem;
 			margin: 0 -4px;
-		}
 
+			font-size: 1rem;
+		}
 	}
 
 	&-avatar {
@@ -95,9 +100,8 @@
 		width: 26px;
 		height: 26px;
 		margin: 2px 4px;
-		border-radius: 2px;
 
-		flex: 0 0 auto;
+		border-radius: 2px;
 
 		background-repeat: no-repeat;
 		background-position: center center;
@@ -114,12 +118,12 @@
 
 		width: 1%;
 
+		margin: 0 4px;
+
 		white-space: nowrap;
 
 		text-overflow: ellipsis;
 		flex-grow: 1;
-
-		margin: 0 4px;
 
 		justify-content: space-around;
 	}
@@ -128,6 +132,7 @@
 		&--small {
 			width: 80px;
 		}
+
 		&--medium {
 			width: 200px;
 		}
@@ -156,8 +161,8 @@
 	flex-direction: column;
 
 	min-height: 0;
-	flex-grow: 1;
 	margin-bottom: 1rem;
+	flex-grow: 1;
 }
 
 .table-scroll {
@@ -166,6 +171,7 @@
 	min-height: 0;
 
 	margin-top: 2rem;
+	margin-bottom: 0.5rem;
 
 	border-top: 1px solid rgba(216, 216, 216, 0.4);
 	flex-grow: 1;
@@ -173,8 +179,11 @@
 
 .table-fake-th {
 	position: absolute;
-	display: block;
+
 	top: 0;
+
+	display: block;
+
 	display: flex;
 
 	padding: 0.5rem 0;
@@ -198,13 +207,15 @@
 
 .table-column-date {
 	overflow: hidden;
+
 	width: 120px;
+
 	white-space: nowrap;
-	text-overflow: ellipsis;
 	text-transform: capitalize;
+	text-overflow: ellipsis;
 }
 
-.table-loading {
+.table-no-click {
 	height: 10px;
 }
 

@@ -5,7 +5,7 @@ export class PrivateSettingsCachedCollection extends RocketChat.CachedCollection
 		super({
 			name: 'private-settings',
 			eventType: 'onLogged',
-			useCache: false
+			useCache: false,
 		});
 	}
 
@@ -22,7 +22,7 @@ export class PrivateSettingsCachedCollection extends RocketChat.CachedCollection
 					RoomManager.close(record.t + record.name);
 				} else {
 					delete record.$loki;
-					this.collection.upsert({_id: record._id}, _.omit(record, '_id'));
+					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
 				}
 
 				this.saveCache();

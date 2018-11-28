@@ -1,4 +1,4 @@
-import {permissionLevel} from '../../lib/rocketchat';
+import { permissionLevel } from '../../lib/rocketchat';
 
 Meteor.methods({
 	'authorization:addPermissionToRole'(permission, role) {
@@ -7,7 +7,7 @@ Meteor.methods({
 		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Adding permission is not allowed', {
 				method: 'authorization:addPermissionToRole',
-				action: 'Adding_permission'
+				action: 'Adding_permission',
 			});
 		}
 
@@ -24,5 +24,5 @@ Meteor.methods({
 
 		addParentPermissions(permission, role);
 		return RocketChat.models.Permissions.addRole(permission, role);
-	}
+	},
 });

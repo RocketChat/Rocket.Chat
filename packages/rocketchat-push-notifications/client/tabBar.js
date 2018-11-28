@@ -5,6 +5,6 @@ Meteor.startup(function() {
 		i18nTitle: 'Notifications_Preferences',
 		icon: 'bell',
 		template: 'pushNotificationsFlexTab',
-		order: 100
+		order: 100,
 	});
 });
