@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomBridge {
@@ -18,8 +19,11 @@ export class AppRoomBridge {
 			case RoomType.PRIVATE_GROUP:
 				method = 'createPrivateGroup';
 				break;
+			case RoomType.DIRECT_MESSAGE:
+				method = 'createDirectMessage';
+				break;
 			default:
-				throw new Error('Only channels and private groups can be created.');
+				throw new Error('Only channels, private groups and direct messages can be created.');
 		}
 
 		let rid;
@@ -29,7 +33,13 @@ export class AppRoomBridge {
 			delete extraData.t;
 			delete extraData.ro;
 			delete extraData.customFields;
-			const info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
+			let info;
+			if (room.type === RoomType.DIRECT_MESSAGE) {
+				members.splice(members.indexOf(room.creator.username), 1);
+				info = Meteor.call(method, members[0]);
+			} else {
+				info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
+			}
 			rid = info.rid;
 		});
 
@@ -70,6 +80,21 @@ export class AppRoomBridge {
 		}
 
 		return this.orch.getConverters().get('users').convertById(room.u._id);
+	}
+
+	async getMembers(roomId, appId) {
+		console.log(`The App ${ appId } is getting the room's members by room id: "${ roomId }"`);
+		const subscriptions = await RocketChat.models.Subscriptions.findByRoomId(roomId);
+		return subscriptions.map((sub) => this.orch.getConverters().get('users').convertById(sub.u && sub.u._id));
+	}
+
+	async getDirectByUsernames(usernames, appId) {
+		console.log(`The App ${ appId } is getting direct room by usernames: "${ usernames }"`);
+		const room = await RocketChat.models.Rooms.findDirectRoomContainingAllUsernames(usernames);
+		if (!room) {
+			return undefined;
+		}
+		return this.orch.getConverters().get('rooms').convertRoom(room);
 	}
 
 	async update(room, members = [], appId) {

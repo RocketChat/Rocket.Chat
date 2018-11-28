@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.CredentialTokens = new class extends RocketChat.models._Base {
 	constructor() {
 		super('credential_tokens');

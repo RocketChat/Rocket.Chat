@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import BigBlueButtonApi from 'meteor/rocketchat:bigbluebutton';
 import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';

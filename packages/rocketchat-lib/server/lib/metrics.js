@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import client from 'prom-client';
 import connect from 'connect';
 import http from 'http';

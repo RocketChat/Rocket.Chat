@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 
 	// // General //
 	// Server

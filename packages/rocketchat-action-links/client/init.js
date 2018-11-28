@@ -1,4 +1,8 @@
-/* globals fireGlobalEvent */
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { fireGlobalEvent } from 'meteor/rocketchat:ui';
+
 Template.room.events({
 	'click .action-link'(event, instance) {
 		event.preventDefault();

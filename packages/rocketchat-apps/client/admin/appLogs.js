@@ -1,3 +1,7 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import moment from 'moment';
 import hljs from 'highlight.js';
 

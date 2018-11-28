@@ -1,5 +1,7 @@
 /* globals SyncedCron */
 
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
