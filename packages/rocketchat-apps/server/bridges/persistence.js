@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 export class AppPersistenceBridge {
 	constructor(orch) {
 		this.orch = orch;
@@ -76,8 +74,7 @@ export class AppPersistenceBridge {
 
 		if (atomic) {
 			const persistenceRaw = this.orch.getPersistenceModel().model.rawCollection();
-			const findAndModify = Meteor.wrapAsync(persistenceRaw.findAndModify, persistenceRaw);
-			return findAndModify(query, null, null, { remove: true });
+			return await persistenceRaw.findAndModify(query, null, null, { remove: true });
 		} else {
 			const records = this.orch.getPersistenceModel().find(query).fetch();
 
@@ -115,8 +112,7 @@ export class AppPersistenceBridge {
 
 		if (atomic) {
 			const persistenceRaw = this.orch.getPersistenceModel().model.rawCollection();
-			const findAndModify = Meteor.wrapAsync(persistenceRaw.findAndModify, persistenceRaw);
-			const ret = findAndModify(query, null, { $set: { data } }, { upsert, returnNew });
+			const ret = await persistenceRaw.findAndModify(query, null, { $set: { data } }, { upsert, returnNew });
 			return ret.value;
 		} else if (returnNew) {
 			return this.orch.getPersistenceModel().upsert(query, { $set: { data } }, { upsert });
