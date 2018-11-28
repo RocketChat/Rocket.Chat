@@ -5,8 +5,8 @@ import Future from 'fibers/future';
 RocketChat.Sandstorm = {};
 
 if (process.env.SANDSTORM === '1') {
-	const Capnp = require('/node_modules/capnp.js');
-	const SandstormHttpBridge = Capnp.importSystem('sandstorm/sandstorm-http-bridge.capnp').SandstormHttpBridge;
+	const Capnp = require('capnp');
+	const { SandstormHttpBridge } = Capnp.importSystem('sandstorm/sandstorm-http-bridge.capnp');
 
 	let capnpConnection = null;
 	let httpBridge = null;

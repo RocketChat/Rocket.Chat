@@ -1,7 +1,11 @@
-function Open(command, params /*, item*/) {
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
+function Open(command, params /* , item*/) {
 	const dict = {
 		'#': ['c', 'p'],
-		'@': ['d']
+		'@': ['d'],
 	};
 
 	if (command !== 'open' || !Match.test(params, String)) {
@@ -13,12 +17,12 @@ function Open(command, params /*, item*/) {
 	room = room.replace(/#|@/, '');
 
 	const query = {
-		name: room
+		name: room,
 	};
 
 	if (type) {
-		query['t'] = {
-			$in: type
+		query.t = {
+			$in: type,
 		};
 	}
 
@@ -44,5 +48,5 @@ function Open(command, params /*, item*/) {
 RocketChat.slashCommands.add('open', Open, {
 	description: 'Opens_a_channel_group_or_direct_message',
 	params: 'room_name',
-	clientOnly: true
+	clientOnly: true,
 });

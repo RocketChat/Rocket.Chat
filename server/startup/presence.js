@@ -1,9 +1,10 @@
 /* globals InstanceStatus, UserPresence, UserPresenceMonitor */
+import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(function() {
 	const instance = {
 		host: 'localhost',
-		port: String(process.env.PORT).trim()
+		port: String(process.env.PORT).trim(),
 	};
 
 	if (process.env.INSTANCE_IP) {
@@ -14,5 +15,9 @@ Meteor.startup(function() {
 
 	UserPresence.start();
 
-	return UserPresenceMonitor.start();
+	const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined' ||
+		!['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
+	if (startMonitor) {
+		UserPresenceMonitor.start();
+	}
 });

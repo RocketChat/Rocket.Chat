@@ -5,6 +5,7 @@ import './AmazonS3.js';
 import './FileSystem.js';
 import './GoogleStorage.js';
 import './GridFS.js';
+import './Webdav.js';
 import './Slingshot_DEPRECATED.js';
 
 const configStore = _.debounce(() => {

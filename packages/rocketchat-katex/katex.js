@@ -2,6 +2,9 @@
  * KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the web.
  * https://github.com/Khan/KaTeX
  */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -27,31 +30,23 @@ class Katex {
 				opener: '\\[',
 				closer: '\\]',
 				displayMode: true,
-				enabled: () => {
-					return this.parenthesis_syntax_enabled();
-				}
+				enabled: () => this.parenthesis_syntax_enabled(),
 			}, {
 				opener: '\\(',
 				closer: '\\)',
 				displayMode: false,
-				enabled: () => {
-					return this.parenthesis_syntax_enabled();
-				}
+				enabled: () => this.parenthesis_syntax_enabled(),
 			}, {
 				opener: '$$',
 				closer: '$$',
 				displayMode: true,
-				enabled: () => {
-					return this.dollar_syntax_enabled();
-				}
+				enabled: () => this.dollar_syntax_enabled(),
 			}, {
 				opener: '$',
 				closer: '$',
 				displayMode: false,
-				enabled: () => {
-					return this.dollar_syntax_enabled();
-				}
-			}
+				enabled: () => this.dollar_syntax_enabled(),
+			},
 		];
 	}
 	// Searches for the first opening delimiter in the string from a given position
@@ -65,7 +60,7 @@ class Katex {
 				if (op.enabled()) {
 					results.push({
 						options: op,
-						pos: str.indexOf(op.opener, start)
+						pos: str.indexOf(op.opener, start),
 					});
 				}
 			});
@@ -87,10 +82,10 @@ class Katex {
 			return null;
 		}
 
-		//Take the first delimiter found
+		// Take the first delimiter found
 		const pos = Math.min.apply(Math, positions);
 
-		const match_index = (()=> {
+		const match_index = (() => {
 			const results = [];
 			matches.forEach((m) => {
 				results.push(m.pos);
@@ -109,7 +104,7 @@ class Katex {
 		const outer = new Boundary;
 
 		// The closing delimiter matching to the opening one
-		const closer = opening_delimiter_match.options.closer;
+		const { closer } = opening_delimiter_match.options;
 		outer.start = opening_delimiter_match.pos;
 		inner.start = opening_delimiter_match.pos + closer.length;
 
@@ -122,7 +117,7 @@ class Katex {
 		outer.end = inner.end + closer.length;
 		return {
 			outer,
-			inner
+			inner,
 		};
 	}
 
@@ -151,7 +146,7 @@ class Katex {
 		return {
 			before,
 			latex,
-			after
+			after,
 		};
 	}
 
@@ -161,7 +156,7 @@ class Katex {
 		let rendered;
 		try {
 			rendered = katex.renderToString(latex, {
-				displayMode
+				displayMode,
 			});
 		} catch (error) {
 			const e = error;
@@ -193,7 +188,7 @@ class Katex {
 
 	// Takes a rocketchat message and renders latex in its content
 	render_message(message) {
-		//Render only if enabled in admin panel
+		// Render only if enabled in admin panel
 		let render_func;
 		if (this.katex_enabled()) {
 			let msg = message;
@@ -205,9 +200,7 @@ class Katex {
 				}
 			}
 			if (_.isString(message)) {
-				render_func = (latex, displayMode) => {
-					return this.render_latex(latex, displayMode);
-				};
+				render_func = (latex, displayMode) => this.render_latex(latex, displayMode);
 			} else {
 				if (message.tokens == null) {
 					message.tokens = [];
@@ -216,7 +209,7 @@ class Katex {
 					const token = `=!=${ Random.id() }=!=`;
 					message.tokens.push({
 						token,
-						text: this.render_latex(latex, displayMode)
+						text: this.render_latex(latex, displayMode),
 					});
 					return token;
 				};

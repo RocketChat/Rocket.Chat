@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:login-token',
 	summary: '',
-	version: '1.0.0'
+	version: '1.0.0',
 });
 
 Package.onUse(function(api) {
@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger', 'server');
 
 	api.use('kadira:flow-router', 'client');
+	api.use('kadira:blaze-layout', 'client');
 
 	api.use('rocketchat:lib');
 	api.use('accounts-base');

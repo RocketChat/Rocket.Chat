@@ -1,4 +1,6 @@
 /* global CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 const config = {
 	serverURL: '',
@@ -11,8 +13,8 @@ const config = {
 	mergeUsers: true,
 	addAutopublishFields: {
 		forLoggedInUser: ['services.tokenpass'],
-		forOtherUsers: ['services.tokenpass.name']
-	}
+		forOtherUsers: ['services.tokenpass.name'],
+	},
 };
 
 const Tokenpass = new CustomOAuth('tokenpass', config);

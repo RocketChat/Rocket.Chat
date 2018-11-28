@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.slider.onRendered(function() {
 	const params = this.data;
 

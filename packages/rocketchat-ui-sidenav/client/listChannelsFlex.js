@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -22,7 +25,7 @@ Template.listChannelsFlex.helpers({
 	},
 	hidden() {
 		return !!RocketChat.models.Subscriptions.findOne({ name: this.name, open: false });
-	}
+	},
 });
 
 Template.listChannelsFlex.events({
@@ -70,7 +73,7 @@ Template.listChannelsFlex.events({
 			instance.$('#sort-subscriptions').hide();
 		}
 		return instance.show.set(show);
-	}
+	},
 });
 
 Template.listChannelsFlex.onCreated(function() {
@@ -101,7 +104,7 @@ Template.listChannelsFlex.onCreated(function() {
 			}
 			this.channelsList.set(RocketChat.models.Subscriptions.find({
 				name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
-				t: 'c'
+				t: 'c',
 			}, options).fetch()
 			);
 			if (this.channelsList.get().length < this.limit.get()) {

@@ -1,5 +1,11 @@
-/*globals AdminChatRoom */
+/* globals AdminChatRoom */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
+
 Template.adminRoomInfo.helpers({
 	selectedRoom() {
 		return Session.get('adminRoomsSelected');
@@ -69,7 +75,7 @@ Template.adminRoomInfo.helpers({
 		} else {
 			return t('False');
 		}
-	}
+	},
 });
 
 Template.adminRoomInfo.events({
@@ -83,7 +89,7 @@ Template.adminRoomInfo.events({
 			confirmButtonText: t('Yes_delete_it'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, () => {
 			Meteor.call('eraseRoom', this.rid, function(error) {
 				if (error) {
@@ -94,7 +100,7 @@ Template.adminRoomInfo.events({
 						text: t('Room_has_been_deleted'),
 						type: 'success',
 						timer: 2000,
-						showConfirmButton: false
+						showConfirmButton: false,
 					});
 				}
 			});
@@ -120,7 +126,7 @@ Template.adminRoomInfo.events({
 	'click .save'(e, t) {
 		e.preventDefault();
 		t.saveSetting(this.rid);
-	}
+	},
 });
 
 Template.adminRoomInfo.onCreated(function() {
@@ -147,15 +153,13 @@ Template.adminRoomInfo.onCreated(function() {
 		}
 		if (!nameValidation.test(name)) {
 			toastr.error(t('error-invalid-room-name', {
-				room_name: name
+				room_name: name,
 			}));
 			return false;
 		}
 		return true;
 	};
-	this.validateRoomTopic = () => {
-		return true;
-	};
+	this.validateRoomTopic = () => true;
 	this.saveSetting = (rid) => {
 		switch (this.editing.get()) {
 			case 'roomName':
@@ -204,7 +208,7 @@ Template.adminRoomInfo.onCreated(function() {
 							}
 						});
 					};
-					if (!AdminChatRoom.findOne(rid, { fields: { 'default': 1 }})['default']) {
+					if (!AdminChatRoom.findOne(rid, { fields: { default: 1 } }).default) {
 						return saveRoomSettings();
 					}
 					modal.open({
@@ -215,7 +219,7 @@ Template.adminRoomInfo.onCreated(function() {
 						confirmButtonText: t('Yes'),
 						cancelButtonText: t('Cancel'),
 						closeOnConfirm: true,
-						html: false
+						html: false,
 					}, function(confirmed) {
 						return !confirmed || saveRoomSettings();
 					});

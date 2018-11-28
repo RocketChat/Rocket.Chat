@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import SearchLogger from '../logger/logger';
 
 class ValidationService {
@@ -29,14 +30,14 @@ class ValidationService {
 		};
 
 		const uid = Meteor.userId();
-		//get subscription for message
+		// get subscription for message
 		if (result.message) {
 			result.message.docs.forEach((msg) => {
 
 				const subscription = getSubscription(msg.rid, uid);
 
 				if (subscription) {
-					msg.r = {name: subscription.name, t: subscription.t};
+					msg.r = { name: subscription.name, t: subscription.t };
 					msg.username = getUsername(msg.user);
 					msg.valid = true;
 					SearchLogger.debug(`user ${ uid } can access ${ msg.rid } ( ${ subscription.t === 'd' ? subscription.username : subscription.name } )`);
@@ -45,9 +46,7 @@ class ValidationService {
 				}
 			});
 
-			result.message.docs.filter((msg) => {
-				return msg.valid;
-			});
+			result.message.docs.filter((msg) => msg.valid);
 		}
 
 		if (result.room) {
@@ -61,9 +60,7 @@ class ValidationService {
 				}
 			});
 
-			result.room.docs.filter((room) => {
-				return room.valid;
-			});
+			result.room.docs.filter((room) => room.valid);
 		}
 
 		return result;

@@ -1,16 +1,19 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 Meteor.methods({
 	saveUserPreferences(settings) {
 		const keys = {
 			language: Match.Optional(String),
 			newRoomNotification: Match.Optional(String),
 			newMessageNotification: Match.Optional(String),
+			clockMode: Match.Optional(Number),
 			useEmojis: Match.Optional(Boolean),
 			convertAsciiEmoji: Match.Optional(Boolean),
 			saveMobileBandwidth: Match.Optional(Boolean),
 			collapseMediaByDefault: Match.Optional(Boolean),
 			autoImageLoad: Match.Optional(Boolean),
 			emailNotificationMode: Match.Optional(String),
-			roomsListExhibitionMode: Match.Optional(String),
 			unreadAlert: Match.Optional(Boolean),
 			notificationsSoundVolume: Match.Optional(Number),
 			desktopNotifications: Match.Optional(String),
@@ -31,14 +34,10 @@ Meteor.methods({
 			sidebarSortby: Match.Optional(String),
 			sidebarViewMode: Match.Optional(String),
 			sidebarHideAvatar: Match.Optional(Boolean),
-			muteFocusedConversations: Match.Optional(Boolean)
+			sidebarGroupByType: Match.Optional(Boolean),
+			muteFocusedConversations: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
-		if (settings.mergeChannels) {
-			check(settings, Match.ObjectIncluding({
-				mergeChannels: Match.OneOf(Number, Boolean) //eslint-disable-line new-cap
-			}));
-		}
 		const user = Meteor.user();
 
 		if (!user) {
@@ -48,7 +47,7 @@ Meteor.methods({
 		const {
 			desktopNotifications: oldDesktopNotifications,
 			mobileNotifications: oldMobileNotifications,
-			emailNotificationMode: oldEmailNotifications
+			emailNotificationMode: oldEmailNotifications,
 		} = (user.settings && user.settings.preferences) || {};
 
 		if (user.settings == null) {
@@ -59,14 +58,6 @@ Meteor.methods({
 			RocketChat.models.Users.setLanguage(user._id, settings.language);
 		}
 
-		if (settings.mergeChannels != null) {
-			settings.mergeChannels = ['1', true].includes(settings.mergeChannels);
-		}
-
-		if (settings.roomsListExhibitionMode != null) {
-			settings.roomsListExhibitionMode = ['category', 'unread', 'activity'].includes(settings.roomsListExhibitionMode) ? settings.roomsListExhibitionMode : 'category';
-		}
-
 		// Keep compatibility with old values
 		if (settings.emailNotificationMode === 'all') {
 			settings.emailNotificationMode = 'mentions';
@@ -74,11 +65,15 @@ Meteor.methods({
 			settings.emailNotificationMode = 'nothing';
 		}
 
+		if (settings.idleTimeLimit != null && settings.idleTimeLimit < 60) {
+			throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
+		}
+
 		RocketChat.models.Users.setPreferences(user._id, settings);
 
 		// propagate changed notification preferences
 		Meteor.defer(() => {
-			if (oldDesktopNotifications !== settings.desktopNotifications) {
+			if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
 				if (settings.desktopNotifications === 'default') {
 					RocketChat.models.Subscriptions.clearDesktopNotificationUserPreferences(user._id);
 				} else {
@@ -86,7 +81,7 @@ Meteor.methods({
 				}
 			}
 
-			if (oldMobileNotifications !== settings.mobileNotifications) {
+			if (settings.mobileNotifications && oldMobileNotifications !== settings.mobileNotifications) {
 				if (settings.mobileNotifications === 'default') {
 					RocketChat.models.Subscriptions.clearMobileNotificationUserPreferences(user._id);
 				} else {
@@ -94,7 +89,7 @@ Meteor.methods({
 				}
 			}
 
-			if (oldEmailNotifications !== settings.emailNotificationMode) {
+			if (settings.emailNotificationMode && oldEmailNotifications !== settings.emailNotificationMode) {
 				if (settings.emailNotificationMode === 'default') {
 					RocketChat.models.Subscriptions.clearEmailNotificationUserPreferences(user._id);
 				} else {
@@ -108,5 +103,5 @@ Meteor.methods({
 		});
 
 		return true;
-	}
+	},
 });

@@ -1,6 +1,12 @@
-/* globals Meteor Restivus logger processWebhookMessage*/
-// TODO: remove globals
-
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Restivus } from 'meteor/nimble:restivus';
+import { logger } from '../logger';
+import { processWebhookMessage } from '../processWebhookMessage';
+import Fiber from 'fibers';
+import Future from 'fibers/future';
 import _ from 'underscore';
 import s from 'underscore.string';
 import vm from 'vm';
@@ -16,22 +22,22 @@ const Api = new Restivus({
 			if (payloadIsWrapped && this.request.headers['content-type'] === 'application/x-www-form-urlencoded') {
 				try {
 					this.bodyParams = JSON.parse(this.bodyParams.payload);
-				} catch ({message}) {
+				} catch ({ message }) {
 					return {
 						error: {
 							statusCode: 400,
 							body: {
 								success: false,
-								error: message
-							}
-						}
+								error: message,
+							},
+						},
 					};
 				}
 			}
 
 			this.integration = RocketChat.models.Integrations.findOne({
 				_id: this.request.params.integrationId,
-				token: decodeURIComponent(this.request.params.token)
+				token: decodeURIComponent(this.request.params.token),
 			});
 
 			if (!this.integration) {
@@ -42,28 +48,33 @@ const Api = new Restivus({
 						statusCode: 404,
 						body: {
 							success: false,
-							error: 'Invalid integration id or token provided.'
-						}
-					}
+							error: 'Invalid integration id or token provided.',
+						},
+					},
 				};
 			}
 
 			const user = RocketChat.models.Users.findOne({
-				_id: this.integration.userId
+				_id: this.integration.userId,
 			});
 
 			return { user };
-		}
-	}
+		},
+	},
 });
 
 const compiledScripts = {};
 function buildSandbox(store = {}) {
 	const sandbox = {
+		scriptTimeout(reject) {
+			return setTimeout(() => reject('timed out'), 3000);
+		},
 		_,
 		s,
 		console,
 		moment,
+		Fiber,
+		Promise,
 		Livechat: RocketChat.Livechat,
 		Store: {
 			set(key, val) {
@@ -71,19 +82,19 @@ function buildSandbox(store = {}) {
 			},
 			get(key) {
 				return store[key];
-			}
+			},
 		},
 		HTTP(method, url, options) {
 			try {
 				return {
-					result: HTTP.call(method, url, options)
+					result: HTTP.call(method, url, options),
 				};
 			} catch (error) {
 				return {
-					error
+					error,
 				};
 			}
-		}
+		},
 	};
 
 	Object.keys(RocketChat.models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = RocketChat.models[k]);
@@ -108,7 +119,7 @@ function getIntegrationScript(integration) {
 			compiledScripts[integration._id] = {
 				script: new sandbox.Script(),
 				store,
-				_updatedAt: integration._updatedAt
+				_updatedAt: integration._updatedAt,
 			};
 
 			return compiledScripts[integration._id].script;
@@ -132,7 +143,7 @@ function createIntegration(options, user) {
 	logger.incoming.debug(options);
 
 	Meteor.runAsUser(user._id, function() {
-		switch (options['event']) {
+		switch (options.event) {
 			case 'newMessageOnChannel':
 				if (options.data == null) {
 					options.data = {};
@@ -145,7 +156,7 @@ function createIntegration(options, user) {
 					urls: [options.target_url],
 					name: options.name,
 					channel: options.data.channel_name,
-					triggerWords: options.data.trigger_words
+					triggerWords: options.data.trigger_words,
 				});
 			case 'newMessageToUser':
 				if (options.data.username.indexOf('@') === -1) {
@@ -156,7 +167,7 @@ function createIntegration(options, user) {
 					urls: [options.target_url],
 					name: options.name,
 					channel: options.data.username,
-					triggerWords: options.data.trigger_words
+					triggerWords: options.data.trigger_words,
 				});
 		}
 	});
@@ -169,12 +180,10 @@ function removeIntegration(options, user) {
 	logger.incoming.debug(options);
 
 	const integrationToRemove = RocketChat.models.Integrations.findOne({
-		urls: options.target_url
+		urls: options.target_url,
 	});
 
-	Meteor.runAsUser(user._id, () => {
-		return Meteor.call('deleteOutgoingIntegration', integrationToRemove._id);
-	});
+	Meteor.runAsUser(user._id, () => Meteor.call('deleteOutgoingIntegration', integrationToRemove._id));
 
 	return RocketChat.API.v1.success();
 }
@@ -187,7 +196,7 @@ function executeIntegrationRest() {
 	if (this.integration.enabled !== true) {
 		return {
 			statusCode: 503,
-			body: 'Service Unavailable'
+			body: 'Service Unavailable',
 		};
 	}
 
@@ -195,7 +204,7 @@ function executeIntegrationRest() {
 		channel: this.integration.channel,
 		alias: this.integration.alias,
 		avatar: this.integration.avatar,
-		emoji: this.integration.emoji
+		emoji: this.integration.emoji,
 	};
 
 	if (this.integration.scriptEnabled && this.integration.scriptCompiled && this.integration.scriptCompiled.trim() !== '') {
@@ -216,7 +225,7 @@ function executeIntegrationRest() {
 				search: this.request._parsedUrl.search,
 				query: this.queryParams,
 				pathname: this.request._parsedUrl.pathname,
-				path: this.request._parsedUrl.path
+				path: this.request._parsedUrl.path,
 			},
 			url_raw: this.request.url,
 			url_params: this.urlParams,
@@ -227,8 +236,8 @@ function executeIntegrationRest() {
 			user: {
 				_id: this.user._id,
 				name: this.user.name,
-				username: this.user.username
-			}
+				username: this.user.username,
+			},
 		};
 
 		try {
@@ -236,9 +245,20 @@ function executeIntegrationRest() {
 			sandbox.script = script;
 			sandbox.request = request;
 
-			const result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, {
-				timeout: 3000
-			});
+			const result = Future.fromPromise(vm.runInNewContext(`
+				new Promise((resolve, reject) => {
+					Fiber(() => {
+						scriptTimeout(reject);
+						try {
+							resolve(script.process_incoming_request({ request: request }));
+						} catch(e) {
+							reject(e);
+						}
+					}).run();
+				}).catch((error) => { throw new Error(error); });
+			`, sandbox, {
+				timeout: 3000,
+			})).wait();
 
 			if (!result) {
 				logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':] No data');
@@ -255,7 +275,7 @@ function executeIntegrationRest() {
 
 			logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':]');
 			logger.incoming.debug('result', this.bodyParams);
-		} catch ({stack}) {
+		} catch ({ stack }) {
 			logger.incoming.error('[Error running Script in Trigger', this.integration.name, ':]');
 			logger.incoming.error(this.integration.scriptCompiled.replace(/^/gm, '  '));
 			logger.incoming.error('[Stack:]');
@@ -310,7 +330,7 @@ function integrationSampleRest() {
 				user_id: Random.id(),
 				user_name: 'rocket.cat',
 				text: 'Sample text 1',
-				trigger_word: 'Sample'
+				trigger_word: 'Sample',
 			}, {
 				token: Random.id(24),
 				channel_id: Random.id(),
@@ -319,7 +339,7 @@ function integrationSampleRest() {
 				user_id: Random.id(),
 				user_name: 'rocket.cat',
 				text: 'Sample text 2',
-				trigger_word: 'Sample'
+				trigger_word: 'Sample',
 			}, {
 				token: Random.id(24),
 				channel_id: Random.id(),
@@ -328,9 +348,9 @@ function integrationSampleRest() {
 				user_id: Random.id(),
 				user_name: 'rocket.cat',
 				text: 'Sample text 3',
-				trigger_word: 'Sample'
-			}
-		]
+				trigger_word: 'Sample',
+			},
+		],
 	};
 }
 
@@ -339,49 +359,49 @@ function integrationInfoRest() {
 	return {
 		statusCode: 200,
 		body: {
-			success: true
-		}
+			success: true,
+		},
 	};
 }
 
 Api.addRoute(':integrationId/:userId/:token', { authRequired: true }, {
 	post: executeIntegrationRest,
-	get: executeIntegrationRest
+	get: executeIntegrationRest,
 });
 
 Api.addRoute(':integrationId/:token', { authRequired: true }, {
 	post: executeIntegrationRest,
-	get: executeIntegrationRest
+	get: executeIntegrationRest,
 });
 
 Api.addRoute('sample/:integrationId/:userId/:token', { authRequired: true }, {
-	get: integrationSampleRest
+	get: integrationSampleRest,
 });
 
 Api.addRoute('sample/:integrationId/:token', { authRequired: true }, {
-	get: integrationSampleRest
+	get: integrationSampleRest,
 });
 
 Api.addRoute('info/:integrationId/:userId/:token', { authRequired: true }, {
-	get: integrationInfoRest
+	get: integrationInfoRest,
 });
 
 Api.addRoute('info/:integrationId/:token', { authRequired: true }, {
-	get: integrationInfoRest
+	get: integrationInfoRest,
 });
 
 Api.addRoute('add/:integrationId/:userId/:token', { authRequired: true }, {
-	post: addIntegrationRest
+	post: addIntegrationRest,
 });
 
 Api.addRoute('add/:integrationId/:token', { authRequired: true }, {
-	post: addIntegrationRest
+	post: addIntegrationRest,
 });
 
 Api.addRoute('remove/:integrationId/:userId/:token', { authRequired: true }, {
-	post: removeIntegrationRest
+	post: removeIntegrationRest,
 });
 
 Api.addRoute('remove/:integrationId/:token', { authRequired: true }, {
-	post: removeIntegrationRest
+	post: removeIntegrationRest,
 });

@@ -1,5 +1,7 @@
+/* globals Meteor */
+
 import Page from './Page';
-import {adminEmail, adminPassword} from '../data/user';
+import { adminEmail, adminPassword } from '../data/user';
 
 
 class SetupWizard extends Page {
@@ -14,9 +16,10 @@ class SetupWizard extends Page {
 	get siteName() { return browser.element('input[name="Site_Name"]'); }
 	get language() { return browser.element('select[name="Language"]'); }
 	get serverType() { return browser.element('select[name="Server_Type"]'); }
+	get registeredServer() { return browser.element('input[name="registerServer"][value="true"]'); }
+	get standaloneServer() { return browser.element('input[name="registerServer"][value="false"]'); }
 
-	open() {
-		super.open('setup-wizard');
+	login() {
 		browser.execute(function(email, password) {
 			Meteor.loginWithPassword(email, password, () => {});
 		}, adminEmail, adminPassword);

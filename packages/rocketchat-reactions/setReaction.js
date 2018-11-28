@@ -1,8 +1,19 @@
 /* globals msgStream */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 
+const removeUserReaction = (message, reaction, username) => {
+	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
+	if (message.reactions[reaction].usernames.length === 0) {
+		delete message.reactions[reaction];
+	}
+	return message;
+};
+
 Meteor.methods({
-	setReaction(reaction, messageId) {
+	setReaction(reaction, messageId, shouldReact) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
@@ -32,25 +43,36 @@ Meteor.methods({
 				_id: Random.id(),
 				rid: room._id,
 				ts: new Date(),
-				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
+				msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 			});
 			return false;
 		} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
 			return false;
 		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
-			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
+		const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		// When shouldReact was not informed, toggle the reaction.
+		if (shouldReact === undefined) {
+			shouldReact = !userAlreadyReacted;
+		}
 
-			if (message.reactions[reaction].usernames.length === 0) {
-				delete message.reactions[reaction];
-			}
+		if (userAlreadyReacted === shouldReact) {
+			return;
+		}
+		if (userAlreadyReacted) {
+			removeUserReaction(message, reaction, user.username);
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
+				if (RocketChat.isTheLastMessage(room, message)) {
+					RocketChat.models.Rooms.unsetReactionsInLastMessage(room._id);
+				}
 				RocketChat.models.Messages.unsetReactions(messageId);
 				RocketChat.callbacks.run('unsetReaction', messageId, reaction);
 			} else {
+				if (RocketChat.isTheLastMessage(room, message)) {
+					RocketChat.models.Rooms.setReactionsInLastMessage(room._id, message);
+				}
 				RocketChat.models.Messages.setReactions(messageId, message.reactions);
 				RocketChat.callbacks.run('setReaction', messageId, reaction);
 			}
@@ -60,11 +82,13 @@ Meteor.methods({
 			}
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
-					usernames: []
+					usernames: [],
 				};
 			}
 			message.reactions[reaction].usernames.push(user.username);
-
+			if (RocketChat.isTheLastMessage(room, message)) {
+				RocketChat.models.Rooms.setReactionsInLastMessage(room._id, message);
+			}
 			RocketChat.models.Messages.setReactions(messageId, message.reactions);
 			RocketChat.callbacks.run('setReaction', messageId, reaction);
 		}
@@ -72,5 +96,5 @@ Meteor.methods({
 		msgStream.emit(message.rid, message);
 
 		return;
-	}
+	},
 });

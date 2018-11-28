@@ -1,4 +1,8 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
+
 RocketChat.ChannelSettings = new class {
 	constructor() {
 		this.options = new ReactiveVar({});
@@ -25,7 +29,7 @@ RocketChat.ChannelSettings = new class {
 	getOptions(currentData = {}, group) {
 		const allOptions = _.toArray(this.options.get());
 		const allowedOptions = _.compact(_.map(allOptions, function(option) {
-			const ret = {...option};
+			const ret = { ...option };
 			if (option.validation == null || option.validation(currentData)) {
 				ret.data = Object.assign({}, typeof option.data === 'function' ? option.data() : option.data, currentData);
 				return ret;
