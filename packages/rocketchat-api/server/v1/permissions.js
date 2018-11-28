@@ -31,7 +31,7 @@ RocketChat.API.v1.addRoute('permissions.list', { authRequired: true }, {
 			versionWillBeRemove: '0.76',
 			response: {
 				permissions: result,
-			}
+			},
 		}));
 	},
 });
