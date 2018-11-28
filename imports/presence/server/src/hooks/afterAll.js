@@ -1,10 +1,13 @@
 export async function afterAll(ctx) {
 
 	const { uid } = ctx.params;
+
 	const key = { _id: uid };
-	// console.log('removeConnection', this.user(), this.userSession());
+
+
 	const userSession = await this.userSession().findOne(key);
-	const status = !userSession ? 'offline' : userSession.connections.reduce((current, { status }) => {
+
+	const connection = !userSession ? 'offline' : userSession.connections.reduce((current, { status }) => {
 		if (status === 'online') {
 			return 'online';
 		}
@@ -14,10 +17,15 @@ export async function afterAll(ctx) {
 		return current;
 	}, 'offline');
 
-	await (this.user().updateOne(key, {
+	const user = await this.user().findOne(key);
+	if (!user) { return ; }
+	const { statusDefault = connection } = user;
+
+	await this.user().updateOne(key, {
 		$set: {
-			status,
+			status: connection === 'online' ? statusDefault : connection,
 		},
-	}));
-	return userSession;
+	});
+
+	return true;
 }

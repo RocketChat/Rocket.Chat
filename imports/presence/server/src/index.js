@@ -11,6 +11,8 @@ export default ({ UserSession, User }) => ({
 	mixins: [], // TODO remove
 	hooks: {
 		after: {
+			setConnectionStatus: 'afterAll',
+			setStatus:'afterAll',
 			newConnection: 'afterAll',
 			removeConnection: 'afterAll',
 		},
