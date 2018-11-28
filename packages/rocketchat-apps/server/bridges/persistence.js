@@ -62,7 +62,7 @@ export class AppPersistenceBridge {
 		return record.data;
 	}
 
-	async removeByAssociations(associations, atomic = false, appId) {
+	async removeByAssociations(associations, atomic, appId) {
 		console.log(`The App ${ appId } is removing records with the following associations:`, associations);
 
 		const query = {
@@ -98,7 +98,7 @@ export class AppPersistenceBridge {
 		throw new Error('Not implemented.');
 	}
 
-	async updateByAssociation(association, data, upsert, atomic = false, returnNew = true, appId) {
+	async updateByAssociation(association, data, upsert, atomic, returnNew, appId) {
 		console.log(`The App ${ appId } is updating the record with association to data as follows:`, association, data);
 
 		if (typeof data !== 'object') {
