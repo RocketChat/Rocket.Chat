@@ -21569,6 +21569,55 @@
           ]
         }
       ]
+    },
+    "0.72.0-rc.2": {
+      "pull_requests": [
+        {
+          "pr": "12741",
+          "title": "Update Apps Engine to 1.3.1",
+          "userLogin": "rodrigok",
+          "milestone": "0.72.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12736",
+          "title": "Regression: Expand Administration sections by toggling section title",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12737",
+          "title": "Regression: Fix Safari detection in PDF previewing",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12735",
+          "title": "Regression: Account pages layout",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12729",
+          "title": "Regression: Inherit font-family for message box",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
