@@ -2,6 +2,7 @@ export default {
 	async removeConnection(ctx) {
 		const { uid, connectionId } = ctx.params;
 
+
 		const query = {
 			'connections.id': connectionId,
 		};

@@ -11,7 +11,6 @@ import { ServiceBroker } from 'moleculer';
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import config from './moleculer.config';
-import Presence from '../presence/server';
 
 const broker = new ServiceBroker(config);
 
@@ -24,14 +23,16 @@ broker.createService(PersonalAccessTokens);
 broker.createService(GetReadReceipts);
 
 broker.createService(Streamer);
-broker.createService(Presence);
 
 RocketChat.Services = broker;
 
 Meteor.startup(() => {
-	const { EXPERIMENTAL_IS_HUB } = process.env;
+	const { EXPERIMENTAL_IS_HUB, EXPERIMENTAL_PRESENCE_SERVICE } = process.env;
 	if (EXPERIMENTAL_IS_HUB) {
 		broker.createService(require('../rocketchat-hub/').default);
+	}
+	if (EXPERIMENTAL_PRESENCE_SERVICE) {
+		broker.createService(require('../presence/server').default);
 	}
 	broker.start();
 });

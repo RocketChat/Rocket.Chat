@@ -1,7 +1,7 @@
 import { ServiceBroker } from 'moleculer';
 // import prometheus from './prometheus';
 const { MongoClient } = require('mongodb');
-import hub from './index';
+import presence from './index';
 // Database Name
 
 import config from './config';
@@ -17,13 +17,14 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
 	}
 	const db = client.db(name);
 
-	const presence_service = hub({
-		Trash: db.collection('rocketchat_trash'),
-		Users: db.collection('users'),
-		Messages: db.collection('rocketchat_message'),
-		Subscriptions: db.collection('rocketchat_subscription'),
-		Rooms: db.collection('rocketchat_room'),
-		Settings: db.collection('rocketchat_settings'),
+	const presence_service = presence({
+		User: db.collection('users'),
+		UserSession: db.collection('usersSessions2'),
+		// Trash: db.collection('rocketchat_trash'),
+		// Messages: db.collection('rocketchat_message'),
+		// Subscriptions: db.collection('rocketchat_subscription'),
+		// Rooms: db.collection('rocketchat_room'),
+		// Settings: db.collection('rocketchat_settings'),
 	});
 
 	broker.createService(presence_service);

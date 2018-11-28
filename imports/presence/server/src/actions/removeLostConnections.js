@@ -14,6 +14,6 @@ export default {
 			},
 		};
 
-		this.userSession().update({}, update, { multi: true });
+		this.userSession().updateMany({}, update);
 	},
 };

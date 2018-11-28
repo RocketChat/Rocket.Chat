@@ -2,7 +2,7 @@ FROM node:latest as build
 
 WORKDIR /app
 
-ADD src/ ./src
+ADD ./server/src/ ./src
 
 ADD package.json .
 
