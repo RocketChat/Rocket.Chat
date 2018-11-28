@@ -6,7 +6,6 @@ const provider = new service.Provider();
 function refreshContactsHashMap() {
 	let phoneFieldName = '';
 	RocketChat.settings.get('Contacts_Phone_Custom_Field_Name', function(name, fieldName) {
-		console.log(fieldName);
 		phoneFieldName = fieldName;
 	});
 
