@@ -1,4 +1,4 @@
-/* globals UserPresence, fireGlobalEvent */
+/* globals fireGlobalEvent */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
@@ -50,15 +50,15 @@ Meteor.startup(function() {
 			return;
 		}
 
-		if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
-			const idleTimeLimit = RocketChat.getUserPreference(user, 'idleTimeLimit') || 300;
-			UserPresence.awayTime = idleTimeLimit * 1000;
-		} else {
-			delete UserPresence.awayTime;
-			UserPresence.stopTimer();
-		}
+		// if (RocketChat.getUserPreference(user, 'enableAutoAway')) {
+		// 	const idleTimeLimit = RocketChat.getUserPreference(user, 'idleTimeLimit') || 300;
+		// 	UserPresence.awayTime = idleTimeLimit * 1000;
+		// } else {
+		// 	delete UserPresence.awayTime;
+		// 	UserPresence.stopTimer();
+		// }
 
-		UserPresence.start();
+		// UserPresence.start();
 
 		if (user.status !== status) {
 			status = user.status;

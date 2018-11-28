@@ -3,6 +3,7 @@ import Notifications from './services/Notifications';
 import Authorization from './services/authorization';
 import User from './services/user';
 import Settings from './services/settings';
+import Presence from './services/presence';
 import Core from '../rocketchat-lib/server/service';
 import Streamer from '../rocketchat-streamer/index';
 import PersonalAccessTokens from '../personal-access-tokens/server/service';
@@ -22,6 +23,7 @@ broker.createService(Settings);
 broker.createService(Core);
 broker.createService(PersonalAccessTokens);
 broker.createService(GetReadReceipts);
+broker.createService(Presence);
 
 broker.createService(Streamer);
 
@@ -30,7 +32,7 @@ RocketChat.Services = broker;
 Meteor.startup(() => {
 	const { EXPERIMENTAL_HUB, EXPERIMENTAL } = process.env;
 	if (EXPERIMENTAL_HUB || EXPERIMENTAL) {
-		broker.createService(require('../rocketchat-hub/meteor').default);
+		broker.createService(require('../rocketchat-hub/index').default);
 	}
 	broker.start();
 });
