@@ -6,12 +6,30 @@ const normalize = {
 	remove: 'removed',
 };
 
-export default ({ Messages, Subscriptions, Rooms, Settings, Trash }) => ({
+export default ({ Users, Messages, Subscriptions, Rooms, Settings, Trash }) => ({
 	name: 'hub',
 	created() {
 		const RocketChat = {
 			Services: this.broker,
 		};
+
+		Users.watch([], { fullDocument: 'updateLookup' }).on('change', async function({ operationType, /* documentKey,*/ fullDocument/* , oplog*/, updateDescription, ...args }) {
+			switch (operationType) {
+				case 'insert':
+				case 'update':
+					const { updatedFields } = updateDescription;
+					// const message = await Messages.findOne(documentKey);
+					const user = fullDocument;
+					// Streamer.emitWithoutBroadcast('__my_messages__', message, {});
+					if (updatedFields.status) {
+						const { status, username, _id } = user;
+						return RocketChat.Services.broadcast('userpresence', { action: normalize[operationType], user: { status, username, _id } });
+					}
+					RocketChat.Services.broadcast('user', { action: normalize[operationType], user });
+				// return Streamer.broadcast({ stream: STREA	M_NAMES['room-messages'], eventName: message.rid, args: message });
+				// publishMessage(operationType, message);
+			}
+		});
 
 		Messages.watch([], { fullDocument: 'updateLookup' }).on('change', async function({ operationType, /* documentKey,*/ fullDocument/* , oplog*/ }) {
 			switch (operationType) {
