@@ -19,6 +19,10 @@ function terminateCurrentSync() {
  */
 export class SmartiAdapter {
 
+	static isEnabled() {
+		return !!RocketChat.settings.get('Assistify_AI_Enabled');
+	}
+
 	/**
 	 * Returns the webhook URL that reveives the analysis callback from Smarti.
 	 */
