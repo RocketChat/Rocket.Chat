@@ -35,11 +35,11 @@ export default {
 	events: {
 		...events,
 		stream({ stream, eventName, args }) {
-			return Streamer[STREAM_NAMES[stream]] && Streamer[STREAM_NAMES[stream]].emit(eventName, ...args);
+			return Streamer[STREAM_NAMES[stream]] && Streamer[stream].emit(eventName, ...args);
 		},
 		stream_internal: {
 			handler({ stream, eventName, args }) {
-				return Streamer[STREAM_NAMES[stream]] && Streamer[STREAM_NAMES[stream]].internal.emit(eventName, ...args);
+				return Streamer[STREAM_NAMES[stream]] && Streamer[stream].internal.emit(eventName, ...args);
 			},
 		},
 	},

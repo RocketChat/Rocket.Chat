@@ -1,4 +1,5 @@
 import { ServiceBroker } from 'moleculer';
+// import prometheus from './prometheus';
 const { MongoClient } = require('mongodb');
 import hub from './index';
 // Database Name
@@ -15,12 +16,23 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
 		return console.error(err);
 	}
 	const db = client.db(name);
-	broker.createService(hub({
+	const PromService = require("moleculer-prometheus");
+	const hub_service = hub({
 		Trash: db.collection('rocketchat_trash'),
 		Messages: db.collection('rocketchat_message'),
 		Subscriptions: db.collection('rocketchat_subscription'),
 		Rooms: db.collection('rocketchat_room'),
-		Settings: db.collection('rocketchat_settings') }));
+		Settings: db.collection('rocketchat_settings'),
+	});
+	hub_service.mixins = [PromService];
+
+	hub_service.settings=  {
+        port: 9100,
+        collectDefaultMetrics: true,
+        timeout: 5 * 1000,
+	}
+
+	broker.createService(hub_service);
 	broker.start();
 });
 export default broker;

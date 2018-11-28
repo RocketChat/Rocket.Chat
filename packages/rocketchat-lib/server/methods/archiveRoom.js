@@ -2,28 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 Meteor.methods({
-	archiveRoom(rid) {
-
+	archiveRoom(rid) { /* microservice */
 		check(rid, String);
-
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
-
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'archiveRoom' });
-		}
-
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'archive-room', room._id)) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
-		}
-
-		if (room.t === 'd') {
-			throw new Meteor.Error('error-direct-message-room', 'Direct Messages can not be archived', { method: 'archiveRoom' });
-		}
-
-		return RocketChat.archiveRoom(rid);
+		return RocketChat.Services.call('core.archiveRoom', { uid, rid });
 	},
 });

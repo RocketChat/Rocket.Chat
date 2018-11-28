@@ -4,8 +4,11 @@ export default {
 	addPermissionToRole: {
 		params: {
 			uid: 'string',
-			roleNames: ['string'],
-			scope: 'string',
+			role: [
+				{ type: 'string' },
+				{ type: 'array', items: 'string' },
+			],
+			scope: { type: 'string', optional: true },
 		},
 		handler(ctx) {
 			const { uid, permission, role } = ctx.params;

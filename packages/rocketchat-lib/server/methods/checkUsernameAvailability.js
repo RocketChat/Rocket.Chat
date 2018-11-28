@@ -2,23 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 Meteor.methods({
-	checkUsernameAvailability(username) {
+	checkUsernameAvailability(username) { /* microservice */
 		check(username, String);
-
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 		}
 
-		const user = Meteor.user();
-
-		if (user.username && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
-		}
-
-		if (user.username === username) {
-			return true;
-		}
-		return RocketChat.checkUsernameAvailability(username);
+		return RocketChat.Service.call('core.checkUsernameAvailabity', { username, uid });
 	},
 });
 

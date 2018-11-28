@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-Meteor.methods({
+Meteor.methods({ /* microservice */
 	cleanRoomHistory({ roomId, latest, oldest, inclusive = true, limit, excludePinned = false, filesOnly = false, fromUsers = [] }) {
 		check(roomId, String);
 		check(latest, Date);
@@ -13,16 +13,12 @@ Meteor.methods({
 		check(filesOnly, Match.Maybe(Boolean));
 		check(fromUsers, Match.Maybe([String]));
 
-		const userId = Meteor.userId();
+		const uid = Meteor.userId();
 
-		if (!userId) {
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cleanRoomHistory' });
 		}
 
-		if (!RocketChat.authz.hasPermission(userId, 'clean-channel-history', roomId)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
-		}
-
-		return RocketChat.cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, filesOnly, fromUsers });
+		return RocketChat.Services.call('core.cleanRoomHistory', { uid, rid: roomId, latest, oldest, inclusive, limit, excludePinned, filesOnly, fromUsers });
 	},
 });

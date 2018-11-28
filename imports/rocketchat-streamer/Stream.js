@@ -98,10 +98,10 @@ export class Stream extends EventEmitter {
 		publication.ready();
 	}
 
-	changedPayload(fields) {
+	changedPayload(fields, collection = this.subscriptionName) {
 		return DDPCommon.stringifyDDP({
 			msg: 'changed',
-			collection: this.subscriptionName,
+			collection,
 			id: 'id',
 			fields,
 		});
@@ -111,7 +111,7 @@ export class Stream extends EventEmitter {
 		const msg = this.changedPayload({
 			eventName,
 			args,
-		});
+		}, this.subscriptionName);
 		return super.emit(eventName, msg);
 	}
 

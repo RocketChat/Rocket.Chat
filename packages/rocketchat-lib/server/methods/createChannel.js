@@ -1,18 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-Meteor.methods({
-	createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
+Meteor.methods({ /* microservice */
+	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
 		check(members, Match.Optional([String]));
-
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-c')) {
+		if (!await RocketChat.Services.call('authorization.hasPermission', { uid, permission: 'create-c' })) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
-		return RocketChat.createRoom('c', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+
+		return RocketChat.Services.call('core.createRoom', { type: 'c', name, members, readOnly, customFields, extraData, uid });
 	},
 });

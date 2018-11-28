@@ -22,7 +22,7 @@ ENV DEPLOY_METHOD=docker \
     MONGO_URL=mongodb://mongo:27017/rocketchat \
     TRANSPORTER=nats://nats:4222
 
-# EXPOSE 80
+EXPOSE 9100
 
 RUN npm install
 RUN npm prune --production

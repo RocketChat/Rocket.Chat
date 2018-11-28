@@ -60,7 +60,14 @@ class NotifyUser extends Stream {
 		super.subscribe(publication, eventName, options);
 		const uid = Meteor.userId();
 		if (/rooms-changed/.test(eventName)) {
-			const roomEvent = (...args) => RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
+			const { socket } = publication._session;
+			const roomEvent = (...args) => {
+				const msg = this.changedPayload({
+					eventName: `${ uid }/rooms-changed`,
+					args,
+				}, this.subscriptionName);
+				socket.send(msg);
+			};
 			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
 			rooms.forEach(({ rid }) => this.internals.on(rid, roomEvent));
 

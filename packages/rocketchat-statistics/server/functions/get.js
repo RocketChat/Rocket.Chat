@@ -18,6 +18,7 @@ const wizardFields = [
 ];
 
 RocketChat.statistics.get = function _getStatistics() {
+	const init = performance.now();
 	const statistics = {};
 
 	// Setup Wizard
@@ -106,6 +107,6 @@ RocketChat.statistics.get = function _getStatistics() {
 	if (MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
 		statistics.oplogEnabled = true;
 	}
-
+	console.log('AAAAAAA', performance.now() - init);
 	return statistics;
 };
