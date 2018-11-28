@@ -11,9 +11,9 @@ import { ServiceBroker } from 'moleculer';
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import config from './moleculer.config';
-const broker = new ServiceBroker(config);
+import Presence from '../presence/server';
 
-import Presence from '../presence';
+const broker = new ServiceBroker(config);
 
 broker.createService(Notifications);
 broker.createService(Authorization);
