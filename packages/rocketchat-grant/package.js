@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'rocketchat:accounts',
+		'rocketchat:ui',
 	]);
 
 	api.mainModule('server/index.js', 'server');

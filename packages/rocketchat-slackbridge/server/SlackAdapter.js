@@ -1,4 +1,6 @@
 /* globals logger*/
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import url from 'url';
 import http from 'http';
@@ -779,7 +781,7 @@ export default class SlackAdapter {
 	}
 
 	processBotMessage(rocketChannel, slackMessage) {
-		const excludeBotNames = RocketChat.settings.get('SlackBridge_Botnames');
+		const excludeBotNames = RocketChat.settings.get('SlackBridge_ExcludeBotnames');
 		if (slackMessage.username !== undefined && excludeBotNames && slackMessage.username.match(excludeBotNames)) {
 			return;
 		}

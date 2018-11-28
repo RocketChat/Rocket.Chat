@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('pinnedMessages', function(rid, limit = 50) {
 	if (!this.userId) {
 		return this.ready();
@@ -6,6 +8,9 @@ Meteor.publish('pinnedMessages', function(rid, limit = 50) {
 
 	const user = RocketChat.models.Users.findOneById(this.userId);
 	if (!user) {
+		return this.ready();
+	}
+	if (!Meteor.call('canAccessRoom', rid, this.userId)) {
 		return this.ready();
 	}
 	const cursorHandle = RocketChat.models.Messages.findPinnedByRoom(rid, { sort: { ts: -1 }, limit }).observeChanges({

@@ -1,5 +1,8 @@
+import { Mongo } from 'meteor/mongo';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
-import moment from 'moment';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { DateFormat } from 'meteor/rocketchat:lib';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 const roomFiles = new Mongo.Collection('room_files');
@@ -42,7 +45,9 @@ Template.uploadedFilesList.helpers({
 			return fixCordova(this.url);
 		}
 	},
-
+	format(timestamp) {
+		return DateFormat.formatDateAndTime(timestamp);
+	},
 	fileTypeIcon() {
 		const [, extension] = this.name.match(/.*?\.(.*)$/);
 
@@ -87,7 +92,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	formatTimestamp(timestamp) {
-		return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
+		return DateFormat.formatDateAndTime(timestamp);
 	},
 
 	hasMore() {
@@ -100,6 +105,10 @@ Template.uploadedFilesList.helpers({
 });
 
 Template.uploadedFilesList.events({
+	'submit .search-form'(e) {
+		e.preventDefault();
+	},
+
 	'input .uploaded-files-list__search-input'(e, t) {
 		t.searchText.set(e.target.value.trim());
 		t.hasMore.set(true);

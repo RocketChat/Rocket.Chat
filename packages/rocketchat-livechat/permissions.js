@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 Meteor.startup(() => {
@@ -19,5 +20,6 @@ Meteor.startup(() => {
 		RocketChat.models.Permissions.createOrUpdate('close-others-livechat-room', ['livechat-manager', 'admin']);
 		RocketChat.models.Permissions.createOrUpdate('save-others-livechat-room-info', ['livechat-manager']);
 		RocketChat.models.Permissions.createOrUpdate('remove-closed-livechat-rooms', ['livechat-manager', 'admin']);
+		RocketChat.models.Permissions.createOrUpdate('view-livechat-analytics', ['livechat-manager', 'admin']);
 	}
 });

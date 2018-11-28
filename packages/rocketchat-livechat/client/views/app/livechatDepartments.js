@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+
 Template.livechatDepartments.helpers({
 	departments() {
 		return LivechatDepartment.find();

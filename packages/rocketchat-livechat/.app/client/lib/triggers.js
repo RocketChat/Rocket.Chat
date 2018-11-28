@@ -1,8 +1,19 @@
 /* globals Livechat */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Session } from 'meteor/session';
 import visitor from '../../imports/client/visitor';
 
+const firedTriggers = JSON.parse(localStorage.getItem('rocketChatFiredTriggers')) || [];
+
+// promise cache for multiple calls (let's say multiple triggers running before the previous finished)
+const agentCacheExpiry = 3600000;
+let agentPromise;
 function getAgent(triggerAction) {
-	return new Promise((resolve, reject) => {
+	if (agentPromise) {
+		return agentPromise;
+	}
+	agentPromise = new Promise((resolve, reject) => {
 		const { params } = triggerAction;
 		if (params.sender === 'queue') {
 			const cache = localStorage.getItem('triggerAgent');
@@ -10,7 +21,7 @@ function getAgent(triggerAction) {
 				const cacheAgent = JSON.parse(cache);
 
 				// cache valid for 1h
-				if (cacheAgent.ts && Date.now() - cacheAgent.ts < 3600000) {
+				if (cacheAgent.ts && Date.now() - cacheAgent.ts < agentCacheExpiry) {
 					return resolve(cacheAgent.agent);
 				}
 			}
@@ -37,6 +48,13 @@ function getAgent(triggerAction) {
 			reject('Unknown sender');
 		}
 	});
+
+	// expire the promise cache as well
+	setTimeout(() => {
+		agentPromise = null;
+	}, agentCacheExpiry);
+
+	return agentPromise;
 }
 
 this.Triggers = (function() {
@@ -77,6 +95,12 @@ this.Triggers = (function() {
 				});
 			}
 		});
+
+		if (trigger.runOnce) {
+			trigger.skip = true;
+			firedTriggers.push(trigger._id);
+			localStorage.setItem('rocketChatFiredTriggers', JSON.stringify(firedTriggers));
+		}
 	};
 
 	const processRequest = function(request) {
@@ -112,8 +136,24 @@ this.Triggers = (function() {
 		triggers = newTriggers;
 	};
 
-	const init = function() {
+	const init = function(newTriggers) {
+		if (initiated) {
+			return;
+		}
+
 		initiated = true;
+
+		if (newTriggers) {
+			setTriggers(newTriggers);
+		}
+
+		firedTriggers.forEach((triggerId) => {
+			triggers.forEach((trigger) => {
+				if (trigger._id === triggerId) {
+					trigger.skip = true;
+				}
+			});
+		});
 
 		if (requests.length > 0 && triggers.length > 0) {
 			requests.forEach(function(request) {

@@ -1,4 +1,6 @@
 /* global InstanceStatus */
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 const logger = new Logger('Meteor', {

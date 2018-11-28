@@ -2,6 +2,10 @@
 // This is not supposed to be a complete list
 // it is just to improve readability in this file
 
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
@@ -96,6 +100,9 @@ Template.messagePopup.onCreated(function() {
 		}
 	};
 	template.verifySelection = () => {
+		if (!template.open.curValue) {
+			return;
+		}
 		const current = template.find('.popup-item.selected');
 		if (current == null) {
 			const first = template.find('.popup-item');
@@ -145,7 +152,7 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			$('.toolbar').css('display', 'none');
+			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -297,7 +304,6 @@ Template.messagePopup.events({
 		template.value.set(this._id);
 		template.enterValue();
 		template.open.set(false);
-		return toolbarSearch.clear();
 	},
 });
 

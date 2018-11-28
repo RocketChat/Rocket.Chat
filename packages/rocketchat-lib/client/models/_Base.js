@@ -1,3 +1,6 @@
+import { check } from 'meteor/check';
+import { Mongo } from 'meteor/mongo';
+
 RocketChat.models._Base = class {
 
 	_baseName() {

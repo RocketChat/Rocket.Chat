@@ -1,6 +1,8 @@
 /* globals FileUpload:true */
 /* exported FileUpload */
-
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { TAPi18n } from 'meteor/tap:i18n';
 import filesize from 'filesize';
 
 let maxFileSize = 0;
