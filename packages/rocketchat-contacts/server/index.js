@@ -4,17 +4,39 @@ const service = require('./service.js');
 const provider = new service.Provider();
 
 function refreshContactsHashMap() {
+	let phoneFieldName = '';
+	RocketChat.settings.get('Contacts_Phone_Custom_Field_Name', function(name, fieldName) {
+		console.log(fieldName);
+		phoneFieldName = fieldName;
+	});
+
 	const contacts = [];
 	const cursor = Meteor.users.find({ active:true });
-	cursor.forEach((user) => {
-		if ('emails' in user) {
-			user.emails.forEach((email) => {
-				if (email.verified) {
-					contacts.push(email.address);
-				}
-			});
-		}
-	});
+
+	if (phoneFieldName) {
+		cursor.forEach((user) => {
+			if ('customFields' in user && phoneFieldName in user.customFields) {
+				contacts.push(user.customFields[phoneFieldName]);
+			}
+			if ('emails' in user) {
+				user.emails.forEach((email) => {
+					if (email.verified) {
+						contacts.push(email.address);
+					}
+				});
+			}
+		});
+	} else {
+		cursor.forEach((user) => {
+			if ('emails' in user) {
+				user.emails.forEach((email) => {
+					if (email.verified) {
+						contacts.push(email.address);
+					}
+				});
+			}
+		});
+	}
 	provider.setHashedMap(provider.generateHashedMap(contacts));
 }
 
