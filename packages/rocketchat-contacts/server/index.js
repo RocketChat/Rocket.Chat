@@ -1,5 +1,6 @@
 /* globals SyncedCron */
 
+import { Meteor } from 'meteor/meteor';
 const service = require('./service.js');
 const provider = new service.Provider();
 
