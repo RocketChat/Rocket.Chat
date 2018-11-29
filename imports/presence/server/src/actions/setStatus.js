@@ -1,47 +1,47 @@
 const STATUS = ['online', 'away', 'busy', 'offline'];
-export default {
-	setStatus: {
-		params: {
-			uid: 'string',
-			status: 'string',
-		},
-		async handler(ctx) {
-			const { uid, status } = ctx.params;
-			if (STATUS.indexOf(status) === -1) {
-				return;
-			}
 
-			await this.user().updateOne({ _id: uid, statusDefault: { $ne: status } }, { $set: { statusDefault: status } });
-			return true;
-		},
+export const setStatus = {
+	params: {
+		uid: 'string',
+		status: 'string',
 	},
-	setConnectionStatus: {
-		params: {
-			uid: 'string',
-			status: 'string',
-		},
-		handler(ctx) {
-			const { uid, status, connection } = ctx.params;
+	async handler(ctx) {
+		const { uid, status } = ctx.params;
+		if (STATUS.indexOf(status) === -1) {
+			return;
+		}
 
-			const query = {
-				_id: uid,
-				'connections.id': connection.id,
-			};
+		await this.user().updateOne({ _id: uid, statusDefault: { $ne: status } }, { $set: { statusDefault: status } });
+		return true;
+	},
+};
 
-			const now = new Date();
+export const setConnectionStatus = {
+	params: {
+		uid: 'string',
+		status: 'string',
+	},
+	handler(ctx) {
+		const { uid, status, connection } = ctx.params;
 
-			const update = {
-				$set: {
-					'connections.$.status': status,
-					'connections.$._updatedAt': now,
-				},
-			};
+		const query = {
+			_id: uid,
+			'connections.id': connection.id,
+		};
 
-			// if (connection.metadata) {
-			// 	update.$set.metadata = connection.metadata;
-			// }
+		const now = new Date();
 
-			return this.userSession().updateOne(query, update);
-		},
+		const update = {
+			$set: {
+				'connections.$.status': status,
+				'connections.$._updatedAt': now,
+			},
+		};
+
+		// if (connection.metadata) {
+		// 	update.$set.metadata = connection.metadata;
+		// }
+
+		return this.userSession().updateOne(query, update);
 	},
 };

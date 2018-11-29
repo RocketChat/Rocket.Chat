@@ -80,7 +80,13 @@ function createMemoryQueue() {
 		},
 	};
 }
-const { REDIS_HOST = 'localhost', REDIS_PORT = 6379, REDIS_PASSWORD } = process.env;
+const {
+	REDIS_HOST = 'localhost',
+	REDIS_PORT = 6379,
+	REDIS_PASSWORD,
+	QUEUE_UI,
+	QUEUE_UI_PORT = 3004,
+} = process.env;
 function createRedisQueue() {
 
 	const Kue = require('kue');
@@ -149,7 +155,9 @@ function createRedisQueue() {
 					});
 				});
 			}
-			Kue.app.listen(3004);
+			if (QUEUE_UI) {
+				Kue.app.listen(QUEUE_UI_PORT);
+			}
 			return this.Promise.resolve();
 		},
 	};

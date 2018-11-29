@@ -1,4 +1,3 @@
-// import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { afterAll } from './hooks';
 import actions from './actions';
 
@@ -8,7 +7,7 @@ export default ({ UserSession, User }) => ({
 		$noVersionPrefix: true,
 	},
 	name: 'presence',
-	mixins: [], // TODO remove
+	mixins: [],
 	hooks: {
 		after: {
 			setConnectionStatus: 'afterAll',
@@ -18,8 +17,10 @@ export default ({ UserSession, User }) => ({
 		},
 	},
 	events: {
-		'$node.disconnected'() {
-			return this.broker.call('presence.removeLostConnections');
+		async '$node.disconnected'({ node }) {
+			const { affectedUsers } = await this.broker.call('presence.removeLostConnections', { nodeID: node.id });
+
+			return affectedUsers.map((uid) => this.afterAll({ params: { uid } })); // TODO wtf?
 		},
 	},
 	actions,
