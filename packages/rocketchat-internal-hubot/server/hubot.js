@@ -1,5 +1,6 @@
 /* globals __meteor_bootstrap__ */
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -12,7 +13,7 @@ const Hubot = Npm.require('hubot');
 // Log messages?
 const DEBUG = false;
 
-let InternalHubot = {};
+export let InternalHubot = {};
 
 const sendHelper = Meteor.bindEnvironment((robot, envelope, strings, map) => {
 	while (strings.length > 0) {
@@ -35,6 +36,10 @@ Hubot.Response.prototype.priv = (...strings) => this.robot.adapter.priv(this.env
 
 // More monkey-patching
 Hubot.Robot.prototype.loadAdapter = () => {}; // disable
+
+export {
+	Hubot,
+};
 
 // grrrr, Meteor.bindEnvironment doesn't preserve `this` apparently
 const bind = function(f) {
@@ -64,7 +69,7 @@ class Robot extends Hubot.Robot {
 	catchAll(callback) { return super.catchAll(Meteor.bindEnvironment(callback)); }
 }
 
-class RocketChatAdapter extends Hubot.Adapter {
+export class RocketChatAdapter extends Hubot.Adapter {
 	// Public: Raw method for sending data back to the chat source. Extend this.
 	//
 	// envelope - A Object with message, room and user details.
@@ -170,7 +175,7 @@ class RocketChatAdapter extends Hubot.Adapter {
 	}
 }
 
-const InternalHubotReceiver = (message) => {
+export const InternalHubotReceiver = (message) => {
 	if (DEBUG) { console.log(message); }
 	if (message.u.username !== InternalHubot.name) {
 		const room = RocketChat.models.Rooms.findOneById(message.rid);
@@ -192,7 +197,7 @@ const InternalHubotReceiver = (message) => {
 	return message;
 };
 
-class HubotScripts {
+export class HubotScripts {
 	constructor(robot) {
 		const modulesToLoad = [
 			'hubot-help/src/help.coffee',
