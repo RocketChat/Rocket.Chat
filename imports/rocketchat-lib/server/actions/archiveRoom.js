@@ -10,7 +10,7 @@ export default {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'archiveRoom' });
 		}
 
-		if (!await RocketChat.Service.call('authorization.hasPermission', { uid, permission: 'archive-room', scope: room._id })) {
+		if (!await RocketChat.Services.call('authorization.hasPermission', { uid, permission: 'archive-room', scope: room._id })) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
 		}
 

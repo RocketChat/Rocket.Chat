@@ -9,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 		}
 
-		return RocketChat.Service.call('core.checkUsernameAvailabity', { username, uid });
+		return RocketChat.Services.call('core.checkUsernameAvailability', { username, uid });
 	},
 });
 
