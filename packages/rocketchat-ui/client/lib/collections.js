@@ -18,7 +18,7 @@ this.CachedUserList = new Mongo.Collection(null);
 RocketChat.models.Users = _.extend({}, RocketChat.models.Users, Meteor.users);
 RocketChat.models.Subscriptions = _.extend({}, RocketChat.models.Subscriptions, ChatSubscription); //eslint-disable-line
 RocketChat.models.Rooms = _.extend({}, RocketChat.models.Rooms, ChatRoom);
-RocketChat.models.Messages = _.extend({}, RocketChat.models.Messages, this.ChatMessage);
+RocketChat.models.Messages = _.extend({}, RocketChat.models.Messages, ChatMessage);
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
