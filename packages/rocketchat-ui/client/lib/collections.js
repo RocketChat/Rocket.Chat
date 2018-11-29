@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
-this.ChatMessage = new Mongo.Collection(null);
+ChatMessage = new Mongo.Collection(null); //eslint-disable-line
 this.CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' });
 ChatRoom = this.CachedChatRoom.collection;
 
