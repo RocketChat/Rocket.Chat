@@ -1,5 +1,6 @@
-/* globals ChatOAuthApps */
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatOAuthApps } from '../collection';
 import moment from 'moment';
 
 Template.oauthApps.onCreated(function() {
