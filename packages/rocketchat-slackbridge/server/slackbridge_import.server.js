@@ -1,4 +1,3 @@
-/* globals msgStream */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
@@ -13,7 +12,7 @@ function SlackBridgeImport(command, params, item) {
 	const channel = room.name;
 	const user = Meteor.users.findOne(Meteor.userId());
 
-	msgStream.emit(item.rid, {
+	RocketChat.Notifications.msgStream.emit(item.rid, {
 		_id: Random.id(),
 		rid: item.rid,
 		u: { username: 'rocket.cat' },
@@ -27,7 +26,7 @@ function SlackBridgeImport(command, params, item) {
 	try {
 		RocketChat.SlackBridge.importMessages(item.rid, (error) => {
 			if (error) {
-				msgStream.emit(item.rid, {
+				RocketChat.Notifications.msgStream.emit(item.rid, {
 					_id: Random.id(),
 					rid: item.rid,
 					u: { username: 'rocket.cat' },
@@ -38,7 +37,7 @@ function SlackBridgeImport(command, params, item) {
 					}, user.language),
 				});
 			} else {
-				msgStream.emit(item.rid, {
+				RocketChat.Notifications.msgStream.emit(item.rid, {
 					_id: Random.id(),
 					rid: item.rid,
 					u: { username: 'rocket.cat' },
@@ -51,7 +50,7 @@ function SlackBridgeImport(command, params, item) {
 			}
 		});
 	} catch (error) {
-		msgStream.emit(item.rid, {
+		RocketChat.Notifications.msgStream.emit(item.rid, {
 			_id: Random.id(),
 			rid: item.rid,
 			u: { username: 'rocket.cat' },

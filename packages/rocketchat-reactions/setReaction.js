@@ -1,4 +1,3 @@
-/* globals msgStream */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
@@ -93,7 +92,7 @@ Meteor.methods({
 			RocketChat.callbacks.run('setReaction', messageId, reaction);
 		}
 
-		msgStream.emit(message.rid, message);
+		RocketChat.Notifications.msgStream.emit(message.rid, message);
 
 		return;
 	},
