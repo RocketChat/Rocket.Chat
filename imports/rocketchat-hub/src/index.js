@@ -31,7 +31,17 @@ export default ({ Users, Messages, Subscriptions, Rooms, Settings, Trash }) => (
 			}
 		});
 
-		Messages.watch([], { fullDocument: 'updateLookup' }).on('change', async function({ operationType, /* documentKey,*/ fullDocument/* , oplog*/ }) {
+		Messages.watch([{
+			$addFields: {
+				tmpfields: {
+					$objectToArray: '$updateDescription.updatedFields',
+				},
+			} }, {
+			$match: {
+				'tmpfields.k': {
+					$nin: ['u.username'], // avoid flood the streamer with messages changes (by username change)
+				},
+			} }], { fullDocument: 'updateLookup' }).on('change', async function({ operationType, /* documentKey,*/ fullDocument/* , oplog*/ }) {
 			switch (operationType) {
 				case 'insert':
 				case 'update':
@@ -43,6 +53,7 @@ export default ({ Users, Messages, Subscriptions, Rooms, Settings, Trash }) => (
 						// publishMessage(operationType, message);
 			}
 		});
+
 		Subscriptions.watch([], { fullDocument: 'updateLookup' }).on('change', async({ operationType, documentKey, fullDocument }) => {
 			let subscription;
 			switch (operationType) {
