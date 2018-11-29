@@ -1,7 +1,5 @@
 /* global slugify */
 import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
-import _ from 'underscore';
 
 function slug(text) {
 	return slugify(text, '.').replace(/[^0-9a-z-_.]/g, '');
