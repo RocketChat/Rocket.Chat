@@ -21,18 +21,18 @@ function hasPermission(userId, permissions, scope, strategy) {
 	return strategy(userId, [].concat(permissions), scope);
 }
 
-RocketChat.authz.hasAllPermission = function(userId, permissions, scope) {
+RocketChat.authz.hasAllPermission = RocketChat.memoize(function(userId, permissions, scope) {
 	return hasPermission(userId, permissions, scope, all);
-};
+});
 
-RocketChat.authz.hasPermission = (userId, permissionId, scope) => {
+RocketChat.authz.hasPermission = RocketChat.memoize(function(userId, permissionId, scope) {
 	if (!userId) {
 		return false;
 	}
 	const permission = RocketChat.models.Permissions.findOne(permissionId);
 	return RocketChat.models.Roles.isUserInRoles(userId, permission.roles, scope);
-};
+});
 
-RocketChat.authz.hasAtLeastOnePermission = function(userId, permissions, scope) {
+RocketChat.authz.hasAtLeastOnePermission = RocketChat.memoize(function(userId, permissions, scope) {
 	return hasPermission(userId, permissions, scope, atLeastOne);
-};
+});

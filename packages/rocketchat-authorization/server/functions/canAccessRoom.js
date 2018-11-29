@@ -1,4 +1,5 @@
-/* globals RocketChat */
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.authz.roomAccessValidators = [
 	function(room, user = {}) {
 		if (room && room.t === 'c') {
@@ -21,9 +22,9 @@ RocketChat.authz.roomAccessValidators = [
 	},
 ];
 
-RocketChat.authz.canAccessRoom = function(room, user, extraData) {
+RocketChat.authz.canAccessRoom = RocketChat.memoize(function(room, user, extraData) {
 	return RocketChat.authz.roomAccessValidators.some((validator) => validator(room, user, extraData));
-};
+});
 
 RocketChat.authz.addRoomAccessValidator = function(validator) {
 	RocketChat.authz.roomAccessValidators.push(validator.bind(this));

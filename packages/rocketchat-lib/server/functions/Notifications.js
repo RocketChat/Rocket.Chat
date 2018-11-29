@@ -1,36 +1,95 @@
 
 import { Meteor } from 'meteor/meteor';
+import { Stream } from './streamer/stream';
 
-class RoomStreamer extends Meteor.Streamer {
-	_publish(publication, eventName, options) {
-		super._publish(publication, eventName, options);
+const MY_MESSAGES = '__my_messages__';
+const MY_MESSAGES_STREAM = '_m_';
+
+class RoomMessage extends Stream {
+	subscribe(publication, eventName, options) {
+		const uid = Meteor.userId();
+		if (eventName !== MY_MESSAGES) {
+			super.subscribe(publication, eventName, options);
+			const revokeSubscription = (clientAction, { rid }) => {
+				if (clientAction === 'removed' && rid === eventName) {
+					publication.stop();
+					this.internals.removeListener(uid, revokeSubscription);
+				}
+			};
+			this.internals.on(uid, revokeSubscription);
+			return;
+		}
+
+		if (!this.isReadAllowed(publication, eventName)) {
+			publication.stop();
+			return;
+		}
+
+		const { socket } = publication._session;
+		const sendMyMessage = (msg) => this.send(socket, msg);
+
+		const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
+
+		const userEvent = (clientAction, { rid }) => {
+			switch (clientAction) {
+				case 'inserted':
+					rooms.push({ rid });
+					this.internals.on(`${ MY_MESSAGES_STREAM }${ rid }`, sendMyMessage);
+					break;
+
+				case 'removed':
+					this.internals.removeListener(rid, sendMyMessage);
+					break;
+			}
+		};
+
+		rooms.forEach(({ rid }) => this.internals.on(`${ MY_MESSAGES_STREAM }${ rid }`, sendMyMessage));
+
+		this.internals.on(uid, userEvent);
+
+		publication.onStop(() => {
+			this.internals.removeListener(uid, userEvent);
+			rooms.forEach(({ rid }) => this.internals.removeListener(`${ MY_MESSAGES_STREAM }${ rid }`, sendMyMessage));
+		});
+	}
+}
+
+class NotifyUser extends Stream {
+	subscribe(publication, eventName, options) {
+		super.subscribe(publication, eventName, options);
 		const uid = Meteor.userId();
 		if (/rooms-changed/.test(eventName)) {
+			const { socket } = publication._session;
 			const roomEvent = (...args) => {
-				RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
+				const msg = this.changedPayload({ 		// RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
+					eventName: `${ uid }/rooms-changed`,	// same behaviour but without sending multiple times
+					args,								// TODO performance: remove concatenation id + room-changed to use just one EJSON.serialize
+				}, this.subscriptionName);
+				socket.send(msg);
 			};
+
 			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
-			rooms.forEach(({ rid }) => {
-				this.on(rid, roomEvent);
-			});
+			rooms.forEach(({ rid }) => this.internals.on(rid, roomEvent));
 
 			const userEvent = (clientAction, { rid }) => {
 				switch (clientAction) {
 					case 'inserted':
+					case 'insert':
 						rooms.push({ rid });
-						this.on(rid, roomEvent);
+						this.internals.on(rid, roomEvent);
 						break;
 
 					case 'removed':
-						this.removeListener(rid, roomEvent);
+					case 'remove':
+						this.internals.removeListener(rid, roomEvent);
 						break;
 				}
 			};
-			this.on(uid, userEvent);
 
+			this.internals.on(uid, userEvent);
 			publication.onStop(() => {
-				this.removeListener(uid, userEvent);
-				rooms.forEach(({ rid }) => this.removeListener(rid, roomEvent));
+				this.internals.removeListener(uid, userEvent);
+				rooms.forEach(({ rid }) => this.internals.removeListener(rid, roomEvent));
 			});
 		}
 	}
@@ -39,11 +98,12 @@ class RoomStreamer extends Meteor.Streamer {
 RocketChat.Notifications = new class {
 	constructor() {
 		this.debug = false;
-		this.streamAll = new Meteor.Streamer('notify-all');
-		this.streamLogged = new Meteor.Streamer('notify-logged');
-		this.streamRoom = new Meteor.Streamer('notify-room');
-		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
-		this.streamUser = new RoomStreamer('notify-user');
+		this.msgStream = new RoomMessage('room-messages');
+		this.streamAll = new Stream('notify-all');
+		this.streamLogged = new Stream('notify-logged');
+		this.streamRoom = new Stream('notify-room');
+		this.streamRoomUsers = new Stream('notify-room-users');
+		this.streamUser = new NotifyUser('notify-user');
 		this.streamAll.allowWrite('none');
 		this.streamLogged.allowWrite('none');
 		this.streamRoom.allowWrite('none');
@@ -123,7 +183,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyAll', [eventName, ...args]);
 		}
 		args.unshift(eventName);
-		return this.streamAll.emitWithoutBroadcast.apply(this.streamAll, args);
+		return this.streamAll.emit.apply(this.streamAll, args);
 	}
 
 	notifyLoggedInThisInstance(eventName, ...args) {
@@ -131,7 +191,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyLogged', [eventName, ...args]);
 		}
 		args.unshift(eventName);
-		return this.streamLogged.emitWithoutBroadcast.apply(this.streamLogged, args);
+		return this.streamLogged.emit.apply(this.streamLogged, args);
 	}
 
 	notifyRoomInThisInstance(room, eventName, ...args) {
@@ -139,7 +199,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyRoomAndBroadcast', [room, eventName, ...args]);
 		}
 		args.unshift(`${ room }/${ eventName }`);
-		return this.streamRoom.emitWithoutBroadcast.apply(this.streamRoom, args);
+		return this.streamRoom.emit.apply(this.streamRoom, args);
 	}
 
 	notifyUserInThisInstance(userId, eventName, ...args) {
@@ -147,16 +207,37 @@ RocketChat.Notifications = new class {
 			console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
 		}
 		args.unshift(`${ userId }/${ eventName }`);
-		return this.streamUser.emitWithoutBroadcast.apply(this.streamUser, args);
+		return this.streamUser.emit.apply(this.streamUser, args);
 	}
 };
 
-RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
+RocketChat.Notifications.msgStream.allowRead(function(eventName, args) {
+	try {
+		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
+
+		if (!room) {
+			return false;
+		}
+
+		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
+			return false;
+		}
+
+		return true;
+	} catch (error) {
+		/* error*/
+		return false;
+	}
+});
+
+
+const allowWrite = RocketChat.memoize(function(uid, eventName, username, extraData) {
 	const [roomId, e] = eventName.split('/');
 
 	if (e === 'webrtc') {
 		return true;
 	}
+
 	if (e === 'typing') {
 		const key = RocketChat.settings.get('UI_Use_Real_Name') ? 'name' : 'username';
 		// typing from livechat widget
@@ -167,7 +248,7 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 			}
 		}
 
-		const user = Meteor.users.findOne(this.userId, {
+		const user = Meteor.users.findOne(uid, {
 			fields: {
 				[key]: 1,
 			},
@@ -181,3 +262,5 @@ RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typ
 	}
 	return false;
 });
+
+RocketChat.Notifications.streamRoom.allowWrite((eventName, username, typing, extraData = {}) => allowWrite(this.userId, eventName, username, extraData));

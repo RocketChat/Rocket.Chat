@@ -5,6 +5,10 @@ class ModelRoles extends RocketChat.models._Base {
 		super(...args);
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ scope: 1 });
+		this.findUsersInRole = RocketChat.memoize(this.findUsersInRole);
+		this.findOneById = RocketChat.memoize(this.findOneById);
+		this.findOneByIdOrName = RocketChat.memoize(this.findOneByIdOrName);
+		this.isUserInRoles = RocketChat.memoize(this.isUserInRoles);
 	}
 
 	findUsersInRole(name, scope, options) {

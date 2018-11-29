@@ -3,6 +3,8 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 class ModelPermissions extends RocketChat.models._Base {
 	constructor(...args) {
 		super(...args);
+		this.findByRole = RocketChat.memoize(this.findByRole);
+		this.findOneById = RocketChat.memoize(this.findOneById);
 	}
 
 	// FIND

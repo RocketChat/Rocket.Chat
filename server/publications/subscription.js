@@ -81,7 +81,7 @@ RocketChat.models.Subscriptions.on('change', ({ clientAction, id, data }) => {
 			break;
 	}
 
-	RocketChat.Notifications.streamUser.__emit(data.u._id, clientAction, data);
+	RocketChat.Notifications.streamUser.internals.emit(data.u._id, clientAction, data);
 
 	RocketChat.Notifications.notifyUserInThisInstance(data.u._id, 'subscriptions-changed', clientAction, data);
 });

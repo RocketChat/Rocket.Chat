@@ -529,3 +529,18 @@ RocketChat.API.v1.addRoute('users.removePersonalAccessToken', { authRequired: tr
 		return RocketChat.API.v1.success();
 	},
 });
+
+RocketChat.API.v1.addRoute('users.actives', { authRequired: true }, {
+	get() {
+		return RocketChat.API.v1.success({
+			users: RocketChat.models.Users.findUsersNotOffline({
+				fields: {
+					username: 1,
+					name: 1,
+					status: 1,
+					utcOffset: 1,
+				},
+			}).fetch(),
+		});
+	},
+});

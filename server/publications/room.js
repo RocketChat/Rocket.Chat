@@ -126,6 +126,6 @@ RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
 	}
 
 	if (data) {
-		RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
+		RocketChat.Notifications.streamUser.internals.emit(id, clientAction, data); // TODO use emit instead (and remove 'id/room-changed'
 	}
 });
