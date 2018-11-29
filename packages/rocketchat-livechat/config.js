@@ -143,7 +143,7 @@ Meteor.startup(function() {
 		type: 'string',
 		group: 'Livechat',
 		public: true,
-		i18nLabel: 'Agent_typing_alias'
+		i18nLabel: 'Agent_typing_alias',
 	});
 
 	RocketChat.settings.add('Livechat_webhookUrl', false, {

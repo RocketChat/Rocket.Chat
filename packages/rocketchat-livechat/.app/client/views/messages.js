@@ -65,8 +65,8 @@ Template.messages.helpers({
 			users: usernames.join(` ${ t('and') } `),
 		};
 	},
-	typingAlias(users){
-		return Template.instance().agentTypingAlias.get() || users
+	typingAlias(users) {
+		return Template.instance().agentTypingAlias.get() || users;
 	},
 	agentData() {
 		const { agent } = Livechat;
