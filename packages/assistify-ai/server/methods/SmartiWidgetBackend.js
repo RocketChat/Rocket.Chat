@@ -1,7 +1,7 @@
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {SystemLogger} from 'meteor/rocketchat:logger';
-import {SmartiProxy, verbs} from '../SmartiProxy';
-import {SmartiAdapter} from '../lib/SmartiAdapter';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { SmartiProxy, verbs } from '../SmartiProxy';
+import { SmartiAdapter } from '../lib/SmartiAdapter';
 
 /** @namespace RocketChat.RateLimiter.limitFunction */
 
@@ -23,7 +23,7 @@ Meteor.methods({
 			SmartiAdapter.getConversationId, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
-				}
+				},
 			}
 		)(channelId);
 	},
@@ -40,7 +40,7 @@ Meteor.methods({
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
-				}
+				},
 			}
 		)(verbs.get, `conversation/${ conversationId }/analysis`, null, null, (error) => {
 			// 404 is expected if no mapping exists
@@ -66,7 +66,7 @@ Meteor.methods({
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
-				}
+				},
 			}
 		)(verbs.get, `conversation/${ conversationId }/analysis/template/${ templateIndex }/result/${ creator }`, { start, rows });
 	},
@@ -79,32 +79,32 @@ Meteor.methods({
 
 		const solrFilterBooleanLimit = 256; // there is a limit for boolean expressinos in a filter query of default 1024 and an additional limiter by the HTTP-server. Experiments showed this limit as magic number.
 		const findOptions = { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { _id: 1 } };
-		const subscribedRooms = RocketChat.models.Subscriptions.find({'u._id': Meteor.userId()}, { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { rid: 1 } }).fetch().map(subscription => subscription.rid);
-		const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({t: 'c'}, findOptions).fetch().map(room => room._id) : [];
-		const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({t: 'l'}, findOptions).fetch().map(room => room._id) : [];
+		const subscribedRooms = RocketChat.models.Subscriptions.find({ 'u._id': Meteor.userId() }, { limit: solrFilterBooleanLimit, sort: { ts: -1 }, fields: { rid: 1 } }).fetch().map((subscription) => subscription.rid);
+		const publicChannels = RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') ? RocketChat.models.Rooms.find({ t: 'c' }, findOptions).fetch().map((room) => room._id) : [];
+		const livechats = RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room') ? RocketChat.models.Rooms.find({ t: 'l' }, findOptions).fetch().map((room) => room._id) : [];
 
 		const accessibleRooms = livechats.concat(subscribedRooms).concat(publicChannels);
 
 		let fq = `${ accessibleRooms.filter(unique).slice(0, solrFilterBooleanLimit).join(' OR ') }`;
-		fq = fq ? { fq: `meta_channel_id:(${ fq })` } : { fq: 'meta_channel_id:""'}; //fallback: if the user's not authorized to view any room, filter for "nothing"
+		fq = fq ? { fq: `meta_channel_id:(${ fq })` } : { fq: 'meta_channel_id:""' }; // fallback: if the user's not authorized to view any room, filter for "nothing"
 		const params = Object.assign(queryParams, fq);
 
 		const searchResult = RocketChat.RateLimiter.limitFunction(
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
-				}
+				},
 			}
 		)(verbs.get, 'conversation/search', params);
 		SystemLogger.debug('SearchResult: ', JSON.stringify(searchResult, null, 2));
 		return searchResult;
-	}
+	},
 });
 
 
-////////////////////////////////////////////
-//////// LOAD THE SMARTI JavaScript ////////
-////////////////////////////////////////////
+// //////////////////////////////////////////
+// ////// LOAD THE SMARTI JavaScript ////////
+// //////////////////////////////////////////
 
 // TODO: Prevent writing JavaScript into a inline <script>-Tags
 // TODO: It would be much better, having a RC-HTTP-Endpoint returning the plain JavaScript file, to be used like
@@ -119,7 +119,7 @@ function loadSmarti() {
 			SmartiProxy.propagateToSmarti, 5, 1000, {
 				userId(userId) {
 					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
-				}
+				},
 			}
 		)(verbs.get, 'plugin/v1/rocket.chat.js');
 		if (!script.error && script) {
@@ -155,7 +155,7 @@ Meteor.methods({
 		script = loadSmarti();
 		delayedReload();
 		return {
-			message: 'settings-reloaded-successfully'
+			message: 'settings-reloaded-successfully',
 		};
 	},
 
@@ -163,10 +163,10 @@ Meteor.methods({
 	 * This method is triggered by the client in order to retrieve the most recent widget
 	 */
 	getSmartiUiScript() {
-		if (!script) { //buffering
+		if (!script) { // buffering
 			script = loadSmarti();
 			delayedReload();
 		}
 		return script;
-	}
+	},
 });

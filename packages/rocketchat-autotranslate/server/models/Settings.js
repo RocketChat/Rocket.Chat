@@ -17,5 +17,5 @@ Object.assign(RocketChat.models.Settings, {
 				RocketChat.models.Settings.insert(newSetting);
 			}
 		}
-	}
+	},
 });

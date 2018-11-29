@@ -2,12 +2,13 @@
 
 this.modal = {
 	renderedModal: null,
-	open(config = {}, fn) {
+	open(config = {}, fn, onCancel) {
 		config.confirmButtonText = config.confirmButtonText || (config.type === 'error' ? t('Ok') : t('Send'));
 		config.cancelButtonText = config.cancelButtonText || t('Cancel');
 		config.closeOnConfirm = config.closeOnConfirm == null ? true : config.closeOnConfirm;
 		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
 		config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
+		config.confirmOnEnter = config.confirmOnEnter == null ? true : config.confirmOnEnter;
 
 		if (config.type === 'input') {
 			config.input = true;
@@ -20,12 +21,13 @@ this.modal = {
 
 		this.close();
 		this.fn = fn;
+		this.onCancel = onCancel;
 		this.config = config;
 
 		if (config.dontAskAgain) {
-			const dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
+			const dontAskAgainList = RocketChat.getUserPreference(Meteor.userId(), 'dontAskAgainList');
 
-			if (dontAskAgainList && dontAskAgainList.some(dontAsk => dontAsk.action === config.dontAskAgain.action)) {
+			if (dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) {
 				this.confirm(true);
 				return;
 			}
@@ -37,11 +39,18 @@ this.modal = {
 			this.timer = setTimeout(() => this.close(), config.timer);
 		}
 	},
+	cancel() {
+		if (this.onCancel) {
+			this.onCancel();
+		}
+		this.close();
+	},
 	close() {
 		if (this.renderedModal) {
 			Blaze.remove(this.renderedModal);
 		}
 		this.fn = null;
+		this.onCancel = null;
 		if (this.timer) {
 			clearTimeout(this.timer);
 		}
@@ -61,7 +70,7 @@ this.modal = {
 		errorEl.style.display = 'block';
 	},
 	onKeydown(e) {
-		if (e.key === 'Enter') {
+		if (modal.config.confirmOnEnter && e.key === 'Enter') {
 			e.preventDefault();
 			e.stopPropagation();
 
@@ -76,7 +85,7 @@ this.modal = {
 
 			modal.close();
 		}
-	}
+	},
 };
 
 Template.rc_modal.helpers({
@@ -85,7 +94,7 @@ Template.rc_modal.helpers({
 	},
 	modalIcon() {
 		return `modal-${ this.type }`;
-	}
+	},
 });
 
 Template.rc_modal.onRendered(function() {
@@ -112,15 +121,15 @@ Template.rc_modal.events({
 	},
 	'click .js-close'(e) {
 		e.stopPropagation();
-		modal.close();
+		modal.cancel();
 	},
 	'click .js-confirm'(e, instance) {
 		e.stopPropagation();
-		const dontAskAgain = instance.data.dontAskAgain;
+		const { dontAskAgain } = instance.data;
 		if (dontAskAgain && document.getElementById('dont-ask-me-again').checked) {
 			const dontAskAgainObject = {
 				action: dontAskAgain.action,
-				label: dontAskAgain.label
+				label: dontAskAgain.label,
 			};
 
 			let dontAskAgainList = RocketChat.getUserPreference(Meteor.user(), 'dontAskAgainList');
@@ -130,7 +139,7 @@ Template.rc_modal.events({
 				dontAskAgainList = [dontAskAgainObject];
 			}
 
-			Meteor.call('saveUserPreferences', {dontAskAgainList}, function(error) {
+			Meteor.call('saveUserPreferences', { dontAskAgainList }, function(error) {
 				if (error) {
 					return handleError(error);
 				}
@@ -153,5 +162,5 @@ Template.rc_modal.events({
 			e.stopPropagation();
 			modal.close();
 		}
-	}
+	},
 });

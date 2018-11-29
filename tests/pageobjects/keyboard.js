@@ -1,7 +1,7 @@
 const Keys = {
-	'TAB': '\uE004',
-	'ENTER': '\uE007',
-	'ESCAPE': 'u\ue00c'
+	TAB: '\uE004',
+	ENTER: '\uE007',
+	ESCAPE: 'u\ue00c',
 };
 
 const sendEnter = function() {
@@ -17,4 +17,4 @@ const sendTab = function() {
 };
 
 
-export {sendEnter, sendEscape, sendTab};
+export { sendEnter, sendEscape, sendTab };

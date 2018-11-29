@@ -4,13 +4,13 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 	constructor() {
 		super('export_operations');
 
-		this.tryEnsureIndex({ 'userId': 1 });
-		this.tryEnsureIndex({ 'status': 1 });
+		this.tryEnsureIndex({ userId: 1 });
+		this.tryEnsureIndex({ status: 1 });
 	}
 
 	// FIND
 	findById(id) {
-		const query = {_id: id};
+		const query = { _id: id };
 
 		return this.find(query);
 	}
@@ -18,10 +18,10 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 	findLastOperationByUser(userId, fullExport = false, options = {}) {
 		const query = {
 			userId,
-			fullExport
+			fullExport,
 		};
 
-		options.sort = {'createdAt' : -1};
+		options.sort = { createdAt : -1 };
 		return this.findOne(query, options);
 	}
 
@@ -29,8 +29,8 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 		const query = {
 			userId,
 			status: {
-				$nin: ['completed']
-			}
+				$nin: ['completed'],
+			},
 		};
 
 		return this.find(query, options);
@@ -38,7 +38,7 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 
 	findAllPending(options) {
 		const query = {
-			status: { $nin: ['completed'] }
+			status: { $nin: ['completed'] },
 		};
 
 		return this.find(query, options);
@@ -51,8 +51,8 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 				roomList: data.roomList,
 				status: data.status,
 				fileList: data.fileList,
-				generatedFile: data.generatedFile
-			}
+				generatedFile: data.generatedFile,
+			},
 		};
 
 		return this.update(data._id, update);
@@ -62,7 +62,7 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 	// INSERT
 	create(data) {
 		const exportOperation = {
-			createdAt: new Date
+			createdAt: new Date,
 		};
 
 		_.extend(exportOperation, data);

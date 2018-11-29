@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:gitlab',
 	version: '0.0.1',
-	summary: 'RocketChat settings for GitLab Oauth Flow'
+	summary: 'RocketChat settings for GitLab Oauth Flow',
 });
 
 Package.onUse(function(api) {

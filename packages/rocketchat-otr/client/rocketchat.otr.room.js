@@ -72,7 +72,7 @@ RocketChat.OTR.Room = class {
 		// Generate an ephemeral key pair.
 		return RocketChat.OTR.crypto.generateKey({
 			name: 'ECDH',
-			namedCurve: 'P-256'
+			namedCurve: 'P-256',
 		}, false, ['deriveKey', 'deriveBits'])
 			.then((keyPair) => {
 				this.keyPair = keyPair;
@@ -92,22 +92,18 @@ RocketChat.OTR.Room = class {
 	importPublicKey(publicKey) {
 		return RocketChat.OTR.crypto.importKey('jwk', EJSON.parse(publicKey), {
 			name: 'ECDH',
-			namedCurve: 'P-256'
-		}, false, []).then((peerPublicKey) => {
-			return RocketChat.OTR.crypto.deriveBits({
-				name: 'ECDH',
-				namedCurve: 'P-256',
-				public: peerPublicKey
-			}, this.keyPair.privateKey, 256);
-		}).then((bits) => {
-			return RocketChat.OTR.crypto.digest({
-				name: 'SHA-256'
-			}, bits);
-		}).then((hashedBits) => {
+			namedCurve: 'P-256',
+		}, false, []).then((peerPublicKey) => RocketChat.OTR.crypto.deriveBits({
+			name: 'ECDH',
+			namedCurve: 'P-256',
+			public: peerPublicKey,
+		}, this.keyPair.privateKey, 256)).then((bits) => RocketChat.OTR.crypto.digest({
+			name: 'SHA-256',
+		}, bits)).then((hashedBits) => {
 			// We truncate the hash to 128 bits.
 			const sessionKeyData = new Uint8Array(hashedBits).slice(0, 16);
 			return RocketChat.OTR.crypto.importKey('raw', sessionKeyData, {
-				name: 'AES-GCM'
+				name: 'AES-GCM',
 			}, false, ['encrypt', 'decrypt']);
 		}).then((sessionKey) => {
 			// Session key available.
@@ -117,13 +113,13 @@ RocketChat.OTR.Room = class {
 
 	encryptText(data) {
 		if (!_.isObject(data)) {
-			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction()+1)*20) }));
+			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 		const iv = crypto.getRandomValues(new Uint8Array(12));
 
 		return RocketChat.OTR.crypto.encrypt({
 			name: 'AES-GCM',
-			iv
+			iv,
 		}, this.sessionKey, data).then((cipherText) => {
 			cipherText = new Uint8Array(cipherText);
 			const output = new Uint8Array(iv.length + cipherText.length);
@@ -147,8 +143,8 @@ RocketChat.OTR.Room = class {
 			_id: message._id,
 			text: message.msg,
 			userId: this.userId,
-			ack: Random.id((Random.fraction()+1)*20),
-			ts
+			ack: Random.id((Random.fraction() + 1) * 20),
+			ts,
 		}));
 		const enc = this.encryptText(data);
 		return enc;
@@ -161,7 +157,7 @@ RocketChat.OTR.Room = class {
 
 		return RocketChat.OTR.crypto.decrypt({
 			name: 'AES-GCM',
-			iv
+			iv,
 		}, this.sessionKey, cipherText)
 			.then((data) => {
 				data = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
@@ -209,7 +205,7 @@ RocketChat.OTR.Room = class {
 						showCancelButton: true,
 						allowOutsideClick: false,
 						confirmButtonText: TAPi18n.__('Yes'),
-						cancelButtonText: TAPi18n.__('No')
+						cancelButtonText: TAPi18n.__('No'),
 					}, (isConfirm) => {
 						if (isConfirm) {
 							establishConnection();
@@ -240,7 +236,7 @@ RocketChat.OTR.Room = class {
 					modal.open({
 						title: TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
-						html: true
+						html: true,
 					});
 				}
 				break;
@@ -252,7 +248,7 @@ RocketChat.OTR.Room = class {
 					modal.open({
 						title: TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
-						html: true
+						html: true,
 					});
 				}
 				break;

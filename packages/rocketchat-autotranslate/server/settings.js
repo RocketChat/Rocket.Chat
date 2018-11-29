@@ -3,7 +3,7 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Message',
 		section: 'AutoTranslate',
-		public: true
+		public: true,
 	});
 	RocketChat.settings.add('AutoTranslate_ServiceProvider', 'google-translate', {
 		type: 'select',
@@ -11,25 +11,25 @@ Meteor.startup(function() {
 		section: 'AutoTranslate',
 		values: [{
 			key: 'google-translate',
-			i18nLabel: 'AutoTranslate_Google'
+			i18nLabel: 'AutoTranslate_Google',
 		}, {
 			key: 'deepl-translate',
-			i18nLabel: 'AutoTranslate_DeepL'
+			i18nLabel: 'AutoTranslate_DeepL',
 		}, {
 			key: 'dbs-translate',
-			i18nLabel: 'AutoTranslate_DBS'
+			i18nLabel: 'AutoTranslate_DBS',
 		}],
-		enableQuery: [{_id: 'AutoTranslate_Enabled', value: true}],
+		enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
 		i18nLabel: 'AutoTranslate_ServiceProvider',
-		public: true
+		public: true,
 	});
 	RocketChat.settings.add('AutoTranslate_ServiceProviderURL', '', {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate',
 		public: true,
-		enableQuery: [{_id: 'AutoTranslate_Enabled', value: true}],
-		i18nLabel: 'AutoTranslate_ServiceProviderURL'
+		enableQuery: [{ _id: 'AutoTranslate_Enabled', value: true }],
+		i18nLabel: 'AutoTranslate_ServiceProviderURL',
 	});
 
 	if (RocketChat.models.Settings.findById('AutoTranslate_GoogleAPIKey').count()) {
@@ -42,8 +42,8 @@ Meteor.startup(function() {
 			public: true,
 			enableQuery: [
 				{
-					_id: 'AutoTranslate_Enabled', value: true
-				}]
+					_id: 'AutoTranslate_Enabled', value: true,
+				}],
 		});
 	}
 });

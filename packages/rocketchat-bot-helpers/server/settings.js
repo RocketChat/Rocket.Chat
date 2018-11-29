@@ -4,7 +4,7 @@ Meteor.startup(function() {
 			type: 'string',
 			section: 'Helpers',
 			i18nLabel: 'BotHelpers_userFields',
-			i18nDescription: 'BotHelpers_userFields_Description'
+			i18nDescription: 'BotHelpers_userFields_Description',
 		});
 	});
 });

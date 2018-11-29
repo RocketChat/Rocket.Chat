@@ -4,22 +4,22 @@ RocketChat.Migrations.add({
 		const query = {
 			type: 'webhook-outgoing',
 			$or: [{
-				channel: []
+				channel: [],
 			}, {
-				channel: ''
+				channel: '',
 			}, {
 				channel: {
-					$exists: false
-				}
-			}]
+					$exists: false,
+				},
+			}],
 		};
 
 		const update = {
 			$set: {
-				channel: ['all_public_channels']
-			}
+				channel: ['all_public_channels'],
+			},
 		};
 
-		RocketChat.models.Integrations.update(query, update, {multi: true});
-	}
+		RocketChat.models.Integrations.update(query, update, { multi: true });
+	},
 });

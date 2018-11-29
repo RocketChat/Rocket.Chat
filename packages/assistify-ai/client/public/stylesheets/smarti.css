@@ -1,6 +1,8 @@
 .smarti-widget .loading-notification {
 	margin: 0 20px;
+
 	text-align: justify;
+
 	font-style: italic;
 	line-height: 1.4;
 }
@@ -11,25 +13,34 @@
 
 .smarti #widgetContainer {
 	position: absolute;
-	font-family: "Helvetica Neue", Arial, sans-serif;
-	font-size: 16px;
-	color: #3D3D3D;
+
 	top: 0;
 	right: 0;
+
+	overflow: hidden;
+
 	width: 400px;
 	height: 100%;
+
+	color: #3d3d3d;
+
 	border-right: 1px solid #dfdfdf;
 	border-left: 1px solid #dfdfdf;
 	background: #f4f4f4;
-	overflow: hidden;
+
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	font-size: 16px;
+
 	line-height: normal;
 }
 
 .smarti #widgetContainer #widgetWrapper {
 	position: relative;
-	height: 100%;
+
 	display: flex;
 	flex-direction: column;
+
+	height: 100%;
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetHeader {
@@ -37,42 +48,55 @@
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetHeader .widgetHeaderWrapper {
-	padding: 15px 15px;
+	padding: 15px;
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetHeader h4 {
-	font-size: 20px;
-	color: #3D3D3D;
-	letter-spacing: 0;
+
 	margin-top: -10px;
-	/*margin-bottom: 30px;*/
+
+	letter-spacing: 0;
+
+	color: #3d3d3d;
+
+	font-size: 20px;
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetHeader h4 img {
 	position: relative;
 	top: 5px;
+
 	height: 30px;
 	margin-right: 4px;
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetBody {
 	position: relative;
-	background: #ffffff;
-	width: 100%;
-	padding: 10px 10px 10px 10px;
+
 	overflow-y: auto;
 	flex: 1;
+
+	width: 100%;
+	padding: 10px;
+
+	background: #ffffff;
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetFooter {
 	position: relative;
-	background: #f4f4f4;
-	color: #747474;
-	opacity: 1;
+
 	width: 100%;
-	text-align: center;
-	border-top: 1px solid #CBCBCB;
+
 	transition: 0.2s;
+
+	text-align: center;
+
+	opacity: 1;
+	color: #747474;
+
+	border-top: 1px solid #cbcbcb;
+
+	background: #f4f4f4;
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetFooter .help-request-actions {
@@ -80,26 +104,38 @@
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetFooter button {
+
+	position: relative;
+
+	display: inline-block;
+
+	width: calc(100% - 20px);
+
+	margin: 10px;
+
+	padding: 15px 30px;
+
 	-o-transition: 0.2s;
 	-ms-transition: 0.2s;
 	-moz-transition: 0.2s;
 	-webkit-transition: 0.2s;
 	transition: 0.2s;
-	position: relative;
-	color: #747474;
-	text-decoration: none;
-	padding: 15px 30px 15px 30px;
-	width: calc(100% - 20px);
-	font-size: 14px;
-	margin: 10px;
-	text-transform: uppercase;
-	background: #CBCBCB;
-	border-radius: 3px;
-	display: inline-block;
+
 	text-align: center;
+
+	text-decoration: none;
+
+	text-transform: uppercase;
+
+	color: #747474;
+	border-radius: 3px;
+
+	background: #cbcbcb;
+
+	font-size: 14px;
 }
 
 .smarti #widgetContainer #widgetWrapper #widgetFooter button:hover {
-	background: #d5195b;
 	color: #ffffff;
+	background: #d5195b;
 }

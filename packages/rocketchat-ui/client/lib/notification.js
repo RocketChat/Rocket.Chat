@@ -1,6 +1,7 @@
 // @TODO implementar 'clicar na notificacao' abre a janela do chat
 import _ from 'underscore';
 import s from 'underscore.string';
+import { e2e } from 'meteor/rocketchat:e2e';
 
 const KonchatNotification = {
 	notificationStatus: new ReactiveVar,
@@ -26,7 +27,7 @@ const KonchatNotification = {
 					body: s.stripTags(message.msg),
 					tag: notification.payload._id,
 					silent: true,
-					canReply: true
+					canReply: true,
 				});
 
 				const user = Meteor.user();
@@ -37,11 +38,11 @@ const KonchatNotification = {
 
 				if (notification.payload && notification.payload.rid) {
 					if (n.addEventListener) {
-						n.addEventListener('reply', ({response}) =>
+						n.addEventListener('reply', ({ response }) =>
 							Meteor.call('sendMessage', {
 								_id: Random.id(),
 								rid: notification.payload.rid,
-								msg: response
+								msg: response,
 							})
 						);
 					}
@@ -63,7 +64,7 @@ const KonchatNotification = {
 		}
 	},
 
-	showDesktop(notification) {
+	async showDesktop(notification) {
 		if ((notification.payload.rid === Session.get('openedRoom')) && (typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)) {
 			return;
 		}
@@ -71,6 +72,14 @@ const KonchatNotification = {
 		if ((Meteor.user().status === 'busy') || (Meteor.settings.public.sandstorm != null)) {
 			return;
 		}
+
+		if (notification.payload.message && notification.payload.message.t === 'e2e') {
+			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
+			if (e2eRoom) {
+				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
+			}
+		}
+
 		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
@@ -90,13 +99,13 @@ const KonchatNotification = {
 				if (sub && sub.audioNotificationValue) {
 					const [audio] = $(`audio#${ sub.audioNotificationValue }`);
 					if (audio && audio.play) {
-						audio.volume = Number((audioVolume/100).toPrecision(2));
+						audio.volume = Number((audioVolume / 100).toPrecision(2));
 						return audio.play();
 					}
 				} else if (newMessageNotification !== 'none') {
 					const [audio] = $(`audio#${ newMessageNotification }`);
 					if (audio && audio.play) {
-						audio.volume = Number((audioVolume/100).toPrecision(2));
+						audio.volume = Number((audioVolume / 100).toPrecision(2));
 						return audio.play();
 					}
 				}
@@ -104,7 +113,7 @@ const KonchatNotification = {
 		}
 	},
 
-	newRoom(rid/*, withSound = true*/) {
+	newRoom(rid/* , withSound = true*/) {
 		Tracker.nonreactive(function() {
 			let newRoomSound = Session.get('newRoomSound');
 			if (newRoomSound != null) {
@@ -125,7 +134,7 @@ const KonchatNotification = {
 		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
 
 		return $(`.link-room-${ rid }`).removeClass('new-room-highlight');
-	}
+	},
 };
 
 Meteor.startup(() => {
@@ -133,8 +142,8 @@ Meteor.startup(() => {
 		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
 			fields: {
 				'settings.preferences.newRoomNotification': 1,
-				'settings.preferences.notificationsSoundVolume': 1
-			}
+				'settings.preferences.notificationsSoundVolume': 1,
+			},
 		});
 		const newRoomNotification = RocketChat.getUserPreference(user, 'newRoomNotification');
 		const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
@@ -144,7 +153,7 @@ Meteor.startup(() => {
 				if (newRoomNotification !== 'none') {
 					const [audio] = $(`audio#${ newRoomNotification }`);
 					if (audio && audio.play) {
-						audio.volume = Number((audioVolume/100).toPrecision(2));
+						audio.volume = Number((audioVolume / 100).toPrecision(2));
 						return audio.play();
 					}
 				}

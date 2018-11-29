@@ -54,8 +54,10 @@
 .rc-old blockquote {
 	position: relative;
 
-	clear: both;
 	display: block;
+
+	clear: both;
+
 	min-height: 20px;
 
 	padding-left: 10px;
@@ -83,7 +85,7 @@
 		border-radius: 0 0 2px 2px;
 	}
 
-	&:before {
+	&::before {
 		position: absolute;
 		top: 0;
 		bottom: 0;
@@ -128,7 +130,6 @@
 
 .copyonly {
 	display: inline-block;
-	float: left;
 
 	width: 0;
 	height: 0;
@@ -138,6 +139,10 @@
 
 	font-size: 0;
 	-moz-box-orient: vertical;
+
+	code & {
+		float: left;
+	}
 }
 
 .rc-old .text-center {
@@ -405,7 +410,8 @@
 
 /* .rc-old textarea, */
 
-/*.rc-old select,
+/*
+rc-old select,
 .rc-old input[type='text'],
 .rc-old input[type='number'],
 .rc-old input[type='email'],
@@ -424,7 +430,8 @@
 
 	line-height: normal;
 	appearance: none;
-}*/
+}
+*/
 
 .rc-old input {
 	& .input-forward {
@@ -1699,7 +1706,7 @@
 
 .rc-old .announcement {
 	display: flex;
-	flex-flow: row nowrap;
+
 	overflow: hidden;
 
 	height: 40px;
@@ -1712,6 +1719,7 @@
 
 	font-size: 1.2em;
 	line-height: 40px;
+	flex-flow: row nowrap;
 
 	& ~ .container-bars {
 		top: 45px;
@@ -1724,9 +1732,11 @@
 	}
 
 	p {
-		width: 0; /* Grow via flex. */
-		flex: auto;
 		overflow: hidden;
+		flex: auto;
+
+		width: 0; /* Grow via flex. */
+
 		white-space: nowrap;
 		text-overflow: ellipsis;
 	}
@@ -2254,8 +2264,9 @@
 .rc-old .flex-tab-main-content {
 	position: relative;
 	z-index: 1;
-	flex-grow: 1;
+
 	overflow: auto;
+	flex-grow: 1;
 }
 
 .rc-old .room-container {
@@ -2625,25 +2636,26 @@
 	.message-popup {
 		display: flex;
 		flex-direction: column;
-		align-items: stretch;
+
 		max-height: 20rem;
+		align-items: stretch;
 
 		.message-popup-items {
 			overflow-y: auto;
 
 			.popup-slash-command {
 				display: flex;
-				flex-direction: row;
-				flex-wrap: wrap;
+				flex-flow: row wrap;
 
 				&-format {
 					flex-grow: 1;
 				}
 
 				&-description {
-					flex-grow: 2;
-					font-style: italic;
 					text-align: right;
+
+					font-style: italic;
+					flex-grow: 2;
 				}
 			}
 		}
@@ -2657,22 +2669,30 @@
 
 .rc-old .preview-items .popup-item {
 	padding: 5px;
+
 	line-height: unset;
 }
 
 .rc-old .rc-message-box .reply-preview {
-	display: flex;
+
 	position: relative;
-	background-color:#fff;
+
+	display: flex;
+
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+
 	padding-left: 15px;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    align-items: center;
-    justify-content: space-between;
+
+	background-color: #ffffff;
+	align-items: center;
+	justify-content: space-between;
 
 	.message {
-		padding: 0;
 		flex: 1;
+
+		padding: 0;
+
 		background-color: transparent;
 	}
 }
@@ -2681,8 +2701,7 @@
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	border-bottom-left-radius: 5px;
-	border-bottom-left-radius: 5px;
-	box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);;
+	box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
 }
 
 .rc-old .reply-preview .cancel-reply {
@@ -2690,18 +2709,15 @@
 }
 
 .rc-old .reply-preview .mention-link.mention-link-all {
-    color: #fff;
+	color: #ffffff;
 }
 
 .rc-old .reply-preview .mention-link.mention-link-me {
-    color: #fff;
+	color: #ffffff;
 }
 
 .rc-old .message-popup.popup-with-reply-preview {
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
+	border-radius: 5px 5px 0 0;
 }
 
 .rc-old .message-popup {
@@ -2837,10 +2853,11 @@
 		text-align: center;
 
 		& .start__purge-warning {
-			padding: 0.5rem;
-			margin-bottom: 0.5rem;
 			margin-top: -33px;
-			border-width: 1px 0 0 0;
+			margin-bottom: 0.5rem;
+			padding: 0.5rem;
+
+			border-width: 1px 0 0;
 			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, transparent 100%);
 		}
 	}
@@ -2970,16 +2987,16 @@
 			content: attr(data-date);
 			text-align: center;
 
+			pointer-events: none;
+
 			font-size: 12px;
 			font-weight: 600;
-
-			pointer-events: none;
 		}
 
 		&::after {
 			position: absolute;
-			top: -20px;
 			z-index: -1;
+			top: -20px;
 			left: 0;
 
 			display: block;
@@ -2988,9 +3005,9 @@
 
 			content: " ";
 
-			border-width: 1px 0 0;
-
 			pointer-events: none;
+
+			border-width: 1px 0 0;
 		}
 	}
 
@@ -3113,7 +3130,10 @@
 		& .role-tag {
 			padding: 1px 4px;
 
-			border-radius: 2px;
+			border-width: 1px;
+
+			border-radius: 4px;
+			background: #ffffff;
 		}
 	}
 
@@ -3144,7 +3164,8 @@
 			text-align: right;
 
 			& .time,
-			& .role-tag {
+			& .role-tag,
+			& .is-bot {
 				display: none;
 			}
 
@@ -3173,7 +3194,6 @@
 		&:hover .edited {
 			display: none;
 		}
-
 	}
 
 	&.system .body {
@@ -3219,9 +3239,9 @@
 			& img {
 				max-width: 100%;
 				max-height: 200px;
-				object-fit: contain;
 
 				cursor: pointer;
+				object-fit: contain;
 			}
 		}
 
@@ -3318,7 +3338,9 @@
 	}
 
 	&.livechat_navigation_history {
-		& .thumb, & .user, & .info {
+		& .thumb,
+		& .user,
+		& .info {
 			display: none;
 		}
 	}
@@ -3664,7 +3686,8 @@ body:not(.is-cordova) {
 			}
 		}
 
-		/*& .close-flex-tab {
+		/*
+		& .close-flex-tab {
 			position: absolute;
 			z-index: 20;
 			top: 3px;
@@ -3690,7 +3713,8 @@ body:not(.is-cordova) {
 					font-size: 10px;
 				}
 			}
-		}*/
+		}
+		*/
 	}
 
 	& .flex-tab-bar {
@@ -3864,12 +3888,6 @@ body:not(.is-cordova) {
 			font-size: 12px;
 			font-weight: 300;
 			line-height: 18px;
-		}
-
-		& .role-tag {
-			padding: 1px 4px;
-
-			border-radius: 2px;
 		}
 	}
 
@@ -4539,8 +4557,10 @@ body:not(.is-cordova) {
 
 		& input,
 		& select {
-			width: 100%;
+
 			position: relative;
+
+			width: 100%;
 
 			padding: 4px 8px;
 
@@ -4624,13 +4644,14 @@ body:not(.is-cordova) {
 	margin: auto;
 
 	text-align: center;
-	align-items: center;
-	flex-flow: row nowrap;
+
+	background-repeat: no-repeat;
+	background-attachment: fixed;
 
 	background-position: center;
-	background-attachment: fixed;
-	background-repeat: no-repeat;
 	background-size: cover;
+	align-items: center;
+	flex-flow: row nowrap;
 
 	& .wrapper {
 		position: relative;
@@ -4672,11 +4693,12 @@ body:not(.is-cordova) {
 	& header {
 		position: relative;
 		z-index: 1;
-		width: 520px;
-		padding: 0 20px;
-		margin: auto;
 
 		display: block;
+
+		max-width: 520px;
+		margin: auto;
+		padding: 0 20px;
 	}
 
 	& .text {
@@ -4797,8 +4819,11 @@ body:not(.is-cordova) {
 }
 
 .rc-old .mention-link {
-	border-radius: 4px;
+
 	padding: 0 4px 2px;
+
+	border-radius: 4px;
+
 	font-weight: bold;
 }
 
@@ -5428,6 +5453,7 @@ body:not(.is-cordova) {
 
 .toggle-hidden {
 	cursor: pointer;
+
 	font-style: italic;
 }
 
@@ -5552,6 +5578,7 @@ body:not(.is-cordova) {
 		z-index: 100;
 
 		right: 40px;
+
 		height: 100%;
 
 		border-width: 0 0 0 1px;

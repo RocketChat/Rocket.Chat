@@ -4,11 +4,11 @@ const USER_ROLE_NAME = 'user';
 const GUEST_ROLE_NAME = 'guest';
 
 const assignPermissions = function(role, permissions) {
-	permissions.forEach(permission => RocketChat.models.Permissions.addRole(permission, role));
+	permissions.forEach((permission) => RocketChat.models.Permissions.addRole(permission, role));
 };
 
 const revokePermissions = function(role, permissions) {
-	permissions.forEach(permission => RocketChat.models.Permissions.removeRole(permission, role));
+	permissions.forEach((permission) => RocketChat.models.Permissions.removeRole(permission, role));
 };
 
 const createConfigurationRole = function() {
@@ -155,7 +155,7 @@ const createConfigurationRole = function() {
 		'change-setting-Accounts_RegistrationForm_SecretURL',
 		'change-setting-Accounts_RegistrationForm_LinkReplacementText',
 		'change-setting-Accounts_Registration_AuthenticationServices_Enabled',
-		'change-setting-Assistify_Deactivate_request_closing_comments'
+		'change-setting-Assistify_Deactivate_request_closing_comments',
 	];
 
 	assignPermissions(CONFIGURATION_ROLE_NAME,
@@ -163,7 +163,7 @@ const createConfigurationRole = function() {
 			'manage-emoji',
 			'manage-own-integrations',
 			'manage-selected-settings',
-			'manage-assets'
+			'manage-assets',
 		]));
 
 	revokePermissions(CONFIGURATION_ROLE_NAME, [
@@ -200,7 +200,7 @@ const createConfigurationRole = function() {
 		'change-setting-Email_Header',
 		'change-setting-Offline_Mention_All_Email',
 		'change-setting-Offline_Mention_Email',
-		'change-setting-Email'
+		'change-setting-Email',
 	]);
 };
 
@@ -234,7 +234,7 @@ const createManagerRole = function() {
 		'unarchive-room',
 		'view-full-other-user-info',
 		'view-room-administration',
-		'view-user-administration'
+		'view-user-administration',
 	];
 
 	assignPermissions(MANAGER_ROLE_NAME, permissions);
@@ -242,13 +242,13 @@ const createManagerRole = function() {
 
 const adjustStandardRoles = function() {
 	const additionalUserPermissions = [
-		'add-user-to-joined-room'
+		'add-user-to-joined-room',
 	];
 
 	assignPermissions(USER_ROLE_NAME, additionalUserPermissions);
 
 	const additionalGuestPermissions = [
-		'view-outside-room'
+		'view-outside-room',
 	];
 
 	assignPermissions(GUEST_ROLE_NAME, additionalGuestPermissions);

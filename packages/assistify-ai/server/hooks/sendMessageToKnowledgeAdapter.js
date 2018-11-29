@@ -1,6 +1,6 @@
-import {RocketChat} from 'meteor/rocketchat:lib';
-import {SystemLogger} from 'meteor/rocketchat:logger';
-import {getKnowledgeAdapter} from '../lib/KnowledgeAdapterProvider';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';
 
 // unregister callbacks for livechat and the hard-coded api.ai
 RocketChat.callbacks.remove('afterSaveMessage', 'externalWebHook');
@@ -8,8 +8,8 @@ RocketChat.callbacks.remove('afterSaveMessage', 'externalWebHook');
 function isMessageRelevant(message, room) {
 
 	const user = RocketChat.models.Users.findOneById(message.u._id);
-	if (user && user.roles['bot']) {
-		return; 	//do not trigger a new evaluation if the message was sent from a bot (particularly by assistify itself)
+	if (user && user.roles.bot) {
+		return; 	// do not trigger a new evaluation if the message was sent from a bot (particularly by assistify itself)
 	}
 
 	const knowledgeEnabled = RocketChat.settings.get('Assistify_AI_Enabled');
@@ -32,7 +32,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		Meteor.defer(() => {
 			const helpRequest = RocketChat.models.Rooms.findOne(room.helpRequestId);
 			const context = {};
-			if (helpRequest) { //there might be rooms without help request objects if they have been created inside the chat-application
+			if (helpRequest) { // there might be rooms without help request objects if they have been created inside the chat-application
 				context.contextType = 'ApplicationHelp';
 				context.environmentType = helpRequest.supportArea;
 				context.environment = helpRequest.environment;

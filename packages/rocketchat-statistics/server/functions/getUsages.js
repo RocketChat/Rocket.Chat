@@ -10,11 +10,11 @@ export function getUsages() {
 	const usages = [];
 	const usersAggregationCursor = userDB.aggregate([
 		{
-			$unwind: '$emails'
+			$unwind: '$emails',
 		},
 		{
-			$project: { '_id': 1, 'emails.address': 1 }
-		}
+			$project: { _id: 1, 'emails.address': 1 },
+		},
 	]);
 
 	const users = Promise.await(usersAggregationCursor.toArray());
@@ -23,15 +23,15 @@ export function getUsages() {
 		{
 			$match:
 				{
-					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) }
-				}
+					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) },
+				},
 		},
 		{
 			$group:
 				{ // if the room contains a parentRoomId it is actually a thread, therefor marked as roomtype 'thread'
-					_id: { uid: '$u._id', subType: {$cond: [{$not: ['$parentRoomId']}, '$t', 'thread']}},
-					subs: { $sum: 1 }
-				}
+					_id: { uid: '$u._id', subType: { $cond: [{ $not: ['$parentRoomId'] }, '$t', 'thread'] } },
+					subs: { $sum: 1 },
+				},
 		},
 		{
 			$group:
@@ -41,11 +41,11 @@ export function getUsages() {
 						$addToSet:
 								{
 									type: '$_id.subType',
-									subscriptions: '$subs'
-								}
-					}
-				}
-		}
+									subscriptions: '$subs',
+								},
+					},
+				},
+		},
 	]);
 
 	const readsArr = Promise.await(readsAggregationCursor.toArray());
@@ -55,8 +55,8 @@ export function getUsages() {
 		{
 			$match:
 				{
-					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) }
-				}
+					ts: { $gt: new Date(lastStatisticsCreatedAt.toISOString()) },
+				},
 		},
 		{
 			$lookup:
@@ -64,18 +64,18 @@ export function getUsages() {
 					from: 'rocketchat_room',
 					localField: 'rid',
 					foreignField: '_id',
-					as: 'msgRooms'
-				}
+					as: 'msgRooms',
+				},
 		},
 		{
-			$unwind: '$msgRooms'
+			$unwind: '$msgRooms',
 		},
 		{
 			$group:
 				{ // if the room contains a parentRoomId it is actually a thread, therefor marked as roomtype 'thread'
-					_id: { uid: '$u._id', msgRoom: {$cond: [{$not: ['$msgRooms.parentRoomId']}, '$msgRooms.t', 'thread']} },
-					messages: { $sum: 1 }
-				}
+					_id: { uid: '$u._id', msgRoom: { $cond: [{ $not: ['$msgRooms.parentRoomId'] }, '$msgRooms.t', 'thread'] } },
+					messages: { $sum: 1 },
+				},
 		},
 		{
 			$group:
@@ -85,11 +85,11 @@ export function getUsages() {
 						$addToSet:
 								{
 									type: '$_id.msgRoom',
-									messages: '$messages'
-								}
-					}
-				}
-		}
+									messages: '$messages',
+								},
+					},
+				},
+		},
 	]);
 
 	const writesArr = Promise.await(writesAggregationCursor.toArray());

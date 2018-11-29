@@ -4,8 +4,8 @@ quotes, prefer-template, no-undef, no-unused-vars*/
 
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
-import {sendEscape} from '../../pageobjects/keyboard';
-import {threading} from '../../pageobjects/threading.page';
+import { sendEscape } from '../../pageobjects/keyboard';
+import { threading } from '../../pageobjects/threading.page';
 import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 const parentChannelName = 'unit-testing';
@@ -22,7 +22,7 @@ describe('[Threading]', function () {
 			sideNav.searchChannel(parentChannelName);
 			console.log('Parent channel already Exists');
 		} catch (e) {
-			sendEscape(); //leave a potentially opened search
+			sendEscape(); // leave a potentially opened search
 			sideNav.createChannel(parentChannelName, true, false);
 			console.log('Parent channel created');
 		}

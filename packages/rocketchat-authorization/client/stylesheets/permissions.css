@@ -11,7 +11,7 @@
 
 	& .section:not(.section-collapsed) {
 		inline-size: fit-content;
-  	}
+	}
 
 	& .permission-grid {
 		& th {
@@ -43,6 +43,7 @@
 
 		& .permission-name {
 			cursor: default;
+			white-space: nowrap;
 		}
 	}
 

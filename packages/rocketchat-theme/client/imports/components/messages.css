@@ -41,7 +41,6 @@
 }
 
 .message {
-
 	& .toggle-hidden {
 		display: none;
 	}
@@ -50,9 +49,11 @@
 		& .body {
 			display: none;
 		}
+
 		& .toggle-hidden {
 			display: block;
 		}
+
 		& + .message--ignored.sequential {
 			display: none;
 		}

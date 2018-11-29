@@ -18,7 +18,7 @@ import supertest from 'supertest';
 const smarti = supertest.agent('http://localhost:8080');
 const credentials = {
 	username: 'admin',
-	password: 'admin'
+	password: 'admin',
 };
 
 describe('[Smarti Integration]', () => {
@@ -41,7 +41,7 @@ describe('[Smarti Integration]', () => {
 		});
 		it('check if client already exists', function(done) {
 			smarti.get('/client')
-				.auth(credentials['username'], credentials['password'])
+				.auth(credentials.username, credentials.password)
 				.expect(200)
 				.expect(function(res) {
 					for (const cl in res.body) {
@@ -57,7 +57,7 @@ describe('[Smarti Integration]', () => {
 		it('post access token', function(done) {
 			const code = `/client/${ clientid }/token`;
 			smarti.post(code)
-				.auth(credentials['username'], credentials['password'])
+				.auth(credentials.username, credentials.password)
 				.set('Content-Type', 'application/json')
 				.send({})
 				.end(function(err, res) {
@@ -69,7 +69,7 @@ describe('[Smarti Integration]', () => {
 		});
 
 		it('shall find the conversation in Smarti', (done) => {
-			const roomId = assistify.roomId;
+			const { roomId } = assistify;
 			roomId.should.not.be.empty;
 
 			requestName = mainContent.channelTitle.getText();
@@ -77,15 +77,13 @@ describe('[Smarti Integration]', () => {
 
 			console.log('roomId', roomId, 'name', requestName);
 
-			smarti.get(`/conversation?channel_id=${ roomId }`) //this does not really filter, see https://github.com/redlink-gmbh/smarti/issues/233
+			smarti.get(`/conversation?channel_id=${ roomId }`) // this does not really filter, see https://github.com/redlink-gmbh/smarti/issues/233
 				.set('Accept', 'application/json')
 				.set('X-Auth-Token', token)
 				.expect((res) => {
 					res.body.content.should.not.be.empty;
 
-					const currentConversation = res.body.content.filter((conversation) => {
-						return conversation.meta.channel_id[0] === roomId;
-					})[0];
+					const currentConversation = res.body.content.filter((conversation) => conversation.meta.channel_id[0] === roomId)[0];
 					currentConversation.should.not.be.empty;
 					conversationId = currentConversation.id;
 				})
@@ -133,7 +131,7 @@ describe('[Smarti Integration]', () => {
 			Global.modal.waitForVisible(5000);
 			Global.confirmPopup();
 
-			//console.log(`deleted /conversation/${ conversationId }/message/${ messageId }`);
+			// console.log(`deleted /conversation/${ conversationId }/message/${ messageId }`);
 
 			browser.pause(2000); // give smarti sometimetoasynchronously process the update
 			smarti.get(`/conversation/${ conversationId }/message/${ messageId }`)

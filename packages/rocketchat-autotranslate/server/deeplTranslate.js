@@ -2,8 +2,8 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import {TranslationProviderRegistry, AutoTranslate} from 'meteor/rocketchat:autotranslate';
-import {SystemLogger} from 'meteor/rocketchat:logger';
+import { TranslationProviderRegistry, AutoTranslate } from 'meteor/rocketchat:autotranslate';
+import { SystemLogger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
 
 /**
@@ -22,7 +22,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
-		//this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
+		// this.apiEndPointUrl = 'https://api.deepl.com/v1/translate';
 	}
 
 	/**
@@ -34,7 +34,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		return {
 			name: this.name,
 			displayName: TAPi18n.__('AutoTranslate_DeepL'),
-			settings: this._getSettings()
+			settings: this._getSettings(),
 		};
 	}
 
@@ -46,7 +46,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 	_getSettings() {
 		return {
 			apiKey: this.apiKey,
-			apiEndPointUrl: this.apiEndPointUrl
+			apiEndPointUrl: this.apiEndPointUrl,
 		};
 	}
 
@@ -63,33 +63,33 @@ class DeeplAutoTranslate extends AutoTranslate {
 			}
 			return this.supportedLanguages[target] = [
 				{
-					'language': 'en',
-					'name': TAPi18n.__('English', {lng: target})
+					language: 'en',
+					name: TAPi18n.__('English', { lng: target }),
 				},
 				{
-					'language': 'de',
-					'name': TAPi18n.__('German', {lng: target})
+					language: 'de',
+					name: TAPi18n.__('German', { lng: target }),
 				},
 				{
-					'language': 'fr',
-					'name': TAPi18n.__('French', {lng: target})
+					language: 'fr',
+					name: TAPi18n.__('French', { lng: target }),
 				},
 				{
-					'language': 'es',
-					'name': TAPi18n.__('Spanish', {lng: target})
+					language: 'es',
+					name: TAPi18n.__('Spanish', { lng: target }),
 				},
 				{
-					'language': 'it',
-					'name': TAPi18n.__('Italian', {lng: target})
+					language: 'it',
+					name: TAPi18n.__('Italian', { lng: target }),
 				},
 				{
-					'language': 'nl',
-					'name': TAPi18n.__('Dutch', {lng: target})
+					language: 'nl',
+					name: TAPi18n.__('Dutch', { lng: target }),
 				},
 				{
-					'language': 'pl',
-					'name': TAPi18n.__('Polish', {lng: target})
-				}
+					language: 'pl',
+					name: TAPi18n.__('Polish', { lng: target }),
+				},
 			];
 		}
 	}
@@ -105,26 +105,26 @@ class DeeplAutoTranslate extends AutoTranslate {
 	_translateMessage(message, targetLanguages) {
 		const translations = {};
 		let msgs = message.msg.split('\n');
-		msgs = msgs.map(msg => encodeURIComponent(msg));
+		msgs = msgs.map((msg) => encodeURIComponent(msg));
 		const query = `text=${ msgs.join('&text=') }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
-		targetLanguages.forEach(language => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
+		targetLanguages.forEach((language) => {
+			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
 						auth_key: this.apiKey,
-						target_lang: language
-					}, query
+						target_lang: language,
+					}, query,
 				});
 
 				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
 					// store translation only when the source and target language are different.
-					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
-						const txt = result.data.translations.map(translation => translation.text);
-						translations[language] = this.deTokenize(Object.assign({}, message, {msg: txt}));
+					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
+						const txt = result.data.translations.map((translation) => translation.text);
+						translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 					}
 				}
 			} catch (e) {
@@ -145,20 +145,20 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const translations = {};
 		const query = `text=${ encodeURIComponent(attachment.description || attachment.text) }`;
 		const supportedLanguages = this.getSupportedLanguages('en');
-		targetLanguages.forEach(language => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, {language})) {
+		targetLanguages.forEach((language) => {
+			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
 				const result = HTTP.get(this.apiEndPointUrl, {
 					params: {
 						auth_key: this.apiKey,
-						target_lang: language
-					}, query
+						target_lang: language,
+					}, query,
 				});
 				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
-					if (result.data.translations.map(translation => translation.detected_source_language).join() !== language) {
-						translations[language] = result.data.translations.map(translation => translation.text);
+					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
+						translations[language] = result.data.translations.map((translation) => translation.text);
 					}
 				}
 			} catch (e) {

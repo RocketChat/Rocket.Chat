@@ -20,7 +20,7 @@ class AssistifySmarti extends RocketChat.models._Base {
 	}
 
 	findOneByConversationId(convId, options) {
-		const query = { 'conversationId': convId };
+		const query = { conversationId: convId };
 		return this.findOne(query, options);
 	}
 

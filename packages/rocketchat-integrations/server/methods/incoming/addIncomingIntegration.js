@@ -51,17 +51,17 @@ Meteor.methods({
 				case '#':
 					record = RocketChat.models.Rooms.findOne({
 						$or: [
-							{_id: channel},
-							{name: channel}
-						]
+							{ _id: channel },
+							{ name: channel },
+						],
 					});
 					break;
 				case '@':
 					record = RocketChat.models.Users.findOne({
 						$or: [
-							{_id: channel},
-							{username: channel}
-						]
+							{ _id: channel },
+							{ username: channel },
+						],
 					});
 					break;
 			}
@@ -75,7 +75,7 @@ Meteor.methods({
 			}
 		}
 
-		const user = RocketChat.models.Users.findOne({username: integration.username});
+		const user = RocketChat.models.Users.findOne({ username: integration.username });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addIncomingIntegration' });
@@ -88,12 +88,12 @@ Meteor.methods({
 		integration.channel = channels;
 		integration.userId = user._id;
 		integration._createdAt = new Date();
-		integration._createdBy = RocketChat.models.Users.findOne(this.userId, {fields: {username: 1}});
+		integration._createdBy = RocketChat.models.Users.findOne(this.userId, { fields: { username: 1 } });
 
 		RocketChat.models.Roles.addUserRoles(user._id, 'bot');
 
 		integration._id = RocketChat.models.Integrations.insert(integration);
 
 		return integration;
-	}
+	},
 });

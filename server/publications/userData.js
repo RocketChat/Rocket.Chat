@@ -23,12 +23,13 @@ Meteor.publish('userData', function() {
 			'services.github': 1,
 			'services.gitlab': 1,
 			'services.tokenpass': 1,
+			'services.blockstack': 1,
 			requirePasswordChange: 1,
 			requirePasswordChangeReason: 1,
 			'services.password.bcrypt': 1,
 			'services.totp.enabled': 1,
 			statusLivechat: 1,
-			banners: 1
-		}
+			banners: 1,
+		},
 	});
 });

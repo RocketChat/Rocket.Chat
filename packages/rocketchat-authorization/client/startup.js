@@ -8,5 +8,5 @@ RocketChat.AdminBox.addOption({
 	icon: 'lock',
 	permissionGranted() {
 		return RocketChat.authz.hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']);
-	}
+	},
 });

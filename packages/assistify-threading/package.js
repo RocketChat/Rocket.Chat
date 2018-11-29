@@ -5,15 +5,15 @@ Package.describe({
 	git: 'http://github.com/assistify/Rocket.Chat',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use(['ecmascript']);
-	api.use('rocketchat:authorization'); //In order to create custom permissions
+	api.use('rocketchat:authorization'); // In order to create custom permissions
 	api.use('templating', 'client');
-	api.use('meteorhacks:inject-initial'); //for provisioning of svg-icons
+	api.use('meteorhacks:inject-initial'); // for provisioning of svg-icons
 
 	api.addFiles('config.js', 'server');
 	api.addFiles('auth.js', 'server');
@@ -27,7 +27,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/RoomsExtension.js', 'server');
 	api.addFiles('server/publications/threadParentAutocomplete.js', 'server');
 
-	//Methods
+	// Methods
 	api.addFiles('server/methods/createThread.js', 'server');
 	api.addFiles('server/methods/getParentChannelId.js', 'server');
 	api.addFiles('server/methods/getParentChannelList.js', 'server');
@@ -36,9 +36,9 @@ Package.onUse(function(api) {
 	// UI artifacts which are pre-processed or packaged by the server
 	api.addAssets('client/public/icons.svg', 'server');
 
-	///////// Client
+	// /////// Client
 
-	//Templates
+	// Templates
 	api.addFiles('client/views/creationDialog/CreateThread.html', 'client');
 	api.addFiles('client/views/creationDialog/CreateThread.js', 'client');
 	api.addFiles('client/views/creationDialog/CreateThreadInputError.html', 'client');
@@ -54,6 +54,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/createThreadMessageAction.js', 'client');
 	api.addFiles('client/threadFromMessageBox.js', 'client');
 
-	//styling
+	// styling
 	api.addFiles('client/public/stylesheets/threading.css', 'client');
 });

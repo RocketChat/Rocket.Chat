@@ -2,36 +2,36 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 class ModelRooms extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 
-		this.tryEnsureIndex({ 'name': 1 }, { unique: 1, sparse: 1 });
-		this.tryEnsureIndex({ 'default': 1 });
-		this.tryEnsureIndex({ 't': 1 });
+		this.tryEnsureIndex({ name: 1 }, { unique: 1, sparse: 1 });
+		this.tryEnsureIndex({ default: 1 });
+		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ 'parentRoomId': 1 });
+		this.tryEnsureIndex({ parentRoomId: 1 });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			$or: [{
-				_id: _idOrName
+				_id: _idOrName,
 			}, {
-				name: _idOrName
-			}]
+				name: _idOrName,
+			}],
 		};
 
 		return this.findOne(query, options);
 	}
 
 	findOneByImportId(_id, options) {
-		const query = {importIds: _id};
+		const query = { importIds: _id };
 
 		return this.findOne(query, options);
 	}
 
 	findOneByName(name, options) {
-		const query = {name};
+		const query = { name };
 
 		return this.findOne(query, options);
 	}
@@ -39,14 +39,14 @@ class ModelRooms extends RocketChat.models._Base {
 	findOneByNameAndNotId(name, rid) {
 		const query = {
 			_id: { $ne: rid },
-			name
+			name,
 		};
 
 		return this.findOne(query);
 	}
 
 	findOneByDisplayName(fname, options) {
-		const query = {fname};
+		const query = { fname };
 
 		return this.findOne(query, options);
 	}
@@ -54,7 +54,7 @@ class ModelRooms extends RocketChat.models._Base {
 	findOneByNameAndType(name, type, options) {
 		const query = {
 			name,
-			t: type
+			t: type,
 		};
 
 		return this.findOne(query, options);
@@ -62,20 +62,16 @@ class ModelRooms extends RocketChat.models._Base {
 
 	// FIND
 
-	findWithUsername(username, options) {
-		return this.find({ usernames: username }, options);
-	}
-
 	findById(roomId, options) {
 		return this.find({ _id: roomId }, options);
 	}
 
 	findByIds(roomIds, options) {
-		return this.find({ _id: {$in: [].concat(roomIds)} }, options);
+		return this.find({ _id: { $in: [].concat(roomIds) } }, options);
 	}
 
 	findByType(type, options) {
-		const query = {t: type};
+		const query = { t: type };
 
 		return this.find(query, options);
 	}
@@ -83,9 +79,9 @@ class ModelRooms extends RocketChat.models._Base {
 	findByTypeInIds(type, ids, options) {
 		const query = {
 			_id: {
-				$in: ids
+				$in: ids,
 			},
-			t: type
+			t: type,
 		};
 
 		return this.find(query, options);
@@ -94,27 +90,27 @@ class ModelRooms extends RocketChat.models._Base {
 	findByTypes(types, options) {
 		const query = {
 			t: {
-				$in: types
-			}
+				$in: types,
+			},
 		};
 
 		return this.find(query, options);
 	}
 
 	findByUserId(userId, options) {
-		const query = {'u._id': userId};
+		const query = { 'u._id': userId };
 
 		return this.find(query, options);
 	}
 
 	findBySubscriptionUserId(userId, options) {
 		const data = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
-			.map(item => item.rid);
+			.map((item) => item.rid);
 
 		const query = {
 			_id: {
-				$in: data
-			}
+				$in: data,
+			},
 		};
 
 		return this.find(query, options);
@@ -122,13 +118,13 @@ class ModelRooms extends RocketChat.models._Base {
 
 	findBySubscriptionTypeAndUserId(type, userId, options) {
 		const data = RocketChat.models.Subscriptions.findByUserIdAndType(userId, type, { fields: { rid: 1 } }).fetch()
-			.map(item => item.rid);
+			.map((item) => item.rid);
 
 		const query = {
 			t: type,
 			_id: {
-				$in: data
-			}
+				$in: data,
+			},
 		};
 
 		return this.find(query, options);
@@ -136,15 +132,15 @@ class ModelRooms extends RocketChat.models._Base {
 
 	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
 		const ids = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
-			.map(item => item.rid);
+			.map((item) => item.rid);
 
 		const query = {
 			_id: {
-				$in: ids
+				$in: ids,
 			},
 			_updatedAt: {
-				$gt: _updatedAt
-			}
+				$gt: _updatedAt,
+			},
 		};
 
 		return this.find(query, options);
@@ -155,12 +151,12 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const query = {
 			$or: [
-				{name: nameRegex},
+				{ name: nameRegex },
 				{
 					t: 'd',
-					usernames: nameRegex
-				}
-			]
+					usernames: nameRegex,
+				},
+			],
 		};
 
 		return this.find(query, options);
@@ -171,15 +167,15 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const query = {
 			t: {
-				$in: types
+				$in: types,
 			},
 			$or: [
-				{name: nameRegex},
+				{ name: nameRegex },
 				{
 					t: 'd',
-					usernames: nameRegex
-				}
-			]
+					usernames: nameRegex,
+				},
+			],
 		};
 
 		return this.find(query, options);
@@ -188,7 +184,7 @@ class ModelRooms extends RocketChat.models._Base {
 	findByNameAndType(name, type, options) {
 		const query = {
 			t: type,
-			name
+			name,
 		};
 
 		// do not use cache
@@ -200,8 +196,8 @@ class ModelRooms extends RocketChat.models._Base {
 			t: type,
 			name,
 			default: {
-				$ne: true
-			}
+				$ne: true,
+			},
 		};
 
 		// do not use cache
@@ -211,12 +207,12 @@ class ModelRooms extends RocketChat.models._Base {
 	findByNameAndTypesNotInIds(name, types, ids, options) {
 		const query = {
 			_id: {
-				$ne: ids
+				$ne: ids,
 			},
 			t: {
-				$in: types
+				$in: types,
 			},
-			name
+			name,
 		};
 
 		// do not use cache
@@ -228,9 +224,9 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const query = {
 			t: {
-				$in: ['c', 'p']
+				$in: ['c', 'p'],
 			},
-			name: nameRegex
+			name: nameRegex,
 		};
 
 		return this.find(query, options);
@@ -240,8 +236,8 @@ class ModelRooms extends RocketChat.models._Base {
 		const query = {
 			default: defaultValue,
 			t: {
-				$in: types
-			}
+				$in: types,
+			},
 		};
 
 		return this.find(query, options);
@@ -250,7 +246,7 @@ class ModelRooms extends RocketChat.models._Base {
 	findDirectRoomContainingUsername(username, options) {
 		const query = {
 			t: 'd',
-			usernames: username
+			usernames: username,
 		};
 
 		return this.find(query, options);
@@ -259,7 +255,7 @@ class ModelRooms extends RocketChat.models._Base {
 	findByTypeAndName(type, name, options) {
 		const query = {
 			name,
-			t: type
+			t: type,
 		};
 
 		return this.find(query, options);
@@ -270,7 +266,7 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const query = {
 			name: nameRegex,
-			t: type
+			t: type,
 		};
 
 		return this.find(query, options);
@@ -281,17 +277,17 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const query = {
 			_id: {
-				$in: ids
+				$in: ids,
 			},
 			name: nameRegex,
-			t: type
+			t: type,
 		};
 
 		return this.find(query, options);
 	}
 
 	findByTypeAndArchivationState(type, archivationstate, options) {
-		const query = {t: type};
+		const query = { t: type };
 
 		if (archivationstate) {
 			query.archived = true;
@@ -305,63 +301,63 @@ class ModelRooms extends RocketChat.models._Base {
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$addToSet: {
 				importIds: {
-					$each: importIds
-				}
-			}
+					$each: importIds,
+				},
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	archiveById(_id) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				archived: true
-			}
+				archived: true,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	unarchiveById(_id) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				archived: false
-			}
+				archived: false,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	setNameById(_id, name, fname) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
 				name,
-				fname
-			}
+				fname,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	setFnameById(_id, fname) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				fname
-			}
+				fname,
+			},
 		};
 
 		return this.update(query, update);
@@ -369,12 +365,12 @@ class ModelRooms extends RocketChat.models._Base {
 
 	incMsgCountById(_id, inc) {
 		if (inc == null) { inc = 1; }
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$inc: {
-				msgs: inc
-			}
+				msgs: inc,
+			},
 		};
 
 		return this.update(query, update);
@@ -382,15 +378,15 @@ class ModelRooms extends RocketChat.models._Base {
 
 	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
 		if (inc == null) { inc = 1; }
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				lm: lastMessageTimestamp
+				lm: lastMessageTimestamp,
 			},
 			$inc: {
-				msgs: inc
-			}
+				msgs: inc,
+			},
 		};
 
 		if (lastMessage) {
@@ -405,8 +401,8 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const update = {
 			$inc: {
-				usersCount: inc
-			}
+				usersCount: inc,
+			},
 		};
 
 		return this.update(query, update);
@@ -415,26 +411,26 @@ class ModelRooms extends RocketChat.models._Base {
 	incUsersCountByIds(ids, inc = 1) {
 		const query = {
 			_id: {
-				$in: ids
-			}
+				$in: ids,
+			},
 		};
 
 		const update = {
 			$inc: {
-				usersCount: inc
-			}
+				usersCount: inc,
+			},
 		};
 
-		return this.update(query, update, {multi: true});
+		return this.update(query, update, { multi: true });
 	}
 
 	setLastMessageById(_id, lastMessage) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				lastMessage
-			}
+				lastMessage,
+			},
 		};
 
 		return this.update(query, update);
@@ -446,48 +442,48 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const update = lastMessage ? {
 			$set: {
-				lastMessage
-			}
+				lastMessage,
+			},
 		} : {
 			$unset: {
-				lastMessage: 1
-			}
+				lastMessage: 1,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	replaceUsername(previousUsername, username) {
-		const query = {usernames: previousUsername};
+		const query = { usernames: previousUsername };
 
 		const update = {
 			$set: {
-				'usernames.$': username
-			}
+				'usernames.$': username,
+			},
 		};
 
 		return this.update(query, update, { multi: true });
 	}
 
 	replaceMutedUsername(previousUsername, username) {
-		const query = {muted: previousUsername};
+		const query = { muted: previousUsername };
 
 		const update = {
 			$set: {
-				'muted.$': username
-			}
+				'muted.$': username,
+			},
 		};
 
 		return this.update(query, update, { multi: true });
 	}
 
 	replaceUsernameOfUserByUserId(userId, username) {
-		const query = {'u._id': userId};
+		const query = { 'u._id': userId };
 
 		const update = {
 			$set: {
-				'u.username': username
-			}
+				'u.username': username,
+			},
 		};
 
 		return this.update(query, update, { multi: true });
@@ -495,23 +491,23 @@ class ModelRooms extends RocketChat.models._Base {
 
 	setJoinCodeById(_id, joinCode) {
 		let update;
-		const query = {_id};
+		const query = { _id };
 
 		if ((joinCode != null ? joinCode.trim() : undefined) !== '') {
 			update = {
 				$set: {
 					joinCodeRequired: true,
-					joinCode
-				}
+					joinCode,
+				},
 			};
 		} else {
 			update = {
 				$set: {
-					joinCodeRequired: false
+					joinCodeRequired: false,
 				},
 				$unset: {
-					joinCode: 1
-				}
+					joinCode: 1,
+				},
 			};
 		}
 
@@ -519,109 +515,109 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	setUserById(_id, user) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
 				u: {
 					_id: user._id,
-					username: user.username
-				}
-			}
+					username: user.username,
+				},
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	setTypeById(_id, type) {
-		const query = {_id};
+		const query = { _id };
 		const update = {
 			$set: {
-				t: type
-			}
+				t: type,
+			},
 		};
 		if (type === 'p') {
-			update.$unset = {default: ''};
+			update.$unset = { default: '' };
 		}
 
 		return this.update(query, update);
 	}
 
 	setTopicById(_id, topic) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				topic
-			}
+				topic,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	setAnnouncementById(_id, announcement, announcementDetails) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
 				announcement,
-				announcementDetails
-			}
+				announcementDetails,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	setCustomFieldsById(_id, customFields) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				customFields
-			}
+				customFields,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	muteUsernameByRoomId(_id, username) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$addToSet: {
-				muted: username
-			}
+				muted: username,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	unmuteUsernameByRoomId(_id, username) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$pull: {
-				muted: username
-			}
+				muted: username,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	saveDefaultById(_id, defaultValue) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				default: defaultValue === 'true'
-			}
+				default: defaultValue === 'true',
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	saveRetentionEnabledById(_id, value) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {};
 
@@ -635,7 +631,7 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	saveRetentionMaxAgeById(_id, value) {
-		const query = {_id};
+		const query = { _id };
 
 		value = Number(value);
 		if (!value) {
@@ -644,32 +640,32 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const update = {
 			$set: {
-				'retention.maxAge': value
-			}
+				'retention.maxAge': value,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	saveRetentionExcludePinnedById(_id, value) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				'retention.excludePinned': value === true
-			}
+				'retention.excludePinned': value === true,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	saveRetentionFilesOnlyById(_id, value) {
-		const query = {_id};
+		const query = { _id };
 
 		const update = {
 			$set: {
-				'retention.filesOnly': value === true
-			}
+				'retention.filesOnly': value === true,
+			},
 		};
 
 		return this.update(query, update);
@@ -680,8 +676,20 @@ class ModelRooms extends RocketChat.models._Base {
 
 		const update = {
 			$set: {
-				'retention.overrideGlobal': value === true
-			}
+				'retention.overrideGlobal': value === true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveEncryptedById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				encrypted: value === true,
+			},
 		};
 
 		return this.update(query, update);
@@ -701,7 +709,7 @@ class ModelRooms extends RocketChat.models._Base {
 
 		if (tags != null) {
 			if (!_.isEmpty(s.trim(tags))) {
-				setData.tags = s.trim(tags).split(',').map(tag => s.trim(tag));
+				setData.tags = s.trim(tags).split(',').map((tag) => s.trim(tag));
 			} else {
 				unsetData.tags = 1;
 			}
@@ -735,8 +743,8 @@ class ModelRooms extends RocketChat.models._Base {
 			usersCount: 0,
 			u: {
 				_id: user._id,
-				username: user.username
-			}
+				username: user.username,
+			},
 		};
 
 		_.extend(room, extraData);
@@ -753,7 +761,7 @@ class ModelRooms extends RocketChat.models._Base {
 			name,
 			usernames: [],
 			msgs: 0,
-			usersCount: 0
+			usersCount: 0,
 		};
 
 		_.extend(room, extraData);
@@ -772,7 +780,7 @@ class ModelRooms extends RocketChat.models._Base {
 
 	// REMOVE
 	removeById(_id) {
-		const query = {_id};
+		const query = { _id };
 
 		return this.remove(query);
 	}
@@ -780,7 +788,7 @@ class ModelRooms extends RocketChat.models._Base {
 	removeDirectRoomContainingUsername(username) {
 		const query = {
 			t: 'd',
-			usernames: username
+			usernames: username,
 		};
 
 		return this.remove(query);

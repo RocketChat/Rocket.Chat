@@ -5,15 +5,14 @@ import { WordCloud } from 'meteor/overture8:wordcloud2';
 
 function drawWords() {
 	const instance = Template.instance();
-	const properties = instance.data.properties;
-	//properties.setCanvas(instance.canvasToDraw.get());
-	window.WordCloud(instance.canvasToDraw.get(), properties);
+	// properties.setCanvas(instance.canvasToDraw.get());
+	window.WordCloud(instance.canvasToDraw.get(), instance.data.properties);
 }
 
 Template.ChannelSelection.events({
 	'click .full-modal__back-button'(event, instance) {
 		instance.data.hideMe();
-	}
+	},
 });
 
 Template.ChannelSelection.helpers({
