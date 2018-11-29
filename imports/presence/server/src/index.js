@@ -10,6 +10,8 @@ export default ({ UserSession, User }) => ({
 	mixins: [],
 	hooks: {
 		after: {
+			setConnectionStatus: 'afterAll',
+			setStatus:'afterAll',
 			newConnection: 'afterAll',
 			removeConnection: 'afterAll',
 		},

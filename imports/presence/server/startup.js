@@ -37,3 +37,18 @@ Meteor.publish(null, function() {
 	}
 	this.ready();
 });
+
+Meteor.methods({
+	'UserPresence:setDefaultStatus'(status) {
+		const uid = Meteor.userId();
+		return broker.call('presence.setStatus', { uid, status });
+	},
+	'UserPresence:online'() {
+		const uid = Meteor.userId();
+		return broker.call('presence.setStatus', { uid, status: 'online' });
+	},
+	// 'UserPresence:away'() {
+	// 	const uid = Meteor.userId();
+	// 	return broker.call('presence.setStatus', { uid, status: 'away', connection: this.connection });
+	// },
+});
