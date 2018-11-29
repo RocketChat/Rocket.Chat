@@ -46,6 +46,7 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 			sender: message.u,
 			type: room.t,
 			name: room.name,
+			messageType: message.t
 		},
 		roomName: RocketChat.settings.get('Push_show_username_room') && room.t !== 'd' ? `#${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
 		username,
