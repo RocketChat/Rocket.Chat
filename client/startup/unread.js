@@ -1,11 +1,16 @@
-/* globals fireGlobalEvent, readMessage, Favico, favico, menu */
+/* globals fireGlobalEvent, readMessage, favico, menu */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Favico } from 'meteor/rocketchat:favico';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		let unreadCount = 0;
 		let unreadAlert = false;
 
-		const subscriptions = ChatSubscription.find({open: true, hideUnreadStatus: { $ne: true }}, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
+		const subscriptions = ChatSubscription.find({ open: true, hideUnreadStatus: { $ne: true } }, { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1 } });
 
 		let openedRoomId = undefined;
 		Tracker.nonreactive(function() {
@@ -32,7 +37,7 @@ Meteor.startup(function() {
 				// Increment the total unread count.
 				unreadCount += subscription.unread;
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					const userUnreadAlert = RocketChat.getUserPreference(Meteor.user(), 'unreadAlert');
+					const userUnreadAlert = RocketChat.getUserPreference(Meteor.userId(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 						unreadAlert = '•';
 					}
@@ -63,7 +68,7 @@ Meteor.startup(function() {
 Meteor.startup(function() {
 	window.favico = new Favico({
 		position: 'up',
-		animation: 'none'
+		animation: 'none',
 	});
 
 	Tracker.autorun(function() {
@@ -74,7 +79,7 @@ Meteor.startup(function() {
 
 		if (favico) {
 			favico.badge(unread, {
-				bgColor: typeof unread !== 'number' ? '#3d8a3a' : '#ac1b1b'
+				bgColor: typeof unread !== 'number' ? '#3d8a3a' : '#ac1b1b',
 			});
 		}
 

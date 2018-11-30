@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
@@ -8,7 +10,6 @@ Meteor.methods({
 		const room = RocketChat.models.Rooms.findOneById(roomId);
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 
-		// allow to only user to send transcripts from their own chats
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== visitor.token) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
@@ -18,5 +19,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.Users.getAgentInfo(room.servedBy._id);
-	}
+	},
 });

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { TimeSync } from 'meteor/mizzao:timesync';
 import visitor from '../../imports/client/visitor';
 import s from 'underscore.string';
 
@@ -14,7 +16,7 @@ Meteor.methods({
 
 			message.u = {
 				_id: visitor.getId(),
-				username: user && user.username || 'visitor'
+				username: (user && user.username) || 'visitor',
 			};
 
 			message.temp = true;
@@ -23,5 +25,5 @@ Meteor.methods({
 
 			ChatMessage.insert(message);
 		}
-	}
+	},
 });

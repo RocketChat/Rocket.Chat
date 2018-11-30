@@ -1,5 +1,10 @@
 // @ChatOAuthApps = new Mongo.Collection 'rocketchat_oauth_apps'
-/*globals ChatOAuthApps */
+/* globals ChatOAuthApps */
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Template } from 'meteor/templating';
+
 FlowRouter.route('/oauth/authorize', {
 	action(params, queryParams) {
 		BlazeLayout.render('main', {
@@ -8,9 +13,9 @@ FlowRouter.route('/oauth/authorize', {
 			client_id: queryParams.client_id,
 			redirect_uri: queryParams.redirect_uri,
 			response_type: queryParams.response_type,
-			state: queryParams.state
+			state: queryParams.state,
 		});
-	}
+	},
 });
 
 FlowRouter.route('/oauth/error/:error', {
@@ -18,9 +23,9 @@ FlowRouter.route('/oauth/error/:error', {
 		BlazeLayout.render('main', {
 			center: 'oauth404',
 			modal: true,
-			error: params.error
+			error: params.error,
 		});
-	}
+	},
 });
 
 Template.authorize.onCreated(function() {
@@ -34,7 +39,7 @@ Template.authorize.helpers({
 	},
 	getClient() {
 		return ChatOAuthApps.findOne();
-	}
+	},
 });
 
 Template.authorize.events({
@@ -43,11 +48,11 @@ Template.authorize.events({
 	},
 	'click #cancel-oauth'() {
 		return window.close();
-	}
+	},
 });
 
 Template.authorize.onRendered(function() {
-	this.autorun(c => {
+	this.autorun((c) => {
 		const user = Meteor.user();
 		if (user && user.oauth && user.oauth.authorizedClients && user.oauth.authorizedClients.includes(this.data.client_id())) {
 			c.stop();

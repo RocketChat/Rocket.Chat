@@ -1,3 +1,4 @@
+import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
 
 RocketChat.Message = {
@@ -27,5 +28,5 @@ RocketChat.Message = {
 		}
 		msg.html = msg.html.replace(/\n/gm, '<br/>');
 		return msg.html;
-	}
+	},
 };

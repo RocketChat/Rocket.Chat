@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
 
 RocketChat.roomTypes = new class roomTypesServer extends RoomTypesCommon {
@@ -31,6 +32,9 @@ RocketChat.roomTypes = new class roomTypesServer extends RoomTypesCommon {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].roomFind;
 	}
 
+	getRoomName(roomType, roomData) {
+		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
+	}
 
 	/**
 	 * Run the publish for a room type

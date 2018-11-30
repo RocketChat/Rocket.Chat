@@ -1,14 +1,17 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChatFile } from 'meteor/rocketchat:file';
 import _ from 'underscore';
 
 Meteor.startup(function() {
-	Meteor.defer(function() {
+	Meteor.defer(() => {
 		if (!RocketChat.models.Rooms.findOneById('GENERAL')) {
 			RocketChat.models.Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-				'default': true
+				default: true,
 			});
 		}
 
-		if (!RocketChat.models.Users.db.findOneById('rocket.cat')) {
+		if (!RocketChat.models.Users.findOneById('rocket.cat')) {
 			RocketChat.models.Users.create({
 				_id: 'rocket.cat',
 				name: 'Rocket.Cat',
@@ -17,7 +20,7 @@ Meteor.startup(function() {
 				statusDefault: 'online',
 				utcOffset: 0,
 				active: true,
-				type: 'bot'
+				type: 'bot',
 			});
 
 			RocketChat.authz.addUserRoles('rocket.cat', 'bot');
@@ -28,13 +31,11 @@ Meteor.startup(function() {
 
 			const file = {
 				userId: 'rocket.cat',
-				type: 'image/png'
+				type: 'image/png',
 			};
 
 			Meteor.runAsUser('rocket.cat', () => {
-				fileStore.insert(file, rs, () => {
-					return RocketChat.models.Users.setAvatarOrigin('rocket.cat', 'local');
-				});
+				fileStore.insert(file, rs, () => RocketChat.models.Users.setAvatarOrigin('rocket.cat', 'local'));
 			});
 		}
 
@@ -47,7 +48,7 @@ Meteor.startup(function() {
 					status: 'offline',
 					statusDefault: 'online',
 					utcOffset: 0,
-					active: true
+					active: true,
 				};
 
 				if (process.env.ADMIN_NAME) {
@@ -63,7 +64,7 @@ Meteor.startup(function() {
 						if (!RocketChat.models.Users.findOneByEmailAddress(process.env.ADMIN_EMAIL)) {
 							adminUser.emails = [{
 								address: process.env.ADMIN_EMAIL,
-								verified: true
+								verified: true,
 							}];
 
 							console.log((`Email: ${ process.env.ADMIN_EMAIL }`).green);
@@ -128,22 +129,18 @@ Meteor.startup(function() {
 		}
 
 		if (_.isEmpty(RocketChat.authz.getUsersInRole('admin').fetch())) {
-			const oldestUser = RocketChat.models.Users.findOne({
-				_id: {
-					$ne: 'rocket.cat'
-				}
-			}, {
-				fields: {
-					username: 1
-				},
-				sort: {
-					createdAt: 1
-				}
-			});
+			const oldestUser = RocketChat.models.Users.getOldest({ _id: 1, username: 1, name: 1 });
 
 			if (oldestUser) {
 				RocketChat.authz.addUserRoles(oldestUser._id, 'admin');
-				console.log(`No admins are found. Set ${ oldestUser.username } as admin for being the oldest user`);
+				console.log(`No admins are found. Set ${ oldestUser.username || oldestUser.name } as admin for being the oldest user`);
+			}
+		}
+
+		if (!_.isEmpty(RocketChat.authz.getUsersInRole('admin').fetch())) {
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 			}
 		}
 
@@ -159,14 +156,14 @@ Meteor.startup(function() {
 				emails: [
 					{
 						address: 'rocketchat.internal.admin.test@rocket.chat',
-						verified: true
-					}
+						verified: true,
+					},
 				],
 				status: 'offline',
 				statusDefault: 'online',
 				utcOffset: 0,
 				active: true,
-				type: 'user'
+				type: 'user',
 			};
 
 			console.log((`Name: ${ adminUser.name }`).green);
@@ -174,7 +171,7 @@ Meteor.startup(function() {
 			console.log((`Username: ${ adminUser.username }`).green);
 			console.log((`Password: ${ adminUser._id }`).green);
 
-			if (RocketChat.models.Users.db.findOneByEmailAddress(adminUser.emails[0].address)) {
+			if (RocketChat.models.Users.findOneByEmailAddress(adminUser.emails[0].address)) {
 				throw new Meteor.Error(`Email ${ adminUser.emails[0].address } already exists`, 'Rocket.Chat can\'t run in test mode');
 			}
 
@@ -187,6 +184,10 @@ Meteor.startup(function() {
 			Accounts.setPassword(adminUser._id, adminUser._id);
 
 			RocketChat.authz.addUserRoles(adminUser._id, 'admin');
+
+			if (RocketChat.settings.get('Show_Setup_Wizard') === 'pending') {
+				RocketChat.models.Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			}
 
 			return RocketChat.addUserToDefaultChannels(adminUser, true);
 		}

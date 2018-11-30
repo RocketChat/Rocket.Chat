@@ -5,7 +5,7 @@
 // See: https://github.com/meteor/meteor/blob/a362e20a37547362b581fed52f7171d022e83b62/packages/promise/server.js
 // Opened issue: https://github.com/js-accounts/graphql/issues/16
 export const authenticated = (Accounts, func) => (async(root, args, context, info) => {
-	const authToken = context.authToken;
+	const { authToken } = context;
 
 	if (!authToken || authToken === '' || authToken === null) {
 		throw new Error('Unable to find authorization token in request');

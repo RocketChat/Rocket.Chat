@@ -1,65 +1,67 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Rooms.setDescriptionById = function(_id, description) {
 	const query = {
-		_id
+		_id,
 	};
 	const update = {
 		$set: {
-			description
-		}
+			description,
+		},
 	};
 	return this.update(query, update);
 };
 
 RocketChat.models.Rooms.setReadOnlyById = function(_id, readOnly) {
 	const query = {
-		_id
+		_id,
 	};
 	const update = {
 		$set: {
-			ro: readOnly
-		}
+			ro: readOnly,
+			muted: [],
+		},
 	};
 	if (readOnly) {
-		RocketChat.models.Subscriptions.findByRoomId(_id).forEach(function(subscription) {
-			if (subscription._user == null) {
+		RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(_id, { fields: { 'u._id': 1, 'u.username': 1 } }).forEach(function({ u: user }) {
+			if (RocketChat.authz.hasPermission(user._id, 'post-readonly')) {
 				return;
 			}
-			const user = subscription._user;
-			if (RocketChat.authz.hasPermission(user._id, 'post-readonly') === false) {
-				if (!update.$set.muted) {
-					update.$set.muted = [];
-				}
-				return update.$set.muted.push(user.username);
-			}
+			return update.$set.muted.push(user.username);
 		});
 	} else {
 		update.$unset = {
-			muted: ''
+			muted: '',
 		};
 	}
+
+	if (update.$set.muted.length === 0) {
+		delete update.$set.muted;
+	}
+
 	return this.update(query, update);
 };
 
 RocketChat.models.Rooms.setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
 	const query = {
-		_id
+		_id,
 	};
 	const update = {
 		$set: {
-			reactWhenReadOnly: allowReacting
-		}
+			reactWhenReadOnly: allowReacting,
+		},
 	};
 	return this.update(query, update);
 };
 
 RocketChat.models.Rooms.setSystemMessagesById = function(_id, systemMessages) {
 	const query = {
-		_id
+		_id,
 	};
 	const update = {
 		$set: {
-			sysMes: systemMessages
-		}
+			sysMes: systemMessages,
+		},
 	};
 	return this.update(query, update);
 };

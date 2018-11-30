@@ -1,8 +1,17 @@
 /* globals FileUpload */
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.deleteMessage = function(message, user) {
 	const keepHistory = RocketChat.settings.get('Message_KeepHistory');
 	const showDeletedStatus = RocketChat.settings.get('Message_ShowDeletedStatus');
-	let deletedMsg;
+	const deletedMsg = RocketChat.models.Messages.findOneById(message._id);
+
+	if (deletedMsg && Apps && Apps.isLoaded()) {
+		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
+		}
+	}
 
 	if (keepHistory) {
 		if (showDeletedStatus) {
@@ -16,7 +25,6 @@ RocketChat.deleteMessage = function(message, user) {
 		}
 	} else {
 		if (!showDeletedStatus) {
-			deletedMsg = RocketChat.models.Messages.findOneById(message._id);
 			RocketChat.models.Messages.removeById(message._id);
 		}
 
@@ -26,15 +34,14 @@ RocketChat.deleteMessage = function(message, user) {
 	}
 
 	Meteor.defer(function() {
-		RocketChat.callbacks.run('afterDeleteMessage', deletedMsg || { _id: message._id });
+		RocketChat.callbacks.run('afterDeleteMessage', deletedMsg);
 	});
 
 	// update last message
 	if (RocketChat.settings.get('Store_Last_Message')) {
 		const room = RocketChat.models.Rooms.findOneById(message.rid, { fields: { lastMessage: 1 } });
 		if (!room.lastMessage || room.lastMessage._id === message._id) {
-			const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid, message._id);
-			RocketChat.models.Rooms.setLastMessageById(message.rid, lastMessage);
+			RocketChat.models.Rooms.resetLastMessageById(message.rid, message._id);
 		}
 	}
 
@@ -42,5 +49,9 @@ RocketChat.deleteMessage = function(message, user) {
 		RocketChat.models.Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {
 		RocketChat.Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
+	}
+
+	if (Apps && Apps.isLoaded()) {
+		Apps.getBridges().getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg);
 	}
 };

@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;
@@ -17,12 +21,12 @@ RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 		if (Array.isArray(result)) {
 			result = {
 				update: result,
-				remove: []
+				remove: [],
 			};
 		}
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
@@ -33,18 +37,12 @@ RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The \'roomId\' param is required');
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, {
-			fields: {
-				_room: 0,
-				_user: 0,
-				$loki: 0
-			}
-		});
+		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
 
 		return RocketChat.API.v1.success({
-			subscription
+			subscription,
 		});
-	}
+	},
 });
 
 /**
@@ -58,7 +56,7 @@ RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
 RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
-			rid: String
+			rid: String,
 		});
 
 		Meteor.runAsUser(this.userId, () =>
@@ -66,6 +64,22 @@ RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 		);
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
+
+RocketChat.API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
+	post() {
+		const { roomId, firstUnreadMessage } = this.bodyParams;
+		if (!roomId && (firstUnreadMessage && !firstUnreadMessage._id)) {
+			return RocketChat.API.v1.failure('At least one of "roomId" or "firstUnreadMessage._id" params is required');
+		}
+
+		Meteor.runAsUser(this.userId, () =>
+			Meteor.call('unreadMessages', firstUnreadMessage, roomId)
+		);
+
+		return RocketChat.API.v1.success();
+	},
+});
+
 

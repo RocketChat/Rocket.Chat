@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+
 Template.oembedSandstormGrain.helpers({
 	token() {
 		return this.meta.sandstorm.grain.token;
@@ -13,7 +16,7 @@ Template.oembedSandstormGrain.helpers({
 	},
 	descriptor() {
 		return this.meta.sandstorm.grain.descriptor;
-	}
+	},
 });
 
 window.sandstormOembed = function(e) {

@@ -1,5 +1,8 @@
 // Do not disclose if user exists when password is invalid
-const _runLoginHandlers = Accounts._runLoginHandlers;
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+
+const { _runLoginHandlers } = Accounts;
 Accounts._runLoginHandlers = function(methodInvocation, options) {
 	const result = _runLoginHandlers.call(Accounts, methodInvocation, options);
 

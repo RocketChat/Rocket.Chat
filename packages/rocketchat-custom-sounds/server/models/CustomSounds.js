@@ -1,19 +1,21 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 class CustomSounds extends RocketChat.models._Base {
 	constructor() {
 		super('custom_sounds');
 
-		this.tryEnsureIndex({ 'name': 1 });
+		this.tryEnsureIndex({ name: 1 });
 	}
 
-	//find one
+	// find one
 	findOneByID(_id, options) {
 		return this.findOne(_id, options);
 	}
 
-	//find
+	// find
 	findByName(name, options) {
 		const query = {
-			name
+			name,
 		};
 
 		return this.find(query, options);
@@ -21,22 +23,22 @@ class CustomSounds extends RocketChat.models._Base {
 
 	findByNameExceptID(name, except, options) {
 		const query = {
-			_id: { $nin: [ except ] },
-			name
+			_id: { $nin: [except] },
+			name,
 		};
 
 		return this.find(query, options);
 	}
 
-	//update
+	// update
 	setName(_id, name) {
 		const update = {
 			$set: {
-				name
-			}
+				name,
+			},
 		};
 
-		return this.update({_id}, update);
+		return this.update({ _id }, update);
 	}
 
 	// INSERT

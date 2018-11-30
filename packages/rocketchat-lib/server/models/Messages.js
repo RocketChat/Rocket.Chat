@@ -1,37 +1,79 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	constructor() {
 		super('message');
 
-		this.tryEnsureIndex({ 'rid': 1, 'ts': 1 });
-		this.tryEnsureIndex({ 'ts': 1 });
+		this.tryEnsureIndex({ rid: 1, ts: 1 });
+		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ 'editedAt': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ editedAt: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'rid': 1, 't': 1, 'u._id': 1 });
-		this.tryEnsureIndex({ 'expireAt': 1 }, { expireAfterSeconds: 0 });
-		this.tryEnsureIndex({ 'msg': 'text' });
+		this.tryEnsureIndex({ rid: 1, t: 1, 'u._id': 1 });
+		this.tryEnsureIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
+		this.tryEnsureIndex({ msg: 'text' });
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'pinned': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'snippeted': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'location': '2dsphere' });
-		this.tryEnsureIndex({ 'slackBotId': 1, 'slackTs': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ pinned: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ location: '2dsphere' });
+		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+	}
+
+	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				$gte: afterTimestamp,
+				$lte: beforeTimestamp,
+			},
+		};
+
+		return this.find(query, options).count();
 	}
 
 	// FIND
 	findByMention(username, options) {
-		const query =	{'mentions.username': username};
+		const query =	{ 'mentions.username': username };
 
 		return this.find(query, options);
 	}
 
+	findFilesByUserId(userId, options = {}) {
+		const query = {
+			'u._id': userId,
+			'file._id': { $exists: true },
+		};
+		return this.find(query, { fields: { 'file._id': 1 }, ...options });
+	}
+
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
+		const query = {
+			rid,
+			ts,
+			'file._id': { $exists: true },
+		};
+
+		if (excludePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
+
+		return this.find(query, { fields: { 'file._id': 1 }, ...options });
+	}
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
 			_hidden: { $ne: true },
 			'mentions.username': username,
-			rid
+			rid,
 		};
 
 		return this.find(query, options);
@@ -40,10 +82,10 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomId(roomId, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 
-			rid: roomId
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -52,15 +94,15 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomIdNotContainingTypes(roomId, types, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 
-			rid: roomId
+			rid: roomId,
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =
-			{$nin: types};
+			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -69,7 +111,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findInvisibleByRoomId(roomId, options) {
 		const query = {
 			_hidden: true,
-			rid: roomId
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -78,12 +120,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomIdAfterTimestamp(roomId, timestamp, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$gt: timestamp
-			}
+				$gt: timestamp,
+			},
 		};
 
 		return this.find(query, options);
@@ -92,12 +134,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findForUpdates(roomId, timestamp, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 			rid: roomId,
 			_updatedAt: {
-				$gt: timestamp
-			}
+				$gt: timestamp,
+			},
 		};
 		return this.find(query, options);
 	}
@@ -105,12 +147,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomIdBeforeTimestamp(roomId, timestamp, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$lt: timestamp
-			}
+				$lt: timestamp,
+			},
 		};
 
 		return this.find(query, options);
@@ -119,12 +161,12 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomIdBeforeTimestampInclusive(roomId, timestamp, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$lte: timestamp
-			}
+				$lte: timestamp,
+			},
 		};
 
 		return this.find(query, options);
@@ -133,13 +175,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomIdBetweenTimestamps(roomId, afterTimestamp, beforeTimestamp, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 			rid: roomId,
 			ts: {
 				$gt: afterTimestamp,
-				$lt: beforeTimestamp
-			}
+				$lt: beforeTimestamp,
+			},
 		};
 
 		return this.find(query, options);
@@ -148,13 +190,13 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 			rid: roomId,
 			ts: {
 				$gte: afterTimestamp,
-				$lte: beforeTimestamp
-			}
+				$lte: beforeTimestamp,
+			},
 		};
 
 		return this.find(query, options);
@@ -163,17 +205,17 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$lt: timestamp
-			}
+				$lt: timestamp,
+			},
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =
-			{$nin: types};
+			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -182,18 +224,18 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options) {
 		const query = {
 			_hidden: {
-				$ne: true
+				$ne: true,
 			},
 			rid: roomId,
 			ts: {
 				$gt: afterTimestamp,
-				$lt: beforeTimestamp
-			}
+				$lt: beforeTimestamp,
+			},
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =
-			{$nin: types};
+			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -204,15 +246,15 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			_hidden: { $ne: true },
 			$or: [{
 				ts: {
-					$gt: timestamp
-				}
+					$gt: timestamp,
+				},
 			},
 			{
-				'editedAt': {
-					$gt: timestamp
-				}
-			}
-			]
+				editedAt: {
+					$gt: timestamp,
+				},
+			},
+			],
 		};
 
 		return this.find(query, options);
@@ -222,7 +264,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		const query = {
 			_hidden: { $ne: true },
 			'starred._id': userId,
-			rid: roomId
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -233,7 +275,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			t: { $ne: 'rm' },
 			_hidden: { $ne: true },
 			pinned: true,
-			rid: roomId
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -243,7 +285,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		const query = {
 			_hidden: { $ne: true },
 			snippeted: true,
-			rid: roomId
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -262,8 +304,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		const query = {
 			rid,
 			_id: {
-				$in: messageIds
-			}
+				$in: messageIds,
+			},
 		};
 
 		return this.find(query, options);
@@ -272,21 +314,32 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	findOneBySlackBotIdAndSlackTs(slackBotId, slackTs) {
 		const query = {
 			slackBotId,
-			slackTs
+			slackTs,
 		};
 
 		return this.findOne(query);
 	}
 
 	findOneBySlackTs(slackTs) {
-		const query = {slackTs};
+		const query = { slackTs };
 
 		return this.findOne(query);
 	}
 
+	findByRoomIdAndType(roomId, type, options) {
+		const query = {
+			rid: roomId,
+			t: type,
+		};
+
+		if (options == null) { options = {}; }
+
+		return this.find(query, options);
+	}
+
 	findByRoomId(roomId, options) {
 		const query = {
-			rid: roomId
+			rid: roomId,
 		};
 
 		return this.find(query, options);
@@ -296,7 +349,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			t: { $exists: false }
+			t: { $exists: false },
 		};
 
 		if (messageId) {
@@ -305,8 +358,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 		const options = {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		};
 
 		return this.findOne(query, options);
@@ -320,7 +373,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		record.editedAt = new Date;
 		record.editedBy = {
 			_id: Meteor.userId(),
-			username: me.username
+			username: me.username,
 		};
 		delete record._id;
 		return this.insert(record);
@@ -329,19 +382,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	// UPDATE
 	setHiddenById(_id, hidden) {
 		if (hidden == null) { hidden = true; }
-		const query =	{_id};
+		const query =	{ _id };
 
 		const update = {
 			$set: {
-				_hidden: hidden
-			}
+				_hidden: hidden,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	setAsDeletedByIdAndUser(_id, user) {
-		const query =	{_id};
+		const query =	{ _id };
 
 		const update = {
 			$set: {
@@ -354,9 +407,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 				editedAt: new Date(),
 				editedBy: {
 					_id: user._id,
-					username: user.username
-				}
-			}
+					username: user.username,
+				},
+			},
 		};
 
 		return this.update(query, update);
@@ -365,14 +418,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
 		if (pinned == null) { pinned = true; }
 		if (pinnedAt == null) { pinnedAt = 0; }
-		const query =	{_id};
+		const query =	{ _id };
 
 		const update = {
 			$set: {
 				pinned,
 				pinnedAt: pinnedAt || new Date,
-				pinnedBy
-			}
+				pinnedBy,
+			},
 		};
 
 		return this.update(query, update);
@@ -381,7 +434,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
 		if (snippeted == null) { snippeted = true; }
 		if (snippetedAt == null) { snippetedAt = 0; }
-		const query =	{_id: message._id};
+		const query =	{ _id: message._id };
 
 		const msg = `\`\`\`${ message.msg }\`\`\``;
 
@@ -391,44 +444,44 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 				snippeted,
 				snippetedAt: snippetedAt || new Date,
 				snippetedBy,
-				snippetName
-			}
+				snippetName,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	setUrlsById(_id, urls) {
-		const query =	{_id};
+		const query =	{ _id };
 
 		const update = {
 			$set: {
-				urls
-			}
+				urls,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	updateAllUsernamesByUserId(userId, username) {
-		const query =	{'u._id': userId};
+		const query =	{ 'u._id': userId };
 
 		const update = {
 			$set: {
-				'u.username': username
-			}
+				'u.username': username,
+			},
 		};
 
 		return this.update(query, update, { multi: true });
 	}
 
 	updateUsernameOfEditByUserId(userId, username) {
-		const query =	{'editedBy._id': userId};
+		const query =	{ 'editedBy._id': userId };
 
 		const update = {
 			$set: {
-				'editedBy.username': username
-			}
+				'editedBy.username': username,
+			},
 		};
 
 		return this.update(query, update, { multi: true });
@@ -437,14 +490,14 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	updateUsernameAndMessageOfMentionByIdAndOldUsername(_id, oldUsername, newUsername, newMessage) {
 		const query = {
 			_id,
-			'mentions.username': oldUsername
+			'mentions.username': oldUsername,
 		};
 
 		const update = {
 			$set: {
 				'mentions.$.username': newUsername,
-				'msg': newMessage
-			}
+				msg: newMessage,
+			},
 		};
 
 		return this.update(query, update);
@@ -452,19 +505,19 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	updateUserStarById(_id, userId, starred) {
 		let update;
-		const query =	{_id};
+		const query =	{ _id };
 
 		if (starred) {
 			update = {
 				$addToSet: {
-					starred: { _id: userId }
-				}
+					starred: { _id: userId },
+				},
 			};
 		} else {
 			update = {
 				$pull: {
-					starred: { _id: Meteor.userId() }
-				}
+					starred: { _id: Meteor.userId() },
+				},
 			};
 		}
 
@@ -472,37 +525,37 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	}
 
 	upgradeEtsToEditAt() {
-		const query =	{ets: { $exists: 1 }};
+		const query =	{ ets: { $exists: 1 } };
 
 		const update = {
 			$rename: {
-				'ets': 'editedAt'
-			}
+				ets: 'editedAt',
+			},
 		};
 
 		return this.update(query, update, { multi: true });
 	}
 
 	setMessageAttachments(_id, attachments) {
-		const query =	{_id};
+		const query =	{ _id };
 
 		const update = {
 			$set: {
-				attachments
-			}
+				attachments,
+			},
 		};
 
 		return this.update(query, update);
 	}
 
 	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
-		const query =	{_id};
+		const query =	{ _id };
 
 		const update = {
 			$set: {
 				slackBotId,
-				slackTs
-			}
+				slackTs,
+			},
 		};
 
 		return this.update(query, update);
@@ -510,16 +563,16 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	unlinkUserId(userId, newUserId, newUsername, newNameAlias) {
 		const query = {
-			'u._id': userId
+			'u._id': userId,
 		};
 
 		const update = {
 			$set: {
-				'alias': newNameAlias,
+				alias: newNameAlias,
 				'u._id': newUserId,
 				'u.username' : newUsername,
-				'u.name' : undefined
-			}
+				'u.name' : undefined,
+			},
 		};
 
 		return this.update(query, update, { multi: true });
@@ -527,7 +580,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 }});
+		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
 		if ((room != null ? room.sysMes : undefined) === false) {
 			return;
 		}
@@ -538,9 +591,9 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			msg: message,
 			u: {
 				_id: user._id,
-				username: user.username
+				username: user.username,
 			},
-			groupable: false
+			groupable: false,
 		};
 
 		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
@@ -551,6 +604,34 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 		record._id = this.insertOrUpsert(record);
 		RocketChat.models.Rooms.incMsgCountById(room._id, 1);
+		return record;
+	}
+
+	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+		const type = 'livechat_navigation_history';
+		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
+		if ((room != null ? room.sysMes : undefined) === false) {
+			return;
+		}
+		const record = {
+			t: type,
+			rid: roomId,
+			ts: new Date,
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username,
+			},
+			groupable: false,
+		};
+
+		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+
+		_.extend(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
 		return record;
 	}
 
@@ -630,21 +711,79 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	// REMOVE
 	removeById(_id) {
-		const query =	{_id};
+		const query =	{ _id };
 
 		return this.remove(query);
 	}
 
 	removeByRoomId(roomId) {
-		const query =	{rid: roomId};
+		const query =	{ rid: roomId };
 
 		return this.remove(query);
 	}
 
-	removeByUserId(userId) {
-		const query =	{'u._id': userId};
+	removeByIdPinnedTimestampAndUsers(rid, pinned, ts, users = []) {
+		const query = {
+			rid,
+			ts,
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
 
 		return this.remove(query);
+	}
+
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ts, limit, users = []) {
+		const query = {
+			rid,
+			ts,
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
+
+		const messagesToDelete = RocketChat.models.Messages.find(query, {
+			fields: {
+				_id: 1,
+			},
+			limit,
+		}).map(({ _id }) => _id);
+
+		return this.remove({
+			_id: {
+				$in: messagesToDelete,
+			},
+		});
+	}
+
+	removeByUserId(userId) {
+		const query =	{ 'u._id': userId };
+
+		return this.remove(query);
+	}
+
+	removeFilesByRoomId(roomId) {
+		this.find({
+			rid: roomId,
+			'file._id': {
+				$exists: true,
+			},
+		}, {
+			fields: {
+				'file._id': 1,
+			},
+		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {
@@ -655,30 +794,30 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		return this.update({
 			rid,
 			unread: true,
-			ts: { $lt: until }
+			ts: { $lt: until },
 		}, {
 			$unset: {
-				unread: 1
-			}
+				unread: 1,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 	}
 
 	setAsReadById(_id) {
 		return this.update({
-			_id
+			_id,
 		}, {
 			$unset: {
-				unread: 1
-			}
+				unread: 1,
+			},
 		});
 	}
 
 	findUnreadMessagesByRoomAndDate(rid, after) {
 		const query = {
 			unread: true,
-			rid
+			rid,
 		};
 
 		if (after) {
@@ -687,8 +826,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 		return this.find(query, {
 			fields: {
-				_id: 1
-			}
+				_id: 1,
+			},
 		});
 	}
 };

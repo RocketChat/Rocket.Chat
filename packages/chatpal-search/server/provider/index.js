@@ -1,5 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /**
  * Enables HTTP functions on Chatpal Backend
@@ -18,8 +21,8 @@ class Backend {
 	index(docs) {
 		const options = {
 			data:docs,
-			params:{language:this._options.language},
-			...this._options.httpOptions
+			params:{ language:this._options.language },
+			...this._options.httpOptions,
 		};
 
 		try {
@@ -33,7 +36,7 @@ class Backend {
 			}
 
 		} catch (e) {
-			//TODO how to deal with this
+			// TODO how to deal with this
 			ChatpalLogger.error('indexing failed', JSON.stringify(e, null, 2));
 			return false;
 		}
@@ -52,11 +55,11 @@ class Backend {
 		const options = {
 			data:{
 				delete: {
-					query: `id:${ id } AND type:${ type }`
+					query: `id:${ id } AND type:${ type }`,
 				},
-				commit:{}
+				commit:{},
 			},
-			...this._options.httpOptions
+			...this._options.httpOptions,
 		};
 
 		try {
@@ -69,7 +72,7 @@ class Backend {
 	}
 
 	count(type) {
-		return this.query({type, rows:0, text:'*'})[type].numFound;
+		return this.query({ type, rows:0, text:'*' })[type].numFound;
 	}
 
 	/**
@@ -81,7 +84,7 @@ class Backend {
 
 		const options = {
 			params,
-			...this._options.httpOptions
+			...this._options.httpOptions,
 		};
 
 		ChatpalLogger.debug('query: ', JSON.stringify(options, null, 2));
@@ -113,7 +116,7 @@ class Backend {
 
 		const options = {
 			params,
-			...this._options.httpOptions
+			...this._options.httpOptions,
 		};
 
 		HTTP.call('POST', this._options.baseurl + this._options.suggestionpath, options, (err, result) => {
@@ -133,10 +136,10 @@ class Backend {
 		const options = {
 			data:{
 				delete: {
-					query: '*:*'
+					query: '*:*',
 				},
-				commit:{}
-			}, ...this._options.httpOptions
+				commit:{},
+			}, ...this._options.httpOptions,
 		};
 
 		try {
@@ -157,9 +160,9 @@ class Backend {
 
 		const options = {
 			params: {
-				stats:true
+				stats:true,
 			},
-			...config.httpOptions
+			...config.httpOptions,
 		};
 
 		try {
@@ -197,7 +200,7 @@ class BatchIndexer {
 	}
 
 	flush() {
-		this._func(this._values, this._rest);//TODO if flush does not work
+		this._func(this._values, this._rest);// TODO if flush does not work
 		this._values = [];
 	}
 }
@@ -242,7 +245,7 @@ export default class Index {
 					created: doc.ts,
 					updated: doc._updatedAt,
 					text: doc.msg,
-					type
+					type,
 				};
 			case 'room':
 				return {
@@ -254,7 +257,7 @@ export default class Index {
 					room_name: doc.name,
 					room_announcement: doc.announcement,
 					room_description: doc.description,
-					room_topic: doc.topic
+					room_topic: doc.topic,
 				};
 			case 'user':
 				return {
@@ -264,7 +267,7 @@ export default class Index {
 					type,
 					user_username: doc.username,
 					user_name: doc.name,
-					user_email: doc.emails && doc.emails.map((e) => { return e.address; })
+					user_email: doc.emails && doc.emails.map((e) => e.address),
 				};
 			default: throw new Error(`Cannot index type '${ type }'`);
 		}
@@ -277,22 +280,22 @@ export default class Index {
 	 * @private
 	 */
 	_existsDataOlderThan(date) {
-		return RocketChat.models.Messages.model.find({ts:{$lt: new Date(date)}, t:{$exists:false}}, {limit:1}).fetch().length > 0;
+		return RocketChat.models.Messages.model.find({ ts:{ $lt: new Date(date) }, t:{ $exists:false } }, { limit:1 }).fetch().length > 0;
 	}
 
 	_doesRoomCountDiffer() {
-		return RocketChat.models.Rooms.find({t:{$ne:'d'}}).count() !== this._backend.count('room');
+		return RocketChat.models.Rooms.find({ t:{ $ne:'d' } }).count() !== this._backend.count('room');
 	}
 
 	_doesUserCountDiffer() {
-		return Meteor.users.find({active:true}).count() !== this._backend.count('user');
+		return Meteor.users.find({ active:true }).count() !== this._backend.count('user');
 	}
 
 	/**
 	 * Index users by using a database cursor
 	 */
 	_indexUsers() {
-		const cursor = Meteor.users.find({active:true});
+		const cursor = Meteor.users.find({ active:true });
 
 		ChatpalLogger.debug(`Start indexing ${ cursor.count() } users`);
 
@@ -308,7 +311,7 @@ export default class Index {
 	 * @private
 	 */
 	_indexRooms() {
-		const cursor = RocketChat.models.Rooms.find({t:{$ne:'d'}});
+		const cursor = RocketChat.models.Rooms.find({ t:{ $ne:'d' } });
 
 		ChatpalLogger.debug(`Start indexing ${ cursor.count() } rooms`);
 
@@ -324,7 +327,7 @@ export default class Index {
 		const start = new Date(date - gap);
 		const end = new Date(date);
 
-		const cursor = RocketChat.models.Messages.model.find({ts:{$gt: start, $lt: end}, t:{$exists:false}});
+		const cursor = RocketChat.models.Messages.model.find({ ts:{ $gt: start, $lt: end }, t:{ $exists:false } });
 
 		ChatpalLogger.debug(`Start indexing ${ cursor.count() } messages between ${ start.toString() } and ${ end.toString() }`);
 
@@ -433,7 +436,7 @@ export default class Index {
 			type,
 			start,
 			rows,
-			...params
+			...params,
 		}, callback);
 	}
 
@@ -442,7 +445,7 @@ export default class Index {
 			text,
 			language,
 			acl,
-			type
+			type,
 		}, callback);
 	}
 

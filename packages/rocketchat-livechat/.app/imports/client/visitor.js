@@ -1,4 +1,9 @@
-/* globals Commands */
+/* globals Commands, Livechat, UserPresence */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Session } from 'meteor/session';
+
 const msgStream = new Meteor.Streamer('room-messages');
 
 export default {
@@ -16,6 +21,23 @@ export default {
 		}
 
 		this.token.set(localStorage.getItem('visitorToken'));
+	},
+
+	reset() {
+		msgStream.unsubscribe(this.roomSubscribed);
+
+		this.id.set(null);
+		this.token.set(null);
+		this.room.set(null);
+		this.data.set(null);
+		this.roomToSubscribe.set(null);
+		this.roomSubscribed = null;
+
+		Livechat.room = null;
+		Livechat.department = null;
+		Livechat.agent = null;
+		Livechat.guestName = null;
+		Livechat.guestEmail = null;
 	},
 
 	getId() {
@@ -36,6 +58,59 @@ export default {
 
 	getToken() {
 		return this.token.get();
+	},
+
+	setToken(token) {
+		if (!token || token === this.token.get()) {
+			return;
+		}
+
+		this.reset();
+
+		localStorage.setItem('visitorToken', token);
+		this.token.set(token);
+
+		Meteor.call('livechat:loginByToken', token, (err, result) => {
+
+			if (!result) {
+				return;
+			}
+
+			if (result._id) {
+				this.setId(result._id);
+				return result._id;
+			}
+		});
+	},
+
+	setName(name) {
+		Livechat.guestName = name;
+
+		if (!this.getId()) {
+			return;
+		}
+
+		const data = {
+			token: this.getToken(),
+			name,
+		};
+
+		Meteor.call('livechat:registerGuest', data);
+	},
+
+	setEmail(email) {
+		Livechat.guestEmail = email;
+
+		if (!this.getId()) {
+			return;
+		}
+
+		const data = {
+			token: this.getToken(),
+			email,
+		};
+
+		Meteor.call('livechat:registerGuest', data);
 	},
 
 	setRoom(rid) {
@@ -61,12 +136,15 @@ export default {
 			return;
 		}
 
+		msgStream.unsubscribe(this.roomSubscribed);
+
 		this.roomSubscribed = roomId;
 
-		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
+		const msgTypesNotDisplayed = ['livechat_video_call', 'livechat_navigation_history', 'au'];
+		msgStream.on(roomId, { visitorToken: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
-			} else if (msg.t !== 'livechat_video_call') {
+			} else if (!msgTypesNotDisplayed.includes(msg.t)) {
 				ChatMessage.upsert({ _id: msg._id }, msg);
 
 				if (msg.t === 'livechat-close') {
@@ -95,5 +173,5 @@ export default {
 			UserPresence.awayTime = 300000; // 5 minutes
 			UserPresence.start(token);
 		});
-	}
+	},
 };

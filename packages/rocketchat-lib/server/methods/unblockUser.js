@@ -1,5 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
-	unblockUser({rid, blocked}) {
+	unblockUser({ rid, blocked }) {
 
 		check(rid, String);
 		check(blocked, String);
@@ -18,5 +21,5 @@ Meteor.methods({
 		RocketChat.models.Subscriptions.unsetBlockedByRoomId(rid, blocked, Meteor.userId());
 
 		return true;
-	}
+	},
 });

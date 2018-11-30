@@ -1,4 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
+
 Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
@@ -14,7 +19,7 @@ Template.visitorForward.helpers({
 	},
 	agentName() {
 		return this.name || this.username;
-	}
+	},
 });
 
 Template.visitorForward.onCreated(function() {
@@ -39,7 +44,7 @@ Template.visitorForward.events({
 		event.preventDefault();
 
 		const transferData = {
-			roomId: instance.room.get()._id
+			roomId: instance.room.get()._id,
 		};
 
 		if (instance.find('#forwardUser').value) {
@@ -77,5 +82,5 @@ Template.visitorForward.events({
 		event.preventDefault();
 
 		this.cancel();
-	}
+	},
 });

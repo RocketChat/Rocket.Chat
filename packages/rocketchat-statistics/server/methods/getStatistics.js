@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	getStatistics(refresh) {
 		if (!Meteor.userId()) {
@@ -13,5 +15,5 @@ Meteor.methods({
 		} else {
 			return RocketChat.models.Statistics.findLast();
 		}
-	}
+	},
 });

@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+
 this.VideoRecorder = new class {
 	constructor() {
 		this.started = false;
@@ -11,7 +13,7 @@ this.VideoRecorder = new class {
 		window.URL = window.URL || window.webkitURL;
 
 		this.videoel = videoel;
-		const ok = stream => {
+		const ok = (stream) => {
 			this.startUserMedia(stream);
 			return (cb != null ? cb.call(this) : undefined);
 		};
@@ -20,7 +22,7 @@ this.VideoRecorder = new class {
 			return cb(false);
 		}
 
-		return navigator.getUserMedia({audio: true, video: true}, ok, e => console.log(`No live video input: ${ e }`));
+		return navigator.getUserMedia({ audio: true, video: true }, ok, (e) => console.log(`No live video input: ${ e }`));
 	}
 
 	record() {
@@ -31,7 +33,7 @@ this.VideoRecorder = new class {
 		this.mediaRecorder = new MediaRecorder(this.stream);
 		this.mediaRecorder.stream = this.stream;
 		this.mediaRecorder.mimeType = 'video/webm';
-		this.mediaRecorder.ondataavailable = blobev => {
+		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {
 				return this.recordingAvailable.set(true);
@@ -43,10 +45,12 @@ this.VideoRecorder = new class {
 
 	startUserMedia(stream) {
 		this.stream = stream;
-		this.videoel.src = URL.createObjectURL(stream);
-		this.videoel.onloadedmetadata = () => {
-			return this.videoel.play();
-		};
+		try {
+			this.videoel.srcObject = stream;
+		} catch (_e) {
+			this.videoel.src = URL.createObjectURL(stream);
+		}
+		this.videoel.onloadedmetadata = () => this.videoel.play();
 
 		this.started = true;
 		return this.cameraStarted.set(true);
@@ -78,7 +82,7 @@ this.VideoRecorder = new class {
 			this.recordingAvailable.set(false);
 
 			if (cb && this.chunks) {
-				const blob = new Blob(this.chunks, { 'type' :  'video/webm' });
+				const blob = new Blob(this.chunks, { type :  'video/webm' });
 				cb(blob);
 			}
 

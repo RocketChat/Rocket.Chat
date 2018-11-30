@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+
 export const RoomSettingsEnum = {
 	NAME: 'roomName',
 	TOPIC: 'roomTopic',
@@ -7,14 +10,16 @@ export const RoomSettingsEnum = {
 	REACT_WHEN_READ_ONLY: 'reactWhenReadOnly',
 	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
 	JOIN_CODE: 'joinCode',
-	BROADCAST: 'broadcast'
+	BROADCAST: 'broadcast',
+	SYSTEM_MESSAGES: 'systemMessages',
+	E2E: 'encrypted',
 };
 
 export const UiTextContext = {
 	CLOSE_WARNING: 'closeWarning',
 	HIDE_WARNING: 'hideWarning',
 	LEAVE_WARNING: 'leaveWarning',
-	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed'
+	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed',
 };
 
 export class RoomTypeRouteConfig {
@@ -47,7 +52,7 @@ export class RoomTypeConfig {
 		icon,
 		header,
 		label,
-		route
+		route,
 	}) {
 		if (typeof identifier !== 'string' || identifier.length === 0) {
 			throw new Error('The identifier must be a string.');
@@ -149,16 +154,26 @@ export class RoomTypeConfig {
 		return true;
 	}
 
+	/**
+	 * Return a room's name
+	 *
+	 * @abstract
+	 * @return {string} Room's name according to it's type
+	 */
+	roomName(/* room */) {
+		return '';
+	}
+
 	canBeCreated() {
 		return Meteor.isServer ?
-			RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), [`create-${ this._identifier }`]) :
-			RocketChat.authz.hasAtLeastOnePermission([`create-${ this._identifier }`]);
+			RocketChat.authz.hasPermission(Meteor.userId(), `create-${ this._identifier }`) :
+			RocketChat.authz.hasPermission([`create-${ this._identifier }`]);
 	}
 
 	canBeDeleted(room) {
 		return Meteor.isServer ?
-			RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), [`delete-${ room.t }`], room._id) :
-			RocketChat.authz.hasAtLeastOnePermission([`delete-${ room.t }`], room._id);
+			RocketChat.authz.hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id) :
+			RocketChat.authz.hasPermission(`delete-${ room.t }`, room._id);
 	}
 
 	supportMembersList(/* room */) {
@@ -202,4 +217,43 @@ export class RoomTypeConfig {
 	getUiText(/* context */) {
 		return '';
 	}
+
+	/**
+	 * Returns the full object of message sender
+	 * @param {string} senderId Sender's _id
+	 * @return {object} Sender's object from db
+	 */
+	getMsgSender(senderId) {
+		return Meteor.isServer ? RocketChat.models.Users.findOneById(senderId) : {};
+	}
+
+	/**
+	 * Returns details to use on notifications
+	 *
+	 * @param {object} room
+	 * @param {object} user
+	 * @param {string} notificationMessage
+	 * @return {object} Notification details
+	 */
+	getNotificationDetails(room, user, notificationMessage) {
+		if (!Meteor.isServer) {
+			return {};
+		}
+
+		const title = `#${ this.roomName(room) }`;
+
+		const text = `${ RocketChat.settings.get('UI_Use_Real_Name') ? user.name : user.username }: ${ notificationMessage }`;
+
+		return { title, text };
+	}
+
+	/**
+	 * Check if there is an user with the same id and loginToken
+	 * @param {object} allowData
+	 * @return {object} User's object from db
+	 */
+	canAccessUploadedFile(/* accessData */) {
+		return false;
+	}
+
 }

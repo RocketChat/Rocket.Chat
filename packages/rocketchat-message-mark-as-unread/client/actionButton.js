@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+
 Meteor.startup(() => {
 	RocketChat.MessageAction.addButton({
 		id: 'mark-message-as-unread',
@@ -11,7 +14,7 @@ Meteor.startup(() => {
 					return handleError(error);
 				}
 				const subscription = ChatSubscription.findOne({
-					rid: message.rid
+					rid: message.rid,
 				});
 				if (subscription == null) {
 					return;
@@ -24,6 +27,6 @@ Meteor.startup(() => {
 			return message.u._id !== Meteor.user()._id;
 		},
 		order: 22,
-		group: 'menu'
+		group: 'menu',
 	});
 });

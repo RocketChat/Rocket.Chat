@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	loadLocale(locale) {
 		check(locale, String);
@@ -11,5 +14,5 @@ Meteor.methods({
 				return console.log(error);
 			}
 		}
-	}
+	},
 });

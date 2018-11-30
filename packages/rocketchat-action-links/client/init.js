@@ -1,4 +1,8 @@
-/* globals fireGlobalEvent */
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { fireGlobalEvent } from 'meteor/rocketchat:ui';
+
 Template.room.events({
 	'click .action-link'(event, instance) {
 		event.preventDefault();
@@ -10,7 +14,7 @@ Template.room.events({
 			return fireGlobalEvent('click-action-link', {
 				actionlink: $(event.currentTarget).data('actionlink'),
 				value: data._arguments[1]._id,
-				message: data._arguments[1]
+				message: data._arguments[1],
 			});
 		}
 
@@ -21,5 +25,5 @@ Template.room.events({
 				}
 			});
 		}
-	}
+	},
 });

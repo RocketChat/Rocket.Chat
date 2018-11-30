@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 Meteor.methods({
 	'livechat:saveTrigger'(trigger) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
@@ -9,8 +12,9 @@ Meteor.methods({
 			name: String,
 			description: String,
 			enabled: Boolean,
+			runOnce: Boolean,
 			conditions: Array,
-			actions: Array
+			actions: Array,
 		});
 
 		if (trigger._id) {
@@ -18,5 +22,5 @@ Meteor.methods({
 		} else {
 			return RocketChat.models.LivechatTrigger.insert(trigger);
 		}
-	}
+	},
 });

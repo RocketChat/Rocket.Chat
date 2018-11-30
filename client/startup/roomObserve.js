@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+
 Meteor.startup(function() {
 	ChatRoom.find().observe({
 		added(data) {
@@ -8,6 +11,6 @@ Meteor.startup(function() {
 		},
 		removed(data) {
 			Session.set(`roomData${ data._id }`, undefined);
-		}
+		},
 	});
 });
