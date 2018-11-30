@@ -51,14 +51,17 @@ class RoomMessage extends Stream {
 			this.internals.removeListener(uid, userEvent);
 			rooms.forEach(({ rid }) => this.internals.removeListener(`${ MY_MESSAGES_STREAM }${ rid }`, sendMyMessage));
 		});
+		publication.ready();
 	}
 }
 
 class NotifyUser extends Stream {
 	subscribe(publication, eventName, options) {
-		super.subscribe(publication, eventName, options);
 		const uid = Meteor.userId();
 		if (/rooms-changed/.test(eventName)) {
+			if (!this.isReadAllowed(publication, eventName, args)) {
+				publication.stop();
+			}
 			const { socket } = publication._session;
 			const roomEvent = (...args) => {
 				const msg = this.changedPayload({ 		// RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
@@ -91,7 +94,9 @@ class NotifyUser extends Stream {
 				this.internals.removeListener(uid, userEvent);
 				rooms.forEach(({ rid }) => this.internals.removeListener(rid, roomEvent));
 			});
+			return publication.ready();
 		}
+		super.subscribe(publication, eventName, options);
 	}
 }
 
