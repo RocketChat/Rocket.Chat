@@ -213,17 +213,7 @@ RocketChat.Notifications = new class {
 
 RocketChat.Notifications.msgStream.allowRead(function(eventName, args) {
 	try {
-		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
-
-		if (!room) {
-			return false;
-		}
-
-		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
-			return false;
-		}
-
-		return true;
+		return  !!Meteor.call('canAccessRoom', eventName, this.userId, args);
 	} catch (error) {
 		/* error*/
 		return false;
