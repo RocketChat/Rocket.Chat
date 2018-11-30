@@ -29,7 +29,7 @@ describe('[Permissions]', function() {
 	});
 
 	// DEPRECATED
-	// TODO: Remove this after three versions have been released. That means at 0.76 this should be gone.
+	// TODO: Remove this after three versions have been released. That means at 0.85 this should be gone.
 	describe('[/permissions.list]', () => {
 		it('should return all permissions that exists on the server, with respective roles', (done) => {
 			request.get(api('permissions.list'))

@@ -21,14 +21,14 @@ RocketChat.API.v1.addRoute('permissions', { authRequired: true }, {
 });
 
 // DEPRECATED
-// TODO: Remove this after three versions have been released. That means at 0.76 this should be gone.
+// TODO: Remove this after three versions have been released. That means at 0.85 this should be gone.
 RocketChat.API.v1.addRoute('permissions.list', { authRequired: true }, {
 	get() {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
 		return RocketChat.API.v1.success(this.deprecationWarning({
 			endpoint: 'permissions.list',
-			versionWillBeRemove: '0.76',
+			versionWillBeRemove: '0.85',
 			response: {
 				permissions: result,
 			},
