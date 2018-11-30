@@ -430,9 +430,11 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 			const sel = document.selection.createRange();
 			sel.text = '\n';
 		} else if (input.selectionStart || input.selectionStart === 0) {
+			const newPosition = input.selectionStart + 1;
 			const before = input.value.substring(0, input.selectionStart);
 			const after = input.value.substring(input.selectionEnd, input.value.length);
 			input.value = `${ before }\n${ after }`;
+			input.selectionStart = input.selectionEnd = newPosition;
 		} else {
 			input.value += '\n';
 		}
