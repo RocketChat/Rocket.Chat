@@ -59,16 +59,19 @@ class NotifyUser extends Stream {
 	subscribe(publication, eventName, options) {
 		const uid = Meteor.userId();
 		if (/rooms-changed/.test(eventName)) {
-			if (!this.isReadAllowed(publication, eventName, args)) {
+			if (!this.isReadAllowed(publication, eventName, options)) {
 				publication.stop();
 			}
 			const { socket } = publication._session;
 			const roomEvent = (...args) => {
-				const msg = this.changedPayload({ 		// RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
-					eventName: `${ uid }/rooms-changed`,	// same behaviour but without sending multiple times
-					args,								// TODO performance: remove concatenation id + room-changed to use just one EJSON.serialize
-				}, this.subscriptionName);
-				socket.send(msg);
+				// RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
+
+				// same behaviour but without sending multiple times
+				// TODO performance: remove concatenation id + room-changed to use just one EJSON.serialize
+				socket.send(this.changedPayload({
+					eventName: `${ uid }/rooms-changed`,
+					args,
+				}, this.subscriptionName));
 			};
 
 			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
@@ -218,7 +221,17 @@ RocketChat.Notifications = new class {
 
 RocketChat.Notifications.msgStream.allowRead(function(eventName, args) {
 	try {
-		return  !!Meteor.call('canAccessRoom', eventName, this.userId, args);
+		const room = Meteor.call('canAccessRoom', eventName, this.userId, args);
+
+		if (!room) {
+			return false;
+		}
+
+		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room')) {
+			return false;
+		}
+
+		return true;
 	} catch (error) {
 		/* error*/
 		return false;
