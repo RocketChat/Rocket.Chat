@@ -23,9 +23,9 @@ const name = (username) => (RocketChat.settings.get('UTF8_Names_Slugify') ? slug
 function generateSuggestion(user) {
 	let usernames = [];
 
-	// if (Meteor.settings.public.sandstorm) {
-	// 	usernames.push(user.services.sandstorm.preferredHandle);
-	// }
+	if (Meteor.settings.public.sandstorm) {
+		usernames.push(user.services.sandstorm.preferredHandle);
+	}
 
 	if (user.name) {
 
