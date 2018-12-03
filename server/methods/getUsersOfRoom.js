@@ -22,7 +22,6 @@ Meteor.methods({
 			total: subscriptions.count(),
 			records: await RocketChat.models.Subscriptions.model.rawCollection().aggregate([
 				{ $match: { rid } },
-
 				{
 					$lookup:
 						{
@@ -32,12 +31,16 @@ Meteor.methods({
 							as: 'u',
 						},
 				},
-				...(showAll ? [{ $match: { 'u.status': 'online' } }] : []),
 				{
 					$project: {
-						$replaceRoot: { newRoot: { $arrayElemAt: [ "$u", 0 ] } }
+						'u._id': 1,
+						'u.name': 1,
+						'u.username': 1,
+						'u.status': 1,
 					},
 				},
+				...(showAll ? [{ $match: { 'u.status': 'online' } }] : []),
+				{ $replaceRoot: { newRoot: { $arrayElemAt: [ "$u", 0 ] } } },
 
 			]).toArray(),
 		};
