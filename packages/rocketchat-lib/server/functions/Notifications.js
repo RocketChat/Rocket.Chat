@@ -1,5 +1,6 @@
 
 import { Meteor } from 'meteor/meteor';
+import { Streamer } from './streamer/stream';
 import { Stream } from './streamer/stream';
 
 const MY_MESSAGES = '__my_messages__';
@@ -159,6 +160,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyAll', [eventName, ...args]);
 		}
 		args.unshift(eventName);
+		Streamer.broadcast(this.streamAll.name, eventName, ...args) 
 		return this.streamAll.emit.apply(this.streamAll, args);
 	}
 
@@ -167,6 +169,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyLogged', [eventName, ...args]);
 		}
 		args.unshift(eventName);
+		Streamer.broadcast(this.streamLogged.name, eventName, ...args) 
 		return this.streamLogged.emit.apply(this.streamLogged, args);
 	}
 
@@ -175,6 +178,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyRoom', [room, eventName, ...args]);
 		}
 		args.unshift(`${ room }/${ eventName }`);
+		Streamer.broadcast(this.streamRoom.name, eventName, ...args) 
 		return this.streamRoom.emit.apply(this.streamRoom, args);
 	}
 
@@ -183,6 +187,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyUser', [userId, eventName, ...args]);
 		}
 		args.unshift(`${ userId }/${ eventName }`);
+		Streamer.streamUser(this.streamRoom.name, eventName, ...args) 
 		return this.streamUser.emit.apply(this.streamUser, args);
 	}
 
