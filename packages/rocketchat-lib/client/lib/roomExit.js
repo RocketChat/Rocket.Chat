@@ -23,7 +23,7 @@ this.roomExit = function() {
 	if (mainNode == null) {
 		return;
 	}
-	return Array.forEach(mainNode.children).forEach((child) => {
+	return Array.from(mainNode.children).forEach((child) => {
 		if (child == null) {
 			return;
 		}
