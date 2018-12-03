@@ -9,7 +9,7 @@ accounts-twitter@1.4.2
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
 autoupdate@1.5.0
-babel-compiler@7.2.2
+babel-compiler@7.2.3
 babel-runtime@1.3.0
 base64@1.0.11
 binary-heap@1.0.11
@@ -34,8 +34,8 @@ deepwell:bootstrap-datepicker2@1.3.0
 deps@1.0.12
 diff-sequence@1.1.1
 dispatch:run-as-user@1.1.1
-dynamic-import@0.5.0
-ecmascript@0.12.2
+dynamic-import@0.5.1
+ecmascript@0.12.3
 ecmascript-runtime@0.7.0
 ecmascript-runtime-client@0.8.0
 ecmascript-runtime-server@0.7.1
@@ -73,7 +73,7 @@ konecty:change-case@2.3.0
 konecty:delayed-task@1.0.0
 konecty:mongo-counter@0.0.5_3
 konecty:multiple-instances-status@1.1.0
-konecty:user-presence@2.2.0
+konecty:user-presence@2.3.0
 launch-screen@1.1.1
 less@2.8.0
 littledata:synced-cron@1.5.1
@@ -95,7 +95,7 @@ mizzao:autocomplete@0.5.1
 mizzao:timesync@0.3.4
 mobile-experience@1.0.5
 mobile-status-bar@1.0.14
-modern-browsers@0.1.2
+modern-browsers@0.1.3
 modules@0.13.0
 modules-runtime@0.10.3
 mongo@1.6.0
@@ -109,7 +109,7 @@ nimble:restivus@0.8.12
 nooitaf:colors@1.1.2_1
 npm-bcrypt@0.9.3
 npm-mongo@3.1.1
-oauth@1.2.6
+oauth@1.2.7
 oauth1@1.2.2
 oauth2@1.2.1
 observe-sequence@1.0.16
@@ -259,7 +259,7 @@ rocketchat:webrtc@0.0.1
 rocketchat:wordpress@0.0.1
 routepolicy@1.1.0
 service-configuration@1.0.11
-session@1.1.8
+session@1.2.0
 sha@1.0.9
 shell-server@0.4.0
 simple:json-routes@2.1.0
@@ -282,7 +282,7 @@ twitter-oauth@1.2.0
 ui@1.0.13
 underscore@1.0.10
 url@1.2.0
-webapp@1.7.0
+webapp@1.7.2
 webapp-hashing@1.0.9
 yasaricli:slugify@0.0.7
 yasinuslu:blaze-meta@0.3.3
