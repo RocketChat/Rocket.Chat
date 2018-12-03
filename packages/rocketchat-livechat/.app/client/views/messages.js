@@ -65,8 +65,8 @@ Template.messages.helpers({
 			users: usernames.join(` ${ t('and') } `),
 		};
 	},
-	typingAlias(users) {
-		return Template.instance().agentTypingAlias.get() || users;
+	agentsAlias(users) {
+		return Template.instance().agentsAlias.get() || users;
 	},
 	agentData() {
 		const { agent } = Livechat;
@@ -173,7 +173,7 @@ Template.messages.events({
 });
 
 Template.messages.onCreated(function() {
-	this.agentTypingAlias = new ReactiveVar(Livechat.agentTypingAlias);
+	this.agentsAlias = new ReactiveVar(Livechat.agentsAlias);
 	this.atBottom = true;
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.showOptions = new ReactiveVar(false);

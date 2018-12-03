@@ -139,11 +139,11 @@ Meteor.startup(function() {
 		i18nLabel: 'Comment_to_leave_on_closing_session',
 	});
 
-	RocketChat.settings.add('Livechat_agent_typing_alias', '', {
+	RocketChat.settings.add('Livechat_agents_alias', '', {
 		type: 'string',
 		group: 'Livechat',
 		public: true,
-		i18nLabel: 'Agent_typing_alias',
+		i18nLabel: 'Agents_alias',
 	});
 
 	RocketChat.settings.add('Livechat_webhookUrl', false, {
