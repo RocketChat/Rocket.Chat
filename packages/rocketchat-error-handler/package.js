@@ -12,6 +12,5 @@ Package.onUse(function(api) {
 		'templating',
 	]);
 
-	api.addFiles('server/lib/RocketChat.ErrorHandler.js', 'server');
-	api.addFiles('server/startup/settings.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });

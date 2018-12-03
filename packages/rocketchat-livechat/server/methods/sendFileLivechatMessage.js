@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
@@ -8,7 +11,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(visitorToken, roomId);
+		const room = RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
 
 		if (!room) {
 			return false;

@@ -2,6 +2,8 @@
  * Highlights is a named function that will process Highlights
  * @param {Object} message - The message object
  */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -15,7 +17,7 @@ function HighlightWordsClient(message) {
 		}
 	}
 
-	const to_highlight = RocketChat.getUserPreference(Meteor.user(), 'highlights');
+	const to_highlight = RocketChat.getUserPreference(Meteor.userId(), 'highlights');
 	if (Array.isArray(to_highlight)) {
 		to_highlight.forEach((highlight) => {
 			if (!s.isBlank(highlight)) {

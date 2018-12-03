@@ -1,4 +1,6 @@
 /* globals CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import s from 'underscore.string';
 import toastr from 'toastr';
 

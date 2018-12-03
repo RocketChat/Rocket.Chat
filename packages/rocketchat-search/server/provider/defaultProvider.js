@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { searchProviderService } from '../service/providerService';
 import SearchProvider from '../model/provider';
 

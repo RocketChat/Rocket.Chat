@@ -1,4 +1,9 @@
-import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
@@ -100,10 +105,10 @@ Template.ChatpalSearchSingleMessage.helpers({
 	},
 
 	time() {
-		return moment(this.created).format(RocketChat.settings.get('Message_TimeFormat'));
+		return DateFormat.formatTime(this.created);
 	},
 	date() {
-		return moment(this.created).format(RocketChat.settings.get('Message_DateFormat'));
+		return DateFormat.formatDate(this.created);
 	},
 });
 

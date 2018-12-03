@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 RocketChat.models.Messages = new class extends RocketChat.models._Base {

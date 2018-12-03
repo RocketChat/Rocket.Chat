@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
@@ -209,7 +212,6 @@ RocketChat.API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true 
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		console.log(findResult);
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
 		const messages = RocketChat.models.Messages.find(ourQuery, {
@@ -220,7 +222,7 @@ RocketChat.API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true 
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			messages,
+			messages: messages.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
 			count: messages.length,
 			offset,
 			total: RocketChat.models.Messages.find(ourQuery).count(),
@@ -260,7 +262,7 @@ RocketChat.API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authR
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			messages: msgs,
+			messages: msgs.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
 			offset,
 			count: msgs.length,
 			total: RocketChat.models.Messages.find(ourQuery).count(),
@@ -286,7 +288,7 @@ RocketChat.API.v1.addRoute(['dm.list', 'im.list'], { authRequired: true }, {
 		const rooms = cursor.fetch();
 
 		return RocketChat.API.v1.success({
-			ims: rooms,
+			ims: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 			offset,
 			count: rooms.length,
 			total,
@@ -313,7 +315,7 @@ RocketChat.API.v1.addRoute(['dm.list.everyone', 'im.list.everyone'], { authRequi
 		}).fetch();
 
 		return RocketChat.API.v1.success({
-			ims: rooms,
+			ims: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 			offset,
 			count: rooms.length,
 			total: RocketChat.models.Rooms.find(ourQuery).count(),

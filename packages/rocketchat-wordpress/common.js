@@ -1,4 +1,6 @@
 /* globals CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
 const config = {

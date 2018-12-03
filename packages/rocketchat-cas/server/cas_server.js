@@ -1,5 +1,10 @@
-/* globals RoutePolicy, logger */
-/* jshint newcap: false */
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
+import { WebApp } from 'meteor/webapp';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoutePolicy } from 'meteor/routepolicy';
+import { logger } from './cas_rocketchat';
 import _ from 'underscore';
 
 import fiber from 'fibers';

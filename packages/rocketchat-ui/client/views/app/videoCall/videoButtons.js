@@ -1,4 +1,7 @@
 /* globals WebRTC */
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+
 Template.videoButtons.helpers({
 	videoAvaliable() {
 		return WebRTC.getInstanceByRoomId(Session.get('openedRoom')) != null;

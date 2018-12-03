@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 const fields = {
@@ -38,6 +39,8 @@ const fields = {
 	tokenpass: 1,
 	streamingOptions: 1,
 	broadcast: 1,
+	encrypted: 1,
+	e2eKeyId: 1,
 };
 
 const roomMap = (record) => {
@@ -123,8 +126,6 @@ RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
 	}
 
 	if (data) {
-		RocketChat.models.Subscriptions.findByRoomId(id, { fields: { 'u._id': 1 } }).forEach(({ u }) => {
-			RocketChat.Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
-		});
+		RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
 	}
 });

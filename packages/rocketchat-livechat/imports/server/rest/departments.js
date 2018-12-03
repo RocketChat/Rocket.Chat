@@ -1,3 +1,5 @@
+import { check } from 'meteor/check';
+
 RocketChat.API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {

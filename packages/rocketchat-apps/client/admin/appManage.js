@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18next } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -16,7 +22,7 @@ function getApps(instance) {
 		fetch(`${ HOST }/v1/apps/${ id }?version=${ RocketChat.Info.marketplaceApiVersion }`).then((data) => data.json()),
 		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
 	]).then(([remoteApps, [localApp]]) => {
-		remoteApps = remoteApps.filter((app) => semver.satisfies(RocketChat.Info.marketplaceApiVersion, app.requiredApiVersion)).sort((a, b) => {
+		remoteApps = remoteApps.sort((a, b) => {
 			if (semver.gt(a.version, b.version)) {
 				return -1;
 			}
@@ -63,9 +69,16 @@ Template.appManage.onCreated(function() {
 	this.app = new ReactiveVar({});
 	this.appsList = new ReactiveVar([]);
 	this.settings = new ReactiveVar({});
+	this.apis = new ReactiveVar([]);
 	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
+
+	this.getApis = async() => {
+		this.apis.set(await window.Apps.getAppApis(id));
+	};
+
+	this.getApis();
 
 	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, id);
@@ -210,6 +223,9 @@ Template.appManage.helpers({
 	settings() {
 		return Object.values(Template.instance().settings.get());
 	},
+	apis() {
+		return Template.instance().apis.get();
+	},
 	parseDescription(i18nDescription) {
 		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
 
@@ -219,6 +235,20 @@ Template.appManage.helpers({
 	},
 	saving() {
 		return Template.instance().loading.get();
+	},
+	curl(method, api) {
+		const example = api.examples[method] || {};
+		return Utilities.curl({
+			url: Meteor.absoluteUrl.defaultOptions.rootUrl + api.computedPath,
+			method,
+			params: example.params,
+			query: example.query,
+			content: example.content,
+			headers: example.headers,
+		}).split('\n');
+	},
+	renderMethods(methods) {
+		return methods.join('|').toUpperCase();
 	},
 });
 

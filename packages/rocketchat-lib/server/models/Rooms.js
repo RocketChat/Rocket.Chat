@@ -61,10 +61,6 @@ class ModelRooms extends RocketChat.models._Base {
 
 	// FIND
 
-	findWithUsername(username, options) {
-		return this.find({ usernames: username }, options);
-	}
-
 	findById(roomId, options) {
 		return this.find({ _id: roomId }, options);
 	}
@@ -255,6 +251,15 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.find(query, options);
 	}
 
+	findDirectRoomContainingAllUsernames(usernames, options) {
+		const query = {
+			t: 'd',
+			usernames: { $size: usernames.length, $all: usernames },
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByTypeAndName(type, name, options) {
 		const query = {
 			name,
@@ -439,9 +444,9 @@ class ModelRooms extends RocketChat.models._Base {
 		return this.update(query, update);
 	}
 
-	resetLastMessageById(_id) {
+	resetLastMessageById(_id, messageId) {
 		const query = { _id };
-		const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id);
+		const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
 		const update = lastMessage ? {
 			$set: {
@@ -680,6 +685,18 @@ class ModelRooms extends RocketChat.models._Base {
 		const update = {
 			$set: {
 				'retention.overrideGlobal': value === true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	saveEncryptedById(_id, value) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				encrypted: value === true,
 			},
 		};
 
