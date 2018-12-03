@@ -184,7 +184,6 @@ export class SlackImporter extends Base {
 	}
 
 	processMessageSubType(message, room, msgDataDefaults, missedTypes) {
-		let msgObj;
 		const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
 
 		let rocketUser = this.getRocketUser(message.user);
@@ -192,95 +191,100 @@ export class SlackImporter extends Base {
 			rocketUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1, name: 1 } });
 		}
 
-		if (rocketUser) {
-			switch (message.subtype) {
-				case 'channel_join':
-					RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
-					break;
-				case 'channel_leave':
-					RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
-					break;
-				case 'me_message':
-					msgObj = {
-						...msgDataDefaults,
-						msg: `_${ this.convertSlackMessageToRocketChat(message.text) }_`,
-					};
-					RocketChat.sendMessage(rocketUser, msgObj, room, true);
-					break;
-				case 'bot_message':
-				case 'slackbot_response':
-					const botUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
-					const botUsername = this.bots[message.bot_id] ? this.bots[message.bot_id].name : message.username;
-					msgObj = {
-						...msgDataDefaults,
-						msg: this.convertSlackMessageToRocketChat(message.text),
-						rid: room._id,
-						bot: true,
-						attachments: message.attachments,
-						username: botUsername || undefined,
-					};
+		if (!rocketUser) {
+			return;
+		}
 
-					if (message.edited) {
-						msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
-						const editedBy = this.getRocketUser(message.edited.user);
-						if (editedBy) {
-							msgObj.editedBy = {
-								_id: editedBy._id,
-								username: editedBy.username,
-							};
-						}
-					}
-
-					if (message.icons) {
-						msgObj.emoji = message.icons.emoji;
-					}
-					RocketChat.sendMessage(botUser, msgObj, room, true);
-					break;
-				case 'channel_purpose':
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', room._id, message.purpose, rocketUser, msgDataDefaults);
-					break;
-				case 'channel_topic':
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, rocketUser, msgDataDefaults);
-					break;
-				case 'channel_name':
-					RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, rocketUser, msgDataDefaults);
-					break;
-				case 'pinned_item':
-					if (message.attachments) {
-						const msgObj = {
-							...msgDataDefaults,
-							attachments: [{
-								text: this.convertSlackMessageToRocketChat(message.attachments[0].text),
-								author_name : message.attachments[0].author_subname,
-								author_icon : getAvatarUrlFromUsername(message.attachments[0].author_subname),
-							}],
-						};
-
-						RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', rocketUser, msgObj);
-					} else {
-						// TODO: make this better
-						this.logger.debug('Pinned item with no attachment, needs work.');
-						// RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUser(message.user), msgDataDefaults
-					}
-					break;
-				case 'file_share':
-					if (message.file && message.file.url_private_download !== undefined) {
-						const details = {
-							message_id: `slack-${ message.ts.replace(/\./g, '-') }`,
-							name: message.file.name,
-							size: message.file.size,
-							type: message.file.mimetype,
-							rid: room._id,
-						};
-						this.uploadFile(details, message.file.url_private_download, rocketUser, room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
-					}
-					break;
-				default:
-					if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
-						missedTypes[message.subtype] = message;
-					}
-					break;
+		switch (message.subtype) {
+			case 'channel_join':
+				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
+				break;
+			case 'channel_leave':
+				RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
+				break;
+			case 'me_message': {
+				const msgObj = {
+					...msgDataDefaults,
+					msg: `_${ this.convertSlackMessageToRocketChat(message.text) }_`,
+				};
+				RocketChat.sendMessage(rocketUser, msgObj, room, true);
+				break;
 			}
+			case 'bot_message':
+			case 'slackbot_response': {
+				const botUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
+				const botUsername = this.bots[message.bot_id] ? this.bots[message.bot_id].name : message.username;
+				const msgObj = {
+					...msgDataDefaults,
+					msg: this.convertSlackMessageToRocketChat(message.text),
+					rid: room._id,
+					bot: true,
+					attachments: message.attachments,
+					username: botUsername || undefined,
+				};
+
+				if (message.edited) {
+					msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
+					const editedBy = this.getRocketUser(message.edited.user);
+					if (editedBy) {
+						msgObj.editedBy = {
+							_id: editedBy._id,
+							username: editedBy.username,
+						};
+					}
+				}
+
+				if (message.icons) {
+					msgObj.emoji = message.icons.emoji;
+				}
+				RocketChat.sendMessage(botUser, msgObj, room, true);
+				break;
+			}
+
+			case 'channel_purpose':
+				RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', room._id, message.purpose, rocketUser, msgDataDefaults);
+				break;
+			case 'channel_topic':
+				RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, rocketUser, msgDataDefaults);
+				break;
+			case 'channel_name':
+				RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, rocketUser, msgDataDefaults);
+				break;
+			case 'pinned_item':
+				if (message.attachments) {
+					const msgObj = {
+						...msgDataDefaults,
+						attachments: [{
+							text: this.convertSlackMessageToRocketChat(message.attachments[0].text),
+							author_name : message.attachments[0].author_subname,
+							author_icon : getAvatarUrlFromUsername(message.attachments[0].author_subname),
+						}],
+					};
+
+					RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', rocketUser, msgObj);
+				} else {
+					// TODO: make this better
+					this.logger.debug('Pinned item with no attachment, needs work.');
+					// RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUser(message.user), msgDataDefaults
+				}
+				break;
+			case 'file_share':
+				if (message.file && message.file.url_private_download !== undefined) {
+					const details = {
+						message_id: `slack-${ message.ts.replace(/\./g, '-') }`,
+						name: message.file.name,
+						size: message.file.size,
+						type: message.file.mimetype,
+						rid: room._id,
+					};
+					this.uploadFile(details, message.file.url_private_download, rocketUser, room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
+				}
+				break;
+			default:
+				if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
+					missedTypes[message.subtype] = message;
+				}
+				break;
 		}
 	}
 
