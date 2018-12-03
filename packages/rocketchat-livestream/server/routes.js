@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import google from 'googleapis';
 const { OAuth2 } = google.auth;
 

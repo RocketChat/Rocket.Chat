@@ -10,7 +10,6 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 	]);
-
-	api.addFiles('client/googlevision.js', 'client');
-	api.addFiles(['server/settings.js', 'server/googlevision.js', 'server/models/Messages.js'], 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

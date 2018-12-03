@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.models.Integrations = new class Integrations extends RocketChat.models._Base {
 	constructor() {
