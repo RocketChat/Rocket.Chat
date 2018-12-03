@@ -187,7 +187,9 @@ export class SlackImporter extends Base {
 		const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
 
 		let rocketUser = this.getRocketUser(message.user);
-		if (!rocketUser) {
+		const useRocketCat = !rocketUser;
+
+		if (useRocketCat) {
 			rocketUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1, name: 1 } });
 		}
 
@@ -197,10 +199,14 @@ export class SlackImporter extends Base {
 
 		switch (message.subtype) {
 			case 'channel_join':
-				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
+				if (!useRocketCat) {
+					RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
+				}
 				break;
 			case 'channel_leave':
-				RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
+				if (!useRocketCat) {
+					RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, rocketUser, msgDataDefaults);
+				}
 				break;
 			case 'me_message': {
 				const msgObj = {
