@@ -316,12 +316,22 @@ export class SlackImporter extends Base {
 		}
 
 		if (message.type === 'message') {
-			if (message.files && message.files[0].url_private_download !== undefined) {
-				const msgObj = {
-					...msgDataDefaults,
-					msg: this.convertSlackMessageToRocketChat(message.files[0].url_private_download),
-				};
-				RocketChat.sendMessage(this.getRocketUser(message.user), msgObj, room, true);
+			if (message.files) {
+				const fileUser = this.getRocketUser(message.user);
+				let fileIndex = 0;
+
+				message.files.forEach((file) => {
+					fileIndex++;
+					if (file.url_private_download === undefined) {
+						return;
+					}
+					const msgObj = {
+						_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }-file${ fileIndex }`,
+						ts: msgDataDefaults.ts,
+						msg: file.url_private_download,
+					};
+					RocketChat.sendMessage(fileUser, msgObj, room, true);
+				});
 			}
 
 			if (message.subtype) {
