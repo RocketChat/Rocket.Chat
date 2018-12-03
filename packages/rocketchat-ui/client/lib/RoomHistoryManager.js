@@ -22,7 +22,7 @@ export const upsertMessage = ({ msg, subscription }) => {
 	return ChatMessage.upsert({ _id: msg._id }, msg);
 };
 
-export const RoomHistoryManager = new class {
+RoomHistoryManager = new class { //eslint-disable-line
 	constructor() {
 		this.defaultLimit = 50;
 		this.histories = {};
@@ -273,4 +273,3 @@ export const RoomHistoryManager = new class {
 		}
 	}
 };
-this.RoomHistoryManager = RoomHistoryManager;

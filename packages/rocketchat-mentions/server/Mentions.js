@@ -2,7 +2,8 @@
 * Mentions is a named function that will process Mentions
 * @param {Object} message - The message object
 */
-import Mentions from '../Mentions';
+import Mentions from '../lib/Mentions';
+
 export default class MentionsServer extends Mentions {
 	constructor(args) {
 		super(args);
