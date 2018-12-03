@@ -40,8 +40,7 @@ Meteor.methods({
 					},
 				},
 				...(showAll ? [{ $match: { 'u.status': 'online' } }] : []),
-				{ $replaceRoot: { newRoot: { $arrayElemAt: [ "$u", 0 ] } } },
-
+				{ $replaceRoot: { newRoot: { $arrayElemAt: ['$u', 0] } } },
 			]).toArray(),
 		};
 	},
