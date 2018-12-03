@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-
+const MY_MESSAGES_STREAM = '_m_';
 
 Meteor.startup(function() {
 
@@ -52,7 +52,7 @@ Meteor.startup(function() {
 					mention.name = user && user.name;
 				});
 			}
-			RocketChat.Notifications.msgStream.emit('__my_messages__', record, {});
+			RocketChat.Notifications.msgStream.emit(`${ MY_MESSAGES_STREAM }${ record.rid }`, record, {});
 			return RocketChat.Notifications.msgStream.emit(record.rid, record);
 		}
 	}
