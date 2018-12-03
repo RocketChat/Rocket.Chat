@@ -11,7 +11,6 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 	]);
-
-	api.addFiles('settings.js', 'server');
-	api.mainModule('markdown.js');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
