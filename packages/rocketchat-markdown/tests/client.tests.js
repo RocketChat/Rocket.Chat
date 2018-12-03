@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 import assert from 'assert';
 import './client.mocks.js';
-import { original } from '../parser/original/original';
+import { original } from '../lib/parser/original/original';
 // import {marked} from '../parser/marked/marked';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
