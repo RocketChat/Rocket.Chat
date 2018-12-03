@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'tracker',
+		'rocketchat:emoji',
 		'rocketchat:lib',
 		'rocketchat:ui-account',
 		'rocketchat:ui-vrecord',
