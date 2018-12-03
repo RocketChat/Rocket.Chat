@@ -7,4 +7,4 @@ curl -X POST \
 https://releases.rocket.chat/update
 
 # Makes build fail if the release isn't there
-curl --fail https://releases.rocket.chat/$CIRCLE_TAG/info
+curl --fail https://releases.rocket.chat/$RC_VERSION/info
