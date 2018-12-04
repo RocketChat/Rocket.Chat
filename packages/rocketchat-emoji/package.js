@@ -11,7 +11,6 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'rocketchat:theme',
-		'rocketchat:ui-message',
 		'htmljs',
 	]);
 
