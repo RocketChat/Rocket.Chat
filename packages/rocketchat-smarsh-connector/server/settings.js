@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import moment from 'moment';
 import 'moment-timezone';
 
