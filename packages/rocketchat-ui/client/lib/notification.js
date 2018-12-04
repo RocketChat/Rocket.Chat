@@ -16,7 +16,7 @@ KonchatNotification = { //eslint-disable-line
 	getDesktopPermission() {
 		if (window.Notification && (Notification.permission !== 'granted') && !Meteor.settings.public.sandstorm) {
 			return Notification.requestPermission(function(status) {
-				KonchatNotification.notificationStatus.set(status);
+				KonchatNotification.notificationStatus.set(status); //eslint-disable-line
 				if (Notification.permission !== status) {
 					return Notification.permission = status;
 				}
@@ -88,7 +88,7 @@ KonchatNotification = { //eslint-disable-line
 		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
-			return KonchatNotification.notify(notification);
+			return KonchatNotification.notify(notification); //eslint-disable-line
 		});
 	},
 
