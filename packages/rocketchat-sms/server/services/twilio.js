@@ -1,4 +1,4 @@
-/* globals RocketChat */
+import { RocketChat } from 'meteor/rocketchat:lib';
 import twilio from 'twilio';
 
 class Twilio {
