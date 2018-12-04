@@ -26,14 +26,6 @@ Template.membersList.helpers({
 		return ChatRoom.findOne(this.rid, { reactive: false }).t === 'd';
 	},
 
-	seeAll() {
-		if (Template.instance().showAllUsers.get()) {
-			return t('Show_only_online');
-		} else {
-			return t('Show_all');
-		}
-	},
-
 	roomUsers() {
 		const onlineUsers = RoomManager.onlineUsers.get();
 		const roomUsers = Template.instance().users.get();
@@ -79,33 +71,28 @@ Template.membersList.helpers({
 			};
 		});
 
-		if (RocketChat.settings.get('UI_Use_Real_Name')) {
-			users = _.sortBy(users, (u) => u.user.name);
-		} else {
-			users = _.sortBy(users, (u) => u.user.username);
-		}
+		const usersTotal = users.length;
+
 		// show online users first.
 		// sortBy is stable, so we can do this
 		users = _.sortBy(users, (u) => u.status === 'offline');
 
-		let hasMore = undefined;
-		const usersLimit = Template.instance().usersLimit.get();
-		if (usersLimit) {
-			hasMore = users.length > usersLimit;
-			users = _.first(users, usersLimit) || [];
-		}
-		const totalShowing = users.length;
+		const { total, loading, usersLimit, loadingMore } = Template.instance();
 
-		const ret = {
+		const hasMore = loadingMore.get() || (usersTotal < total.get() && usersLimit.get() <= usersTotal);
+
+		const totalShowing = usersTotal;
+
+		return {
 			_id: this.rid,
-			total: Template.instance().total.get(),
+			total: total.get(),
 			totalShowing,
-			loading: Template.instance().loading.get(),
+			loading: loading.get(),
 			totalOnline,
 			users,
 			hasMore,
+			rid: this.rid,
 		};
-		return ret;
 	},
 
 	canAddUser() {
@@ -167,7 +154,11 @@ Template.membersList.helpers({
 		}
 
 		return this.user.username;
-	} });
+	},
+	loadingMore() {
+		return Template.instance().loadingMore.get();
+	},
+});
 
 Template.membersList.events({
 	'click .js-add'() {
@@ -185,15 +176,7 @@ Template.membersList.events({
 	'change .js-type'(e, instance) {
 		const seeAll = instance.showAllUsers.get();
 		instance.showAllUsers.set(!seeAll);
-	},
-	'click .see-all'(e, instance) {
-		const seeAll = instance.showAllUsers.get();
-		instance.showAllUsers.set(!seeAll);
-
-		if (!seeAll) {
-			return instance.usersLimit.set(100);
-		}
-
+		instance.usersLimit.set(100);
 	},
 	'click .js-action'(e, instance) {
 		e.currentTarget.parentElement.classList.add('active');
@@ -265,7 +248,21 @@ Template.membersList.events({
 	},
 
 	'click .show-more-users'(e, instance) {
-		return instance.usersLimit.set(instance.usersLimit.get() + 100);
+		const { showAllUsers, usersLimit, users, total, loadingMore } = instance;
+
+		loadingMore.set(true);
+		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: 100, skip: usersLimit.get() }, (error, result) => {
+			if (error) {
+				console.error(error);
+				loadingMore.set(false);
+				return;
+			}
+			users.set(users.get().concat(result.records));
+			total.set(result.total);
+			loadingMore.set(false);
+		});
+
+		usersLimit.set(usersLimit.get() + 100);
 	},
 });
 
@@ -276,24 +273,22 @@ Template.membersList.onCreated(function() {
 	this.showDetail = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
 
-
 	this.users = new ReactiveVar([]);
 	this.total = new ReactiveVar;
 	this.loading = new ReactiveVar(true);
+	this.loadingMore = new ReactiveVar(false);
 
 	this.tabBar = Template.instance().tabBar;
 
 	Tracker.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
-		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) => {
+		Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
 			this.users.set(users.records);
 			this.total.set(users.total);
-			return this.loading.set(false);
-		}
-		);
-	}
-	);
+			this.loading.set(false);
+		});
+	});
 
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
-	async getUsersOfRoom(rid, showAll) {
+	async getUsersOfRoom(rid, showAll, { limit, skip } = {}) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
@@ -17,6 +17,12 @@ Meteor.methods({
 		}
 
 		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid);
+
+		const sort = {
+			$sort: {
+				[RocketChat.settings.get('UI_Use_Real_Name') ? 'u.name' : 'u.username']: 1,
+			},
+		};
 
 		return {
 			total: subscriptions.count(),
@@ -39,7 +45,10 @@ Meteor.methods({
 						'u.status': 1,
 					},
 				},
-				...(showAll ? [{ $match: { 'u.status': 'online' } }] : []),
+				...(showAll ? [] : [{ $match: { 'u.status': 'online' } }]),
+				...(skip > 0 ? [{ $skip: skip }] : []),
+				...(limit > 0 ? [{ $limit: limit }] : []),
+				sort,
 				{ $replaceRoot: { newRoot: { $arrayElemAt: ['$u', 0] } } },
 			]).toArray(),
 		};
