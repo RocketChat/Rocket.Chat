@@ -65,6 +65,9 @@ Template.messages.helpers({
 			users: usernames.join(` ${ t('and') } `),
 		};
 	},
+	agentsAlias(users) {
+		return Template.instance().agentsAlias.get() || users;
+	},
 	agentData() {
 		const { agent } = Livechat;
 		if (!agent) {
@@ -75,9 +78,7 @@ Template.messages.helpers({
 			avatar: getAvatarUrlFromUsername(agent.username),
 		};
 
-		if (agent.name) {
-			agentData.name = agent.name;
-		}
+		agentData.name = Livechat.agentsAlias || agent.name || undefined;
 
 		if (agent.emails && agent.emails[0] && agent.emails[0].address) {
 			agentData.email = agent.emails[0].address;
@@ -170,6 +171,7 @@ Template.messages.events({
 });
 
 Template.messages.onCreated(function() {
+	this.agentsAlias = new ReactiveVar(Livechat.agentsAlias);
 	this.atBottom = true;
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.showOptions = new ReactiveVar(false);

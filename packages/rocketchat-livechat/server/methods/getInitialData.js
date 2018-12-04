@@ -25,6 +25,7 @@ Meteor.methods({
 			conversationFinishedMessage: null,
 			nameFieldRegistrationForm: null,
 			emailFieldRegistrationForm: null,
+			agentsAlias: '',
 		};
 
 		const options = {
@@ -79,6 +80,7 @@ Meteor.methods({
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
 
 		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
+		info.agentsAlias = initSettings.Livechat_agents_alias;
 
 		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
 			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));

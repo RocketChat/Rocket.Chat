@@ -1,5 +1,6 @@
 {
   "Additional_Feedback": "Zusätzliches Feedback",
+  "Agents_alias": "Alias für alle Agenten",
   "Appearance": "Erscheinungsbild",
   "Are_you_sure_do_you_want_end_this_chat": "Sind Sie sich sicher, dass Sie diesen Chat beenden wollen?",
   "Are_you_sure_do_you_want_end_this_chat_and_switch_department": "Sind Sie sich sicher, dass Sie diesen Chat beenden und die Abteilung wechseln wollen?",
@@ -16,6 +17,7 @@
   "How_responsive_was_the_chat_agent": "Wie reaktionsschnell war der Chat-Agent?",
   "How_satisfied_were_you_with_this_chat": "Wie zufrieden sind Sie mit diesem Gespräch?",
   "Installation": "Installation",
+  "is_typing": "schreibt",
   "New_messages": "Neue Nachrichten",
   "New_livechat_in_queue": "Neuer Chat in der Wartschlange",
   "No": "Nein",
