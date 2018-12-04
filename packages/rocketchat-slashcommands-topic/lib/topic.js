@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:ui';
 /*
  * Join is a named function that will replace /topic commands
  * @param {Object} message - The message object
