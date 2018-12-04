@@ -9,7 +9,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import { e2e } from 'meteor/rocketchat:e2e';
 
-const KonchatNotification = {
+KonchatNotification = { //eslint-disable-line
 	notificationStatus: new ReactiveVar,
 
 	// notificacoes HTML5
@@ -175,5 +175,3 @@ Meteor.startup(() => {
 		}
 	});
 });
-export { KonchatNotification };
-this.KonchatNotification = KonchatNotification;
