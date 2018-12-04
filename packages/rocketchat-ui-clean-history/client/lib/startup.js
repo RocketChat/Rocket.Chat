@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(() => {
 	RocketChat.TabBar.addButton({
