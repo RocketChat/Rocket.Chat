@@ -78,9 +78,7 @@ Template.messages.helpers({
 			avatar: getAvatarUrlFromUsername(agent.username),
 		};
 
-		if (agent.name) {
-			agentData.name = agent.name;
-		}
+		agentData.name = Livechat.agentsAlias || agent.name || undefined;
 
 		if (agent.emails && agent.emails[0] && agent.emails[0].address) {
 			agentData.email = agent.emails[0].address;
