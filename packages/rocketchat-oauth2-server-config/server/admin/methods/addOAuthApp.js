@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 Meteor.methods({
