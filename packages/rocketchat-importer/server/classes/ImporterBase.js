@@ -6,7 +6,9 @@ import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { ImporterWebsocket } from './ImporterWebsocket';
-
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import http from 'http';
 import fs from 'fs';
 import https from 'https';

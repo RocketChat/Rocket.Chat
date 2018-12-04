@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.saveRoomDescription = function(rid, roomDescription, user) {
 	if (!Match.test(rid, String)) {

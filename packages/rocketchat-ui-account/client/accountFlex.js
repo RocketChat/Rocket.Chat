@@ -15,7 +15,7 @@ Template.accountFlex.helpers({
 		return RocketChat.settings.get('Accounts_AllowUserProfileChange');
 	},
 	accessTokensEnabled() {
-		return RocketChat.settings.get('API_Enable_Personal_Access_Tokens');
+		return RocketChat.authz.hasAllPermission(['create-personal-access-tokens']);
 	},
 	encryptionEnabled() {
 		return RocketChat.settings.get('E2E_Enable');

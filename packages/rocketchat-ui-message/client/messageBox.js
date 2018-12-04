@@ -368,9 +368,9 @@ Template.messageBox.events({
 	'click .register-anonymous'(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		return Meteor.call('registerUser', {}, function(error, loginData) {
-			if (loginData && loginData.token) {
-				return Meteor.loginWithToken(loginData.token);
+		return Meteor.call('registerUser', {}, function(error, result) {
+			if (!error) {
+				Meteor.loginWithToken(result.token);
 			}
 		});
 	},
@@ -643,6 +643,37 @@ Template.messageBox.events({
 		});
 		return false;
 	},
+
+	'click .emoji-picker-icon'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
+			return false;
+		}
+
+		if (RocketChat.EmojiPicker.isOpened()) {
+			RocketChat.EmojiPicker.close();
+		} else {
+			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
+				const { input } = window.chatMessages[RocketChat.openedRoom];
+
+				const emojiValue = `:${ emoji }:`;
+
+				const caretPos = input.selectionStart;
+				const textAreaTxt = input.value;
+				input.focus();
+				if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
+					input.value = textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos);
+				}
+
+				input.focus();
+
+				input.selectionStart = caretPos + emojiValue.length;
+				input.selectionEnd = caretPos + emojiValue.length;
+			});
+		}
+	},
 });
 
 Template.messageBox.onRendered(function() {
@@ -662,6 +693,7 @@ Template.messageBox.onRendered(function() {
 });
 
 Template.messageBox.onCreated(function() {
+	RocketChat.EmojiPicker.init();
 	this.dataReply = new ReactiveVar(''); // if user is replying to a mssg, this will contain data of the mssg being replied to
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);

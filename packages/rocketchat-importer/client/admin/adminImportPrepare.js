@@ -4,6 +4,7 @@ import { Importers } from 'meteor/rocketchat:importer';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({
@@ -49,7 +50,7 @@ Template.adminImportPrepare.helpers({
 
 			message = TAPi18n.__('Importer_Upload_FileSize_Message', { maxFileSize: fileSizeMessage });
 		} else {
-			message = t('Importer_Upload_Unlimited_FileSize');
+			message = TAPi18n.__('Importer_Upload_Unlimited_FileSize');
 		}
 
 		return message;
