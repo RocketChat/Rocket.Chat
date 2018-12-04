@@ -65,6 +65,7 @@
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run jslint && meteor npm run stylelint",
 		"jslint": "eslint .",
+		"jslint-fix": "eslint . --fix",
 		"stylelint": "stylelint \"packages/**/*.css\"",
 		"test": "node .scripts/start.js",
 		"test-resume": "/bin/bash .scripts/continueTesting.sh",

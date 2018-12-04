@@ -62,6 +62,10 @@ Template.message.helpers({
 
 	sender() {
 		const { agent } = Livechat;
+		if (Livechat.agentsAlias) {
+			return Livechat.agentsAlias;
+		}
+
 		if (agent && this.u.username === agent.username) {
 			return agent.name || agent.username;
 		}
