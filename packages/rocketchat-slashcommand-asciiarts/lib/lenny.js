@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 /*
 * Lenny is a named function that will replace /lenny commands
 * @param {Object} message - The message object
