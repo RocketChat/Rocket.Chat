@@ -1,3 +1,7 @@
+# Assistify 0.9.3
+
+This is a bugfix release.
+
 # Assistify 0.9.2
 
 This is a bugfix release.
