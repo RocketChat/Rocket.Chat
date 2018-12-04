@@ -9,9 +9,17 @@
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../../lib/RoomTypeConfig';
 import { sendNotification } from './sendNotificationsOnMessage.js';
 
+import {
+	Streamer,
+	Stream,
+} from '../functions/streamer';
+
+
 export {
 	RoomSettingsEnum,
 	RoomTypeConfig,
 	RoomTypeRouteConfig,
 	sendNotification,
+	Streamer,
+	Stream,
 };

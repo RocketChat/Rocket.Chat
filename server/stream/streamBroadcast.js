@@ -4,6 +4,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
 import { DDPCommon } from 'meteor/ddp-common';
+import {
+	Streamer,
+} from 'meteor/rocketchat:lib';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -143,6 +146,13 @@ Meteor.methods({
 			return 'not-authorized';
 		}
 
+		if (Streamer[streamName]) {
+			if (Streamer[streamName].serverOnly) {
+				return Streamer[streamName].internals.emit(eventName, ...args);
+			}
+			return Streamer[streamName].emit(eventName, ...args);
+		}
+
 		const instance = Meteor.StreamerCentral.instances[streamName];
 		if (!instance) {
 			return 'stream-not-exists';
@@ -150,10 +160,9 @@ Meteor.methods({
 
 		if (instance.serverOnly) {
 			const scope = {};
-			instance.emitWithScope(eventName, scope, ...args);
-		} else {
-			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+			return instance.emitWithScope(eventName, scope, ...args);
 		}
+		Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
 	},
 });
 
@@ -226,8 +235,6 @@ function startStreamBroadcast() {
 
 	function broadcast(streamName, eventName, args/* , userId*/) {
 		const fromInstance = `${ process.env.INSTANCE_IP }:${ process.env.PORT }`;
-		const results = [];
-
 		for (const instance of Object.keys(connections)) {
 			const connection = connections[instance];
 
@@ -258,7 +265,6 @@ function startStreamBroadcast() {
 				});
 			}
 		}
-		return results;
 	}
 
 	return Meteor.StreamerCentral.on('broadcast', function(streamName, eventName, args) {

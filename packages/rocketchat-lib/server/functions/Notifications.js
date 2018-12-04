@@ -160,7 +160,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyAll', [eventName, ...args]);
 		}
 		args.unshift(eventName);
-		Streamer.broadcast(this.streamAll.name, eventName, ...args);
+		Streamer.broadcast(this.streamAll.name, ...args);
 		return this.streamAll.emit.apply(this.streamAll, args);
 	}
 
@@ -169,7 +169,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyLogged', [eventName, ...args]);
 		}
 		args.unshift(eventName);
-		Streamer.broadcast(this.streamLogged.name, eventName, ...args);
+		Streamer.broadcast(this.streamLogged.name, ...args);
 		return this.streamLogged.emit.apply(this.streamLogged, args);
 	}
 
@@ -178,7 +178,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyRoom', [room, eventName, ...args]);
 		}
 		args.unshift(`${ room }/${ eventName }`);
-		Streamer.broadcast(this.streamRoom.name, eventName, ...args);
+		Streamer.broadcast(this.streamRoom.name, ...args);
 		return this.streamRoom.emit.apply(this.streamRoom, args);
 	}
 
@@ -187,7 +187,7 @@ RocketChat.Notifications = new class {
 			console.log('notifyUser', [userId, eventName, ...args]);
 		}
 		args.unshift(`${ userId }/${ eventName }`);
-		Streamer.streamUser(this.streamRoom.name, eventName, ...args);
+		Streamer.broadcast(this.streamUser.name, ...args);
 		return this.streamUser.emit.apply(this.streamUser, args);
 	}
 
@@ -245,6 +245,7 @@ RocketChat.Notifications.msgStream.allowRead(function(eventName, args) {
 
 
 const allowWrite = RocketChat.memoize(function(uid, eventName, username, extraData) {
+
 	const [roomId, e] = eventName.split('/');
 
 	if (e === 'webrtc') {
@@ -276,4 +277,4 @@ const allowWrite = RocketChat.memoize(function(uid, eventName, username, extraDa
 	return false;
 });
 
-RocketChat.Notifications.streamRoom.allowWrite((eventName, username, typing, extraData = {}) => allowWrite(this.userId, eventName, username, extraData));
+RocketChat.Notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData = {}) { return allowWrite(this.userId, eventName, username, extraData); });
