@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.72.0-develop",
+	"version": "0.73.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -96,7 +96,6 @@
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
 		"chimp": "^0.51.1",
-		"conventional-changelog-cli": "^2.0.5",
 		"eslint": "^4.19.1",
 		"husky": "^0.14.3",
 		"mocha": "^5.2.0",
