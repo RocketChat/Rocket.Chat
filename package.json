@@ -91,7 +91,7 @@
 	"devDependencies": {
 		"@octokit/rest": "^16.1.0",
 		"@rocket.chat/eslint-config": "^0.1.2",
-		"autoprefixer": "^9.4.0",
+		"autoprefixer": "^9.4.1",
 		"babel-eslint": "^10.0.1",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -131,6 +131,7 @@
 		"bad-words": "^3.0.0",
 		"bcrypt": "^3.0.2",
 		"blockstack": "18.1.0",
+		"body-parser": "1.18.3",
 		"bson": "^4.0.0",
 		"bugsnag": "^2.4.3",
 		"bunyan": "^1.8.12",
