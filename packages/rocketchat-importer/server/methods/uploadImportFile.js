@@ -1,6 +1,7 @@
-/* globals RocketChatImportFileInstance */
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChatImportFileInstance } from '../startup/store';
 
 Meteor.methods({
 	uploadImportFile(binaryContent, contentType, fileName, importerKey) {
