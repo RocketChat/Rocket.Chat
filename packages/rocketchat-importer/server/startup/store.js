@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChatFile } from 'meteor/rocketchat:file';
 
 Meteor.startup(function() {
 	const RocketChatStore = RocketChatFile.FileSystem;
