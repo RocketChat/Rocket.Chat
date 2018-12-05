@@ -160,12 +160,17 @@ Accounts.registerLoginHandler(function(options) {
 		_.each(attr_map, function(source, int_name) {
 			// Source is our String to interpolate
 			if (_.isString(source)) {
+				let replacedValue = source;
 				_.each(ext_attrs, function(value, ext_name) {
-					source = source.replace(`%${ ext_name }%`, ext_attrs[ext_name]);
+					replacedValue = replacedValue.replace(`%${ ext_name }%`, ext_attrs[ext_name]);
 				});
 
-				int_attrs[int_name] = source;
-				logger.debug(`Sourced internal attribute: ${ int_name } = ${ source }`);
+				if (source !== replacedValue) {
+					int_attrs[int_name] = replacedValue;
+					logger.debug(`Sourced internal attribute: ${ int_name } = ${ replacedValue }`);
+				} else {
+					logger.debug(`Sourced internal attribute: ${ int_name } skipped.`);
+				}
 			}
 		});
 	}
