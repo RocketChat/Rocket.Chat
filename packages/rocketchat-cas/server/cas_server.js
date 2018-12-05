@@ -177,7 +177,18 @@ Accounts.registerLoginHandler(function(options) {
 
 	// Search existing user by its external service id
 	logger.debug(`Looking up user by id: ${ result.username }`);
+	// First, look for a user that has logged in from CAS with this username before
 	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
+	if (!user) {
+		// If that user was not found, check if there's any CAS user that is currently using that username on Rocket.Chat
+		// With this, CAS login will continue to work if the user is renamed on both sides and also if the user is renamed only on Rocket.Chat.
+		const username = new RegExp(`^${ result.username }$`, 'i');
+		user = Meteor.users.findOne({ 'services.cas.external_id': { $exists: true }, username });
+		if (user) {
+			// Update the user's external_id to reflect this new username.
+			Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
+		}
+	}
 
 	if (user) {
 		logger.debug(`Using existing user for '${ result.username }' with id: ${ user._id }`);
