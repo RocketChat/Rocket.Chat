@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
-import gcStorage from '@google-cloud/storage';
+import { Storage } from '@google-cloud/storage';
 
 /**
  * GoogleStorage store
@@ -13,7 +13,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 	constructor(options) {
 		super(options);
 
-		const gcs = gcStorage(options.connection);
+		const gcs = new Storage(options.connection);
 		this.bucket = gcs.bucket(options.bucket);
 
 		options.getPath = options.getPath || function(file) {
