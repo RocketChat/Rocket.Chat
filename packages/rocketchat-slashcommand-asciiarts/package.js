@@ -7,14 +7,9 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
+		'ecmascript',
 		'rocketchat:lib',
 	]);
-
-	api.use('ecmascript');
-
-	api.addFiles('gimme.js', ['server', 'client']);
-	api.addFiles('lenny.js', ['server', 'client']);
-	api.addFiles('shrug.js', ['server', 'client']);
-	api.addFiles('tableflip.js', ['server', 'client']);
-	api.addFiles('unflip.js', ['server', 'client']);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
