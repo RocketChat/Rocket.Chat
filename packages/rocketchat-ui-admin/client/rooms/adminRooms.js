@@ -1,4 +1,3 @@
-/* globals AdminChatRoom, RocketChat */
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -6,12 +5,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { SideNav, t } from 'meteor/rocketchat:ui';
+import { RocketChat, RocketChatTabBar } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
-
-this.AdminChatRoom = new Mongo.Collection('rocketchat_room');
+export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
 	isReady() {
