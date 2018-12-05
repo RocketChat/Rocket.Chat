@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { modal, t } from 'meteor/rocketchat:ui';
 
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
