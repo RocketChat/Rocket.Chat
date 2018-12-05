@@ -160,7 +160,6 @@ export class Base {
 	 */
 	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
 		if (!skipTypeCheck) {
-
 			const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);
 			this.logger.debug('Expected file type is:', this.info.mimeType);
