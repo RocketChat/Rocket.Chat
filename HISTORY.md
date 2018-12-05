@@ -1,6 +1,36 @@
 
+# 0.72.1
+`2018-12-04  ·  4 🐛  ·  2 🔍  ·  6 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Change spread operator to Array.from for Edge browser ([#12818](https://github.com/RocketChat/Rocket.Chat/pull/12818) by [@ohmonster](https://github.com/ohmonster))
+- API users.info returns caller rooms and not requested user ones ([#12727](https://github.com/RocketChat/Rocket.Chat/pull/12727) by [@piotrkochan](https://github.com/piotrkochan))
+- Missing HipChat Enterprise Importer ([#12847](https://github.com/RocketChat/Rocket.Chat/pull/12847))
+- Emoji as avatar ([#12805](https://github.com/RocketChat/Rocket.Chat/pull/12805))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Bump Apps-Engine version ([#12848](https://github.com/RocketChat/Rocket.Chat/pull/12848))
+- Change file order in rocketchat-cors ([#12804](https://github.com/RocketChat/Rocket.Chat/pull/12804))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@ohmonster](https://github.com/ohmonster)
+- [@piotrkochan](https://github.com/piotrkochan)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@d-gubert](https://github.com/d-gubert)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 0.72.0
-`2018-11-27  ·  1 ️️️⚠️  ·  6 🎉  ·  16 🚀  ·  22 🐛  ·  79 🔍  ·  25 👩‍💻👨‍💻`
+`2018-11-28  ·  1 ️️️⚠️  ·  6 🎉  ·  16 🚀  ·  22 🐛  ·  79 🔍  ·  25 👩‍💻👨‍💻`
 
 ### ⚠️ BREAKING CHANGES
 
