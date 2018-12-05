@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import './settings.js';
 import './models/Rooms.js';
 import googleLanguage from '@google-cloud/language';

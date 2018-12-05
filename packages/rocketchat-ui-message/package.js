@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'tracker',
+		'rocketchat:emoji',
 		'rocketchat:lib',
 		'rocketchat:ui-account',
 		'rocketchat:ui-vrecord',
@@ -44,5 +45,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('startup/messageBoxActions.js', 'client');
 
-	api.export('renderMessageBody');
+	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
+
+	api.mainModule('client/index.js', 'client');
 });

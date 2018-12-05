@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 Meteor.methods({
 	openRoom(rid) {
 		if (!Meteor.userId()) {

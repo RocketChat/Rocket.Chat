@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 let verifyEmailTemplate = '';
@@ -18,9 +21,10 @@ Meteor.methods({
 				],
 			});
 
-			const { id, token } = Accounts._loginUser(this, userId);
+			const stampedLoginToken = Accounts._generateStampedLoginToken();
 
-			return { id, token };
+			Accounts._insertLoginToken(userId, stampedLoginToken);
+			return stampedLoginToken;
 		} else {
 			check(formData, Match.ObjectIncluding({
 				email: String,

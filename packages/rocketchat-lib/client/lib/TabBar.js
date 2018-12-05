@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 RocketChat.TabBar = new (class TabBar {
 	get size() {

@@ -1,4 +1,6 @@
 import _ from 'underscore';
+import { Accounts } from 'meteor/accounts-base';
+import { HTTP } from 'meteor/http';
 
 function getIdentity(accessToken) {
 	try {
