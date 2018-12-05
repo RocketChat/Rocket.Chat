@@ -20,8 +20,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-importer-not-defined', `The importer (${ importerKey }) has no import class defined.`, { method: 'uploadImportFile' });
 		}
 
-		const date = new Date(new Date().toUTCString()).toISOString();
-		const newFileName = `${ date }_${ userId }_${ fileName }`;
+		const date = new Date();
+		const dateStr = `${ date.getUTCFullYear() }${ date.getUTCMonth() }${ date.getUTCDate() }${ date.getUTCHours() }${ date.getUTCMinutes() }${ date.getUTCSeconds() }`;
+		const newFileName = `${ dateStr }_${ userId }_${ fileName }`;
 
 		importer.instance.startFileUpload(newFileName, contentType);
 

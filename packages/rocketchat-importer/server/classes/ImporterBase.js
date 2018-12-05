@@ -138,11 +138,12 @@ export class Base {
 	 */
 	prepareUsingLocalFile(fullFilePath) {
 		const file = fs.readFileSync(fullFilePath);
+		const buffer = Buffer.isBuffer(file) ? file : new Buffer(file);
 
 		const { contentType } = this.importRecord;
 		const fileName = this.importRecord.file;
 
-		const data = new Buffer(file).toString('base64');
+		const data = buffer.toString('base64');
 		const dataURI = `data:${ contentType };base64,${ data }`;
 
 		return this.prepare(dataURI, contentType, fileName, true);
@@ -159,6 +160,7 @@ export class Base {
 	 */
 	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
 		if (!skipTypeCheck) {
+
 			const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);
 			this.logger.debug('Expected file type is:', this.info.mimeType);

@@ -44,6 +44,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	prepare(dataURI, sentContentType, fileName) {
+		console.log('chegou aqui');
 		super.prepare(dataURI, sentContentType, fileName);
 
 		const tempUsers = [];
