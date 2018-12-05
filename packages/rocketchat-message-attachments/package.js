@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',
+		'rocketchat:ui-message',
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
