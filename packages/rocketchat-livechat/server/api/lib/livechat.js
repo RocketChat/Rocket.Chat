@@ -38,6 +38,24 @@ export function findRoom(token, rid) {
 	return RocketChat.models.Rooms.findLivechatByIdAndVisitorToken(rid, token, fields);
 }
 
+export function findOpenRoom(token, departmentId) {
+	const options = {
+		fields: {
+			departmentId: 1,
+			servedBy: 1,
+			open: 1,
+		}
+	};
+
+	let room;
+	const rooms = (departmentId) ? RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : RocketChat.models.Rooms.findOpenByVisitorToken(token, options).fetch();
+	if (rooms && rooms.length > 0) {
+		room = rooms[0];
+	}
+
+	return room;
+}
+
 export function getRoom(guest, rid, roomInfo) {
 	const token = guest && guest.token;
 
