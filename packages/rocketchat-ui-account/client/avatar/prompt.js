@@ -1,10 +1,11 @@
-/* globals fileUploadHandler */
-
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { t, SideNav } from 'meteor/rocketchat:ui';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import s from 'underscore.string';
 import toastr from 'toastr';
 import mime from 'mime-type/with-db';
