@@ -44,7 +44,7 @@ export function findOpenRoom(token, departmentId) {
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
-		}
+		},
 	};
 
 	let room;
