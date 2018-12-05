@@ -30,9 +30,9 @@ export class Base {
 	 * @static
 	 */
 	static getBSONSize(item) {
-		const { BSON } = require('bson');
-		const bson = new BSON();
-		return bson.calculateObjectSize(item);
+		const { calculateObjectSize } = require('bson');
+
+		return calculateObjectSize(item);
 	}
 
 	/**
