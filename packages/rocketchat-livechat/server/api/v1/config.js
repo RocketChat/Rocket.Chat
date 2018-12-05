@@ -1,4 +1,4 @@
-import { findRoom, findGuest, settings, online, findOpenRoom } from '../lib/livechat';
+import { findGuest, settings, online, findOpenRoom } from '../lib/livechat';
 import { Match, check } from 'meteor/check';
 
 RocketChat.API.v1.addRoute('livechat/config', {
