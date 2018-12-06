@@ -7,7 +7,7 @@ Meteor.startup(function() {
 		if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
 			RocketChat.MessageAction.addButton({
 				id: 'toggle-language',
-				icon: 'icon-language',
+				icon: 'language',
 				label: 'Toggle_original_translated',
 				context: [
 					'message',
