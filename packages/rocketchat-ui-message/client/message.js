@@ -1,4 +1,3 @@
-/* globals renderEmoji renderMessageBody */
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
@@ -7,6 +6,8 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
+import { renderEmoji } from 'meteor/rocketchat:emoji';
+import { renderMessageBody } from './renderMessageBody';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
