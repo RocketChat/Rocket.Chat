@@ -64,31 +64,24 @@ class NotifyUser extends Stream {
 				publication.stop();
 			}
 			const { socket } = publication._session;
-			const roomEvent = (...args) => {
-				// RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
+			const rooms = [];
 
-				// same behaviour but without sending multiple times
-				// TODO performance: remove concatenation id + room-changed to use just one EJSON.serialize
-				socket.send(this.changedPayload({
-					eventName: `${ uid }/rooms-changed`,
-					args,
-				}, this.subscriptionName));
-			};
-
-			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
-			rooms.forEach(({ rid }) => this.internals.on(rid, roomEvent));
+			RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).forEach(({ rid }) => rooms.push({ rid, remove: this.addSubscription(rid, socket) }));
 
 			const userEvent = (clientAction, { rid }) => {
 				switch (clientAction) {
 					case 'inserted':
 					case 'insert':
-						rooms.push({ rid });
-						this.internals.on(rid, roomEvent);
+						rooms.push({ rid, remove: this.addSubscription(rid, socket) });
 						break;
 
 					case 'removed':
 					case 'remove':
-						this.internals.removeListener(rid, roomEvent);
+						const sub = rooms.index(({ rid: roomId }) => roomId === rid);
+						if (sub > -1) {
+							rooms[sub].remove();
+							rooms.splice(sub, 1);
+						}
 						break;
 				}
 			};
@@ -96,7 +89,11 @@ class NotifyUser extends Stream {
 			this.internals.on(uid, userEvent);
 			publication.onStop(() => {
 				this.internals.removeListener(uid, userEvent);
-				rooms.forEach(({ rid }) => this.internals.removeListener(rid, roomEvent));
+
+				while (rooms.length) {
+					rooms[0].remove();
+					rooms.pop();
+				}
 			});
 			return publication.ready();
 		}
@@ -151,6 +148,10 @@ RocketChat.Notifications = new class {
 		this.streamRoomUsers.allowRead('none');
 		this.streamUser.allowRead(function(eventName) {
 			const [userId] = eventName.split('/');
+
+			if (eventName === 'rooms-changed') {
+				return this.userId != null;
+			}
 			return (this.userId != null) && this.userId === userId;
 		});
 	}

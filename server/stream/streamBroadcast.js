@@ -119,6 +119,27 @@ function startMatrixBroadcast() {
 	});
 }
 
+
+function emit(streamName, eventName, args) {
+	if (Streamer[streamName]) {
+		if (Streamer[streamName].serverOnly) {
+			return Streamer[streamName].internals.emit(eventName, ...args);
+		}
+		return Streamer[streamName].emit(eventName, ...args);
+	}
+
+	const instance = Meteor.StreamerCentral.instances[streamName];
+	if (!instance) {
+		return 'stream-not-exists';
+	}
+
+	if (instance.serverOnly) {
+		const scope = {};
+		return instance.emitWithScope(eventName, scope, ...args);
+	}
+	Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+}
+
 Meteor.methods({
 	broadcastAuth(remoteId, selfId) {
 		check(selfId, String);
@@ -145,24 +166,7 @@ Meteor.methods({
 		if (this.connection.broadcastAuth !== true) {
 			return 'not-authorized';
 		}
-
-		if (Streamer[streamName]) {
-			if (Streamer[streamName].serverOnly) {
-				return Streamer[streamName].internals.emit(eventName, ...args);
-			}
-			return Streamer[streamName].emit(eventName, ...args);
-		}
-
-		const instance = Meteor.StreamerCentral.instances[streamName];
-		if (!instance) {
-			return 'stream-not-exists';
-		}
-
-		if (instance.serverOnly) {
-			const scope = {};
-			return instance.emitWithScope(eventName, scope, ...args);
-		}
-		Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+		return emit(streamName, eventName, args);
 	},
 });
 
@@ -197,11 +201,7 @@ function startStreamCastBroadcast(value) {
 			return 'not-authorized';
 		}
 
-		if (!Meteor.StreamerCentral.instances[streamName]) {
-			return 'stream-not-exists';
-		}
-
-		return Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+		return emit(streamName, eventName, args);
 	});
 
 	return connection.subscribe('stream');

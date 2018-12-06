@@ -69,6 +69,9 @@ RocketChat.Notifications = new class {
 		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
 	}
 	onUser(eventName, callback) {
+		if (eventName === 'rooms-changed') {
+			return this.streamUser.on(`${ eventName }`, callback);
+		}
 		return this.streamUser.on(`${ Meteor.userId() }/${ eventName }`, callback);
 	}
 	unAll(callback) {

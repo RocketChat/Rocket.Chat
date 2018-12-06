@@ -93,7 +93,7 @@ export class Stream extends EventEmitter {
 			publication.stop();
 			throw new Meteor.Error('not-allowed');
 		}
-		const cancel = this[addSubscription](eventName, publication._session.socket);
+		const cancel = this.addSubscription(eventName, publication._session.socket);
 		publication.onStop(cancel);
 		publication.ready();
 	}
@@ -105,6 +105,17 @@ export class Stream extends EventEmitter {
 			id: 'id',
 			fields,
 		});
+	}
+
+
+	emitDifferentEventName(key, eventName, ...args) {
+		const msg = this.changedPayload({
+			eventName,
+			args,
+		}, this.subscriptionName);
+
+		Streamer.emit('emit', this.name, eventName, this.listenerCount(eventName), msg);
+		return super.emit(key, msg);
 	}
 
 	emit(eventName, ...args) {
@@ -137,7 +148,7 @@ export class Stream extends EventEmitter {
 		Meteor.publish(this.subscriptionName, function(...args) { return self.subscribe.apply(self, [this, ...args]); });
 	}
 
-	[addSubscription](eventName, client) {
+	addSubscription(eventName, client) {
 		const fn = (msg) => client.send(msg);
 		this.on(eventName, fn);
 		return () => this[removeSubscription](eventName, fn);
