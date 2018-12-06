@@ -67,7 +67,7 @@ const toolbarButtons = (user) => [{
 	name: t('Search'),
 	icon: 'magnifier',
 	action: () => {
-		toolbarSearch.show(false);
+		toolbarSearch.show(false); //eslint-disable-line
 	},
 },
 {
