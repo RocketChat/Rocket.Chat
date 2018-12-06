@@ -77,7 +77,7 @@ class NotifyUser extends Stream {
 
 					case 'removed':
 					case 'remove':
-						const sub = rooms.index(({ rid: roomId }) => roomId === rid);
+						const sub = rooms.findIndex(({ rid: roomId }) => roomId === rid);
 						if (sub > -1) {
 							rooms[sub].remove();
 							rooms.splice(sub, 1);
