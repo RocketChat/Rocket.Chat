@@ -162,4 +162,6 @@ Package.onUse(function(api) {
 	api.export('RoomHistoryManager', 'client');
 	api.export('KonchatNotification', 'client');
 	api.export('VideoRecorder', 'client');
+	api.export('UserRoles', 'client');
+	api.export('isRtl', 'client');
 });
