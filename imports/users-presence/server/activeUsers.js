@@ -1,7 +1,6 @@
-import memoize from 'mem';
-import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
+import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
-export const emitStatus = memoize((_id, username, name, utcOffset, status) => {
+export const emitStatus = (_id, username, name, utcOffset, status) => {
 	RocketChat.Notifications.notifyLoggedInThisInstance('user-status', {
 		_id,
 		username,
@@ -9,9 +8,9 @@ export const emitStatus = memoize((_id, username, name, utcOffset, status) => {
 		status,
 		utcOffset,
 	});
-}, { maxAge: 5000 });
+};
 
-UserPresenceMonitor.onSetUserStatus((user, status/* , statusConnection*/) => {
+UserPresenceEvents.on('setUserStatus', (user, status/* , statusConnection*/) => {
 	const {
 		_id,
 		username,
