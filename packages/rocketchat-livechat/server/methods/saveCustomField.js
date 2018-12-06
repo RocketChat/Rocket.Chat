@@ -1,4 +1,6 @@
 /* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding", "Match.Optional"]}] */
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 
 Meteor.methods({
 	'livechat:saveCustomField'(_id, customFieldData) {

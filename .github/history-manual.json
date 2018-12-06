@@ -11,5 +11,10 @@
 		"title": "[FIX] Removed Deprecated Package rocketchat:sharedsecret`",
 		"userLogin": "rodrigok",
 		"contributors": []
+	}],
+	"0.72.0-rc.0": [{
+		"title": "[BREAK] Support for Cordova (Rocket.Chat Legacy app) has reached End-of-life, support has been discontinued",
+		"userLogin": "sampaiodiego",
+		"contributors": []
 	}]
 }

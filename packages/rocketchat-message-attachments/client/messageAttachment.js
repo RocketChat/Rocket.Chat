@@ -1,12 +1,16 @@
+import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { renderMessageBody } from 'meteor/rocketchat:ui-message';
+
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',
 	danger: '#D30230',
 };
 
-/* globals renderMessageBody*/
 Template.messageAttachment.helpers({
 	fixCordova,
 	parsedText() {
@@ -50,8 +54,7 @@ Template.messageAttachment.helpers({
 		if (this.collapsed != null) {
 			return this.collapsed;
 		} else {
-			const user = Meteor.user();
-			return RocketChat.getUserPreference(user, 'collapseMediaByDefault') === true;
+			return RocketChat.getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
 	},
 	time() {

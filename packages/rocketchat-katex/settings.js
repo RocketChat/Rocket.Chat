@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	const enableQuery = {
 		_id: 'Katex_Enabled',

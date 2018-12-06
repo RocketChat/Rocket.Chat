@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({

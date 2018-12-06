@@ -1,5 +1,8 @@
 /* globals FileUploadBase, UploadFS, fileUploadHandler:true */
 /* exported fileUploadHandler */
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Tracker } from 'meteor/tracker';
 
 new UploadFS.Store({
 	collection: RocketChat.models.Uploads.model,
