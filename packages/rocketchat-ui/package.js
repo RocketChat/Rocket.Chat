@@ -161,4 +161,6 @@ Package.onUse(function(api) {
 	api.export('ChatMessage', 'client');
 	api.export('RoomHistoryManager', 'client');
 	api.export('KonchatNotification', 'client');
+	api.export('UserRoles', 'client');
+	api.export('isRtl', 'client');
 });
