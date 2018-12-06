@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import LivechatVisitors from '../../models/LivechatVisitors';
@@ -7,7 +8,7 @@ export function online() {
 }
 
 export function findTriggers() {
-	return RocketChat.models.LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions'));
+	return RocketChat.models.LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 }
 
 export function findDepartments() {
@@ -58,6 +59,9 @@ export function findAgent(agentId) {
 
 export function settings() {
 	const initSettings = RocketChat.Livechat.getInitSettings();
+	const triggers = findTriggers();
+	const departments = findDepartments();
+	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 
 	return {
 		enabled: initSettings.Livechat_enabled,
@@ -89,10 +93,16 @@ export function settings() {
 			offlineUnavailableMessage: initSettings.Livechat_offline_form_unavailable,
 			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
 			transcriptMessage: initSettings.Livechat_transcript_message,
+			registrationFormMessage: initSettings.Livechat_registration_form_message,
 		},
 		survey: {
 			items: ['satisfaction', 'agentKnowledge', 'agentResposiveness', 'agentFriendliness'],
 			values: ['1', '2', '3', '4', '5'],
+		},
+		triggers,
+		departments,
+		resources: {
+			sound,
 		},
 	};
 }

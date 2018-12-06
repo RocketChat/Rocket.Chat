@@ -363,7 +363,7 @@ RocketChat.Livechat = {
 			'Livechat_conversation_finished_message',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
-
+			'Livechat_registration_form_message',
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
