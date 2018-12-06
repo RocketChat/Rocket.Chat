@@ -614,6 +614,18 @@ class ModelUsers extends RocketChat.models._Base {
 		return this.update({ _id }, update);
 	}
 
+	updateDefaultStatus(_id, statusDefault) {
+		return this.update({
+			_id,
+			statusDefault: { $ne: statusDefault },
+		}, {
+			$set: {
+				statusDefault,
+				_updateAt: new Date(),
+			},
+		});
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
