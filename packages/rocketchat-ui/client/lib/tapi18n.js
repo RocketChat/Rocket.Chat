@@ -23,7 +23,7 @@ this.tr = function(key, options, ...replaces) {
 	}
 };
 
-this.isRtl = (lang) => {
+isRtl = (lang) => { //eslint-disable-line
 	const language = lang || localStorage.getItem('userLanguage') || 'en-US';
 	return ['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ug', 'ur', 'yi'].includes(language.split('-').shift().toLowerCase());
 };
