@@ -1,4 +1,4 @@
-_site-url_
+_caddy-url_
 proxy / localhost:_port_ {
   websocket
   transparent

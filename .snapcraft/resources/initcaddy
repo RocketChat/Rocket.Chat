@@ -2,7 +2,7 @@
 
 # Config options for Caddyfile
 #options="site path port"
-options="site-url port"
+options="caddy-url port"
 
 refresh_opt_in_config() {
 # replace an option inside the config file.
@@ -33,6 +33,14 @@ for opt in $options
 done
 }
 
+caddy="$(snapctl get caddy)"
+if [[ $caddy == "disable" ]]; then
+  echo "Caddy is not enabled, please set caddy-url=<your_url> and caddy=enable"
+  exit 1
+fi
+
 create_caddyfile
 update_caddyfile
+
+echo "Your URL was successfully configured - Please restart rocketchat and caddy services to apply configuration changes"
 

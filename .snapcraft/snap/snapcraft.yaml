@@ -36,6 +36,9 @@ apps:
         plugs: [network]
     initcaddy:
         command: env LC_ALL=C initcaddy
+hooks:
+    configure:
+        plugs: [network]
 parts:
     node:
         plugin: dump 
@@ -95,3 +98,12 @@ parts:
         organize:
             caddy: bin/caddy
         after: [mongodb]
+    hooks:
+        plugin: nil
+        stage-packages:
+            - dnsutils
+            - curl
+        prime:
+            - usr
+            - lib
+

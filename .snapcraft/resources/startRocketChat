@@ -20,6 +20,10 @@ function start_rocketchat {
         export MONGO_URL="$(snapctl get mongo-url)"
         export MONGO_OPLOG_URL="$(snapctl get mongo-oplog-url)"
 	export Accounts_AvatarStorePath=$SNAP_COMMON/uploads
+	siteurl="$(snapctl get siteurl)"
+        if [ -n "$siteurl" ]; then
+	  export OVERWRITE_SETTING_Site_Url=$siteurl
+	fi
 
 	for filename in $SNAP_COMMON/*.env; do
           while read env_var; do
