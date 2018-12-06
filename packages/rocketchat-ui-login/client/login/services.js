@@ -1,6 +1,7 @@
-/* globals CustomOAuth */
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
