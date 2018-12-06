@@ -12,4 +12,7 @@ Package.onUse(function(api) {
 		'rocketchat:importer',
 		'rocketchat:logger',
 	]);
+
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
