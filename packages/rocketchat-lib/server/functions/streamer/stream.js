@@ -6,7 +6,7 @@ import { DDPCommon } from 'meteor/ddp-common';
 
 const prepareSubscription = Symbol('prepareSubscription');
 const prepareMethod = Symbol('prepareMethod');
-const addSubscription = Symbol('addSubscription');
+
 const removeSubscription = Symbol('removeSubscription');
 const authorizaton = Symbol('authorizaton');
 
