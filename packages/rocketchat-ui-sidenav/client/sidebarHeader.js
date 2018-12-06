@@ -38,7 +38,7 @@ const extendedViewOption = (user) => {
 const showToolbar = new ReactiveVar(false);
 
 const selectorSearch = '.toolbar__search .rc-input__element';
-const toolbarSearch = {
+toolbarSearch = { //eslint-disable-line
 	shortcut: false,
 	clear() {
 		const $inputMessage = $('.js-input-message');
@@ -62,8 +62,6 @@ const toolbarSearch = {
 		}
 	},
 };
-
-this.toolbarSearch = toolbarSearch;
 
 const toolbarButtons = (user) => [{
 	name: t('Search'),
