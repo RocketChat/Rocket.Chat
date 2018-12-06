@@ -30,9 +30,7 @@ this.VideoRecorder = new class {
 		if (this.stream == null) {
 			return;
 		}
-		this.mediaRecorder = new MediaRecorder(this.stream);
-		this.mediaRecorder.stream = this.stream;
-		this.mediaRecorder.mimeType = 'video/webm';
+		this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: 'video/webm' });
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {
@@ -45,12 +43,11 @@ this.VideoRecorder = new class {
 
 	startUserMedia(stream) {
 		this.stream = stream;
-		try {
-			this.videoel.srcObject = stream;
-		} catch (_e) {
-			this.videoel.src = URL.createObjectURL(stream);
-		}
-		this.videoel.onloadedmetadata = () => this.videoel.play();
+		this.videoel.src = URL.createObjectURL(stream);
+
+		this.videoel.onloadedmetadata = () => {
+			this.videoel.play();
+		};
 
 		this.started = true;
 		return this.cameraStarted.set(true);
