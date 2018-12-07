@@ -1,8 +1,8 @@
-/* globals popover */
 import { Mongo } from 'meteor/mongo';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { DateFormat } from 'meteor/rocketchat:lib';
+import { popover } from 'meteor/rocketchat:ui';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
