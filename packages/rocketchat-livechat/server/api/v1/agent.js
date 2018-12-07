@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import { findRoom, findGuest, findAgent } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/agent.info/:rid/:token', {

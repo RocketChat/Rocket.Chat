@@ -1,4 +1,7 @@
 /* globals Livechat */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Session } from 'meteor/session';
 import visitor from '../../imports/client/visitor';
 
 const firedTriggers = JSON.parse(localStorage.getItem('rocketChatFiredTriggers')) || [];
@@ -133,8 +136,16 @@ this.Triggers = (function() {
 		triggers = newTriggers;
 	};
 
-	const init = function() {
+	const init = function(newTriggers) {
+		if (initiated) {
+			return;
+		}
+
 		initiated = true;
+
+		if (newTriggers) {
+			setTriggers(newTriggers);
+		}
 
 		firedTriggers.forEach((triggerId) => {
 			triggers.forEach((trigger) => {

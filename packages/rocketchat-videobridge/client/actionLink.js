@@ -1,4 +1,7 @@
+import { Session } from 'meteor/session';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
+
 RocketChat.actionLinks.register('joinJitsiCall', function(message, params, instance) {
 	if (Session.get('openedRoom')) {
 		const rid = Session.get('openedRoom');

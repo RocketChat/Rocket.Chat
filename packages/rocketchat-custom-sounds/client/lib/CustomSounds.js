@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 class CustomSounds {

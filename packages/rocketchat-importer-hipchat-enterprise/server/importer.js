@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
 import {
 	Base,
 	ProgressStep,
@@ -5,6 +8,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { Readable } from 'stream';
 import path from 'path';
 import s from 'underscore.string';
@@ -495,6 +499,7 @@ export class HipChatEnterpriseImporter extends Base {
 				super.updateProgress(ProgressStep.FINISHING);
 				super.updateProgress(ProgressStep.DONE);
 			} catch (e) {
+				super.updateRecord({ 'error-record': JSON.stringify(e, Object.getOwnPropertyNames(e)) });
 				this.logger.error(e);
 				super.updateProgress(ProgressStep.ERROR);
 			}

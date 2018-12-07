@@ -1,27 +1,25 @@
 <template name="accountIntegrations">
-	<section class="page-container page-home page-static">
-		{{> header sectionName="Integrations"}}
+	<section class="preferences-page preferences-page--new page-static page-settings">
+		{{> header sectionName="Integrations" fullpage=true}}
 
 		<div class="content">
 			<form id="integrations" autocomplete="off">
-				<fieldset class="rc-form-legend">
-					<div class="section">
-						<h1>{{_ "WebDAV"}}</h1>
-						<div class="section-content border-component-color">
-							<div class="input-line double-col">
-								<label for="webdav-accounts">{{_ "WebDAV_Accounts"}}</label>
-								<div class="rc-select">
-									<select id="webdav-accounts" class="rc-select__element" style="text-transform: none" multiple>
-										{{#each webdavAccounts}}
-											<option value="{{this._id}}">{{getOptionValue this}}</option>
-										{{/each}}
-									</select>
-								</div>
-								<button class="rc-button rc-button--cancel webdav-account-remove"><span>{{_ "Remove"}}</span></button>
+				<div class="section">
+					<h1>{{_ "WebDAV"}}</h1>
+					<div class="section-content border-component-color">
+						<div class="input-line double-col">
+							<label for="webdav-accounts" class="setting-label">{{_ "WebDAV_Accounts"}}</label>
+							<div class="rc-select setting-field">
+								<select id="webdav-accounts" class="rc-select__element" style="text-transform: none" multiple>
+									{{#each webdavAccounts}}
+										<option value="{{this._id}}">{{getOptionValue this}}</option>
+									{{/each}}
+								</select>
 							</div>
+							<button class="rc-button rc-button--cancel setting-action webdav-account-remove"><span>{{_ "Remove"}}</span></button>
 						</div>
 					</div>
-				</fieldset>
+				</div>
 			</form>
 		</div>
 	</section>

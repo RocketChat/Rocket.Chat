@@ -1,4 +1,7 @@
-/* globals Blaze, RocketChat */
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Blaze } from 'meteor/blaze';
+
 RocketChat.tooltip = {
 	source: null,
 	initiated: false,

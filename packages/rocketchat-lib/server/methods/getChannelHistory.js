@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -51,22 +53,7 @@ Meteor.methods({
 			records = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
 		}
 
-		const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
-
-		const messages = _.map(records, (message) => {
-			message.starred = _.findWhere(message.starred, { _id: fromUserId });
-			if (message.u && message.u._id && UI_Use_Real_Name) {
-				const user = RocketChat.models.Users.findOneById(message.u._id);
-				message.u.name = user && user.name;
-			}
-			if (message.mentions && message.mentions.length && UI_Use_Real_Name) {
-				message.mentions.forEach((mention) => {
-					const user = RocketChat.models.Users.findOneById(mention._id);
-					mention.name = user && user.name;
-				});
-			}
-			return message;
-		});
+		const messages = records.map((record) => RocketChat.composeMessageObjectWithUser(record, fromUserId));
 
 		if (unreads) {
 			let unreadNotLoaded = 0;

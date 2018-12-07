@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(function() {
 	RocketChat.settings.add('GoogleNaturalLanguage_Enabled', false, {
 		type: 'boolean',

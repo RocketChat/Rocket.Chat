@@ -1,7 +1,10 @@
-/* global InstanceStatus, MongoInternals */
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
 import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 const wizardFields = [
 	'Organization_Type',
@@ -28,6 +31,12 @@ RocketChat.statistics.get = function _getStatistics() {
 			statistics.wizard[wizardField] = record.value;
 		}
 	});
+
+	if (statistics.wizard.allowMarketingEmails) {
+		const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
+		statistics.wizard.contactName = firstUser && firstUser.name;
+		statistics.wizard.contactEmail = firstUser && firstUser.emails[0].address;
+	}
 
 	// Version
 	statistics.uniqueId = RocketChat.settings.get('uniqueID');

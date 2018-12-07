@@ -1,4 +1,9 @@
-/* globals fireGlobalEvent, readMessage, Favico, favico, menu */
+/* globals fireGlobalEvent, readMessage, favico, menu */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Favico } from 'meteor/rocketchat:favico';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
@@ -32,7 +37,7 @@ Meteor.startup(function() {
 				// Increment the total unread count.
 				unreadCount += subscription.unread;
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					const userUnreadAlert = RocketChat.getUserPreference(Meteor.user(), 'unreadAlert');
+					const userUnreadAlert = RocketChat.getUserPreference(Meteor.userId(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 						unreadAlert = '•';
 					}

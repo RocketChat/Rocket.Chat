@@ -1,4 +1,5 @@
 /* globals WebAppInternals*/
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 function testWebAppInternals(fn) {

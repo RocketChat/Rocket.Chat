@@ -1,4 +1,11 @@
 /* globals MsgTyping */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -13,7 +20,7 @@ Meteor.startup(() => {
 	});
 });
 
-this.ChatMessages = class ChatMessages {
+ChatMessages = class ChatMessages { //eslint-disable-line
 	constructor() {
 
 		this.saveTextMessageBox = _.debounce((rid, value) => { // eslint
@@ -417,6 +424,25 @@ this.ChatMessages = class ChatMessages {
 		}
 	}
 
+	insertNewLine(input) {
+		if (document.selection) {
+			input.focus();
+			const sel = document.selection.createRange();
+			sel.text = '\n';
+		} else if (input.selectionStart || input.selectionStart === 0) {
+			const newPosition = input.selectionStart + 1;
+			const before = input.value.substring(0, input.selectionStart);
+			const after = input.value.substring(input.selectionEnd, input.value.length);
+			input.value = `${ before }\n${ after }`;
+			input.selectionStart = input.selectionEnd = newPosition;
+		} else {
+			input.value += '\n';
+		}
+		input.blur();
+		input.focus();
+		typeof input.updateAutogrow === 'function' && input.updateAutogrow();
+	}
+
 	restoreText(rid) {
 		const text = localStorage.getItem(`messagebox_${ rid }`);
 		if (typeof text === 'string' && this.input) {
@@ -468,30 +494,24 @@ this.ChatMessages = class ChatMessages {
 	}
 
 	keydown(rid, event) {
-		const input = event.currentTarget;
-		// const $input = $(input);
-		const k = event.which;
+		const { currentTarget: input, which: k } = event;
 
-		if (k === 13) {
-			if ((sendOnEnter == null || sendOnEnter === 'normal' || sendOnEnter === 'desktop') && Meteor.Device.isDesktop()) {
-				if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) { // Enter without shift/ctrl/alt
-					event.preventDefault();
-					event.stopPropagation();
-					this.send(rid, input);
-					return;
-				} else if (!event.shiftKey) {
-					return input.value += '\n';
-				}
-			} else if (sendOnEnter === 'alternative') {
-				if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) { // Enter with shift/ctrl/alt
-					event.preventDefault();
-					event.stopPropagation();
-					this.send(rid, input);
-					return;
-				}
+		if (k === 13 || k === 10) { // New line or carriage return
+			const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' ||
+				(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
+			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
+			const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
+
+			event.preventDefault();
+			event.stopPropagation();
+			if (isSending) {
+				this.send(rid, input);
+			} else {
+				this.insertNewLine(input);
 			}
-		}
 
+			return;
+		}
 
 		if (k === 9) { // Tab
 			event.preventDefault();

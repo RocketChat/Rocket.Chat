@@ -1,4 +1,8 @@
 /* globals HTTP */
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -221,7 +225,8 @@ RocketChat.Livechat = {
 		}
 
 		if (department) {
-			updateUser.$set.department = department;
+			const dep = RocketChat.models.LivechatDepartment.findOneByIdOrName(department);
+			updateUser.$set.department = dep && dep._id;
 		}
 
 		LivechatVisitors.updateById(userId, updateUser);
@@ -267,6 +272,10 @@ RocketChat.Livechat = {
 	},
 
 	closeRoom({ user, visitor, room, comment }) {
+		if (!room || room.t !== 'l' || !room.open) {
+			return false;
+		}
+
 		const now = new Date();
 
 		const closeData = {
@@ -354,7 +363,7 @@ RocketChat.Livechat = {
 			'Livechat_conversation_finished_message',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
-
+			'Livechat_registration_form_message',
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});

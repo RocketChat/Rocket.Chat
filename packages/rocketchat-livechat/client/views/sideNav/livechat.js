@@ -1,4 +1,10 @@
 /* globals LivechatInquiry, KonchatNotification */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+
 Template.livechat.helpers({
 	isActive() {
 		const query = {
