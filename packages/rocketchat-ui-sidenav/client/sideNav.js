@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { roomType } from './roomsHelpers';
 
 /* globals menu*/
 
@@ -19,17 +20,7 @@ Template.sideNav.helpers({
 		return String(RocketChat.settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
-	roomType() {
-		return RocketChat.roomTypes.getTypes().map((roomType) => ({
-			template: roomType.customTemplate || 'roomList',
-			data: {
-				header: roomType.header,
-				identifier: roomType.identifier,
-				isCombined: roomType.isCombined,
-				label: roomType.label,
-			},
-		}));
-	},
+	roomType,
 
 	loggedInUser() {
 		return !!Meteor.userId();
