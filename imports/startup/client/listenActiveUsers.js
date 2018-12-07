@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-const updateUser = (user, force = false) => {
+const saveUser = (user, force = false) => {
 	// do not update my own user, my user's status will come from a subscription
 	if (user._id === Meteor.userId()) {
 		return;
@@ -30,7 +30,7 @@ function getActiveUsers() {
 	RocketChat.API.v1.get('users.actives')
 		.then((result) => {
 			result.users.forEach((user) => {
-				updateUser(user);
+				saveUser(user);
 			});
 		})
 		.catch(() => setTimeout(getActiveUsers, retry++ * 2000));
@@ -43,6 +43,19 @@ Tracker.autorun(() => {
 	getActiveUsers();
 });
 
-RocketChat.Notifications.onLogged('user-status', (user) => {
-	updateUser(user, true);
+Meteor.startup(function() {
+	RocketChat.Notifications.onLogged('user-status', (user) => {
+		saveUser(user, true);
+	});
+
+	RocketChat.Notifications.onLogged('Users:NameChanged', ({ _id, username }) => {
+		if (!username) {
+			return;
+		}
+		Meteor.users._collection.upsert({ _id }, {
+			$set: {
+				username,
+			},
+		});
+	});
 });
