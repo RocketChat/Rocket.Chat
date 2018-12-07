@@ -39,6 +39,7 @@
   * [Hyper.sh](#hypersh)
   * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
+  * [Syncloud.org](#syncloudorg)
 * [About Rocket.Chat](#about-rocketchat)
   * [In the News](#in-the-news)
   * [Features](#features)
@@ -230,6 +231,11 @@ Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
 
 [![Deploy](https://github.com/mastappl/images/blob/master/deployTo.png)](https://panel.d2c.io/?import=https://github.com/d2cio/rocketchat-stack/archive/master.zip/)
+
+## Syncloud.org
+Run Rocket.Chat on your easy to use personal device.
+
+[![Deploy](https://syncloud.org/images/logo_min.svg)](https://syncloud.org)
 
 # About Rocket.Chat
 
