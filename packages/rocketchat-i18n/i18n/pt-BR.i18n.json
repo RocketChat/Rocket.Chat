@@ -1641,6 +1641,7 @@
   "Livechat_open_inquiery_show_connecting": "Mostrar conexão de mensagem em vez de entrada quando o visitante ainda não está conectado a um agente",
   "Livechat_Queue": "Roleta Livechat",
   "Livechat_registration_form": "Formulário de Registro",
+  "Livechat_registration_form_message": "Mensagem do Formulário de Registro",
   "Livechat_room_count": "Contador de salas de Livechat",
   "Livechat_Routing_Method": "Método de roteamento Livechat",
   "Livechat_Take_Confirm": "Você quer levar esse cliente?",
