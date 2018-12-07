@@ -1,4 +1,5 @@
-// we need only jws functionality
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { jws } from 'jsrsasign';
 
 Meteor.methods({
