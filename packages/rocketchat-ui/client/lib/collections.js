@@ -9,7 +9,7 @@ ChatRoom = this.CachedChatRoom.collection;
 
 this.CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscriptions' });
 ChatSubscription = this.CachedChatSubscription.collection; //eslint-disable-line
-this.UserRoles = new Mongo.Collection(null);
+UserRoles = new Mongo.Collection(null); //eslint-disable-line
 RoomRoles = new Mongo.Collection(null); //eslint-disable-line
 this.UserAndRoom = new Mongo.Collection(null);
 this.CachedChannelList = new Mongo.Collection(null);
