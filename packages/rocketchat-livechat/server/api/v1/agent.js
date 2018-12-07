@@ -50,7 +50,7 @@ RocketChat.API.v1.addRoute('livechat/agent.next/:token', {
 			}
 
 			let { department } = this.queryParams;
-			if (!department || department === 'undefined') {
+			if (!department) {
 				const requireDeparment = RocketChat.Livechat.getRequiredDepartment();
 				if (requireDeparment) {
 					department = requireDeparment._id;

@@ -49,7 +49,7 @@ export function findOpenRoom(token, departmentId) {
 	};
 
 	let room;
-	const rooms = (departmentId) ? RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : RocketChat.models.Rooms.findOpenByVisitorToken(token, options).fetch();
+	const rooms = departmentId ? RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : RocketChat.models.Rooms.findOpenByVisitorToken(token, options).fetch();
 	if (rooms && rooms.length > 0) {
 		room = rooms[0];
 	}
