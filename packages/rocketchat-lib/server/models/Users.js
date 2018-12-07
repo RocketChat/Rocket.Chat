@@ -621,7 +621,6 @@ class ModelUsers extends RocketChat.models._Base {
 		}, {
 			$set: {
 				statusDefault,
-				_updateAt: new Date(),
 			},
 		});
 	}
