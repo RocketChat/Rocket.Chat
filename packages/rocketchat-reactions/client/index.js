@@ -1,5 +1,4 @@
-import './stylesheets/reaction.css';
-import '../server/models/Rooms';
-import '../server/models/Messages';
+import '../lib/models/Rooms';
+import '../lib/models/Messages';
 import './init';
 import './methods/setReaction';
