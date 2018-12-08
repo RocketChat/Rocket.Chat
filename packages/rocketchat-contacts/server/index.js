@@ -15,9 +15,21 @@ function refreshContactsHashMap() {
 
 	if (phoneFieldName) {
 		cursor.forEach((user) => {
-			if ('customFields' in user && phoneFieldName in user.customFields) {
-				contacts.push(user.customFields[phoneFieldName]);
+			const phoneFieldArray = phoneFieldName.split(',');
+			let dict = user;
+
+			for (let i = 0;i < phoneFieldArray.length - 1;i++) {
+				if (phoneFieldArray[i] in dict) {
+					dict = dict[phoneFieldArray[i]];
+				}
 			}
+
+			const phone = dict[phoneFieldArray[phoneFieldArray.length - 1]];
+
+			if (phone) {
+				contacts.push(phone);
+			}
+
 			if ('emails' in user) {
 				user.emails.forEach((email) => {
 					if (email.verified) {
