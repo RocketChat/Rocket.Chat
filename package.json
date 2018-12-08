@@ -1,11 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-<<<<<<< HEAD
-	"version": "0.72.1",
-=======
 	"version": "0.73.0-develop",
->>>>>>> upstream/develop
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -120,17 +116,10 @@
 		"supertest": "^3.3.0"
 	},
 	"dependencies": {
-<<<<<<< HEAD
-		"@babel/runtime": "^7.1.2",
-		"@google-cloud/language": "^1.2.0",
-		"@google-cloud/storage": "^1.7.0",
-		"@google-cloud/vision": "^0.19.0",
-=======
 		"@babel/runtime": "^7.2.0",
 		"@google-cloud/language": "^2.0.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
->>>>>>> upstream/develop
 		"@rocket.chat/apps-engine": "1.3.2",
 		"@slack/client": "^4.8.0",
 		"adm-zip": "^0.4.13",
