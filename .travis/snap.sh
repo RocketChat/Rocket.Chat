@@ -17,7 +17,6 @@ elif [[ $TRAVIS_TAG ]]; then
     RC_VERSION=$TRAVIS_TAG
 else
     CHANNEL=edge
-
     RC_VERSION=0.73.0-develop
 fi
 
