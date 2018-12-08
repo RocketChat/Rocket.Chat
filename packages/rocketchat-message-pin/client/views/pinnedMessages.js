@@ -1,7 +1,7 @@
-/* globals PinnedMessage */
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { PinnedMessage } from '../lib/PinnedMessage';
 
 Template.pinnedMessages.helpers({
 	hasMessages() {

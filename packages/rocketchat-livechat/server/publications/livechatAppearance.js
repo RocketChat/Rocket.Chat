@@ -26,6 +26,7 @@ Meteor.publish('livechat:appearance', function() {
 				'Livechat_registration_form',
 				'Livechat_name_field_registration_form',
 				'Livechat_email_field_registration_form',
+				'Livechat_registration_form_message',
 			],
 		},
 	};

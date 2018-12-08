@@ -9,14 +9,14 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import { e2e } from 'meteor/rocketchat:e2e';
 
-const KonchatNotification = {
+KonchatNotification = { //eslint-disable-line
 	notificationStatus: new ReactiveVar,
 
 	// notificacoes HTML5
 	getDesktopPermission() {
 		if (window.Notification && (Notification.permission !== 'granted') && !Meteor.settings.public.sandstorm) {
 			return Notification.requestPermission(function(status) {
-				KonchatNotification.notificationStatus.set(status);
+				KonchatNotification.notificationStatus.set(status); //eslint-disable-line
 				if (Notification.permission !== status) {
 					return Notification.permission = status;
 				}
@@ -88,7 +88,7 @@ const KonchatNotification = {
 		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
-			return KonchatNotification.notify(notification);
+			return KonchatNotification.notify(notification); //eslint-disable-line
 		});
 	},
 
@@ -175,5 +175,3 @@ Meteor.startup(() => {
 		}
 	});
 });
-export { KonchatNotification };
-this.KonchatNotification = KonchatNotification;
