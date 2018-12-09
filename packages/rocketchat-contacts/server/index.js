@@ -6,6 +6,7 @@ const provider = new service.Provider();
 
 function refreshContactsHashMap() {
 	let phoneFieldName = '';
+
 	RocketChat.settings.get('Contacts_Phone_Custom_Field_Name', function(name, fieldName) {
 		phoneFieldName = fieldName;
 	});
@@ -14,33 +15,36 @@ function refreshContactsHashMap() {
 	const cursor = Meteor.users.find({ active:true });
 
 	if (phoneFieldName) {
+		const phoneFieldArray = phoneFieldName.split(',');
+
 		cursor.forEach((user) => {
-			const phoneFieldArray = phoneFieldName.split(',');
 			let dict = user;
-
-			for (let i = 0;i < phoneFieldArray.length - 1;i++) {
-				if (phoneFieldArray[i] in dict) {
-					dict = dict[phoneFieldArray[i]];
-				}
-			}
-
-			const phone = dict[phoneFieldArray[phoneFieldArray.length - 1]];
-
-			if (phone) {
-				contacts.push(phone);
-			}
-
-			if ('emails' in user) {
-				user.emails.forEach((email) => {
-					if (email.verified) {
-						contacts.push(email.address);
+			const discoverable = RocketChat.getUserPreference(user, 'isPublicAccount');
+			if (discoverable !== false) {
+				for (let i = 0;i < phoneFieldArray.length - 1;i++) {
+					if (phoneFieldArray[i] in dict) {
+						dict = dict[phoneFieldArray[i]];
 					}
-				});
+				}
+				const phone = dict[phoneFieldArray[phoneFieldArray.length - 1]];
+
+				if (phone) {
+					contacts.push(phone);
+				}
+
+				if ('emails' in user) {
+					user.emails.forEach((email) => {
+						if (email.verified) {
+							contacts.push(email.address);
+						}
+					});
+				}
 			}
 		});
 	} else {
 		cursor.forEach((user) => {
-			if ('emails' in user) {
+			const discoverable = RocketChat.getUserPreference(user, 'isPublicAccount');
+			if (discoverable !== false && 'emails' in user) {
 				user.emails.forEach((email) => {
 					if (email.verified) {
 						contacts.push(email.address);

@@ -169,6 +169,7 @@ Template.accountPreferences.onCreated(function() {
 			return s.trim(e);
 		}));
 		data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map((option) => ({ action: option.value, label: option.text }));
+		data.isPublicAccount = JSON.parse($('#isPublicAccount').find('input:checked').val());
 
 		let reload = false;
 
