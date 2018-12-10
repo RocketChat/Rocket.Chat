@@ -59,7 +59,8 @@ class RoomMessage extends Stream {
 class NotifyUser extends Stream {
 	subscribe(publication, eventName, options) {
 		const uid = Meteor.userId();
-		if (/rooms-changed/.test(eventName)) {
+
+		if ('rooms-changed' === eventName) {
 			if (!this.isReadAllowed(publication, eventName, options)) {
 				publication.stop();
 			}
@@ -94,6 +95,50 @@ class NotifyUser extends Stream {
 					rooms[0].remove();
 					rooms.pop();
 				}
+			});
+			return publication.ready();
+		}
+
+		if (/rooms-changed/.test(eventName)) {
+			if (!this.isReadAllowed(publication, eventName, options)) {
+				publication.stop();
+			}
+			const { socket } = publication._session;
+			const roomEvent = (...args) => {
+				// RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
+				// same behaviour but without sending multiple times
+				// TODO performance: remove concatenation id + room-changed to use just one EJSON.serialize
+				socket.send(this.changedPayload({
+					eventName: `${ uid }/rooms-changed`,
+					args,
+				}, this.subscriptionName));
+			};
+
+			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
+
+			rooms.forEach(({ rid }) => this.internals.on(rid, roomEvent));
+
+			RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).forEach(({ rid }) => rooms.push({ rid, remove: this.addSubscription(rid, socket) }));
+
+			const userEvent = (clientAction, { rid }) => {
+				switch (clientAction) {
+					case 'inserted':
+					case 'insert':
+						rooms.push({ rid });
+						this.internals.on(rid, roomEvent);
+						break;
+
+					case 'removed':
+					case 'remove':
+						this.internals.removeListener(rid, roomEvent);
+						break;
+				}
+			};
+
+			this.internals.on(uid, userEvent);
+			publication.onStop(() => {
+				this.internals.removeListener(uid, userEvent);
+				rooms.forEach(({ rid }) => this.internals.removeListener(rid, roomEvent));
 			});
 			return publication.ready();
 		}
