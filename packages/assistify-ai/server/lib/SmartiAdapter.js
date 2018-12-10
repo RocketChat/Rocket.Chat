@@ -111,7 +111,6 @@ export class SmartiAdapter {
 
 			if (request_result) {
 				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(message._id));
-				SmartiAdapter._getAnalysisResult(message.rid, conversationId);
 				// autosync: If a room was not in sync, but the new message could be synced, try to sync the room again
 				Meteor.defer(() => SmartiAdapter._tryResync(message.rid, false));
 			} else {
@@ -136,7 +135,6 @@ export class SmartiAdapter {
 		if (conversationId) {
 			SystemLogger.debug(`Smarti - Deleting message ${ message.rid } from conversation ${ conversationId }.`);
 			SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }/message/${ message._id }`);
-			SmartiAdapter._getAnalysisResult(message.rid, conversationId);
 		} else {
 			SystemLogger.error(`Smarti - deleting message from conversation faild after delete message [ id: ${ message._id } ] from room [ id: ${ message.rid } ]`);
 		}
@@ -237,7 +235,7 @@ export class SmartiAdapter {
 	/**
 	 * Updates the mapping and triggers an asynchronous analysis.
 	 */
-	static _getAnalysisResult(roomId, conversationId) {
+	static getAnalysisResult(roomId, conversationId) {
 
 		// conversation updated or created => request analysis results
 		SystemLogger.debug(`Smarti - conversation updated or created -> get analysis result asynch [ callback=${ SmartiAdapter.rocketWebhookUrl } ] for conversation: ${ conversationId } and room: ${ roomId }`);
