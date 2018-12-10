@@ -1,4 +1,4 @@
-/* globals RocketChatImportFileInstance */
+import { RocketChatImportFileInstance } from '../startup/store';
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
 import path from 'path';

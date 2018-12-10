@@ -30,9 +30,9 @@ export class Base {
 	 * @static
 	 */
 	static getBSONSize(item) {
-		const { BSON } = require('bson');
-		const bson = new BSON();
-		return bson.calculateObjectSize(item);
+		const { calculateObjectSize } = require('bson');
+
+		return calculateObjectSize(item);
 	}
 
 	/**
@@ -138,11 +138,12 @@ export class Base {
 	 */
 	prepareUsingLocalFile(fullFilePath) {
 		const file = fs.readFileSync(fullFilePath);
+		const buffer = Buffer.isBuffer(file) ? file : new Buffer(file);
 
 		const { contentType } = this.importRecord;
 		const fileName = this.importRecord.file;
 
-		const data = new Buffer(file).toString('base64');
+		const data = buffer.toString('base64');
 		const dataURI = `data:${ contentType };base64,${ data }`;
 
 		return this.prepare(dataURI, contentType, fileName, true);

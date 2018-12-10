@@ -160,4 +160,5 @@ Package.onUse(function(api) {
 	api.export('popout', 'client');
 	api.export('ChatMessage', 'client');
 	api.export('RoomHistoryManager', 'client');
+	api.export('KonchatNotification', 'client');
 });

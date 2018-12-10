@@ -1,6 +1,7 @@
-/* globals RocketChatImportFileInstance */
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChatImportFileInstance } from '../startup/store';
 
 Meteor.methods({
 	uploadImportFile(binaryContent, contentType, fileName, importerKey) {
@@ -19,8 +20,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-importer-not-defined', `The importer (${ importerKey }) has no import class defined.`, { method: 'uploadImportFile' });
 		}
 
-		const date = new Date(new Date().toUTCString()).toISOString();
-		const newFileName = `${ date }_${ userId }_${ fileName }`;
+		const date = new Date();
+		const dateStr = `${ date.getUTCFullYear() }${ date.getUTCMonth() }${ date.getUTCDate() }${ date.getUTCHours() }${ date.getUTCMinutes() }${ date.getUTCSeconds() }`;
+		const newFileName = `${ dateStr }_${ userId }_${ fileName }`;
 
 		importer.instance.startFileUpload(newFileName, contentType);
 

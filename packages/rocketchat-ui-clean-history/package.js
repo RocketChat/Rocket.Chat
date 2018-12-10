@@ -17,11 +17,5 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 	]);
-
-	api.addFiles([
-		'client/lib/startup.js',
-		'client/views/cleanHistory.html',
-		'client/views/cleanHistory.js',
-		'client/views/stylesheets/cleanHistory.css',
-	], 'client');
+	api.mainModule('client/index.js', 'client');
 });
