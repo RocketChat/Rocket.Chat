@@ -163,6 +163,37 @@ class FederatedMessage extends FederatedResource {
 				}
 			}
 
+			// Is there a file?
+			if (localMessage.file) {
+				const fileStore = FileUpload.getStore('Uploads');
+
+				const { federation: { peer: identifier } } = localMessage;
+
+				const { upload, buffer } = Meteor.federationPeerClient.getUpload({ identifier, localMessage });
+
+				const oldUploadId = upload._id;
+
+				// Normalize upload
+				delete upload._id;
+				upload.rid = localMessage.rid;
+				upload.userId = localMessage.u._id;
+				upload.federation = {
+					_id: localMessage.file._id,
+					peer: identifier,
+				};
+
+				Meteor.runAsUser(upload.userId, () => Meteor.wrapAsync(fileStore.insert.bind(fileStore))(upload, buffer));
+
+				// Update the message's file
+				localMessage.file._id = upload._id;
+
+				// Update the message's attachments
+				for (const attachment of localMessage.attachments) {
+					attachment.title_link = attachment.title_link.replace(oldUploadId, upload._id);
+					attachment.image_url = attachment.image_url.replace(oldUploadId, upload._id);
+				}
+			}
+
 			// Create the message
 			const { _id } = RocketChat.sendMessage(localMessage.u, localMessage, localRoom, false);
 

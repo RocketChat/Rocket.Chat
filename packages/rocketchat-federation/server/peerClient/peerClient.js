@@ -146,6 +146,23 @@ class PeerClient {
 		return peer;
 	}
 
+	getUpload(options) {
+		const { identifier, localMessage: { file: { _id: fileId } } } = options;
+
+		let peer = null;
+
+		try {
+			peer = this.searchPeer(identifier);
+		} catch (err) {
+			this.log(`Could not find peer using identifier:${ identifier }`);
+			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using identifier:${ identifier }`);
+		}
+
+		const { data: { upload, buffer } } = this.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
+
+		return { upload, buffer: Buffer.from(buffer) };
+	}
+
 	findUser(options) {
 		const { peer: { identifier: localPeerIdentifier } } = this;
 

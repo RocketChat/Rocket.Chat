@@ -3,6 +3,7 @@ import FederatedRoom from '../federatedResources/FederatedRoom';
 import FederatedUser from '../federatedResources/FederatedUser';
 
 import federationEventsRoutes from './routes/federation/events';
+import uploadsRoutes from './routes/uploads';
 import usersRoutes from './routes/users';
 
 class PeerServer {
@@ -19,8 +20,9 @@ class PeerServer {
 		const { identifier } = this.config;
 
 		// Setup routes
-		usersRoutes.call(this);
 		federationEventsRoutes.call(this);
+		uploadsRoutes.call(this);
+		usersRoutes.call(this);
 
 		this.log(`${ identifier }'s routes are set`);
 	}

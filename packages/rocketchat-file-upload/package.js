@@ -44,3 +44,7 @@ Package.onUse(function(api) {
 	api.export('fileUploadHandler');
 	api.export('FileUpload');
 });
+
+Npm.depends({
+	'stream-buffers': '3.0.2',
+});

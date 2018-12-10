@@ -1,0 +1,10 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "stream-buffers": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/stream-buffers/-/stream-buffers-3.0.2.tgz",
+      "integrity": "sha512-DQi1h8VEBA/lURbSwFtEHnSTb9s2/pwLEaFuNhXwy1Dx3Sa0lOuYT2yNUr4/j2fs8oCAMANtrZ5OrPZtyVs3MQ=="
+    }
+  }
+}
