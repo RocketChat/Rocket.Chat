@@ -35,6 +35,8 @@ RocketChat._setUsername = function(userId, u) {
 	} catch (e) {
 		console.error(e);
 	}
+	// Set new username*
+	RocketChat.models.Users.setUsername(user._id, username);
 	/* globals getAvatarSuggestionForUser */
 	user.username = username;
 	if (!previousUsername && RocketChat.settings.get('Accounts_SetDefaultAvatar') === true) {
@@ -75,8 +77,6 @@ RocketChat._setUsername = function(userId, u) {
 			fileStore.model.updateFileNameById(file._id, username);
 		}
 	}
-	// Set new username*
-	RocketChat.models.Users.setUsername(user._id, username);
 	return user;
 };
 

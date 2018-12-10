@@ -34,3 +34,11 @@ RocketChat.models.Users.findByIdsWithPublicE2EKey = function(ids, options) {
 
 	return this.find(query, options);
 };
+
+RocketChat.models.Users.resetE2EKey = function(userId) {
+	this.update({ _id: userId }, {
+		$unset: {
+			e2e: '',
+		},
+	});
+};
