@@ -19893,6 +19893,21 @@
           ]
         }
       ]
+    },
+    "0.70.5": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12898",
+          "title": "[FIX] Reset password email",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.72.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
