@@ -1,4 +1,19 @@
 
+# 0.71.2
+`2018-12-10  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Reset password email ([#12898](https://github.com/RocketChat/Rocket.Chat/pull/12898))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 0.71.1
 `2018-10-31  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
