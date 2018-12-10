@@ -1,6 +1,18 @@
 
+# 0.72.2
+`2018-12-10  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- line-height for unread bar buttons (jump to first and mark as read) ([#12900](https://github.com/RocketChat/Rocket.Chat/pull/12900))
+- PDF view loading indicator ([#12882](https://github.com/RocketChat/Rocket.Chat/pull/12882))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@tassoevan](https://github.com/tassoevan)
+
 # 0.72.1
-`2018-12-04  ·  4 🐛  ·  2 🔍  ·  6 👩‍💻👨‍💻`
+`2018-12-05  ·  4 🐛  ·  2 🔍  ·  6 👩‍💻👨‍💻`
 
 ### 🐛 Bug fixes
 
@@ -205,6 +217,13 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 
+# 0.71.2
+`2018-12-10`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
 # 0.71.1
 `2018-10-31  ·  1 🐛  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
@@ -318,6 +337,21 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 0.70.5
+`2018-12-10  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.3`
+- NPM: `5.6.0`
+
+### 🐛 Bug fixes
+
+- Reset password email ([#12898](https://github.com/RocketChat/Rocket.Chat/pull/12898))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 0.70.4
 `2018-10-09  ·  1 🐛  ·  2 🔍  ·  1 👩‍💻👨‍💻`
