@@ -38,18 +38,14 @@ export default () => {
 		RocketChat.settings.updateById('Update_LatestAvailableVersion', update.lastestVersion.version);
 		RocketChat.models.Roles.findUsersInRole('admin').forEach((adminUser) => {
 			try {
-				Meteor.runAsUser(adminUser._id, () => {
-					Meteor.call('createDirectMessage', 'rocket.cat');
-				});
+				Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
 
 				const msg = {
 					msg: `*${ TAPi18n.__('Update_your_RocketChat', adminUser.language) }*\n${ TAPi18n.__('New_version_available_(s)', update.lastestVersion.version, adminUser.language) }\n${ update.lastestVersion.infoUrl }`,
 					rid: [adminUser._id, 'rocket.cat'].sort().join(''),
 				};
 
-				Meteor.runAsUser('rocket.cat', () => {
-					Meteor.call('sendMessage', msg);
-				});
+				Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', msg));
 			} catch (e) {
 				console.error(e);
 			}
