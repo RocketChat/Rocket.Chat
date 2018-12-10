@@ -92,6 +92,9 @@ class FederatedUser extends FederatedResource {
 			localUser._id = RocketChat.models.Users.create(localUserObject);
 		}
 
+		// Update the id
+		this.user._id = localUser._id;
+
 		return localUser;
 	}
 }
