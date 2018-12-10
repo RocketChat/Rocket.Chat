@@ -235,8 +235,8 @@ export class SmartiAdapter {
 	/**
 	 * Updates the mapping and triggers an asynchronous analysis.
 	 */
-	static getAnalysisResult(roomId, conversationId) {
-
+	static triggerAnalysis(roomId) {
+		const conversationId = SmartiAdapter.getConversationId(roomId);
 		// conversation updated or created => request analysis results
 		SystemLogger.debug(`Smarti - conversation updated or created -> get analysis result asynch [ callback=${ SmartiAdapter.rocketWebhookUrl } ] for conversation: ${ conversationId } and room: ${ roomId }`);
 		SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`, { callback: SmartiAdapter.rocketWebhookUrl }); // asynch
