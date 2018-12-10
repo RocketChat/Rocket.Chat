@@ -164,4 +164,5 @@ Package.onUse(function(api) {
 	api.export('VideoRecorder', 'client');
 	api.export('UserRoles', 'client');
 	api.export('isRtl', 'client');
+	api.export('alerts', 'client');
 });
