@@ -56,7 +56,6 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
 		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 
-		this.unblock();
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;
