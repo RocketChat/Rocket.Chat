@@ -22,7 +22,7 @@ apps:
         daemon: simple
         plugs: [network, network-bind]
     rocketchat-caddy:
-        command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile -host=localhost:8080
+        command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile
         daemon: simple
         plugs: [network, network-bind]
     mongo:
@@ -36,6 +36,9 @@ apps:
         plugs: [network]
     initcaddy:
         command: env LC_ALL=C initcaddy
+hooks:
+    configure:
+        plugs: [network]
 parts:
     node:
         plugin: dump 
@@ -95,3 +98,12 @@ parts:
         organize:
             caddy: bin/caddy
         after: [mongodb]
+    hooks:
+        plugin: nil
+        stage-packages:
+            - dnsutils
+            - curl
+        prime:
+            - usr
+            - lib
+

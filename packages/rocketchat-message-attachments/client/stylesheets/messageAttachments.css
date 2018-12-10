@@ -152,9 +152,11 @@ html.rtl .attachment {
 	& .attachment-pdf-loading {
 		display: none;
 
-		animation: spin 1s linear infinite;
-
 		font-size: 1.5rem;
+
+		svg {
+			animation: spin 1s linear infinite;
+		}
 	}
 
 	& .actions-container {

@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.settings.addGroup('OAuth', function() {
 	return this.section('WordPress', function() {
 
