@@ -21697,6 +21697,67 @@
           ]
         }
       ]
+    },
+    "0.70.5": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12898",
+          "title": "[FIX] Reset password email",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.72.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.71.2": {
+      "node_version": "8.11.3",
+      "npm_version": "5.6.0",
+      "pull_requests": [
+        {
+          "pr": "12898",
+          "title": "[FIX] Reset password email",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.72.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.72.2": {
+      "pull_requests": [
+        {
+          "pr": "12900",
+          "title": "[FIX] line-height for unread bar buttons (jump to first and mark as read)",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12898",
+          "title": "[FIX] Reset password email",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.72.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12882",
+          "title": "[FIX] PDF view loading indicator",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
