@@ -43,11 +43,10 @@ VideoRecorder = new class { //eslint-disable-line
 
 	startUserMedia(stream) {
 		this.stream = stream;
-		this.videoel.src = URL.createObjectURL(stream);
-
-		this.videoel.onloadedmetadata = () => {
-			this.videoel.play();
-		};
+		this.videoel.srcObject = stream;
+		this.videoel.addEventListener('loadeddata', ({ target }) => {
+			target.play();
+		}, false);
 
 		this.started = true;
 		return this.cameraStarted.set(true);
