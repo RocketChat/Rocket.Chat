@@ -1,6 +1,9 @@
-/* globals openRoom, LivechatInquiry */
 import { Session } from 'meteor/session';
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { RocketChat, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, openRoom } from 'meteor/rocketchat:lib';
+if (Meteor.isClient) {
+	import { LivechatInquiry } from './LivechatInquiry';
+}
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -54,12 +57,13 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getUserStatus(roomId) {
-		const room = Session.get(`roomData${ roomId }`);
+		const room = Session.get(`roomData${roomId}`);
 		if (room) {
 			return room.v && room.v.status;
 		}
+		const livechatInquiry = Meteor.isClient ? LivechatInquiry : RocketChat.models.livechatInquiry;
 
-		const inquiry = LivechatInquiry.findOne({ rid: roomId });
+		const inquiry = livechatInquiry.findOne({ rid: roomId });
 		return inquiry && inquiry.v && inquiry.v.status;
 	}
 

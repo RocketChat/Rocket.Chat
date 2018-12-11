@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 class LivechatInquiry extends RocketChat.models._Base {
 	constructor() {
 		super('livechat_inquiry');

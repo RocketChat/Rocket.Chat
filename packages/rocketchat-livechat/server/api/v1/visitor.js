@@ -1,4 +1,5 @@
 import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
 RocketChat.API.v1.addRoute('livechat/visitor', {
