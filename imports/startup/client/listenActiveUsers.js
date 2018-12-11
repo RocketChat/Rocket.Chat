@@ -27,7 +27,7 @@ const saveUser = (user, force = false) => {
 
 let retry = 0;
 function getActiveUsers() {
-	RocketChat.API.v1.get('users.actives')
+	RocketChat.API.v1.get('users.active')
 		.then((result) => {
 			result.users.forEach((user) => {
 				saveUser(user);
