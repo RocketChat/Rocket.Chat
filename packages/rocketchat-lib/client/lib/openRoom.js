@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 currentTracker = undefined;
 
-function openRoom(type, name) {
+openRoom = function(type, name) { //eslint-disable-line
 	Session.set('openedRoom', null);
 
 	return Meteor.defer(() =>
@@ -96,5 +96,3 @@ function openRoom(type, name) {
 		})
 	);
 }
-export { openRoom };
-this.openRoom = openRoom;
