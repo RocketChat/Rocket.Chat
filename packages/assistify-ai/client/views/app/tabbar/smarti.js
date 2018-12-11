@@ -21,8 +21,8 @@ Template.AssistifySmarti.onCreated(function() {
 	the user is interested in what Smarti is analyzing =>
 	register a callback which triggers an analysis asynchronously
 	*/
-	RocketChat.callbacks.add('streamMessage', () => {
-		Meteor.call('analyze', instance.data.rid);
+	RocketChat.callbacks.add('streamMessage', (message) => {
+		Meteor.call('analyze', message.rid);
 	}, RocketChat.callbacks.priority.LOW, 'smarti-analysis');
 
 });
