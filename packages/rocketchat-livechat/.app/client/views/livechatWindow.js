@@ -1,10 +1,14 @@
-/* globals Department, Livechat, LivechatVideoCall */
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import visitor from '../../imports/client/visitor';
+import { Livechat } from '../lib/_livechat';
+import { Department } from '../lib/collections';
+import { LivechatVideoCall } from '../lib/LivechatVideoCall';
+import { parentCall } from '../lib/parentCall';
+import { Triggers } from '../lib/triggers';
 
 function showDepartments() {
 	return Department.find({ showOnRegistration: true }).count() > 1;

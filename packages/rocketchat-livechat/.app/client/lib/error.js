@@ -1,3 +1,3 @@
-this.showError = (msg) => {
+export const showError = (msg) => {
 	$('.error').addClass('show').find('span').html(msg);
 };

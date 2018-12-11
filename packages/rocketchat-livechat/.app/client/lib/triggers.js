@@ -1,8 +1,10 @@
-/* globals Livechat */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
 import visitor from '../../imports/client/visitor';
+import { Livechat } from './_livechat';
+import { ChatMessage } from './collections';
+import { parentCall } from './parentCall';
 
 const firedTriggers = JSON.parse(localStorage.getItem('rocketChatFiredTriggers')) || [];
 
@@ -57,7 +59,7 @@ function getAgent(triggerAction) {
 	return agentPromise;
 }
 
-this.Triggers = (function() {
+export const Triggers = (function() {
 	let triggers = [];
 	let initiated = false;
 	let requests = [];

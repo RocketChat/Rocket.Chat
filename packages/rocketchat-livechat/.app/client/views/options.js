@@ -1,8 +1,11 @@
-/* globals Department, Livechat */
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import swal from 'sweetalert2';
 import visitor from '../../imports/client/visitor';
+import { Livechat } from '../lib/_livechat';
+import { Department } from '../lib/collections';
+import { t } from '../lib/tapi18n';
+
 
 Template.options.helpers({
 	showDepartments() {

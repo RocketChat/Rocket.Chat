@@ -1,7 +1,8 @@
+/* globals RoomManager */
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-this.getAvatarUrlFromUsername = (username) => {
+export const getAvatarUrlFromUsername = (username) => {
 	const key = `avatar_random_${ username }`;
 	const random = Session.keys[key] || 0;
 	if (!username) {
@@ -11,7 +12,7 @@ this.getAvatarUrlFromUsername = (username) => {
 	return `${ Meteor.absoluteUrl() }avatar/${ username }.jpg?_dc=${ random }`;
 };
 
-this.updateAvatarOfUsername = (username) => {
+export const updateAvatarOfUsername = (username) => {
 	const key = `avatar_random_${ username }`;
 	Session.set(key, Math.round(Math.random() * 1000));
 

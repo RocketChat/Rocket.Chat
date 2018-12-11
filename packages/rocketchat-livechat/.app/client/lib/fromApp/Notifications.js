@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import visitor from '../../../imports/client/visitor';
 
-this.Notifications = new class {
+export const Notifications = new class {
 	constructor(...args) {
 		this.logged = visitor.getId() !== null;
 		this.loginCb = [];

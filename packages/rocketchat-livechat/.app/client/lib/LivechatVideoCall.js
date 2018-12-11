@@ -1,9 +1,9 @@
-/* globals LivechatVideoCall, cordova, JitsiMeetExternalAPI */
+/* globals cordova, JitsiMeetExternalAPI */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import visitor from '../../imports/client/visitor';
 
-LivechatVideoCall = new (class LivechatVideoCall {
+export const LivechatVideoCall = new (class LivechatVideoCall {
 	constructor() {
 		this.live = new ReactiveVar(false);
 		this.calling = new ReactiveVar(false);
@@ -80,5 +80,3 @@ LivechatVideoCall = new (class LivechatVideoCall {
 		return this.live.get();
 	}
 });
-
-/* exported LivechatVideoCall */

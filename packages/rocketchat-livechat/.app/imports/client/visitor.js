@@ -1,8 +1,12 @@
-/* globals Commands, Livechat, UserPresence */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
+import { Livechat } from '../../client/lib/_livechat';
+import { Commands } from '../../client/lib/commands';
+import { ChatMessage } from '../../client/lib/collections';
+import { parentCall } from '../../client/lib/parentCall';
+import { UserPresence } from 'meteor/konecty:user-presence';
 
 const msgStream = new Meteor.Streamer('room-messages');
 

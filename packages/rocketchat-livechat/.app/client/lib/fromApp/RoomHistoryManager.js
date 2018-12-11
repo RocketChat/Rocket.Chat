@@ -1,9 +1,9 @@
-/* globals readMessage UserRoles RoomRoles*/
-
+/* globals readMessage UserRoles RoomRoles, ChatSubscription, ChatRoom, RoomManager */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import visitor from '../../../imports/client/visitor';
+import { ChatMessage } from '../collections';
 import _ from 'underscore';
 
 export const RoomHistoryManager = new class {
@@ -234,4 +234,3 @@ export const RoomHistoryManager = new class {
 		}
 	}
 };
-this.RoomHistoryManager = RoomHistoryManager;

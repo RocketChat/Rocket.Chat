@@ -1,8 +1,10 @@
-/* globals Livechat, t, tr, livechatAutolinker */
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 import visitor from '../../imports/client/visitor';
+import { Livechat } from '../lib/_livechat';
+import { t, tr } from '../lib/tapi18n';
+import { livechatAutolinker } from '../lib/autolinker';
 import s from 'underscore.string';
 
 Template.message.helpers({

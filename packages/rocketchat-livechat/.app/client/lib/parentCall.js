@@ -1,4 +1,4 @@
-this.parentCall = (method, args = []) => {
+export const parentCall = (method, args = []) => {
 	const data = {
 		src: 'rocketchat',
 		fn: method,

@@ -1,8 +1,11 @@
-/* globals CustomFields, Livechat */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
 import visitor from '../../imports/client/visitor';
+import { Triggers } from './triggers';
+import { CustomFields } from './CustomFields';
+import { Livechat } from './_livechat';
+import { parentCall } from './parentCall';
 
 const api = {
 	pageVisited(info) {
