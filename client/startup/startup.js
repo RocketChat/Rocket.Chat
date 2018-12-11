@@ -35,10 +35,11 @@ Meteor.startup(function() {
 
 	let status = undefined;
 	Tracker.autorun(function() {
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			return;
 		}
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+		const user = RocketChat.models.Users.findOne(uid, {
 			fields: {
 				status: 1,
 				'settings.preferences.idleTimeLimit': 1,
@@ -54,7 +55,7 @@ Meteor.startup(function() {
 			const idleTimeLimit = RocketChat.getUserPreference(user, 'idleTimeLimit') || 300;
 			UserPresence.awayTime = idleTimeLimit * 1000;
 		} else {
-			delete UserPresence.awayTime;
+			UserPresence.awayTime = 0;
 			UserPresence.stopTimer();
 		}
 

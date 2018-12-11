@@ -123,6 +123,8 @@ export class Stream extends EventEmitter {
 			eventName,
 			args,
 		}, this.subscriptionName);
+
+		Streamer.emit('emit', this.name, eventName, this.listenerCount(eventName), msg);
 		return super.emit(eventName, msg);
 	}
 
