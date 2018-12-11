@@ -73,7 +73,7 @@ SideNav = new class { //eslint-disable-line
 		}
 	}
 	focusInput() {
-		const sideNavDivs = [...this.sideNav[0].children].filter((el) => el.tagName === 'DIV' && !el.classList.contains('hidden'));
+		const sideNavDivs = Array.from(this.sideNav[0].children).filter((el) => el.tagName === 'DIV' && !el.classList.contains('hidden'));
 		let highestZidx = 0;
 		let highestZidxElem;
 		sideNavDivs.forEach((el) => {
