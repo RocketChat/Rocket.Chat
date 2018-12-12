@@ -17,6 +17,7 @@ import './methods/setupImporter';
 import './methods/startImport';
 import './methods/uploadImportFile';
 import './methods/getImportFileData';
+import './methods/downloadPublicImportFile';
 import './startup/setImportsToInvalid';
 import './startup/store';
 

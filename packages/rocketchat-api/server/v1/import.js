@@ -14,6 +14,19 @@ RocketChat.API.v1.addRoute('uploadImportFile', { authRequired: true }, {
 
 });
 
+RocketChat.API.v1.addRoute('downloadPublicImportFile', { authRequired: true }, {
+	post() {
+		const { fileUrl, importerKey } = this.bodyParams;
+
+		Meteor.runAsUser(this.userId, () => {
+			RocketChat.API.v1.success(Meteor.call('downloadPublicImportFile', fileUrl, importerKey));
+		});
+
+		return RocketChat.API.v1.success();
+	},
+
+});
+
 RocketChat.API.v1.addRoute('getImportFileData', { authRequired: true }, {
 	get() {
 		const { importerKey } = this.requestParams();

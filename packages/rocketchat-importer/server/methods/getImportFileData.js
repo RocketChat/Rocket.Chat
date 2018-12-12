@@ -1,6 +1,7 @@
 import { RocketChatImportFileInstance } from '../startup/store';
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
 import path from 'path';
 
 Meteor.methods({
@@ -24,8 +25,11 @@ Meteor.methods({
 			return undefined;
 		}
 
-		const fileName = importer.instance.importRecord.file;
+		if (importer.instance.progress.step === ProgressStep.DOWNLOADING_FILE_URL) {
+			return { waiting: true };
+		}
 
+		const fileName = importer.instance.importRecord.file;
 		const fullFilePath = path.join(RocketChatImportFileInstance.absolutePath, fileName);
 		const results = importer.instance.prepareUsingLocalFile(fullFilePath);
 

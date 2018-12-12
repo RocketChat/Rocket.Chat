@@ -57,6 +57,43 @@ Template.adminImportPrepare.helpers({
 	},
 });
 
+function getImportFileData(importer, template) {
+	RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
+		if (!data) {
+			console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
+			toastr.error(t('Importer_not_setup'));
+			template.preparing.set(false);
+			return;
+		}
+
+		if (data.waiting) {
+			setTimeout(() => {
+				getImportFileData(importer, template);
+			}, 500);
+			return;
+		}
+
+		if (data.step) {
+			console.warn('Invalid file, contains `data.step`.', data);
+			toastr.error(t('Invalid_Export_File', importer.key));
+			template.preparing.set(false);
+			return;
+		}
+
+		template.users.set(data.users);
+		template.channels.set(data.channels);
+		template.message_count.set(data.message_count);
+		template.loaded.set(true);
+		template.preparing.set(false);
+	}).catch((error) => {
+		if (error) {
+			toastr.error(t('Failed_To_Load_Import_Data'));
+			template.preparing.set(false);
+		}
+	});
+}
+
+
 Template.adminImportPrepare.events({
 	'change .import-file-input'(event, template) {
 		const importer = this;
@@ -81,32 +118,7 @@ Template.adminImportPrepare.events({
 					fileName: file.name,
 					importerKey: importer.key,
 				}).then(() => {
-					RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
-						if (!data) {
-							console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
-							toastr.error(t('Importer_not_setup'));
-							template.preparing.set(false);
-							return;
-						}
-
-						if (data.step) {
-							console.warn('Invalid file, contains `data.step`.', data);
-							toastr.error(t('Invalid_Export_File', importer.key));
-							template.preparing.set(false);
-							return;
-						}
-
-						template.users.set(data.users);
-						template.channels.set(data.channels);
-						template.message_count.set(data.message_count);
-						template.loaded.set(true);
-						template.preparing.set(false);
-					}).catch((error) => {
-						if (error) {
-							toastr.error(t('Failed_To_Load_Import_Data'));
-							template.preparing.set(false);
-						}
-					});
+					getImportFileData(importer, template);
 				}).catch((error) => {
 					if (error) {
 						toastr.error(t('Failed_To_upload_Import_File'));
@@ -116,6 +128,29 @@ Template.adminImportPrepare.events({
 			};
 		});
 	},
+
+
+	'click .download-public-url'(event, template) {
+		const importer = this;
+		if (!importer || !importer.key) { return; }
+
+		const fileUrl = $('.import-file-url').val();
+
+		template.preparing.set(true);
+
+		RocketChat.API.post('v1/downloadPublicImportFile', {
+			fileUrl,
+			importerKey: importer.key,
+		}).then(() => {
+			getImportFileData(importer, template);
+		}).catch((error) => {
+			if (error) {
+				toastr.error(t('Failed_To_upload_Import_File'));
+				template.preparing.set(false);
+			}
+		});
+	},
+
 
 	'click .button.start'(event, template) {
 		const btn = this;
