@@ -1,4 +1,29 @@
 
+# 0.72.3
+`2018-12-12  ·  8 🐛  ·  5 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Padding for message box in embedded layout ([#12556](https://github.com/RocketChat/Rocket.Chat/pull/12556))
+- Crowd sync was being stopped when a user was not found ([#12930](https://github.com/RocketChat/Rocket.Chat/pull/12930) by [@piotrkochan](https://github.com/piotrkochan))
+- Some icons were missing ([#12913](https://github.com/RocketChat/Rocket.Chat/pull/12913))
+- User data download fails when a room has been deleted. ([#12829](https://github.com/RocketChat/Rocket.Chat/pull/12829))
+- CAS Login not working with renamed users ([#12860](https://github.com/RocketChat/Rocket.Chat/pull/12860))
+- Stream of my_message wasn't sending the room information ([#12914](https://github.com/RocketChat/Rocket.Chat/pull/12914))
+- cannot reset password ([#12903](https://github.com/RocketChat/Rocket.Chat/pull/12903))
+- Version check update notification ([#12905](https://github.com/RocketChat/Rocket.Chat/pull/12905))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@piotrkochan](https://github.com/piotrkochan)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 0.72.2
 `2018-12-10  ·  2 🐛  ·  1 👩‍💻👨‍💻`
 
