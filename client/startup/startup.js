@@ -29,7 +29,6 @@ Meteor.startup(function() {
 			return;
 		}
 		Meteor.subscribe('userData');
-		Meteor.subscribe('activeUsers');
 		computation.stop();
 	});
 

@@ -56,7 +56,7 @@ Meteor.methods({
 });
 
 RocketChat.models.Settings.on('change', ({ clientAction, id, data, diff }) => {
-	if (Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
+	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
 		return;
 	}
 	switch (clientAction) {

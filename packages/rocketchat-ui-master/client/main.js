@@ -153,7 +153,7 @@ Template.main.helpers({
 		return iframeEnabled && RocketChat.iframeLogin.reactiveIframeUrl.get();
 	},
 	subsReady() {
-		const routerReady = FlowRouter.subsReady('userData', 'activeUsers');
+		const routerReady = FlowRouter.subsReady('userData');
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = RocketChat.settings.cachedCollection.ready.get();
 		const ready = (Meteor.userId() == null) || (routerReady && subscriptionsReady && settingsReady);

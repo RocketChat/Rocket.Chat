@@ -1,4 +1,4 @@
-/* global InstanceStatus, DDP, LoggerManager */
+/* global InstanceStatus, DDP, LoggerManager, UserPresence */
 
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
@@ -10,6 +10,9 @@ import {
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
+
+const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined' ||
+	!['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
 
 const connections = {};
 this.connections = connections;
@@ -49,7 +52,12 @@ function authorizeConnection(instance) {
 	return _authorizeConnection(instance);
 }
 
+const originalSetDefaultStatus = UserPresence.setDefaultStatus;
 function startMatrixBroadcast() {
+	if (!startMonitor) {
+		UserPresence.setDefaultStatus = originalSetDefaultStatus;
+	}
+
 	const query = {
 		'extraInformation.port': {
 			$exists: true,
@@ -174,6 +182,12 @@ function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
 
 	logger.connection.info('connecting in', instance, value);
+
+	if (!startMonitor) {
+		UserPresence.setDefaultStatus = (id, status) => {
+			RocketChat.models.Users.updateDefaultStatus(id, status);
+		};
+	}
 
 	const connection = DDP.connect(value, {
 		_dontPrintErrors: LoggerManager.logLevel < 2,

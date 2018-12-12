@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-
+import { DDPCommon } from 'meteor/ddp-common';
+const MY_MESSAGE = '__my_messages__';
 const MY_MESSAGES_STREAM = '_m_';
 
 Meteor.startup(function() {
-
-
 	RocketChat.Notifications.msgStream.allowWrite('none');
 
 	RocketChat.Notifications.msgStream.allowRead(function(eventName, args) {
@@ -17,11 +16,17 @@ Meteor.startup(function() {
 		}
 	});
 
+
 	RocketChat.Notifications.msgStream.allowRead('__my_messages__', 'all');
+
+//msgStream.allowEmit(MY_MESSAGE, function(eventName, msg) {
+//	try {
+//		const room = Meteor.call('canAccessRoom', msg.rid, this.userId);
 
 	// RocketChat.Notifications.msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 	// 	try {
 	// 		const room = Meteor.call('canAccessRoom', msg.rid, this.userId);
+
 
 	// 		if (!room) {
 	// 			return false;
@@ -52,12 +57,16 @@ Meteor.startup(function() {
 					mention.name = user && user.name;
 				});
 			}
+
 			RocketChat.Notifications.msgStream.emit(`${ MY_MESSAGES_STREAM }${ record.rid }`, record, {});
 			return RocketChat.Notifications.msgStream.emit(record.rid, record);
 		}
 	}
 
-	return RocketChat.models.Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
+	return RocketChat.models.Messages.on('change', function({ clientAction, id, data, diff/* , oplog*/ }) {
+		if (diff && (diff['u.username'] || diff['editedBy.username'] || Object.keys(diff).some(function(k) { return ~k.indexOf('mentions.'); }))) {
+			return;
+		}
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
