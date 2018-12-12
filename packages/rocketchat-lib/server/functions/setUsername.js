@@ -77,6 +77,13 @@ RocketChat._setUsername = function(userId, u) {
 			fileStore.model.updateFileNameById(file._id, username);
 		}
 	}
+
+	RocketChat.Notifications.notifyLogged('Users:NameChanged', {
+		_id: user._id,
+		name: user.name,
+		username: user.username,
+	});
+
 	return user;
 };
 

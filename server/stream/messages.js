@@ -57,7 +57,10 @@ Meteor.startup(function() {
 		}
 	}
 
-	return RocketChat.models.Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
+	return RocketChat.models.Messages.on('change', function({ clientAction, id, data, diff/* , oplog*/ }) {
+		if (diff && (diff['u.username'] || diff['editedBy.username'] || Object.keys(diff).some(function(k) { return ~k.indexOf('mentions.'); }))) {
+			return;
+		}
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -99,7 +98,7 @@ Template.adminUsers.onCreated(function() {
 		};
 
 		const limit = instance.limit && instance.limit.get();
-		return Meteor.users.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
+		return RocketChat.models.FullUser.find(query, { limit, sort: { username: 1, name: 1 } }).fetch();
 	};
 });
 
@@ -124,7 +123,7 @@ Template.adminUsers.events({
 	},
 	'click .user-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(Meteor.users.findOne(this._id));
+		instance.tabBarData.set(RocketChat.models.FullUser.findOne(this._id));
 		instance.tabBar.open('admin-user-info');
 	},
 	'click .info-tabs button'(e) {
