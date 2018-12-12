@@ -1,5 +1,5 @@
 import { RocketChat } from 'meteor/rocketchat:lib';
-import LivechatRoomType from '../lib/LivechatRoomType';
+import LivechatRoomType from './lib/LivechatRoomType';
 import LivechatVisitors from './models/LivechatVisitors';
 
 class LivechatRoomTypeServer extends LivechatRoomType {

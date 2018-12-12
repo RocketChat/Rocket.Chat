@@ -11,7 +11,7 @@ import './collections/LivechatMonitoring';
 import './collections/LivechatPageVisited';
 import './collections/LivechatQueueUser';
 import './collections/LivechatTrigger';
-import '../lib/LivechatInquiry';
+import './collections/LivechatInquiry';
 import './collections/livechatOfficeHour';
 import './collections/LivechatVisitor';
 import './methods/changeLivechatStatus';

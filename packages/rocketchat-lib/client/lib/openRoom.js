@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 currentTracker = undefined;
 
-openRoom = function(type, name) { //eslint-disable-line
+openRoom = function(type, name) { // eslint-disable-line
 	Session.set('openedRoom', null);
 
 	return Meteor.defer(() =>
@@ -34,7 +34,7 @@ openRoom = function(type, name) { //eslint-disable-line
 					Meteor.call('createDirectMessage', name, function(error) {
 						if (!error) {
 							RoomManager.close(type + name);
-							return openRoom('d', name);
+							return openRoom('d', name); // eslint-disable-line
 						} else {
 							Session.set('roomNotFound', { type, name, error });
 							BlazeLayout.render('main', { center: 'roomNotFound' });
@@ -49,7 +49,7 @@ openRoom = function(type, name) { //eslint-disable-line
 						} else {
 							RocketChat.models.Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
 							RoomManager.close(type + name);
-							return openRoom(type, name);
+							return openRoom(type, name); // eslint-disable-line
 						}
 					});
 				}
@@ -95,4 +95,4 @@ openRoom = function(type, name) { //eslint-disable-line
 			return RocketChat.callbacks.run('enter-room', sub);
 		})
 	);
-}
+};
