@@ -42,7 +42,9 @@
 		"declaration-block-semicolon-space-after": "always-single-line",
 		"declaration-block-semicolon-space-before": "never",
 		"declaration-block-single-line-max-declarations": 1,
-		"declaration-block-trailing-semicolon": "always",
+		"declaration-block-trailing-semicolon": ["always", {
+            "severity": "warning"
+        } ],
 		"declaration-colon-newline-after": "always-multi-line",
 		"declaration-colon-space-after": "always-single-line",
 		"declaration-colon-space-before": "never",
