@@ -12,6 +12,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { Readable } from 'stream';
 import path from 'path';
 import s from 'underscore.string';
+import fs from 'fs';
 import TurndownService from 'turndown';
 
 const turndownService = new TurndownService({
@@ -43,9 +44,7 @@ export class HipChatEnterpriseImporter extends Base {
 		this.directMessages = new Map();
 	}
 
-	prepare(dataURI, sentContentType, fileName) {
-		super.prepare(dataURI, sentContentType, fileName);
-
+	prepareUsingLocalFile(fullFilePath) {
 		const tempUsers = [];
 		const tempRooms = [];
 		const tempMessages = new Map();
@@ -129,6 +128,8 @@ export class HipChatEnterpriseImporter extends Base {
 										userId: m.UserMessage.sender.id,
 										text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
 										ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
+										attachment: m.UserMessage.attachment,
+										attachment_path: m.UserMessage.attachment_path,
 									});
 								} else if (m.NotificationMessage) {
 									const text = m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`;
@@ -140,6 +141,8 @@ export class HipChatEnterpriseImporter extends Base {
 										alias: m.NotificationMessage.sender,
 										text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
 										ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
+										attachment: m.NotificationMessage.attachment,
+										attachment_path: m.NotificationMessage.attachment_path,
 									});
 								} else if (m.TopicRoomMessage) {
 									roomMsgs.push({
@@ -249,12 +252,9 @@ export class HipChatEnterpriseImporter extends Base {
 				resolve(new Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
 			}));
 
-			// Wish I could make this cleaner :(
-			const split = dataURI.split(',');
-			const read = new this.Readable;
-			read.push(new Buffer(split[split.length - 1], 'base64'));
-			read.push(null);
-			read.pipe(this.zlib.createGunzip()).pipe(this.extract);
+			const rs = fs.createReadStream(fullFilePath);
+
+			rs.pipe(this.zlib.createGunzip()).pipe(this.extract);
 		});
 
 		return promise;
