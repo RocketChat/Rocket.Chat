@@ -6,36 +6,36 @@ class ContactsProvider {
 		this.contactsWeakHashMap = {};
 	}
 
-	addContact(contact) {
+	addContact(contact, username) {
 		const weakHash = this.getWeakHash(contact);
 		const strongHash = this.getStrongHash(contact);
 
 		if (weakHash in this.contactsWeakHashMap) {
 			if (this.contactsWeakHashMap[weakHash].indexOf(strongHash) === -1) {
-				this.contactsWeakHashMap[weakHash].push(strongHash);
+				this.contactsWeakHashMap[weakHash].push({
+					h:strongHash,
+					u:username,
+				});
 			}
 		} else {
-			this.contactsWeakHashMap[weakHash] = [strongHash];
+			this.contactsWeakHashMap[weakHash] = [{ h:strongHash, u:username }];
 		}
 	}
 
 	generateHashedMap(contacts) {
 		const contactsWeakHashMap = {};
 		contacts.forEach((contact) => {
-
-			const weakHash = this.getWeakHash(contact);
-			const strongHash = this.getStrongHash(contact);
-
+			const weakHash = this.getWeakHash(contact.d);
+			const strongHash = this.getStrongHash(contact.d);
 			if (weakHash in contactsWeakHashMap) {
 				if (contactsWeakHashMap[weakHash].indexOf(strongHash) === -1) {
-					contactsWeakHashMap[weakHash].push(strongHash);
+					contactsWeakHashMap[weakHash].push({ h:strongHash, u:contact.u });
 				}
 			} else {
-				contactsWeakHashMap[weakHash] = [strongHash];
+				contactsWeakHashMap[weakHash] = [{ h:strongHash, u:contact.u }];
 			}
 		});
 		return contactsWeakHashMap;
-
 	}
 
 	setHashedMap(contactsWeakHashMap) {
@@ -60,12 +60,12 @@ class ContactsProvider {
 		return result;
 	}
 
-	removeContact(contact) {
+	removeContact(contact, username) {
 		const weakHash = this.getWeakHash(contact);
 		const strongHash = this.getStrongHash(contact);
 
 		if (weakHash in this.contactsWeakHashMap && this.contactsWeakHashMap[weakHash].indexOf(strongHash) >= 0) {
-			this.contactsWeakHashMap[weakHash].splice(this.contactsWeakHashMap[weakHash].indexOf(strongHash), 1);
+			this.contactsWeakHashMap[weakHash].splice(this.contactsWeakHashMap[weakHash].indexOf({ h:strongHash, u:username }), 1);
 
 			if (!this.contactsWeakHashMap[weakHash].length) { delete this.contactsWeakHashMap[weakHash]; }
 		}

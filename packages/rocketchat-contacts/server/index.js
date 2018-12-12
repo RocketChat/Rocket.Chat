@@ -29,13 +29,13 @@ function refreshContactsHashMap() {
 				const phone = dict[phoneFieldArray[phoneFieldArray.length - 1]];
 
 				if (phone) {
-					contacts.push(phone);
+					contacts.push({ d:phone, u:user.username });
 				}
 
 				if ('emails' in user) {
 					user.emails.forEach((email) => {
 						if (email.verified) {
-							contacts.push(email.address);
+							contacts.push({ d:email.address, u:user.username });
 						}
 					});
 				}
@@ -47,7 +47,7 @@ function refreshContactsHashMap() {
 			if (discoverable !== false && 'emails' in user) {
 				user.emails.forEach((email) => {
 					if (email.verified) {
-						contacts.push(email.address);
+						contacts.push({ d:email.address, u:user.username });
 					}
 				});
 			}
