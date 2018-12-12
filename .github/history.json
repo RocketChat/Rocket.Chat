@@ -21758,6 +21758,86 @@
           ]
         }
       ]
+    },
+    "0.72.3": {
+      "pull_requests": [
+        {
+          "pr": "12556",
+          "title": "[FIX] Padding for message box in embedded layout",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12930",
+          "title": "[FIX] Crowd sync was being stopped when a user was not found",
+          "userLogin": "piotrkochan",
+          "milestone": "0.72.3",
+          "contributors": [
+            "piotrkochan",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12913",
+          "title": "[FIX] Some icons were missing",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "12829",
+          "title": "[FIX] User data download fails when a room has been deleted.",
+          "userLogin": "Hudell",
+          "milestone": "0.72.3",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12860",
+          "title": "[FIX] CAS Login not working with renamed users",
+          "userLogin": "Hudell",
+          "milestone": "0.72.3",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12914",
+          "title": "[FIX] Stream of my_message wasn't sending the room information",
+          "userLogin": "ggazzo",
+          "milestone": "0.72.3",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "12903",
+          "title": "[FIX] cannot reset password",
+          "userLogin": "ggazzo",
+          "milestone": "0.72.3",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12905",
+          "title": "[FIX] Version check update notification",
+          "userLogin": "rodrigok",
+          "milestone": "0.72.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
