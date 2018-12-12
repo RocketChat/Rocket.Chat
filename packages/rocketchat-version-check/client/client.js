@@ -1,7 +1,7 @@
-/* globals alerts */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { alerts } from 'meteor/rocketchat:ui';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
