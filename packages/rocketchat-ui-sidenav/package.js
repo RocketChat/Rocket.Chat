@@ -43,4 +43,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/roomList.js', 'client');
 	api.addFiles('client/sortlist.js', 'client');
 	api.addFiles('client/toolbar.js', 'client');
+
+	api.export('toolbarSearch', 'client');
 });
