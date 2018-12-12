@@ -1,7 +1,8 @@
-/* globals msgStream */
+/* global msgStream */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 const removeUserReaction = (message, reaction, username) => {
