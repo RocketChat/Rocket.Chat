@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Messages.setReactions = function(messageId, reactions) {
 	return this.update({ _id: messageId }, { $set: { reactions } });
 };
