@@ -1,4 +1,3 @@
-import './stylesheets/integrations.css';
 import '../lib/rocketchat';
 import './collections';
 import './startup';
