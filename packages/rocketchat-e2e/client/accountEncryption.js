@@ -1,8 +1,10 @@
-/* globals Template, t, ReactiveVar */
+/* globals t */
 import toastr from 'toastr';
 import s from 'underscore.string';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { e2e } from 'meteor/rocketchat:e2e';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 
 Template.accountEncryption.helpers({
 	isEnabled() {
