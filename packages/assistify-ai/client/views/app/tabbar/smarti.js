@@ -6,6 +6,7 @@ Template.AssistifySmarti.onCreated(function() {
 	this.maxTriesLoading = 10;
 	this.timeoutMs = 2000;
 	this.currentTryLoading = new ReactiveVar(0);
+	this.reactOnSmartiDirty = new ReactiveVar(true);
 
 	const instance = this;
 
@@ -19,17 +20,18 @@ Template.AssistifySmarti.onCreated(function() {
 	/*
 	Once this template is created (meaning: Once the tab is opened),
 	the user is interested in what Smarti is analyzing =>
-	register a callback which triggers an analysis asynchronously
+	Hook into an event issued by the backend to allow requesting an analysis
 	*/
-	RocketChat.callbacks.add('streamMessage', (message) => {
-		Meteor.call('analyze', message.rid);
-	}, RocketChat.callbacks.priority.LOW, 'smarti-analysis');
-
+	RocketChat.Notifications.onRoom(instance.data.rid, 'assistify-smarti-dirty', () => {
+		if (this.reactOnSmartiDirty.get()) {
+			Meteor.call('analyze', instance.data.rid);
+		}
+	});
 });
 
 Template.AssistifySmarti.onDestroyed(function() {
+	this.reactOnSmartiDirty.set(false);
 	clearTimeout(this.loading);
-	RocketChat.callbacks.remove('streamMessage', 'smarti-analysis');
 });
 
 /**

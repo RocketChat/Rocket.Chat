@@ -12,6 +12,12 @@ function terminateCurrentSync() {
 	syncTimer = 0;
 }
 
+function notifyClientsSmartiDirty(roomId, conversationId) {
+	RocketChat.Notifications.notifyRoom(roomId, 'assistify-smarti-dirty', {
+		roomId,
+		conversationId,
+	});
+}
 /**
  * The SmartiAdpater can be understood as an interface for all interaction with Smarti triggered by Rocket.Chat server.
  * The SmartiAdapter sould not expose any methods that can directly be called by the client.
@@ -111,6 +117,7 @@ export class SmartiAdapter {
 
 			if (request_result) {
 				Meteor.defer(() => SmartiAdapter._markMessageAsSynced(message._id));
+				notifyClientsSmartiDirty(message.rid, conversationId);
 				// autosync: If a room was not in sync, but the new message could be synced, try to sync the room again
 				Meteor.defer(() => SmartiAdapter._tryResync(message.rid, false));
 			} else {
@@ -135,6 +142,7 @@ export class SmartiAdapter {
 		if (conversationId) {
 			SystemLogger.debug(`Smarti - Deleting message ${ message.rid } from conversation ${ conversationId }.`);
 			SmartiProxy.propagateToSmarti(verbs.delete, `conversation/${ conversationId }/message/${ message._id }`);
+			notifyClientsSmartiDirty(message.rid, conversationId);
 		} else {
 			SystemLogger.error(`Smarti - deleting message from conversation faild after delete message [ id: ${ message._id } ] from room [ id: ${ message.rid } ]`);
 		}
@@ -237,9 +245,11 @@ export class SmartiAdapter {
 	 */
 	static triggerAnalysis(roomId) {
 		const conversationId = SmartiAdapter.getConversationId(roomId);
-		// conversation updated or created => request analysis results
-		SystemLogger.debug(`Smarti - conversation updated or created -> get analysis result asynch [ callback=${ SmartiAdapter.rocketWebhookUrl } ] for conversation: ${ conversationId } and room: ${ roomId }`);
-		SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`, { callback: SmartiAdapter.rocketWebhookUrl }); // asynch
+		if (conversationId) {
+			SmartiProxy.propagateToSmarti(verbs.get, `conversation/${ conversationId }/analysis`, { callback: SmartiAdapter.rocketWebhookUrl }); // asynch
+		} else {
+			SystemLogger.error(`No conversation found for roomId ${ roomId }`);
+		}
 	}
 
 	/**
