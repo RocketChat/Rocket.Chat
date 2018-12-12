@@ -6,7 +6,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
-import { t, ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder } from 'meteor/rocketchat:ui';
+import { t, ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -378,17 +378,17 @@ Template.messageBox.events({
 	},
 	'focus .js-input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
-		if (window.chatMessages[this._id]) {
-			window.chatMessages[this._id].input = instance.find('.js-input-message');
+		if (chatMessages[this._id]) {
+			chatMessages[this._id].input = instance.find('.js-input-message');
 		}
 	},
 	'click .js-send'(event, instance) {
 		const input = instance.find('.js-input-message');
-		window.chatMessages[this._id].send(this._id, input, () => {
+		chatMessages[this._id].send(this._id, input, () => {
 			// fixes https://github.com/RocketChat/Rocket.Chat/issues/3037
 			// at this point, the input is cleared and ready for autogrow
 			input.updateAutogrow();
-			instance.isMessageFieldEmpty.set(window.chatMessages[this._id].isEmpty());
+			instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
 			return input.focus();
 		});
 	},
@@ -400,8 +400,8 @@ Template.messageBox.events({
 			.trigger('dataChange');
 	},
 	'keyup .js-input-message'(event, instance) {
-		window.chatMessages[this._id].keyup(this._id, event, instance);
-		return instance.isMessageFieldEmpty.set(window.chatMessages[this._id].isEmpty());
+		chatMessages[this._id].keyup(this._id, event, instance);
+		return instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
 	},
 	'paste .js-input-message'(e, instance) {
 		Meteor.setTimeout(function() {
@@ -437,24 +437,24 @@ Template.messageBox.events({
 				applyMd.apply(action, [event, t]);
 			}
 		}
-		return window.chatMessages[this._id].keydown(this._id, event, Template.instance());
+		return chatMessages[this._id].keydown(this._id, event, Template.instance());
 	}),
 
 	'input .js-input-message'(event, instance) {
 		instance.sendIcon.set(event.target.value !== '');
-		return window.chatMessages[this._id].valueChanged(this._id, event, Template.instance());
+		return chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 	},
 
 	'propertychange .js-input-message'(event) {
 		if (event.originalEvent.propertyName === 'value') {
-			return window.chatMessages[this._id].valueChanged(this._id, event, Template.instance());
+			return chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 		}
 	},
 	'click .editing-commands-cancel > button'() {
-		return window.chatMessages[this._id].clearEditing();
+		return chatMessages[this._id].clearEditing();
 	},
 	'click .editing-commands-save > button'() {
-		return window.chatMessages[this._id].send(this._id, window.chatMessages[this._id].input);
+		return chatMessages[this._id].send(this._id, chatMessages[this._id].input);
 	},
 	'click .js-md'(e, t) {
 		applyMd.apply(this, [e, t]);
@@ -499,7 +499,7 @@ Template.messageBox.events({
 		const timer = document.querySelector('.rc-message-box__timer');
 		const mic = document.querySelector('.rc-message-box__icon.mic');
 
-		window.chatMessages[RocketChat.openedRoom].recording = true;
+		chatMessages[RocketChat.openedRoom].recording = true;
 		AudioRecorder.start(function() {
 			const startTime = new Date;
 			timer.innerHTML = '00:00';
@@ -531,7 +531,7 @@ Template.messageBox.events({
 		}
 
 		AudioRecorder.stop();
-		window.chatMessages[RocketChat.openedRoom].recording = false;
+		chatMessages[RocketChat.openedRoom].recording = false;
 	},
 	'click .js-audio-message-check'(event) {
 		event.preventDefault();
@@ -547,7 +547,7 @@ Template.messageBox.events({
 			clearInterval(audioMessageIntervalId);
 		}
 
-		window.chatMessages[RocketChat.openedRoom].recording = false;
+		chatMessages[RocketChat.openedRoom].recording = false;
 		AudioRecorder.stop(function(blob) {
 
 			loader.classList.remove('active');
@@ -658,7 +658,7 @@ Template.messageBox.events({
 			RocketChat.EmojiPicker.close();
 		} else {
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				const { input } = window.chatMessages[RocketChat.openedRoom];
+				const { input } = chatMessages[RocketChat.openedRoom];
 
 				const emojiValue = `:${ emoji }:`;
 
@@ -685,8 +685,8 @@ Template.messageBox.onRendered(function() {
 		const reply = $(input).data('reply');
 		self.dataReply.set(reply);
 	});
-	window.chatMessages[RocketChat.openedRoom] = window.chatMessages[RocketChat.openedRoom] || new ChatMessages;
-	window.chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
+	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
+	chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
 		animate: true,
 		onInitialize: true,
 	}).on('autogrow', () => {
@@ -724,9 +724,9 @@ Meteor.startup(function() {
 	});
 	RocketChat.callbacks.add('enter-room', function() {
 		setTimeout(() => {
-			if (window.chatMessages[RocketChat.openedRoom].input) {
-				window.chatMessages[RocketChat.openedRoom].input.focus();
-				window.chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);
+			if (chatMessages[RocketChat.openedRoom].input) {
+				chatMessages[RocketChat.openedRoom].input.focus();
+				chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);
 			}
 		}, 200);
 	});
