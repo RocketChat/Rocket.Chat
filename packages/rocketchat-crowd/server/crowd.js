@@ -144,7 +144,7 @@ export class CROWD {
 
 				const email = user.emails[0].address;
 				logger.info('Attempting to find for user by email', email);
-				
+
 				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
 				if (!response || response.users.length === 0) {
 					logger.warning('Could not find user in CROWD with username or email:', username, email);
