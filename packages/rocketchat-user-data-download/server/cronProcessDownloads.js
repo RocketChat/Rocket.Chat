@@ -41,7 +41,7 @@ const loadUserSubscriptions = function(exportOperation) {
 	cursor.forEach((subscription) => {
 		const roomId = subscription.rid;
 		const roomData = RocketChat.models.Rooms.findOneById(roomId);
-		let roomName = roomData.name ? roomData.name : roomId;
+		let roomName = (roomData && roomData.name) ? roomData.name : roomId;
 		let userId = null;
 
 		if (subscription.t === 'd') {
