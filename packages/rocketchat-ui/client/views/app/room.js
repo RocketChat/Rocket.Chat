@@ -16,7 +16,7 @@ import Clipboard from 'clipboard';
 
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
-window.chatMessages = window.chatMessages || {};
+chatMessages = {}; // eslint-disable-line
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
