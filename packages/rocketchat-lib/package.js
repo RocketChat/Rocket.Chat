@@ -188,6 +188,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/robotMethods.js', 'server');
 	api.addFiles('server/methods/saveSetting.js', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.js', 'server');
+	api.addFiles('server/methods/sendInvitationSMS.js', 'server');
 	api.addFiles('server/methods/sendMessage.js', 'server');
 	api.addFiles('server/methods/sendSMTPTestEmail.js', 'server');
 	api.addFiles('server/methods/setAdminStatus.js', 'server');

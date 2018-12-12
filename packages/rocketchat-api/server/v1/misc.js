@@ -175,3 +175,38 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('invite.email', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.email) {
+			throw new Meteor.Error('error-email-param-not-provided', 'The required "email" param is required.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email]));
+		return RocketChat.API.v1.success();
+
+		// sendInvitationEmail always returns an empty list
+		/*
+		if(this.bodyParams.email in result){
+			return RocketChat.API.v1.success();
+		}else{
+			return RocketChat.API.v1.failure('Email Invite Failed');
+		}
+		*/
+	},
+});
+
+RocketChat.API.v1.addRoute('invite.sms', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.phone) {
+			throw new Meteor.Error('error-phone-param-not-provided', 'The required "phone" param is required.');
+		}
+		const phone = this.bodyParams.phone.replace(/-|\s/g, '');
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', [phone]));
+		if (result.indexOf(phone) >= 0) {
+			return RocketChat.API.v1.success();
+		} else {
+			return RocketChat.API.v1.failure('SMS Invite Failed');
+		}
+	},
+});
