@@ -1,8 +1,10 @@
-/* globals JitsiMeetExternalAPI */
 /* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { t, modal } from 'meteor/rocketchat:ui';
+import { JitsiMeetExternalAPI } from '../public/external_api';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {
