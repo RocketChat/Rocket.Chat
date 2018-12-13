@@ -1247,6 +1247,14 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
+		this.add('UI_Display_Integrations', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_Display_Personal_Access_Tokens', true, {
+			type: 'boolean',
+			public: true,
+		});
 		this.add('UI_Group_Channels_By_Type', true, {
 			type: 'boolean',
 			public: false,

@@ -17,14 +17,14 @@ Template.accountFlex.helpers({
 	allowUserProfileChange() {
 		return RocketChat.settings.get('Accounts_AllowUserProfileChange');
 	},
-	accessTokensEnabled() {
-		return RocketChat.authz.hasAllPermission(['create-personal-access-tokens']);
-	},
 	encryptionEnabled() {
 		return RocketChat.settings.get('E2E_Enable');
 	},
-	webdavIntegrationEnabled() {
-		return RocketChat.settings.get('Webdav_Integration_Enabled');
+	showPersonalAccessTokensMenu() {
+		return RocketChat.authz.hasAllPermission(['create-personal-access-tokens']) && RocketChat.settings.get('UI_Display_Personal_Access_Tokens');
+	},
+	showIntegrationsMenu() {
+		return RocketChat.settings.get('Webdav_Integration_Enabled') && RocketChat.settings.get('UI_Display_Integrations');
 	},
 	menuItem(name, icon, section, group) {
 		return {
