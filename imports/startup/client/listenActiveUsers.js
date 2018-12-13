@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import _ from 'underscore';
 
 const saveUser = (user, force = false) => {
 	// do not update my own user, my user's status will come from a subscription
@@ -26,7 +27,7 @@ const saveUser = (user, force = false) => {
 };
 
 let retry = 0;
-function getActiveUsers() {
+const getActiveUsers = _.debounce(() => {
 	RocketChat.API.v1.get('users.active')
 		.then((result) => {
 			result.users.forEach((user) => {
@@ -34,10 +35,10 @@ function getActiveUsers() {
 			});
 		})
 		.catch(() => setTimeout(getActiveUsers, retry++ * 2000));
-}
+}, 1000);
 
 Tracker.autorun(() => {
-	if (!Meteor.userId()) {
+	if (!Meteor.userId() || !Meteor.status().connected) {
 		return;
 	}
 	getActiveUsers();
