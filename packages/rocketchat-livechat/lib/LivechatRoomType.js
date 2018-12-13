@@ -1,6 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { ChatRoom } from 'meteor/rocketchat:ui';
 import { RocketChat, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, openRoom } from 'meteor/rocketchat:lib';
+import { LivechatInquiry } from './LivechatInquiry';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -58,8 +60,12 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		if (room) {
 			return room.v && room.v.status;
 		}
-
-		const inquiry = RocketChat.models.livechatInquiry.findOne({ rid: roomId });
+		let inquiry;
+		if (Meteor.isClient) {
+			inquiry = LivechatInquiry.findOne({ rid: roomId });
+		} else {
+			inquiry = RocketChat.models.LivechatInquiry.findOne({ rid: roomId });
+		}
 		return inquiry && inquiry.v && inquiry.v.status;
 	}
 

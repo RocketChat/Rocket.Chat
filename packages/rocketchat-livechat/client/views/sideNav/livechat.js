@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { RocketChat, handleError } from 'meteor/rocketchat:lib';
 import { t, modal, ChatSubscription, KonchatNotification } from 'meteor/rocketchat:ui';
-import { LivechatInquiry } from '../../collections/LivechatInquiry';
+import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 
 Template.livechat.helpers({
 	isActive() {
