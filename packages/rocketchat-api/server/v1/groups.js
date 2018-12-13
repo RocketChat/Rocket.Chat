@@ -387,11 +387,17 @@ RocketChat.API.v1.addRoute('groups.leave', { authRequired: true }, {
 // List Private Groups a user has access to
 RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 	get() {
+		const params = this.requestParams();
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
+		let user = this.userId;
+
+		if (params.userId) {
+			user = params.userId;
+		}
 
 		// TODO: CACHE: Add Breacking notice since we removed the query param
-		const cursor = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('p', this.userId, {
+		const cursor = RocketChat.models.Rooms.findBySubscriptionTypeAndUserId('p', user, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
@@ -403,7 +409,7 @@ RocketChat.API.v1.addRoute('groups.list', { authRequired: true }, {
 
 
 		return RocketChat.API.v1.success({
-			groups: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+			groups: rooms.map((room) => this.composeRoomWithLastMessage(room, user)),
 			offset,
 			count: rooms.length,
 			total: totalCount,
