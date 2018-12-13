@@ -1,14 +1,28 @@
 
 import { Meteor } from 'meteor/meteor';
-
+const changedPayload = function(collection, id, fields) {
+	return DDPCommon.stringifyDDP({
+		msg: 'changed',
+		collection,
+		id,
+		fields,
+	});
+};
+ const send = function(self, msg) {
+	if (!self.socket) {
+		return;
+	}
+	self.socket.send(msg);
+};
 class RoomStreamer extends Meteor.Streamer {
 	_publish(publication, eventName, options) {
 		super._publish(publication, eventName, options);
 		const uid = Meteor.userId();
 		if (/rooms-changed/.test(eventName)) {
-			const roomEvent = (...args) => {
-				RocketChat.Notifications.notifyUserInThisInstance(uid, 'rooms-changed', ...args);
-			};
+			const roomEvent = (...args) => send(subscription._session, changedPayload(this.subscriptionName, 'id', {
+				eventName: `${uid}/rooms-changed`,
+				args,
+			}));
 			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
 			rooms.forEach(({ rid }) => {
 				this.on(rid, roomEvent);
