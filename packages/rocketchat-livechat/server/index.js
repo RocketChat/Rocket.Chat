@@ -69,7 +69,6 @@ import './models/LivechatTrigger';
 import './models/indexes';
 import './models/LivechatInquiry';
 import './models/LivechatOfficeHour';
-import './lib/Analytics';
 import './lib/Livechat';
 import './lib/QueueMethods';
 import './lib/OfficeClock';
