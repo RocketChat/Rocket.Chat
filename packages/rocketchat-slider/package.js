@@ -7,10 +7,10 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('templating', 'client');
-	api.use('rocketchat:theme');
-
-	api.addFiles('rocketchat-slider.html', 'client');
-	api.addFiles('rocketchat-slider.js', 'client');
+	api.use([
+		'ecmascript',
+		'templating',
+		'rocketchat:theme',
+	]);
+	api.mainModule('client/index.js', 'client');
 });
