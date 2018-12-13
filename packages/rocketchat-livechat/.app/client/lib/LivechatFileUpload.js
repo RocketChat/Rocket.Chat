@@ -1,7 +1,10 @@
-/* globals fileUpload, Livechat, Handlebars, showError, sendFileUpload */
-/* exported LivechatFileUpload, fileUpload, sendFileUpload */
+/* globals Handlebars */
 import { Meteor } from 'meteor/meteor';
 import visitor from '../../imports/client/visitor';
+import { t } from './tapi18n';
+import { showError } from './error';
+import { Livechat } from './_livechat';
+import { parentCall } from './parentCall';
 import swal from 'sweetalert2';
 
 const handleRequestError = (response) => {
@@ -107,7 +110,7 @@ function sendFileMessage(file, roomId) {
 	});
 }
 
-sendFileUpload = (file) => getUploadPreview(file, function(file, preview) {
+export const sendFileUpload = (file) => getUploadPreview(file, function(file, preview) {
 	let html = '';
 	if (file.type === 'audio') {
 		html = `<div class='upload-preview'><audio  style="width: 100%;" controls="controls"><source src="${ preview }" type="audio/wav">Your browser does not support the audio element.</audio></div>`;
@@ -156,7 +159,7 @@ sendFileUpload = (file) => getUploadPreview(file, function(file, preview) {
 	});
 });
 
-fileUpload = (file) => {
+export const fileUpload = (file) => {
 
 	if (file.size === 0) {
 		swal({

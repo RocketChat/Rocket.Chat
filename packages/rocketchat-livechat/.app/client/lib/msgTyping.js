@@ -1,9 +1,10 @@
-/* globals Notifications, Livechat */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
+import { Notifications } from './fromApp/Notifications';
+import { Livechat } from './_livechat';
 
 export const MsgTyping = (function() {
 	const timeout = 15000;
@@ -84,5 +85,3 @@ export const MsgTyping = (function() {
 
 	return { start, stop, get, selfTyping };
 }());
-
-this.MsgTyping = MsgTyping;

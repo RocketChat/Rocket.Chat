@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import visitor from '../../imports/client/visitor';
+import { getAvatarUrlFromUsername } from '../lib/fromApp/avatar';
 
 Template.avatar.helpers({
 	imageUrl() {

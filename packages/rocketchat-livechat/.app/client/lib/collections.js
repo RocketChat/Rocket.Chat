@@ -1,4 +1,4 @@
 import { Mongo } from 'meteor/mongo';
 
-this.ChatMessage = new Mongo.Collection(null);
-this.Department = new Mongo.Collection(null);
+export const ChatMessage = new Mongo.Collection(null);
+export const Department = new Mongo.Collection(null);

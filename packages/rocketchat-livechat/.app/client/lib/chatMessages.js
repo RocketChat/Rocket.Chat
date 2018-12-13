@@ -1,12 +1,18 @@
-/* globals MsgTyping, showError, Livechat */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 import visitor from '../../imports/client/visitor';
+import { ChatMessage } from './collections';
+import { t } from './tapi18n';
+import { MsgTyping } from './msgTyping';
+import { Livechat } from './_livechat';
+import { parentCall } from './parentCall';
+import { showError } from './error';
+import { RoomHistoryManager } from './fromApp/RoomHistoryManager';
 
-this.ChatMessages = class ChatMessages {
+export class ChatMessages {
 	init(node) {
 		this.editing = {};
 
@@ -174,14 +180,6 @@ this.ChatMessages = class ChatMessages {
 		}
 	}
 
-	deleteMsg(message) {
-		Meteor.call('deleteMessage', message, (error) => {
-			if (error) {
-				return handleError(error);
-			}
-		});
-	}
-
 	update(id, rid, input) {
 		if (s.trim(input.value) !== '') {
 			const msg = input.value;
@@ -280,4 +278,4 @@ this.ChatMessages = class ChatMessages {
 	isMessageTooLong(input) {
 		return input && input.value.length > this.messageMaxSize;
 	}
-};
+}

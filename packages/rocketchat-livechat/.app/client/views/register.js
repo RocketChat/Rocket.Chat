@@ -1,9 +1,12 @@
-/* globals Department, Livechat, LivechatVideoCall */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import visitor from '../../imports/client/visitor';
+import { Livechat } from '../lib/_livechat';
+import { Department } from '../lib/collections';
+import { LivechatVideoCall } from '../lib/LivechatVideoCall';
+import { parentCall } from '../lib/parentCall';
 import _ from 'underscore';
 import s from 'underscore.string';
 

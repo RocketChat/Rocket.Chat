@@ -1,8 +1,15 @@
-/* globals Livechat, LivechatVideoCall, MsgTyping, fileUpload */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import visitor from '../../imports/client/visitor';
+import { ChatMessage } from '../lib/collections';
+import { t } from '../lib/tapi18n';
+import { Livechat } from '../lib/_livechat';
+import { MsgTyping } from '../lib/msgTyping';
+import { LivechatVideoCall } from '../lib/LivechatVideoCall';
+import { getAvatarUrlFromUsername } from '../lib/fromApp/avatar';
+import { fileUpload } from '../lib/LivechatFileUpload';
+import { ChatMessages } from '../lib/chatMessages';
 import _ from 'underscore';
 import mime from 'mime-type/with-db';
 
