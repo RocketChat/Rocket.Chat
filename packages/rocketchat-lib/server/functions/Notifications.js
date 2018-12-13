@@ -1,5 +1,7 @@
 
 import { Meteor } from 'meteor/meteor';
+import { DDPCommon } from 'meteor/ddp-common';
+
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
 		msg: 'changed',
@@ -8,7 +10,7 @@ const changedPayload = function(collection, id, fields) {
 		fields,
 	});
 };
- const send = function(self, msg) {
+const send = function(self, msg) {
 	if (!self.socket) {
 		return;
 	}
@@ -19,8 +21,8 @@ class RoomStreamer extends Meteor.Streamer {
 		super._publish(publication, eventName, options);
 		const uid = Meteor.userId();
 		if (/rooms-changed/.test(eventName)) {
-			const roomEvent = (...args) => send(subscription._session, changedPayload(this.subscriptionName, 'id', {
-				eventName: `${uid}/rooms-changed`,
+			const roomEvent = (...args) => send(publication._session, changedPayload(this.subscriptionName, 'id', {
+				eventName: `${ uid }/rooms-changed`,
 				args,
 			}));
 			const rooms = RocketChat.models.Subscriptions.find({ 'u._id': uid }, { fields: { rid: 1 } }).fetch();
