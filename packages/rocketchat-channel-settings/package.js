@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 	]);
+	api.addFiles('client/stylesheets/channel-settings.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
