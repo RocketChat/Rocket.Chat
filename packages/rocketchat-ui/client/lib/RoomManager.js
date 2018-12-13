@@ -7,6 +7,9 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { upsertMessage } from './RoomHistoryManager';
 
+
+const maxRoomsOpen = parseInt(localStorage && locaStorage.getItem('rc-maxRoomsOpen')) || 5 ;
+
 const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
 const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 	const query = { rid, ts };
@@ -135,7 +138,6 @@ RoomManager = new function() { //eslint-disable-line
 
 
 		closeOlderRooms() {
-			const maxRoomsOpen = 10;
 			if (Object.keys(openedRooms).length <= maxRoomsOpen) {
 				return;
 			}
