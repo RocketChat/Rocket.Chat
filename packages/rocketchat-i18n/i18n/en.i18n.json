@@ -1713,6 +1713,7 @@
   "Livechat_open_inquiery_show_connecting": "Show Connecting Message Instead of Input When Guest is Not Yet Connected to an Agent",
   "Livechat_Queue": "Livechat Queue",
   "Livechat_registration_form": "Registration Form",
+  "Livechat_registration_form_message": "Registration Form Message",
   "Livechat_room_count": "Livechat Room Count",
   "Livechat_Routing_Method": "Livechat Routing Method",
   "Livechat_Take_Confirm": "Do you want to take this client?",

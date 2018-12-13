@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 

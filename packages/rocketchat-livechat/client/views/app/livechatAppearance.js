@@ -102,6 +102,9 @@ Template.livechatAppearance.helpers({
 			return 'checked';
 		}
 	},
+	registrationFormMessage() {
+		return Template.instance().registrationFormMessage.get();
+	},
 	sampleColor() {
 		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
 			return Template.instance().colorOffline.get();
@@ -204,6 +207,7 @@ Template.livechatAppearance.onCreated(function() {
 	this.registrationFormEnabled = new ReactiveVar(null);
 	this.registrationFormNameFieldEnabled = new ReactiveVar(null);
 	this.registrationFormEmailFieldEnabled = new ReactiveVar(null);
+	this.registrationFormMessage = new ReactiveVar(null);
 
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_title');
@@ -248,6 +252,10 @@ Template.livechatAppearance.onCreated(function() {
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_conversation_finished_message');
 		this.conversationFinishedMessage.set(setting && setting.value);
+	});
+	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_registration_form_message');
+		this.registrationFormMessage.set(setting && setting.value);
 	});
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_registration_form');
@@ -318,6 +326,10 @@ Template.livechatAppearance.events({
 
 		const settingRegistrationFormEmailFieldEnabled = LivechatAppearance.findOne('Livechat_email_field_registration_form');
 		instance.registrationFormEmailFieldEnabled.set(settingRegistrationFormEmailFieldEnabled && settingRegistrationFormEmailFieldEnabled.value);
+
+		const settingRegistrationFormMessage = LivechatAppearance.findOne('Livechat_registration_form_message');
+		instance.registrationFormMessage.set(settingRegistrationFormMessage && settingRegistrationFormMessage.value);
+
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
@@ -377,6 +389,10 @@ Template.livechatAppearance.events({
 			{
 				_id: 'Livechat_email_field_registration_form',
 				value: instance.registrationFormEmailFieldEnabled.get(),
+			},
+			{
+				_id: 'Livechat_registration_form_message',
+				value: s.trim(instance.registrationFormMessage.get()),
 			},
 		];
 
