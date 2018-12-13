@@ -207,6 +207,7 @@ RocketChat.API.v1.addRoute('invite.sms', { authRequired: true }, {
 			return RocketChat.API.v1.success();
 		} else {
 			return RocketChat.API.v1.failure('SMS Invite Failed');
+		}
 	},
 });
 
