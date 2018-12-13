@@ -54,7 +54,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	getUserStatus(roomId) {
-		const room = Session.get(`roomData${roomId}`);
+		const room = Session.get(`roomData${ roomId }`);
 		if (room) {
 			return room.v && room.v.status;
 		}

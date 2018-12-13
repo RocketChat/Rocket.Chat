@@ -95,4 +95,4 @@ openRoom = function(type, name) { // eslint-disable-line
 			return RocketChat.callbacks.run('enter-room', sub);
 		})
 	);
-}
+};
