@@ -1,10 +1,13 @@
-/* global fileUploadHandler, Handlebars */
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 import { Session } from 'meteor/session';
 import { call } from 'meteor/rocketchat:lib';
+import { t, modal } from 'meteor/rocketchat:ui';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { Handlebars } from 'meteor/ui';
+
 Template.webdavFilePicker.rendered = async function() {
 	const { accountId } = this.data;
 	Session.set('webdavCurrentFolder', '/');
