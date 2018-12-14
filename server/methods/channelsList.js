@@ -53,16 +53,16 @@ Meteor.methods({
 		if (channelType !== 'private') {
 			if (RocketChat.authz.hasPermission(userId, 'view-c-room')) {
 				if (filter) {
-					channels = channels.concat(RocketChat.models.Rooms.findByType('c', options).fetch());
-				} else {
 					channels = channels.concat(RocketChat.models.Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
+				} else {
+					channels = channels.concat(RocketChat.models.Rooms.findByType('c', options).fetch());
 				}
 			} else if (RocketChat.authz.hasPermission(userId, 'view-joined-room')) {
 				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				if (filter) {
-					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('c', roomIds, options).fetch());
-				} else {
 					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).fetch());
+				} else {
+					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('c', roomIds, options).fetch());
 				}
 			}
 		}
@@ -81,9 +81,9 @@ Meteor.methods({
 			if (!groupByType) {
 				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				if (filter) {
-					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('p', roomIds, options).fetch());
-				} else {
 					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).fetch());
+				} else {
+					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('p', roomIds, options).fetch());
 				}
 			}
 		}
