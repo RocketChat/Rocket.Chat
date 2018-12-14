@@ -1,7 +1,8 @@
-/* globals TAPi18n, AutoComplete */
+/* globals TAPi18n */
 /* globals _ */
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
 
 const parent = document.querySelector('.main-content');
 let oldRoute = '';

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('Livechat');
 
@@ -296,6 +298,13 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Transcript_message',
 		enableQuery: { _id: 'Livechat_enable_transcript', value: true },
+	});
+
+	RocketChat.settings.add('Livechat_registration_form_message', '', {
+		type: 'string',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_registration_form_message',
 	});
 
 	RocketChat.settings.add('Livechat_open_inquiery_show_connecting', false, {

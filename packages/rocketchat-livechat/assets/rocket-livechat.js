@@ -540,6 +540,8 @@
 
 		widget.dataset.state = 'closed';
 		widget.style.height = widgetHeightClosed;
+		widget.style.right = '50px';
+		widget.style.bottom = '0px';
 		callHook('widgetClosed');
 
 		emitCallback('chat-minimized');
@@ -580,6 +582,33 @@
 			} else {
 				closeWidget();
 			}
+		},
+		restoreWindow: function() {
+			if (widget.dataset.state === 'closed') {
+				openWidget();
+			}
+		},
+		startDragWindow: function(offset) {
+			if (widget.dataset.state !== 'opened') {
+				return;
+			}
+			this.dragOffset = offset;
+		},
+		stopDragWindow: function() {
+			if (widget.dataset.state !== 'opened') {
+				return;
+			}
+			this.dragOffset = null;
+		},
+		dragWindow: function(displacement) {
+			if (!this.dragOffset) {
+				return;
+			}
+
+			const right = parseInt(widget.style.right.replace(/px$/, ''), 10);
+			const bottom = parseInt(widget.style.bottom.replace(/px$/, ''), 10);
+			widget.style.right = (right - (displacement.x - this.dragOffset.x)) + 'px';
+			widget.style.bottom = (bottom - (displacement.y - this.dragOffset.y)) + 'px';
 		},
 		openPopout: function() {
 			closeWidget();

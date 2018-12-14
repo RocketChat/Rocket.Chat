@@ -1,6 +1,7 @@
 {
 	"version": "0.2.0",
 	"configurations": [
+		
 		{
 			"name": "Attach to meteor debug",
 			"type": "node",
@@ -10,6 +11,7 @@
 			"restart": false,
 			"sourceMaps": true,
 			"sourceMapPathOverrides": {
+				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
@@ -23,6 +25,7 @@
 			"url": "http://localhost:3000",
 			"webRoot": "${workspaceFolder}",
 			"sourceMapPathOverrides": {
+				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
@@ -40,6 +43,7 @@
 			"port": 9229,
 			"timeout": 300000, //Rocket.Chat really takes some time to startup, so play it safe
 			"sourceMapPathOverrides": {
+				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
@@ -58,6 +62,7 @@
 			"port": 9229,
 			"timeout": 300000, //Rocket.Chat really takes some time to startup, so play it safe
 			"sourceMapPathOverrides": {
+				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"
@@ -76,6 +81,7 @@
 			"port": 9229,
 			"timeout": 300000, //Rocket.Chat really takes some time to startup, so play it safe
 			"sourceMapPathOverrides": {
+				"meteor://💻app/*": "${workspaceFolder}/*",
 				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
 				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 				"meteor://💻app/packages/assistify:*": "${workspaceFolder}/packages/assistify-*"

@@ -1,4 +1,6 @@
+import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
+import { Random } from 'meteor/random';
 import Webdav from 'webdav';
 import stream from 'stream';
 /**
@@ -11,7 +13,6 @@ export class WebdavStore extends UploadFS.Store {
 	constructor(options) {
 
 		super(options);
-
 
 		const client = new Webdav(
 			options.connection.credentials.server,
@@ -127,7 +128,6 @@ export class WebdavStore extends UploadFS.Store {
 			writeStream.pipe(webdavStream);
 			return writeStream;
 		};
-
 	}
 }
 

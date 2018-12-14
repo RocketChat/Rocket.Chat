@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 export default function handleQUIT(args) {
 	const user = RocketChat.models.Users.findOne({
 		'profile.irc.nick': args.nick,

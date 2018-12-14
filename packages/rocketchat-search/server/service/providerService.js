@@ -1,4 +1,5 @@
 /* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { validationService } from '../service/validationService';

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
 		this.unblock();
@@ -53,7 +55,10 @@ Meteor.methods({
 	},
 });
 
-RocketChat.models.Settings.on('change', ({ clientAction, id, data }) => {
+RocketChat.models.Settings.on('change', ({ clientAction, id, data, diff }) => {
+	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
+		return;
+	}
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':

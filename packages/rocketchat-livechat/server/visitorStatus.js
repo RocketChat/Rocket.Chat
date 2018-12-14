@@ -1,4 +1,6 @@
 /* globals UserPresenceEvents */
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(() => {
 	UserPresenceEvents.on('setStatus', (session, status, metadata) => {
 		if (metadata && metadata.visitor) {

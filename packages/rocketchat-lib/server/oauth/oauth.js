@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
 const AccessTokenServices = {};

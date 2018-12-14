@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Busboy from 'busboy';
 import filesize from 'filesize';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
@@ -23,7 +24,7 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 			return RocketChat.API.v1.unauthorized();
 		}
 
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(visitorToken, this.urlParams.rid);
+		const room = RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
 		if (!room) {
 			return RocketChat.API.v1.unauthorized();
 		}

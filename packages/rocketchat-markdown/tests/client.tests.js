@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 import assert from 'assert';
 import './client.mocks.js';
-import { original } from '../parser/original/original';
+import { original } from '../lib/parser/original/original';
 // import {marked} from '../parser/marked/marked';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
@@ -192,6 +192,7 @@ const link = {
 	'[Rocket.Chat Site](tps://rocket.chat/)': '[Rocket.Chat Site](tps://rocket.chat/)',
 	'[Open Site For Rocket.Chat](open.rocket.chat/)': '[Open Site For Rocket.Chat](open.rocket.chat/)',
 	'[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)': '[Testing Entry on Rocket.Chat Docs Site](htts://rocket.chat/docs/developer-guides/testing/#testing)',
+	'[Text](http://link?param1=1&param2=2)': linkWrapped('http://link?param1=1&param2=2', 'Text'),
 };
 
 const inlinecode = {
