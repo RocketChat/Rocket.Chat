@@ -1,7 +1,8 @@
-/* globals WebAppHashing */
-
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefix';

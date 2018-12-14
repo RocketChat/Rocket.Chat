@@ -1,4 +1,3 @@
-import '../assets/stylesheets/emojiCustomAdmin.css';
 import './models/EmojiCustom';
 import './lib/emojiCustom';
 import './notifications/deleteEmojiCustom';
