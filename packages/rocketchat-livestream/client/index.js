@@ -1,4 +1,3 @@
-import './styles/liveStreamTab.css';
 import './views/liveStreamTab.html';
 import './views/liveStreamTab';
 import './views/livestreamBroadcast.html';

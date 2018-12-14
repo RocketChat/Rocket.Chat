@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:logger',
 		'kadira:flow-router',
 	]);
+	api.addFiles('client/style/style.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

@@ -8,6 +8,8 @@ import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { renderEmoji } from 'meteor/rocketchat:emoji';
 import { renderMessageBody } from './renderMessageBody';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:ui';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -33,7 +35,8 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	const pdfjsLib = await import('pdfjs-dist');
 	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }node_modules/pdfjs-dist/build/pdf.worker.js`;
 
-	const loader = document.getElementById('js-loading-${canvasId}');
+	const loader = document.getElementById(`js-loading-${ canvasId }`);
+
 	if (loader) {
 		loader.style.display = 'block';
 	}
@@ -45,10 +48,10 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	const context = canvas.getContext('2d');
 	canvas.height = viewport.height;
 	canvas.width = viewport.width;
-	page.render({
+	await page.render({
 		canvasContext: context,
 		viewport,
-	});
+	}).promise;
 
 	if (loader) {
 		loader.style.display = 'none';
