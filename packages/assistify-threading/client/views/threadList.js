@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 
 Template.ThreadList.events({
 	'click .js-create-thread'() {
