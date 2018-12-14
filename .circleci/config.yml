@@ -96,7 +96,7 @@ jobs:
             cd /tmp/build-test
             tar czf /tmp/build/Rocket.Chat.tar.gz bundle
             cd /tmp/build-test/bundle/programs/server
-            npm install
+            npm install --production
 
       # - save_cache:
       #     key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
