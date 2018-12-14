@@ -9,7 +9,7 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-	class LivechatInquiry extends RocketChat.models._Base {
+	class LivechatInquiryClass extends RocketChat.models._Base {
 		constructor() {
 			super('livechat_inquiry');
 
@@ -101,5 +101,6 @@ if (Meteor.isServer) {
 		}
 	}
 
-	RocketChat.models.LivechatInquiry = new LivechatInquiry();
+	RocketChat.models.LivechatInquiry = new LivechatInquiryClass();
+	LivechatInquiry = RocketChat.models.LivechatInquiry;
 }

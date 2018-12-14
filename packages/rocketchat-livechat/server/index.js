@@ -70,6 +70,7 @@ import './models/indexes';
 import '../lib/LivechatInquiry';
 import './models/LivechatOfficeHour';
 import './lib/Livechat';
+import './lib/Analytics';
 import './lib/QueueMethods';
 import './lib/OfficeClock';
 import './sendMessageBySMS';
