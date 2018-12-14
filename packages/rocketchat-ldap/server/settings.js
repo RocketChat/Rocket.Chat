@@ -85,6 +85,7 @@ RocketChat.settings.addGroup('LDAP', function() {
 		this.add('LDAP_Sync_User_Data', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: syncDataQuery });
 		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery });
+		this.add('LDAP_Avatar_Field', '', { type: 'string', enableQuery });
 
 		this.add('LDAP_Background_Sync', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Background_Sync_Interval', 'Every 24 hours', { type: 'string', enableQuery: backgroundSyncQuery });

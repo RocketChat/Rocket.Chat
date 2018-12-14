@@ -194,7 +194,7 @@ export function syncUserData(user, ldapUser) {
 	}
 
 	if (user && user._id && RocketChat.settings.get('LDAP_Sync_User_Avatar') === true) {
-		const avatar = ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
+		const avatar = ldapUser._raw[RocketChat.settings.get('LDAP_Avatar_Field')] || ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
 		if (avatar) {
 			logger.info('Syncing user avatar');
 
