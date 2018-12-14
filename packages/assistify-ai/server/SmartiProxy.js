@@ -57,10 +57,7 @@ export class SmartiProxy {
 		} catch (error) {
 
 			if (error && onError) {
-				const recoveryResult = onError(error);
-				if (recoveryResult !== undefined) {
-					return recoveryResult;
-				}
+				return onError(error);
 			}
 
 			SystemLogger.error('Could not complete', method, 'to', url, error.response);
