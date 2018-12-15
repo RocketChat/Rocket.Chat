@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import s from 'underscore.string';
 
 // Request custom OAuth credentials for the user
