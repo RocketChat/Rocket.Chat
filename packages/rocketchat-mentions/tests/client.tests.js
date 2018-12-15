@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 import assert from 'assert';
 
-import Mentions from '../Mentions';
+import Mentions from '../lib/Mentions';
 let mention;
 beforeEach(function functionName() {
 	mention = new Mentions({
@@ -237,6 +237,14 @@ describe('replace methods', function() {
 		it(`should escape special characters in "hello ${ specialchars }"`, () => {
 			const result = mention.replaceUsers(`hello ${ specialchars }`, message, 'me');
 			assert.equal(result, `hello <a class="mention-link " data-username="${ specialchars.replace('@', '') }" title="${ specialchars.replace('@', '') }">${ specialcharsName }</a>`);
+		});
+
+		it(`should render for "hello<br>${ str2 } <br>"`, () => {
+			const result = mention.replaceUsers(`hello<br>${ str2 } <br>`, message, 'me');
+			const replaced = str2.replace('@', '');
+			const expected = `hello<br><a class="mention-link " data-username="${ replaced }" title="${ replaced }">${ str2Name }</a> <br>`;
+
+			assert.equal(result, expected);
 		});
 
 		it('should render for unknow/private user "hello @unknow"', () => {

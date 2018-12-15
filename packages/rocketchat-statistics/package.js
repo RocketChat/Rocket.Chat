@@ -12,15 +12,6 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'konecty:multiple-instances-status',
 	]);
-
-	// Statistics
-	api.addFiles('lib/rocketchat.js', ['client', 'server']);
-	api.addFiles([
-		'server/models/Statistics.js',
-		'server/models/Sessions.js',
-		'server/functions/get.js',
-		'server/functions/save.js',
-		'server/methods/getStatistics.js',
-		'server/startup/monitor.js',
-	], 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 class ModelRoles extends RocketChat.models._Base {
 	constructor(...args) {
 		super(...args);
@@ -62,6 +64,18 @@ class ModelRoles extends RocketChat.models._Base {
 			model && model.removeRolesByUserId && model.removeRolesByUserId(userId, roleName, scope);
 		}
 		return true;
+	}
+
+	findOneByIdOrName(_idOrName, options) {
+		const query = {
+			$or: [{
+				_id: _idOrName,
+			}, {
+				name: _idOrName,
+			}],
+		};
+
+		return this.findOne(query, options);
 	}
 }
 

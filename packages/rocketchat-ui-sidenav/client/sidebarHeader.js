@@ -1,4 +1,9 @@
 /* globals popover menu */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
 	RocketChat.callbacks.run('userStatusManuallySet', status);
@@ -30,14 +35,39 @@ const extendedViewOption = (user) => {
 	return;
 };
 
+const showToolbar = new ReactiveVar(false);
+
+const selectorSearch = '.toolbar__search .rc-input__element';
+toolbarSearch = { //eslint-disable-line
+	shortcut: false,
+	clear() {
+		const $inputMessage = $('.js-input-message');
+
+		if (0 === $inputMessage.length) {
+			return;
+		}
+
+		$inputMessage.focus();
+		$(selectorSearch).val('');
+	},
+	show(fromShortcut) {
+		menu.open();
+		showToolbar.set(true);
+		this.shortcut = fromShortcut;
+	},
+	close() {
+		showToolbar.set(false);
+		if (this.shortcut) {
+			menu.close();
+		}
+	},
+};
 
 const toolbarButtons = (user) => [{
 	name: t('Search'),
 	icon: 'magnifier',
 	action: () => {
-		const toolbarEl = $('.toolbar');
-		toolbarEl.css('display', 'block');
-		toolbarEl.find('.rc-input__element').focus();
+		toolbarSearch.show(false); //eslint-disable-line
 	},
 },
 {
@@ -218,6 +248,9 @@ Template.sidebarHeader.helpers({
 	},
 	toolbarButtons() {
 		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());
+	},
+	showToolbar() {
+		return showToolbar.get();
 	},
 });
 

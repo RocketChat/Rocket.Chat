@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
+import { sendNotification } from 'meteor/rocketchat:lib';
 
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
@@ -34,6 +38,7 @@ RocketChat.QueueMethods = {
 			servedBy: {
 				_id: agent.agentId,
 				username: agent.username,
+				ts: new Date(),
 			},
 			cl: false,
 			open: true,
@@ -149,6 +154,26 @@ RocketChat.QueueMethods = {
 		RocketChat.models.LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
 
+		// Alert the agents of the queued request
+		agentIds.forEach((agentId) => {
+			sendNotification({
+				// fake a subscription in order to make use of the function defined above
+				subscription: {
+					rid: room._id,
+					t : room.t,
+					u: {
+						_id : agentId,
+					},
+				},
+				sender: room.v,
+				hasMentionToAll: true, // consider all agents to be in the room
+				hasMentionToHere: false,
+				message: Object.assign(message, { u: room.v }),
+				notificationMessage: message.msg,
+				room: Object.assign(room, { name: TAPi18n.__('New_livechat_in_queue') }),
+				mentionIds: [],
+			});
+		});
 		return room;
 	},
 	'External'(guest, message, roomInfo, agent) {

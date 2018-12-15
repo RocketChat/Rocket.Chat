@@ -1,3 +1,5 @@
+import { Blaze } from 'meteor/blaze';
+
 this.Modal = (function() {
 
 	const self = {};

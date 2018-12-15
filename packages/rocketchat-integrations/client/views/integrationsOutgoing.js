@@ -1,5 +1,12 @@
-/* global ChatIntegrations */
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t, modal } from 'meteor/rocketchat:ui';
+import { ChatIntegrations } from '../collections';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
 
@@ -132,7 +139,7 @@ Template.integrationsOutgoing.helpers({
 				title: 'Rocket.Chat',
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
-				image_url: 'https://rocket.chat/images/mockup.png',
+				image_url: '/images/integration-attachment-example.png',
 				color: '#764FA5',
 			}],
 			ts: new Date(),
@@ -154,7 +161,7 @@ Template.integrationsOutgoing.helpers({
 				title: 'Rocket.Chat',
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
-				image_url: 'https://rocket.chat/images/mockup.png',
+				image_url: '/images/integration-attachment-example.png',
 				color: '#764FA5',
 			}],
 		};

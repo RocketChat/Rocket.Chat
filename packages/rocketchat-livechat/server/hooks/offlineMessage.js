@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.callbacks.add('livechat.offlineMessage', (data) => {
 	if (!RocketChat.settings.get('Livechat_webhook_on_offline_msg')) {
 		return data;

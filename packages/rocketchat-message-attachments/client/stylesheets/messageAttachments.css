@@ -88,18 +88,22 @@ html.rtl .attachment {
 
 	& .attachment-fields {
 		display: flex;
+
 		margin-top: 4px;
 		flex-wrap: wrap;
 
 		& .attachment-field {
 			flex: 1 0 100%;
+
 			padding-top: 5px;
 			padding-bottom: 5px;
 
 			&.attachment-field-short {
 				display: inline-block;
-				margin-right: 12px;
+
 				flex: 1 1;
+
+				margin-right: 12px;
 			}
 
 			& .attachment-field-title {
@@ -139,6 +143,20 @@ html.rtl .attachment {
 
 		border-width: 1px;
 		border-radius: 5px;
+	}
+
+	& .attachment-canvas {
+		display: none;
+	}
+
+	& .attachment-pdf-loading {
+		display: none;
+
+		font-size: 1.5rem;
+
+		svg {
+			animation: spin 1s linear infinite;
+		}
 	}
 
 	& .actions-container {

@@ -1,5 +1,7 @@
 import _ from 'underscore';
 import s from 'underscore.string';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 
 Template.listPrivateGroupsFlex.helpers({
 	groups() {

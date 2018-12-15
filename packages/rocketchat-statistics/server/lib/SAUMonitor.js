@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import UAParser from 'ua-parser-js';
 import { UAParserMobile } from './UAParserMobile';
 

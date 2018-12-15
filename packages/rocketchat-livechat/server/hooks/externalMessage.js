@@ -1,4 +1,7 @@
-/* globals HTTP, SystemLogger */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 let knowledgeEnabled = false;
