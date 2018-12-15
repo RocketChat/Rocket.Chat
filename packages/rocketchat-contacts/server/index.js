@@ -1,6 +1,7 @@
 /* globals SyncedCron */
 
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 const service = require('./service.js');
 const provider = new service.Provider();
 
@@ -34,6 +35,9 @@ function refreshContactsHashMap() {
 	}
 
 	let dict;
+
+	const phonePattern = /^\+?[1-9]\d{1,14}$/;
+	const rfcMailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	cursor.forEach((user) => {
 		const discoverable = RocketChat.getUserPreference(user, 'isPublicAccount');
 		if (discoverable !== false) {
@@ -44,9 +48,12 @@ function refreshContactsHashMap() {
 						dict = dict[phoneFieldArray[i]];
 					}
 				}
-				const phone = dict[phoneFieldArray[phoneFieldArray.length - 1]];
-				if (phone) {
-					contacts.push({ d:phone, u:user.username });
+				let phone = dict[phoneFieldArray[phoneFieldArray.length - 1]];
+				if (phone && _.isString(phone)) {
+					phone = phone.replace(/[^0-9+]|_/g, '');
+					if (phonePattern.test(phone)) {
+						contacts.push({ d:phone, u:user.username });
+					}
 				}
 
 			}
@@ -59,8 +66,10 @@ function refreshContactsHashMap() {
 					}
 				}
 				const email = dict[emailFieldArray[emailFieldArray.length - 1]];
-				if (email) {
-					contacts.push({ d:email, u:user.username });
+				if (email && _.isString(email)) {
+					if (rfcMailPattern.test(email)) {
+						contacts.push({ d:email, u:user.username });
+					}
 				}
 			}
 
