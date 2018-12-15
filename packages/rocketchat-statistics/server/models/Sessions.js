@@ -13,7 +13,7 @@ class ModelSessions extends RocketChat.models._Base {
 	createOrUpdate(data = {}) {
 		const { year, month, day, sessionId, instanceId } = data;
 
-		if (!(year && month && day && sessionId && instanceId)) {
+		if (!year || !month || !day || !sessionId || !instanceId) {
 			return;
 		}
 
@@ -81,7 +81,6 @@ class ModelSessions extends RocketChat.models._Base {
 	}
 
 	createBatch(sessions) {
-
 		if (!sessions || sessions.length === 0) {
 			return;
 		}

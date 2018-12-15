@@ -72,7 +72,7 @@ export class SAUMonitorClass {
 	}
 
 	isRunning() {
-		return typeof this._started === 'boolean' && this._started === true;
+		return this._started === true;
 	}
 
 	_log(...args) {
@@ -292,8 +292,8 @@ export class SAUMonitorClass {
 			});
 		}
 	}
+
 	_applyAllServerSessionsBatch(callback, params) {
-		const self = this;
 		const batch = (arr, limit) => {
 			if (!arr.length) {
 				return Promise.resolve();
@@ -301,7 +301,7 @@ export class SAUMonitorClass {
 			const ids = [];
 			return Promise.all(arr.splice(0, limit).map((item) => {
 				ids.push(item.id);
-				return self._getConnectionInfo(item.connectionHandle, params);
+				return this._getConnectionInfo(item.connectionHandle, params);
 			})).then((data) => {
 				callback(data, ids);
 				return batch(arr, limit);
