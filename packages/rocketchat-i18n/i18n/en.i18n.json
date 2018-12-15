@@ -594,6 +594,7 @@
   "Consumer_Goods": "Consumer Goods",
   "Contains_Security_Fixes": "Contains Security Fixes",
   "Contact": "Contact",
+  "Contacts_Background_Sync_Interval_Description":"Interval in minutes after which the contacts are synced form db by the discovery service",
   "Contacts_Phone_Custom_Field_Name_Description":"Comma seperated keys in hierarcy order to access phone number in User object. Eg. services,ssotest,telephoneNumber",
   "Content": "Content",
   "Continue": "Continue",
