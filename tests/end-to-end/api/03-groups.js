@@ -1,10 +1,4 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
-import { getCredentials, api, login, request, credentials, group, log, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
+import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
 import { adminUsername } from '../../data/user';
 
 function getRoomInfo(roomId) {

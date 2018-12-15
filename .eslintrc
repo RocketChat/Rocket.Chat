@@ -6,7 +6,6 @@
 		"AccountBox"                  : false,
 		"Apps"                        : false,
 		"Assets"                      : false,
-		"browser"                     : false,
 		"ChatMessage"                 : false,
 		"ChatMessages"                : false,
 		"ChatRoom"                    : false,
@@ -25,7 +24,6 @@
 		"Settings"                    : false,
 		"SideNav"                     : false,
 		"t"                           : false,
-		"TimeSync"                    : false,
 		"toastr"                      : false,
 		"VideoRecorder"               : false,
 		"VRecDialog"                  : false
