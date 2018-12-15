@@ -26,7 +26,6 @@
 		"SideNav"                     : false,
 		"t"                           : false,
 		"TimeSync"                    : false,
-		"toastr"                      : false,
 		"VideoRecorder"               : false,
 		"VRecDialog"                  : false
 	}
