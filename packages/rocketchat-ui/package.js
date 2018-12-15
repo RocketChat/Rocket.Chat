@@ -148,6 +148,7 @@ Package.onUse(function(api) {
 	api.export('fileUpload');
 	api.export('t');
 	api.export('modal', 'client');
+	api.export('popover', 'client');
 	api.export('fireGlobalEvent', 'client');
 	api.export('ChatRoom', 'client');
 	api.export('ChatSubscription', 'client');
@@ -157,4 +158,9 @@ Package.onUse(function(api) {
 	api.export('RoomManager', 'client');
 	api.export('getAvatarUrlFromUsername');
 	api.export('popout', 'client');
+	api.export('ChatMessage', 'client');
+	api.export('RoomHistoryManager', 'client');
+	api.export('KonchatNotification', 'client');
+	api.export('UserRoles', 'client');
+	api.export('isRtl', 'client');
 });
