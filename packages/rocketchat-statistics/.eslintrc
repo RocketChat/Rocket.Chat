@@ -1,0 +1,7 @@
+{
+	"extends": ["@rocket.chat/eslint-config"],
+	"root": true,
+	"globals": {
+		"Package": false
+	}
+}

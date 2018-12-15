@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import UAParser from 'ua-parser-js';
 import { UAParserMobile } from './UAParserMobile';
+import { Sessions } from '../models/Sessions';
+import { Logger } from 'meteor/rocketchat:logger';
 
 const getDateObj = (dateTime) => {
 	if (!dateTime) {
@@ -23,7 +25,7 @@ const logger = new Logger('SAUMonitor');
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
  */
-export class SAUMonitor {
+export class SAUMonitorClass {
 	constructor() {
 		this._serviceName = 'SAUMonitor';
 		this._started = false;
@@ -124,7 +126,7 @@ export class SAUMonitor {
 			this._handleSession(connection, getDateObj());
 
 			connection.onClose(() => {
-				RocketChat.models.Sessions.closeByInstanceIdAndSessionId(this._instanceId, connection.id);
+				Sessions.closeByInstanceIdAndSessionId(this._instanceId, connection.id);
 			});
 		});
 	}
@@ -145,13 +147,13 @@ export class SAUMonitor {
 		Accounts.onLogout((info) => {
 			const sessionId = info.connection.id;
 			const userId = info.user._id;
-			RocketChat.models.Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
+			Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
 		});
 	}
 
 	_handleSession(connection, params) {
 		const data = this._getConnectionInfo(connection, params);
-		RocketChat.models.Sessions.createOrUpdate(data);
+		Sessions.createOrUpdate(data);
 	}
 
 	_updateActiveSessions() {
@@ -168,10 +170,10 @@ export class SAUMonitor {
 			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
 
 			const createSessions = ((objects, ids) => {
-				RocketChat.models.Sessions.createBatch(objects);
+				Sessions.createBatch(objects);
 
 				Meteor.defer(() => {
-					RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
+					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
 				});
 			});
 			this._applyAllServerSessionsBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay });
@@ -181,7 +183,7 @@ export class SAUMonitor {
 
 		// Otherwise, just update the lastActivityAt field
 		this._applyAllServerSessionsIds((sessions) => {
-			RocketChat.models.Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, 	this._instanceId, sessions, { lastActivityAt: currentDateTime });
+			Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, 	this._instanceId, sessions, { lastActivityAt: currentDateTime });
 		});
 	}
 
