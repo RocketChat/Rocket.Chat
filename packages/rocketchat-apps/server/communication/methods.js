@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const waitToLoad = function(orch) {
 	return new Promise((resolve) => {
 		let id = setInterval(() => {

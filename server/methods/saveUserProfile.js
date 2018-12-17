@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+
 Meteor.methods({
 	saveUserProfile(settings, customFields) {
 		check(settings, Object);

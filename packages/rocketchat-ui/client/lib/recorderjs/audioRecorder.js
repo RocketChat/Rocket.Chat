@@ -1,5 +1,5 @@
 /* globals Recorder */
-this.AudioRecorder = new class {
+AudioRecorder = new class { //eslint-disable-line
 	start(cb) {
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
 

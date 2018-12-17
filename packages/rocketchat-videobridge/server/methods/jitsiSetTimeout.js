@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {
 

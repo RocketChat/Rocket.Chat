@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
@@ -243,26 +244,44 @@ function sendAllNotifications(message, room) {
 
 	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
 	if (room.t === 'c') {
-		const mentions = message.mentions.filter(({ _id }) => _id !== 'here' && _id !== 'all').map(({ _id }) => _id);
-		Promise.all(RocketChat.models.Subscriptions.findByRoomIdAndUserIds(room._id, mentions)
-			.fetch()
-			.map(async(subscription) => {
-				await callJoinRoom(subscription.u, room._id);
-				return subscription;
-			})).then((subscriptions) => subscriptions.forEach((subscription) =>
-			sendNotification({
-				subscription,
-				sender,
-				hasMentionToAll,
-				hasMentionToHere,
-				message,
-				notificationMessage,
-				room,
-				mentionIds,
-			})));
+		// get subscriptions from users already in room (to not send them a notification)
+		const mentions = [...mentionIdsWithoutGroups];
+		RocketChat.models.Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, { fields: { 'u._id': 1 } }).forEach((subscription) => {
+			const index = mentions.indexOf(subscription.u._id);
+			if (index !== -1) {
+				mentions.splice(index, 1);
+			}
+		});
+
+		Promise.all(mentions
+			.map(async(userId) => {
+				await callJoinRoom(userId, room._id);
+
+				return userId;
+			})
+		).then((users) => {
+			users.forEach((userId) => {
+				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+
+				sendNotification({
+					subscription,
+					sender,
+					hasMentionToAll,
+					hasMentionToHere,
+					message,
+					notificationMessage,
+					room,
+					mentionIds,
+				});
+			});
+		}).catch((error) => {
+			throw new Meteor.Error(error);
+		});
 	}
 
 	return message;
 }
 
 RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
+
+export { sendNotification };

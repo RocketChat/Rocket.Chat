@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import SearchLogger from '../logger/logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 class ValidationService {
 	constructor() {}

@@ -12,7 +12,5 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'webapp',
 	]);
-
-	api.addFiles('server/startup/settings.js', 'server');
-	api.addFiles('server/cronProcessDownloads.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });

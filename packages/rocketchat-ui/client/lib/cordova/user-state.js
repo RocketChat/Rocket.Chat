@@ -1,4 +1,5 @@
 /* globals UserPresence, readMessage */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 let timer = undefined;

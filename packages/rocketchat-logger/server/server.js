@@ -1,4 +1,7 @@
 /* globals EventEmitter LoggerManager SystemLogger Log*/
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { EJSON } from 'meteor/ejson';
 import _ from 'underscore';
 import s from 'underscore.string';
 
