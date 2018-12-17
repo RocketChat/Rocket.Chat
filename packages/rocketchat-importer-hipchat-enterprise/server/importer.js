@@ -47,6 +47,7 @@ export class HipChatEnterpriseImporter extends Base {
 	prepareUsingLocalFile(fullFilePath) {
 		const tempUsers = [];
 		const tempRooms = [];
+		const emails = [];
 		const tempMessages = new Map();
 		const tempDirectMessages = new Map();
 		const promise = new Promise((resolve, reject) => {
@@ -71,9 +72,10 @@ export class HipChatEnterpriseImporter extends Base {
 					if (info.base === 'users.json') {
 						super.updateProgress(ProgressStep.PREPARING_USERS);
 						for (const u of file) {
-							// if (!u.User.email) {
-							// 	// continue;
-							// }
+							if (u.User.email) {
+								emails.push(u.User.email);
+							}
+
 							tempUsers.push({
 								id: u.User.id,
 								email: u.User.email,
@@ -177,6 +179,23 @@ export class HipChatEnterpriseImporter extends Base {
 			});
 
 			this.extract.on('finish', Meteor.bindEnvironment(() => {
+				// Check if any of the emails used are already taken
+				if (emails.length > 0) {
+					const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: emails } });
+
+					conflictingUsers.forEach((conflictingUser) => tempUsers.forEach((newUser) => conflictingUser.emails.forEach((email) => {
+						if (email && email.address === newUser.email) {
+							if (conflictingUser.username !== newUser.username) {
+								newUser.is_email_taken = true;
+								newUser.do_import = false;
+								return false;
+							}
+						}
+
+						return true;
+					})));
+				}
+
 				// Insert the users record, eventually this might have to be split into several ones as well
 				// if someone tries to import a several thousands users instance
 				const usersId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
@@ -243,7 +262,7 @@ export class HipChatEnterpriseImporter extends Base {
 					return;
 				}
 
-				const selectionUsers = tempUsers.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, true));
+				const selectionUsers = tempUsers.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
 				const selectionChannels = tempRooms.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate));
 				const selectionMessages = this.importRecord.count.messages;
 
@@ -297,16 +316,7 @@ export class HipChatEnterpriseImporter extends Base {
 					}
 
 					Meteor.runAsUser(startedByUserId, () => {
-						let existantUser;
-
-						if (u.email) {
-							RocketChat.models.Users.findOneByEmailAddress(u.email);
-						}
-
-						// If we couldn't find one by their email address, try to find an existing user by their username
-						if (!existantUser) {
-							existantUser = RocketChat.models.Users.findOneByUsername(u.username);
-						}
+						const existantUser = RocketChat.models.Users.findOneByUsername(u.username);
 
 						if (existantUser) {
 							// since we have an existing user, let's try a few things
@@ -314,6 +324,9 @@ export class HipChatEnterpriseImporter extends Base {
 							RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
 						} else {
 							const user = { email: u.email, password: Random.id() };
+							if (u.is_email_taken && u.email) {
+								user.email = user.email.replace('@', `+rocket.chat_${ Math.floor(Math.random() * 10000).toString() }@`);
+							}
 							if (!user.email) {
 								delete user.email;
 								user.username = u.username;
@@ -512,7 +525,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	getSelection() {
-		const selectionUsers = this.users.users.map((u) => new SelectionUser(u.id, u.username, u.email, false, false, true));
+		const selectionUsers = this.users.users.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted === true, false, u.do_import !== false, u.is_email_taken === true));
 		const selectionChannels = this.channels.channels.map((c) => new SelectionChannel(c.id, c.name, false, true, c.isPrivate));
 		const selectionMessages = this.importRecord.count.messages;
 
