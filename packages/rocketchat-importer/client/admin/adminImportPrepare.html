@@ -38,6 +38,7 @@
 														<li>
 															<input type="checkbox" name="{{user_id}}" checked="checked" />{{username}} - {{email}}
 															{{#if is_deleted }} <em>({{_ "Deleted"}})</em>{{/if}}
+															{{#if is_email_taken }} <em>({{_ "Duplicated_Email_address_will_be_ignored"}})</em>{{/if}}
 														</li>
 													{{/unless}}
 												{{/each}}

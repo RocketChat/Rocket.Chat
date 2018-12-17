@@ -72,11 +72,7 @@ export class HipChatEnterpriseImporter extends Base {
 					if (info.base === 'users.json') {
 						super.updateProgress(ProgressStep.PREPARING_USERS);
 						for (const u of file) {
-							if (u.User.email) {
-								emails.push(u.User.email);
-							}
-
-							tempUsers.push({
+							const userData = {
 								id: u.User.id,
 								email: u.User.email,
 								name: u.User.name,
@@ -84,7 +80,17 @@ export class HipChatEnterpriseImporter extends Base {
 								avatar: u.User.avatar && u.User.avatar.replace(/\n/g, ''),
 								timezone: u.User.timezone,
 								isDeleted: u.User.is_deleted,
-							});
+							};
+
+							if (u.User.email) {
+								if (emails.indexOf(u.User.email) >= 0) {
+									userData.is_email_taken = true;
+								} else {
+									emails.push(u.User.email);
+								}
+							}
+
+							tempUsers.push(userData);
 						}
 					} else if (info.base === 'rooms.json') {
 						super.updateProgress(ProgressStep.PREPARING_CHANNELS);
