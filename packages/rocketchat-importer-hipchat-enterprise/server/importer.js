@@ -285,6 +285,53 @@ export class HipChatEnterpriseImporter extends Base {
 		return promise;
 	}
 
+	_importUser(u, startedByUserId) {
+		Meteor.runAsUser(startedByUserId, () => {
+			const existantUser = RocketChat.models.Users.findOneByUsername(u.username);
+
+			if (existantUser) {
+				// since we have an existing user, let's try a few things
+				u.rocketId = existantUser._id;
+				RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
+			} else {
+				const user = { email: u.email, password: Random.id() };
+				// if (u.is_email_taken && u.email) {
+				// 	user.email = user.email.replace('@', `+rocket.chat_${ Math.floor(Math.random() * 10000).toString() }@`);
+				// }
+				if (!user.email) {
+					delete user.email;
+					user.username = u.username;
+				}
+
+				try {
+					const userId = Accounts.createUser(user);
+					Meteor.runAsUser(userId, () => {
+						Meteor.call('setUsername', u.username, { joinDefaultChannelsSilenced: true });
+						// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
+						RocketChat.models.Users.setName(userId, u.name);
+						// TODO: Think about using a custom field for the users "title" field
+
+						if (u.avatar) {
+							Meteor.call('setAvatarFromService', `data:image/png;base64,${ u.avatar }`);
+						}
+
+						// Deleted users are 'inactive' users in Rocket.Chat
+						if (u.deleted) {
+							Meteor.call('setUserActiveStatus', userId, false);
+						}
+
+						RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
+						u.rocketId = userId;
+					});
+				} catch (e) {
+					this.addUserError(u.id, e);
+				}
+			}
+
+			super.addCountCompleted(1);
+		});
+	}
+
 	startImport(importSelection) {
 		super.startImport(importSelection);
 		const started = Date.now();
@@ -321,46 +368,7 @@ export class HipChatEnterpriseImporter extends Base {
 						continue;
 					}
 
-					Meteor.runAsUser(startedByUserId, () => {
-						const existantUser = RocketChat.models.Users.findOneByUsername(u.username);
-
-						if (existantUser) {
-							// since we have an existing user, let's try a few things
-							u.rocketId = existantUser._id;
-							RocketChat.models.Users.update({ _id: u.rocketId }, { $addToSet: { importIds: u.id } });
-						} else {
-							const user = { email: u.email, password: Random.id() };
-							if (u.is_email_taken && u.email) {
-								user.email = user.email.replace('@', `+rocket.chat_${ Math.floor(Math.random() * 10000).toString() }@`);
-							}
-							if (!user.email) {
-								delete user.email;
-								user.username = u.username;
-							}
-
-							const userId = Accounts.createUser(user);
-							Meteor.runAsUser(userId, () => {
-								Meteor.call('setUsername', u.username, { joinDefaultChannelsSilenced: true });
-								// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
-								RocketChat.models.Users.setName(userId, u.name);
-								// TODO: Think about using a custom field for the users "title" field
-
-								if (u.avatar) {
-									Meteor.call('setAvatarFromService', `data:image/png;base64,${ u.avatar }`);
-								}
-
-								// Deleted users are 'inactive' users in Rocket.Chat
-								if (u.deleted) {
-									Meteor.call('setUserActiveStatus', userId, false);
-								}
-
-								RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: u.id } });
-								u.rocketId = userId;
-							});
-						}
-
-						super.addCountCompleted(1);
-					});
+					this._importUser(u, startedByUserId);
 				}
 				this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 

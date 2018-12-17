@@ -290,6 +290,24 @@ export class Base {
 	}
 
 	/**
+	 * Registers error information on a specific user from the import record
+	 *
+	 * @param {int} the user id
+	 * @param {object} an exception object
+	 */
+	addUserError(userId, error) {
+		Imports.model.update({
+			_id: this.importRecord._id,
+			'fileData.users.user_id': userId,
+		}, {
+			$set: {
+				'fileData.users.$.error': error,
+				hasErrors: true,
+			},
+		});
+	}
+
+	/**
 	 * Updates the import record with the given fields being `set`.
 	 *
 	 * @param {any} fields The fields to set, it should be an object with key/values.
