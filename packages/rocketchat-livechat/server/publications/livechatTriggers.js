@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.publish('livechat:triggers', function(_id) {
 	if (!this.userId) {
