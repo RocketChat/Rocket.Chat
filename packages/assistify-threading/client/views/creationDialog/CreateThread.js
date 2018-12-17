@@ -220,7 +220,8 @@ Template.CreateThread.events({
 	'input #parentChannel-search'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position);
+		const { length } = input.value;
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
 		t.parentChannel.set(input.value);
 		t.parentChannelId.set('');
 		t.parentChannelError.set('');
@@ -238,6 +239,7 @@ Template.CreateThread.events({
 		const parentChannel = instance.parentChannel.get();
 		const parentChannelId = instance.parentChannelId.get();
 		const openingQuestion = instance.openingQuestion.get();
+		let errorText = '';
 		if (parentChannelId) {
 			instance.error.set(null);
 			Meteor.call('createThread', parentChannelId, {
@@ -247,25 +249,39 @@ Template.CreateThread.events({
 					console.log(err);
 					switch (err.error) {
 						case 'error-invalid-name':
-							instance.error.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
-							return;
+							errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
+							break;
 						case 'error-duplicate-channel-name':
-							instance.error.set(TAPi18n.__('Request_already_exists'));
-							return;
+							errorText = TAPi18n.__('Request_already_exists');
+							break;
 						case 'error-archived-duplicate-name':
-							instance.error.set(TAPi18n.__('Duplicate_archived_channel_name', name));
-							return;
+							errorText = TAPi18n.__('Duplicate_archived_channel_name', name);
+							break;
 						case 'error-invalid-room-name':
 							console.log('room name slug error');
 							// 	toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));
-							instance.error.set(TAPi18n.__('Invalid_room_name', err.details.channel_name));
-							return;
+							errorText = TAPi18n.__('Invalid_room_name', err.details.channel_name);
+							break;
 						default:
 							return handleError(err);
 					}
+				} else {
+					// callback to enable tracking
+					Meteor.defer(() => {
+						RocketChat.callbacks.run('afterCreateThread', Meteor.user(), result);
+					});
+					RocketChat.roomTypes.openRouteLink(result.t, result);
 				}
-				FlowRouter.goToRoomById(result.rid);
 			});
+		} else {
+			errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
+		}
+
+		if (errorText) {
+			instance.parentChannelError.set(errorText);
+			if (!instance.selectParent.get()) {
+				toastr.error(errorText);
+			}
 		}
 	},
 	'click .full-modal__back-button'() {
@@ -327,6 +343,17 @@ Template.CreateThread.onCreated(function() {
 		instance.showDropDown.set('');
 	}, 200);
 
+	// callback to allow setting a parent Channel or e. g. tracking the event using Piwik or GA
+	const callbackDefaults = RocketChat.callbacks.run('openThreadCreationScreen');
+	if (callbackDefaults) {
+		if (callbackDefaults.parentChannel) {
+			instance.parentChannel.set(callbackDefaults.parentChannel);
+		}
+		if (callbackDefaults.openingQuestion) {
+			instance.openingQuestion.set(callbackDefaults.openingQuestion);
+		}
+	}
+
 	instance.debounceValidateParentChannel = _.debounce((parentChannel) => {
 		if (!parentChannel) {
 			return false; // parentChannel is mandatory
@@ -334,7 +361,7 @@ Template.CreateThread.onCreated(function() {
 		return Meteor.call('assistify:getParentChannelId', parentChannel, (error, result) => {
 			if (!result) {
 				instance.parentChannelId.set(false);
-				instance.parentChannelError.set('Parent_channel_doesnt_exist');
+				instance.parentChannelError.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
 			} else {
 				instance.parentChannelError.set('');
 				instance.parentChannelId.set(result); // assign parent channel Id
@@ -368,19 +395,19 @@ Template.CreateThread.onCreated(function() {
 	});
 	this.ac.tmplInst = this;
 
-	// pre-fill form based on query parameters if passed - TODO: There has to be another dedicated route to execute this template (except /home)
-	// if (FlowRouter.current().queryParams) {
-	// 	const parentChannel = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('parentChannel');
-	// 	if (parentChannel) {
-	// 		instance.parentChannel.set(parentChannel);
-	// 		instance.debounceValidateParentChannel(parentChannel);
-	// 	}
+	// pre-fill form based on query parameters if passed
+	if (FlowRouter.current().queryParams) {
+		const parentChannel = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('parentChannel');
+		if (parentChannel) {
+			instance.parentChannel.set(parentChannel);
+			instance.debounceValidateParentChannel(parentChannel);
+		}
 
-	// 	const question = FlowRouter.getQueryParam('question');
-	// 	if (question) {
-	// 		instance.openingQuestion.set(question);
-	// 	}
-	// }
+		const question = FlowRouter.getQueryParam('question') || FlowRouter.getQueryParam('message');
+		if (question) {
+			instance.openingQuestion.set(question);
+		}
+	}
 
 	Meteor.call('getParentChannelList', {
 		sort: 'name',

@@ -24,7 +24,7 @@ Meteor.startup(function() {
 					});
 
 					// navigate to the newly created room
-					FlowRouter.goToRoomById(result.rid);
+					FlowRouter.goToRoomById(result._id);
 				}
 			});
 		},

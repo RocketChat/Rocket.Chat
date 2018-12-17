@@ -4,7 +4,7 @@ function getParentChannels() {
 	const result = Meteor.call('getParentChannelList', { sort: 'name', default: -1 });
 
 	return result.channels
-		.filter((channel) => channel.name)
+		.filter((channel) => !!channel.name)
 		.map((channel) => ({
 			key: channel.name, // has to be "key" in order to be able to select it in the settings as dropdown
 			i18nLabel: channel.name,
@@ -36,6 +36,14 @@ Meteor.startup(() => {
 	if (!RocketChat.settings.get('Thread_default_parent_Channel')) {
 		RocketChat.models.Settings.updateValueById('Thread_default_parent_Channel', defaultChannel);
 	}
+
+	RocketChat.settings.add('Thread_invitations_threshold', 10, {
+		group: 'Threading',
+		i18nLabel: 'Thread_invitations_threshold',
+		i18nDescription: 'Thread_invitations_threshold_description',
+		type: 'int',
+		public: true,
+	});
 
 	RocketChat.settings.add('Thread_from_context_menu', 'button', {
 		group: 'Threading',

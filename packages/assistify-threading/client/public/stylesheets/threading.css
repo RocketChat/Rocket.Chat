@@ -4,6 +4,7 @@
 	height: 45px;
 	min-height: 80px;
 	max-height: 250px;
+
 	padding: 0.75rem 1rem;
 
 	resize: vertical;
@@ -30,25 +31,10 @@
 	font-size: 11px; /* no clue, why we have to specify this explicitly. Dirty hack. */
 }
 
-.create-thread-sidebar {
-	margin-bottom: 22px;
-}
-
-.create-thread-sidebar button {
-	width: 100%;
+.create-thread-sidebar-button {
+	width: 82.5%;
 	min-height: 24px;
-
-	margin-top: -8px;
-	margin-right: auto;
-	margin-left: auto;
+	margin: 0 auto 20px;
 
 	font-size: 100%;
-}
-
-.create-thread-sidebar .rooms-list__list {
-	margin-bottom: 0;
-}
-
-.create-thread-sidebar .rooms-list__empty-room {
-	margin-bottom: 6px;
 }

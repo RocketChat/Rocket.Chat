@@ -11,6 +11,7 @@ Object.assign(RocketChat.models.Rooms, {
 				$in: ['c'],
 			},
 			name: nameRegex,
+			archived: { $ne: true },
 			parentRoomId: {
 				$exists: false,
 			},
