@@ -1,12 +1,7 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import crypto from 'crypto';
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
 	apiEmail,
@@ -989,7 +984,7 @@ describe('[Users]', function() {
 			});
 		});
 
-		describe('Testing if the returned token is valid:', (done) => {
+		describe('Testing if the returned token is valid:', () => {
 			it('should return 200', (done) => request.post(api('users.createToken'))
 				.set(credentials)
 				.send({ username: user.username })
