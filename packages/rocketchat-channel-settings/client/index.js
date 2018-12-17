@@ -1,4 +1,3 @@
-import './stylesheets/channel-settings.css';
 import './startup/messageTypes';
 import './startup/tabBar';
 import './startup/trackSettingsChange';
