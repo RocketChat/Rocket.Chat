@@ -21,7 +21,6 @@
 		"RocketChat"                  : true,
 		"RoomHistoryManager"          : false,
 		"RoomManager"                 : false,
-		"ServiceConfiguration"        : false,
 		"Settings"                    : false,
 		"SideNav"                     : false,
 		"t"                           : false,
