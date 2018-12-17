@@ -11,7 +11,7 @@ Meteor.methods({
 
 		const msg = RocketChat.models.Messages.findOneById(msgId);
 
-		if (!msg && !msg.rid) {
+		if (!msg || !msg.rid) {
 			return undefined;
 		}
 
