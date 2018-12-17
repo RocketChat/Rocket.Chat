@@ -19,6 +19,9 @@ Template.accountFlex.helpers({
 	accessTokensEnabled() {
 		return RocketChat.authz.hasAllPermission(['create-personal-access-tokens']);
 	},
+	showSecurityMenu() {
+		return RocketChat.settings.get('UI_Display_Security');
+	},
 	encryptionEnabled() {
 		return RocketChat.settings.get('E2E_Enable');
 	},
