@@ -49,7 +49,7 @@ class IframeLogin {
 			return;
 		}
 
-		console.log('tryLogin');
+		console.log('tryLogin', RocketChat);
 		const options = {
 			beforeSend: (xhr) => {
 				xhr.withCredentials = true;

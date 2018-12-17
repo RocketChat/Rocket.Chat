@@ -7,25 +7,21 @@
 		</div>
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
-				{{# unless embeddedVersion}}
-					{{# header}}
-						{{#with flexData}}
-							<div class="rc-header__block rc-header__block-action">
-								{{> RoomsActionTab}}
-							</div>
-						{{/with}}
-					{{/header}}
-				{{/unless}}
+				{{# header}}
+					{{#with flexData}}
+						<div class="rc-header__block rc-header__block-action">
+							{{> RoomsActionTab}}
+						</div>
+					{{/with}}
+				{{/header}}
 
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
-						{{#unless embeddedVersion}}
-							{{#if showAnnouncement}}
-							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline roomAnnouncement}}">
-								<p>{{{RocketChatMarkdownInline roomAnnouncement}}}</p>
-							</div>
-							{{/if}}
-						{{/unless}}
+						{{#if showAnnouncement}}
+						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline roomAnnouncement}}">
+							<p>{{{RocketChatMarkdownInline roomAnnouncement}}}</p>
+						</div>
+						{{/if}}
 						<div class="container-bars {{containerBarsShow unreadData uploading}}">
 							{{#with unreadData}}
 								{{#if since}}

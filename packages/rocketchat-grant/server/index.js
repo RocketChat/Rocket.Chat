@@ -11,12 +11,19 @@ import { middleware as redirect } from './redirect';
 import Providers, { middleware as providers } from './providers';
 import Settings from './settings';
 
+const MongoDBStore = require('connect-mongodb-session')(session);
+
 let grant;
 
 WebApp.connectHandlers.use(session({
 	secret: 'grant',
 	resave: true,
 	saveUninitialized: true,
+	store: new MongoDBStore({
+    uri: process.env.MONGO_URL,
+    databaseName: 'rocketchat',
+    collection: 'usersSessions'
+  })
 }));
 
 // grant

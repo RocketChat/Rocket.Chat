@@ -1,5 +1,6 @@
 .messages-container-wrapper {
 	position: relative;
+	padding-bottom: 7px;
 }
 
 .message-actions {

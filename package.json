@@ -60,7 +60,7 @@
 		"chat"
 	],
 	"scripts": {
-		"start": "meteor",
+		"start": "meteor run --port 3031",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run jslint && meteor npm run stylelint",
@@ -143,6 +143,7 @@
 		"codemirror": "^5.41.0",
 		"coffeescript": "^1.12.7",
 		"connect": "^2.7.10",
+		"connect-mongodb-session": "^2.0.6",
 		"core-js": "^2.5.7",
 		"csv-parse": "^2.5.0",
 		"emailreplyparser": "^0.0.5",

@@ -6,11 +6,13 @@
 				{{> burger}}
 			</div>
 
-			{{#if showToggleFavorite}}
-				<div class="rc-header__block rc-header__favorite">
-					<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
-				</div>
-			{{/if}}
+			{{#unless embeddedVersion}}
+				{{#if showToggleFavorite}}
+					<div class="rc-header__block rc-header__favorite">
+						<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
+					</div>
+				{{/if}}
+			{{/unless}}
 			<!-- TODO: fix it style and helper -->
 			{{#if tokenAccessChannel}}
 				<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
@@ -62,7 +64,7 @@
 			{{/if}}
 
 			{{#unless isChannel}}
-			{{# unless hideHelp}}
+			{{#unless hideHelp}}
 			<div class="rc-header__section-help"></div>
 			{{/unless}}
 			{{/unless}}
@@ -70,10 +72,12 @@
 			{{#with toolbarButtons}}
 			<div class="iframe-toolbar">
 				{{#each buttons}}
-				<button class="{{id}}">
-					{{#if icon}}<i class="{{icon}}"></i>{{/if}}
-					{{label}}
-				</button>
+					{{#if allowButton}}
+						<button class="{{id}}">
+							{{#if icon}}<i class="{{icon}}"></i>{{/if}}
+							{{label}}
+						</button>
+					{{/if}}
 				{{/each}}
 			</div>
 			{{/with}}

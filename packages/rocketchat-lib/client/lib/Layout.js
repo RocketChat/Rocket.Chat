@@ -9,6 +9,6 @@ RocketChat.Layout = new (class RocketChatLayout {
 	}
 
 	isEmbedded() {
-		return this.layout === 'embedded';
+		return true; //this.layout === 'embedded';
 	}
 });

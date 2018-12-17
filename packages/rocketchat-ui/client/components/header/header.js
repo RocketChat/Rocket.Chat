@@ -41,6 +41,24 @@ Template.header.helpers({
 		return RocketChat.models.Rooms.findOne(this._id).t === 'd';
 	},
 
+	isChannelOrGroup() {
+		return RocketChat.models.Rooms.findOne(this._id).t === 'c' || RocketChat.models.Rooms.findOne(this._id).t === 'p';
+	},
+
+	allowButton() {
+		return RocketChat.TabBar.getButtons().filter(button => {
+				if (button.name !== 'addUsers') {
+					return true;
+				}
+		}).length;
+	},
+
+	embeddedVersion() {
+		if (RocketChat.Layout.isEmbedded()) {
+			return 'embedded-view';
+		}
+	},
+
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
