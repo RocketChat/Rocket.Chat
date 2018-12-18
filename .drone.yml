@@ -32,10 +32,11 @@ pipeline:
       - mkdir /drone/build
       - meteor build --allow-superuser --server-only --directory /drone/build
       - tar -zcvf ${DRONE_REPO_BRANCH}.tar.gz /drone/build
-        event: push
-        branch:
-          - staging
-          - master
+    when:
+      event: push
+      branch:
+        - staging
+        - master
   rebuild-cache:
     image: drillster/drone-volume-cache
     rebuild: true
