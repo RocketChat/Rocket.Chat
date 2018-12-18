@@ -399,4 +399,12 @@ Meteor.startup(function() {
 		i18nLabel: 'Secret_token',
 		enableQuery: { _id: 'Livechat_Routing_Method', value: 'External' },
 	});
+
+	RocketChat.settings.add('Livechat_Allow_collect_and_store_HTTP_header_informations', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Allow_collect_and_store_HTTP_header_informations',
+		i18nDescription: 'Allow_collect_and_store_HTTP_header_informations_description',
+	});
 });

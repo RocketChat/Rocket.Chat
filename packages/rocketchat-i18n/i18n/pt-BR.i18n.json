@@ -236,6 +236,8 @@
   "All_messages": "Todas as mensagens",
   "All_users": "Todos usuários",
   "All_users_in_the_channel_can_write_new_messages": "Todos usuários no canal podem enviar mensagens novas",
+  "Allow_collect_and_store_HTTP_header_informations": "Permitir coletar e armazenar informações do cabeçalho HTTP",
+  "Allow_collect_and_store_HTTP_header_informations_description": "Esta configuração determina se o Livechat tem permissão para armazenar informações coletadas do HTTP Header, como endereço IP, User-Agent, etc.",
   "Allow_Invalid_SelfSigned_Certs": "Permitir certificados inválidos e auto-assinados para validação de links e previews",
   "Allow_Invalid_SelfSigned_Certs_Description": "Permitir certificado SSL inválidos e auto-assinados para validação de link e previews.",
   "Allow_switching_departments": "Permitir que Visitantes Mudem de Departamento",

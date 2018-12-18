@@ -198,7 +198,9 @@ RocketChat.Livechat = {
 					username,
 				};
 
-				if (this.connection) {
+				const storeHttpHeaderData = RocketChat.settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations');
+
+				if (this.connection && storeHttpHeaderData) {
 					userData.userAgent = this.connection.httpHeaders['user-agent'];
 					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.httpHeaders['x-forwarded-for'] || this.connection.clientAddress;
 					userData.host = this.connection.httpHeaders.host;
