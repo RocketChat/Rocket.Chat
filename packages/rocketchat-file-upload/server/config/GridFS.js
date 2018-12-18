@@ -1,4 +1,4 @@
-/* globals FileUpload, UploadFS */
+import { UploadFS } from 'meteor/jalik:ufs';
 import stream from 'stream';
 import zlib from 'zlib';
 import util from 'util';
