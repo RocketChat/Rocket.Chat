@@ -7,6 +7,7 @@ import { Blaze } from 'meteor/blaze';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
+import toastr from 'toastr';
 
 const parent = document.querySelector('.main-content');
 let oldRoute = '';
@@ -259,7 +260,6 @@ Template.CreateThread.events({
 							break;
 						case 'error-invalid-room-name':
 							console.log('room name slug error');
-							// 	toastr.error(TAPi18n.__('Duplicate_archived_channel_name', name));
 							errorText = TAPi18n.__('Invalid_room_name', err.details.channel_name);
 							break;
 						default:
