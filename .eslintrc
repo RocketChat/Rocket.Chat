@@ -6,7 +6,6 @@
 		"AccountBox"                  : false,
 		"Apps"                        : false,
 		"Assets"                      : false,
-		"browser"                     : false,
 		"ChatMessage"                 : false,
 		"ChatMessages"                : false,
 		"ChatRoom"                    : false,
@@ -21,12 +20,9 @@
 		"RocketChat"                  : true,
 		"RoomHistoryManager"          : false,
 		"RoomManager"                 : false,
-		"ServiceConfiguration"        : false,
 		"Settings"                    : false,
 		"SideNav"                     : false,
 		"t"                           : false,
-		"TimeSync"                    : false,
-		"toastr"                      : false,
 		"VideoRecorder"               : false,
 		"VRecDialog"                  : false
 	}
