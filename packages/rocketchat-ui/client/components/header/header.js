@@ -1,7 +1,8 @@
-/* globals fireGlobalEvent, openRoom*/
+/* globals fireGlobalEvent*/
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -161,8 +162,7 @@ Template.header.events({
 		const { parentRoomId } = threadRoom;
 
 		if (parentRoomId) {
-			const parentRoom = ChatRoom.findOne({ _id: parentRoomId });
-			return openRoom(parentRoom.t, parentRoom.name);
+			return FlowRouter.goToRoomById(parentRoomId);
 		}
 	},
 });
