@@ -1,6 +1,8 @@
 /* globals readMessage UserRoles RoomRoles*/
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
-import { e2e } from 'meteor/rocketchat:e2e';
 
 export const upsertMessage = ({ msg, subscription }) => {
 	const userId = msg.u && msg.u._id;
@@ -15,13 +17,12 @@ export const upsertMessage = ({ msg, subscription }) => {
 	msg.roles = _.union.apply(_.union, roles);
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
-		e2e.decryptPendingMessagesDeferred();
 	}
 
 	return ChatMessage.upsert({ _id: msg._id }, msg);
 };
 
-export const RoomHistoryManager = new class {
+RoomHistoryManager = new class { //eslint-disable-line
 	constructor() {
 		this.defaultLimit = 50;
 		this.histories = {};
@@ -77,8 +78,6 @@ export const RoomHistoryManager = new class {
 			if (err) {
 				return;
 			}
-
-			e2e.decryptPendingMessagesDeferred();
 
 			let previousHeight;
 			const { messages = [] } = result;
@@ -274,4 +273,3 @@ export const RoomHistoryManager = new class {
 		}
 	}
 };
-this.RoomHistoryManager = RoomHistoryManager;

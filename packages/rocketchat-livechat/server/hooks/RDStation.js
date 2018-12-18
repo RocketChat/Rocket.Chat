@@ -1,3 +1,6 @@
+import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 function sendToRDStation(room) {
 	if (!RocketChat.settings.get('Livechat_RDStation_Token')) {
 		return room;
@@ -9,6 +12,8 @@ function sendToRDStation(room) {
 		return room;
 	}
 
+	const email = Array.isArray(livechatData.visitor.email) ? livechatData.visitor.email[0].address : livechatData.visitor.email;
+
 	const options = {
 		headers: {
 			'Content-Type': 'application/json',
@@ -17,7 +22,7 @@ function sendToRDStation(room) {
 			token_rdstation: RocketChat.settings.get('Livechat_RDStation_Token'),
 			identificador: 'rocketchat-livechat',
 			client_id: livechatData.visitor._id,
-			email: livechatData.visitor.email,
+			email,
 		},
 	};
 

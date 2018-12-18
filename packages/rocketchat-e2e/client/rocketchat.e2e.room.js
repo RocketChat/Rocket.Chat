@@ -183,7 +183,7 @@ export class E2ERoom {
 			}
 
 			// Key has been encrypted. Publish to that user's subscription model for this room.
-			await call('updateGroupE2EKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
+			await call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
 		}
 	}
 
@@ -285,7 +285,7 @@ export class E2ERoom {
 
 		try {
 			const result = await decryptAES(vector, this.groupSessionKey, cipherText);
-			return EJSON.parse(toString(result));
+			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 		} catch (error) {
 			return console.error('E2E -> Error decrypting message: ', error, message);
 		}

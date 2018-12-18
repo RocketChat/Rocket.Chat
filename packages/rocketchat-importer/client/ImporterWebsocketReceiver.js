@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 class ImporterWebsocketReceiverDef {
 	constructor() {
 		this.streamer = new Meteor.Streamer('importers');

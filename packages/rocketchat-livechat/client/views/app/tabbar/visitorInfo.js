@@ -1,5 +1,11 @@
-/* globals LivechatVisitor */
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t, modal, ChatRoom } from 'meteor/rocketchat:ui';
+import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';

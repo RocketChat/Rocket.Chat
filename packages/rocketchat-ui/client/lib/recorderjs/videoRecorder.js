@@ -1,4 +1,6 @@
-this.VideoRecorder = new class {
+import { ReactiveVar } from 'meteor/reactive-var';
+
+VideoRecorder = new class { //eslint-disable-line
 	constructor() {
 		this.started = false;
 		this.cameraStarted = new ReactiveVar(false);

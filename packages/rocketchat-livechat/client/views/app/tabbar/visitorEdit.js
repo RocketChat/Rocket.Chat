@@ -1,6 +1,10 @@
-/* globals LivechatVisitor */
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { t, ChatRoom } from 'meteor/rocketchat:ui';
+import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import toastr from 'toastr';
+
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();

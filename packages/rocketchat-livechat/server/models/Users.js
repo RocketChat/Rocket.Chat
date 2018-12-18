@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 /**
  * Sets an user as (non)operator
  * @param {string} _id - User's _id
