@@ -1,9 +1,10 @@
-/* globals Gravatar */
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
+import { Gravatar } from 'meteor/jparker:gravatar';
+
 let html = '';
 Meteor.startup(() => {
 	Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
