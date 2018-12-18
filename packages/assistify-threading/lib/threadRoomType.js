@@ -14,7 +14,7 @@ export class ThreadRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return RocketChat.authz.hasPermission('start-thread') && RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 	}
 }
 
