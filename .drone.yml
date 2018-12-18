@@ -26,9 +26,9 @@ pipeline:
       - meteor npm install phantomjs-prebuilt@2.1.15 --ignore-scripts
       - meteor npm install sharp chai webpack postcss postcss-syntax fibers
       - meteor npm install
-      - set +e
-      - meteor add rocketchat:lib
-      - set -e
+      # - set +e
+      # - meteor add rocketchat:lib
+      # - set -e
       - mkdir /drone/build
       - meteor build --allow-superuser --server-only --directory /drone/build
     when:
