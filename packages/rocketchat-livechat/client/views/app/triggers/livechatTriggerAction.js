@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Template.livechatTriggerAction.helpers({
 	hiddenValue(current) {

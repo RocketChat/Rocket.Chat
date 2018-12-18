@@ -1,9 +1,11 @@
-/* globals LivechatInquiry, KonchatNotification */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t, modal, ChatSubscription, KonchatNotification } from 'meteor/rocketchat:ui';
+import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 
 Template.livechat.helpers({
 	isActive() {

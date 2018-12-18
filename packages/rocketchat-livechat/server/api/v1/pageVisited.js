@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import { findGuest, findRoom } from '../lib/livechat';
 
