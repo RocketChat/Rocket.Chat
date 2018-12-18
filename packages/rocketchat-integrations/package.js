@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 		'nimble:restivus',
 		'templating',
 	]);
+	api.addFiles('client/stylesheets/integrations.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

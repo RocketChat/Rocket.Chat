@@ -1,4 +1,3 @@
-import './views/stylesheets/messagestar.css';
 import './actionButton';
 import './starMessage';
 import './tabBar';
