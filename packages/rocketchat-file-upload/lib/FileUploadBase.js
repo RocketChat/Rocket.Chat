@@ -76,4 +76,4 @@ export class FileUploadBase {
 	stop() {
 		return this.handler.stop();
 	}
-};
+}
