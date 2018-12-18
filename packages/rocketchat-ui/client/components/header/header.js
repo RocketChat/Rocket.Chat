@@ -1,4 +1,4 @@
-/* globals fireGlobalEvent*/
+/* globals fireGlobalEvent, openRoom*/
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -6,6 +6,11 @@ import { Template } from 'meteor/templating';
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
+
+const isThread = ({ _id }) => {
+	const room = ChatRoom.findOne({ _id });
+	return !!(room && room.parentRoomId);
+};
 
 Template.header.helpers({
 	back() {
@@ -39,6 +44,10 @@ Template.header.helpers({
 
 	isDirect() {
 		return RocketChat.models.Rooms.findOne(this._id).t === 'd';
+	},
+
+	isThread() {
+		return isThread(Template.instance().data);
 	},
 
 	roomName() {
@@ -95,7 +104,7 @@ Template.header.helpers({
 	},
 
 	showToggleFavorite() {
-		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
+		return !isThread(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
 	},
 
 	fixedHeight() {
@@ -142,6 +151,19 @@ Template.header.events({
 				.focus()
 				.select(),
 		10);
+	},
+
+	'click .js-open-parent-channel'(event) {
+		event.preventDefault();
+
+		const threadRoomId = Template.instance().data._id;
+		const threadRoom = ChatRoom.findOne({ _id: threadRoomId });
+		const { parentRoomId } = threadRoom;
+
+		if (parentRoomId) {
+			const parentRoom = ChatRoom.findOne({ _id: parentRoomId });
+			return openRoom(parentRoom.t, parentRoom.name);
+		}
 	},
 });
 

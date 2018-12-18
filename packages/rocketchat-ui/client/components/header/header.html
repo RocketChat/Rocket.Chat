@@ -11,6 +11,13 @@
 					<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
 				</div>
 			{{/if}}
+
+			{{#if isThread}}
+				<div class="rc-header__block rc-header__thread_open_parent js-open-parent-channel">
+					<a href="#">{{> icon block="rc-header__icon" icon="back"}}</a>
+				</div>
+			{{/if}}
+
 			<!-- TODO: fix it style and helper -->
 			{{#if tokenAccessChannel}}
 				<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
