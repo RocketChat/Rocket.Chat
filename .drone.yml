@@ -8,6 +8,11 @@ pipeline:
       - ./.meteor/local
     volumes:
       - /tmp/cache/Rocket.Chat:/cache
+    when:
+        event: push
+        branch:
+          - staging
+          - master
   build:
     image: ubuntu:16.04
     environment:
@@ -24,7 +29,11 @@ pipeline:
       - set -e
       - mkdir /drone/build
       - meteor build --allow-superuser --server-only --directory /drone/build
-      - cp .docker/Dockerfile.local /drone/build/Dockerfile
+    when:
+        event: push
+        branch:
+          - staging
+          - master
   rebuild-cache:
     image: drillster/drone-volume-cache
     rebuild: true
@@ -34,11 +43,23 @@ pipeline:
       - ./.meteor/local
     volumes:
       - /tmp/cache/Rocket.Chat:/cache
-  docker:
-    image: plugins/docker
-    repo: rocketchat/rocket.chat
-    dockerfile: /drone/build/Dockerfile
-    storage_driver: overlay
-    context: /drone/build
-    secrets: [ docker_username, docker_password ]
-    tag: designpreview
+    when:
+        event: push
+        branch:
+          - staging
+          - master
+  s3-sync-dist-test:
+      image: plugins/s3-sync:1
+      secrets:
+          - aws_access_key_id
+          - aws_secret_access_key
+      bucket: aleign-chat
+      region: ap-southeast-2
+      source: /drone/build
+      target: /${DRONE_REPO_BRANCH}
+      delete: true
+      when:
+          event: push
+          branch:
+            - staging
+            - master
