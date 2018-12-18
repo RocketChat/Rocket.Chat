@@ -23,7 +23,7 @@ pipeline:
       - export PATH="/drone/.meteor:$PATH"
       - if [ ! -e "/drone/.meteor/meteor" ]; then export HOME=/drone; curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
       - which meteor
-      - npm install sharp chai webpack postcss postcss-syntax fibers
+      - meteor npm install sharp chai webpack postcss postcss-syntax fibers
       - meteor npm install
       - set +e
       - meteor add rocketchat:lib
