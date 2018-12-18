@@ -1,4 +1,5 @@
 /* globals UploadFS */
+import { Meteor } from 'meteor/meteor';
 
 let protectedFiles;
 

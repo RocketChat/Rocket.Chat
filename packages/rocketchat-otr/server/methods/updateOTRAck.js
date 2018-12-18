@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	updateOTRAck(_id, ack) {
 		if (!Meteor.userId()) {

@@ -1,5 +1,8 @@
+import { Mongo } from 'meteor/mongo';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { DateFormat } from 'meteor/rocketchat:lib';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 const roomFiles = new Mongo.Collection('room_files');

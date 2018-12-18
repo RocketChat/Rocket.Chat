@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { Template } from 'meteor/templating';
+import { t, modal } from 'meteor/rocketchat:ui';
+import { handleError } from 'meteor/rocketchat:lib';
+import { AgentUsers } from '../../collections/AgentUsers';
 import _ from 'underscore';
 import toastr from 'toastr';
 let ManagerUsers;

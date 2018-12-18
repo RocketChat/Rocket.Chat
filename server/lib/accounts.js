@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
@@ -57,16 +61,16 @@ Accounts.emailTemplates.userActivated = {
 let verifyEmailTemplate = '';
 let enrollAccountTemplate = '';
 Meteor.startup(() => {
-	Mailer.getTemplate('Verification_Email', (value) => {
+	Mailer.getTemplateWrapped('Verification_Email', (value) => {
 		verifyEmailTemplate = value;
 	});
-	Mailer.getTemplate('Accounts_Enrollment_Email', (value) => {
+	Mailer.getTemplateWrapped('Accounts_Enrollment_Email', (value) => {
 		enrollAccountTemplate = value;
 	});
 });
 Accounts.emailTemplates.verifyEmail.html = function(user, url) {
 	url = url.replace(Meteor.absoluteUrl(), `${ Meteor.absoluteUrl() }login/`);
-	return Mailer.wrap(Mailer.replacekey(Mailer.replace(verifyEmailTemplate), 'Verification_Url', url));
+	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url });
 };
 
 Accounts.urls.resetPassword = function(token) {
@@ -81,10 +85,10 @@ Accounts.emailTemplates.enrollAccount.subject = function(user) {
 };
 
 Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
-	return Mailer.wrap(Mailer.replace(enrollAccountTemplate, {
+	return Mailer.replace(enrollAccountTemplate, {
 		name: s.escapeHTML(user.name),
 		email: user.emails && user.emails[0] && s.escapeHTML(user.emails[0].address),
-	}));
+	});
 };
 
 Accounts.onCreateUser(function(options, user = {}) {

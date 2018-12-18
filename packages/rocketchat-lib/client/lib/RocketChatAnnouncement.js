@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+
 export class RocketChatAnnouncement {
 	constructor(args = {}) {
 		this.room = new ReactiveVar(args.room);

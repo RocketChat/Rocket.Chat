@@ -1,4 +1,12 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 const msgNavType = 'livechat_navigation_history';
+
+const crmEnabled = () => {
+	const secretToken = RocketChat.settings.get('Livechat_secret_token');
+	const webhookUrl = RocketChat.settings.get('Livechat_webhookUrl');
+	return secretToken !== '' && secretToken !== undefined && webhookUrl !== '' && webhookUrl !== undefined;
+};
 
 const sendMessageType = (msgType) => {
 	const sendNavHistory = RocketChat.settings.get('Livechat_Visitor_navigation_as_a_message') && RocketChat.settings.get('Send_visitor_navigation_history_livechat_webhook_request');
@@ -7,6 +15,10 @@ const sendMessageType = (msgType) => {
 };
 
 function sendToCRM(type, room, includeMessages = true) {
+	if (crmEnabled() === false) {
+		return room;
+	}
+
 	const postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
 
 	postData.type = type;

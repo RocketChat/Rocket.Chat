@@ -1,4 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { t, ChatRoom } from 'meteor/rocketchat:ui';
+import { LivechatDepartment } from '../../../collections/LivechatDepartment';
+import { AgentUsers } from '../../../collections/AgentUsers';
 import toastr from 'toastr';
+
 Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
