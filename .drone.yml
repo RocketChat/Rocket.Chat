@@ -18,7 +18,7 @@ pipeline:
     environment:
       - METEOR_ALLOW_SUPERUSER=true
     commands:
-      - apt update && apt install curl git python g++ build-essential bzip2 epel-release GraphicsMagick -y
+      - apt update && apt install curl git python g++ build-essential bzip2 -y
       - export HOME=/drone
       - export PATH="/drone/.meteor:$PATH"
       - if [ ! -e "/drone/.meteor/meteor" ]; then export HOME=/drone; curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
