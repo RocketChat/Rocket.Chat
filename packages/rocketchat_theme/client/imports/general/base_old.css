@@ -2684,7 +2684,6 @@ rc-old select,
 
 .rc-old .rc-message-box .reply-preview__wrap {
 	position: relative;
-	bottom: 10px;
 }
 
 .rc-old .rc-message-box .reply-preview {
