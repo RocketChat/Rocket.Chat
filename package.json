@@ -76,8 +76,7 @@
 		"translation-diff": "node .scripts/translationDiff.js",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
-		"release": "meteor npm run set-version --silent",
-		"prepush": "meteor npm run lint && meteor npm run testunit"
+		"release": "meteor npm run set-version --silent"
 	},
 	"license": "MIT",
 	"repository": {
