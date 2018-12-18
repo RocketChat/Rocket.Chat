@@ -166,5 +166,6 @@ Package.onUse(function(api) {
 	api.export('UserRoles', 'client');
 	api.export('isRtl', 'client');
 	api.export('alerts', 'client');
+	api.export('AccountBox', 'client');
 	api.export('chatMessages', 'client');
 });

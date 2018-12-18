@@ -1,6 +1,7 @@
-/* globals openRoom, LivechatInquiry */
 import { Session } from 'meteor/session';
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { RocketChat, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, openRoom } from 'meteor/rocketchat:lib';
+import { LivechatInquiry } from './LivechatInquiry';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -58,7 +59,6 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		if (room) {
 			return room.v && room.v.status;
 		}
-
 		const inquiry = LivechatInquiry.findOne({ rid: roomId });
 		return inquiry && inquiry.v && inquiry.v.status;
 	}

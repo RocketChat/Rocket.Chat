@@ -3,6 +3,9 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { t, modal } from 'meteor/rocketchat:ui';
+import { handleError } from 'meteor/rocketchat:lib';
+import { AgentUsers } from '../../collections/AgentUsers';
 import _ from 'underscore';
 import moment from 'moment';
 
