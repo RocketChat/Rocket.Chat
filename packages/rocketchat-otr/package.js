@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'templating',
 	]);
+	api.addFiles('client/stylesheets/otr.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

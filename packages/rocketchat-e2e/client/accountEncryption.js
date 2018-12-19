@@ -1,4 +1,3 @@
-/* globals t */
 import toastr from 'toastr';
 import s from 'underscore.string';
 import { RocketChat } from 'meteor/rocketchat:lib';

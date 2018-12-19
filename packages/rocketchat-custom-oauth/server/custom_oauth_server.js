@@ -1,8 +1,9 @@
-/* globals OAuth*/
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');

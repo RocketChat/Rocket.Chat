@@ -457,8 +457,3 @@ function Postis(options) {
 
   return postis;
 }
-
-export {
-  JitsiMeetExternalAPI,
-};
-

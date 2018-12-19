@@ -1,5 +1,3 @@
-/* globals FileUpload */
-
 import _ from 'underscore';
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/Webdav/server.js';

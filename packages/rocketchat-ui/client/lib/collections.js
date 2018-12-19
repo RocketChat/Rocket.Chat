@@ -7,8 +7,8 @@ ChatMessage = new Mongo.Collection(null); //eslint-disable-line
 this.CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' });
 ChatRoom = this.CachedChatRoom.collection;
 
-this.CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscriptions' });
-ChatSubscription = this.CachedChatSubscription.collection; //eslint-disable-line
+CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscriptions' }); //eslint-disable-line
+ChatSubscription = CachedChatSubscription.collection; //eslint-disable-line
 UserRoles = new Mongo.Collection(null); //eslint-disable-line
 RoomRoles = new Mongo.Collection(null); //eslint-disable-line
 this.UserAndRoom = new Mongo.Collection(null);
@@ -24,7 +24,7 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 			this.CachedChatRoom.init();
-			this.CachedChatSubscription.ready.set(true);
+			CachedChatSubscription.ready.set(true); //eslint-disable-line
 		}
 	});
 });

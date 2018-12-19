@@ -59,6 +59,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 	} else {
 		openProfileTab(e, instance, username);
 	}
+	e.stopPropagation();
 };
 
 const mountPopover = (e, i, outerContext) => {

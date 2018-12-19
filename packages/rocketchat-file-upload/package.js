@@ -1,4 +1,3 @@
-/* globals Package */
 Package.describe({
 	name: 'rocketchat:file-upload',
 	version: '0.0.1',
@@ -20,6 +19,7 @@ Package.onUse(function(api) {
 	api.use('accounts-base');
 	api.use('tracker');
 	api.use('webapp');
+	api.use('konecty:multiple-instances-status');
 	api.use('rocketchat:e2e');
 
 	api.addFiles('globalFileRestrictions.js');
