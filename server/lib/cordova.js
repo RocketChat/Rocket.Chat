@@ -1,7 +1,8 @@
-/* global Push, SystemLogger */
+/* global Push */
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { SystemLogger } from 'meteor/rocketchat:logger';
 
 Meteor.methods({
 	// log() {
