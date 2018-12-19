@@ -50,6 +50,7 @@ class Administration extends Page {
 	get rolesUserCreateC() { return browser.element('[name="perm[user][create-c]"]'); }
 	get rolesUserCreateP() { return browser.element('[name="perm[user][create-p]"]'); }
 	get rolesUserCreateD() { return browser.element('[name="perm[user][create-d]"]'); }
+	get rolesUserCreateRo() { return browser.element('[name="perm[user][create-ro]"]'); }
 	get rolesUserMentionAll() { return browser.element('[name="perm[user][mention-all]"]'); }
 	get rolesUserPreviewC() { return browser.element('[name="perm[user][preview-c-room]"]'); }
 	get rolesUserViewC() { return browser.element('[name="perm[user][view-c-room]"]'); }

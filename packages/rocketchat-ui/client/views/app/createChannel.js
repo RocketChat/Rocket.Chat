@@ -90,8 +90,11 @@ Template.createChannel.helpers({
 	typeDescription() {
 		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel') : t('Everyone_can_access_this_channel'));
 	},
-	broadcast() {
-		return Template.instance().broadcast.get();
+	readOnlyDisabled() {
+		return Template.instance().broadcast.get() || !RocketChat.authz.hasAllPermission(['create-ro']);
+	},
+	broadcastDisabled() {
+		return !RocketChat.authz.hasAllPermission(['create-ro']);
 	},
 	encrypted() {
 		return Template.instance().encrypted.get();

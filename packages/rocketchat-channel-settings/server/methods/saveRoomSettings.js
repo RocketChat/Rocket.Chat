@@ -39,7 +39,7 @@ Meteor.methods({
 
 		const room = RocketChat.models.Rooms.findOneById(rid);
 
-		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
+		if (room.broadcast && (!settings.readOnly || settings.reactWhenReadOnly)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -74,6 +74,12 @@ Meteor.methods({
 				throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Type',
+				});
+			}
+			if (setting === 'readOnly' && value !== room.ro && !RocketChat.authz.hasPermission(userId, 'create-ro', rid)) {
+				throw new Meteor.Error('error-action-not-allowed', 'Changing a room\'s read only setting is not allowed', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Read_Only',
 				});
 			}
 			if (setting === 'encrypted' && value !== room.encrypted && (room.t !== 'd' && room.t !== 'p')) {
