@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',
 		'mizzao:autocomplete',
+		'rocketchat:file-upload',
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -168,4 +169,7 @@ Package.onUse(function(api) {
 	api.export('alerts', 'client');
 	api.export('AccountBox', 'client');
 	api.export('chatMessages', 'client');
+	api.export('CachedChatSubscription', 'client');
+	api.export('readMessage', 'client');
+	api.export('updateAvatarOfUsername', 'client');
 });
