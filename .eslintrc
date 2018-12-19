@@ -8,6 +8,7 @@
 		"alerts"                      : false,
 		"Apps"                        : false,
 		"Assets"                      : false,
+		"AudioRecorder"               : false,
 		"ChatMessage"                 : false,
 		"ChatMessages"                : false,
 		"chatMessages"                : false,
