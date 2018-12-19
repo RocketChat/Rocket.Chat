@@ -1,5 +1,6 @@
-/* globals modal, RocketChat*/
 import { Meteor } from 'meteor/meteor';
+import { t, modal } from 'meteor/rocketchat:ui';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(function() {
 

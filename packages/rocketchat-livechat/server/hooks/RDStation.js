@@ -1,4 +1,5 @@
 import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 function sendToRDStation(room) {
 	if (!RocketChat.settings.get('Livechat_RDStation_Token')) {

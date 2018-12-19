@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.statistics.save = function() {
 	const statistics = RocketChat.statistics.get();
 	statistics.createdAt = new Date;

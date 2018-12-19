@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Subscriptions.updateAudioNotificationsById = function(_id, audioNotifications) {
 	const query = {
 		_id,

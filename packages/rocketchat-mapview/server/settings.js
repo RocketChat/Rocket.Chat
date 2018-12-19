@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(function() {
 	RocketChat.settings.add('MapView_Enabled', false, { type: 'boolean', group: 'Message', section: 'Google Maps', public: true, i18nLabel: 'MapView_Enabled', i18nDescription: 'MapView_Enabled_Description' });

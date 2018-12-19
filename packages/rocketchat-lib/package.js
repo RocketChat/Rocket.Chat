@@ -31,6 +31,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:mailer');
 	api.use('mizzao:timesync');
 	api.use('rocketchat:custom-oauth');
+	api.use('rocketchat:file');
 	api.use('rocketchat:authorization', { unordered: true });
 	api.use('rocketchat:push-notifications', { unordered: true });
 
@@ -253,6 +254,7 @@ Package.onUse(function(api) {
 	// EXPORT
 	api.export('RocketChat');
 	api.export('handleError', 'client');
+	api.export('openRoom', 'client');
 
 	// exports
 	api.mainModule('server/lib/index.js', 'server');

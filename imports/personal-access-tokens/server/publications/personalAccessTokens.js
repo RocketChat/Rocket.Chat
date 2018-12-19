@@ -4,7 +4,7 @@ Meteor.publish('personalAccessTokens', function() {
 	if (!this.userId) {
 		return this.ready();
 	}
-	if (!RocketChat.settings.get('API_Enable_Personal_Access_Tokens')) {
+	if (!RocketChat.authz.hasPermission(this.userId, 'create-personal-access-tokens')) {
 		return this.ready();
 	}
 	const self = this;

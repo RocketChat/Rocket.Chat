@@ -153,6 +153,10 @@ html.rtl .attachment {
 		display: none;
 
 		font-size: 1.5rem;
+
+		svg {
+			animation: spin 1s linear infinite;
+		}
 	}
 
 	& .actions-container {

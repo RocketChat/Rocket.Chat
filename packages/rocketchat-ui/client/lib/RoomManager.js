@@ -7,6 +7,9 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { upsertMessage } from './RoomHistoryManager';
 
+
+const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
+
 const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
 const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 	const query = { rid, ts };
@@ -19,7 +22,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 	ChatMessage.remove(query);
 };
 
-const RoomManager = new function() {
+RoomManager = new function() { //eslint-disable-line
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
 	const onlineUsers = new ReactiveVar({});
@@ -135,7 +138,6 @@ const RoomManager = new function() {
 
 
 		closeOlderRooms() {
-			const maxRoomsOpen = 10;
 			if (Object.keys(openedRooms).length <= maxRoomsOpen) {
 				return;
 			}
@@ -242,9 +244,13 @@ const loadMissedMessages = function(rid) {
 		return;
 	}
 	const subscription = ChatSubscription.findOne({ rid });
-	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) =>
-		Array.from(result).map((item) => RocketChat.promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })))
-	);
+	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) => {
+		if (result) {
+			return Array.from(result).map((item) => RocketChat.promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })));
+		} else {
+			return [];
+		}
+	});
 };
 
 let connectionWasOnline = true;
@@ -309,8 +315,6 @@ Tracker.autorun(function() {
 	}
 });
 
-export { RoomManager };
-this.RoomManager = RoomManager;
 RocketChat.callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), RocketChat.callbacks.priority.MEDIUM, 'roommanager-after-logout-cleanup');
 
 RocketChat.CachedCollectionManager.onLogin(() => {
