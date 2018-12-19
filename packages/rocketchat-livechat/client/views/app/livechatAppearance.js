@@ -1,4 +1,3 @@
-/* globals jscolor */
 /* eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';

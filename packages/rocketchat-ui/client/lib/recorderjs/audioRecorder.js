@@ -1,4 +1,3 @@
-/* globals Recorder */
 AudioRecorder = new class { //eslint-disable-line
 	start(cb) {
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -26,7 +25,7 @@ AudioRecorder = new class { //eslint-disable-line
 	startUserMedia(stream) {
 		this.stream = stream;
 		const input = window.audioContext.createMediaStreamSource(stream);
-		this.recorder = new Recorder(input, {
+		this.recorder = new window.Recorder(input, {
 			workerPath: 'mp3-realtime-worker.js',
 			numChannels: 1,
 		});

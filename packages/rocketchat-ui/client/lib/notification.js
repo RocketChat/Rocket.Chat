@@ -8,6 +8,7 @@ import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { e2e } from 'meteor/rocketchat:e2e';
+import { getAvatarAsPng } from './avatar';
 
 KonchatNotification = { //eslint-disable-line
 	notificationStatus: new ReactiveVar,
@@ -85,7 +86,6 @@ KonchatNotification = { //eslint-disable-line
 			}
 		}
 
-		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
 			return KonchatNotification.notify(notification); //eslint-disable-line
