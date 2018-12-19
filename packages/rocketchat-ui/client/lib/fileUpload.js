@@ -1,9 +1,10 @@
-/* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
+/* globals Handlebars, fileUpload, modal, t */
 /* exported fileUpload */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
