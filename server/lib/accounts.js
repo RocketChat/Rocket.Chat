@@ -1,5 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 const accountsConfig = {
 	forbidClientAccountCreation: true,
@@ -21,18 +26,13 @@ Accounts.emailTemplates.userToActivate = {
 	},
 
 	html(options = {}) {
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-
 		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
 
-		const html = RocketChat.placeholders.replace(TAPi18n.__(email), {
+		return Mailer.replace(TAPi18n.__(email), {
 			name: s.escapeHTML(options.name),
 			email: s.escapeHTML(options.email),
 			reason: s.escapeHTML(options.reason),
 		});
-
-		return header + html + footer;
 	},
 };
 
@@ -47,26 +47,30 @@ Accounts.emailTemplates.userActivated = {
 	},
 
 	html({ active, name, username }) {
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 
-		const html = RocketChat.placeholders.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
+		return Mailer.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
 			name: s.escapeHTML(name),
 		});
-
-		return header + html + footer;
 	},
 };
 
 
-const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.text;
-
+// const verifyEmailHtml = Accounts.emailTemplates.verifyEmail.html;
+let verifyEmailTemplate = '';
+let enrollAccountTemplate = '';
+Meteor.startup(() => {
+	Mailer.getTemplateWrapped('Verification_Email', (value) => {
+		verifyEmailTemplate = value;
+	});
+	Mailer.getTemplateWrapped('Accounts_Enrollment_Email', (value) => {
+		enrollAccountTemplate = value;
+	});
+});
 Accounts.emailTemplates.verifyEmail.html = function(user, url) {
 	url = url.replace(Meteor.absoluteUrl(), `${ Meteor.absoluteUrl() }login/`);
-	return verifyEmailHtml(user, url);
+	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url });
 };
 
 Accounts.urls.resetPassword = function(token) {
@@ -75,37 +79,16 @@ Accounts.urls.resetPassword = function(token) {
 
 Accounts.emailTemplates.resetPassword.html = Accounts.emailTemplates.resetPassword.text;
 
-Accounts.emailTemplates.enrollAccount.subject = function(user = {}) {
-	let subject;
-	if (RocketChat.settings.get('Accounts_Enrollment_Customized')) {
-		subject = RocketChat.settings.get('Accounts_Enrollment_Email_Subject');
-	} else {
-		subject = TAPi18n.__('Accounts_Enrollment_Email_Subject_Default', {
-			lng: user.language || RocketChat.settings.get('language') || 'en',
-		});
-	}
-	return RocketChat.placeholders.replace(subject);
+Accounts.emailTemplates.enrollAccount.subject = function(user) {
+	const subject = RocketChat.settings.get('Accounts_Enrollment_Email_Subject');
+	return Mailer.replace(subject, user);
 };
 
 Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
-	let html;
-	if (RocketChat.settings.get('Accounts_Enrollment_Customized')) {
-		html = RocketChat.settings.get('Accounts_Enrollment_Email');
-	} else {
-		html = TAPi18n.__('Accounts_Enrollment_Email_Default', {
-			lng: user.language || RocketChat.settings.get('language') || 'en',
-		});
-	}
-
-	const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-	const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-
-	html = RocketChat.placeholders.replace(html, {
+	return Mailer.replace(enrollAccountTemplate, {
 		name: s.escapeHTML(user.name),
 		email: user.emails && user.emails[0] && s.escapeHTML(user.emails[0].address),
 	});
-
-	return header + html + footer;
 };
 
 Accounts.onCreateUser(function(options, user = {}) {
@@ -161,7 +144,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 			html: Accounts.emailTemplates.userToActivate.html(options),
 		};
 
-		Meteor.defer(() => Email.send(email));
+		Mailer.send(email);
 	}
 
 	return user;

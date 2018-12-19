@@ -1,6 +1,6 @@
-import _ from 'underscore';
-
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
+import _ from 'underscore';
 
 RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	checkCondition(roomType) {
@@ -112,5 +112,22 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			return false;
 		}
 		return this.roomTypes[roomType].notSubscribedTpl;
+	}
+
+	openRouteLink(roomType, subData, queryParams) {
+		if (!this.roomTypes[roomType]) {
+			return false;
+		}
+
+		let routeData = {};
+		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
+			routeData = this.roomTypes[roomType].route.link(subData);
+		} else if (subData && subData.name) {
+			routeData = {
+				name: subData.name,
+			};
+		}
+
+		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
 };

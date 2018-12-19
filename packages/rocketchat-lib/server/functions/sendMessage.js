@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
 		if (value[field] != null) {
@@ -13,14 +16,29 @@ const objectMaybeIncluding = (types) => Match.Where((value) => {
 	return true;
 });
 
-const validateAttachmentsFields = (attachmentFields) => {
-	check(attachmentFields, objectMaybeIncluding({
+const validateAttachmentsFields = (attachmentField) => {
+	check(attachmentField, objectMaybeIncluding({
 		short: Boolean,
+		title: String,
+		value: Match.OneOf(String, Match.Integer, Boolean),
 	}));
 
-	check(attachmentFields, objectMaybeIncluding({
-		title: String,
-		value: String,
+	if (typeof attachmentField.value !== 'undefined') {
+		attachmentField.value = String(attachmentField.value);
+	}
+
+};
+
+const validateAttachmentsActions = (attachmentActions) => {
+	check(attachmentActions, objectMaybeIncluding({
+		type: String,
+		text: String,
+		url: String,
+		image_url: String,
+		is_webview: Boolean,
+		webview_height_ratio: String,
+		msg: String,
+		msg_in_chat_window: Boolean,
 	}));
 };
 
@@ -30,6 +48,8 @@ const validateAttachment = (attachment) => {
 		text: String,
 		ts: Match.OneOf(String, Match.Integer),
 		thumb_url: String,
+		button_alignment: String,
+		actions: [Match.Any],
 		message_link: String,
 		collapsed: Boolean,
 		author_name: String,
@@ -46,6 +66,10 @@ const validateAttachment = (attachment) => {
 
 	if (attachment.fields && attachment.fields.length) {
 		attachment.fields.map(validateAttachmentsFields);
+	}
+
+	if (attachment.actions && attachment.actions.length) {
+		attachment.actions.map(validateAttachmentsActions);
 	}
 };
 
@@ -97,7 +121,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the messaging sending.');
+			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
 		}
 
 		let result;

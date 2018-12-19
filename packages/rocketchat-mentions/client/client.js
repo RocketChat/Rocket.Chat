@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Mentions from '../Mentions';
 const MentionsClient = new Mentions({
 	pattern() {

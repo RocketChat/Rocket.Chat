@@ -1,3 +1,9 @@
+import { SHA256 } from 'meteor/sha';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -7,7 +13,7 @@ const validateUsername = (username) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return reg.test(username);
 };
-const validateName = (name) => name.length;
+const validateName = (name) => name && name.length;
 const validatePassword = (password, confirmationPassword) => {
 	if (!confirmationPassword) {
 		return true;
@@ -69,14 +75,16 @@ Template.accountProfile.helpers({
 	},
 	services() {
 		const suggestions = Template.instance().suggestions.get();
-		return ['gravatar', 'facebook', 'google', 'github', 'gitlab', 'linkedIn', 'twitter']
-			.map((service) => ({
+
+		if (suggestions.avatars) {
+			return Object.keys(suggestions.avatars).map((service) => ({
 				name: service,
 				// TODO: improve this fix
 				service: !suggestions.avatars[service.toLowerCase()] ? RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
 				suggestion: suggestions.avatars[service.toLowerCase()],
 			}))
-			.filter(({ service, suggestion }) => service || suggestion);
+				.filter(({ service, suggestion }) => service || suggestion);
+		}
 	},
 	initialsUsername() {
 		const user = Meteor.user();

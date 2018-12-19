@@ -1,5 +1,7 @@
 /* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
 import { UiTextContext } from 'meteor/rocketchat:lib';
+import { Template } from 'meteor/templating';
 
 Template.roomList.helpers({
 	rooms() {
@@ -13,7 +15,16 @@ Template.roomList.helpers({
 		if (this.anonymous) {
 			return RocketChat.models.Rooms.find({ t: 'c' }, { sort: { name: 1 } });
 		}
-		const user = Meteor.userId();
+
+		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+			fields: {
+				'settings.preferences.sidebarSortby': 1,
+				'settings.preferences.sidebarShowFavorites': 1,
+				'settings.preferences.sidebarShowUnread': 1,
+				'services.tokenpass': 1,
+			},
+		});
+
 		const sortBy = RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical';
 		const query = {
 			open: true,
@@ -112,6 +123,7 @@ const mergeSubRoom = (subscription) => {
 	const room = RocketChat.models.Rooms.findOne(subscription.rid) || { _updatedAt: subscription.ts };
 	subscription.lastMessage = room.lastMessage;
 	subscription.lm = room._updatedAt;
+	subscription.streamingOptions = room.streamingOptions;
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
@@ -127,6 +139,7 @@ const mergeRoomSub = (room) => {
 		$set: {
 			lastMessage: room.lastMessage,
 			lm: room._updatedAt,
+			streamingOptions: room.streamingOptions,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
 	});

@@ -1,4 +1,7 @@
 /* globals CustomFields, Livechat */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
 import visitor from '../../imports/client/visitor';
 
 const api = {
@@ -60,9 +63,19 @@ const api = {
 			data.token = Random.id();
 		}
 
+		if (data.department) {
+			api.setDepartment(data.department);
+		}
+
 		Meteor.call('livechat:registerGuest', data, function(error, result) {
-			if (!error && result.visitor && result.visitor.token) {
+			if (!error) {
+				visitor.reset();
+			}
+
+			if (result && result.visitor && result.visitor.token) {
 				visitor.setToken(result.visitor.token);
+				visitor.setId(result.userId);
+				visitor.setData(result.visitor);
 			}
 		});
 	},

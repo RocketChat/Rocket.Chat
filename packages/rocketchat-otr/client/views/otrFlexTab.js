@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+
 Template.otrFlexTab.helpers({
 	otrAvailable() {
 		return RocketChat.OTR && RocketChat.OTR.isEnabled();

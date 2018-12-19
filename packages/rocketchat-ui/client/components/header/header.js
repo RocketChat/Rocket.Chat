@@ -1,4 +1,7 @@
 /* globals fireGlobalEvent*/
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -81,6 +84,11 @@ Template.header.helpers({
 		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 	},
 
+	encryptedChannel() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return roomData && roomData.encrypted;
+	},
+
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
@@ -92,6 +100,10 @@ Template.header.helpers({
 
 	fixedHeight() {
 		return Template.instance().data.fixedHeight;
+	},
+
+	fullpage() {
+		return Template.instance().data.fullpage;
 	},
 
 	isChannel() {

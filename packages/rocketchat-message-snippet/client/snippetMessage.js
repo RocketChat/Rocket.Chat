@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	snippetMessage(message) {
 		if (typeof Meteor.userId() === 'undefined' || Meteor.userId() === null) {

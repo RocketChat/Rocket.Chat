@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Progress } from './ImporterProgress';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Selection } from './ImporterSelection';
@@ -5,7 +6,9 @@ import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { ImporterWebsocket } from './ImporterWebsocket';
-
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import http from 'http';
 import https from 'https';
 import AdmZip from 'adm-zip';
@@ -192,12 +195,16 @@ export class Base {
 
 				this.oldSettings.FileUpload_MaxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').value;
 				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', -1);
+
+				this.oldSettings.FileUpload_MediaTypeWhiteList = RocketChat.models.Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
+				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
 				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
 				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
+				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
 				break;
 		}
 
@@ -271,6 +278,11 @@ export class Base {
 		const fileStore = FileUpload.getStore('Uploads');
 
 		return requestModule.get(fileUrl, Meteor.bindEnvironment(function(res) {
+			const contentType = res.headers['content-type'];
+			if (!details.type && contentType) {
+				details.type = contentType;
+			}
+
 			const rawData = [];
 			res.on('data', (chunk) => rawData.push(chunk));
 			res.on('end', Meteor.bindEnvironment(() => {

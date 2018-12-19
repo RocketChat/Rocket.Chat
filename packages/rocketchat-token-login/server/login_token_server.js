@@ -1,4 +1,5 @@
 /* globals Accounts */
+import { Meteor } from 'meteor/meteor';
 
 Accounts.registerLoginHandler('login-token', function(result) {
 	if (!result.loginToken) {

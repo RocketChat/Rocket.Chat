@@ -1,8 +1,13 @@
 /* globals chatMessages cordova */
-
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
+
 const call = (method, ...args) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err, data) {
 		if (err) {
@@ -119,8 +124,8 @@ RocketChat.MessageAction = new class {
 		}
 
 		const subData = RocketChat.models.Subscriptions.findOne({ rid: roomData._id, 'u._id': Meteor.userId() });
-		const routePath = RocketChat.roomTypes.getRouteLink(roomData.t, subData || roomData);
-		return `${ Meteor.absoluteUrl(routePath.replace(/^\//, '')) }?msg=${ msgId }`;
+		const roomURL = RocketChat.roomTypes.getURL(roomData.t, subData || roomData);
+		return `${ roomURL }?msg=${ msgId }`;
 	}
 };
 

@@ -1,5 +1,6 @@
 /* globals SyncedCron */
 
+import { Meteor } from 'meteor/meteor';
 import checkVersionUpdate from './functions/checkVersionUpdate';
 import './methods/banner_dismiss';
 import './addSettings';

@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import Busboy from 'busboy';
+
 export class AppsRestApi {
 	constructor(orch, manager) {
 		this._orch = orch;
@@ -14,7 +18,6 @@ export class AppsRestApi {
 	}
 
 	_handleFile(request, fileField) {
-		const Busboy = Npm.require('busboy');
 		const busboy = new Busboy({ headers: request.headers });
 
 		return Meteor.wrapAsync((callback) => {
@@ -308,6 +311,21 @@ export class AppsRestApi {
 					} else {
 						return RocketChat.API.v1.failure(e.message);
 					}
+				}
+			},
+		});
+
+		this.api.addRoute(':id/apis', { authRequired: true }, {
+			get() {
+				console.log(`Getting ${ this.urlParams.id }'s apis..`);
+				const prl = manager.getOneById(this.urlParams.id);
+
+				if (prl) {
+					return RocketChat.API.v1.success({
+						apis: manager.apiManager.listApis(this.urlParams.id),
+					});
+				} else {
+					return RocketChat.API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 		});

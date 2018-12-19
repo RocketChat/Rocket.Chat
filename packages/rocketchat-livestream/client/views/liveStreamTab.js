@@ -1,8 +1,13 @@
-/* globals popout */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import { auth } from '../oauth.js';
-import { RocketChatAnnouncement } from 'meteor/rocketchat:lib';
-
+import { RocketChatAnnouncement, RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { popout, t } from 'meteor/rocketchat:ui';
 
 export const call = (...args) => new Promise(function(resolve, reject) {
 	Meteor.call(...args, function(err, result) {
@@ -137,6 +142,7 @@ Template.liveStreamTab.events({
 			...optionsFromUrl(i.find('[name=streaming-source]').value),
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked,
 			message: i.find('[name=streaming-message]').value,
+			type: 'livestream',
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {
@@ -197,6 +203,7 @@ Template.liveStreamTab.events({
 			...optionsFromUrl(i.find('[name=streaming-source]').value),
 			isAudioOnly: i.find('[name=streaming-audio-only]').checked,
 			message: i.find('[name=streaming-message]').value,
+			type: 'livestream',
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', streamingOptions, function(err) {

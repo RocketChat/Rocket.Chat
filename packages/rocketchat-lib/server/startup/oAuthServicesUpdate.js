@@ -1,4 +1,5 @@
 /* globals CustomOAuth */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 const logger = new Logger('rocketchat:lib', {

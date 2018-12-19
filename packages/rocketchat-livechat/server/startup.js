@@ -1,5 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+
 Meteor.startup(() => {
-	RocketChat.roomTypes.setRoomFind('l', (_id) => RocketChat.models.Rooms.findLivechatById(_id));
+	RocketChat.roomTypes.setRoomFind('l', (_id) => RocketChat.models.Rooms.findLivechatById(_id).fetch());
 
 	RocketChat.authz.addRoomAccessValidator(function(room, user) {
 		return room && room.t === 'l' && user && RocketChat.authz.hasPermission(user._id, 'view-livechat-rooms');

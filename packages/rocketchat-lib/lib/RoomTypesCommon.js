@@ -1,5 +1,7 @@
 /* globals roomExit */
+import { Meteor } from 'meteor/meteor';
 import { RoomTypeConfig } from './RoomTypeConfig';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 export class RoomTypesCommon {
 	constructor() {
@@ -74,28 +76,19 @@ export class RoomTypesCommon {
 		return FlowRouter.path(this.roomTypes[roomType].route.name, routeData);
 	}
 
-	openRouteLink(roomType, subData, queryParams) {
-		if (!this.roomTypes[roomType]) {
-			return false;
-		}
-
-		let routeData = {};
-		if (this.roomTypes[roomType] && this.roomTypes[roomType].route && this.roomTypes[roomType].route.link) {
-			routeData = this.roomTypes[roomType].route.link(subData);
-		} else if (subData && subData.name) {
-			routeData = {
-				name: subData.name,
-			};
-		}
-
-		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
-	}
-
 	/**
 	 * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
 	 * @param {RoomTypeConfig} roomConfig room's type configuration
 	 */
 	getConfig(roomType) {
 		return this.roomTypes[roomType];
+	}
+
+	getURL(...args) {
+		const path = this.getRouteLink(...args);
+		if (!path) {
+			return false;
+		}
+		return Meteor.absoluteUrl(path.replace(/^\//, ''));
 	}
 }

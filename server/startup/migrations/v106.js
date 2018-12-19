@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
 
 RocketChat.Migrations.add({

@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
+		'mizzao:autocomplete',
 	]);
 
 	api.addFiles('client/flexTabBar.html', 'client');
