@@ -1,4 +1,3 @@
-/* globals Package */
 Package.describe({
 	name: 'rocketchat:file-upload',
 	version: '0.0.1',

@@ -1,5 +1,3 @@
-/* globals UploadFS */
-
 import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
@@ -7,6 +5,7 @@ import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
+import { UploadFS } from 'meteor/jalik:ufs';
 
 const cookie = new Cookies();
 
