@@ -7,7 +7,7 @@ import _ from 'underscore';
 
 import { hide, leave } from 'meteor/rocketchat:lib';
 
-popover = { //eslint-disable-line
+popover = {
 	renderedPopover: null,
 	open({ currentTarget, ...config }) {
 		// Popover position must be computed as soon as possible, avoiding DOM changes over currentTarget
