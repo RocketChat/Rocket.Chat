@@ -31,7 +31,7 @@ pipeline:
       - set -e
       - mkdir /drone/build
       - meteor build --allow-superuser --server-only --directory /drone/build
-      - tar -zcvf /${DRONE_REPO_BRANCH}.tar.gz /drone/build/bundle
+      - tar -zcvf ${DRONE_BRANCH}.tar.gz /drone/build/bundle
     when:
       event: push
       branch:
@@ -58,8 +58,8 @@ pipeline:
           - aws_secret_access_key
       bucket: aleign-chat
       region: ap-southeast-2
-      source: /${DRONE_REPO_BRANCH}.tar.gz
-      target: /${DRONE_REPO_BRANCH}.tar.gz
+      source: /${DRONE_BRANCH}.tar.gz
+      target: /${DRONE_BRANCH}.tar.gz
       delete: true
       when:
           event: push
