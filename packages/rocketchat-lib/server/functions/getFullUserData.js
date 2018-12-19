@@ -1,4 +1,3 @@
-/* globals RocketChat */
 import s from 'underscore.string';
 
 const logger = new Logger('getFullUserData');
