@@ -2,7 +2,7 @@
 import stream from 'stream';
 import zlib from 'zlib';
 import util from 'util';
-
+import { Logger } from 'meteor/rocketchat:logger';
 import { FileUploadClass } from '../lib/FileUpload';
 
 const logger = new Logger('FileUpload');

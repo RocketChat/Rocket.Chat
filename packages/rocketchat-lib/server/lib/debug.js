@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
+import { Logger } from 'meteor/rocketchat:logger';
 
 const logger = new Logger('Meteor', {
 	methods: {

@@ -2,6 +2,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { Logger } from 'meteor/rocketchat:logger';
 import http from 'http';
 import URL from 'url';
 

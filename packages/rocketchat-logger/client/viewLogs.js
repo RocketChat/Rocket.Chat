@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-this.stdout = new Mongo.Collection('stdout');
+export const stdout = new Mongo.Collection('stdout');
 
 Meteor.startup(function() {
 	RocketChat.AdminBox.addOption({

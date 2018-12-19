@@ -13,7 +13,6 @@
 		"FileUpload"                  : false,
 		"handleError"                 : false,
 		"getAvatarUrlFromUsername"    : false,
-		"Logger"                      : false,
 		"modal"                       : false,
 		"Npm"                         : false,
 		"Package"                     : false,

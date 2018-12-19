@@ -21,8 +21,5 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/viewLogs.js', 'client');
 
 	api.addFiles('server/server.js', 'server');
-
-	api.export('Logger');
-	api.export('SystemLogger');
-	api.export('LoggerManager');
+	api.mainModule('server/index.js', 'server');
 });
