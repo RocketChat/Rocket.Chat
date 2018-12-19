@@ -17,38 +17,11 @@ Package.onUse(function(api) {
 		'random',
 		'tracker',
 		'webapp',
-	]);
-
-	api.use([
 		'templating',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
-	], 'client');
-
-
-	// Server
-	api.addFiles([
-		'server/startup/settings.js',
-		'server/models/Rooms.js',
-		'server/methods/snippetMessage.js',
-		'server/requests.js',
-		'server/publications/snippetedMessagesByRoom.js',
-		'server/publications/snippetedMessage.js',
-	], 'server');
-
-	// Client
-	api.addFiles([
-		'client/lib/collections.js',
-		'client/actionButton.js',
-		'client/messageType.js',
-		'client/snippetMessage.js',
-		'client/router.js',
-		'client/page/snippetPage.html',
-		'client/page/snippetPage.js',
-		'client/tabBar/tabBar.js',
-		'client/tabBar/views/snippetedMessages.html',
-		'client/tabBar/views/snippetedMessages.js',
-		'client/page/stylesheets/snippetPage.css',
-	], 'client');
-
+	]);
+	api.addFiles('client/page/stylesheets/snippetPage.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

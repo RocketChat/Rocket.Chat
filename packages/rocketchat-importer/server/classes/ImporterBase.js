@@ -6,7 +6,9 @@ import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { ImporterWebsocket } from './ImporterWebsocket';
-
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import http from 'http';
 import https from 'https';
 import AdmZip from 'adm-zip';
@@ -27,9 +29,9 @@ export class Base {
 	 * @static
 	 */
 	static getBSONSize(item) {
-		const { BSON } = require('bson');
-		const bson = new BSON();
-		return bson.calculateObjectSize(item);
+		const { calculateObjectSize } = require('bson');
+
+		return calculateObjectSize(item);
 	}
 
 	/**

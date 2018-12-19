@@ -1,7 +1,7 @@
-/* global renderMessageBody:true */
+import { RocketChat } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 
-renderMessageBody = function(msg) {
+export const renderMessageBody = (msg) => {
 	msg.html = msg.msg;
 
 	if (s.trim(msg.html) !== '') {
@@ -19,5 +19,3 @@ renderMessageBody = function(msg) {
 
 	return msg.html;
 };
-
-/* exported renderMessageBody */
