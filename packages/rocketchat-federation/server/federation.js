@@ -1,44 +1,60 @@
 import PeerClient from './peerClient';
+import PeerDNS from './peerDNS';
+import PeerHTTP from './peerHTTP';
 import PeerServer from './peerServer';
 
+const { FederationKeys } = RocketChat.models;
+
 if (!!RocketChat.settings.get('FEDERATION_Enabled') === true) {
+	// Are we using the hub?
+	const discoveryMethod = RocketChat.settings.get('FEDERATION_Discovery_Method');
 
-	// Verify config
-	const identifier = RocketChat.settings.get('FEDERATION_Peer_Identifier');
-	const domains = RocketChat.settings.get('FEDERATION_Peer_Domains');
-	const hubUrl = RocketChat.settings.get('FEDERATION_Hub_URL');
 	const peerUrl = RocketChat.settings.get('Site_Url');
+	const domain = RocketChat.settings.get('FEDERATION_Domain');
+	const hubUrl = RocketChat.settings.get('FEDERATION_Hub_URL');
 
-	if (!identifier || !domains || !hubUrl || !peerUrl) {
+	if (!domain) {
 		console.log('[federation] Configuration is not correct, federation is NOT running.');
-		console.log(`[federation] identifier:${ identifier } | domains:${ domains } | hub:${ hubUrl } | peer:${ peerUrl }`);
+		console.log(`[federation] domain:${ domain }`);
 		return;
 	}
 
+	if (discoveryMethod === 'hub' && !hubUrl) {
+		console.log('[federation] Configuration is not correct, federation is NOT running.');
+		console.log(`[federation] domain:${ domain } | hub:${ hubUrl }`);
+		return;
+	}
+
+	// Get the key pair
+	Meteor.federationPrivateKey = FederationKeys.getPrivateKey();
+	Meteor.federationPublicKey = FederationKeys.getPublicKey();
+
 	// Normalize the config values
 	const config = {
-		identifier: identifier.replace('@', ''),
-		domains: domains.split(',').map((d) => d.replace('@', '').trim()),
 		hub: {
+			active: discoveryMethod === 'hub',
 			url: hubUrl.replace(/\/+$/, ''),
 		},
 		peer: {
+			domain: domain.replace('@', '').trim(),
 			url: peerUrl.replace(/\/+$/, ''),
+			public_key: Meteor.federationPublicKey,
 		},
 	};
 
+	// Add global information
 	Meteor.federationLocalIdentifier = config.identifier;
+	Meteor.federationPeerDNS = new PeerDNS(config);
+	Meteor.federationPeerHTTP = new PeerHTTP();
 	Meteor.federationPeerClient = new PeerClient(config);
 	Meteor.federationPeerServer = new PeerServer(config);
-
-	const { federationPeerClient, federationPeerServer } = Meteor;
 
 	Meteor.startup(() => {
 		console.log('[federation] Booting...');
 
-		// Stop if registering was not possible
-		if (!federationPeerClient.register()) { return; }
+		// Register if using the hub
+		if (!Meteor.federationPeerClient.register()) { return; }
 
-		federationPeerServer.start();
+		Meteor.federationPeerServer.start();
 	});
 }

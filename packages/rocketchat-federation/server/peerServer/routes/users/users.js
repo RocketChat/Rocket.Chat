@@ -5,7 +5,7 @@ export default function usersRoutes() {
 
 	RocketChat.API.v1.addRoute('federation.users', { authRequired: false }, {
 		get() {
-			const { identifier: localPeerIdentifier } = self.config;
+			const { peer: { domain: localPeerDomain } } = self.config;
 
 			const { username, email } = this.requestParams();
 
@@ -27,7 +27,10 @@ export default function usersRoutes() {
 				return RocketChat.API.v1.failure('There is no such user in this server');
 			}
 
-			const federatedUser = new FederationUser(localPeerIdentifier, user);
+			const federatedUser = new FederationUser(localPeerDomain, user);
+
+			console.log('piroca');
+			console.log(JSON.stringify(federatedUser, null, 2));
 
 			return RocketChat.API.v1.success({ federatedUser });
 		},

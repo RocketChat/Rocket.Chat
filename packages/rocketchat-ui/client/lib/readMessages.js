@@ -24,6 +24,7 @@ readMessage = new class {
 	}
 
 	readNow(force) {
+		console.log(`readNow force: ${ force || false }`);
 		if (force == null) { force = false; }
 		if (this.debug) { console.log('--------------'); }
 		if (this.debug) { console.log('readMessage -> readNow init process force:', force); }
@@ -32,16 +33,22 @@ readMessage = new class {
 
 		self.refreshUnreadMark();
 
+		console.log('readNow 1');
+
 		if ((force !== true) && (this.canReadMessage === false)) {
 			if (this.debug) { console.log('readMessage -> readNow canceled by canReadMessage: false'); }
 			return;
 		}
+
+		console.log('readNow 2');
 
 		const rid = Session.get('openedRoom');
 		if (rid == null) {
 			if (this.debug) { console.log('readMessage -> readNow canceled, no rid informed'); }
 			return;
 		}
+
+		console.log('readNow 3');
 
 		if (force === true) {
 			if (this.debug) { console.log('readMessage -> readNow via force rid:', rid); }
@@ -52,22 +59,30 @@ readMessage = new class {
 			});
 		}
 
+		console.log('readNow 4');
+
 		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription == null) {
 			if (this.debug) { console.log('readMessage -> readNow canceled, no subscription found for rid:', rid); }
 			return;
 		}
 
+		console.log('readNow 5');
+
 		if ((subscription.alert === false) && (subscription.unread === 0)) {
 			if (this.debug) { console.log('readMessage -> readNow canceled, alert', subscription.alert, 'and unread', subscription.unread); }
 			return;
 		}
+
+		console.log('readNow 6');
 
 		const room = RoomManager.getOpenedRoomByRid(rid);
 		if (room == null) {
 			if (this.debug) { console.log('readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name); }
 			return;
 		}
+
+		console.log('readNow 7');
 
 		// Only read messages if user saw the first unread message
 		const unreadMark = $('.message.first-unread');
@@ -82,6 +97,8 @@ readMessage = new class {
 		} else if (RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() > 0) {
 			return;
 		}
+
+		console.log('readNow 8');
 
 		if (this.debug) { console.log('readMessage -> readNow rid:', rid); }
 		Meteor.call('readMessages', rid, function() {
@@ -188,21 +205,25 @@ Meteor.startup(function() {
 	$(window).on('blur', () => readMessage.disable());
 
 	$(window).on('focus', () => {
+		console.log('focus');
 		readMessage.enable();
 		return readMessage.read();
 	});
 
 	$(window).on('click', () => {
+		console.log('click');
 		readMessage.enable();
 		return readMessage.read();
 	});
 
 	$(window).on('touchend', () => {
+		console.log('touchend');
 		readMessage.enable();
 		return readMessage.read();
 	});
 
 	$(window).on('keyup', (e) => {
+		console.log('keyup');
 		const key = e.which;
 		if (key === 27) {
 			readMessage.enable();

@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 	// Add models
 	api.addFiles('server/models/FederationDNSCache.js', 'server');
 	api.addFiles('server/models/FederationEvents.js', 'server');
+	api.addFiles('server/models/FederationKeys.js', 'server');
 
 	// Add methods
 	api.addFiles('server/methods/index.js', 'server');
@@ -25,4 +26,5 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'queue-fifo': '0.2.5',
+	'node-rsa': '1.0.2',
 });

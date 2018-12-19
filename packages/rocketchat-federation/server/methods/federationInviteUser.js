@@ -4,7 +4,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const [username, identifier] = usernameWithIdentifier.split('@');
+		const [username, domain] = usernameWithIdentifier.split('@');
 
 		const { federationPeerClient } = Meteor;
 
@@ -12,7 +12,7 @@ Meteor.methods({
 			throw new Meteor.Error('federation-not-registered', 'Looks like this server is not registered to the DNS server');
 		}
 
-		const federatedUser = federationPeerClient.findUser({ username, identifier });
+		const federatedUser = federationPeerClient.findUser({ username, domain });
 
 		if (!federatedUser) {
 			throw new Meteor.Error('federation-user-not-found', `Could not find a federated user:"${ usernameWithIdentifier }"`);
