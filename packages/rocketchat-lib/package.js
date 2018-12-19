@@ -254,6 +254,7 @@ Package.onUse(function(api) {
 	// EXPORT
 	api.export('RocketChat');
 	api.export('handleError', 'client');
+	api.export('openRoom', 'client');
 
 	// exports
 	api.mainModule('server/lib/index.js', 'server');
