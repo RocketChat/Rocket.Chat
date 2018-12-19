@@ -14,8 +14,10 @@ Package.onUse(function(api) {
 	api.use('accounts-base');
 	api.use('ecmascript');
 	api.use('random');
+	api.use('google-oauth');
 	api.use('check');
 	api.use('tracker');
+	api.use('jparker:gravatar');
 	api.use('ddp-rate-limiter');
 	api.use('mongo');
 	api.use('oauth');
@@ -31,7 +33,9 @@ Package.onUse(function(api) {
 	api.use('rocketchat:mailer');
 	api.use('mizzao:timesync');
 	api.use('rocketchat:custom-oauth');
+	api.use('konecty:multiple-instances-status');
 	api.use('rocketchat:file');
+	api.use('rocketchat:push');
 	api.use('rocketchat:authorization', { unordered: true });
 	api.use('rocketchat:push-notifications', { unordered: true });
 

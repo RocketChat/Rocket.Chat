@@ -1,6 +1,7 @@
-/* globals MongoInternals, SystemLogger */
+/* globals MongoInternals */
 
 import { Meteor } from 'meteor/meteor';
+import { SystemLogger } from 'meteor/rocketchat:logger';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
