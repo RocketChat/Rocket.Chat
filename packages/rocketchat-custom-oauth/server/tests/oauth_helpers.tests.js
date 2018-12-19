@@ -6,7 +6,7 @@ import { mapRolesFromSSO } from '../lib/oauth_helpers';
 // base data set
 let existingUser = {};
 let userDB = [
-]
+];
 // mock
 global.RocketChat = {
 	authz : {
@@ -23,8 +23,8 @@ global.RocketChat = {
 			if (foundIndex === - 1) {
 				user.roles.push(role);
 			}
-		}
-	}
+		},
+	},
 };
 
 describe('CustomOAuth - Server', () => {
@@ -32,7 +32,7 @@ describe('CustomOAuth - Server', () => {
 		it('should add roles from SSO to existing user', () => {
 			existingUser = { _id: 0, roles : ['userRole1'] };
 			userDB = [
-				existingUser
+				existingUser,
 			];
 			const ssoIdentity = { roles : ['userRole1', 'userRole2'] };
 			mapRolesFromSSO(existingUser, ssoIdentity);
@@ -44,7 +44,7 @@ describe('CustomOAuth - Server', () => {
 		it('should remove roles from SSO on existing user', () => {
 			existingUser = { _id: 0, roles : ['userRole1'] };
 			userDB = [
-				existingUser
+				existingUser,
 			];
 			const ssoIdentity = { roles : [] };
 			mapRolesFromSSO(existingUser, ssoIdentity);
