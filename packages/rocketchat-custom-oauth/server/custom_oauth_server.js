@@ -5,6 +5,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
+import { mapRolesFromSSO } from './lib/oauth_helpers';
+
 const logger = new Logger('CustomOAuth');
 
 const Services = {};
@@ -81,7 +83,9 @@ export class CustomOAuth {
 	}
 
 	getAccessToken(query) {
-		const config = ServiceConfiguration.configurations.findOne({ service: this.name });
+		const config = ServiceConfiguration.configurations.findOne({
+			service: this.name
+		});
 		if (!config) {
 			throw new ServiceConfiguration.ConfigError();
 		}
@@ -113,7 +117,9 @@ export class CustomOAuth {
 			response = HTTP.post(this.tokenPath, allOptions);
 		} catch (err) {
 			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
-			throw _.extend(error, { response: err.response });
+			throw _.extend(error, {
+				response: err.response
+			});
 		}
 
 		let data;
@@ -161,7 +167,9 @@ export class CustomOAuth {
 			return data;
 		} catch (err) {
 			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
-			throw _.extend(error, { response: err.response });
+			throw _.extend(error, {
+				response: err.response
+			});
 		}
 	}
 
@@ -239,21 +247,9 @@ export class CustomOAuth {
 					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 				}
 
-				console.log(identity)
-				// Adding roles
-				if (identity.roles) {
-					let user = RocketChat.models.Users.findOneByEmailAddress(identity.email);
-					if (user) {
-						identity.roles.forEach(function (role) {
-							RocketChat.authz.addUserRoles(user._id, role);
-						});
-					}
-					RocketChat.authz.addUserRoles(user._id, 'livechat-manager');
-				}
+				const user = RocketChat.models.Users.findOneByEmailAddress(identity.email);
+				mapRolesFromSSO(user, identity);
 			}
-
-			// console.log 'id:', JSON.stringify identity, null, '  '
-
 			const serviceData = {
 				_OAuthCustom: true,
 				accessToken,
@@ -293,7 +289,7 @@ export class CustomOAuth {
 	}
 
 	addHookToProcessUser() {
-		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData/* , options*/) => {
+		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData /* , options*/ ) => {
 			if (serviceName !== this.name) {
 				return;
 			}
@@ -322,7 +318,9 @@ export class CustomOAuth {
 					},
 				};
 
-				RocketChat.models.Users.update({ _id: user._id }, update);
+				RocketChat.models.Users.update({
+					_id: user._id
+				}, update);
 			}
 		});
 
@@ -342,8 +340,10 @@ export class CustomOAuth {
 }
 
 
-const { updateOrCreateUserFromExternalService } = Accounts;
-Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
+const {
+	updateOrCreateUserFromExternalService
+} = Accounts;
+Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/ ) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		hook.apply(this, args);
 	}
