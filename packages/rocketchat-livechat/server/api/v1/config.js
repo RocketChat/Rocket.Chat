@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { findGuest, settings, online, findOpenRoom } from '../lib/livechat';
 import { Match, check } from 'meteor/check';
 
