@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { ReactiveDict } from 'meteor/reactive-dict';
 
 /*
 * RocketChat.settings holds all packages settings
 * @namespace RocketChat.settings
 */
-
-/* globals ReactiveDict*/
 
 RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({
 	name: 'public-settings',

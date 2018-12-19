@@ -1,5 +1,3 @@
-/* globals Package: false */
-
 Package.describe({
 	name: 'rocketchat:e2e',
 	version: '0.0.1',

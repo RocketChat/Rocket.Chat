@@ -1,5 +1,4 @@
-/* globals UploadFS */
-
+import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 import './AmazonS3.js';
 import './FileSystem.js';
