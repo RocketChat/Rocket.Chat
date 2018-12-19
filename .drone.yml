@@ -31,7 +31,7 @@ pipeline:
       - set -e
       - mkdir /drone/build
       - meteor build --allow-superuser --server-only --directory /drone/build
-      - tar -zcvf ${DRONE_REPO_BRANCH}.tar.gz /drone/build
+      - tar -zcvf /${DRONE_REPO_BRANCH}.tar.gz /drone/build/bundle
     when:
       event: push
       branch:
