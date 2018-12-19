@@ -1,4 +1,3 @@
-/* globals device */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import mime from 'mime-type/with-db';

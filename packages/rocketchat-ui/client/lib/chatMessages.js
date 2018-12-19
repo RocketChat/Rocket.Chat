@@ -1,4 +1,3 @@
-/* globals MsgTyping */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
@@ -195,7 +194,6 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 		this.editing.saved = this.input.value;
 		return this.editing.savedCursor = this.input.selectionEnd;
 	}
-	/* globals readMessage KonchatNotification */
 	/**
 	* * @param {string} rim room ID
 	* * @param {Element} input DOM element

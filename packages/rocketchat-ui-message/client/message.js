@@ -9,6 +9,7 @@ import { DateFormat } from 'meteor/rocketchat:lib';
 import { renderEmoji } from 'meteor/rocketchat:emoji';
 import { renderMessageBody } from './renderMessageBody';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
 import { t } from 'meteor/rocketchat:ui';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
@@ -92,7 +93,6 @@ Template.message.helpers({
 		if (!this.u || !this.u._id) {
 			return [];
 		}
-		/* globals UserRoles RoomRoles */
 		const userRoles = UserRoles.findOne(this.u._id);
 		const roomRoles = RoomRoles.findOne({
 			'u._id': this.u._id,
