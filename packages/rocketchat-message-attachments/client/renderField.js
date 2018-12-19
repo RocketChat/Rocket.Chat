@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { Blaze } from 'meteor/blaze';
+
 const renderers = {};
 
 /**
@@ -34,6 +37,11 @@ export function registerFieldTemplate(fieldType, templateName, events) {
 	}
 }
 
+// onRendered is not being executed (no idea why). Consequently, we cannot use Blaze.renderWithData(), since we don't
+// have access to the DOM outside onRendered. Therefore, we can only translate the content of the field to HTML and
+// embed it non-reactively.
+// This in turn means that onRendered of the field template will not be processed either.
+// I guess it may have someting to do with rocketchat-nrr
 Template.renderField.helpers({
 	specializedRendering({ hash: { field, message } }) {
 		let html = '';

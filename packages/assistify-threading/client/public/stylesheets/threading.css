@@ -38,3 +38,18 @@
 
 	font-size: 100%;
 }
+
+.attachment-fields button {
+	min-height: auto;
+	padding: 3px;
+
+	font-weight: normal;
+}
+
+.attachment-fields button:hover {
+	text-decoration: none;
+}
+
+.attachment-fields button.no-replies {
+	opacity: 0.4;
+}

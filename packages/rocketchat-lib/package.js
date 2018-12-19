@@ -174,6 +174,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/getChannelHistory.js', 'server');
 	api.addFiles('server/methods/getFullUserData.js', 'server');
 	api.addFiles('server/methods/getRoomJoinCode.js', 'server');
+	api.addFiles('server/methods/getRoomMessageMetadata.js', 'server');
 	api.addFiles('server/methods/getRoomRoles.js', 'server');
 	api.addFiles('server/methods/getServerInfo.js', 'server');
 	api.addFiles('server/methods/getSingleMessage.js', 'server');
