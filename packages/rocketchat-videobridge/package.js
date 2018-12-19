@@ -13,7 +13,9 @@ Package.onUse(function(api) {
 		'rocketchat:bigbluebutton',
 		'templating',
 	]);
+	api.addAssets('client/public/external_api.js', 'client');
 	api.addFiles('client/stylesheets/video.less', 'client');
+
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
