@@ -1,4 +1,5 @@
-/* globals Push */
+import { Push } from 'meteor/rocketchat:push';
+
 class PushNotification {
 	getNotificationId(roomId) {
 		const serverId = RocketChat.settings.get('uniqueID');

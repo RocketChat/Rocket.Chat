@@ -1,4 +1,3 @@
-/* globals fireGlobalEvent currentTracker*/
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -6,7 +5,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 
-currentTracker = undefined;
+export let currentTracker = undefined;
 
 openRoom = function(type, name) { // eslint-disable-line
 	Session.set('openedRoom', null);

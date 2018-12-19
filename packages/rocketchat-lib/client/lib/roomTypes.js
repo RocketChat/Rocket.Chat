@@ -49,7 +49,6 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		if (!user) {
 			return room && room.ro;
 		}
-		/* globals RoomRoles */
 		const userOwner = RoomRoles.findOne({
 			rid: roomId,
 			'u._id': user._id,
