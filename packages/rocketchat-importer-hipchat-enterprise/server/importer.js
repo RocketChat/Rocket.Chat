@@ -412,18 +412,25 @@ export class HipChatEnterpriseImporter extends Base {
 					// Find the rocketchatId of the user who created this channel
 					let creatorId = startedByUserId;
 					for (const u of this.users.users) {
-						if (u.id === c.creator && u.do_import) {
+						if (u.id === c.creator && u.do_import && u.rocketId) {
 							creatorId = u.rocketId;
+							break;
 						}
 					}
 
 					// Create the channel
 					Meteor.runAsUser(creatorId, () => {
-						const roomInfo = Meteor.call(c.isPrivate ? 'createPrivateGroup' : 'createChannel', c.name, []);
-						c.rocketId = roomInfo.rid;
+						try {
+							const roomInfo = Meteor.call(c.isPrivate ? 'createPrivateGroup' : 'createChannel', c.name, []);
+							c.rocketId = roomInfo.rid;
+						} catch (e) {
+							this.logger.error(`Failed to create channel, using userId: ${ creatorId };`, e);
+						}
 					});
 
-					RocketChat.models.Rooms.update({ _id: c.rocketId }, { $set: { ts: c.created, topic: c.topic }, $addToSet: { importIds: c.id } });
+					if (c.rocketId) {
+						RocketChat.models.Rooms.update({ _id: c.rocketId }, { $set: { ts: c.created, topic: c.topic }, $addToSet: { importIds: c.id } });
+					}
 				}
 
 				super.addCountCompleted(1);
