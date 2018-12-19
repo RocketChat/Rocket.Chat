@@ -36,7 +36,8 @@
 												{{#each users}}
 													{{#unless is_bot}}
 														<li>
-															<input type="checkbox" name="{{user_id}}" checked="checked" />{{username}} - {{email}}
+															<input type="checkbox" name="{{user_id}}" id="user_{{user_id}}" checked="checked" />
+															<label for="user_{{user_id}}">{{username}} - {{email}}</label>
 															{{#if is_deleted }} <em>({{_ "Deleted"}})</em>{{/if}}
 															{{#if is_email_taken }} <em>({{_ "Duplicated_Email_address_will_be_ignored"}})</em>{{/if}}
 														</li>
@@ -54,7 +55,8 @@
 											<ul>
 												{{#each channels}}
 													<li>
-														<input type="checkbox" name="{{channel_id}}" checked="checked" />{{name}}
+														<input type="checkbox" name="{{channel_id}}" id="channel_{{channel_id}}" checked="checked" />
+														<label for="channel_{{channel_id}}">{{name}}</label>
 														{{#if is_archived}} <em>({{_ "Importer_Archived"}})</em>{{/if}}
 														{{#if is_private}} <em>({{_ "Private_Group"}})</em>{{/if}}
 													</li>
