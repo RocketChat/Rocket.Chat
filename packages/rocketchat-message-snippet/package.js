@@ -1,4 +1,3 @@
-/* globals Package */
 Package.describe({
 	name: 'rocketchat:message-snippet',
 	version: '0.0.1',

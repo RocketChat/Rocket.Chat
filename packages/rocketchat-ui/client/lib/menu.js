@@ -18,7 +18,6 @@ window.addEventListener('resize', _.debounce((() => {
 	};
 })(), 100));
 
-/* globals isRtl */
 this.menu = new class extends EventEmitter {
 	constructor() {
 		super();
