@@ -9,10 +9,14 @@ import { t, modal, fileUpload } from 'meteor/rocketchat:ui';
 RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
 	icon: 'video',
-	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_VideoRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
-	action({ messageBox }) {
-		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox);
-	},
+	condition: () => (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
+		navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
+		window.MediaRecorder &&
+		RocketChat.settings.get('FileUpload_Enabled') &&
+		RocketChat.settings.get('Message_VideoRecorderEnabled') &&
+		(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
+			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
+	action: ({ messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox)),
 });
 
 RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
