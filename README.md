@@ -418,6 +418,13 @@ cd Rocket.Chat
 meteor npm start
 ```
 
+In order to debug the server part use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
+
+```sh
+meteor debug
+```
+You'll find a nodejs icon in the developer console.
+
 If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
 
 ## Branching Model
