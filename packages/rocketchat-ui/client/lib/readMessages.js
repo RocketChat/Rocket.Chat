@@ -15,7 +15,7 @@ import _ from 'underscore';
 // window.addEventListener 'focus', ->
 // readMessage.refreshUnreadMark(undefined, true)
 
-const readMessage = new class {
+readMessage = new class {
 	constructor() {
 		this.debug = false;
 		this.callbacks = [];
@@ -211,5 +211,3 @@ Meteor.startup(function() {
 		}
 	});
 });
-export { readMessage };
-this.readMessage = readMessage;

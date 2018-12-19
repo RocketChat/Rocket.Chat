@@ -1,4 +1,3 @@
-/* globals chatMessages cordova */
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';

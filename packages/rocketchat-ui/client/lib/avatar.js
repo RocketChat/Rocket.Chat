@@ -24,7 +24,7 @@ this.getAvatarAsPng = function(username, cb) {
 	};
 };
 
-this.updateAvatarOfUsername = function(username) {
+updateAvatarOfUsername = function(username) { //eslint-disable-line
 
 	const key = `avatar_random_${ username }`;
 	Session.set(key, Math.round(Math.random() * 1000));
