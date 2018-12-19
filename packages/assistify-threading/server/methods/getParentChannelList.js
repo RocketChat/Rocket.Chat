@@ -7,6 +7,10 @@ Meteor.methods({
 		check(sort, Match.Optional(String));
 		check(limit, Match.Optional(Number));
 
+		if (!Meteor.userId()) {
+			return { channels: [] };
+		}
+
 		const options = {
 			fields: {
 				name: 1,
