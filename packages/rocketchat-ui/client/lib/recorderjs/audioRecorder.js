@@ -1,6 +1,6 @@
 // TODO: embed Recorder class here
 // TODO: create the worker for mp3 encoding on-the-fly
-AudioRecorder = new (class AudioRecorder {
+AudioRecorder = new (class AudioRecorder { //eslint-disable-line
 	start(cb) {
 		window.audioContext = new (window.AudioContext || window.webkitAudioContext);
 
