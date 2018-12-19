@@ -1,4 +1,3 @@
-import './stylesheets/autotranslate.css';
 import './lib/actionButton';
 import './lib/autotranslate';
 import './lib/tabBar';

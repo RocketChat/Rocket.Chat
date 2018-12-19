@@ -8,6 +8,8 @@ import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { renderEmoji } from 'meteor/rocketchat:emoji';
 import { renderMessageBody } from './renderMessageBody';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:ui';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||

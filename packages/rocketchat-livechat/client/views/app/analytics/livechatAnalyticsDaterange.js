@@ -1,5 +1,5 @@
-/* globals popover */
 import { Template } from 'meteor/templating';
+import { popover } from 'meteor/rocketchat:ui';
 import moment from 'moment';
 import { setDateRange } from '../../../lib/dateHandler';
 
