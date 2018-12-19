@@ -4,8 +4,8 @@ import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
 ChatMessage = new Mongo.Collection(null); //eslint-disable-line
-this.CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' });
-ChatRoom = this.CachedChatRoom.collection;
+export const CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' });
+ChatRoom = CachedChatRoom.collection;
 
 CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscriptions' }); //eslint-disable-line
 ChatSubscription = CachedChatSubscription.collection; //eslint-disable-line
@@ -23,7 +23,7 @@ RocketChat.models.Messages = _.extend({}, RocketChat.models.Messages, ChatMessag
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
-			this.CachedChatRoom.init();
+			CachedChatRoom.init();
 			CachedChatSubscription.ready.set(true); //eslint-disable-line
 		}
 	});

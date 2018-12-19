@@ -1,4 +1,3 @@
-/* globals popover isRtl */
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
