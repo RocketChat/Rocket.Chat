@@ -1,4 +1,3 @@
-/* globals RocketChat */
 import s from 'underscore.string';
 import { Logger } from 'meteor/rocketchat:logger';
 
