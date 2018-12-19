@@ -229,7 +229,6 @@ Template.messageBox.helpers({
 			},
 		};
 	},
-	/* globals MsgTyping*/
 	usersTyping() {
 		const maxUsernames = 4;
 		const users = MsgTyping.get(this._id);

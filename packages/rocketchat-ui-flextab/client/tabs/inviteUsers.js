@@ -6,6 +6,7 @@ import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { t } from 'meteor/rocketchat:ui';
+import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 
 const acEvents = {
@@ -124,7 +125,7 @@ Template.inviteUsers.onRendered(function() {
 		users.set(usersArr);
 	});
 });
-/* global Deps */
+
 Template.inviteUsers.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
