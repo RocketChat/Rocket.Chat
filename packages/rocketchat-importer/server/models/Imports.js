@@ -16,8 +16,6 @@ class ImportsModel extends RocketChat.models._Base {
 		// But only returns it if it is still pending
 
 		const forbiddenStatus = [
-			ProgressStep.DOWNLOADING_FILE_URL,
-			ProgressStep.DOWNLOAD_COMPLETE,
 			ProgressStep.DONE,
 			ProgressStep.ERROR,
 			ProgressStep.CANCELLED,
