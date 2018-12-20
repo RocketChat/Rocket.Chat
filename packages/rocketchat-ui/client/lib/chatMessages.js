@@ -19,10 +19,10 @@ Meteor.startup(() => {
 	});
 });
 
-ChatMessages = class ChatMessages { //eslint-disable-line
+ChatMessages = class ChatMessages {
 	constructor() {
 
-		this.saveTextMessageBox = _.debounce((rid, value) => { // eslint
+		this.saveTextMessageBox = _.debounce((rid, value) => {
 			const key = `messagebox_${ rid }`;
 			return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
 		}, 1000);

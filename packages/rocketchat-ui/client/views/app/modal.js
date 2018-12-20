@@ -1,4 +1,3 @@
-/* globals modal */
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';

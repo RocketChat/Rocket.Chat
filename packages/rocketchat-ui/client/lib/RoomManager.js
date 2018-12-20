@@ -6,7 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { upsertMessage } from './RoomHistoryManager';
-
+import { CachedChatRoom } from './collections';
 
 const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
@@ -22,14 +22,13 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 	ChatMessage.remove(query);
 };
 
-RoomManager = new function() { //eslint-disable-line
+RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
 	const Cls = class {
 		static initClass() {
-			/* globals CachedChatRoom CachedChatSubscription */
 			this.prototype.openedRooms = openedRooms;
 			this.prototype.onlineUsers = onlineUsers;
 			this.prototype.computation = Tracker.autorun(() => {
