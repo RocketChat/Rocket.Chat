@@ -97,7 +97,7 @@ class PeerDNS {
 		return {
 			domain,
 			url: `${ protocol }://${ srvEntry.name }:${ srvEntry.port }`,
-			publicKey,
+			public_key: publicKey,
 		};
 	}
 
@@ -141,6 +141,9 @@ class PeerDNS {
 		const { domain } = peer;
 
 		delete peer._id;
+
+		// Make sure public_key has no line breaks
+		peer.public_key = peer.public_key.replace(/\n|\r/g, '');
 
 		return RocketChat.models.FederationDNSCache.upsert({ domain }, peer);
 	}

@@ -1,21 +1,9 @@
-import NodeRSA from 'node-rsa';
+import { Meteor } from 'meteor/meteor';
+
+const { FederationKeys } = RocketChat.models;
 
 Meteor.startup(function() {
-	const { FederationKeys } = RocketChat.models;
-
-	let federationPublicKey;
-
-	// Create key pair if needed
-	if (!FederationKeys.getPublicKey()) {
-		console.log('[federation] Generating key pairs');
-
-		const key = new NodeRSA({ b: 512 });
-		key.generateKeyPair();
-
-		federationPublicKey = key.exportKey('pkcs1-public-pem');
-	} else {
-		federationPublicKey = FederationKeys.getPublicKey();
-	}
+	const federationPublicKey = FederationKeys.getPublicKeyString();
 
 	RocketChat.settings.addGroup('Federation', function() {
 		this.add('FEDERATION_Enabled', false, {

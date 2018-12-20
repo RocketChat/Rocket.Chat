@@ -1,15 +1,40 @@
+const { FederationKeys } = RocketChat.models;
+
 export default function eventsRoutes() {
 	const self = this;
 
 	RocketChat.API.v1.addRoute('federation.events', { authRequired: false }, {
 		post() {
-			if (!this.bodyParams.event) {
-				return RocketChat.API.v1.failure('Event was not sent');
+			if (!this.bodyParams.payload) {
+				return RocketChat.API.v1.failure('Payload was not sent');
 			}
 
-			const {
-				event: e,
-			} = this.bodyParams;
+			if (!this.request.headers['x-federation-domain']) {
+				return RocketChat.API.v1.failure('Cannot handle that request');
+			}
+
+			const remotePeerDomain = this.request.headers['x-federation-domain'];
+
+			const peer = Meteor.federationPeerDNS.searchPeer(remotePeerDomain);
+
+			if (!peer) {
+				return RocketChat.API.v1.failure('Could not find valid peer');
+			}
+
+			const payloadBuffer = Buffer.from(this.bodyParams.payload.data);
+
+			// Decrypt with the peer's public key
+			let payload = FederationKeys.loadKey(peer.public_key, 'public').decryptPublic(payloadBuffer);
+
+			// Decrypt with the local private key
+			payload = Meteor.federationPrivateKey.decrypt(payload);
+
+			// Get the event
+			const { event: e } = JSON.parse(payload.toString());
+
+			if (!e) {
+				return RocketChat.API.v1.failure('Event was not sent');
+			}
 
 			self.log(`Received event:${ e.t }`);
 

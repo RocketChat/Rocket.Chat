@@ -2,6 +2,11 @@ import { HTTP } from 'meteor/http';
 
 class PeerHTTP {
 
+	constructor(config) {
+		// General
+		this.config = config;
+	}
+
 	log(message) {
 		console.log(`[federation-http] ${ message }`);
 	}
@@ -21,7 +26,7 @@ class PeerHTTP {
 
 		this.log(`Sending request: ${ method } - ${ url }`);
 
-		return HTTP.call(method, url, { data, timeout: 2000 });
+		return HTTP.call(method, url, { data, timeout: 2000, headers: { 'x-federation-domain': this.config.peer.domain } });
 	}
 
 	//

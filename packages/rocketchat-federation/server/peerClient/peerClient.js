@@ -4,6 +4,8 @@ import FederatedMessage from '../federatedResources/FederatedMessage';
 import FederatedRoom from '../federatedResources/FederatedRoom';
 import FederatedUser from '../federatedResources/FederatedUser';
 
+const { FederationKeys } = RocketChat.models;
+
 class PeerClient {
 	constructor(config) {
 		// General
@@ -107,16 +109,25 @@ class PeerClient {
 
 		const peer = Meteor.federationPeerDNS.searchPeer(domain);
 
-		if (!peer) {
+		if (!peer || !peer.public_key) {
 			this.log(`Could not find valid peer:${ domain }`);
 
 			RocketChat.models.FederationEvents.setEventAsErrored(e, 'Could not find valid peer');
 		} else {
 			try {
-				Meteor.federationPeerHTTP.request(peer, 'POST', '/api/v1/federation.events', { event: e });
+				const stringPayload = JSON.stringify({ event: e });
+
+				// Encrypt with the peer's public key
+				let payload = FederationKeys.loadKey(peer.public_key, 'public').encrypt(stringPayload);
+
+				// Encrypt with the local private key
+				payload = Meteor.federationPrivateKey.encryptPrivate(payload);
+
+				Meteor.federationPeerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload });
 
 				RocketChat.models.FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
+				console.log(err);
 				this.log(`[${ e.t }] Event was refused by peer:${ domain }`);
 
 				RocketChat.models.FederationEvents.setEventAsErrored(e, err.toString());
