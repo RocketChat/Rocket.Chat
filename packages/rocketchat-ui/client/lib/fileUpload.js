@@ -4,6 +4,7 @@ import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import { Handlebars } from 'meteor/ui';
+import { t } from 'meteor/rocketchat:utils';
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();

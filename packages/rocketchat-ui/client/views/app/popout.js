@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';

@@ -1,6 +1,6 @@
 import { Tracker } from 'meteor/tracker';
 
-fireGlobalEvent = function _fireGlobalEvent(eventName, params) { //eslint-disable-line
+fireGlobalEvent = function _fireGlobalEvent(eventName, params) {
 	window.dispatchEvent(new CustomEvent(eventName, { detail: params }));
 
 	Tracker.autorun((computation) => {

@@ -3,6 +3,7 @@ import { Match } from 'meteor/check';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { t } from 'meteor/rocketchat:utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import Clipboard from 'clipboard';
