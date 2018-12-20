@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router' ;
 import { TAPi18n } from 'meteor/tap:i18n';
+import { t } from 'meteor/rocketchat:utils';
 import { ChromeScreenShare } from './screenShare';
 
 class WebRTCTransportClass {

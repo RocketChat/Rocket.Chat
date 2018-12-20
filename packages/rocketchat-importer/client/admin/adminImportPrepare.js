@@ -4,7 +4,7 @@ import { Importers } from 'meteor/rocketchat:importer';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({

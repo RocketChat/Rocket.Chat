@@ -10,7 +10,7 @@ import { renderEmoji } from 'meteor/rocketchat:emoji';
 import { renderMessageBody } from './renderMessageBody';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||

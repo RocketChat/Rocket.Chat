@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { popover } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 const setStatus = (status) => {
 	AccountBox.setStatus(status);

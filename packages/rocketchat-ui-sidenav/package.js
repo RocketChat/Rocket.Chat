@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
+		'rocketchat:utils',
 		'rocketchat:ui',
 		'rocketchat:lazy-load',
 	]);
