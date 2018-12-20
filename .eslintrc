@@ -28,8 +28,6 @@
 		"getAvatarUrlFromUsername"    : false,
 		"getAvatarSuggestionForUser"  : false,
 		"globals"                     : true,
-		"isChrome"                    : false,
-		"isFirefox"                   : false,
 		"JitsiMeetExternalAPI"        : false,
 		"jscolor"                     : false,
 		"KonchatNotification"         : false,
