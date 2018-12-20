@@ -18,7 +18,13 @@ Template.visitorForward.helpers({
 		return LivechatDepartment.find({ enabled: true });
 	},
 	agents() {
-		return AgentUsers.find({ _id: { $ne: Meteor.userId() } }, { sort: { name: 1, username: 1 } });
+		const query = {
+			_id: { $ne: Meteor.userId() },
+			status: { $ne: 'offline' },
+			statusLivechat: 'available',
+		};
+
+		return AgentUsers.find(query, { sort: { name: 1, username: 1 } });
 	},
 	agentName() {
 		return this.name || this.username;
