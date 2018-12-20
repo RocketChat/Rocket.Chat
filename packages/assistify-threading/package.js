@@ -49,6 +49,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
 	api.addFiles('client/views/ThreadList.html', 'client');
 	api.addFiles('client/views/ThreadList.js', 'client');
+	api.addFiles('client/views/fieldTypeThreadReplyCounter.html', 'client');
+	api.addFiles('client/views/fieldTypeThreadReplyCounter.js', 'client');
+	api.addFiles('client/views/fieldTypeThreadLastMessageAge.html', 'client');
+	api.addFiles('client/views/fieldTypeThreadLastMessageAge.js', 'client');
 
 	// Other UI extensions
 	api.addFiles('client/createThreadMessageAction.js', 'client');
