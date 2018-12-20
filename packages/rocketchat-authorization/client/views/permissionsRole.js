@@ -146,7 +146,7 @@ Template.permissionsRole.events({
 		const roleData = {
 			description: e.currentTarget.elements.description.value,
 			scope: e.currentTarget.elements.scope.value,
-			mandatory2fa: e.currentTarget.elements.mandatory2fa.checked
+			mandatory2fa: e.currentTarget.elements.mandatory2fa.checked,
 		};
 
 		if (this._id) {
