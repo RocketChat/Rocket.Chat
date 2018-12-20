@@ -2536,6 +2536,88 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 			type: 'string',
 		});
 	});
+
+	this.section('Cloud_Info', function() {
+		this.add('Cloud_Url', 'https://cloud.rocket.chat', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Id', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Name', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Id', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Secret', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
+			type: 'int',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Registration_Client_Uri', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Registration_State', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+	});
 });
 
 RocketChat.settings.init();

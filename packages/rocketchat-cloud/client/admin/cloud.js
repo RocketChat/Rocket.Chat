@@ -44,13 +44,14 @@ Template.cloud.events({
 	'click .connect-btn'() {
 		const token = $('input[name=cloudToken]').val();
 
-		Meteor.call('cloud:connectServer', token, (error) => {
+		Meteor.call('cloud:connectServer', token, (error, data) => {
 			if (error) {
 				console.warn(error);
 				return;
 			}
 
-			toastr.success(t('Connected'));
+			console.log('connect result:', data);
+			window.open(data.url, 'cloudConnect');
 		});
 	},
 });
