@@ -2529,6 +2529,12 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 		this.add('Allow_Marketing_Emails', true, {
 			type: 'boolean',
 		});
+		this.add('Register_Server', true, {
+			type: 'boolean',
+		});
+		this.add('Organization_Email', '', {
+			type: 'string',
+		});
 	});
 });
 

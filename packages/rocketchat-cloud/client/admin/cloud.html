@@ -1,0 +1,72 @@
+<template name="cloud">
+	<div class="main-content-flex">
+		<section class="page-container page-home page-static page-settings">
+			{{> header sectionName="Rocket.Chat Cloud Connect"}}
+			<div class="content">
+				{{#requiresPermission 'manage-cloud'}}
+					<div class="section">
+						<div class="section-title">
+							<div class="section-title-text">
+								What is this?
+							</div>
+						</div>
+
+						<div class="section-content">
+							<p>Rocket.Chat Cloud Connect allows you to connect your on-perm Rocket.Chat server to our Cloud. Doing so enables you to manage your licenses for the push gateway, etc and more.</p>
+						</div>
+					</div>
+					<div class="section">
+						{{#if info.canConnect}}
+							<div class="section-title">
+								<div class="section-title-text">
+									Configuration
+								</div>
+							</div>
+
+							<div class="section-content border-component-color">
+								<div class="input-line double-col">
+									<label class="setting-label" title="cloudEmail">Email</label>
+									<div class="setting-field">
+										<input class="input-monitor rc-input__element" type="text" name="cloudEmail" value="{{ info.email }}">
+										<div class="settings-description secondary-font-color">The email to send the Cloud registration link to.</div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label class="setting-label" title=""></label>
+									<div class="setting-field">
+										<button type="button" class="rc-button rc-button--primary action update-email-btn">Update Email</button>
+									</div>
+								</div>
+
+								<pre>{{ canConnect }}</pre>
+
+								<div class="input-line double-col">
+									<label class="setting-label" title="cloudToken">Token</label>
+									<div class="setting-field">
+										<input class="input-monitor rc-input__element" type="text" name="cloudToken" value="{{ info.token }}">
+										<div class="settings-description secondary-font-color">Manually enter the token received from the Cloud Registration Email.</div>
+									</div>
+								</div>
+								<div class="input-line double-col">
+									<label class="setting-label" title=""></label>
+									<div class="setting-field">
+										<button type="button" class="rc-button rc-button--primary action connect-btn">Connect</button>
+									</div>
+								</div>
+							</div>
+						{{else}}
+							<div class="section-title">
+								<div class="section-title-text">
+									Registration Required
+								</div>
+							</div>
+							<div class="section-content border-component-color">
+								<p><a href="./admin/Setup_Wizard">Click here to go to the settings page to register your server.</a></p>
+							</div>
+						{{/if}}
+					</div>
+				{{/requiresPermission}}
+			</div>
+		</section>
+	</div>
+</template>

@@ -75,8 +75,20 @@ const persistSettings = (state, callback) => {
 				value: state.registerServer,
 			},
 			{
+				_id: 'Apps_Framework_enabled',
+				value: state.registerServer,
+			},
+			{
+				_id: 'Register_Server',
+				value: state.registerServer,
+			},
+			{
 				_id: 'Allow_Marketing_Emails',
 				value: state.optIn,
+			},
+			{
+				_id: 'Organization_Email',
+				value: state['registration-email'],
 			},
 		]);
 
