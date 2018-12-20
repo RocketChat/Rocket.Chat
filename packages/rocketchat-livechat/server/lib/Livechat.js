@@ -437,13 +437,13 @@ RocketChat.Livechat = {
 
 	transfer(room, guest, transferData) {
 		let agent;
-		let user;
 
 		if (transferData.userId) {
-			user = RocketChat.models.Users.findOneOnlineAgentById(transferData.userId);
-		}
+			const user = RocketChat.models.Users.findOneOnlineAgentById(transferData.userId);
+			if (!user) {
+				return false;
+			}
 
-		if (user) {
 			const { _id: agentId, username } = user;
 			agent = Object.assign({}, { agentId, username });
 		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
