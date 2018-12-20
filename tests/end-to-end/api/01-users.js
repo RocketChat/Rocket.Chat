@@ -1004,15 +1004,39 @@ describe('[Users]', function() {
 
 	describe('[/users.setPreferences]', () => {
 		it('should set some preferences by user when execute successfully', (done) => {
-			preferences.userId = credentials['X-User-Id'];
+			const userPreferences = {
+				userId: credentials['X-User-Id'],
+				data: {
+					...preferences.data,
+				},
+			};
 			request.post(api('users.setPreferences'))
 				.set(credentials)
-				.send(preferences)
+				.send(userPreferences)
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					expect(res.body.user.settings.preferences).to.be.eql(preferences.data);
+					expect(Object.keys(res.body.user.settings.preferences)).to.include.members(Object.keys(userPreferences.data));
 					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should set some preferences and language preference by user when execute successfully', (done) => {
+			const userPreferences = {
+				userId: credentials['X-User-Id'],
+				data: {
+					...preferences.data,
+					language: 'en',
+				},
+			};
+			request.post(api('users.setPreferences'))
+				.set(credentials)
+				.send(userPreferences)
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.user.settings.preferences).to.have.property('language', 'en');
 				})
 				.end(done);
 		});
@@ -1020,12 +1044,16 @@ describe('[Users]', function() {
 
 	describe('[/users.getPreferences]', () => {
 		it('should return all preferences when execute successfully', (done) => {
+			const userPreferences = {
+				...preferences.data,
+				language: 'en',
+			};
 			request.get(api('users.getPreferences'))
 				.set(credentials)
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					expect(res.body.preferences).to.be.eql(preferences.data);
+					expect(res.body.preferences).to.be.eql(userPreferences);
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
