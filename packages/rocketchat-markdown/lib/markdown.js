@@ -78,7 +78,7 @@ class MarkdownClass {
 	}
 }
 
-const Markdown = new MarkdownClass;
+export const Markdown = new MarkdownClass;
 RocketChat.Markdown = Markdown;
 
 // renderMessage already did html escape
