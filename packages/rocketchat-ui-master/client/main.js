@@ -130,7 +130,8 @@ RocketChat.mainReady = new ReactiveVar(false);
 Template.main.helpers({
 	removeSidenav() {
 		const { modal } = this;
-		return (modal || typeof modal === 'function' ? modal() : modal); // || RocketChat.Layout.isEmbedded();
+		const isAdmin = RocketChat.authz.hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration']);
+		return (modal || typeof modal === 'function' ? modal() : modal || (RocketChat.Layout.isEmbedded() && !isAdmin));
 	},
 	siteName() {
 		return RocketChat.settings.get('Site_Name');

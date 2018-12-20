@@ -30,12 +30,14 @@
 				{{/if}}
 
 				<div class="rc-header__data">
+					{{#unless disabled}}
 					{{#unless secondaryName}}
 					<div class="rc-header__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</div>
 					{{else}}
 					<div class="rc-header__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
 					{{/unless}}
-
+					{{/unless}}
+					
 					{{#if isDirect}}
 					<span class="rc-header__status">
 						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>

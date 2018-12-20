@@ -47,7 +47,7 @@ Template.header.helpers({
 
 	allowButton() {
 		return RocketChat.TabBar.getButtons().filter(button => {
-				if (button.name !== 'addUsers') {
+				if (button.name !== 'addUsers' && button.name !== 'members-list' && button.name !== 'channel-settings') {
 					return true;
 				}
 		}).length;
@@ -57,6 +57,10 @@ Template.header.helpers({
 		if (RocketChat.Layout.isEmbedded()) {
 			return 'embedded-view';
 		}
+	},
+
+	disabled() {
+			return true
 	},
 
 	roomName() {

@@ -52,6 +52,9 @@ const filterButtons = (button, anonymous, rid) => {
 	if (button.id === 'addUsers' && !canShowAddUsersButton(rid)) {
 		return false;
 	}
+	if (button.id === 'addUsers' || button.id === 'members-list' || button.id === 'channel-settings') {
+		return false;
+	}
 	return true;
 };
 Template.flexTabBar.helpers({
