@@ -28,6 +28,8 @@ Package.onUse(function(api) {
 		'rocketchat:e2e',
 		'mizzao:autocomplete',
 		'rocketchat:file-upload',
+		'konecty:user-presence',
+		'rocketchat:webrtc',
 	]);
 
 	api.use('kadira:flow-router', 'client');

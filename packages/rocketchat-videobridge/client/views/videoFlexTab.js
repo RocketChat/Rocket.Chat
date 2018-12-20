@@ -1,5 +1,3 @@
-/* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
-/* globals JitsiMeetExternalAPI */
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
