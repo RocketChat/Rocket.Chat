@@ -1,7 +1,8 @@
-/* global SyncedCron */
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Logger } from 'meteor/rocketchat:logger';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
+
 const logger = new Logger('SyncedCron');
 
 SyncedCron.config({

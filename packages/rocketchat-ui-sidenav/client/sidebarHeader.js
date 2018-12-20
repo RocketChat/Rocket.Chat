@@ -39,7 +39,7 @@ const extendedViewOption = (user) => {
 const showToolbar = new ReactiveVar(false);
 
 const selectorSearch = '.toolbar__search .rc-input__element';
-toolbarSearch = { //eslint-disable-line
+toolbarSearch = {
 	shortcut: false,
 	clear() {
 		const $inputMessage = $('.js-input-message');
@@ -68,7 +68,7 @@ const toolbarButtons = (user) => [{
 	name: t('Search'),
 	icon: 'magnifier',
 	action: () => {
-		toolbarSearch.show(false); //eslint-disable-line
+		toolbarSearch.show(false);
 	},
 },
 {
