@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'nooitaf:colors',
 		'raix:eventemitter',
 		'templating',
+		'rocketchat:utils',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 	]);

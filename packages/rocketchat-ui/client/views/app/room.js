@@ -8,7 +8,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';

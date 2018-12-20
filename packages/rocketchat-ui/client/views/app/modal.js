@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
 
 modal = {
 	renderedModal: null,
