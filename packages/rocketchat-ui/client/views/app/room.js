@@ -1,4 +1,3 @@
-/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
@@ -8,7 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-
+import { WebRTC } from 'meteor/rocketchat:webrtc';
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
@@ -16,7 +15,7 @@ import Clipboard from 'clipboard';
 
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
-chatMessages = {}; // eslint-disable-line
+chatMessages = {};
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
@@ -1114,7 +1113,6 @@ Template.room.onRendered(function() {
 	});
 
 	wrapper.addEventListener('scroll', () => updateUnreadCount());
-	/* globals WebRTC */
 	// salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date);
 
