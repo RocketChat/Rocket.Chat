@@ -1,5 +1,6 @@
-/* globals FileUploadBase:true, UploadFS */
-/* exported FileUploadBase */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
@@ -33,7 +34,7 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 });
 
 
-FileUploadBase = class FileUploadBase {
+export class FileUploadBase {
 	constructor(store, meta, file) {
 		this.id = Random.id();
 		this.meta = meta;
@@ -75,4 +76,4 @@ FileUploadBase = class FileUploadBase {
 	stop() {
 		return this.handler.stop();
 	}
-};
+}

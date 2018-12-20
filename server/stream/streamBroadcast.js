@@ -1,7 +1,10 @@
-/* global InstanceStatus, DDP, LoggerManager */
-
+import { Meteor } from 'meteor/meteor';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { check } from 'meteor/check';
 import _ from 'underscore';
+import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
+import { Logger, LoggerManager } from 'meteor/rocketchat:logger';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();

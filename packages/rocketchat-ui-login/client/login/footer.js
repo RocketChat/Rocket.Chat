@@ -1,3 +1,8 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.loginFooter.onCreated(function() {
 	this.suggestedLanguage = new ReactiveVar();
 

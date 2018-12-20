@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from './models/LivechatVisitors';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {

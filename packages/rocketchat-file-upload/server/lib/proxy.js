@@ -1,5 +1,8 @@
-/* globals UploadFS, InstanceStatus */
-
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { Logger } from 'meteor/rocketchat:logger';
 import http from 'http';
 import URL from 'url';
 

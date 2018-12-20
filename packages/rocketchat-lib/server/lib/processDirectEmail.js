@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { EmailReplyParser as reply } from 'emailreplyparser';
 import moment from 'moment';
 

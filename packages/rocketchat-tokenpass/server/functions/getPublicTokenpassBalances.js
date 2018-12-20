@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 let userAgent = 'Meteor';
 if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
 

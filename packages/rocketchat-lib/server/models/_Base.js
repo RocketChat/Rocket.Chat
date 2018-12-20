@@ -1,3 +1,4 @@
+import { check } from 'meteor/check';
 import ModelsBaseDb from './_BaseDb';
 import objectPath from 'object-path';
 import _ from 'underscore';
@@ -125,6 +126,10 @@ class ModelsBase {
 
 	trashFindDeletedAfter(...args/* deletedAt, query, options*/) {
 		return this._db.trashFindDeletedAfter(...args);
+	}
+
+	trashFindDeleted(...args) {
+		return this._db.trashFindDeleted(...args);
 	}
 
 	processQueryOptionsOnResult(result, options = {}) {

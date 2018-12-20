@@ -1,6 +1,3 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import sideNav from '../../pageobjects/side-nav.page';
 import flexTab from '../../pageobjects/flex-tab.page';
 import admin from '../../pageobjects/administration.page';
@@ -522,6 +519,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show open first channel field', () => {
+					admin.generalOpenFirstChannel.waitForVisible(5000);
 					admin.generalOpenFirstChannel.isVisible().should.be.true;
 				});
 

@@ -5,8 +5,8 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:removeToken' });
 		}
-		if (!RocketChat.settings.get('API_Enable_Personal_Access_Tokens')) {
-			throw new Meteor.Error('error-personal-access-tokens-are-current-disabled', 'Personal Access Tokens are currently disabled', { method: 'personalAccessTokens:removeToken' });
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-personal-access-tokens')) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:removeToken' });
 		}
 		const tokenExist = RocketChat.models.Users.findPersonalAccessTokenByTokenNameAndUserId({
 			userId: Meteor.userId(),

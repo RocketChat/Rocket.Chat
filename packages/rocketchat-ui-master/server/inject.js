@@ -1,4 +1,5 @@
-/* globals Inject */
+import { Meteor } from 'meteor/meteor';
+import { Inject } from 'meteor/meteorhacks:inject-initial';
 import _ from 'underscore';
 import s from 'underscore.string';
 

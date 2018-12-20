@@ -1,4 +1,10 @@
-/* globals LivechatIntegration */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
+import { LivechatIntegration } from '../../../collections/LivechatIntegration';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';

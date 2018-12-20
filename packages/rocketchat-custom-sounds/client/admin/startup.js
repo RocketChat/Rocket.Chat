@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.AdminBox.addOption({
 	href: 'custom-sounds',
 	i18nLabel: 'Custom_Sounds',

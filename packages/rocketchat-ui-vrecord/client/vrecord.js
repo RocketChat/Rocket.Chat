@@ -1,5 +1,7 @@
-/* globals VideoRecorder, fileUpload */
 import { VRecDialog } from './VRecDialog';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { VideoRecorder, fileUpload } from 'meteor/rocketchat:ui';
 
 Template.vrecDialog.helpers({
 	recordIcon() {

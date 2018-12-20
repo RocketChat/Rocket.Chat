@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'snippeted-message',

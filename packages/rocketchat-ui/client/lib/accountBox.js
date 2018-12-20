@@ -1,6 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 
-this.AccountBox = (function() {
+AccountBox = (function() {
 	let status = 0;
 	const items = new ReactiveVar([]);
 	function setStatus(status) {

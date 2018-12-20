@@ -1,4 +1,5 @@
-/* globals MongoInternals */
+import { Match } from 'meteor/check';
+import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 
 const baseName = 'rocketchat_';
@@ -371,6 +372,15 @@ class ModelsBaseDb extends EventEmitter {
 		query.__collection__ = this.name;
 		query._deletedAt = {
 			$gt: deletedAt,
+		};
+
+		return trash.find(query, options);
+	}
+
+	trashFindDeleted(deletedAt, query = {}, options) {
+		query.__collection__ = this.name;
+		query._deletedAt = {
+			$gte: deletedAt,
 		};
 
 		return trash.find(query, options);

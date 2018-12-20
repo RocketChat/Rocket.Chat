@@ -1,4 +1,4 @@
-/* globals getAvatarSuggestionForUser */
+import { RocketChatFile } from 'meteor/rocketchat:file';
 
 RocketChat.Migrations.add({
 	version: 2,

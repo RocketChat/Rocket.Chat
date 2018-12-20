@@ -1,4 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
+import { LivechatTrigger } from '../../collections/LivechatTrigger';
 import toastr from 'toastr';
+
 Template.livechatTriggersForm.helpers({
 	name() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));

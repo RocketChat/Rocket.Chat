@@ -1,6 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
-
-/* globals menu*/
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 
 Template.sideNav.helpers({
 	flexTemplate() {
@@ -37,7 +39,7 @@ Template.sideNav.helpers({
 	},
 
 	sidebarHideAvatar() {
-		return RocketChat.getUserPreference(Meteor.user(), 'sidebarHideAvatar');
+		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarHideAvatar');
 	},
 });
 

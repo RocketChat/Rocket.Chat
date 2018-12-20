@@ -1,4 +1,42 @@
-const msgStream = new Meteor.Streamer('room-messages');
+import { Meteor } from 'meteor/meteor';
+import { DDPCommon } from 'meteor/ddp-common';
+const MY_MESSAGE = '__my_messages__';
+
+const changedPayload = function(collection, id, fields) {
+	return DDPCommon.stringifyDDP({
+		msg: 'changed',
+		collection,
+		id,
+		fields,
+	});
+};
+
+const send = function(self, msg) {
+	if (!self.socket) {
+		return;
+	}
+	self.socket.send(msg);
+};
+
+class MessageStream extends Meteor.Streamer {
+	mymessage = (eventName, args) => {
+		const subscriptions = this.subscriptionsByEventName[eventName];
+		if (!Array.isArray(subscriptions)) {
+			return;
+		}
+		subscriptions.forEach(({ subscription }) => {
+			const options = this.isEmitAllowed(subscription, eventName, args);
+			if (options) {
+				send(subscription._session, changedPayload(this.subscriptionName, 'id', {
+					eventName,
+					args: [args, options],
+				}));
+			}
+		});
+	}
+}
+
+const msgStream = new MessageStream('room-messages');
 this.msgStream = msgStream;
 
 msgStream.allowWrite('none');
@@ -17,14 +55,15 @@ msgStream.allowRead(function(eventName, args) {
 
 		return true;
 	} catch (error) {
+
 		/* error*/
 		return false;
 	}
 });
 
-msgStream.allowRead('__my_messages__', 'all');
+msgStream.allowRead(MY_MESSAGE, 'all');
 
-msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
+msgStream.allowEmit(MY_MESSAGE, function(eventName, msg) {
 	try {
 		const room = Meteor.call('canAccessRoom', msg.rid, this.userId);
 
@@ -32,11 +71,12 @@ msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 			return false;
 		}
 
-		options.roomParticipant = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null;
-		options.roomType = room.t;
-		options.roomName = room.name;
+		return {
+			roomParticipant: RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null,
+			roomType: room.t,
+			roomName: room.name,
+		};
 
-		return true;
 	} catch (error) {
 		/* error*/
 		return false;
@@ -59,8 +99,8 @@ Meteor.startup(function() {
 					mention.name = user && user.name;
 				});
 			}
-			msgStream.emitWithoutBroadcast('__my_messages__', record, {});
-			return msgStream.emitWithoutBroadcast(record.rid, record);
+			this.msgStream.mymessage(MY_MESSAGE, record);
+			msgStream.emitWithoutBroadcast(record.rid, record);
 		}
 	}
 

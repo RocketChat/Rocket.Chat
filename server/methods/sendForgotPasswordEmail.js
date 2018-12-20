@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
@@ -45,7 +48,7 @@ Meteor.methods({
 			Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
 				return Mailer.replacekey(html, 'Forgot_Password_Url', url);
 			};
-			return Accounts.sendResetPasswordEmail(user._id, email);
+			return !!Accounts.sendResetPasswordEmail(user._id, email);
 		} catch (error) {
 			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
 				method: 'registerUser',

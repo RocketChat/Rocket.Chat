@@ -1,6 +1,7 @@
-/* global MongoInternals */
 import os from 'os';
 import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { MongoInternals } from 'meteor/mongo';
 // import checkUpdate from '../checkUpdate';
 
 export default () => {

@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import loginPage from '../../pageobjects/login.page';
 import setupWizard from '../../pageobjects/setup-wizard.page';
 

@@ -145,6 +145,20 @@ html.rtl .attachment {
 		border-radius: 5px;
 	}
 
+	& .attachment-canvas {
+		display: none;
+	}
+
+	& .attachment-pdf-loading {
+		display: none;
+
+		font-size: 1.5rem;
+
+		svg {
+			animation: spin 1s linear infinite;
+		}
+	}
+
 	& .actions-container {
 		margin-top: 6px;
 	}
