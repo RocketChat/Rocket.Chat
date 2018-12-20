@@ -789,6 +789,7 @@ describe('[Chat]', function() {
 			});
 		});
 	});
+
 	describe('[/chat.pinMessage]', () => {
 		it('should return an error when pinMessage is not allowed in this server', (done) => {
 			updateSetting('Message_AllowPinning', false).then(() => {
@@ -807,7 +808,7 @@ describe('[Chat]', function() {
 			});
 		});
 
-		 it('should return an error when pinMessage is allowed in server but user dont have permission', (done) => {
+		it('should return an error when pinMessage is allowed in server but user dont have permission', (done) => {
 			updateSetting('Message_AllowPinning', true).then(() => {
 				updatePermission('pin-message', []).then(() => {
 					request.post(api('chat.pinMessage'))
@@ -826,7 +827,7 @@ describe('[Chat]', function() {
 			});
 		});
 
-		 it('should pin Message successfully', (done) => {
+		it('should pin Message successfully', (done) => {
 			updatePermission('pin-message', ['admin']).then(() => {
 				request.post(api('chat.pinMessage'))
 					.set(credentials)
@@ -844,7 +845,7 @@ describe('[Chat]', function() {
 		});
 	});
 
-	 describe('[/chat.unPinMessage]', () => {
+	describe('[/chat.unPinMessage]', () => {
 		it('should return an error when pinMessage is not allowed in this server', (done) => {
 			updateSetting('Message_AllowPinning', false).then(() => {
 				request.post(api('chat.unPinMessage'))
@@ -862,7 +863,7 @@ describe('[Chat]', function() {
 			});
 		});
 
-		 it('should return an error when pinMessage is allowed in server but users dont have permission', (done) => {
+		it('should return an error when pinMessage is allowed in server but users dont have permission', (done) => {
 			updateSetting('Message_AllowPinning', true).then(() => {
 				updatePermission('pin-message', []).then(() => {
 					request.post(api('chat.unPinMessage'))
@@ -881,7 +882,7 @@ describe('[Chat]', function() {
 			});
 		});
 
-		 it('should unpin Message successfully', (done) => {
+		it('should unpin Message successfully', (done) => {
 			updatePermission('pin-message', ['admin']).then(() => {
 				request.post(api('chat.unPinMessage'))
 					.set(credentials)
