@@ -1,9 +1,9 @@
-/* globals chatMessages cordova */
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';

@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {

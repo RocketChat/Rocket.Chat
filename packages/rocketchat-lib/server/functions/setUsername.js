@@ -37,7 +37,6 @@ RocketChat._setUsername = function(userId, u) {
 	}
 	// Set new username*
 	RocketChat.models.Users.setUsername(user._id, username);
-	/* globals getAvatarSuggestionForUser */
 	user.username = username;
 	if (!previousUsername && RocketChat.settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = getAvatarSuggestionForUser(user);
