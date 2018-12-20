@@ -1231,6 +1231,8 @@
   "Force_Disable_OpLog_For_Cache_Description": "Não usará o OpLog para sincronizar o cache mesmo quando estiver disponível",
   "Force_SSL": "Forçar SSL",
   "Force_SSL_Description": "*Cuidado!* _Forçar SSL_ nunca deve ser usado com proxy reverso. Se você tem um proxy reverso, você deve fazer o redirecionamento LÁ. Esta opção existe para implantações como Heroku, que não permite a configuração de redirecionamento de proxy reverso.",
+  "Force_visitor_to_accept_data_processing_consent": "Forçar o visitante a aceitar o consentimento de processamento de dados",
+  "Force_visitor_to_accept_data_processing_consent_description": "Os visitantes não podem inicar novas conversas sem o consentimento.",
   "Forgot_password": "Esqueceu sua senha",
   "Forgot_Password_Description": "Você pode usar os seguintes placeholders: <br/><ul><li>[Forgot_Password_Url] para o URL de recuperação de senha.</li><li>[nome], [fname], [lname] para o nome completo, primeiro nome ou sobrenome do usuário, respectivamente.</li><li>[email] para o email do usuário.</li><li>[Site_Name] e [Site_URL] para o Nome do Aplicativo e o URL, respectivamente.</li></ul>",
   "Forgot_Password_Email": "Clique <a href=\"[Forgot_Password_Url]\">aqui</a> para redefinir sua senha.",

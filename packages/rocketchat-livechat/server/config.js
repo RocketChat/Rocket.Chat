@@ -408,4 +408,23 @@ Meteor.startup(function() {
 		i18nLabel: 'Allow_collect_and_store_HTTP_header_informations',
 		i18nDescription: 'Allow_collect_and_store_HTTP_header_informations_description',
 	});
+
+	RocketChat.settings.add('Livechat_force_accept_data_processing_consent', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Force_visitor_to_accept_data_processing_consent',
+		i18nDescription: 'Force_visitor_to_accept_data_processing_consent_description',
+	});
+
+	RocketChat.settings.add('Livechat_data_processing_consent_text', false, {
+		type: 'string',
+		multiline: true,
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Data_processing_consent_text',
+		i18nDescription: 'Data_processing_consent_text_description',
+		enableQuery: { _id: 'Livechat_force_accept_data_processing_consent', value: true },
+	});
+
 });
