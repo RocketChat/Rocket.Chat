@@ -436,7 +436,8 @@ RocketChat.Livechat = {
 	},
 
 	transfer(room, guest, transferData) {
-		let agent, user;
+		let agent;
+		let user;
 
 		if (transferData.userId) {
 			user = RocketChat.models.Users.findOneOnlineAgentById(transferData.userId);
