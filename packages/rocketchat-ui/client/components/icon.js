@@ -1,4 +1,3 @@
-/* globals isFirefox, isChrome */
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 

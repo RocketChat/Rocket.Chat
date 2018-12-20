@@ -1,4 +1,3 @@
-/* globals MsgTyping */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
@@ -6,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -20,10 +20,10 @@ Meteor.startup(() => {
 	});
 });
 
-ChatMessages = class ChatMessages { //eslint-disable-line
+ChatMessages = class ChatMessages {
 	constructor() {
 
-		this.saveTextMessageBox = _.debounce((rid, value) => { // eslint
+		this.saveTextMessageBox = _.debounce((rid, value) => {
 			const key = `messagebox_${ rid }`;
 			return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
 		}, 1000);
@@ -195,7 +195,6 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 		this.editing.saved = this.input.value;
 		return this.editing.savedCursor = this.input.selectionEnd;
 	}
-	/* globals readMessage KonchatNotification */
 	/**
 	* * @param {string} rim room ID
 	* * @param {Element} input DOM element

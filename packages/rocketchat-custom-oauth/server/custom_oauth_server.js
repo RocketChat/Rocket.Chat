@@ -4,6 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import { Logger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
 
 import { mapRolesFromSSO } from './lib/oauth_helpers';

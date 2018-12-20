@@ -1,7 +1,6 @@
-/* globals Recorder */
 // TODO: embed Recorder class here
 // TODO: create the worker for mp3 encoding on-the-fly
-AudioRecorder = new (class AudioRecorder {
+AudioRecorder = new (class AudioRecorder { //eslint-disable-line
 	start(cb) {
 		window.audioContext = new (window.AudioContext || window.webkitAudioContext);
 
@@ -33,7 +32,7 @@ AudioRecorder = new (class AudioRecorder {
 	startUserMedia(stream) {
 		this.stream = stream;
 		const input = window.audioContext.createMediaStreamSource(stream);
-		this.recorder = new Recorder(input, {
+		this.recorder = new window.Recorder(input, {
 			workerPath: 'mp3-realtime-worker.js',
 			numChannels: 1,
 		});
