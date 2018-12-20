@@ -11,7 +11,7 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 		let result = null;
 
 		try {
-			result = HTTP.get(dataURI, { npmRequestOptions: { encoding: 'binary' } });
+			result = HTTP.get(dataURI, { npmRequestOptions: { encoding: 'binary', rejectUnauthorized: false } });
 		} catch (error) {
 			if (!error.response || error.response.statusCode !== 404) {
 				console.log(`Error while handling the setting of the avatar from a url (${ dataURI }) for ${ user.username }:`, error);
