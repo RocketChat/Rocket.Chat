@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
+		'rocketchat:utils',
 		'rocketchat:lib',
 	]);
 	api.mainModule('client/index.js', 'client');

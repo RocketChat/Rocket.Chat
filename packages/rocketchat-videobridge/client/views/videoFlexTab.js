@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { t, modal } from 'meteor/rocketchat:ui';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {
