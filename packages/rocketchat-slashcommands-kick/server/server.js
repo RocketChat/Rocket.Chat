@@ -1,7 +1,12 @@
 
 // Kick is a named function that will replace /kick commands
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
-const Kick = function(command, params, {rid}) {
+const Kick = function(command, params, { rid }) {
 	if (command !== 'kick' || !Match.test(params, String)) {
 		return;
 	}
@@ -9,36 +14,39 @@ const Kick = function(command, params, {rid}) {
 	if (username === '') {
 		return;
 	}
-	const user = Meteor.users.findOne(Meteor.userId());
+	const userId = Meteor.userId();
+	const user = Meteor.users.findOne(userId);
 	const kickedUser = RocketChat.models.Users.findOneByUsername(username);
-	const room = RocketChat.models.Rooms.findOneById(rid);
+
 	if (kickedUser == null) {
-		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		return RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date,
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, user.language)
+				sprintf: [username],
+			}, user.language),
 		});
 	}
-	if ((room.usernames || []).includes(username) === false) {
-		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id, { fields: { _id: 1 } });
+	if (!subscription) {
+		return RocketChat.Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date,
 			msg: TAPi18n.__('Username_is_not_in_this_room', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, user.language)
+				sprintf: [username],
+			}, user.language),
 		});
 	}
-	Meteor.call('removeUserFromRoom', {rid, username});
+	Meteor.call('removeUserFromRoom', { rid, username });
 };
 
 RocketChat.slashCommands.add('kick', Kick, {
 	description: 'Remove_someone_from_room',
 	params: '@username',
-	permission: 'remove-user'
+	permission: 'remove-user',
 });

@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 import moment from 'moment';
 
 import './readReceipts.css';
@@ -16,7 +18,7 @@ Template.readReceipts.helpers({
 	},
 	isLoading() {
 		return Template.instance().loading.get();
-	}
+	},
 });
 
 Template.readReceipts.onCreated(function readReceiptsOnCreated() {

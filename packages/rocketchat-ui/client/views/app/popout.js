@@ -1,9 +1,12 @@
-/* globals popout */
+import { Blaze } from 'meteor/blaze';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 
-this.popout = {
+popout = {
 	context: null,
 	isAudioOnly: false,
 	showVideoControls: true,
+	showStreamControls: false,
 	x: 0,
 	y: 0,
 	open(config = {}, fn) {
@@ -19,6 +22,7 @@ this.popout = {
 		if (config.data) {
 			this.isAudioOnly = config.data.isAudioOnly;
 			this.showVideoControls = config.data.showVideoControls;
+			this.showStreamControls = config.data.showStreamControls;
 		}
 	},
 	close() {
@@ -64,7 +68,7 @@ this.popout = {
 			popoutElement.style.left = `${ positionLeft >= 0 ? positionLeft : 0 }px`;
 			popoutElement.style.top = `${ positionTop >= 0 ? positionTop : 0 }px`;
 		}
-	}
+	},
 };
 
 Template.popout.helpers({
@@ -82,13 +86,21 @@ Template.popout.helpers({
 	},
 	showVideoControls() {
 		return Template.instance().showVideoControls.get();
-	}
+	},
+	showStreamControls() {
+		return Template.instance().showStreamControls.get();
+	},
+	getStreamStatus() {
+		return Template.instance().streamStatus.get();
+	},
 });
 
 Template.popout.onRendered(function() {
 	Template.instance().isMinimized.set(popout.isAudioOnly);
 	Template.instance().isAudioOnly.set(popout.isAudioOnly);
 	Template.instance().showVideoControls.set(popout.showVideoControls);
+	Template.instance().showStreamControls.set(popout.showStreamControls);
+
 
 	if (this.data.onRendered) {
 		this.data.onRendered();
@@ -99,8 +111,11 @@ Template.popout.onCreated(function() {
 	this.isAudioOnly = new ReactiveVar(popout.isAudioOnly);
 	this.canOpenExternal = new ReactiveVar(popout.canOpenExternal);
 	this.showVideoControls = new ReactiveVar(popout.showVideoControls);
+	this.showStreamControls = new ReactiveVar(popout.showStreamControls);
+
 	this.isMuted = new ReactiveVar(false);
 	this.isPlaying = new ReactiveVar(true);
+	this.streamStatus = new ReactiveVar('preparing');
 	document.body.addEventListener('dragstart', popout.dragstart, true);
 	document.body.addEventListener('dragover', popout.dragover, true);
 	document.body.addEventListener('dragend', popout.dragend, true);
@@ -137,7 +152,7 @@ Template.popout.events({
 	},
 	'dragstart .rc-popout-wrapper'(event) {
 		const e = event.originalEvent || event;
-		const url = this.data.streamingSource || '.rc-popout-wrapper';
+		const url = (this.data && this.data.streamingSource) || '.rc-popout-wrapper';
 		popout.x = e.offsetX;
 		popout.y = e.offsetY;
 		e.dataTransfer.setData('application/x-moz-node', e.currentTarget);
@@ -146,6 +161,25 @@ Template.popout.events({
 	},
 	'dragend .rc-popout-wrapper'(event) {
 		event.preventDefault();
+	},
+	'click .rc-popout__controls--record'(e, i) {
+		e.preventDefault();
+		if (i.streamStatus.get() === 'ready') {
+			document.querySelector('.streaming-popup').dispatchEvent(new Event('startStreaming'));
+			i.streamStatus.set('starting');
+		} else if (i.streamStatus.get() === 'broadcasting') {
+			document.querySelector('.streaming-popup').dispatchEvent(new Event('stopStreaming'));
+			i.streamStatus.set('finished');
+			setTimeout(() => popout && popout.close(), 2000);
+		}
+	},
+	'broadcastStreamReady .streaming-popup'(e, i) {
+		e.preventDefault();
+		i.streamStatus.set('ready');
+	},
+	'broadcastStream .streaming-popup'(e, i) {
+		e.preventDefault();
+		i.streamStatus.set('broadcasting');
 	},
 	'click .rc-popout__controls--play'(e, i) {
 		window.liveStreamPlayer.playVideo();
@@ -169,7 +203,7 @@ Template.popout.events({
 		} else if (e.detail === window.YT.PlayerState.PAUSED) {
 			i.isPlaying.set(false);
 		}
-	}
+	},
 });
 
 RocketChat.callbacks.add('afterLogoutCleanUp', () => popout.close(), RocketChat.callbacks.priority.MEDIUM, 'popout-close-after-logout-cleanup');

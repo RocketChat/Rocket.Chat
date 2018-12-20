@@ -1,3 +1,5 @@
+import { t } from 'meteor/rocketchat:utils';
+
 RocketChat.MessageAction.addButton({
 	id: 'receipt-detail',
 	icon: 'info-circled',
@@ -9,16 +11,16 @@ RocketChat.MessageAction.addButton({
 			title: t('Message_info'),
 			content: 'readReceipts',
 			data: {
-				messageId: message._id
+				messageId: message._id,
 			},
 			showConfirmButton: true,
 			showCancelButton: false,
-			confirmButtonText: t('Close')
+			confirmButtonText: t('Close'),
 		});
 	},
 	condition() {
 		return RocketChat.settings.get('Message_Read_Receipt_Store_Users');
 	},
 	order: 1,
-	group: 'menu'
+	group: 'menu',
 });

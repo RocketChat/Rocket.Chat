@@ -1,4 +1,3 @@
-/* globals Modernizr */
 RocketChat.Login = (function() {
 	function onClick(el) {
 		const $el = $(el);
@@ -44,7 +43,7 @@ RocketChat.Button = (function() {
 	const reset = function(el) {
 		if (time) { clearTimeout(time); }
 		const $el = $(el);
-		const html= $el.attr('data-def-text');
+		const html = $el.attr('data-def-text');
 		if (html) { $el.find('span').html(html); }
 		return $el.removeClass('-progress going done');
 	};
@@ -56,7 +55,7 @@ RocketChat.animationSupport = function() {
 		WebkitAnimation: 'webkitAnimationEnd',
 		OAnimation: 'oAnimationEnd',
 		msAnimation: 'MSAnimationEnd',
-		animation: 'animationend'
+		animation: 'animationend',
 	};
 
 	const transEndEventNames = {
@@ -64,7 +63,7 @@ RocketChat.animationSupport = function() {
 		MozTransition: 'transitionend',
 		OTransition: 'oTransitionEnd otransitionend',
 		msTransition: 'MSTransitionEnd',
-		transition: 'transitionend'
+		transition: 'transitionend',
 	};
 	const prefixB = transEndEventNames[Modernizr.prefixed('transition')];
 	const prefixA = animeEnd[Modernizr.prefixed('animation')];
@@ -72,7 +71,7 @@ RocketChat.animationSupport = function() {
 	return {
 		support,
 		animation: prefixA,
-		transition: prefixB
+		transition: prefixB,
 	};
 };
 
@@ -86,14 +85,14 @@ RocketChat.animeBack = function(e, callback, type) {
 	const p = ((type ? s.animation : s.transition));
 	el.one(p, function(e) {
 
-		//el.off(p);
+		// el.off(p);
 		callback(e);
 	});
 
 };
 
 RocketChat.preLoadImgs = function(urls, callback) {
-	const preLoader = $('<div/>').attr({id: 'perverter-preloader'});
+	const preLoader = $('<div/>').attr({ id: 'perverter-preloader' });
 	let ended = undefined;
 	const l_ = function(x) {
 		if (x.width > 0) {
@@ -107,7 +106,7 @@ RocketChat.preLoadImgs = function(urls, callback) {
 			}
 		}
 	};
-	return urls.map(url => {
+	return urls.map((url) => {
 		const im = new Image();
 		im.onload = function() {
 			l_(this);

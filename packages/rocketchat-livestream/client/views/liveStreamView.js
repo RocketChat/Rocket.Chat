@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
 
 this.onYouTubePlayerAPIReady = function() {
 	const playerReadyEvent = new Event('playerReady');
@@ -22,14 +24,14 @@ Template.liveStreamView.onRendered(function() {
 				enablejsapi: 1,
 				fs: 0,
 				modestbranding: 1,
-				rel: 0
+				rel: 0,
 			},
 			events: {
-				'onStateChange': (e) => {
-					const playerStateChangedEvent = new CustomEvent('playerStateChanged', {detail: e.data});
+				onStateChange: (e) => {
+					const playerStateChangedEvent = new CustomEvent('playerStateChanged', { detail: e.data });
 					document.querySelector('.rc-popout').dispatchEvent(playerStateChangedEvent);
-				}
-			}
+				},
+			},
 		});
 	} else {
 		const tag = document.createElement('script');
@@ -53,14 +55,14 @@ Template.liveStreamView.events({
 				enablejsapi: 1,
 				fs: 0,
 				modestbranding: 1,
-				rel: 0
+				rel: 0,
 			},
 			events: {
-				'onStateChange': (e) => {
-					const playerStateChangedEvent = new CustomEvent('playerStateChanged', {detail: e.data});
+				onStateChange: (e) => {
+					const playerStateChangedEvent = new CustomEvent('playerStateChanged', { detail: e.data });
 					document.querySelector('.rc-popout').dispatchEvent(playerStateChangedEvent);
-				}
-			}
+				},
+			},
 		});
-	}
+	},
 });

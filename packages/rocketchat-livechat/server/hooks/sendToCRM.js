@@ -1,4 +1,24 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
+const msgNavType = 'livechat_navigation_history';
+
+const crmEnabled = () => {
+	const secretToken = RocketChat.settings.get('Livechat_secret_token');
+	const webhookUrl = RocketChat.settings.get('Livechat_webhookUrl');
+	return secretToken !== '' && secretToken !== undefined && webhookUrl !== '' && webhookUrl !== undefined;
+};
+
+const sendMessageType = (msgType) => {
+	const sendNavHistory = RocketChat.settings.get('Livechat_Visitor_navigation_as_a_message') && RocketChat.settings.get('Send_visitor_navigation_history_livechat_webhook_request');
+
+	return sendNavHistory && msgType === msgNavType;
+};
+
 function sendToCRM(type, room, includeMessages = true) {
+	if (crmEnabled() === false) {
+		return room;
+	}
+
 	const postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
 
 	postData.type = type;
@@ -14,7 +34,7 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	if (messages) {
 		messages.forEach((message) => {
-			if (message.t) {
+			if (message.t && !sendMessageType(message.t)) {
 				return;
 			}
 			const msg = {
@@ -22,12 +42,17 @@ function sendToCRM(type, room, includeMessages = true) {
 				username: message.u.username,
 				msg: message.msg,
 				ts: message.ts,
-				editedAt: message.editedAt
+				editedAt: message.editedAt,
 			};
 
 			if (message.u.username !== postData.visitor.username) {
 				msg.agentId = message.u._id;
 			}
+
+			if (message.t === msgNavType) {
+				msg.navigation = message.navigation;
+			}
+
 			postData.messages.push(msg);
 		});
 	}
@@ -73,9 +98,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	} else if (!RocketChat.settings.get('Livechat_webhook_on_agent_message')) {
 		return message;
 	}
-
 	// if the message has a type means it is a special message (like the closing comment), so skips
-	if (message.t) {
+	// unless the settings that handle with visitor navigation history are enabled
+	if (message.t && !sendMessageType(message.t)) {
 		return message;
 	}
 

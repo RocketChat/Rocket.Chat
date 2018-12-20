@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Progress } from './ImporterProgress';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Selection } from './ImporterSelection';
@@ -5,7 +6,9 @@ import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { ImporterWebsocket } from './ImporterWebsocket';
-
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import http from 'http';
 import https from 'https';
 import AdmZip from 'adm-zip';
@@ -26,9 +29,9 @@ export class Base {
 	 * @static
 	 */
 	static getBSONSize(item) {
-		const { BSON } = require('bson');
-		const bson = new BSON();
-		return bson.calculateObjectSize(item);
+		const { calculateObjectSize } = require('bson');
+
+		return calculateObjectSize(item);
 	}
 
 	/**
@@ -95,7 +98,7 @@ export class Base {
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
-		const importId = Imports.insert({ 'type': this.info.name, 'ts': Date.now(), 'status': this.progress.step, 'valid': true, 'user': Meteor.user()._id });
+		const importId = Imports.insert({ type: this.info.name, ts: Date.now(), status: this.progress.step, valid: true, user: Meteor.user()._id });
 		this.importRecord = Imports.findOne(importId);
 
 		this.users = {};
@@ -129,7 +132,7 @@ export class Base {
 		}
 
 		this.updateProgress(ProgressStep.PREPARING_STARTED);
-		return this.updateRecord({ 'file': fileName });
+		return this.updateRecord({ file: fileName });
 	}
 
 	/**
@@ -192,17 +195,21 @@ export class Base {
 
 				this.oldSettings.FileUpload_MaxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').value;
 				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', -1);
+
+				this.oldSettings.FileUpload_MediaTypeWhiteList = RocketChat.models.Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
+				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
 				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
 				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
+				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
 				break;
 		}
 
 		this.logger.debug(`${ this.info.name } is now at ${ step }.`);
-		this.updateRecord({ 'status': this.progress.step });
+		this.updateRecord({ status: this.progress.step });
 
 		ImporterWebsocket.progressUpdated(this.progress);
 
@@ -231,8 +238,8 @@ export class Base {
 	addCountCompleted(count) {
 		this.progress.count.completed = this.progress.count.completed + count;
 
-		//Only update the database every 500 records
-		//Or the completed is greater than or equal to the total amount
+		// Only update the database every 500 records
+		// Or the completed is greater than or equal to the total amount
 		if (((this.progress.count.completed % 500) === 0) || (this.progress.count.completed >= this.progress.count.total)) {
 			this.updateRecord({ 'count.completed': this.progress.count.completed });
 		}
@@ -271,8 +278,13 @@ export class Base {
 		const fileStore = FileUpload.getStore('Uploads');
 
 		return requestModule.get(fileUrl, Meteor.bindEnvironment(function(res) {
+			const contentType = res.headers['content-type'];
+			if (!details.type && contentType) {
+				details.type = contentType;
+			}
+
 			const rawData = [];
-			res.on('data', chunk => rawData.push(chunk));
+			res.on('data', (chunk) => rawData.push(chunk));
 			res.on('end', Meteor.bindEnvironment(() => {
 				fileStore.insert(details, Buffer.concat(rawData), function(err, file) {
 					if (err) {
@@ -282,7 +294,7 @@ export class Base {
 
 						const attachment = {
 							title: file.name,
-							title_link: url
+							title_link: url,
 						};
 
 						if (/^image\/.+/.test(file.type)) {
@@ -309,14 +321,14 @@ export class Base {
 							ts: timeStamp,
 							msg: '',
 							file: {
-								_id: file._id
+								_id: file._id,
 							},
 							groupable: false,
-							attachments: [attachment]
+							attachments: [attachment],
 						};
 
 						if ((details.message_id != null) && (typeof details.message_id === 'string')) {
-							msg['_id'] = details.message_id;
+							msg._id = details.message_id;
 						}
 
 						return RocketChat.sendMessage(user, msg, room, true);

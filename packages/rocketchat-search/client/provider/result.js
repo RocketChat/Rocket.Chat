@@ -1,4 +1,10 @@
-/* globals FlowRouter, RoomHistoryManager */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoomHistoryManager } from 'meteor/rocketchat:ui';
 import _ from 'underscore';
 
 Meteor.startup(function() {
@@ -27,17 +33,17 @@ Meteor.startup(function() {
 			// ie. 50, 100, 200, 400, 800 are the favored timings
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 });
 
 Template.DefaultSearchResultTemplate.onCreated(function() {
 	const self = this;
 
-	//paging
+	// paging
 	this.pageSize = this.data.settings.PageSize;
 
-	//global search
+	// global search
 	this.globalSearchEnabled = this.data.settings.GlobalSearchEnabled;
 	this.data.parentPayload.searchAll = this.globalSearchEnabled;
 
@@ -62,7 +68,7 @@ Template.DefaultSearchResultTemplate.events({
 			t.data.payload.limit = (t.data.payload.limit || t.pageSize) + t.pageSize;
 			t.data.search();
 		}
-	}, 200)
+	}, 200),
 });
 
 Template.DefaultSearchResultTemplate.helpers({
@@ -79,6 +85,6 @@ Template.DefaultSearchResultTemplate.helpers({
 		return Template.instance().hasMore.get();
 	},
 	message() {
-		return { customClass: 'search', actionContext: 'search', ...this};
-	}
+		return { customClass: 'search', actionContext: 'search', ...this };
+	},
 });

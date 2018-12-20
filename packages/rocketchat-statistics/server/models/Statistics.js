@@ -1,8 +1,10 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Statistics = new class extends RocketChat.models._Base {
 	constructor() {
 		super('statistics');
 
-		this.tryEnsureIndex({ 'createdAt': 1 });
+		this.tryEnsureIndex({ createdAt: 1 });
 	}
 
 	// FIND ONE
@@ -14,9 +16,9 @@ RocketChat.models.Statistics = new class extends RocketChat.models._Base {
 	findLast() {
 		const options = {
 			sort: {
-				createdAt: -1
+				createdAt: -1,
 			},
-			limit: 1
+			limit: 1,
 		};
 		const records = this.find({}, options).fetch();
 		return records && records[0];

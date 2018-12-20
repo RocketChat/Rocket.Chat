@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 function Create(command, params, item) {
 	function getParams(str) {
 		const regex = /(--(\w+))+/g;
@@ -32,8 +38,8 @@ function Create(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Channel_already_exist', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 		return;
 	}
@@ -47,5 +53,5 @@ function Create(command, params, item) {
 
 RocketChat.slashCommands.add('create', Create, {
 	description: 'Create_A_New_Channel',
-	params: '#channel'
+	params: '#channel',
 });

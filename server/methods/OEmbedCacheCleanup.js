@@ -1,8 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	OEmbedCacheCleanup() {
 		if (Meteor.userId() && !RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'OEmbedCacheCleanup'
+				method: 'OEmbedCacheCleanup',
 			});
 		}
 
@@ -11,7 +13,7 @@ Meteor.methods({
 		date.setDate(date.getDate() - expirationDays);
 		RocketChat.models.OEmbedCache.removeAfterDate(date);
 		return {
-			message: 'cache_cleared'
+			message: 'cache_cleared',
 		};
-	}
+	},
 });

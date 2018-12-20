@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -6,7 +7,7 @@ Meteor.methods({
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'afterVerifyEmail'
+				method: 'afterVerifyEmail',
 			});
 		}
 
@@ -18,5 +19,5 @@ Meteor.methods({
 			RocketChat.models.Roles.addUserRoles(user._id, 'user');
 			RocketChat.models.Roles.removeUserRoles(user._id, 'anonymous');
 		}
-	}
+	},
 });

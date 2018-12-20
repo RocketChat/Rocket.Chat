@@ -35,7 +35,7 @@ html.rtl .attachment {
 			bottom: 0;
 			left: 0;
 
-			width: 4px;
+			width: 2px;
 
 			border-radius: 8px;
 		}
@@ -57,7 +57,8 @@ html.rtl .attachment {
 			margin-bottom: -2px;
 		}
 
-		& .time {
+		& .time,
+		& .time-link {
 			font-size: 0.8em;
 			font-weight: normal;
 		}
@@ -86,11 +87,21 @@ html.rtl .attachment {
 	}
 
 	& .attachment-fields {
+		display: flex;
+
 		margin-top: 4px;
+		flex-wrap: wrap;
 
 		& .attachment-field {
+			flex: 1 0 100%;
+
+			padding-top: 5px;
+			padding-bottom: 5px;
+
 			&.attachment-field-short {
 				display: inline-block;
+
+				flex: 1 1;
 
 				margin-right: 12px;
 			}
@@ -100,10 +111,6 @@ html.rtl .attachment {
 				line-height: 1rem;
 			}
 		}
-	}
-
-	& .attachment-field ~ .attachment-field {
-		margin-top: 8px;
 	}
 
 	& .attachment-thumb {
@@ -136,5 +143,23 @@ html.rtl .attachment {
 
 		border-width: 1px;
 		border-radius: 5px;
+	}
+
+	& .attachment-canvas {
+		display: none;
+	}
+
+	& .attachment-pdf-loading {
+		display: none;
+
+		font-size: 1.5rem;
+
+		svg {
+			animation: spin 1s linear infinite;
+		}
+	}
+
+	& .actions-container {
+		margin-top: 6px;
 	}
 }

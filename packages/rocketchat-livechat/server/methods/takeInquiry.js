@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	'livechat:takeInquiry'(inquiryId) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room')) {
@@ -14,7 +17,8 @@ Meteor.methods({
 
 		const agent = {
 			agentId: user._id,
-			username: user.username
+			username: user.username,
+			ts: new Date(),
 		};
 
 		// add subscription
@@ -26,17 +30,18 @@ Meteor.methods({
 			unread: 1,
 			userMentions: 1,
 			groupMentions: 0,
-			code: inquiry.code,
 			u: {
 				_id: agent.agentId,
-				username: agent.username
+				username: agent.username,
 			},
 			t: 'l',
 			desktopNotifications: 'all',
 			mobilePushNotifications: 'all',
-			emailNotifications: 'all'
+			emailNotifications: 'all',
 		};
+
 		RocketChat.models.Subscriptions.insert(subscriptionData);
+		RocketChat.models.Rooms.incUsersCountById(inquiry.rid);
 
 		// update room
 		const room = RocketChat.models.Rooms.findOneById(inquiry.rid);
@@ -45,7 +50,8 @@ Meteor.methods({
 
 		room.servedBy = {
 			_id: agent.agentId,
-			username: agent.username
+			username: agent.username,
+			ts: agent.ts,
 		};
 
 		// mark inquiry as taken
@@ -58,10 +64,10 @@ Meteor.methods({
 
 		RocketChat.Livechat.stream.emit(room._id, {
 			type: 'agentData',
-			data: RocketChat.models.Users.getAgentInfo(agent.agentId)
+			data: RocketChat.models.Users.getAgentInfo(agent.agentId),
 		});
 
-		// return room corresponding to inquiry (for redirecting agent to the room route)
-		return room;
-	}
+		// return inquiry (for redirecting agent to the room route)
+		return inquiry;
+	},
 });

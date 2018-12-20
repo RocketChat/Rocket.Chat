@@ -1,4 +1,4 @@
-import { RoomType } from '@rocket.chat/apps-ts-definition/rooms';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomsConverter {
 	constructor(orch) {
@@ -27,7 +27,7 @@ export class AppRoomsConverter {
 			const creator = RocketChat.models.Users.findOneById(room.creator.id);
 			u = {
 				_id: creator._id,
-				username: creator.username
+				username: creator.username,
 			};
 		}
 
@@ -37,14 +37,14 @@ export class AppRoomsConverter {
 			name: room.slugifiedName,
 			t: room.type,
 			u,
-			usernames: room.usernames,
+			members: room.members,
 			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
 			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
 			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
 			msgs: room.messageCount || 0,
 			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
-			lm: room.lastModifiedAt
+			lm: room.lastModifiedAt,
 		};
 	}
 
@@ -64,7 +64,7 @@ export class AppRoomsConverter {
 			slugifiedName: room.name,
 			type: this._convertTypeToApp(room.t),
 			creator,
-			usernames: room.usernames,
+			members: room.members,
 			isDefault: typeof room.default === 'undefined' ? false : room.default,
 			isReadOnly: typeof room.ro === 'undefined' ? false : room.ro,
 			displaySystemMessages: typeof room.sysMes === 'undefined' ? true : room.sysMes,
@@ -72,7 +72,7 @@ export class AppRoomsConverter {
 			createdAt: room.ts,
 			updatedAt: room._updatedAt,
 			lastModifiedAt: room.lm,
-			customFields: {}
+			customFields: {},
 		};
 	}
 

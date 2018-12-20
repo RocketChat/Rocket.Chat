@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { call, UiTextContext } from 'meteor/rocketchat:lib';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { t } from 'meteor/rocketchat:utils';
 
 export function hide(type, rid, name) {
 	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
@@ -12,23 +16,37 @@ export function hide(type, rid, name) {
 		confirmButtonText: t('Yes_hide_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: true,
-		html: false
-	}, function() {
+		dontAskAgain: {
+			action: 'hideRoom',
+			label: t('Hide_room'),
+		},
+		html: false,
+	}, async function() {
 		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 			FlowRouter.go('home');
 		}
 
-		Meteor.call('hideRoom', rid, function(err) {
-			if (err) {
-				handleError(err);
-			} else if (rid === Session.get('openedRoom')) {
-				Session.delete('openedRoom');
-			}
-		});
+		await call('hideRoom', rid);
+		if (rid === Session.get('openedRoom')) {
+			Session.delete('openedRoom');
+		}
 	});
-
 	return false;
 }
+
+const leaveRoom = async(rid) => {
+	if (!Meteor.userId()) {
+		return false;
+	}
+	const tmp = ChatSubscription.findOne({ rid, 'u._id': Meteor.userId() });
+	ChatSubscription.remove({ rid, 'u._id': Meteor.userId() });
+	try {
+		await call('leaveRoom', rid);
+	} catch (error) {
+		ChatSubscription.insert(tmp);
+		throw error;
+	}
+};
 
 export function leave(type, rid, name) {
 	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.LEAVE_WARNING);
@@ -42,30 +60,27 @@ export function leave(type, rid, name) {
 		confirmButtonText: t('Yes_leave_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
-		html: false
-	}, function(isConfirm) {
-		if (isConfirm) {
-			Meteor.call('leaveRoom', rid, function(err) {
-				if (err) {
-					modal.open({
-						title: t('Warning'),
-						text: handleError(err, false),
-						type: 'warning',
-						html: false
-					});
-				} else {
-					modal.close();
-					if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
-						FlowRouter.go('home');
-					}
-
-					RoomManager.close(rid);
-				}
+		html: false,
+	}, async function(isConfirm) {
+		if (!isConfirm) {
+			return;
+		}
+		try {
+			await leaveRoom(rid);
+			modal.close();
+			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
+				FlowRouter.go('home');
+			}
+			RoomManager.close(rid);
+		} catch (error) {
+			return modal.open({
+				type: 'error',
+				title: t('Warning'),
+				text: handleError(error, false),
+				html: false,
 			});
 		}
 	});
-
-	return false;
 }
 
 export function erase(rid) {
@@ -78,16 +93,15 @@ export function erase(rid) {
 		confirmButtonText: t('Yes_delete_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
-		html: false
-	}, () => {
-		call('eraseRoom', rid).then(() => {
-			modal.open({
-				title: t('Deleted'),
-				text: t('Room_has_been_deleted'),
-				type: 'success',
-				timer: 2000,
-				showConfirmButton: false
-			});
+		html: false,
+	}, async() => {
+		await call('eraseRoom', rid);
+		modal.open({
+			title: t('Deleted'),
+			text: t('Room_has_been_deleted'),
+			type: 'success',
+			timer: 2000,
+			showConfirmButton: false,
 		});
 	});
 }

@@ -1,7 +1,8 @@
-/* globals RocketChat */
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.authz.roomAccessValidators = [
 	function(room, user = {}) {
-		if (room.t === 'c') {
+		if (room && room.t === 'c') {
 			if (!user._id && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 				return true;
 			}
@@ -9,20 +10,22 @@ RocketChat.authz.roomAccessValidators = [
 			return RocketChat.authz.hasPermission(user._id, 'view-c-room');
 		}
 	},
-	function(room, user = {}) {
+	function(room, user) {
+		if (!room || !user) {
+			return;
+		}
+
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 		if (subscription) {
-			return subscription._room;
+			return true;
 		}
-	}
+	},
 ];
 
 RocketChat.authz.canAccessRoom = function(room, user, extraData) {
-	return RocketChat.authz.roomAccessValidators.some((validator) => {
-		return validator.call(this, room, user, extraData);
-	});
+	return RocketChat.authz.roomAccessValidators.some((validator) => validator(room, user, extraData));
 };
 
 RocketChat.authz.addRoomAccessValidator = function(validator) {
-	RocketChat.authz.roomAccessValidators.push(validator);
+	RocketChat.authz.roomAccessValidators.push(validator.bind(this));
 };

@@ -1,31 +1,33 @@
-/*globals MentionedMessage */
 import _ from 'underscore';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { MentionedMessage } from '../lib/MentionedMessage';
 
 Template.mentionsFlexTab.helpers({
 	hasMessages() {
 		return MentionedMessage.find({
-			rid: this.rid
+			rid: this.rid,
 		}, {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		}).count() > 0;
 	},
 	messages() {
 		return MentionedMessage.find({
-			rid: this.rid
+			rid: this.rid,
 		}, {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		});
 	},
 	message() {
-		return _.extend(this, { customClass: 'mentions', actionContext: 'mentions'});
+		return _.extend(this, { customClass: 'mentions', actionContext: 'mentions' });
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
-	}
+	},
 });
 
 Template.mentionsFlexTab.onCreated(function() {
@@ -46,5 +48,5 @@ Template.mentionsFlexTab.events({
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}
-	}, 200)
+	}, 200),
 });

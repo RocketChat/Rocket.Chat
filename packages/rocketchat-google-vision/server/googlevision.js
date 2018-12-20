@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
 class GoogleVision {
 	constructor() {
 		this.storage = require('@google-cloud/storage');
@@ -61,7 +67,7 @@ class GoogleVision {
 								_id: Random.id(),
 								rid: message.rid,
 								ts: new Date,
-								msg: TAPi18n.__('Adult_images_are_not_allowed', {}, user.language)
+								msg: TAPi18n.__('Adult_images_are_not_allowed', {}, user.language),
 							});
 						}
 						throw new Meteor.Error('GoogleVisionError: Image blocked');
@@ -138,10 +144,10 @@ class GoogleVision {
 						results[index] = (results[index] || []).concat(visionData[index] || []);
 						break;
 					case 'safeSearch':
-						results['safeSearch'] = visionData['safeSearch'];
+						results.safeSearch = visionData.safeSearch;
 						break;
 					case 'properties':
-						results['colors'] = visionData[index]['colors'];
+						results.colors = visionData[index].colors;
 						break;
 				}
 			}

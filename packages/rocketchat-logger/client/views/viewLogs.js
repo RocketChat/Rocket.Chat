@@ -1,7 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { ansispan } from '../ansispan';
+import { stdout } from '../viewLogs';
 import _ from 'underscore';
 import moment from 'moment';
-// TODO: remove this globals
-/* globals ansispan stdout readMessage*/
 
 Template.viewLogs.onCreated(function() {
 	this.subscribe('stdout');
@@ -15,8 +17,8 @@ Template.viewLogs.helpers({
 	logs() {
 		return stdout.find({}, {
 			sort: {
-				ts: 1
-			}
+				ts: 1,
+			},
 		});
 	},
 	ansispan(string) {
@@ -26,14 +28,14 @@ Template.viewLogs.helpers({
 	},
 	formatTS(date) {
 		return moment(date).format('YMMDD-HH:mm:ss.SSS(ZZ)');
-	}
+	},
 });
 
 Template.viewLogs.events({
 	'click .new-logs'() {
 		Template.instance().atBottom = true;
 		return Template.instance().sendToBottomIfNecessary();
-	}
+	},
 });
 
 Template.viewLogs.onRendered(function() {
@@ -81,7 +83,7 @@ Template.viewLogs.onRendered(function() {
 			});
 		});
 		observer.observe(wrapperUl, {
-			childList: true
+			childList: true,
 		});
 	}
 	template.onWindowResize = function() {

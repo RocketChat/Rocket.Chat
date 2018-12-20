@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import OmniChannel from '../lib/OmniChannel';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
@@ -28,7 +29,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	OmniChannel.reply({
 		page: room.facebook.page.id,
 		token: room.v.token,
-		text: message.msg
+		text: message.msg,
 	});
 
 	return message;

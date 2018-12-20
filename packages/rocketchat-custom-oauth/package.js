@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'rocketchat:custom-oauth',
 	summary: 'Custom OAuth flow',
-	version: '1.0.0'
+	version: '1.0.0',
 });
 
 Package.onUse(function(api) {
@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('accounts-oauth');
 	api.use('service-configuration');
+	api.use('rocketchat:logger');
 
 	api.use('templating', 'client');
 

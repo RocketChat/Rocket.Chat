@@ -1,6 +1,6 @@
-/* globals InstanceStatus */
 import _ from 'underscore';
 import s from 'underscore.string';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 	constructor() {
@@ -10,24 +10,28 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 			doc.instanceId = InstanceStatus.id();
 		});
 
-		this.tryEnsureIndex({ 'rid': 1 });
-		this.tryEnsureIndex({ 'uploadedAt': 1 });
+		this.tryEnsureIndex({ rid: 1 });
+		this.tryEnsureIndex({ uploadedAt: 1 });
 	}
 
-	findNotHiddenFilesOfRoom(roomId, limit) {
+	findNotHiddenFilesOfRoom(roomId, searchText, limit) {
 		const fileQuery = {
 			rid: roomId,
 			complete: true,
 			uploading: false,
 			_hidden: {
-				$ne: true
-			}
+				$ne: true,
+			},
 		};
+
+		if (searchText) {
+			fileQuery.name = { $regex: new RegExp(RegExp.escape(searchText), 'i') };
+		}
 
 		const fileOptions = {
 			limit,
 			sort: {
-				uploadedAt: -1
+				uploadedAt: -1,
 			},
 			fields: {
 				_id: 1,
@@ -37,8 +41,8 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 				description: 1,
 				type: 1,
 				url: 1,
-				uploadedAt: 1
-			}
+				uploadedAt: 1,
+			},
 		};
 
 		return this.find(fileQuery, fileOptions);
@@ -52,7 +56,7 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 			uploading: true,
 			progress: 0,
 			extension: s.strRightBack(file.name, '.'),
-			uploadedAt: new Date()
+			uploadedAt: new Date(),
 		};
 
 		_.extend(fileData, file, extra);
@@ -74,15 +78,15 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 
 		const filter = {
 			_id: fileId,
-			userId
+			userId,
 		};
 
 		const update = {
 			$set: {
 				complete: true,
 				uploading: false,
-				progress: 1
-			}
+				progress: 1,
+			},
 		};
 
 		update.$set = _.extend(file, update.$set);

@@ -1,10 +1,4 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
-import {getCredentials, api, login, request, credentials, integration, log } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
-import supertest from 'supertest';
+import { api, request, credentials, integration } from '../../data/api-data.js';
 
 describe('Outgoing Integrations', function() {
 	this.retries(0);
@@ -24,7 +18,7 @@ describe('Outgoing Integrations', function() {
 				alias: 'guggy',
 				avatar: 'http://res.guggy.com/logo_128.png',
 				emoji: ':ghost:',
-				event: 'sendMessage'
+				event: 'sendMessage',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -59,7 +53,7 @@ describe('Outgoing Integrations', function() {
 			.set(credentials)
 			.send({
 				type: 'webhook-outgoing',
-				integrationId: integration._id
+				integrationId: integration._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)

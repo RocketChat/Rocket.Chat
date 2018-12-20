@@ -2,7 +2,7 @@ Package.describe({
 	name: 'rocketchat:graphql',
 	version: '0.0.1',
 	summary: 'GraphQL API',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
@@ -13,22 +13,19 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:api',
 		'rocketchat:accounts',
-		'swydo:graphql'
+		'swydo:graphql',
 	]);
-	api.addFiles('server/settings.js', 'server');
-	api.mainModule('server/api.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });
 
 Npm.depends({
-	'@accounts/graphql-api': '0.1.1',
-	'apollo-server-express': '1.1.2',
-	'cors': '2.8.4',
-	'body-parser': '1.17.2',
-	'express': '4.15.4',
-	'graphql': '0.10.3',
-	'graphql-subscriptions': '0.4.4',
-	'graphql-tools': '1.2.2',
+	'@accounts/graphql-api': '0.2.3',
+	'apollo-server-express': '1.3.6',
+	cors: '2.8.4',
+	graphql: '0.13.2',
+	'graphql-subscriptions': '0.5.8',
+	'graphql-tools': '3.0.2',
 	'lodash.property': '4.4.2',
-	'merge-graphql-schemas': '1.1.3',
-	'subscriptions-transport-ws': '0.8.2'
+	'merge-graphql-schemas': '1.5.2',
+	'subscriptions-transport-ws': '0.9.11',
 });

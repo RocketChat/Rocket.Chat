@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	'livechat:saveDepartment'(_id, departmentData, departmentAgents) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
@@ -5,5 +8,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.Livechat.saveDepartment(_id, departmentData, departmentAgents);
-	}
+	},
 });

@@ -1,4 +1,5 @@
-import {EmailReplyParser as reply} from 'emailreplyparser';
+import { Meteor } from 'meteor/meteor';
+import { EmailReplyParser as reply } from 'emailreplyparser';
 import moment from 'moment';
 
 RocketChat.processDirectEmail = function(email) {
@@ -7,7 +8,7 @@ RocketChat.processDirectEmail = function(email) {
 			ts: new Date(email.headers.date),
 			msg: email.body,
 			sentByEmail: true,
-			groupable: false
+			groupable: false,
 		};
 
 		if (message.ts) {
@@ -29,8 +30,8 @@ RocketChat.processDirectEmail = function(email) {
 		const user = RocketChat.models.Users.findOneByEmailAddress(email.headers.from, {
 			fields: {
 				username: 1,
-				name: 1
-			}
+				name: 1,
+			},
 		});
 		if (!user) {
 			// user not found
@@ -39,7 +40,7 @@ RocketChat.processDirectEmail = function(email) {
 
 		const prevMessage = RocketChat.models.Messages.findOneById(email.headers.mid, {
 			rid: 1,
-			u: 1
+			u: 1,
 		});
 		if (!prevMessage) {
 			// message doesn't exist anymore
@@ -54,7 +55,7 @@ RocketChat.processDirectEmail = function(email) {
 
 		const roomInfo = RocketChat.models.Rooms.findOneById(message.rid, {
 			t: 1,
-			name: 1
+			name: 1,
 		});
 
 		// check mention
@@ -75,7 +76,7 @@ RocketChat.processDirectEmail = function(email) {
 		message.msg = prevMessageLink + message.msg;
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
-		if (subscription && subscription.blocked || subscription.blocker) {
+		if (subscription && (subscription.blocked || subscription.blocker)) {
 			// room is blocked
 			return false;
 		}

@@ -1,8 +1,10 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Users.setTokenpassTcaBalances = function(_id, tcaBalances) {
 	const update = {
 		$set: {
-			'services.tokenpass.tcaBalances': tcaBalances
-		}
+			'services.tokenpass.tcaBalances': tcaBalances,
+		},
 	};
 
 	return this.update(_id, update);
@@ -10,13 +12,13 @@ RocketChat.models.Users.setTokenpassTcaBalances = function(_id, tcaBalances) {
 
 RocketChat.models.Users.getTokenBalancesByUserId = function(userId) {
 	const query = {
-		_id: userId
+		_id: userId,
 	};
 
 	const options = {
 		fields: {
-			'services.tokenpass.tcaBalances': 1
-		}
+			'services.tokenpass.tcaBalances': 1,
+		},
 	};
 
 	return this.findOne(query, options);

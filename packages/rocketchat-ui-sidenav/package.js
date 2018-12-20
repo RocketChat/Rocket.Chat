@@ -7,7 +7,7 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -15,7 +15,9 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:lib',
-		'rocketchat:ui'
+		'rocketchat:utils',
+		'rocketchat:ui',
+		'rocketchat:lazy-load',
 	]);
 
 	api.addFiles('client/createCombinedFlex.html', 'client');
@@ -42,4 +44,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/roomList.js', 'client');
 	api.addFiles('client/sortlist.js', 'client');
 	api.addFiles('client/toolbar.js', 'client');
+
+	api.export('toolbarSearch', 'client');
 });

@@ -1,4 +1,5 @@
-import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-ts-definition/AppStatus';
+import { Meteor } from 'meteor/meteor';
+import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -9,7 +10,7 @@ export const AppEvents = Object.freeze({
 	COMMAND_ADDED: 'command/added',
 	COMMAND_DISABLED: 'command/disabled',
 	COMMAND_UPDATED: 'command/updated',
-	COMMAND_REMOVED: 'command/removed'
+	COMMAND_REMOVED: 'command/removed',
 });
 
 export class AppServerListener {

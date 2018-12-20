@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 const acEvents = {
@@ -22,7 +30,7 @@ const acEvents = {
 	},
 	'blur [name="users"]'(e, t) {
 		t.ac.onBlur(e);
-	}
+	},
 };
 
 const validateChannelName = (name) => {
@@ -40,14 +48,14 @@ const filterNames = (old) => {
 	}
 
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
 Template.createChannel.helpers({
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
-		return typeof param === 'function' ? param.apply(instance.ac): param;
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
 		return Template.instance().ac.filteredList();
@@ -62,7 +70,7 @@ Template.createChannel.helpers({
 				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
 					return `<strong>${ part }</strong>`;
 				}) }`;
-			}
+			},
 		};
 	},
 	selectedUsers() {
@@ -86,11 +94,26 @@ Template.createChannel.helpers({
 	broadcast() {
 		return Template.instance().broadcast.get();
 	},
+	encrypted() {
+		return Template.instance().encrypted.get();
+	},
+	encryptedDisabled() {
+		return Template.instance().type.get() !== 'p' || Template.instance().broadcast.get();
+	},
+	e2eEnabled() {
+		return RocketChat.settings.get('E2E_Enable');
+	},
 	readOnly() {
 		return Template.instance().readOnly.get();
 	},
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
+	},
+	cantCreateBothTypes() {
+		return !RocketChat.authz.hasAllPermission(['create-c', 'create-p']);
+	},
+	roomTypeIsP() {
+		return Template.instance().type.get() === 'p';
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
@@ -121,7 +144,7 @@ Template.createChannel.helpers({
 		return {
 			validations : instance.extensions_validations,
 			submits: instance.extensions_submits,
-			change: instance.change
+			change: instance.change,
 		};
 	},
 	roomTypesBeforeStandard() {
@@ -129,9 +152,7 @@ Template.createChannel.helpers({
 		return RocketChat.roomTypes.roomTypesOrder.filter(
 			(roomTypeOrder) => roomTypeOrder.order < orderLow
 		).map(
-			(roomTypeOrder) => {
-				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
-			}
+			(roomTypeOrder) => RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier]
 		).filter((roomType) => roomType.creationTemplate);
 	},
 	roomTypesAfterStandard() {
@@ -139,29 +160,31 @@ Template.createChannel.helpers({
 		return RocketChat.roomTypes.roomTypesOrder.filter(
 			(roomTypeOrder) => roomTypeOrder.order > orderHigh
 		).map(
-			(roomTypeOrder) => {
-				return RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier];
-			}
+			(roomTypeOrder) => RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier]
 		).filter((roomType) => roomType.creationTemplate);
-	}
+	},
 });
 
 Template.createChannel.events({
 	...acEvents,
-	'click .rc-tags__tag'({target}, t) {
-		const {username} = Blaze.getData(target);
-		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	'click .rc-tags__tag'({ target }, t) {
+		const { username } = Blaze.getData(target);
+		t.selectedUsers.set(t.selectedUsers.get().filter((user) => user.username !== username));
 	},
 	'change [name=setTokensRequired]'(e, t) {
 		t.tokensRequired.set(e.currentTarget.checked);
 		t.change();
 	},
 	'change [name="type"]'(e, t) {
-		t.type.set(e.target.checked ? e.target.value : 'd');
+		t.type.set(e.target.checked ? e.target.value : 'c');
 		t.change();
 	},
 	'change [name="broadcast"]'(e, t) {
 		t.broadcast.set(e.target.checked);
+		t.change();
+	},
+	'change [name="encrypted"]'(e, t) {
+		t.encrypted.set(e.target.checked);
 		t.change();
 	},
 	'change [name="readOnly"]'(e, t) {
@@ -170,7 +193,7 @@ Template.createChannel.events({
 	'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterNames(input.value);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
@@ -180,7 +203,7 @@ Template.createChannel.events({
 	'input [name="name"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterNames(input.value);
 
 		input.value = modified;
@@ -199,21 +222,20 @@ Template.createChannel.events({
 		const type = instance.type.get();
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
+		const encrypted = instance.encrypted.get();
 		const isPrivate = type === 'p';
 
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
-		if (!Object.keys(instance.extensions_validations).map(key => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
+		if (!Object.keys(instance.extensions_validations).map((key) => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
 		}
 
 		const extraData = Object.keys(instance.extensions_submits)
-			.reduce((result, key) => {
-				return { ...result, ...instance.extensions_submits[key](instance) };
-			}, {broadcast});
+			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
 
-		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map(user => user.username), readOnly, {}, extraData, function(err, result) {
+		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
 					return instance.invalid.set(true);
@@ -231,7 +253,7 @@ Template.createChannel.events({
 			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
-	}
+	},
 });
 
 Template.createChannel.onRendered(function() {
@@ -240,33 +262,34 @@ Template.createChannel.onRendered(function() {
 	this.firstNode.querySelector('[name="users"]').focus();
 	this.ac.element = this.firstNode.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	this.ac.$element.on('autocompleteselect', function(e, { item }) {
 		const usersArr = users.get();
 		usersArr.push(item);
 		users.set(usersArr);
 	});
 });
-/* global AutoComplete */
+
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
-	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
+	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
 	// this.onViewRead:??y(function() {
 	Tracker.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
+		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
 	});
 	this.extensions_validations = {};
 	this.extensions_submits = {};
 	this.name = new ReactiveVar('');
-	this.type = new ReactiveVar('p');
+	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c');
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
+	this.encrypted = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
 	this.change = _.debounce(() => {
 		let valid = true;
-		Object.keys(this.extensions_validations).map(key => this.extensions_validations[key]).forEach(f => (valid = f(this) && valid));
+		Object.keys(this.extensions_validations).map((key) => this.extensions_validations[key]).forEach((f) => (valid = f(this) && valid));
 		this.extensions_invalid.set(!valid);
 	}, 300);
 
@@ -274,6 +297,12 @@ Template.createChannel.onCreated(function() {
 		const broadcast = this.broadcast.get();
 		if (broadcast) {
 			this.readOnly.set(true);
+			this.encrypted.set(false);
+		}
+
+		const type = this.type.get();
+		if (type !== 'p') {
+			this.encrypted.set(false);
 		}
 	});
 
@@ -295,7 +324,7 @@ Template.createChannel.onCreated(function() {
 		{
 			selector:{
 				item: '.rc-popup-list__item',
-				container: '.rc-popup-list__list'
+				container: '.rc-popup-list__list',
 			},
 
 			limit: 10,
@@ -312,9 +341,9 @@ Template.createChannel.onCreated(function() {
 					selector(match) {
 						return { term: match };
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 
 		});
 
@@ -330,14 +359,12 @@ Template.tokenpass.onCreated(function() {
 		this.invalid.set(result);
 		return !result;
 	};
-	this.data.submits.tokenpass = () => {
-		return {
-			tokenpass: {
-				require: this.requireAll.get() ? 'all' : 'any',
-				tokens: this.selectedTokens.get()
-			}
-		};
-	};
+	this.data.submits.tokenpass = () => ({
+		tokenpass: {
+			require: this.requireAll.get() ? 'all' : 'any',
+			tokens: this.selectedTokens.get(),
+		},
+	});
 	this.balance = new ReactiveVar('');
 	this.token = new ReactiveVar('');
 	this.selectedTokens = new ReactiveVar([]);
@@ -353,7 +380,7 @@ Template.tokenpass.helpers({
 		return Template.instance().invalid.get();
 	},
 	addIsDisabled() {
-		const {balance, token} = Template.instance();
+		const { balance, token } = Template.instance();
 		return (balance.get().length && token.get().length) ? '' : 'disabled';
 	},
 	tokenRequiment() {
@@ -361,24 +388,24 @@ Template.tokenpass.helpers({
 	},
 	tokenRequimentDescription() {
 		return Template.instance().requireAll.get() ? t('All_added_tokens_will_be_required_by_the_user') : t('At_least_one_added_token_is_required_by_the_user');
-	}
+	},
 });
 
 Template.tokenpass.events({
 	'click [data-button=add]'(e, instance) {
-		const {balance, token, selectedTokens} = instance;
+		const { balance, token, selectedTokens } = instance;
 		const text = token.get();
 		const arr = selectedTokens.get();
-		selectedTokens.set([...arr.filter(token => token.token !== text), {token: text, balance: balance.get()}]);
+		selectedTokens.set([...arr.filter((token) => token.token !== text), { token: text, balance: balance.get() }]);
 		balance.set('');
 		token.set('');
-		[...instance.findAll('input[type=text],input[type=number]')].forEach(el => el.value = '');
+		[...instance.findAll('input[type=text],input[type=number]')].forEach((el) => el.value = '');
 		instance.data.change();
 		return false;
 	},
-	'click .rc-tags__tag'({target}, t) {
-		const {token} = Blaze.getData(target);
-		t.selectedTokens.set(t.selectedTokens.get().filter(t => t.token !== token));
+	'click .rc-tags__tag'({ target }, t) {
+		const { token } = Blaze.getData(target);
+		t.selectedTokens.set(t.selectedTokens.get().filter((t) => t.token !== token));
 		t.data.change();
 	},
 	'input [name=tokenMinimumNeededBalance]'(e, i) {
@@ -389,5 +416,5 @@ Template.tokenpass.events({
 	},
 	'change [name=tokenRequireAll]'(e, i) {
 		i.requireAll.set(e.currentTarget.checked);
-	}
+	},
 });

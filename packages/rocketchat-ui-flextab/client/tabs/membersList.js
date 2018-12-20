@@ -1,11 +1,19 @@
-/* globals WebRTC popover isRtl */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { ChatRoom, RoomManager, popover } from 'meteor/rocketchat:ui';
+import { t, isRtl } from 'meteor/rocketchat:utils';
+import { WebRTC } from 'meteor/rocketchat:webrtc';
 import _ from 'underscore';
-import {getActions} from './userActions';
+import { getActions } from './userActions';
 
 Template.membersList.helpers({
 	ignored() {
-		const {user} = this;
-		const sub = RocketChat.models.Subscriptions.findOne({rid: Session.get('openedRoom')});
+		const { user } = this;
+		const sub = RocketChat.models.Subscriptions.findOne({ rid: Session.get('openedRoom') });
 		return sub && sub.ignored && sub.ignored.indexOf(user._id) > -1 ? `(${ t('Ignored') })` : '';
 	},
 	tAddUsers() {
@@ -46,7 +54,7 @@ Template.membersList.helpers({
 			console.log(e);
 		}
 		if (filter && reg) {
-			users = users.filter(user => reg.test(user.username) || reg.test(user.name));
+			users = users.filter((user) => reg.test(user.username) || reg.test(user.name));
 		}
 
 		users = users.map(function(user) {
@@ -70,18 +78,18 @@ Template.membersList.helpers({
 				user,
 				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
 				muted: Array.from(roomMuted).includes(user.username),
-				utcOffset
+				utcOffset,
 			};
 		});
 
 		if (RocketChat.settings.get('UI_Use_Real_Name')) {
-			users = _.sortBy(users, u => u.user.name);
+			users = _.sortBy(users, (u) => u.user.name);
 		} else {
-			users = _.sortBy(users, u => u.user.username);
+			users = _.sortBy(users, (u) => u.user.username);
 		}
 		// show online users first.
 		// sortBy is stable, so we can do this
-		users = _.sortBy(users, u => u.status === 'offline');
+		users = _.sortBy(users, (u) => u.status === 'offline');
 
 		let hasMore = undefined;
 		const usersLimit = Template.instance().usersLimit.get();
@@ -98,7 +106,7 @@ Template.membersList.helpers({
 			loading: Template.instance().loading.get(),
 			totalOnline,
 			users,
-			hasMore
+			hasMore,
 		};
 		return ret;
 	},
@@ -106,9 +114,7 @@ Template.membersList.helpers({
 	canAddUser() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return (() => {
-			return RocketChat.roomTypes.roomTypes[roomData.t].canAddUser(roomData);
-		})();
+		return (() => RocketChat.roomTypes.roomTypes[roomData.t].canAddUser(roomData))();
 	},
 
 	autocompleteSettingsAddUser() {
@@ -124,14 +130,14 @@ Template.membersList.helpers({
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
 					filter: {
-						exceptions: [Meteor.user().username]
+						exceptions: [Meteor.user().username],
 					},
 					selector(match) {
 						return { term: match };
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 		};
 	},
 
@@ -155,7 +161,7 @@ Template.membersList.helpers({
 			clear: Template.instance().clearUserDetail,
 			showAll: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
 			hideAdminControls: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
-			video: ['d'].includes(room != null ? room.t : undefined)
+			video: ['d'].includes(room != null ? room.t : undefined),
 		};
 	},
 	displayName() {
@@ -164,14 +170,14 @@ Template.membersList.helpers({
 		}
 
 		return this.user.username;
-	}});
+	} });
 
 Template.membersList.events({
 	'click .js-add'() {
 		Template.parentData(0).tabBar.setTemplate('inviteUsers');
 		Template.parentData(0).tabBar.setData({
 			label: 'Add_users',
-			icon: 'user'
+			icon: 'user',
 		});
 
 		Template.parentData(0).tabBar.open();
@@ -198,24 +204,26 @@ Template.membersList.events({
 		const _actions = getActions({
 			user: this.user.user,
 			hideAdminControls: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
-			directActions: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAll(room) || false
-		}).map(action => typeof action === 'function' ? action.call(this): action).filter(action => action && (!action.condition || action.condition.call(this)));
+			directActions: RocketChat.roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
+		})
+			.map((action) => (typeof action === 'function' ? action.call(this) : action))
+			.filter((action) => action && (!action.condition || action.condition.call(this)));
 		const groups = [];
 		const columns = [];
-		const admin = _actions.filter(action => action.group === 'admin');
-		const others = _actions.filter(action => !action.group);
-		const channel = _actions.filter(actions => actions.group === 'channel');
+		const admin = _actions.filter((action) => action.group === 'admin');
+		const others = _actions.filter((action) => !action.group);
+		const channel = _actions.filter((actions) => actions.group === 'channel');
 		if (others.length) {
-			groups.push({items:others});
+			groups.push({ items:others });
 		}
 		if (channel.length) {
-			groups.push({items:channel});
+			groups.push({ items:channel });
 		}
 
 		if (admin.length) {
-			groups.push({items:admin});
+			groups.push({ items:admin });
 		}
-		columns[0] = {groups};
+		columns[0] = { groups };
 
 		$(e.currentTarget).blur();
 		e.preventDefault();
@@ -223,23 +231,23 @@ Template.membersList.events({
 			columns,
 			mousePosition: () => ({
 				x: e.currentTarget.getBoundingClientRect().right + 10,
-				y: e.currentTarget.getBoundingClientRect().bottom + 100
+				y: e.currentTarget.getBoundingClientRect().bottom + 100,
 			}),
 			customCSSProperties: () => ({
 				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined
+				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined,
 			}),
 			data: {
 				rid: this._id,
 				username: instance.data.username,
-				instance
+				instance,
 			},
 			offsetHorizontal: 15,
 			activeElement: e.currentTarget,
 			currentTarget: e.currentTarget,
 			onDestroyed:() => {
 				e.currentTarget.parentElement.classList.remove('active');
-			}
+			},
 		};
 		e.stopPropagation();
 		popover.open(config);
@@ -261,7 +269,7 @@ Template.membersList.events({
 
 	'click .show-more-users'(e, instance) {
 		return instance.usersLimit.set(instance.usersLimit.get() + 100);
-	}
+	},
 });
 
 Template.membersList.onCreated(function() {
@@ -292,12 +300,10 @@ Template.membersList.onCreated(function() {
 
 	this.clearUserDetail = () => {
 		this.showDetail.set(false);
-		return setTimeout(() => {
-			return this.clearRoomUserDetail();
-		}, 500);
+		return setTimeout(() => this.clearRoomUserDetail(), 500);
 	};
 
-	this.showUserDetail = username => {
+	this.showUserDetail = (username) => {
 		this.showDetail.set(username != null);
 		return this.userDetail.set(username);
 	};

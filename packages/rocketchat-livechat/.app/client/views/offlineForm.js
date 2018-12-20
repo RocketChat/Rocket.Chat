@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -17,7 +21,7 @@ Template.offlineForm.helpers({
 		} else {
 			return TAPi18n.__('Thanks_We_ll_get_back_to_you_soon');
 		}
-	}
+	},
 });
 
 Template.offlineForm.events({
@@ -27,9 +31,9 @@ Template.offlineForm.events({
 		const form = event.currentTarget;
 
 		const data = {
-			name: form.elements['name'].value,
-			email: form.elements['email'].value,
-			message: form.elements['message'].value
+			name: form.elements.name.value,
+			email: form.elements.email.value,
+			message: form.elements.message.value,
 		};
 
 		if (!instance.validateForm(form)) {
@@ -49,7 +53,7 @@ Template.offlineForm.events({
 				parentCall('callback', ['offline-form-submit', data]);
 			}
 		});
-	}
+	},
 });
 
 Template.offlineForm.onCreated(function() {
