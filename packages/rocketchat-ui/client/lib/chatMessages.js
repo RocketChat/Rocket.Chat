@@ -25,9 +25,7 @@ export const getPermaLinks = async(replies) => {
 		RocketChat.MessageAction.getPermaLink(reply._id)
 	);
 
-	const links = Promise.all(promises);
-
-	return links;
+	return Promise.all(promises);
 };
 
 export const mountReply = async(msg, input) => {
