@@ -61,8 +61,6 @@ Meteor.methods({
 			redirect_uris: [redirectUrl],
 		};
 
-		console.log(regInfo);
-
 		const cloudUrl = RocketChat.settings.get('Cloud_Url');
 		const result = HTTP.post(`${ cloudUrl }/api/oauth/clients`, {
 			headers: {
