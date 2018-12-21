@@ -123,16 +123,6 @@ Meteor.methods({
 			},
 		});
 
-		// const result2 = {
-		// 	access_token: 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI1OGMwNDkwODEwNzU3ZDBjODhmN2I2YjkiLCJSb2xlIjoiYWRtaW4iLCJTY29wZSI6Im9mZmxpbmUrd29ya3NwYWNlIiwiZXhwIjoxNTQ1Mjg3Mzg3LCJqdGkiOiJhNjRiNDVhNS03MzFlLTQyNDAtODVmOC05M2I0ODUxZDQzOTUiLCJpYXQiOjE1NDUyODM3ODcsImlzcyI6IlJvY2tldC5DaGF0In0.rB277xSSHideU8z82MnpX7cqMo2tGwr25Aj25VcQGUpQfH2rPdcSnjRLm-yhL7YZTHzKsY6jXTaoLwoQalRJDQ',
-		// 	expires_in: 14400,
-		// 	scope: 'offline+workspace',
-		// 	refresh_token: 'mysupersecretrefreshtoken',
-		// 	token_type: 'Bearer',
-		// };
-
-		console.log(result);
-
 		return result;
 	},
 });
