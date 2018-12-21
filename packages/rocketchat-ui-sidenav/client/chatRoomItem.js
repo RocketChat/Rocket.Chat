@@ -1,6 +1,7 @@
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
 
 Template.chatRoomItem.helpers({
 	roomData() {

@@ -3,7 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t, ChatSubscription, popover } from 'meteor/rocketchat:ui';
+import { ChatSubscription, popover } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 const notificationLabels = {
 	all: 'All_messages',
