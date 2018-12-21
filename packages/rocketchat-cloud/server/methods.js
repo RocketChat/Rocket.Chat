@@ -4,17 +4,18 @@ import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
 
 Meteor.methods({
-	'cloud:retrieveRegistrationInfo'() {
+	'cloud:checkRegisterStatus'() {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:retrieveRegistrationInfo' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:checkRegisterStatus' });
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'manage-cloud')) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:retrieveRegistrationInfo' });
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:checkRegisterStatus' });
 		}
 
 		const info = {
-			canConnect: RocketChat.settings.get('Register_Server'),
+			registeredWithWizard: RocketChat.settings.get('Register_Server'),
+			workspaceConnected: (RocketChat.settings.get('Cloud_Workspace_Client_Id')) ? true : false,
 			token: '',
 			email: '',
 		};
@@ -41,7 +42,7 @@ Meteor.methods({
 
 		RocketChat.models.Settings.updateValueById('Organization_Email', email);
 	},
-	'cloud:connectServer'(token) {
+	'cloud:connectWorkspace'(token) {
 		check(token, String);
 
 		if (!Meteor.userId()) {
@@ -52,12 +53,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:connectServer' });
 		}
 
-		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/api/cloud/redirect`.replace(/\/\/+/g, '/');
+		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/admin/cloud/oauth-callback`.replace(/\/\/+/g, '/');
 
 		const regInfo = {
 			email: RocketChat.settings.get('Organization_Email'),
 			client_name: RocketChat.settings.get('Site_Name'),
-			redirectUris: [redirectUrl],
+			redirect_uris: [redirectUrl],
 		};
 
 		console.log(regInfo);
@@ -72,37 +73,41 @@ Meteor.methods({
 
 		const { data } = result;
 
-		const state = Random.id();
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Id', data.workspaceId);
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Name', data.client_name);
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Client_Id', data.client_id);
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Client_Secret', data.client_secret);
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', data.client_secret_expires_at);
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
+
+		return true;
+	},
+	'cloud:getOAuthAuthorizationUrl'() {
+		const state = Random.id();
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Registration_State', state);
 
-		const url = `${ cloudUrl }/authorize?response_type=code&client_id=${ data.client_id }&redirect_uri=${ redirectUrl }&scope=offline+workspace&state=${ state }`;
+		const cloudUrl = RocketChat.settings.get('Cloud_Url');
+		const client_id = RocketChat.settings.get('Cloud_Workspace_Client_Id');
 
-		console.log('User is being sent to:', url);
+		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/admin/cloud/oauth-callback`.replace(/\/\/+/g, '/');
+		const url = `${ cloudUrl }/authorize?response_type=code&client_id=${ client_id }&redirect_uri=${ redirectUrl }&scope=offline+workspace&state=${ state }`;
 
-		return {
-			url,
-		};
+		return url;
 	},
-	'cloud:continueConnecting'(code, state) {
+	'cloud:finishOAuthAuthorization'(code, state) {
 		check(code, String);
 		check(state, String);
 
 		// We do not expect any user to call this, they're simply redirected to a url which calls this
 		if (Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:continueConnecting' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:finishOAuthAuthorization' });
 		}
 
 		if (RocketChat.settings.get('Cloud_Workspace_Registration_State') !== this.queryParams.state) {
-			throw new Meteor.Error('error-invalid-state', 'Invalid state provided', { method: 'cloud:continueConnecting' });
+			throw new Meteor.Error('error-invalid-state', 'Invalid state provided', { method: 'cloud:finishOAuthAuthorization' });
 		}
 
-		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/api/cloud/redirect`.replace(/\/\/+/g, '/');
+		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/admin/cloud/oauth-callback`.replace(/\/\/+/g, '/');
 		const cloudUrl = RocketChat.settings.get('Cloud_Url');
 		const clientId = RocketChat.settings.get('Cloud_Workspace_Client_Id');
 		const clientSecret = RocketChat.settings.get('Cloud_Workspace_Client_Secret');
@@ -127,5 +132,7 @@ Meteor.methods({
 		// };
 
 		console.log(result);
+
+		return result
 	},
 });

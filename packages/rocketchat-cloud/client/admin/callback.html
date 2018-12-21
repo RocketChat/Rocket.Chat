@@ -1,0 +1,16 @@
+<template name="cloudCallback">
+	<div class="main-content-flex">
+		<section class="page-container page-home page-static page-settings">
+			{{> header sectionName="Rocket.Chat Cloud Connect"}}
+			<div class="content">
+				{{#requiresPermission 'manage-cloud'}}
+				{{#if callbackError.error}}
+				<p>Error received while authenticating</p>
+
+				<p>Code: {{ callbackError.errorCode }}</p>
+				{{/if}}
+				{{/requiresPermission}}
+			</div>
+		</section>
+	</div>
+</template>

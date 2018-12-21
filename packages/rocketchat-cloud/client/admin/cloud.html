@@ -12,23 +12,32 @@
 						</div>
 
 						<div class="section-content">
-							<p>Rocket.Chat Cloud Connect allows you to connect your on-perm Rocket.Chat server to our Cloud. Doing so enables you to manage your licenses for the push gateway, etc and more.</p>
+							<p>Rocket.Chat Cloud Connect allows you to connect your self-hosted Rocket.Chat Workspace to our Cloud. Doing so enables you to manage your licenses, Billing and Support in Rocket.Chat Cloud.</p>
 						</div>
 					</div>
 					<div class="section">
-						{{#if info.canConnect}}
-							<div class="section-title">
-								<div class="section-title-text">
-									Configuration
+						{{#if info.registeredWithWizard}}
+							{{#if info.workspaceConnected}}
+							<div class="section-content border-component-color">
+
+								<p>Login to Rocket.Chat Cloud to finish linking your workspace</p>
+
+									<div class="input-line double-col">
+										<label class="setting-label" title=""></label>
+										<div class="setting-field">
+											<button type="button" class="rc-button rc-button--primary action login-btn">Login To Rocket.Chat Cloud</button>
+										</div>
+									</div>
+
 								</div>
-							</div>
+							{{else}}
 
 							<div class="section-content border-component-color">
 								<div class="input-line double-col">
 									<label class="setting-label" title="cloudEmail">Email</label>
 									<div class="setting-field">
 										<input class="input-monitor rc-input__element" type="text" name="cloudEmail" value="{{ info.email }}">
-										<div class="settings-description secondary-font-color">The email to send the Cloud registration link to.</div>
+										<div class="settings-description secondary-font-color">The address to send your Cloud registration email to.</div>
 									</div>
 								</div>
 								<div class="input-line double-col">
@@ -38,7 +47,7 @@
 									</div>
 								</div>
 
-								<pre>{{ canConnect }}</pre>
+								<pre>{{ registeredWithWizard }}</pre>
 
 								<div class="input-line double-col">
 									<label class="setting-label" title="cloudToken">Token</label>
@@ -54,6 +63,7 @@
 									</div>
 								</div>
 							</div>
+							{{/if}}
 						{{else}}
 							<div class="section-title">
 								<div class="section-title-text">
@@ -61,7 +71,8 @@
 								</div>
 							</div>
 							<div class="section-content border-component-color">
-								<p><a href="./admin/Setup_Wizard">Click here to go to the settings page to register your server.</a></p>
+								<p>Looks like during setup you didn't chose to register your workspace </p>
+								<p><a href="./admin/Setup_Wizard">Click here to register your workspace.</a></p>
 							</div>
 						{{/if}}
 					</div>

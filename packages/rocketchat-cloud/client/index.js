@@ -2,9 +2,16 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 FlowRouter.route('/admin/cloud', {
-	name: 'apps',
+	name: 'config',
 	action() {
 		BlazeLayout.render('main', { center: 'cloud', old: true });
+	},
+});
+
+FlowRouter.route('/admin/cloud/oauth-callback', {
+	name: 'oauth-callback',
+	action() {
+		BlazeLayout.render('main', { center: 'callback', old: true });
 	},
 });
 

@@ -15,6 +15,8 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'client/admin/cloud.html',
 		'client/admin/cloud.js',
+		'client/admin/callback.html',
+		'client/admin/callback.js'
 	], 'client');
 
 	api.mainModule('client/index.js', 'client');

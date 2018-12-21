@@ -9,9 +9,9 @@ Template.cloud.onCreated(function() {
 	instance.info = new ReactiveVar();
 	instance.loading = new ReactiveVar(true);
 
-	Meteor.call('cloud:retrieveRegistrationInfo', (error, info) => {
+	Meteor.call('cloud:checkRegisterStatus', (error, info) => {
 		if (error) {
-			console.warn('cloud:retrieveRegistrationInfo', error);
+			console.warn('cloud:checkRegisterStatus', error);
 			return;
 		}
 
@@ -41,10 +41,22 @@ Template.cloud.events({
 		});
 	},
 
+	'click .login-btn'() {
+		Meteor.call('cloud:getOAuthAuthorizationUrl', (error, url) => {
+			if (error) {
+				console.warn(error);
+				return;
+			}
+
+			console.log(url);
+			window.location.href = url;
+		});
+	},
+
 	'click .connect-btn'() {
 		const token = $('input[name=cloudToken]').val();
 
-		Meteor.call('cloud:connectServer', token, (error, data) => {
+		Meteor.call('cloud:connectWorkspace', token, (error, data) => {
 			if (error) {
 				console.warn(error);
 				return;
