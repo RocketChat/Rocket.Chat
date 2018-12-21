@@ -53,17 +53,22 @@ Template.cloud.events({
 		});
 	},
 
-	'click .connect-btn'() {
+	'click .connect-btn'(e, i) {
 		const token = $('input[name=cloudToken]').val();
 
-		Meteor.call('cloud:connectWorkspace', token, (error, data) => {
+		Meteor.call('cloud:connectWorkspace', token, (error) => {
 			if (error) {
 				console.warn(error);
+				toastr.error(error);
 				return;
 			}
 
-			console.log('connect result:', data);
-			window.open(data.url, 'cloudConnect');
+			toastr.success(t('Connected'));
+
+			const info = i.info.get();
+			info.workspaceConnected = true;
+
+			i.info.set(info);
 		});
 	},
 });

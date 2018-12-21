@@ -4,11 +4,11 @@
 			{{> header sectionName="Rocket.Chat Cloud Connect"}}
 			<div class="content">
 				{{#requiresPermission 'manage-cloud'}}
-				{{#if callbackError.error}}
-				<p>Error received while authenticating</p>
+					{{#if callbackError.error}}
+						<p>Error received while authenticating</p>
 
-				<p>Code: {{ callbackError.errorCode }}</p>
-				{{/if}}
+						<p>Code: {{ callbackError.errorCode }}</p>
+					{{/if}}
 				{{/requiresPermission}}
 			</div>
 		</section>

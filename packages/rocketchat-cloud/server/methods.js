@@ -53,7 +53,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:connectServer' });
 		}
 
-		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/admin/cloud/oauth-callback`.replace(/\/\/+/g, '/');
+		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/admin/cloud/oauth-callback`.replace(/\/\/admin+/g, '/admin');
 
 		const regInfo = {
 			email: RocketChat.settings.get('Organization_Email'),
@@ -78,6 +78,21 @@ Meteor.methods({
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', data.client_secret_expires_at);
 		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
 
+		console.log('making a call out to the token generation');
+
+		// Now that we have the client id and secret, let's get the refresh and access token
+		const authTokenResult = HTTP.post(`${ cloudUrl }/api/oauth/token?client_id=${ data.client_id }&client_secret=${ data.client_secret }&grant_type=client_credentials&redirect_uri=${ redirectUrl }`, {
+			data: {},
+		});
+
+		console.log(authTokenResult);
+		console.log('Data:', authTokenResult.data);
+
+		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
+		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_In', authTokenResult.data.expires_in);
+		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token_Scope', authTokenResult.data.scope);
+		RocketChat.models.Settings.updateValueById('Cloud_Workspace_Refresh_Token', authTokenResult.data.refresh_token);
+
 		return true;
 	},
 	'cloud:getOAuthAuthorizationUrl'() {
@@ -96,30 +111,24 @@ Meteor.methods({
 		check(code, String);
 		check(state, String);
 
-		// We do not expect any user to call this, they're simply redirected to a url which calls this
-		if (Meteor.userId()) {
+		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:finishOAuthAuthorization' });
 		}
 
-		if (RocketChat.settings.get('Cloud_Workspace_Registration_State') !== this.queryParams.state) {
+		if (RocketChat.settings.get('Cloud_Workspace_Registration_State') !== state) {
 			throw new Meteor.Error('error-invalid-state', 'Invalid state provided', { method: 'cloud:finishOAuthAuthorization' });
 		}
 
-		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/admin/cloud/oauth-callback`.replace(/\/\/+/g, '/');
+		const redirectUrl = `${ RocketChat.settings.get('Site_Url') }/admin/cloud/oauth-callback`.replace(/\/\/admin+/g, '/admin');
 		const cloudUrl = RocketChat.settings.get('Cloud_Url');
 		const clientId = RocketChat.settings.get('Cloud_Workspace_Client_Id');
 		const clientSecret = RocketChat.settings.get('Cloud_Workspace_Client_Secret');
 
-		const result = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
+		const result = HTTP.post(`${ cloudUrl }/api/oauth/token?client_id=${ clientId }&client_secret=${ clientSecret }&grant_type=authorization_code&code=${ code }&redirect_uri=${ redirectUrl }`, {
 			data: {},
-			query: {
-				client_id: clientId,
-				client_secret: clientSecret,
-				grant_type: 'authorization_code',
-				code,
-				redirect_uri: redirectUrl,
-			},
 		});
+
+		// TODO: determine how to handle this
 
 		return result;
 	},

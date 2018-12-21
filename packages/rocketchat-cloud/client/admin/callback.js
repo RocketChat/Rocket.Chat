@@ -12,9 +12,12 @@ Template.cloudCallback.onCreated(function() {
 
 	const params = queryString.parse(location.search);
 
+	console.log('THe query params:', params);
+
 	if (params.error_code) {
 		instance.callbackError.set({ error: true, errorCode: params.error_code });
 	} else {
+		console.log('calling finish oAuth');
 		Meteor.call('cloud:finishOAuthAuthorization', params.code, params.state, (error, result) => {
 			if (error) {
 				console.warn('cloud:finishOAuthAuthorization', error);
