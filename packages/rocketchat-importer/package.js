@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'check',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:logger',
 	]);
