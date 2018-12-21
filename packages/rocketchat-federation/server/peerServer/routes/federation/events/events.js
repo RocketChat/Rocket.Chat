@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const { FederationKeys } = RocketChat.models;
 
 export default function eventsRoutes() {

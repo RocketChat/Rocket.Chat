@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import dns from 'dns';
 
 const { FederationDNSCache } = RocketChat.models;

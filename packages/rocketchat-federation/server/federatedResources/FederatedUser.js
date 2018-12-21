@@ -18,7 +18,7 @@ class FederatedUser extends FederatedResource {
 				peer: localPeerIdentifier,
 			};
 
-				// Prepare the user
+			// Prepare the user
 			user.federation = federation;
 
 			// Update the user

@@ -1,4 +1,5 @@
 /* globals FileUpload */
+import { Meteor } from 'meteor/meteor';
 
 export default function uploadsRoutes() {
 	RocketChat.API.v1.addRoute('federation.uploads', { authRequired: false }, {

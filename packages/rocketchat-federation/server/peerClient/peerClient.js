@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import qs from 'querystring';
 
 import FederatedMessage from '../federatedResources/FederatedMessage';

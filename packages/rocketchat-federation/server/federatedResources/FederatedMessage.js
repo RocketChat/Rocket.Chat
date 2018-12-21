@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import FederatedResource from './FederatedResource';
 import FederatedRoom from './FederatedRoom';
 import FederatedUser from './FederatedUser';
@@ -42,7 +44,7 @@ class FederatedMessage extends FederatedResource {
 				roomId: room.federation._id,
 			};
 
-				// Prepare the user
+			// Prepare the user
 			message.federation = federation;
 
 			// Update the user
