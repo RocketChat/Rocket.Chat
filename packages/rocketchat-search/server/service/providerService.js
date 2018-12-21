@@ -1,7 +1,6 @@
-/* globals RocketChat */
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
-
 import { validationService } from '../service/validationService';
 import SearchLogger from '../logger/logger';
 
