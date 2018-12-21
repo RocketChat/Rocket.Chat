@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+gmport { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
@@ -79,6 +79,9 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
+
+        // Adding 10 minutes delay for every message.
+	Meteor._sleepForMs(600000);
 
 	check(message, objectMaybeIncluding({
 		_id: String,
