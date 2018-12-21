@@ -80,6 +80,9 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		return false;
 	}
 
+        // Adding 10 minutes delay for every message.
+	Meteor._sleepForMs(600000);
+
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
