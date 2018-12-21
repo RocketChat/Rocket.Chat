@@ -357,7 +357,7 @@ RocketChat.API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
 		} else if (isNaN(Date.parse(since))) {
 			throw new Meteor.Error('The "since" query parameter must be a valid date.');
 		}
-		const cursor = RocketChat.models.Messages.trashFindDeleted(new Date(since), { rid: roomId }, {
+		const cursor = RocketChat.models.Messages.trashFindDeletedAfter(new Date(since), { rid: roomId }, {
 			skip: offset,
 			limit: count,
 		});

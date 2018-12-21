@@ -376,15 +376,6 @@ class ModelsBaseDb extends EventEmitter {
 
 		return trash.find(query, options);
 	}
-
-	trashFindDeleted(deletedAt, query = {}, options) {
-		query.__collection__ = this.name;
-		query._deletedAt = {
-			$gte: deletedAt,
-		};
-
-		return trash.find(query, options);
-	}
 }
 
 export default ModelsBaseDb;
