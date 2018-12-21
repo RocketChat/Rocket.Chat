@@ -33,6 +33,7 @@ pipeline:
       - meteor build --allow-superuser --server-only --directory /drone/build
       - cd /drone/build/bundle
       - tar -zcvf /${DRONE_BRANCH}.tar.gz .
+      - ls /
     when:
       event: push
       branch:
