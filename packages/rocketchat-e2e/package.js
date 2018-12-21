@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'less',
 		'mizzao:timesync',
 		'rocketchat:lib',
+		'rocketchat:utils',
 		'templating',
 		'sha',
 	]);

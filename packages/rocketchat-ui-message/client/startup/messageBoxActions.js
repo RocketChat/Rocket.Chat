@@ -1,10 +1,10 @@
-/* globals device */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import mime from 'mime-type/with-db';
 import { VRecDialog } from 'meteor/rocketchat:ui-vrecord';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { t, modal, fileUpload } from 'meteor/rocketchat:ui';
+import { modal, fileUpload } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',

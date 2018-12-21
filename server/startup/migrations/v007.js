@@ -1,4 +1,4 @@
-/* globals OEmbed */
+import { OEmbed } from 'meteor/rocketchat:oembed';
 import _ from 'underscore';
 
 RocketChat.Migrations.add({

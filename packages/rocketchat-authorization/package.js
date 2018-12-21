@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'mongo',
+		'rocketchat:utils',
 	]);
 	api.use([
 		'templating',

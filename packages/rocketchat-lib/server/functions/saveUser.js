@@ -242,9 +242,12 @@ RocketChat.saveUser = function(userId, userData) {
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;
 	}
-
 	if (userData.settings) {
 		updateUser.$set.settings = { preferences: userData.settings.preferences };
+	}
+
+	if (userData.language) {
+		updateUser.$set.language = userData.language;
 	}
 
 	if (typeof userData.requirePasswordChange !== 'undefined') {
