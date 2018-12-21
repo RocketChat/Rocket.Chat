@@ -6,6 +6,8 @@ import {
 	message,
 } from '../../data/api-data.js';
 import { password } from '../../data/user';
+import { createRoom } from '../../data/rooms.helper.js';
+import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper.js';
 
 describe('[Chat]', function() {
 	this.retries(0);
@@ -658,6 +660,129 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.getDeletedMessages]', () => {
+		let roomId;
+		before((done) => {
+			createRoom({
+				type: 'c',
+				name: `channel.test.${ Date.now() }`,
+			}).end((err, res) => {
+				roomId = res.body.channel._id;
+				sendSimpleMessage({ roomId })
+					.end((err, res) => {
+						const msgId = res.body.message._id;
+						deleteMessage({ roomId, msgId }).end(done);
+					});
+			});
+		});
+
+		describe('when execute successfully', () => {
+			it('should return a list of deleted messages', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						since: new Date('20 December 2018 17:51 UTC').toISOString(),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages.length).to.be.equal(1);
+					})
+					.end(done);
+			});
+			it('should return a list of deleted messages when the user sets count query parameter', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						since: new Date('20 December 2018 17:51 UTC').toISOString(),
+						count: 1,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages.length).to.be.equal(1);
+					})
+					.end(done);
+			});
+			it('should return a list of deleted messages when the user sets count and offset query parameters', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						since: new Date('20 December 2018 17:51 UTC').toISOString(),
+						count: 1,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages.length).to.be.equal(1);
+					})
+					.end(done);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error when "roomId" is not provided', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						since: new Date('20 December 2018 17:51 UTC').toISOString(),
+						count: 1,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('The required "roomId" query param is missing.');
+					})
+					.end(done);
+			});
+			it('should return statusCode 400 and an error when "since" is not provided', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						count: 1,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('The required "since" query param is missing.');
+					})
+					.end(done);
+			});
+			it('should return statusCode 400 and an error when "since" is provided but it is invalid ISODate', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						since: 'InvalidaDate',
+						count: 1,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('The "since" query parameter must be a valid date.');
 					})
 					.end(done);
 			});

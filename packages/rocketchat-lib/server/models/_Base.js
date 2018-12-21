@@ -128,6 +128,10 @@ class ModelsBase {
 		return this._db.trashFindDeletedAfter(...args);
 	}
 
+	trashFindDeleted(...args) {
+		return this._db.trashFindDeleted(...args);
+	}
+
 	processQueryOptionsOnResult(result, options = {}) {
 		if (result === undefined || result === null) {
 			return undefined;
