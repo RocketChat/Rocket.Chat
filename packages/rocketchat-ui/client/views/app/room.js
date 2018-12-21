@@ -854,6 +854,11 @@ Template.room.events({
 			return;
 		}
 		RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
+			const chatMessages = window.chatMessages[rid];
+			if (chatMessages && chatMessages.processSlashCommand(msgObject)) {
+				return;
+			}
+
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
