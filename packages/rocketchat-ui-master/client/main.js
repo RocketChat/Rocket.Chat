@@ -167,6 +167,17 @@ Template.main.helpers({
 		const user = Meteor.user();
 		return user && user.requirePasswordChange === true;
 	},
+	require2faSetup() {
+		const user = Meteor.user();
+
+		// User is already using 2fa
+		if (user.services.totp !== undefined && user.services.totp.enabled) {
+			return false;
+		}
+
+		const mandatoryRole = RocketChat.models.Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+		return mandatoryRole !== undefined;
+	},
 	CustomScriptLoggedOut() {
 		const script = RocketChat.settings.get('Custom_Script_Logged_Out') || '';
 		if (script.trim()) {
