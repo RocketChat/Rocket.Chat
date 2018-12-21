@@ -1,4 +1,3 @@
-/* globals FileUpload */
 import { Meteor } from 'meteor/meteor';
 
 RocketChat.deleteMessage = function(message, user) {
