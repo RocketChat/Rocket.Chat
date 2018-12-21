@@ -1,18 +1,15 @@
-/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss, popover */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { t } from 'meteor/rocketchat:utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
 RocketChat.settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true); } });
-
-this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
-this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');

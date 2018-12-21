@@ -1,7 +1,3 @@
-/* globals alerts, modal */
-
-import './stylesheets/e2e';
-
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';

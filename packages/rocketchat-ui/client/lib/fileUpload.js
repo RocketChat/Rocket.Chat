@@ -1,9 +1,10 @@
-/* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
-/* exported fileUpload */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { Handlebars } from 'meteor/ui';
+import { t } from 'meteor/rocketchat:utils';
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -134,7 +135,7 @@ const getUploadPreview = async(file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-fileUpload = async(files) => {
+fileUpload = async(files) => { //eslint-disable-line
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');

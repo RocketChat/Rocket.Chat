@@ -1,9 +1,12 @@
-/* globals AdminChatRoom */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { AdminChatRoom } from './adminRooms';
 import toastr from 'toastr';
 
 Template.adminRoomInfo.helpers({
