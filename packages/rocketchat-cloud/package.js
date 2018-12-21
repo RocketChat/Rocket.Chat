@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 		'client/admin/cloud.html',
 		'client/admin/cloud.js',
 		'client/admin/callback.html',
-		'client/admin/callback.js'
+		'client/admin/callback.js',
 	], 'client');
 
 	api.mainModule('client/index.js', 'client');

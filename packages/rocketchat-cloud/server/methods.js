@@ -133,6 +133,6 @@ Meteor.methods({
 
 		console.log(result);
 
-		return result
+		return result;
 	},
 });
