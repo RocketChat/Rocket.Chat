@@ -413,11 +413,12 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
+		alert: 'Force_visitor_to_accept_data_processing_consent_enabled_alert',
 		i18nLabel: 'Force_visitor_to_accept_data_processing_consent',
 		i18nDescription: 'Force_visitor_to_accept_data_processing_consent_description',
 	});
 
-	RocketChat.settings.add('Livechat_data_processing_consent_text', false, {
+	RocketChat.settings.add('Livechat_data_processing_consent_text', '', {
 		type: 'string',
 		multiline: true,
 		group: 'Livechat',
