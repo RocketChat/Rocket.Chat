@@ -5,7 +5,8 @@ import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export function connectWorkspace(token) {
-	if (!retrieveRegistrationStatus().registeredWithWizard) {
+	const { registeredWithWizard } = retrieveRegistrationStatus();
+	if (!registeredWithWizard) {
 		return false;
 	}
 
