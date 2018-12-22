@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
+import queryString from 'query-string';
 import toastr from 'toastr';
 
 Template.cloud.onCreated(function() {
@@ -9,16 +10,45 @@ Template.cloud.onCreated(function() {
 	instance.info = new ReactiveVar();
 	instance.loading = new ReactiveVar(true);
 
-	Meteor.call('cloud:checkRegisterStatus', (error, info) => {
-		if (error) {
-			console.warn('cloud:checkRegisterStatus', error);
-			return;
-		}
+	instance.loadRegStatus = function _loadRegStatus() {
+		Meteor.call('cloud:checkRegisterStatus', (error, info) => {
+			if (error) {
+				console.warn('cloud:checkRegisterStatus', error);
+				return;
+			}
 
-		instance.info.set(info);
-		instance.loading.set(false);
-		console.log(info);
-	});
+			instance.info.set(info);
+			instance.loading.set(false);
+		});
+	};
+
+	instance.connectWorkspace = function _connectWorkspace(token) {
+		Meteor.call('cloud:connectWorkspace', token, (error, success) => {
+			if (error) {
+				toastr.error(error);
+				instance.loadRegStatus();
+				return;
+			}
+
+			if (!success) {
+				toastr.error('Invalid token');
+				instance.loadRegStatus();
+				return;
+			}
+
+			toastr.success(t('Connected'));
+
+			instance.loadRegStatus();
+		});
+	};
+
+	const params = queryString.parse(location.search);
+
+	if (params.token) {
+		instance.connectWorkspace();
+	} else {
+		instance.loadRegStatus();
+	}
 });
 
 Template.cloud.helpers({
@@ -56,19 +86,6 @@ Template.cloud.events({
 	'click .connect-btn'(e, i) {
 		const token = $('input[name=cloudToken]').val();
 
-		Meteor.call('cloud:connectWorkspace', token, (error) => {
-			if (error) {
-				console.warn(error);
-				toastr.error(error);
-				return;
-			}
-
-			toastr.success(t('Connected'));
-
-			const info = i.info.get();
-			info.workspaceConnected = true;
-
-			i.info.set(info);
-		});
+		i.connectWorkspace(token);
 	},
 });
