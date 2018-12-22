@@ -32,16 +32,13 @@ RocketChat.statistics.get = function _getStatistics() {
 		}
 	});
 
-	if (RocketChat.settings.get('Register_Server')) {
-		const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
-		statistics.wizard.contactName = firstUser && firstUser.name;
-		statistics.wizard.contactEmail = firstUser && firstUser.emails[0].address;
+	const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
+	statistics.wizard.contactName = firstUser && firstUser.name;
+	statistics.wizard.contactEmail = firstUser && firstUser.emails[0].address;
 
-		if (RocketChat.models.Settings.findOne('Organization_Email')) {
-			statistics.wizard.contactEmail = RocketChat.settings.get('Organization_Email');
-		}
+	if (RocketChat.models.Settings.findOne('Organization_Email')) {
+		statistics.wizard.contactEmail = RocketChat.settings.get('Organization_Email');
 	}
-
 
 	// Version
 	statistics.uniqueId = RocketChat.settings.get('uniqueID');
