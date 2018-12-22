@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 	api.use('matb33:collection-hooks');
 	api.use('service-configuration');
 	api.use('check');
+	api.use('rocketchat:utils');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');

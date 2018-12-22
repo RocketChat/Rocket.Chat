@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 
