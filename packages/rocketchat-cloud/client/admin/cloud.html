@@ -19,13 +19,17 @@
 						{{#if info.registeredWithWizard}}
 							{{#if info.workspaceConnected}}
 								<div class="section-content border-component-color">
-									<p>Your workspace is now connected to the Rocket.Chat Cloud. If you would like, you can login to Rocket.Chat Cloud to and associate your workspace with your account.</p>
-									<div class="input-line double-col">
-										<label class="setting-label" title=""></label>
-										<div class="setting-field">
-											<button type="button" class="rc-button rc-button--primary action login-btn">Login To Rocket.Chat Cloud</button>
+									{{#if info.userAssociated}}
+										<p>Your workspace is now connected to the Rocket.Chat Cloud and an account is associated.</p>
+									{{else}}
+										<p>Your workspace is now connected to the Rocket.Chat Cloud. If you would like, you can login to the Rocket.Chat Cloud and associate your workspace with your Cloud account.</p>
+										<div class="input-line double-col">
+											<label class="setting-label" title=""></label>
+											<div class="setting-field">
+												<button type="button" class="rc-button rc-button--primary action login-btn">Login To Rocket.Chat Cloud</button>
+											</div>
 										</div>
-									</div>
+									{{/if}}
 								</div>
 							{{else}}
 								<div class="section-content border-component-color">

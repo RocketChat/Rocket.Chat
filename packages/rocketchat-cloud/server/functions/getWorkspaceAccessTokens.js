@@ -8,6 +8,11 @@ export function getWorkspaceAccessToken() {
 		return '';
 	}
 
+	const client_id = RocketChat.settings.get('Cloud_Workspace_Client_Id');
+	if (!client_id) {
+		return '';
+	}
+
 	const expires = RocketChat.models.Settings.findOneById('Cloud_Workspace_Access_Token_Expires_At');
 	const now = new Date();
 
@@ -16,7 +21,6 @@ export function getWorkspaceAccessToken() {
 	}
 
 	const cloudUrl = RocketChat.settings.get('Cloud_Url');
-	const client_id = RocketChat.settings.get('Cloud_Workspace_Client_Id');
 	const client_secret = RocketChat.settings.get('Cloud_Workspace_Client_Secret');
 	const redirectUrl = getRedirectUri();
 

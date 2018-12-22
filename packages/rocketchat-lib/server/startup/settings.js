@@ -2647,6 +2647,16 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 				value: true,
 			},
 		});
+
+		this.add('Cloud_Workspace_Account_Associated', false, {
+			type: 'boolean',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
 	});
 });
 

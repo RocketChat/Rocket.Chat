@@ -22,10 +22,24 @@ export function finishOAuthAuthorization(code, state) {
 			grant_type: 'authorization_code',
 			code,
 			redirect_uri: getRedirectUri(),
+			scope: 'offline+workspace',
 		}),
 	});
 
-	// TODO: determine how to handle this
+	const expiresAt = new Date();
+	expiresAt.setSeconds(expiresAt.getSeconds() + result.data.expires_in);
 
-	return result;
+	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Account_Associated', true);
+	RocketChat.models.Users.update({ _id: Meteor.userId() }, {
+		$set: {
+			'services.cloud': {
+				accessToken: result.data.access_token,
+				expiresAt,
+				scope: result.data.scope,
+				tokenType: result.data.token_type,
+			},
+		},
+	});
+
+	return true;
 }
