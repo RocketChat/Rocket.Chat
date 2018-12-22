@@ -22,7 +22,7 @@ export function finishOAuthAuthorization(code, state) {
 			grant_type: 'authorization_code',
 			code,
 			redirect_uri: getRedirectUri(),
-			scope: 'offline+workspace',
+			scope: 'offline,workspace',
 		}),
 	});
 
@@ -37,6 +37,7 @@ export function finishOAuthAuthorization(code, state) {
 				expiresAt,
 				scope: result.data.scope,
 				tokenType: result.data.token_type,
+				refreshToken: result.data.refresh_token,
 			},
 		},
 	});

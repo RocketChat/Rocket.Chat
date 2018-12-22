@@ -11,5 +11,5 @@ export function getOAuthAuthorizationUrl() {
 	const client_id = RocketChat.settings.get('Cloud_Workspace_Client_Id');
 	const redirectUrl = getRedirectUri();
 
-	return `${ cloudUrl }/authorize?response_type=code&client_id=${ client_id }&redirect_uri=${ redirectUrl }&scope=offline+workspace&state=${ state }`;
+	return `${ cloudUrl }/authorize?response_type=code&client_id=${ client_id }&redirect_uri=${ redirectUrl }&scope=offline,workspace&state=${ state }`;
 }

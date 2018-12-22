@@ -2628,7 +2628,7 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 			},
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Scope', 'offline+workspace', {
+		this.add('Cloud_Workspace_Access_Token_Scope', 'offline,workspace', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
