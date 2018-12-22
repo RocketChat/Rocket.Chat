@@ -24,15 +24,20 @@ export function getWorkspaceAccessToken() {
 	const client_secret = RocketChat.settings.get('Cloud_Workspace_Client_Secret');
 	const redirectUrl = getRedirectUri();
 
-	const authTokenResult = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
-		data: {},
-		query: querystring.stringify({
-			client_id,
-			client_secret,
-			grant_type: 'client_credentials',
-			redirect_uri: redirectUrl,
-		}),
-	});
+	let authTokenResult;
+	try {
+		authTokenResult = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
+			data: {},
+			query: querystring.stringify({
+				client_id,
+				client_secret,
+				grant_type: 'client_credentials',
+				redirect_uri: redirectUrl,
+			}),
+		});
+	} catch (e) {
+		return '';
+	}
 
 	const expiresAt = new Date();
 	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);

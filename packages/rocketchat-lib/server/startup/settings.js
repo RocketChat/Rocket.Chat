@@ -2608,6 +2608,16 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 			},
 		});
 
+		this.add('Cloud_Workspace_License', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
 		this.add('Cloud_Workspace_Access_Token', '', {
 			type: 'string',
 			hidden: true,

@@ -14,17 +14,22 @@ export function finishOAuthAuthorization(code, state) {
 	const clientId = RocketChat.settings.get('Cloud_Workspace_Client_Id');
 	const clientSecret = RocketChat.settings.get('Cloud_Workspace_Client_Secret');
 
-	const result = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
-		data: {},
-		query: querystring.stringify({
-			client_id: clientId,
-			client_secret: clientSecret,
-			grant_type: 'authorization_code',
-			code,
-			redirect_uri: getRedirectUri(),
-			scope: 'offline,workspace',
-		}),
-	});
+	let result;
+	try {
+		result = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
+			data: {},
+			query: querystring.stringify({
+				client_id: clientId,
+				client_secret: clientSecret,
+				grant_type: 'authorization_code',
+				code,
+				redirect_uri: getRedirectUri(),
+				scope: 'offline,workspace',
+			}),
+		});
+	} catch (e) {
+		return false;
+	}
 
 	const expiresAt = new Date();
 	expiresAt.setSeconds(expiresAt.getSeconds() + result.data.expires_in);
