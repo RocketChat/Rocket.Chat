@@ -2618,8 +2618,8 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 			},
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Expires_In', 0, {
-			type: 'int',
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+			type: 'date',
 			hidden: true,
 			readonly: true,
 			enableQuery: {
@@ -2629,16 +2629,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 		});
 
 		this.add('Cloud_Workspace_Access_Token_Scope', 'offline+workspace', {
-			type: 'string',
-			hidden: true,
-			readonly: true,
-			enableQuery: {
-				_id: 'Register_Server',
-				value: true,
-			},
-		});
-
-		this.add('Cloud_Workspace_Refresh_Token', '', {
 			type: 'string',
 			hidden: true,
 			readonly: true,
