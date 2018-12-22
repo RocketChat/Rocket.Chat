@@ -18,51 +18,47 @@
 					<div class="section">
 						{{#if info.registeredWithWizard}}
 							{{#if info.workspaceConnected}}
-							<div class="section-content border-component-color">
-
-								<p>Login to Rocket.Chat Cloud to finish linking your workspace</p>
-
+								<div class="section-content border-component-color">
+									<p>Your workspace is now connected to the Rocket.Chat Cloud. If you would like, you can login to Rocket.Chat Cloud to and associate your workspace with your account.</p>
 									<div class="input-line double-col">
 										<label class="setting-label" title=""></label>
 										<div class="setting-field">
 											<button type="button" class="rc-button rc-button--primary action login-btn">Login To Rocket.Chat Cloud</button>
 										</div>
 									</div>
-
 								</div>
 							{{else}}
+								<div class="section-content border-component-color">
+									<div class="input-line double-col">
+										<label class="setting-label" title="cloudEmail">Email</label>
+										<div class="setting-field">
+											<input class="input-monitor rc-input__element" type="text" name="cloudEmail" value="{{ info.email }}">
+											<div class="settings-description secondary-font-color">The address to send your Cloud registration email to.</div>
+										</div>
+									</div>
+									<div class="input-line double-col">
+										<label class="setting-label" title=""></label>
+										<div class="setting-field">
+											<button type="button" class="rc-button rc-button--primary action update-email-btn">Update Email</button>
+										</div>
+									</div>
 
-							<div class="section-content border-component-color">
-								<div class="input-line double-col">
-									<label class="setting-label" title="cloudEmail">Email</label>
-									<div class="setting-field">
-										<input class="input-monitor rc-input__element" type="text" name="cloudEmail" value="{{ info.email }}">
-										<div class="settings-description secondary-font-color">The address to send your Cloud registration email to.</div>
-									</div>
-								</div>
-								<div class="input-line double-col">
-									<label class="setting-label" title=""></label>
-									<div class="setting-field">
-										<button type="button" class="rc-button rc-button--primary action update-email-btn">Update Email</button>
-									</div>
-								</div>
+									<pre>{{ registeredWithWizard }}</pre>
 
-								<pre>{{ registeredWithWizard }}</pre>
-
-								<div class="input-line double-col">
-									<label class="setting-label" title="cloudToken">Token</label>
-									<div class="setting-field">
-										<input class="input-monitor rc-input__element" type="text" name="cloudToken" value="{{ info.token }}">
-										<div class="settings-description secondary-font-color">Manually enter the token received from the Cloud Registration Email.</div>
+									<div class="input-line double-col">
+										<label class="setting-label" title="cloudToken">Token</label>
+										<div class="setting-field">
+											<input class="input-monitor rc-input__element" type="text" name="cloudToken" value="{{ info.token }}">
+											<div class="settings-description secondary-font-color">Manually enter the token received from the Cloud Registration Email.</div>
+										</div>
+									</div>
+									<div class="input-line double-col">
+										<label class="setting-label" title=""></label>
+										<div class="setting-field">
+											<button type="button" class="rc-button rc-button--primary action connect-btn">Connect</button>
+										</div>
 									</div>
 								</div>
-								<div class="input-line double-col">
-									<label class="setting-label" title=""></label>
-									<div class="setting-field">
-										<button type="button" class="rc-button rc-button--primary action connect-btn">Connect</button>
-									</div>
-								</div>
-							</div>
 							{{/if}}
 						{{else}}
 							<div class="section-title">
