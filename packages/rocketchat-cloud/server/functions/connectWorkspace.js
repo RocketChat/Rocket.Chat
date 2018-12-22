@@ -2,14 +2,19 @@ import querystring from 'querystring';
 import { HTTP } from 'meteor/http';
 
 import { getRedirectUri } from './getRedirectUri';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export function connectWorkspace(token) {
-	const redirectUrl = getRedirectUri();
+	if (!retrieveRegistrationStatus().registeredWithWizard) {
+		return false;
+	}
+
+	const redirectUri = getRedirectUri();
 
 	const regInfo = {
 		email: RocketChat.settings.get('Organization_Email'),
 		client_name: RocketChat.settings.get('Site_Name'),
-		redirect_uris: [redirectUrl],
+		redirect_uris: [redirectUri],
 	};
 
 	const cloudUrl = RocketChat.settings.get('Cloud_Url');
@@ -43,7 +48,7 @@ export function connectWorkspace(token) {
 				client_id: data.client_id,
 				client_secret: data.client_secret,
 				grant_type: 'client_credentials',
-				redirect_uri: redirectUrl,
+				redirect_uri: redirectUri,
 			}),
 		});
 	} catch (e) {
@@ -55,7 +60,6 @@ export function connectWorkspace(token) {
 
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token_Scope', authTokenResult.data.scope);
 
 	return true;
 }

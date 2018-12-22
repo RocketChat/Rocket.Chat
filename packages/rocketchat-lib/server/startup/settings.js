@@ -2638,16 +2638,6 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 			},
 		});
 
-		this.add('Cloud_Workspace_Access_Token_Scope', 'offline,workspace', {
-			type: 'string',
-			hidden: true,
-			readonly: true,
-			enableQuery: {
-				_id: 'Register_Server',
-				value: true,
-			},
-		});
-
 		this.add('Cloud_Workspace_Registration_State', '', {
 			type: 'string',
 			hidden: true,

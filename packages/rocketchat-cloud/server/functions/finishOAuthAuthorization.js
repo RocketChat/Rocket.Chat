@@ -24,7 +24,6 @@ export function finishOAuthAuthorization(code, state) {
 				grant_type: 'authorization_code',
 				code,
 				redirect_uri: getRedirectUri(),
-				scope: 'offline,workspace',
 			}),
 		});
 	} catch (e) {

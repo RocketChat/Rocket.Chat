@@ -22,7 +22,7 @@ export function getWorkspaceAccessToken() {
 
 	const cloudUrl = RocketChat.settings.get('Cloud_Url');
 	const client_secret = RocketChat.settings.get('Cloud_Workspace_Client_Secret');
-	const redirectUrl = getRedirectUri();
+	const redirectUri = getRedirectUri();
 
 	let authTokenResult;
 	try {
@@ -32,7 +32,7 @@ export function getWorkspaceAccessToken() {
 				client_id,
 				client_secret,
 				grant_type: 'client_credentials',
-				redirect_uri: redirectUrl,
+				redirect_uri: redirectUri,
 			}),
 		});
 	} catch (e) {
@@ -44,7 +44,6 @@ export function getWorkspaceAccessToken() {
 
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token_Scope', authTokenResult.data.scope);
 
 	console.log('refreshed client access token');
 
