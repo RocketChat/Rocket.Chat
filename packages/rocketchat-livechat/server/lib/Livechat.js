@@ -748,18 +748,6 @@ RocketChat.Livechat = {
 		RocketChat.models.Rooms.removeByVisitorToken(token);
 	},
 
-	removeRoom(_id) {
-		const room = RocketChat.models.Rooms.findOneById(rid);
-
-		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room');
-		}
-
-		RocketChat.models.Messages.removeByRoomId(rid);
-		RocketChat.models.Subscriptions.removeByRoomId(rid);
-		return RocketChat.models.Rooms.removeById(rid);
-	},
-
 	saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
 
