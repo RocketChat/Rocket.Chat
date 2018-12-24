@@ -368,6 +368,8 @@ RocketChat.Livechat = {
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',
+			'Livechat_force_accept_data_processing_consent',
+			'Livechat_data_processing_consent_text',
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
@@ -715,6 +717,47 @@ RocketChat.Livechat = {
 		}
 
 		return RocketChat.authz.removeUserFromRoles(user._id, 'livechat-manager');
+	},
+
+	removeGuest(_id) {
+		check(_id, String);
+
+		const guest = LivechatVisitors.findById(_id);
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
+		}
+
+		this.cleanGuestHistory(_id);
+		return LivechatVisitors.removeById(_id);
+	},
+
+	cleanGuestHistory(guestId) {
+		const guest = LivechatVisitors.findById(_id);
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
+		}
+
+		const { token } = guest;
+
+		RocketChat.models.Rooms.findByVisitorToken(token).forEach((room) => {
+			RocketChat.models.Messages.removeFilesByRoomId(room._id);
+			RocketChat.models.Messages.removeByRoomId(room._id);
+		});
+
+		RocketChat.models.Subscriptions.removeByVisitorToken(token);
+		RocketChat.models.Rooms.removeByVisitorToken(token);
+	},
+
+	removeRoom(_id) {
+		const room = RocketChat.models.Rooms.findOneById(rid);
+
+		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
+
+		RocketChat.models.Messages.removeByRoomId(rid);
+		RocketChat.models.Subscriptions.removeByRoomId(rid);
+		return RocketChat.models.Rooms.removeById(rid);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
