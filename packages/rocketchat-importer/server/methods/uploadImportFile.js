@@ -30,9 +30,6 @@ Meteor.methods({
 		const readStream = RocketChatFile.bufferToStream(file);
 		const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
 
-		writeStream.on('end', Meteor.bindEnvironment(() => {
-		}));
-
 		readStream.pipe(writeStream);
 	},
 });
