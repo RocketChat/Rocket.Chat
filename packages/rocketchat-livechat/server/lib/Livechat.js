@@ -731,7 +731,7 @@ RocketChat.Livechat = {
 		return LivechatVisitors.removeById(_id);
 	},
 
-	cleanGuestHistory(guestId) {
+	cleanGuestHistory(_id) {
 		const guest = LivechatVisitors.findById(_id);
 		if (!guest) {
 			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
