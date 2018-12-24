@@ -86,10 +86,6 @@ const persistSettings = (state, callback) => {
 				_id: 'Allow_Marketing_Emails',
 				value: state.optIn,
 			},
-			{
-				_id: 'Organization_Email',
-				value: state['registration-email'],
-			},
 		]);
 
 	RocketChat.settings.batchSet(settings, (error) => {
