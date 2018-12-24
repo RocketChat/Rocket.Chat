@@ -360,6 +360,7 @@ RocketChat.API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
 		const cursor = RocketChat.models.Messages.trashFindDeletedAfter(new Date(since), { rid: roomId }, {
 			skip: offset,
 			limit: count,
+			fields: { _id: 1 },
 		});
 
 		const total = cursor.count();
