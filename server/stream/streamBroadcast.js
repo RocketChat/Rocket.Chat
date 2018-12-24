@@ -2,7 +2,6 @@
 
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 import { DDPCommon } from 'meteor/ddp-common';
 import {
 	Streamer,
@@ -44,9 +43,7 @@ function authorizeConnection(instance) {
 	};
 
 	if (!InstanceStatus.getCollection().findOne(query)) {
-		return Meteor.setTimeout(function() {
-			return authorizeConnection(instance);
-		}, 500);
+		return Meteor.setTimeout(authorizeConnection, 500, instance);
 	}
 
 	return _authorizeConnection(instance);
@@ -242,9 +239,8 @@ function startStreamBroadcast() {
 
 		if (value && value.trim() !== '') {
 			return startStreamCastBroadcast(value);
-		} else {
-			return startMatrixBroadcast();
 		}
+		return startMatrixBroadcast();
 	});
 
 	function broadcast(streamName, eventName, args/* , userId*/) {
@@ -281,9 +277,7 @@ function startStreamBroadcast() {
 		}
 	}
 
-	return Meteor.StreamerCentral.on('broadcast', function(streamName, eventName, args) {
-		return broadcast(streamName, eventName, args);
-	});
+	return Meteor.StreamerCentral.on('broadcast', broadcast);
 }
 
 Meteor.startup(function() {
@@ -299,8 +293,8 @@ Meteor.methods({
 		}
 
 		return Object.keys(connections).map((address) => {
-			const conn = connections[address];
-			return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
+			const { instanceRecord, broadcastAuth, _stream } = connections[address];
+			return { address, currentStatus: _stream.currentStatus, instanceRecord, broadcastAuth };
 		});
 	},
 });
