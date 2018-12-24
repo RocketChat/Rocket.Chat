@@ -99,7 +99,7 @@ export class Base {
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
-		const userId = Meteor.user()._id;
+		const userId = Meteor.userId();
 		const importRecord = Imports.findPendingImport(this.info.key);
 
 		if (importRecord) {
