@@ -10,7 +10,7 @@ RocketChat.metrics.streamer = new RocketChat.promclient.Counter({
 RocketChat.metrics.stream = new RocketChat.promclient.Counter({
 	name: 'rocketchat_meteor_stream',
 	help: 'summary of stream',
-	labelNames: ['stream', 'eventName', 'listeners'],
+	labelNames: ['stream', 'eventName'],
 });
 
 export const Streamer = new class Streamer extends EventEmitter {
@@ -28,5 +28,5 @@ Streamer.on('broadcast', (stream, eventName) => {
 });
 
 Streamer.on('emit', (stream, eventName) => {
-	RocketChat.metrics.streamer.labels(stream, eventName).inc();
+	RocketChat.metrics.stream.labels(stream, eventName).inc();
 });

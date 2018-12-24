@@ -1,4 +1,3 @@
-import './style/style.css';
 import './search/search.html';
 import './search/search';
 import './provider/suggestion.html';
