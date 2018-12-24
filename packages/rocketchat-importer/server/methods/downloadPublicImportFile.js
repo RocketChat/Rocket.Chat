@@ -7,7 +7,6 @@ import http from 'http';
 Meteor.methods({
 	downloadPublicImportFile(fileUrl, importerKey) {
 		const userId = Meteor.userId();
-		console.log(fileUrl);
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'downloadPublicImportFile' });
