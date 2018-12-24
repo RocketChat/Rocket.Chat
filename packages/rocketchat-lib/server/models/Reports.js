@@ -1,18 +1,3 @@
-import _ from 'underscore';
+import { Reports } from 'meteor/rocketchat:models';
 
-RocketChat.models.Reports = new class extends RocketChat.models._Base {
-	constructor() {
-		super('reports');
-	}
-	createWithMessageDescriptionAndUserId(message, description, userId, extraData) {
-		const record = {
-			message,
-			description,
-			ts: new Date(),
-			userId,
-		};
-		_.extend(record, extraData);
-		record._id = this.insert(record);
-		return record;
-	}
-};
+RocketChat.models.Reports = Reports;
