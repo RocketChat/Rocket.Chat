@@ -5,6 +5,6 @@ export class UserDataFiles extends Base {
 		super();
 		this._initModel('userDataFiles');
 	}
-};
+}
 
 export default new UserDataFiles();

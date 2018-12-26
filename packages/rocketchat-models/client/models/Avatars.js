@@ -5,6 +5,6 @@ export class Avatars extends Base {
 		super();
 		this._initModel('avatars');
 	}
-};
+}
 
 export default new Avatars();

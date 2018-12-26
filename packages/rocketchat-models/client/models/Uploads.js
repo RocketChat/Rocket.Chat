@@ -5,6 +5,6 @@ export class Uploads extends Base {
 		super();
 		this._initModel('uploads');
 	}
-};
+}
 
 export default new Uploads();

@@ -52,4 +52,4 @@ export class Base {
 
 	tryDropIndex() {}
 
-};
+}
