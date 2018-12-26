@@ -1,6 +1,3 @@
-RocketChat.models.UserDataFiles = new class extends RocketChat.models._Base {
-	constructor() {
-		super();
-		this._initModel('userDataFiles');
-	}
-};
+import { UserDataFiles } from 'meteor/rocketchat:models';
+
+RocketChat.models.UserDataFiles = UserDataFiles;

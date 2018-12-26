@@ -1,7 +1,3 @@
+import { Uploads } from 'meteor/rocketchat:models';
 
-RocketChat.models.Uploads = new class extends RocketChat.models._Base {
-	constructor() {
-		super();
-		this._initModel('uploads');
-	}
-};
+RocketChat.models.Uploads = Uploads;
