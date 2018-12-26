@@ -171,7 +171,7 @@ RocketChat.Notifications = new class {
 			}
 			return false;
 		});
-		this.streamUser.allowWrite('logged');
+		this.streamUser.allowWrite('none');
 		this.streamAll.allowRead('all');
 		this.streamLogged.allowRead('logged');
 		this.streamRoom.allowRead(function(eventName, extraData) {
