@@ -16,7 +16,7 @@ RocketChat.metrics.stream = new RocketChat.promclient.Counter({
 export const Streamer = new class Streamer extends EventEmitter {
 	broadcast(stream, eventName, ...args) {
 		Meteor.StreamerCentral.emit('broadcast', stream, eventName, args); // TODO: remove that emiter
-
+		this.emit('broadcast', stream, eventName, args);
 	}
 	// internal(stream, eventName, ...args) {
 	// RocketChat.Services.broadcast('stream-internal', { stream, eventName, args });
