@@ -243,9 +243,6 @@ Package.onUse(function(api) {
 	api.addFiles('startup/defaultRoomTypes.js');
 	api.addFiles('startup/index.js', 'server');
 
-	// VERSION
-	api.addFiles('rocketchat.info');
-
 	// EXPORT
 	api.export('RocketChat');
 	api.export('handleError', 'client');
