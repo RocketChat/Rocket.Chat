@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:utils');
 	api.use('rocketchat:models');
 	api.use('rocketchat:migrations');
+	api.use('rocketchat:metrics');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
@@ -82,6 +83,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
+	api.addFiles('lib/info.js');
 
 	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
