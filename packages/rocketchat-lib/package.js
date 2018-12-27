@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:models');
 	api.use('rocketchat:migrations');
 	api.use('rocketchat:metrics');
+	api.use('rocketchat:callbacks');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
