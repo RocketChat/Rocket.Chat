@@ -10,6 +10,7 @@ import Subscriptions from './models/Subscriptions';
 import Uploads from './models/Uploads';
 import UserDataFiles from './models/UserDataFiles';
 import Users from './models/Users';
+import Statistics from './models/Statistics';
 
 export {
 	Base,
@@ -24,4 +25,5 @@ export {
 	Uploads,
 	UserDataFiles,
 	Users,
+	Statistics,
 };
