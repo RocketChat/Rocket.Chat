@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('rocketchat:utils');
 	api.use('rocketchat:models');
+	api.use('rocketchat:migrations');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
@@ -133,6 +134,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
 	api.addFiles('server/lib/passwordPolicy.js', 'server');
+	api.addFiles('server/lib/migrations.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/index.js', 'server');

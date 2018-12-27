@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
 		'rocketchat:version',
 		'logging',
 		'check',
