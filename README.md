@@ -39,6 +39,7 @@
   * [Hyper.sh](#hypersh)
   * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
+  * [Syncloud.org](#syncloudorg)
 * [About Rocket.Chat](#about-rocketchat)
   * [In the News](#in-the-news)
   * [Features](#features)
@@ -231,6 +232,11 @@ Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with 
 
 [![Deploy](https://github.com/mastappl/images/blob/master/deployTo.png)](https://panel.d2c.io/?import=https://github.com/d2cio/rocketchat-stack/archive/master.zip/)
 
+## Syncloud.org
+Run Rocket.Chat on your easy to use personal device.
+
+[![Deploy](https://syncloud.org/images/logo_min.svg)](https://syncloud.org)
+
 # About Rocket.Chat
 
 Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) fullstack framework.
@@ -408,6 +414,13 @@ meteor npm install
 meteor npm start
 ```
 
+In order to debug the server part use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
+
+```sh
+meteor debug
+```
+You'll find a nodejs icon in the developer console.
+
 If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
 
 ## Branching Model
@@ -424,7 +437,7 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 
 ## How to Contribute
 
-Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community.
+Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://rocket.chat/docs/contributing/).
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 

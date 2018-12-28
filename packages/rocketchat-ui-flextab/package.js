@@ -15,22 +15,10 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'mizzao:autocomplete',
+		'rocketchat:webrtc',
 	]);
-
-	api.addFiles('client/flexTabBar.html', 'client');
-	api.addFiles('client/tabs/inviteUsers.html', 'client');
-	api.addFiles('client/tabs/membersList.html', 'client');
-	api.addFiles('client/tabs/uploadedFilesList.html', 'client');
-	api.addFiles('client/tabs/userEdit.html', 'client');
-	api.addFiles('client/tabs/userInfo.html', 'client');
-
-	api.addFiles('client/flexTabBar.js', 'client');
-	api.addFiles('client/tabs/inviteUsers.js', 'client');
-	api.addFiles('client/tabs/membersList.js', 'client');
-	api.addFiles('client/tabs/uploadedFilesList.js', 'client');
-	api.addFiles('client/tabs/userEdit.js', 'client');
-	api.addFiles('client/tabs/userInfo.js', 'client');
-	api.addFiles('client/tabs/keyboardShortcuts.html', 'client');
+	api.mainModule('client/index.js', 'client');
 });

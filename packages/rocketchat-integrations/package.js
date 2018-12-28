@@ -15,11 +15,13 @@ Package.onUse(function(api) {
 		'rocketchat:authorization',
 		'rocketchat:theme',
 		'rocketchat:logger',
+		'rocketchat:utils',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 		'nimble:restivus',
 		'templating',
 	]);
+	api.addFiles('client/stylesheets/integrations.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

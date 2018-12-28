@@ -8,8 +8,9 @@ import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { e2e } from 'meteor/rocketchat:e2e';
+import { getAvatarAsPng } from './avatar';
 
-const KonchatNotification = {
+KonchatNotification = {
 	notificationStatus: new ReactiveVar,
 
 	// notificacoes HTML5
@@ -85,7 +86,6 @@ const KonchatNotification = {
 			}
 		}
 
-		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
 			return KonchatNotification.notify(notification);
@@ -175,5 +175,3 @@ Meteor.startup(() => {
 		}
 	});
 });
-export { KonchatNotification };
-this.KonchatNotification = KonchatNotification;

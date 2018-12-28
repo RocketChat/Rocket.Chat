@@ -1,7 +1,7 @@
-/* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
-/* globals popout */
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { popout } from 'meteor/rocketchat:ui';
 
 Template.videoFlexTabBbb.helpers({
 	openInNewWindow() {
