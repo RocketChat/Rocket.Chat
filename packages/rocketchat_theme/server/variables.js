@@ -1,4 +1,4 @@
-
+import { RocketChat } from 'meteor/rocketchat:lib';
 // TODO: Define registers/getters/setters for packages to work with established
 // 			heirarchy of colors instead of making duplicate definitions
 // TODO: Settings pages to show simple separation of major/minor/addon colors

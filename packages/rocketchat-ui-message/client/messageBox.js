@@ -1,10 +1,13 @@
-/* globals fileUpload KonchatNotification chatMessages popover AudioRecorder chatMessages fileUploadHandler*/
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -227,7 +230,6 @@ Template.messageBox.helpers({
 			},
 		};
 	},
-	/* globals MsgTyping*/
 	usersTyping() {
 		const maxUsernames = 4;
 		const users = MsgTyping.get(this._id);
@@ -280,7 +282,7 @@ Template.messageBox.helpers({
 		return Template.instance().dataReply.get();
 	},
 	isAudioMessageAllowed() {
-		return (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+		return (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
 			navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
 			RocketChat.settings.get('FileUpload_Enabled') &&
 			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
@@ -656,7 +658,7 @@ Template.messageBox.events({
 			RocketChat.EmojiPicker.close();
 		} else {
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				const { input } = window.chatMessages[RocketChat.openedRoom];
+				const { input } = chatMessages[RocketChat.openedRoom];
 
 				const emojiValue = `:${ emoji }:`;
 

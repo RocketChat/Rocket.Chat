@@ -1,4 +1,3 @@
-import '../assets/stylesheets/customSoundsAdmin.css';
 import './lib/CustomSounds';
 import './models/CustomSounds';
 import './notifications/deleteCustomSound';
