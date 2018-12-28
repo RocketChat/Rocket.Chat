@@ -24386,6 +24386,88 @@
           ]
         }
       ]
+    },
+    "0.73.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "pull_requests": [
+        {
+          "pr": "12932",
+          "title": "Release 0.72.3",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "ggazzo",
+            "Hudell",
+            "tassoevan",
+            "piotrkochan"
+          ]
+        },
+        {
+          "pr": "12901",
+          "title": "Release 0.72.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12848",
+          "title": "Bump Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "0.72.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "12818",
+          "title": "[FIX] Change spread operator to Array.from for Edge browser",
+          "userLogin": "ohmonster",
+          "milestone": "0.72.1",
+          "contributors": [
+            "ohmonster"
+          ]
+        },
+        {
+          "pr": "12727",
+          "title": "[FIX] API users.info returns caller rooms and not requested user ones",
+          "userLogin": "piotrkochan",
+          "milestone": "0.72.1",
+          "contributors": [
+            "piotrkochan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12804",
+          "title": "Change file order in rocketchat-cors",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.72.1",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12847",
+          "title": "[FIX] Missing HipChat Enterprise Importer",
+          "userLogin": "Hudell",
+          "milestone": "0.72.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "12805",
+          "title": "[FIX] Emoji as avatar",
+          "userLogin": "tassoevan",
+          "milestone": "0.72.1",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
