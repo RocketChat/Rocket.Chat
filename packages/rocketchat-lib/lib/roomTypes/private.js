@@ -1,4 +1,3 @@
-/* globals openRoom */
 import { Meteor } from 'meteor/meteor';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../RoomTypeConfig';
 

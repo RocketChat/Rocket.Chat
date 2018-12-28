@@ -1,8 +1,9 @@
-/* globals popover menu */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { popover } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
@@ -38,7 +39,7 @@ const extendedViewOption = (user) => {
 const showToolbar = new ReactiveVar(false);
 
 const selectorSearch = '.toolbar__search .rc-input__element';
-const toolbarSearch = {
+toolbarSearch = {
 	shortcut: false,
 	clear() {
 		const $inputMessage = $('.js-input-message');
@@ -62,8 +63,6 @@ const toolbarSearch = {
 		}
 	},
 };
-
-this.toolbarSearch = toolbarSearch;
 
 const toolbarButtons = (user) => [{
 	name: t('Search'),

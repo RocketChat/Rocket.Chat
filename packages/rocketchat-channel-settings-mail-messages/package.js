@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 		'rocketchat:channel-settings',
 		'mizzao:autocomplete',
 		'mongo',
+		'rocketchat:utils',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

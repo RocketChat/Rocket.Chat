@@ -5,6 +5,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 const acEvents = {

@@ -1,4 +1,3 @@
-/* globals MsgTyping */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
@@ -6,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -20,10 +20,10 @@ Meteor.startup(() => {
 	});
 });
 
-ChatMessages = class ChatMessages { //eslint-disable-line
+ChatMessages = class ChatMessages {
 	constructor() {
 
-		this.saveTextMessageBox = _.debounce((rid, value) => { // eslint
+		this.saveTextMessageBox = _.debounce((rid, value) => {
 			const key = `messagebox_${ rid }`;
 			return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
 		}, 1000);
@@ -195,7 +195,6 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 		this.editing.saved = this.input.value;
 		return this.editing.savedCursor = this.input.selectionEnd;
 	}
-	/* globals readMessage KonchatNotification */
 	/**
 	* * @param {string} rim room ID
 	* * @param {Element} input DOM element
@@ -260,43 +259,8 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 			this.hasValue.set(false);
 			this.stopTyping(rid);
 
-			// Check if message starts with /command
-			if (msg[0] === '/') {
-				const match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
-				if (match) {
-					let command;
-					if (RocketChat.slashCommands.commands[match[1]]) {
-						const commandOptions = RocketChat.slashCommands.commands[match[1]];
-						command = match[1];
-						const param = match[2] || '';
-
-						if (!commandOptions.permission || RocketChat.authz.hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
-							if (commandOptions.clientOnly) {
-								commandOptions.callback(command, param, msgObject);
-							} else {
-								Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject }));
-							}
-
-							return;
-						}
-					}
-
-					if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
-						const invalidCommandMsg = {
-							_id: Random.id(),
-							rid,
-							ts: new Date,
-							msg: TAPi18n.__('No_such_command', { command: match[1] }),
-							u: {
-								username: RocketChat.settings.get('InternalHubot_Username'),
-							},
-							private: true,
-						};
-
-						ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
-						return;
-					}
-				}
+			if (this.processSlashCommand(msgObject)) {
+				return;
 			}
 
 			Meteor.call('sendMessage', msgObject);
@@ -318,6 +282,49 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 
 			return this.confirmDeleteMsg(message, done);
 		}
+	}
+
+	processSlashCommand(msgObject) {
+		// Check if message starts with /command
+		if (msgObject.msg[0] === '/') {
+			const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
+			if (match) {
+				let command;
+				if (RocketChat.slashCommands.commands[match[1]]) {
+					const commandOptions = RocketChat.slashCommands.commands[match[1]];
+					command = match[1];
+					const param = match[2] || '';
+
+					if (!commandOptions.permission || RocketChat.authz.hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
+						if (commandOptions.clientOnly) {
+							commandOptions.callback(command, param, msgObject);
+						} else {
+							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject }));
+						}
+
+						return true;
+					}
+				}
+
+				if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
+					const invalidCommandMsg = {
+						_id: Random.id(),
+						rid: msgObject.rid,
+						ts: new Date,
+						msg: TAPi18n.__('No_such_command', { command: match[1] }),
+						u: {
+							username: RocketChat.settings.get('InternalHubot_Username'),
+						},
+						private: true,
+					};
+
+					ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	confirmDeleteMsg(message, done = function() {}) {

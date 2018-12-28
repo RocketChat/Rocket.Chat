@@ -1,17 +1,22 @@
-/* globals fileUpload device modal */
-
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import mime from 'mime-type/with-db';
 import { VRecDialog } from 'meteor/rocketchat:ui-vrecord';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { modal, fileUpload } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
 	icon: 'video',
-	condition: () => (navigator.getUserMedia || navigator.webkitGetUserMedia) && RocketChat.settings.get('FileUpload_Enabled') && RocketChat.settings.get('Message_VideoRecorderEnabled') && (!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') || RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
-	action({ messageBox }) {
-		return VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox);
-	},
+	condition: () => (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
+		navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
+		window.MediaRecorder &&
+		RocketChat.settings.get('FileUpload_Enabled') &&
+		RocketChat.settings.get('Message_VideoRecorderEnabled') &&
+		(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
+			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
+	action: ({ messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox)),
 });
 
 RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {

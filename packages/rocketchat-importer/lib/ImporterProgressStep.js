@@ -1,6 +1,9 @@
 /** The progress step that an importer is at. */
 export const ProgressStep = Object.freeze({
+	UPLOADING: 'importer_uploading',
 	NEW: 'importer_new',
+	DOWNLOADING_FILE_URL: 'downloading_file_url',
+	DOWNLOAD_COMPLETE: 'download_complete',
 	PREPARING_STARTED: 'importer_preparing_started',
 	PREPARING_USERS: 'importer_preparing_users',
 	PREPARING_CHANNELS: 'importer_preparing_channels',

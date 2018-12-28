@@ -1,4 +1,3 @@
-/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
@@ -8,7 +7,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-
+import { t } from 'meteor/rocketchat:utils';
+import { WebRTC } from 'meteor/rocketchat:webrtc';
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
@@ -16,7 +16,7 @@ import Clipboard from 'clipboard';
 
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
-window.chatMessages = window.chatMessages || {};
+chatMessages = {};
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
@@ -59,6 +59,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 	} else {
 		openProfileTab(e, instance, username);
 	}
+	e.stopPropagation();
 };
 
 const mountPopover = (e, i, outerContext) => {
@@ -853,6 +854,11 @@ Template.room.events({
 			return;
 		}
 		RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
+			const chatMessages = window.chatMessages[rid];
+			if (chatMessages && chatMessages.processSlashCommand(msgObject)) {
+				return;
+			}
+
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
@@ -1113,7 +1119,6 @@ Template.room.onRendered(function() {
 	});
 
 	wrapper.addEventListener('scroll', () => updateUnreadCount());
-	/* globals WebRTC */
 	// salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date);
 
