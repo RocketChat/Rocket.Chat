@@ -1,6 +1,90 @@
 defaults: &defaults
   working_directory: ~/repo
 
+test-with-oplog: &test-with-oplog
+  <<: *defaults
+  docker:
+    - image: circleci/node:8.11-browsers
+
+  environment:
+    TEST_MODE: "true"
+    MONGO_URL: mongodb://localhost:27017/rocketchat
+    MONGO_OPLOG_URL: mongodb://localhost:27017/local
+
+  steps:
+    - attach_workspace:
+        at: /tmp
+
+    - checkout
+
+    - run:
+        name: Install dependencies
+        command: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+          echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+          echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+          sudo apt-get update
+          sudo apt-get install -y mongodb-org-shell google-chrome-stable
+
+    - run:
+        name: Configure Replica Set
+        command: |
+          mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+          mongo --eval 'rs.status()'
+
+    - run:
+        name: NPM install
+        command: |
+          npm install
+
+    - run:
+        name: Run Tests
+        command: |
+          for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+    - store_artifacts:
+        path: .screenshots/
+
+test-without-oplog: &test-without-oplog
+  <<: *defaults
+  docker:
+    - image: circleci/node:8.11-browsers
+
+  environment:
+    TEST_MODE: "true"
+    MONGO_URL: mongodb://localhost:27017/rocketchat
+
+  steps:
+    - attach_workspace:
+        at: /tmp
+
+    - checkout
+
+    - run:
+        name: Install dependencies
+        command: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+          echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+          echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+          sudo apt-get update
+          sudo apt-get install -y mongodb-org-shell google-chrome-stable
+
+    - run:
+        name: NPM install
+        command: |
+          npm install
+
+    - run:
+        name: Run Tests
+        command: |
+          for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+
+    - store_artifacts:
+        path: .screenshots/
+
+
 version: 2
 jobs:
   build:
@@ -132,91 +216,52 @@ jobs:
       - store_artifacts:
           path: /tmp/build
 
-  test-with-oplog:
-    <<: *defaults
+
+  test-with-oplog-mongo-3-2:
+    <<: *test-with-oplog
     docker:
-      - image: circleci/node:8.11-browsers
+      - image: mongo:3.2
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
+
+  test-with-oplog-mongo-3-4:
+    <<: *test-with-oplog
+    docker:
+      - image: mongo:3.4
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
+
+  test-with-oplog-mongo-3-6:
+    <<: *test-with-oplog
+    docker:
+      - image: mongo:3.6
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
+
+  test-with-oplog-mongo-4-0:
+    <<: *test-with-oplog
+    docker:
       - image: mongo:4.0
         command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
-    environment:
-      TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/rocketchat
-      MONGO_OPLOG_URL: mongodb://localhost:27017/local
 
-    steps:
-      - attach_workspace:
-          at: /tmp
-
-      - checkout
-
-      - run:
-          name: Install dependencies
-          command: |
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-            sudo apt-get update
-            sudo apt-get install -y mongodb-org-shell google-chrome-stable
-
-      - run:
-          name: Configure Replica Set
-          command: |
-            mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-            mongo --eval 'rs.status()'
-
-      - run:
-          name: NPM install
-          command: |
-            npm install
-
-      - run:
-          name: Run Tests
-          command: |
-            for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
-
-      - store_artifacts:
-          path: .screenshots/
-
-  test-without-oplog:
-    <<: *defaults
+  test-without-oplog-mongo-3-2:
+    <<: *test-without-oplog
     docker:
-      - image: circleci/node:8.11-browsers
-      - image: circleci/mongo:4.0
+      - image: mongo:3.2
 
-    environment:
-      TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/rocketchat
+  test-without-oplog-mongo-3-4:
+    <<: *test-without-oplog
+    docker:
+      - image: mongo:3.4
 
-    steps:
-      - attach_workspace:
-          at: /tmp
+  test-without-oplog-mongo-3-6:
+    <<: *test-without-oplog
+    docker:
+      - image: mongo:3.6
 
-      - checkout
+  test-without-oplog-mongo-4-0:
+    <<: *test-without-oplog
+    docker:
+      - image: mongo:4.0
 
-      - run:
-          name: Install dependencies
-          command: |
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-            sudo apt-get update
-            sudo apt-get install -y mongodb-org-shell google-chrome-stable
-
-      - run:
-          name: NPM install
-          command: |
-            npm install
-
-      - run:
-          name: Run Tests
-          command: |
-            for i in $(seq 1 5); do mongo rocketchat --eval 'db.dropDatabase()' && npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
-
-      - store_artifacts:
-          path: .screenshots/
 
   deploy:
     <<: *defaults
