@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { renderMessageBody } from 'meteor/rocketchat:ui-message';
 
 const colors = {

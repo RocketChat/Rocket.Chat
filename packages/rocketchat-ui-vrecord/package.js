@@ -13,13 +13,7 @@ Package.onUse(function(api) {
 		'tracker',
 		'rocketchat:lib',
 	]);
-
-
 	api.addFiles('client/vrecord.css', 'client');
-
-	api.addFiles('client/vrecord.html', 'client');
-	api.addFiles('client/vrecord.js', 'client');
-
-	api.addFiles('server/settings.js', 'server');
-	api.mainModule('client/VRecDialog.js', 'client');
+	api.mainModule('server/index.js', 'server');
+	api.mainModule('client/index.js', 'client');
 });

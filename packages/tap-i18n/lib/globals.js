@@ -2,7 +2,6 @@
 // the client
 
 /* eslint no-unused-vars: 0 */
-/* globals globals: 1 */
 
 globals = {
 	fallback_language: 'en',

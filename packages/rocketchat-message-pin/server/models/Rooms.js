@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Rooms.setLastMessagePinned = function(roomId, pinnedBy, pinned, pinnedAt) {
 	const query = { _id: roomId };
 

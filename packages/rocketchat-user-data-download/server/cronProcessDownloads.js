@@ -1,7 +1,8 @@
-/* globals SyncedCron */
-
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';

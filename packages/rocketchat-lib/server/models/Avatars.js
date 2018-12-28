@@ -1,6 +1,6 @@
-/* globals InstanceStatus */
 import _ from 'underscore';
 import s from 'underscore.string';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 RocketChat.models.Avatars = new class extends RocketChat.models._Base {
 	constructor() {
