@@ -24362,6 +24362,30 @@
           ]
         }
       ]
+    },
+    "0.73.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "pull_requests": [
+        {
+          "pr": "13031",
+          "title": "Regression: List of custom emojis wasn't working",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.73.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13033",
+          "title": "[FIX] Download files without extension wasn't possible",
+          "userLogin": "tassoevan",
+          "milestone": "0.73.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }

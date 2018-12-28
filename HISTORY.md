@@ -1,6 +1,25 @@
 
 # 0.73.0 (Under Release Candidate Process)
 
+## 0.73.0-rc.2
+`2018-12-27  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+- Download files without extension wasn't possible ([#13033](https://github.com/RocketChat/Rocket.Chat/pull/13033))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: List of custom emojis wasn't working ([#13031](https://github.com/RocketChat/Rocket.Chat/pull/13031))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 0.73.0-rc.1
 `2018-12-24  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
