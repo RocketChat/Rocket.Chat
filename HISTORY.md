@@ -1,43 +1,10 @@
 
-# 0.73.0 (Under Release Candidate Process)
+# 0.73.0
+`2018-12-27  ·  10 🎉  ·  9 🚀  ·  34 🐛  ·  84 🔍  ·  26 👩‍💻👨‍💻`
 
-## 0.73.0-rc.2
-`2018-12-27  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-- Download files without extension wasn't possible ([#13033](https://github.com/RocketChat/Rocket.Chat/pull/13033))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Regression: List of custom emojis wasn't working ([#13031](https://github.com/RocketChat/Rocket.Chat/pull/13031))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 0.73.0-rc.1
-`2018-12-24  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-- Change `chat.getDeletedMessages` to get messages after informed date and return only message's _id ([#13021](https://github.com/RocketChat/Rocket.Chat/pull/13021))
-- Improve Importer code quality ([#13020](https://github.com/RocketChat/Rocket.Chat/pull/13020))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@Hudell](https://github.com/Hudell)
-- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
-
-## 0.73.0-rc.0
-`2018-12-20  ·  10 🎉  ·  9 🚀  ·  33 🐛  ·  81 🔍  ·  26 👩‍💻👨‍💻`
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
 
 ### 🎉 New features
 
@@ -99,6 +66,7 @@
 - Incorrect parameter name in Livechat stream ([#12851](https://github.com/RocketChat/Rocket.Chat/pull/12851))
 - Autotranslate icon on message action menu ([#12585](https://github.com/RocketChat/Rocket.Chat/pull/12585))
 - Google Cloud Storage storage provider ([#12843](https://github.com/RocketChat/Rocket.Chat/pull/12843))
+- Download files without extension wasn't possible ([#13033](https://github.com/RocketChat/Rocket.Chat/pull/13033))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -184,6 +152,9 @@
 - Convert rocketchat-mapview to main module structure ([#12701](https://github.com/RocketChat/Rocket.Chat/pull/12701))
 - Add check to make sure releases was updated ([#12791](https://github.com/RocketChat/Rocket.Chat/pull/12791))
 - Merge master into develop & Set version to 0.73.0-develop ([#12776](https://github.com/RocketChat/Rocket.Chat/pull/12776))
+- Change `chat.getDeletedMessages` to get messages after informed date and return only message's _id ([#13021](https://github.com/RocketChat/Rocket.Chat/pull/13021))
+- Improve Importer code quality ([#13020](https://github.com/RocketChat/Rocket.Chat/pull/13020))
+- Regression: List of custom emojis wasn't working ([#13031](https://github.com/RocketChat/Rocket.Chat/pull/13031))
 
 </details>
 
