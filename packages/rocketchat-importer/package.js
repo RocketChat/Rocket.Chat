@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:logger',
 	]);
+
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
