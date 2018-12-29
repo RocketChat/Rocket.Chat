@@ -1,6 +1,31 @@
 
+# 0.73.1
+`2018-12-28  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Default importer path ([#13045](https://github.com/RocketChat/Rocket.Chat/pull/13045))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Execute tests with versions 3.2, 3.4, 3.6 and 4.0 of MongoDB ([#13049](https://github.com/RocketChat/Rocket.Chat/pull/13049))
+- Regression: Get room's members list not working on MongoDB 3.2 ([#13051](https://github.com/RocketChat/Rocket.Chat/pull/13051))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 0.73.0
-`2018-12-27  ·  10 🎉  ·  9 🚀  ·  34 🐛  ·  84 🔍  ·  26 👩‍💻👨‍💻`
+`2018-12-28  ·  10 🎉  ·  9 🚀  ·  34 🐛  ·  84 🔍  ·  26 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.4`
