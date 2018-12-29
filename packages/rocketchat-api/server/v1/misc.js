@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+
+const phoneUtil = PhoneNumberUtil.getInstance();
 
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {
@@ -202,6 +205,10 @@ RocketChat.API.v1.addRoute('invite.sms', { authRequired: true }, {
 			throw new Meteor.Error('error-phone-param-not-provided', 'The required "phone" param is required.');
 		}
 		const phone = this.bodyParams.phone.replace(/-|\s/g, '');
+		if (!phoneUtil.isValidNumber(phoneUtil.parse(phone))) {
+			return RocketChat.API.v1.failure('Invalid number');
+		}
+
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', [phone]));
 		if (result.indexOf(phone) >= 0) {
 			return RocketChat.API.v1.success();
