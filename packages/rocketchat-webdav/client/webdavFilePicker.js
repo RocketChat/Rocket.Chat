@@ -4,7 +4,8 @@ import _ from 'underscore';
 import toastr from 'toastr';
 import { Session } from 'meteor/session';
 import { call } from 'meteor/rocketchat:lib';
-import { t, modal } from 'meteor/rocketchat:ui';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import { Handlebars } from 'meteor/ui';
 

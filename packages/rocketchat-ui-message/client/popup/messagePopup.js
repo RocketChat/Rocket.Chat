@@ -1,4 +1,3 @@
-/* globals toolbarSearch */
 // This is not supposed to be a complete list
 // it is just to improve readability in this file
 

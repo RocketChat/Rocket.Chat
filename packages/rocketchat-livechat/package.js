@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'webapp',
 		'autoupdate',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:authorization',
 		'rocketchat:logger',
