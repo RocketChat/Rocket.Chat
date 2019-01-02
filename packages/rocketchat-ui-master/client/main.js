@@ -1,18 +1,15 @@
-/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss, popover */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { t } from 'meteor/rocketchat:utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
 RocketChat.settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true); } });
-
-this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
-this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -169,6 +166,17 @@ Template.main.helpers({
 	requirePasswordChange() {
 		const user = Meteor.user();
 		return user && user.requirePasswordChange === true;
+	},
+	require2faSetup() {
+		const user = Meteor.user();
+
+		// User is already using 2fa
+		if (user.services.totp !== undefined && user.services.totp.enabled) {
+			return false;
+		}
+
+		const mandatoryRole = RocketChat.models.Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+		return mandatoryRole !== undefined;
 	},
 	CustomScriptLoggedOut() {
 		const script = RocketChat.settings.get('Custom_Script_Logged_Out') || '';

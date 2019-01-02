@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'webapp',
 		'mongo',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:api',
 		'rocketchat:theme',
@@ -17,6 +18,7 @@ Package.onUse(function(api) {
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 	]);
+	api.addFiles('client/oauth/stylesheets/oauth2.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

@@ -1,10 +1,11 @@
-/* globals jscolor*/
 /* eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';

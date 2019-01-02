@@ -1,5 +1,3 @@
-/* global menu, toolbarSearch */
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
