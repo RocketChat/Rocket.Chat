@@ -47,8 +47,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/ChannelNotFound.js', 'client');
 	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client');
 	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
-	api.addFiles('client/views/ThreadList.html', 'client');
-	api.addFiles('client/views/ThreadList.js', 'client');
+	api.addFiles('client/views/threadList.html', 'client');
+	api.addFiles('client/views/threadList.js', 'client');
 	api.addFiles('client/views/fieldTypeThreadReplyCounter.html', 'client');
 	api.addFiles('client/views/fieldTypeThreadReplyCounter.js', 'client');
 	api.addFiles('client/views/fieldTypeThreadLastMessageAge.html', 'client');
