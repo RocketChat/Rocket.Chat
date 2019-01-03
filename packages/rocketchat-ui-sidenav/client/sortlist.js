@@ -1,6 +1,6 @@
-/* globals popover */
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { popover } from 'meteor/rocketchat:ui';
 
 const checked = function(prop, field) {
 	const userId = Meteor.userId();

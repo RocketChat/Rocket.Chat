@@ -20,6 +20,7 @@ import './v1/emoji-custom';
 import './v1/groups';
 import './v1/im';
 import './v1/integrations';
+import './v1/import';
 import './v1/misc';
 import './v1/permissions';
 import './v1/push';

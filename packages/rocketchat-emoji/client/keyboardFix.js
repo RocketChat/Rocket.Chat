@@ -1,4 +1,3 @@
-/* global device */
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 

@@ -4,8 +4,6 @@ import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-/* globals menu*/
-
 Template.sideNav.helpers({
 	flexTemplate() {
 		return SideNav.getFlex().template;

@@ -1,4 +1,5 @@
-/* globals RocketChat */
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.authz.roomAccessValidators = [
 	function(room, user = {}) {
 		if (room && room.t === 'c') {
