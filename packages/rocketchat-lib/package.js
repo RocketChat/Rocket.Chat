@@ -40,12 +40,12 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 	api.use('rocketchat:mailer');
 	api.use('rocketchat:settings');
+	api.use('rocketchat:authorization');
 	api.use('mizzao:timesync');
 	api.use('rocketchat:custom-oauth');
 	api.use('konecty:multiple-instances-status');
 	api.use('rocketchat:file');
 	api.use('rocketchat:push');
-	api.use('rocketchat:authorization', { unordered: true });
 	api.use('rocketchat:push-notifications', { unordered: true });
 
 	api.use('templating', 'client');
@@ -128,6 +128,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/updateMessage.js', 'server');
 	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
+	api.addFiles('server/functions/authorization.js', 'server');
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');
@@ -242,6 +243,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
 	api.addFiles('client/lib/handleError.js', 'client');
+	api.addFiles('client/lib/authorization.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');
