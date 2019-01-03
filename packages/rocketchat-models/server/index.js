@@ -11,6 +11,8 @@ import Uploads from './models/Uploads';
 import UserDataFiles from './models/UserDataFiles';
 import Users from './models/Users';
 import Statistics from './models/Statistics';
+import Permissions from './models/Permissions';
+import Roles from './models/Roles';
 
 export {
 	Base,
@@ -26,4 +28,6 @@ export {
 	UserDataFiles,
 	Users,
 	Statistics,
+	Permissions,
+	Roles,
 };
