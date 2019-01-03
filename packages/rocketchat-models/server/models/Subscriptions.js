@@ -773,7 +773,11 @@ export class Subscriptions extends Base {
 	}
 
 	// INSERT
-	createWithRoomAndUser(room, user, extraData) {
+	async createWithRoomAndUser(room, user, extraData) {
+		if (!this.getDefaultSubscriptionPref) {
+			const Utils = await import('meteor/rocketchat:utils');
+			this.getDefaultSubscriptionPref = Utils.getDefaultSubscriptionPref;
+		}
 		const subscription = {
 			open: false,
 			alert: false,
@@ -791,7 +795,7 @@ export class Subscriptions extends Base {
 				username: user.username,
 				name: user.name,
 			},
-			...getDefaultSubscriptionPref(user),
+			...this.getDefaultSubscriptionPref(user),
 			...extraData,
 		};
 
