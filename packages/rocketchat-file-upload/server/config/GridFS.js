@@ -158,7 +158,7 @@ new FileUploadClass({
 
 		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
-		res.setHeader('Content-Type', file.type);
+		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size);
 
 		return readFromGridFS(file.store, file._id, file, req, res);
