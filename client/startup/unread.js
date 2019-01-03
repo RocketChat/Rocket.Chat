@@ -1,9 +1,9 @@
-/* globals fireGlobalEvent, readMessage, favico, menu */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Favico } from 'meteor/rocketchat:favico';
+import { fireGlobalEvent, readMessage } from 'meteor/rocketchat:ui';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
@@ -77,8 +77,8 @@ Meteor.startup(function() {
 		const unread = Session.get('unread');
 		fireGlobalEvent('unread-changed', unread);
 
-		if (favico) {
-			favico.badge(unread, {
+		if (window.favico) {
+			window.favico.badge(unread, {
 				bgColor: typeof unread !== 'number' ? '#3d8a3a' : '#ac1b1b',
 			});
 		}

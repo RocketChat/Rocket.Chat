@@ -1,4 +1,3 @@
-/* globals readMessage UserRoles RoomRoles*/
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
@@ -22,7 +21,7 @@ export const upsertMessage = ({ msg, subscription }) => {
 	return ChatMessage.upsert({ _id: msg._id }, msg);
 };
 
-RoomHistoryManager = new class { //eslint-disable-line
+RoomHistoryManager = new class {
 	constructor() {
 		this.defaultLimit = 50;
 		this.histories = {};
