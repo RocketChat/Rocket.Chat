@@ -450,6 +450,11 @@ RocketChat.settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
+		this.add('Accounts_Default_User_Preferences_isPublicAccount', true, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Is_Public_Account',
+		});
 	});
 
 	this.section('Avatar', function() {
