@@ -7,7 +7,7 @@ import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/m
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
-const sendNotification = ({
+const sendNotification = async({
 	subscription,
 	sender,
 	hasMentionToAll,
@@ -25,14 +25,14 @@ const sendNotification = ({
 	}
 
 	// notifications disabled
-	if (subscription.disableNotifications) {
-		return;
-	}
+	// if (subscription.disableNotifications) {
+	// 	return;
+	// }
 
 	// dont send notification to users who ignored the sender
-	if (Array.isArray(subscription.ignored) && subscription.ignored.includes(sender._id)) {
-		return;
-	}
+	// if (Array.isArray(subscription.ignored) && subscription.ignored.includes(sender._id)) {
+	// 	return;
+	// }
 
 	const hasMentionToUser = mentionIds.includes(subscription.u._id);
 
@@ -41,11 +41,11 @@ const sendNotification = ({
 		return;
 	}
 
-	const receiver = RocketChat.models.Users.findOneById(subscription.u._id);
+	const receiver = subscription.u;
 
-	if (!receiver || !receiver.active) {
-		return;
-	}
+	// if (!receiver || !receiver.active) {
+	// 	return;
+	// }
 
 	const roomType = room.t;
 	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
@@ -71,6 +71,7 @@ const sendNotification = ({
 	if (shouldNotifyAudio({
 		disableAllMessageNotifications,
 		status: receiver.status,
+		statusConnection: receiver.statusConnection,
 		audioNotifications,
 		hasMentionToAll,
 		hasMentionToHere,
@@ -85,6 +86,7 @@ const sendNotification = ({
 	if (shouldNotifyDesktop({
 		disableAllMessageNotifications,
 		status: receiver.status,
+		statusConnection: receiver.statusConnection,
 		desktopNotifications,
 		hasMentionToAll,
 		hasMentionToHere,
@@ -148,8 +150,46 @@ const sendNotification = ({
 		RocketChat.Sandstorm.notify(message, [subscription.u._id], `@${ sender.username }: ${ message.msg }`, room.t === 'p' ? 'privateMessage' : 'message');
 	}
 };
+const project = {
+	$project: {
+		ls: 0,
+		_updatedAt: 0,
+		rid: 0,
+		unread: 0,
+		groupMentions: 0,
+		ts: 0,
+		open: 0,
+		alert: 0,
+		userMentions: 0,
+		'u.services': 0,
+		'u.createdAt': 0,
+		'u._updatedAt': 0,
+		'u.roles': 0,
+		'u.avatarOrigin': 0,
+		'u.operator': 0,
+		'u.statusDefault': 0,
+		'u.statusLivechat': 0,
+		'u.utcOffset': 0,
+		'u.settings': 0,
+	},
+};
+const filter = {
+	$match: {
+		'u.active': true,
+		'u.statusConnection': { $ne: 'online' },
+	},
+};
+const lookup = {
+	$lookup: {
+		from: 'users',
+		localField: 'u._id',
+		foreignField: '_id',
+		as: 'u',
+	},
+};
+const unwind = { $unwind: '$u' };
 
-function sendAllNotifications(message, room) {
+async function sendAllNotifications(message, room) {
 
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -186,6 +226,8 @@ function sendAllNotifications(message, room) {
 
 	const query = {
 		rid: room._id,
+		ignored: { $ne: sender._id },
+		disableNotifications: { $ne: true },
 		$or: [{
 			'userHighlights.0': { $exists: 1 },
 		}],
@@ -229,7 +271,17 @@ function sendAllNotifications(message, room) {
 
 	// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
-	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(query);
+
+	const subscriptions = await RocketChat.models.Subscriptions.model.rawCollection().aggregate([
+		{
+			$match: query,
+		},
+		lookup,
+		unwind,
+		filter,
+		project,
+	]).toArray();
+
 	subscriptions.forEach((subscription) => sendNotification({
 		subscription,
 		sender,
@@ -284,4 +336,5 @@ function sendAllNotifications(message, room) {
 
 RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
 
-export { sendNotification };
+
+export { sendNotification, sendAllNotifications };

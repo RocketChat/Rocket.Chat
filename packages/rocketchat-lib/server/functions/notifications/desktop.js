@@ -40,6 +40,7 @@ export function notifyDesktopUser({
 export function shouldNotifyDesktop({
 	disableAllMessageNotifications,
 	status,
+	statusConnection,
 	desktopNotifications,
 	hasMentionToAll,
 	hasMentionToHere,
@@ -51,7 +52,7 @@ export function shouldNotifyDesktop({
 		return false;
 	}
 
-	if (status === 'busy' || desktopNotifications === 'nothing') {
+	if (statusConnection === 'offline' || status === 'busy' || desktopNotifications === 'nothing') {
 		return false;
 	}
 
