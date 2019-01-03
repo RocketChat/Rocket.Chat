@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 		'rocketchat:ui-master',
 		'rocketchat:push',
 		'rocketchat:utils',
+		'rocketchat:models',
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',

@@ -254,6 +254,11 @@ Package.onUse(function(api) {
 	api.addFiles('client/models/_Base.js', 'client');
 	api.addFiles('client/models/Avatars.js', 'client');
 	api.addFiles('client/models/Uploads.js', 'client');
+	api.addFiles('client/models/Messages.js', 'client');
+	api.addFiles('client/models/Roles.js', 'client');
+	api.addFiles('client/models/Rooms.js', 'client');
+	api.addFiles('client/models/Subscriptions.js', 'client');
+	api.addFiles('client/models/Users.js', 'client');
 
 	// CLIENT VIEWS
 	api.addFiles('client/views/customFieldsForm.html', 'client');
