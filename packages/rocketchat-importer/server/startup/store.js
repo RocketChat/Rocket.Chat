@@ -6,7 +6,7 @@ export let RocketChatImportFileInstance;
 Meteor.startup(function() {
 	const RocketChatStore = RocketChatFile.FileSystem;
 
-	let path = '~/uploads';
+	let path = '/tmp/rocketchat-importer';
 	if (RocketChat.settings.get('ImportFile_FileSystemPath') != null) {
 		if (RocketChat.settings.get('ImportFile_FileSystemPath').trim() !== '') {
 			path = RocketChat.settings.get('ImportFile_FileSystemPath');
