@@ -105,8 +105,17 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.migration = RocketChat.Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
-	if (MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
 		statistics.oplogEnabled = true;
+	}
+
+	try {
+		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));
+		statistics.mongoVersion = version;
+	} catch (e) {
+		console.error('Error getting MongoDB version');
 	}
 
 	return statistics;
