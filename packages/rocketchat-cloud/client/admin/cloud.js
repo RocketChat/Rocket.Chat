@@ -1,3 +1,5 @@
+import './cloud.html';
+
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
@@ -79,7 +81,6 @@ Template.cloud.events({
 				return;
 			}
 
-			console.log(url);
 			window.location.href = url;
 		});
 	},

@@ -12,13 +12,6 @@ Package.onUse(function(api) {
 		'templating',
 	]);
 
-	api.addFiles([
-		'client/admin/cloud.html',
-		'client/admin/cloud.js',
-		'client/admin/callback.html',
-		'client/admin/callback.js',
-	], 'client');
-
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

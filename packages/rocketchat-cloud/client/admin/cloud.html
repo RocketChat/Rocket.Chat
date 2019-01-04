@@ -1,18 +1,18 @@
 <template name="cloud">
 	<div class="main-content-flex">
 		<section class="page-container page-home page-static page-settings">
-			{{> header sectionName="Rocket.Chat Cloud Connect"}}
+			{{> header sectionName="Cloud_connect"}}
 			<div class="content">
 				{{#requiresPermission 'manage-cloud'}}
 					<div class="section">
 						<div class="section-title">
 							<div class="section-title-text">
-								What is this?
+								{{_ "Cloud_what_is_it"}}
 							</div>
 						</div>
 
 						<div class="section-content">
-							<p>Rocket.Chat Cloud Connect allows you to connect your self-hosted Rocket.Chat Workspace to our Cloud. Doing so enables you to manage your licenses, Billing and Support in Rocket.Chat Cloud.</p>
+							<p>{{_ "Cloud_what_is_it_description"}}</p>
 						</div>
 					</div>
 					<div class="section">
@@ -20,13 +20,13 @@
 							{{#if info.workspaceConnected}}
 								<div class="section-content border-component-color">
 									{{#if info.userAssociated}}
-										<p>Your workspace is now connected to the Rocket.Chat Cloud and an account is associated.</p>
+										<p>{{_ "Cloud_workspace_connected_plus_account"}}</p>
 									{{else}}
-										<p>Your workspace is now connected to the Rocket.Chat Cloud. If you would like, you can login to the Rocket.Chat Cloud and associate your workspace with your Cloud account.</p>
+										<p>{{_ "Cloud_workspace_connected_without_account"}}</p>
 										<div class="input-line double-col">
 											<label class="setting-label" title=""></label>
 											<div class="setting-field">
-												<button type="button" class="rc-button rc-button--primary action login-btn">Login To Rocket.Chat Cloud</button>
+												<button type="button" class="rc-button rc-button--primary action login-btn">{{_ "Cloud_login_to_cloud"}}</button>
 											</div>
 										</div>
 									{{/if}}
@@ -37,29 +37,29 @@
 										<label class="setting-label" title="cloudEmail">Email</label>
 										<div class="setting-field">
 											<input class="input-monitor rc-input__element" type="text" name="cloudEmail" value="{{ info.email }}">
-											<div class="settings-description secondary-font-color">The address to send your Cloud registration email to.</div>
+											<div class="settings-description secondary-font-color">{{_ "Cloud_address_to_send_registration_to"}}</div>
 										</div>
 									</div>
 									<div class="input-line double-col">
 										<label class="setting-label" title=""></label>
 										<div class="setting-field">
-											<button type="button" class="rc-button rc-button--primary action update-email-btn">Update Email</button>
+											<button type="button" class="rc-button rc-button--primary action update-email-btn">{{_ "Cloud_update_email"}}</button>
 										</div>
 									</div>
 
 									<pre>{{ registeredWithWizard }}</pre>
 
 									<div class="input-line double-col">
-										<label class="setting-label" title="cloudToken">Token</label>
+										<label class="setting-label" title="cloudToken">{{_ "Token"}}</label>
 										<div class="setting-field">
 											<input class="input-monitor rc-input__element" type="text" name="cloudToken" value="{{ info.token }}">
-											<div class="settings-description secondary-font-color">Manually enter the token received from the Cloud Registration Email.</div>
+											<div class="settings-description secondary-font-color">{{_ "Cloud_manually_input_token"}}</div>
 										</div>
 									</div>
 									<div class="input-line double-col">
 										<label class="setting-label" title=""></label>
 										<div class="setting-field">
-											<button type="button" class="rc-button rc-button--primary action connect-btn">Connect</button>
+											<button type="button" class="rc-button rc-button--primary action connect-btn">{{_ "Connect"}}</button>
 										</div>
 									</div>
 								</div>
@@ -67,12 +67,12 @@
 						{{else}}
 							<div class="section-title">
 								<div class="section-title-text">
-									Registration Required
+									{{_ "Cloud_registration_required"}}
 								</div>
 							</div>
 							<div class="section-content border-component-color">
-								<p>Looks like during setup you didn't chose to register your workspace </p>
-								<p><a href="./admin/Setup_Wizard">Click here to register your workspace.</a></p>
+								<p>{{_ "Cloud_registration_required_description"}}</p>
+								<p><a href="./admin/Setup_Wizard">{{_ "Cloud_registration_requried_link_text"}}</a></p>
 							</div>
 						{{/if}}
 					</div>

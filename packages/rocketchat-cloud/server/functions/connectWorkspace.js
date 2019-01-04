@@ -33,6 +33,10 @@ export function connectWorkspace(token) {
 
 	const { data } = result;
 
+	if (!data) {
+		return false;
+	}
+
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Id', data.workspaceId);
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Name', data.client_name);
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Client_Id', data.client_id);

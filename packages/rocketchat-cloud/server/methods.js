@@ -32,6 +32,8 @@ Meteor.methods({
 		RocketChat.models.Settings.updateValueById('Organization_Email', email);
 	},
 	'cloud:connectWorkspace'(token) {
+		check(token, String);
+
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:connectServer' });
 		}
