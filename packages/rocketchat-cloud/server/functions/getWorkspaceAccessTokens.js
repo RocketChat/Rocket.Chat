@@ -45,7 +45,6 @@ export function getWorkspaceAccessToken() {
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
 	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
 
-	console.log('refreshed client access token');
 
 	return authTokenResult.data.access_token;
 }
