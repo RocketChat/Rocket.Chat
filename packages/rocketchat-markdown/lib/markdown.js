@@ -45,11 +45,29 @@ class MarkdownClass {
 		return parsers.original(message);
 	}
 
-	mountTokensBack(message, useHtml = true) {
-		if (message.tokens && message.tokens.length > 0) {
-			for (const { token, text, noHtml } of message.tokens) {
-				message.html = message.html.replace(token, () => (useHtml ? text : noHtml)); // Uses lambda so doesn't need to escape $
+	mountTokensBackRecursively(message, tokenList, useHtml = true) {
+		const missingTokens = [];
+
+		if (tokenList.length > 0) {
+			for (const { token, text, noHtml } of tokenList) {
+				if (message.html.indexOf(token) >= 0) {
+					message.html = message.html.replace(token, () => (useHtml ? text : noHtml)); // Uses lambda so doesn't need to escape $
+				} else {
+					missingTokens.push({ token, text, noHtml });
+				}
 			}
+		}
+
+		// If there are tokens that were missing from the string, but the last iteration replaced at least one token, then go again
+		// this is done because one of the tokens may have been hidden by another one
+		if (missingTokens.length > 0 && missingTokens.length < tokenList.length) {
+			this.mountTokensBackRecursively(message, missingTokens, useHtml);
+		}
+	}
+
+	mountTokensBack(message, useHtml = true) {
+		if (message.tokens) {
+			this.mountTokensBackRecursively(message, message.tokens, useHtml);
 		}
 
 		return message;
@@ -60,7 +78,7 @@ class MarkdownClass {
 	}
 }
 
-const Markdown = new MarkdownClass;
+export const Markdown = new MarkdownClass;
 RocketChat.Markdown = Markdown;
 
 // renderMessage already did html escape

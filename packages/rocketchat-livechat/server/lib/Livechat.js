@@ -439,11 +439,13 @@ RocketChat.Livechat = {
 		let agent;
 
 		if (transferData.userId) {
-			const user = RocketChat.models.Users.findOneById(transferData.userId);
-			agent = {
-				agentId: user._id,
-				username: user.username,
-			};
+			const user = RocketChat.models.Users.findOneOnlineAgentById(transferData.userId);
+			if (!user) {
+				return false;
+			}
+
+			const { _id: agentId, username } = user;
+			agent = Object.assign({}, { agentId, username });
 		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
 			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
 		} else {

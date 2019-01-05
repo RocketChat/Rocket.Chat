@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 	api.use('ecmascript');
 	api.use('accounts-oauth');
 	api.use('service-configuration');
+	api.use('rocketchat:logger');
 
 	api.use('templating', 'client');
 
