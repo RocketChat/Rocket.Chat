@@ -28,6 +28,7 @@ export function findGuest(token) {
 
 export function findRoom(token, rid) {
 	const fields = {
+		t: 1,
 		departmentId: 1,
 		servedBy: 1,
 		open: 1,
