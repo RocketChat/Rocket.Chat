@@ -25,6 +25,8 @@ Package.onUse(function(api) {
 
 	// Extensions to the rest of RC
 	api.addFiles('server/models/RoomsExtension.js', 'server');
+	api.addFiles('server/models/MessagesExtension.js', 'server');
+	api.addFiles('server/hooks/propagateThreadMetadata.js', 'server');
 	api.addFiles('server/publications/threadParentAutocomplete.js', 'server');
 
 	// Methods
@@ -47,8 +49,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/ChannelNotFound.js', 'client');
 	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client');
 	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
-	api.addFiles('client/views/threadList.html', 'client');
-	api.addFiles('client/views/threadList.js', 'client');
+	api.addFiles('client/views/ThreadList.html', 'client');
+	api.addFiles('client/views/ThreadList.js', 'client');
 	api.addFiles('client/views/fieldTypeThreadReplyCounter.html', 'client');
 	api.addFiles('client/views/fieldTypeThreadReplyCounter.js', 'client');
 	api.addFiles('client/views/fieldTypeThreadLastMessageAge.html', 'client');

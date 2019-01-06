@@ -115,8 +115,8 @@ oauth1@1.2.2
 oauth2@1.2.1
 observe-sequence@1.0.16
 ordered-dict@1.1.0
-overture8:wordcloud2@1.0.0
 ostrio:cookies@2.3.0
+overture8:wordcloud2@1.0.0
 pauli:accounts-linkedin@2.1.5
 pauli:linkedin-oauth@1.2.0
 promise@0.11.1
@@ -219,6 +219,7 @@ rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
 rocketchat:slashcommands-create@0.0.1
+rocketchat:slashcommands-create-thread@0.0.1
 rocketchat:slashcommands-help@0.0.1
 rocketchat:slashcommands-hide@0.0.1
 rocketchat:slashcommands-invite@0.0.1

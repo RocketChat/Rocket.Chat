@@ -91,11 +91,11 @@ export class ThreadBuilder {
 				fields: [
 					{
 						type: 'messageCounter',
-						roomId: roomCreated._id,
+						count: 1,
 					},
 					{
 						type: 'lastMessageAge',
-						roomId: roomCreated._id,
+						lm: this._openingMessage.ts,
 					}],
 			};
 
@@ -113,12 +113,18 @@ export class ThreadBuilder {
 			if (!parentRoom.sysMes) {
 				RocketChat.models.Rooms.setSystemMessagesById(parentRoom._id, true);
 			}
-			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, { ts: this._openingMessage.ts });
+			const createdLinkMessage = RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('create-thread', parentRoom._id, this._getMessageUrl(repostedMessage._id), this.rocketCatUser, linkMessage, { ts: this._openingMessage.ts });
 
 			// reset it if necessary
 			if (!parentRoom.sysMes) {
 				RocketChat.models.Rooms.setSystemMessagesById(parentRoom._id, false);
 			}
+
+			// finally, propagate the message ID of the system message in the parent to the thread
+			// so that this system message can be updated on changes of the thread.
+			// this redundancy is neccessary in order to re-render the actually non-reactive message list
+			// in order to update the visualized thread metadata (e. g. last message ts) on the link message
+			RocketChat.models.Rooms.setLinkMessageById(roomCreated._id, createdLinkMessage._id);
 			return true;
 		}
 	}
@@ -200,6 +206,7 @@ export class ThreadBuilder {
 			// Create messages linking the parent room and the thread
 			this._linkMessages(threadRoom, this._parentRoom, repostedMessage);
 		}
+
 		return threadRoom;
 	}
 }

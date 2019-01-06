@@ -19,4 +19,16 @@ Object.assign(RocketChat.models.Rooms, {
 
 		return this.find(query, options);
 	},
+
+	setLinkMessageById(_id, linkMessageId) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				linkMessageId,
+			},
+		};
+
+		return this.update(query, update);
+	},
 });
