@@ -1,6 +1,4 @@
 import { registerFieldTemplate } from 'meteor/rocketchat:message-attachments';
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 

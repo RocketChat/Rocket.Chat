@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+
 function CreateThread(command, params, item) {
 	if (command !== 'thread' || !Match.test(params, String)) {
 		return;
