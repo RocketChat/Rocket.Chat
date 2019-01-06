@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/MessagesExtension.js', 'server');
 	api.addFiles('server/hooks/propagateThreadMetadata.js', 'server');
 	api.addFiles('server/publications/threadParentAutocomplete.js', 'server');
+	api.addFiles('server/publications/threadsOfRoom.js', 'server');
 
 	// Methods
 	api.addFiles('server/methods/createThread.js', 'server');
@@ -51,6 +52,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
 	api.addFiles('client/views/ThreadList.html', 'client');
 	api.addFiles('client/views/ThreadList.js', 'client');
+	api.addFiles('client/views/ThreadsTabbar.html', 'client');
+	api.addFiles('client/views/ThreadsTabbar.js', 'client');
 	api.addFiles('client/views/fieldTypeThreadReplyCounter.html', 'client');
 	api.addFiles('client/views/fieldTypeThreadReplyCounter.js', 'client');
 	api.addFiles('client/views/fieldTypeThreadLastMessageAge.html', 'client');
@@ -59,6 +62,7 @@ Package.onUse(function(api) {
 	// Other UI extensions
 	api.addFiles('client/createThreadMessageAction.js', 'client');
 	api.addFiles('client/threadFromMessageBox.js', 'client');
+	api.addFiles('client/tabBar.js', 'client');
 
 	// styling
 	api.addFiles('client/public/stylesheets/threading.css', 'client');
