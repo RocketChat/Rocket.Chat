@@ -1,6 +1,7 @@
 import './livechat';
 import './startup';
 import './visitorStatus';
+import './agentStatus';
 import './permissions';
 import '../lib/messageTypes';
 import './config';
