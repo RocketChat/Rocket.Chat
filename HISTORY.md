@@ -1,4 +1,22 @@
 
+# 0.73.2
+`2019-01-07  ·  1 🎉  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🎉 New features
+
+- Cloud Integration ([#13013](https://github.com/RocketChat/Rocket.Chat/pull/13013))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@graywolf336](https://github.com/graywolf336)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 0.73.1
 `2018-12-28  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
