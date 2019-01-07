@@ -1,4 +1,7 @@
-/* global Babel */
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Babel } from 'meteor/babel-compiler';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
@@ -51,17 +54,17 @@ function _verifyUserHasPermissionForChannels(integration, userId, channels) {
 				case '#':
 					record = RocketChat.models.Rooms.findOne({
 						$or: [
-							{_id: channel},
-							{name: channel}
-						]
+							{ _id: channel },
+							{ name: channel },
+						],
 					});
 					break;
 				case '@':
 					record = RocketChat.models.Users.findOne({
 						$or: [
-							{_id: channel},
-							{username: channel}
-						]
+							{ _id: channel },
+							{ username: channel },
+						],
 					});
 					break;
 			}
@@ -70,7 +73,7 @@ function _verifyUserHasPermissionForChannels(integration, userId, channels) {
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', { function: 'validateOutgoing._verifyUserHasPermissionForChannels' });
 			}
 
-			if (!RocketChat.authz.hasAllPermission(userId, 'manage-integrations', 'manage-own-integrations') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { fields: { _id: 1 } })) {
+			if (!RocketChat.authz.hasAllPermission(userId, ['manage-integrations', 'manage-own-integrations']) && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { fields: { _id: 1 } })) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing._verifyUserHasPermissionForChannels' });
 			}
 		}
@@ -92,7 +95,7 @@ RocketChat.integrations.validateOutgoing = function _validateOutgoing(integratio
 		delete integration.channel;
 	}
 
-	//Moved to it's own function to statisfy the complexity rule
+	// Moved to it's own function to statisfy the complexity rule
 	_verifyRequiredFields(integration);
 
 	let channels = [];

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 Meteor.methods({
 	setAdminStatus(userId, admin) {
 
@@ -19,5 +22,5 @@ Meteor.methods({
 		} else {
 			return Meteor.call('authorization:removeUserFromRole', 'admin', user.username);
 		}
-	}
+	},
 });

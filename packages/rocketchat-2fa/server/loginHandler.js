@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
 		return;
@@ -22,7 +26,7 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 			secret: login.user.services.totp.secret,
 			token: totp.code,
 			userId: login.user._id,
-			backupTokens: login.user.services.totp.hashedBackup
+			backupTokens: login.user.services.totp.hashedBackup,
 		});
 
 		if (verified !== true) {

@@ -1,6 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 
-this.AccountBox = (function() {
+AccountBox = (function() {
 	let status = 0;
 	const items = new ReactiveVar([]);
 	function setStatus(status) {
@@ -57,7 +63,7 @@ this.AccountBox = (function() {
 		}
 		const routeConfig = {
 			center: 'pageContainer',
-			pageTemplate: newRoute.pageTemplate
+			pageTemplate: newRoute.pageTemplate,
 		};
 		if (newRoute.i18nPageTitle != null) {
 			routeConfig.i18nPageTitle = newRoute.i18nPageTitle;
@@ -77,8 +83,8 @@ this.AccountBox = (function() {
 						SideNav.setFlex(newRoute.sideNav);
 						return SideNav.openFlex();
 					}
-				}
-			]
+				},
+			],
 		});
 	}
 	return {
@@ -89,6 +95,6 @@ this.AccountBox = (function() {
 		openFlex,
 		addRoute,
 		addItem,
-		getItems
+		getItems,
 	};
 }());

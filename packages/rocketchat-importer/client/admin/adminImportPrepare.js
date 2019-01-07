@@ -1,4 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Importers } from 'meteor/rocketchat:importer';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({
@@ -24,8 +31,69 @@ Template.adminImportPrepare.helpers({
 	},
 	message_count() {
 		return Template.instance().message_count.get();
-	}
+	},
+	fileSizeLimitMessage() {
+		const maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize');
+		let message;
+
+		if (maxFileSize > 0) {
+			const sizeInKb = maxFileSize / 1024;
+			const sizeInMb = sizeInKb / 1024;
+
+			let fileSizeMessage;
+			if (sizeInMb > 0) {
+				fileSizeMessage = TAPi18n.__('FileSize_MB', { fileSize: sizeInMb.toFixed(2) });
+			} else if (sizeInKb > 0) {
+				fileSizeMessage = TAPi18n.__('FileSize_KB', { fileSize: sizeInKb.toFixed(2) });
+			} else {
+				fileSizeMessage = TAPi18n.__('FileSize_Bytes', { fileSize: maxFileSize.toFixed(0) });
+			}
+
+			message = TAPi18n.__('Importer_Upload_FileSize_Message', { maxFileSize: fileSizeMessage });
+		} else {
+			message = TAPi18n.__('Importer_Upload_Unlimited_FileSize');
+		}
+
+		return message;
+	},
 });
+
+function getImportFileData(importer, template) {
+	RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
+		if (!data) {
+			console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
+			toastr.error(t('Importer_not_setup'));
+			template.preparing.set(false);
+			return;
+		}
+
+		if (data.waiting) {
+			setTimeout(() => {
+				getImportFileData(importer, template);
+			}, 500);
+			return;
+		}
+
+		if (data.step) {
+			console.warn('Invalid file, contains `data.step`.', data);
+			toastr.error(t('Invalid_Export_File', importer.key));
+			template.preparing.set(false);
+			return;
+		}
+
+		template.users.set(data.users);
+		template.channels.set(data.channels);
+		template.message_count.set(data.message_count);
+		template.loaded.set(true);
+		template.preparing.set(false);
+	}).catch((error) => {
+		if (error) {
+			toastr.error(t('Failed_To_Load_Import_Data'));
+			template.preparing.set(false);
+		}
+	});
+}
+
 
 Template.adminImportPrepare.events({
 	'change .import-file-input'(event, template) {
@@ -38,42 +106,52 @@ Template.adminImportPrepare.events({
 			files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
 		}
 
-		return Array.from(files).map((file) => {
+		Array.from(files).forEach((file) => {
 			template.preparing.set(true);
 
 			const reader = new FileReader();
-			reader.readAsDataURL(file);
+
+			reader.readAsBinaryString(file);
 			reader.onloadend = () => {
-				Meteor.call('prepareImport', importer.key, reader.result, file.type, file.name, function(error, data) {
+				RocketChat.API.post('v1/uploadImportFile', {
+					binaryContent: reader.result,
+					contentType: file.type,
+					fileName: file.name,
+					importerKey: importer.key,
+				}).then(() => {
+					getImportFileData(importer, template);
+				}).catch((error) => {
 					if (error) {
-						toastr.error(t('Invalid_Import_File_Type'));
+						toastr.error(t('Failed_To_upload_Import_File'));
 						template.preparing.set(false);
-						return;
 					}
-
-					if (!data) {
-						console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
-						toastr.error(t('Importer_not_setup'));
-						template.preparing.set(false);
-						return;
-					}
-
-					if (data.step) {
-						console.warn('Invalid file, contains `data.step`.', data);
-						toastr.error(t('Invalid_Export_File', importer.key));
-						template.preparing.set(false);
-						return;
-					}
-
-					template.users.set(data.users);
-					template.channels.set(data.channels);
-					template.message_count.set(data.message_count);
-					template.loaded.set(true);
-					template.preparing.set(false);
 				});
 			};
 		});
 	},
+
+
+	'click .download-public-url'(event, template) {
+		const importer = this;
+		if (!importer || !importer.key) { return; }
+
+		const fileUrl = $('.import-file-url').val();
+
+		template.preparing.set(true);
+
+		RocketChat.API.post('v1/downloadPublicImportFile', {
+			fileUrl,
+			importerKey: importer.key,
+		}).then(() => {
+			getImportFileData(importer, template);
+		}).catch((error) => {
+			if (error) {
+				toastr.error(t('Failed_To_upload_Import_File'));
+				template.preparing.set(false);
+			}
+		});
+	},
+
 
 	'click .button.start'(event, template) {
 		const btn = this;
@@ -118,9 +196,8 @@ Template.adminImportPrepare.events({
 	'click .button.uncheck-archived-channels'(event, template) {
 		Array.from(template.channels.get()).filter((channel) => channel.is_archived).map((channel) =>
 			$(`[name=${ channel.channel_id }]`).attr('checked', false));
-	}
+	},
 });
-
 
 Template.adminImportPrepare.onCreated(function() {
 	const instance = this;
@@ -133,7 +210,7 @@ Template.adminImportPrepare.onCreated(function() {
 	function loadSelection(progress) {
 		if ((progress != null ? progress.step : undefined)) {
 			switch (progress.step) {
-				//When the import is running, take the user to the progress page
+				// When the import is running, take the user to the progress page
 				case 'importer_importing_started':
 				case 'importer_importing_users':
 				case 'importer_importing_channels':

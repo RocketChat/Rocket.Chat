@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
@@ -19,20 +21,20 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 	post() {
 		if (!this.bodyParams.text && !this.bodyParams.attachments) {
 			return {
-				success: false
+				success: false,
 			};
 		}
 
 		if (!this.request.headers['x-hub-signature']) {
 			return {
-				success: false
+				success: false,
 			};
 		}
 
 		if (!RocketChat.settings.get('Livechat_Facebook_Enabled')) {
 			return {
 				success: false,
-				error: 'Integration disabled'
+				error: 'Integration disabled',
 			};
 		}
 
@@ -41,19 +43,19 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 		if (this.request.headers['x-hub-signature'] !== `sha1=${ signature }`) {
 			return {
 				success: false,
-				error: 'Invalid signature'
+				error: 'Invalid signature',
 			};
 		}
 
 		const sendMessage = {
 			message: {
-				_id: this.bodyParams.mid
+				_id: this.bodyParams.mid,
 			},
 			roomInfo: {
 				facebook: {
-					page: this.bodyParams.page
-				}
-			}
+					page: this.bodyParams.page,
+				},
+			},
 		};
 		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
@@ -70,7 +72,7 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 
 			const userId = RocketChat.Livechat.registerGuest({
 				token: sendMessage.message.token,
-				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`
+				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`,
 			});
 
 			visitor = RocketChat.models.Users.findOneById(userId);
@@ -82,10 +84,10 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 		try {
 			return {
 				sucess: true,
-				message: RocketChat.Livechat.sendMessage(sendMessage)
+				message: RocketChat.Livechat.sendMessage(sendMessage),
 			};
 		} catch (e) {
 			console.error('Error using Facebook ->', e);
 		}
-	}
+	},
 });

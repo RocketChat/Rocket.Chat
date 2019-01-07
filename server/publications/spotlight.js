@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 
 function fetchRooms(userId, rooms) {
@@ -5,14 +7,14 @@ function fetchRooms(userId, rooms) {
 		return rooms;
 	}
 
-	return rooms.map(room => {
+	return rooms.map((room) => {
 		delete room.lastMessage;
 		return room;
 	});
 }
 
 Meteor.methods({
-	spotlight(text, usernames, type = {users: true, rooms: true}, rid) {
+	spotlight(text, usernames, type = { users: true, rooms: true }, rid) {
 		const searchForChannels = text[0] === '#';
 		const searchForDMs = text[0] === '@';
 		if (searchForChannels) {
@@ -26,20 +28,21 @@ Meteor.methods({
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 		const result = {
 			users: [],
-			rooms: []
+			rooms: [],
 		};
 		const roomOptions = {
 			limit: 5,
 			fields: {
 				t: 1,
 				name: 1,
-				lastMessage: 1
+				joinCodeRequired: 1,
+				lastMessage: 1,
 			},
 			sort: {
-				name: 1
-			}
+				name: 1,
+			},
 		};
-		const userId = this.userId;
+		const { userId } = this;
 		if (userId == null) {
 			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
 				result.rooms = fetchRooms(userId, RocketChat.models.Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch());
@@ -51,9 +54,9 @@ Meteor.methods({
 			fields: {
 				username: 1,
 				name: 1,
-				status: 1
+				status: 1,
 			},
-			sort: {}
+			sort: {},
 		};
 		if (RocketChat.settings.get('UI_Use_Real_Name')) {
 			userOptions.sort.name = 1;
@@ -68,33 +71,33 @@ Meteor.methods({
 
 			if (type.rooms === true && RocketChat.authz.hasPermission(userId, 'view-c-room')) {
 				const searchableRoomTypes = Object.entries(RocketChat.roomTypes.roomTypes)
-					.filter((roomType)=>roomType[1].includeInRoomSearch())
-					.map((roomType)=>roomType[0]);
+					.filter((roomType) => roomType[1].includeInRoomSearch())
+					.map((roomType) => roomType[0]);
 
-				const roomIds = RocketChat.models.Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypes, {fields: {rid: 1}}).fetch().map(s => s.rid);
+				const roomIds = RocketChat.models.Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypes, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				result.rooms = fetchRooms(userId, RocketChat.models.Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypes, roomIds, roomOptions).fetch());
 			}
 		} else if (type.users === true && rid) {
 			const subscriptions = RocketChat.models.Subscriptions.find({
 				rid, 'u.username': {
 					$regex: regex,
-					$nin: [...usernames, Meteor.user().username]
-				}
-			}, {limit: userOptions.limit}).fetch().map(({u}) => u._id);
-			result.users = RocketChat.models.Users.find({_id: {$in: subscriptions}}, {
+					$nin: [...usernames, Meteor.user().username],
+				},
+			}, { limit: userOptions.limit }).fetch().map(({ u }) => u._id);
+			result.users = RocketChat.models.Users.find({ _id: { $in: subscriptions } }, {
 				fields: userOptions.fields,
-				sort: userOptions.sort
+				sort: userOptions.sort,
 			}).fetch();
 		}
 
 		return result;
-	}
+	},
 });
 
 DDPRateLimiter.addRule({
 	type: 'method',
 	name: 'spotlight',
-	userId(/*userId*/) {
+	userId(/* userId*/) {
 		return true;
-	}
+	},
 }, 100, 100000);

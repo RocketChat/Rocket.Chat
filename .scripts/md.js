@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const semver = require('semver');
 const _ = require('underscore');
-const execSync = require('child_process').execSync;
+const { execSync } = require('child_process');
 
 const historyDataFile = path.join(__dirname, '../.github/history.json');
 const historyManualDataFile = path.join(__dirname, '../.github/history-manual.json');
@@ -30,14 +30,14 @@ const nonContributors = [
 	'rodrigok',
 	'renatobecker',
 	'sampaiodiego',
-	'SeanPackham'
+	'SeanPackham',
 ];
 
 const GroupNames = {
 	FIX: '### 🐛 Bug fixes',
 	NEW: '### 🎉 New features',
 	BREAK: '### ⚠️ BREAKING CHANGES',
-	MINOR: '🔍 Minor changes'
+	MINOR: '🔍 Minor changes',
 };
 
 const SummaryNameEmoticons = {
@@ -45,7 +45,7 @@ const SummaryNameEmoticons = {
 	NEW: '🎉',
 	BREAK: '️️️⚠️',
 	NOGROUP: '🔍',
-	contributor: '👩‍💻👨‍💻'
+	contributor: '👩‍💻👨‍💻',
 };
 
 const historyData = (() => {
@@ -64,7 +64,7 @@ const historyManualData = (() => {
 	}
 })();
 
-Object.keys(historyManualData).forEach(tag => {
+Object.keys(historyManualData).forEach((tag) => {
 	historyData[tag] = historyData[tag] || [];
 	historyData[tag].unshift(...historyManualData[tag]);
 });
@@ -74,10 +74,10 @@ function groupPRs(prs) {
 		BREAK: [],
 		NEW: [],
 		FIX: [],
-		NOGROUP: []
+		NOGROUP: [],
 	};
 
-	prs.forEach(pr => {
+	prs.forEach((pr) => {
 		const match = pr.title.match(/\[(FIX|NEW|BREAK)\]\s*(.+)/);
 		if (match) {
 			pr.title = match[2];
@@ -98,26 +98,26 @@ function getLatestCommitDate() {
 	return execSync('git log --date=short --format=\'%ad\' -1').toString().replace(/\n/, '');
 }
 
-Object.keys(historyData).forEach(tag => {
+Object.keys(historyData).forEach((tag) => {
 	historyData[tag] = {
 		prs: historyData[tag],
-		rcs: []
+		rcs: [],
 	};
 });
 
-Object.keys(historyData).forEach(tag => {
+Object.keys(historyData).forEach((tag) => {
 	if (/-rc/.test(tag)) {
 		const mainTag = tag.replace(/-rc.*/, '');
 		historyData[mainTag] = historyData[mainTag] || {
 			noMainRelease: true,
 			prs: [],
-			rcs: []
+			rcs: [],
 		};
 
 		if (historyData[mainTag].noMainRelease) {
 			historyData[mainTag].rcs.push({
 				tag,
-				prs: historyData[tag].prs
+				prs: historyData[tag].prs,
 			});
 		} else {
 			historyData[mainTag].prs.push(...historyData[tag].prs);
@@ -132,7 +132,7 @@ const file = [];
 function getSummary(contributors, groupedPRs) {
 	const summary = [];
 
-	Object.keys(groupedPRs).forEach(group => {
+	Object.keys(groupedPRs).forEach((group) => {
 		if (groupedPRs[group].length) {
 			summary.push(`${ groupedPRs[group].length } ${ SummaryNameEmoticons[group] }`);
 		}
@@ -153,7 +153,7 @@ function renderPRs(prs) {
 	const data = [];
 	const groupedPRs = groupPRs(prs);
 
-	Object.keys(groupedPRs).forEach(group => {
+	Object.keys(groupedPRs).forEach((group) => {
 		const prs = groupedPRs[group];
 		if (!prs.length) {
 			return;
@@ -166,10 +166,10 @@ function renderPRs(prs) {
 		} else {
 			data.push(`\n${ groupName }\n`);
 		}
-		prs.forEach(pr => {
+		prs.forEach((pr) => {
 			let contributors = _.compact(_.difference(pr.contributors, nonContributors))
 				.sort()
-				.map(contributor => `[@${ contributor }](https://github.com/${ contributor })`)
+				.map((contributor) => `[@${ contributor }](https://github.com/${ contributor })`)
 				.join(' & ');
 
 			if (contributors) {
@@ -184,21 +184,19 @@ function renderPRs(prs) {
 		}
 	});
 
-	const contributors = _.compact(_.difference(prs.reduce((value, pr) => {
-		return _.unique(value.concat(pr.contributors));
-	}, []), nonContributors));
+	const contributors = _.compact(_.difference(prs.reduce((value, pr) => _.unique(value.concat(pr.contributors)), []), nonContributors));
 
 	if (contributors.length) {
 		// TODO: Improve list like https://gist.github.com/paulmillr/2657075/
 		data.push('\n### 👩‍💻👨‍💻 Contributors 😍\n');
-		contributors.sort().forEach(contributor => {
+		contributors.sort().forEach((contributor) => {
 			data.push(`- [@${ contributor }](https://github.com/${ contributor })`);
 		});
 	}
 
 	return {
 		data,
-		summary: getSummary(contributors, groupedPRs)
+		summary: getSummary(contributors, groupedPRs),
 	};
 }
 
@@ -219,8 +217,8 @@ function sort(a, b) {
 	return 0;
 }
 
-Object.keys(historyData).sort(sort).forEach(tag => {
-	const {prs, rcs} = historyData[tag];
+Object.keys(historyData).sort(sort).forEach((tag) => {
+	const { prs, rcs } = historyData[tag];
 
 	if (!prs.length && !rcs.length) {
 		return;
@@ -228,7 +226,7 @@ Object.keys(historyData).sort(sort).forEach(tag => {
 
 	const tagDate = tag === 'HEAD' ? getLatestCommitDate() : getTagDate(tag);
 
-	const {data, summary} = renderPRs(prs);
+	const { data, summary } = renderPRs(prs);
 
 	const tagText = tag === 'HEAD' ? 'Next' : tag;
 
@@ -242,8 +240,8 @@ Object.keys(historyData).sort(sort).forEach(tag => {
 	file.push(...data);
 
 	if (Array.isArray(rcs)) {
-		rcs.reverse().forEach(rc => {
-			const {data, summary} = renderPRs(rc.prs);
+		rcs.reverse().forEach((rc) => {
+			const { data, summary } = renderPRs(rc.prs);
 
 			if (historyData[tag].noMainRelease) {
 				const tagDate = getTagDate(rc.tag);

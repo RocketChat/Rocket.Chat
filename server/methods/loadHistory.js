@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 const hideMessagesOfType = [];
 
 RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {
@@ -24,7 +27,7 @@ Meteor.methods({
 
 		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadHistory'
+				method: 'loadHistory',
 			});
 		}
 
@@ -43,5 +46,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.loadMessageHistory({ userId: fromId, rid, end, limit, ls });
-	}
+	},
 });

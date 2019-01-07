@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorHistory' }));
@@ -26,7 +29,7 @@ Meteor.publish('livechat:visitorHistory', function({ rid: roomId }) {
 			},
 			removed(id) {
 				self.removed('visitor_history', id);
-			}
+			},
 		});
 
 		self.ready();

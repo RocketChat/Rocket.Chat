@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
@@ -9,7 +10,7 @@ Meteor.methods({
 		}
 
 		return {
-			_id: visitor._id
+			_id: visitor._id,
 		};
-	}
+	},
 });

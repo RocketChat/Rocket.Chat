@@ -1,4 +1,6 @@
-import {UploadFS} from 'meteor/jalik:ufs';
+import { check } from 'meteor/check';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { Random } from 'meteor/random';
 import Webdav from 'webdav';
 import stream from 'stream';
 /**
@@ -12,7 +14,6 @@ export class WebdavStore extends UploadFS.Store {
 
 		super(options);
 
-
 		const client = new Webdav(
 			options.connection.credentials.server,
 			options.connection.credentials.username,
@@ -20,7 +21,7 @@ export class WebdavStore extends UploadFS.Store {
 		);
 
 		options.getPath = function(file) {
-			if (options.uploadFolderPath[options.uploadFolderPath.length-1] !== '/') {
+			if (options.uploadFolderPath[options.uploadFolderPath.length - 1] !== '/') {
 				options.uploadFolderPath += '/';
 			}
 			return options.uploadFolderPath + file._id;
@@ -57,7 +58,7 @@ export class WebdavStore extends UploadFS.Store {
 			}
 
 			file.Webdav = {
-				path: options.getPath(file)
+				path: options.getPath(file),
 			};
 
 			file.store = this.options.name;
@@ -70,7 +71,7 @@ export class WebdavStore extends UploadFS.Store {
 		 * @param callback
 		 */
 		this.delete = function(fileId, callback) {
-			const file = this.getCollection().findOne({_id: fileId});
+			const file = this.getCollection().findOne({ _id: fileId });
 			client.deleteFile(this.getPath(file), (err, data) => {
 				if (err) {
 					console.error(err);
@@ -110,7 +111,7 @@ export class WebdavStore extends UploadFS.Store {
 			const writeStream = new stream.PassThrough();
 			const webdavStream = client.createWriteStream(this.getPath(file));
 
-			//TODO remove timeout when UploadFS bug resolved
+			// TODO remove timeout when UploadFS bug resolved
 			const newListenerCallback = (event, listener) => {
 				if (event === 'finish') {
 					process.nextTick(() => {
@@ -127,7 +128,6 @@ export class WebdavStore extends UploadFS.Store {
 			writeStream.pipe(webdavStream);
 			return writeStream;
 		};
-
 	}
 }
 

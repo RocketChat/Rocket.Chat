@@ -1,10 +1,12 @@
-/* globals Slingshot */
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Slingshot } from 'meteor/edgee:slingshot';
 
 import filesize from 'filesize';
 
 const slingShotConfig = {
-	authorize(file/*, metaContext*/) {
-		//Deny uploads if user is not logged in.
+	authorize(file/* , metaContext*/) {
+		// Deny uploads if user is not logged in.
 		if (!this.userId) {
 			throw new Meteor.Error('login-required', 'Please login before posting files');
 		}
@@ -22,7 +24,7 @@ const slingShotConfig = {
 		return true;
 	},
 	maxSize: 0,
-	allowedFileTypes: null
+	allowedFileTypes: null,
 };
 
 Slingshot.fileRestrictions('rocketchat-uploads', slingShotConfig);

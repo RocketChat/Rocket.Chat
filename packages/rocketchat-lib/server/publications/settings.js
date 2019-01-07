@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
 		this.unblock();
@@ -10,15 +12,15 @@ Meteor.methods({
 				}),
 				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
-						$ne: true
+						$ne: true,
 					},
-					'public': true
+					public: true,
 				}, {
 					fields: {
 						_id: 1,
-						_deletedAt: 1
-					}
-				}).fetch()
+						_deletedAt: 1,
+					},
+				}).fetch(),
 			};
 		}
 		return records;
@@ -39,21 +41,24 @@ Meteor.methods({
 				}),
 				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
-						$ne: true
-					}
+						$ne: true,
+					},
 				}, {
 					fields: {
 						_id: 1,
-						_deletedAt: 1
-					}
-				}).fetch()
+						_deletedAt: 1,
+					},
+				}).fetch(),
 			};
 		}
 		return records;
-	}
+	},
 });
 
-RocketChat.models.Settings.on('change', ({clientAction, id, data}) => {
+RocketChat.models.Settings.on('change', ({ clientAction, id, data, diff }) => {
+	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
+		return;
+	}
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
@@ -62,10 +67,10 @@ RocketChat.models.Settings.on('change', ({clientAction, id, data}) => {
 				_id: setting._id,
 				value: setting.value,
 				editor: setting.editor,
-				properties: setting.properties
+				properties: setting.properties,
 			};
 
-			if (setting['public'] === true) {
+			if (setting.public === true) {
 				RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
 			} else {
 				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);

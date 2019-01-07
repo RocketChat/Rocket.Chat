@@ -1,3 +1,6 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+
 Template.adminUserChannels.helpers({
 	type() {
 		if (this.t === 'd') {
@@ -12,16 +15,16 @@ Template.adminUserChannels.helpers({
 		switch (this.t) {
 			case 'd':
 				return FlowRouter.path('direct', {
-					username: this.name
+					username: this.name,
 				});
 			case 'p':
 				return FlowRouter.path('group', {
-					name: this.name
+					name: this.name,
 				});
 			case 'c':
 				return FlowRouter.path('channel', {
-					name: this.name
+					name: this.name,
 				});
 		}
-	}
+	},
 });

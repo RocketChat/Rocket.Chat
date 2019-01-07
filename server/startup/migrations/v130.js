@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 
 RocketChat.Migrations.add({
@@ -5,24 +6,24 @@ RocketChat.Migrations.add({
 	up() {
 		RocketChat.models.Rooms._db.originals.update(
 			{
-				t: { $ne: 'd' }
+				t: { $ne: 'd' },
 			},
 			{
-				$unset: { usernames: 1 }
+				$unset: { usernames: 1 },
 			},
 			{
-				multi: true
+				multi: true,
 			}
 		);
 
 		RocketChat.models.Rooms.find(
 			{
-				usersCount: { $exists: false }
+				usersCount: { $exists: false },
 			},
 			{
 				fields: {
-					_id: 1
-				}
+					_id: 1,
+				},
 			}
 		).forEach(({ _id }) => {
 			const usersCount = RocketChat.models.Subscriptions.findByRoomId(
@@ -31,12 +32,12 @@ RocketChat.Migrations.add({
 
 			RocketChat.models.Rooms._db.originals.update(
 				{
-					_id
+					_id,
 				},
 				{
 					$set: {
-						usersCount
-					}
+						usersCount,
+					},
 				}
 			);
 		});
@@ -47,12 +48,12 @@ RocketChat.Migrations.add({
 			{
 				t: 'd',
 				name: { $exists: true },
-				fname: { $exists: false }
+				fname: { $exists: false },
 			},
 			{
 				fields: {
-					name: 1
-				}
+					name: 1,
+				},
 			}
 		).fetch();
 
@@ -65,30 +66,28 @@ RocketChat.Migrations.add({
 			return obj;
 		}, {});
 
-		const updateSubscription = subscription => {
-			return new Promise(resolve => {
-				Meteor.defer(() => {
-					const name = usersByUsername[subscription.name];
+		const updateSubscription = (subscription) => new Promise((resolve) => {
+			Meteor.defer(() => {
+				const name = usersByUsername[subscription.name];
 
-					if (!name) {
-						return resolve();
-					}
+				if (!name) {
+					return resolve();
+				}
 
-					RocketChat.models.Subscriptions._db.originals.update(
-						{
-							_id: subscription._id
+				RocketChat.models.Subscriptions._db.originals.update(
+					{
+						_id: subscription._id,
+					},
+					{
+						$set: {
+							fname: name,
 						},
-						{
-							$set: {
-								fname: name
-							}
-						}
-					);
+					}
+				);
 
-					resolve();
-				});
+				resolve();
 			});
-		};
+		});
 
 		// Use FUTURE to process itens in batchs and wait the final one
 		const fut = new Future();
@@ -105,7 +104,7 @@ RocketChat.Migrations.add({
 			);
 
 			if (itens.length) {
-				Promise.all(itens.map(s => updateSubscription(s))).then(() => {
+				Promise.all(itens.map((s) => updateSubscription(s))).then(() => {
 					processBatch();
 				});
 			} else {
@@ -116,5 +115,5 @@ RocketChat.Migrations.add({
 		processBatch();
 
 		fut.wait();
-	}
+	},
 });

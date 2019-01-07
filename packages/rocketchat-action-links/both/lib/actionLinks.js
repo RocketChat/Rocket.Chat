@@ -1,4 +1,7 @@
-//Action Links namespace creation.
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
+// Action Links namespace creation.
 RocketChat.actionLinks = {
 	actions: {},
 	register(name, funct) {
@@ -17,7 +20,7 @@ RocketChat.actionLinks = {
 
 		const subscription = RocketChat.models.Subscriptions.findOne({
 			rid: message.rid,
-			'u._id': userId
+			'u._id': userId,
 		});
 		if (!subscription) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { function: 'actionLinks.getMessage' });
@@ -28,5 +31,5 @@ RocketChat.actionLinks = {
 		}
 
 		return message;
-	}
+	},
 };

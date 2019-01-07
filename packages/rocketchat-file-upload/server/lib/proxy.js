@@ -1,5 +1,8 @@
-/* globals UploadFS, InstanceStatus */
-
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { Logger } from 'meteor/rocketchat:logger';
 import http from 'http';
 import URL from 'url';
 
@@ -44,7 +47,7 @@ WebApp.connectHandlers.stack.unshift({
 
 		// Get file
 		const fileId = match[2];
-		const file = store.getCollection().findOne({_id: fileId});
+		const file = store.getCollection().findOne({ _id: fileId });
 		if (file === undefined) {
 			res.writeHead(404);
 			res.end();
@@ -57,7 +60,7 @@ WebApp.connectHandlers.stack.unshift({
 		}
 
 		// Proxy to other instance
-		const instance = InstanceStatus.getCollection().findOne({_id: file.instanceId});
+		const instance = InstanceStatus.getCollection().findOne({ _id: file.instanceId });
 
 		if (instance == null) {
 			res.writeHead(404);
@@ -75,17 +78,17 @@ WebApp.connectHandlers.stack.unshift({
 			hostname: instance.extraInformation.host,
 			port: instance.extraInformation.port,
 			path: req.originalUrl,
-			method: 'POST'
+			method: 'POST',
 		};
 
 		const proxy = http.request(options, function(proxy_res) {
 			proxy_res.pipe(res, {
-				end: true
+				end: true,
 			});
 		});
 
 		req.pipe(proxy, {
-			end: true
+			end: true,
 		});
-	})
+	}),
 });

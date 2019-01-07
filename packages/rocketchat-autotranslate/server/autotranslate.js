@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -34,7 +37,7 @@ class AutoTranslate {
 			const token = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token,
-				text: match
+				text: match,
 			});
 			return token;
 		});
@@ -52,13 +55,13 @@ class AutoTranslate {
 			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: pretoken,
-				text: pre
+				text: pre,
 			});
 
 			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: posttoken,
-				text: post
+				text: post,
 			});
 
 			return pretoken + text + posttoken;
@@ -69,13 +72,13 @@ class AutoTranslate {
 			const pretoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: pretoken,
-				text: pre
+				text: pre,
 			});
 
 			const posttoken = `<i class=notranslate>{${ count++ }}</i>`;
 			message.tokens.push({
 				token: posttoken,
-				text: post
+				text: post,
 			});
 
 			return pretoken + text + posttoken;
@@ -93,7 +96,7 @@ class AutoTranslate {
 
 		for (const tokenIndex in message.tokens) {
 			if (message.tokens.hasOwnProperty(tokenIndex)) {
-				const token = message.tokens[tokenIndex].token;
+				const { token } = message.tokens[tokenIndex];
 				if (token.indexOf('notranslate') === -1) {
 					const newToken = `<i class=notranslate>{${ count++ }}</i>`;
 					message.msg = message.msg.replace(token, newToken);
@@ -109,12 +112,12 @@ class AutoTranslate {
 		let count = message.tokens.length;
 
 		if (message.mentions && message.mentions.length > 0) {
-			message.mentions.forEach(mention => {
-				message.msg = message.msg.replace(new RegExp(`(@${ mention.username })`, 'gm'), match => {
+			message.mentions.forEach((mention) => {
+				message.msg = message.msg.replace(new RegExp(`(@${ mention.username })`, 'gm'), (match) => {
 					const token = `<i class=notranslate>{${ count++ }}</i>`;
 					message.tokens.push({
 						token,
-						text: match
+						text: match,
 					});
 					return token;
 				});
@@ -122,12 +125,12 @@ class AutoTranslate {
 		}
 
 		if (message.channels && message.channels.length > 0) {
-			message.channels.forEach(channel => {
-				message.msg = message.msg.replace(new RegExp(`(#${ channel.name })`, 'gm'), match => {
+			message.channels.forEach((channel) => {
+				message.msg = message.msg.replace(new RegExp(`(#${ channel.name })`, 'gm'), (match) => {
 					const token = `<i class=notranslate>{${ count++ }}</i>`;
 					message.tokens.push({
 						token,
-						text: match
+						text: match,
 					});
 					return token;
 				});
@@ -139,8 +142,8 @@ class AutoTranslate {
 
 	deTokenize(message) {
 		if (message.tokens && message.tokens.length > 0) {
-			for (const {token, text, noHtml} of message.tokens) {
-				message.msg = message.msg.replace(token, () => noHtml ? noHtml : text);
+			for (const { token, text, noHtml } of message.tokens) {
+				message.msg = message.msg.replace(token, () => (noHtml ? noHtml : text));
 			}
 		}
 		return message.msg;
@@ -150,7 +153,7 @@ class AutoTranslate {
 		if (this.enabled && this.apiKey) {
 			let targetLanguages;
 			if (targetLanguage) {
-				targetLanguages = [ targetLanguage ];
+				targetLanguages = [targetLanguage];
 			} else {
 				targetLanguages = RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
 			}
@@ -163,11 +166,11 @@ class AutoTranslate {
 					targetMessage = this.tokenize(targetMessage);
 
 					let msgs = targetMessage.msg.split('\n');
-					msgs = msgs.map(msg => encodeURIComponent(msg));
+					msgs = msgs.map((msg) => encodeURIComponent(msg));
 					const query = `q=${ msgs.join('&q=') }`;
 
 					const supportedLanguages = this.getSupportedLanguages('en');
-					targetLanguages.forEach(language => {
+					targetLanguages.forEach((language) => {
 						if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 							language = language.substr(0, 2);
 						}
@@ -179,7 +182,7 @@ class AutoTranslate {
 							return message;
 						}
 						if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-							const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
+							const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 							translations[language] = this.deTokenize(Object.assign({}, targetMessage, { msg: txt }));
 						}
 					});
@@ -198,13 +201,13 @@ class AutoTranslate {
 							if (attachment.description || attachment.text) {
 								const query = `q=${ encodeURIComponent(attachment.description || attachment.text) }`;
 								const supportedLanguages = this.getSupportedLanguages('en');
-								targetLanguages.forEach(language => {
+								targetLanguages.forEach((language) => {
 									if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 										language = language.substr(0, 2);
 									}
 									const result = HTTP.get('https://translation.googleapis.com/language/translate/v2', { params: { key: this.apiKey, target: language }, query });
 									if (result.statusCode === 200 && result.data && result.data.data && result.data.data.translations && Array.isArray(result.data.data.translations) && result.data.data.translations.length > 0) {
-										const txt = result.data.data.translations.map(translation => translation.translatedText).join('\n');
+										const txt = result.data.data.translations.map((translation) => translation.translatedText).join('\n');
 										translations[language] = txt;
 									}
 								});

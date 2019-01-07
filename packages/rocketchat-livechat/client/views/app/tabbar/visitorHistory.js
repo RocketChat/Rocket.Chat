@@ -1,3 +1,7 @@
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { Mongo } from 'meteor/mongo';
 import moment from 'moment';
 const visitorHistory = new Mongo.Collection('visitor_history');
 
@@ -9,11 +13,11 @@ Template.visitorHistory.helpers({
 	previousChats() {
 		return visitorHistory.find({
 			_id: { $ne: this.rid },
-			'v._id': Template.instance().visitorId.get()
+			'v._id': Template.instance().visitorId.get(),
 		}, {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		});
 	},
 
@@ -25,7 +29,7 @@ Template.visitorHistory.helpers({
 		}
 
 		return title;
-	}
+	},
 });
 
 Template.visitorHistory.onCreated(function() {

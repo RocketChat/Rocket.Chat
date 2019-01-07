@@ -1,4 +1,5 @@
-/* globals device cordova*/
+import { Meteor } from 'meteor/meteor';
+
 if (Meteor.isCordova) {
 	const body = $(document.body);
 	document.addEventListener('deviceready', function() {

@@ -1,4 +1,6 @@
 /* globals LivechatVideoCall, cordova, JitsiMeetExternalAPI */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import visitor from '../../imports/client/visitor';
 
 LivechatVideoCall = new (class LivechatVideoCall {
@@ -48,11 +50,11 @@ LivechatVideoCall = new (class LivechatVideoCall {
 	start(domain, room) {
 		Meteor.defer(() => {
 			const interfaceConfig = {};
-			interfaceConfig['TOOLBAR_BUTTONS'] = '[""]';
-			interfaceConfig['APP_NAME'] = '"Livechat"';
-			interfaceConfig['INITIAL_TOOLBAR_TIMEOUT'] = '5000';
-			interfaceConfig['MIN_WIDTH'] = '300';
-			interfaceConfig['FILM_STRIP_MAX_HEIGHT'] = '50';
+			interfaceConfig.TOOLBAR_BUTTONS = '[""]';
+			interfaceConfig.APP_NAME = '"Livechat"';
+			interfaceConfig.INITIAL_TOOLBAR_TIMEOUT = '5000';
+			interfaceConfig.MIN_WIDTH = '300';
+			interfaceConfig.FILM_STRIP_MAX_HEIGHT = '50';
 
 			this.api = new JitsiMeetExternalAPI(domain, room, $('.video-call').width(), $('.video-call').height(), $('.video-call .container').get(0), {}, interfaceConfig);
 

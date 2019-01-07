@@ -1,15 +1,54 @@
-/* globals FileUpload */
+import { WebApp } from 'meteor/webapp';
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import sharp from 'sharp';
+import { Cookies } from 'meteor/ostrio:cookies';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
+const cookie = new Cookies();
+
+function isUserAuthenticated(req) {
+	const headers = req.headers || {};
+	const query = req.query || {};
+
+	let { rc_uid, rc_token } = query;
+
+	if (!rc_uid && headers.cookie) {
+		rc_uid = cookie.get('rc_uid', headers.cookie) ;
+		rc_token = cookie.get('rc_token', headers.cookie);
+	}
+
+	if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
+		return false;
+	}
+
+	return true;
+}
+
+const warnUnauthenticatedAccess = _.debounce(() => {
+	console.warn('The server detected an unauthenticated access to an user avatar. This type of request will soon be blocked by default.');
+}, 60000 * 30); // 30 minutes
+
+function userCanAccessAvatar(req) {
+	if (RocketChat.settings.get('Accounts_AvatarBlockUnauthenticatedAccess') === true) {
+		return isUserAuthenticated(req);
+	}
+
+	if (!isUserAuthenticated(req)) {
+		warnUnauthenticatedAccess();
+	}
+
+	return true;
+}
 
 Meteor.startup(function() {
-	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/*, next*/) {
+	WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res/* , next*/) {
 		const params = {
-			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))
+			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')),
 		};
 		const cacheTime = req.query.cacheTime || RocketChat.settings.get('Accounts_AvatarCacheTime');
 
-		if (_.isEmpty(params.username)) {
+		if (_.isEmpty(params.username) || !userCanAccessAvatar(req)) {
 			res.writeHead(403);
 			res.write('Forbidden');
 			res.end();
@@ -75,8 +114,8 @@ Meteor.startup(function() {
 				if (RocketChat.settings.get('UI_Use_Name_Avatar')) {
 					const user = RocketChat.models.Users.findOneByUsername(username, {
 						fields: {
-							name: 1
-						}
+							name: 1,
+						},
 					});
 
 					if (user && user.name) {

@@ -1,5 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Importers, ImporterWebsocketReceiver, ProgressStep } from 'meteor/rocketchat:importer';
-
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
 import toastr from 'toastr';
 
 Template.adminImportProgress.helpers({
@@ -11,7 +16,7 @@ Template.adminImportProgress.helpers({
 	},
 	total() {
 		return Template.instance().total.get();
-	}
+	},
 });
 
 Template.adminImportProgress.onCreated(function() {

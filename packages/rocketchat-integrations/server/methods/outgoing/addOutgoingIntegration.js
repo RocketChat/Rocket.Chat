@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	addOutgoingIntegration(integration) {
 		if (!RocketChat.authz.hasPermission(this.userId, 'manage-integrations')
@@ -10,9 +13,9 @@ Meteor.methods({
 		integration = RocketChat.integrations.validateOutgoing(integration, this.userId);
 
 		integration._createdAt = new Date();
-		integration._createdBy = RocketChat.models.Users.findOne(this.userId, {fields: {username: 1}});
+		integration._createdBy = RocketChat.models.Users.findOne(this.userId, { fields: { username: 1 } });
 		integration._id = RocketChat.models.Integrations.insert(integration);
 
 		return integration;
-	}
+	},
 });

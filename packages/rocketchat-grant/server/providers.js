@@ -1,4 +1,4 @@
-import { check } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 
 import { Storage } from './storage';
 import { routes } from './routes';
@@ -7,14 +7,13 @@ class Providers extends Storage {
 	register(name, options, getUser) {
 		check(name, String);
 		check(options, {
-			// eslint-disable-next-line
-			scope: Match.OneOf(String, [String])
+			scope: Match.OneOf(String, [String]),
 		});
 		check(getUser, Function);
 
 		this._add(name.toLowerCase(), {
 			scope: options.scope,
-			getUser
+			getUser,
 		});
 	}
 }
@@ -32,7 +31,7 @@ export function middleware(req, res, next) {
 		providers.forEach((_, name) => list.push(name));
 
 		res.end(JSON.stringify({
-			data: list
+			data: list,
 		}));
 		return;
 	}

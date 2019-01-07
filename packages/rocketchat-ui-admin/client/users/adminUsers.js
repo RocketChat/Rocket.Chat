@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SideNav } from 'meteor/rocketchat:ui';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -30,9 +37,9 @@ Template.adminUsers.helpers({
 	flexData() {
 		return {
 			tabBar: Template.instance().tabBar,
-			data: Template.instance().tabBarData.get()
+			data: Template.instance().tabBarData.get(),
 		};
-	}
+	},
 });
 
 Template.adminUsers.onCreated(function() {
@@ -49,7 +56,7 @@ Template.adminUsers.onCreated(function() {
 		i18nTitle: 'Invite_Users',
 		icon: 'send',
 		template: 'adminInviteUser',
-		order: 1
+		order: 1,
 	});
 	RocketChat.TabBar.addButton({
 		groups: ['admin-users'],
@@ -57,7 +64,7 @@ Template.adminUsers.onCreated(function() {
 		i18nTitle: 'Add_User',
 		icon: 'plus',
 		template: 'adminUserEdit',
-		order: 2
+		order: 2,
 	});
 	RocketChat.TabBar.addButton({
 		groups: ['admin-users'],
@@ -65,7 +72,7 @@ Template.adminUsers.onCreated(function() {
 		i18nTitle: 'User_Info',
 		icon: 'user',
 		template: 'adminUserInfo',
-		order: 3
+		order: 3,
 	});
 	this.autorun(function() {
 		const filter = instance.filter.get();
@@ -83,12 +90,12 @@ Template.adminUsers.onCreated(function() {
 
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = {$or: [{ username: filterReg }, { name: filterReg}, { 'emails.address': filterReg }]};
+			query = { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] };
 		} else {
 			query = {};
 		}
 		query.type = {
-			$in: ['user', 'bot']
+			$in: ['user', 'bot'],
 		};
 
 		const limit = instance.limit && instance.limit.get();
@@ -131,5 +138,5 @@ Template.adminUsers.events({
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);
-	}
+	},
 });

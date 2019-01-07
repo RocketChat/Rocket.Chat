@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -12,18 +14,18 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'channelsList'
+				method: 'channelsList',
 			});
 		}
 
 		const options = {
 			fields: {
 				name: 1,
-				t: 1
+				t: 1,
 			},
 			sort: {
-				msgs: -1
-			}
+				msgs: -1,
+			},
 		};
 
 		if (_.isNumber(limit)) {
@@ -34,12 +36,12 @@ Meteor.methods({
 			switch (sort) {
 				case 'name':
 					options.sort = {
-						name: 1
+						name: 1,
 					};
 					break;
 				case 'msgs':
 					options.sort = {
-						msgs: -1
+						msgs: -1,
 					};
 			}
 		}
@@ -56,7 +58,7 @@ Meteor.methods({
 					channels = channels.concat(RocketChat.models.Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
 				}
 			} else if (RocketChat.authz.hasPermission(userId, 'view-joined-room')) {
-				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('c', userId, {fields: {rid: 1}}).fetch().map(s => s.rid);
+				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				if (filter) {
 					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('c', roomIds, options).fetch());
 				} else {
@@ -69,15 +71,15 @@ Meteor.methods({
 			const user = RocketChat.models.Users.findOne(userId, {
 				fields: {
 					username: 1,
-					'settings.preferences.sidebarGroupByType': 1
-				}
+					'settings.preferences.sidebarGroupByType': 1,
+				},
 			});
 			const userPref = RocketChat.getUserPreference(user, 'sidebarGroupByType');
 			// needs to negate globalPref because userPref represents its opposite
 			const groupByType = userPref !== undefined ? userPref : RocketChat.settings.get('UI_Group_Channels_By_Type');
 
 			if (!groupByType) {
-				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('p', userId, {fields: {rid: 1}}).fetch().map(s => s.rid);
+				const roomIds = RocketChat.models.Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				if (filter) {
 					channels = channels.concat(RocketChat.models.Rooms.findByTypeInIds('p', roomIds, options).fetch());
 				} else {
@@ -87,7 +89,7 @@ Meteor.methods({
 		}
 
 		return {
-			channels
+			channels,
 		};
-	}
+	},
 });

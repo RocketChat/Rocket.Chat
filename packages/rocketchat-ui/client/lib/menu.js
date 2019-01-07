@@ -1,6 +1,8 @@
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+import { isRtl } from 'meteor/rocketchat:utils';
 
 const sideNavW = 280;
 const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -17,7 +19,6 @@ window.addEventListener('resize', _.debounce((() => {
 	};
 })(), 100));
 
-/* globals isRtl */
 this.menu = new class extends EventEmitter {
 	constructor() {
 		super();

@@ -2,39 +2,20 @@ Package.describe({
 	name: 'chatpal:search',
 	version: '0.0.1',
 	summary: 'Chatpal Search Provider',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
-		'rocketchat:logger',
-		'rocketchat:search',
-		'kadira:flow-router',
-		'meteorhacks:inject-initial'
+		'rocketchat:utils',
 	]);
-
-	api.addFiles('server/asset/chatpal-enter.svg', 'server', {isAsset:true});
-	api.addFiles('server/asset/chatpal-logo-icon-darkblue.svg', 'server', {isAsset:true});
-
-	api.addFiles([
-		'server/provider/provider.js',
-		'server/provider/index.js',
-		'server/utils/logger.js',
-		'server/utils/utils.js',
-		'server/asset/config.js'
+	api.addAssets([
+		'server/asset/chatpal-enter.svg',
+		'server/asset/chatpal-logo-icon-darkblue.svg',
 	], 'server');
-
-	api.addFiles([
-		'client/template/suggestion.html',
-		'client/template/suggestion.js',
-		'client/template/result.html',
-		'client/template/result.js',
-		'client/template/admin.html',
-		'client/template/admin.js',
-		'client/style.css',
-		'client/route.js'
-	], 'client');
+	api.addFiles('client/style.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

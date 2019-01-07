@@ -16,12 +16,12 @@ echo -e "Tag: $CIRCLE_TAG\r\nBranch: $CIRCLE_BRANCH\r\nBuild: $CIRCLE_BUILD_NUM\
 git clone -b $SNAP_CHANNEL git+ssh://rocket.chat.buildmaster@git.launchpad.net/rocket.chat launchpad
 
 # Rarely will change, but just incase we copy it all
-cp -r resources buildinfo launchpad/
-sed s/#{RC_VERSION}/$RC_VERSION/ snapcraft.yaml > launchpad/snapcraft.yaml
+cp -r resources buildinfo snap launchpad/
+sed s/#{RC_VERSION}/$RC_VERSION/ snap/snapcraft.yaml > launchpad/snap/snapcraft.yaml
 sed s/#{RC_VERSION}/$RC_VERSION/ resources/prepareRocketChat > launchpad/resources/prepareRocketChat
 
 cd launchpad
-git add resources snapcraft.yaml buildinfo
+git add resources snap buildinfo
 
 # Set commit author details
 git config user.email "buildmaster@rocket.chat"

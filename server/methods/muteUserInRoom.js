@@ -1,13 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 Meteor.methods({
 	muteUserInRoom(data) {
 		check(data, Match.ObjectIncluding({
 			rid: String,
-			username: String
+			username: String,
 		}));
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'muteUserInRoom'
+				method: 'muteUserInRoom',
 			});
 		}
 
@@ -15,7 +18,7 @@ Meteor.methods({
 
 		if (!RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'muteUserInRoom'
+				method: 'muteUserInRoom',
 			});
 		}
 
@@ -23,21 +26,21 @@ Meteor.methods({
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'muteUserInRoom'
+				method: 'muteUserInRoom',
 			});
 		}
 
 		if (['c', 'p'].includes(room.t) === false) {
 			throw new Meteor.Error('error-invalid-room-type', `${ room.t } is not a valid room type`, {
 				method: 'muteUserInRoom',
-				type: room.t
+				type: room.t,
 			});
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'muteUserInRoom'
+				method: 'muteUserInRoom',
 			});
 		}
 
@@ -50,10 +53,10 @@ Meteor.methods({
 		RocketChat.models.Messages.createUserMutedWithRoomIdAndUser(data.rid, mutedUser, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
-			}
+				username: fromUser.username,
+			},
 		});
 
 		return true;
-	}
+	},
 });

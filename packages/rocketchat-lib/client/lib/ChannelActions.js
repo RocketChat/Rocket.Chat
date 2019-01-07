@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { call, UiTextContext } from 'meteor/rocketchat:lib';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { t } from 'meteor/rocketchat:utils';
 
 export function hide(type, rid, name) {
 	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
@@ -14,9 +18,9 @@ export function hide(type, rid, name) {
 		closeOnConfirm: true,
 		dontAskAgain: {
 			action: 'hideRoom',
-			label: t('Hide_room')
+			label: t('Hide_room'),
 		},
-		html: false
+		html: false,
 	}, async function() {
 		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 			FlowRouter.go('home');
@@ -30,7 +34,7 @@ export function hide(type, rid, name) {
 	return false;
 }
 
-const leaveRoom = async rid => {
+const leaveRoom = async(rid) => {
 	if (!Meteor.userId()) {
 		return false;
 	}
@@ -56,7 +60,7 @@ export function leave(type, rid, name) {
 		confirmButtonText: t('Yes_leave_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
-		html: false
+		html: false,
 	}, async function(isConfirm) {
 		if (!isConfirm) {
 			return;
@@ -73,7 +77,7 @@ export function leave(type, rid, name) {
 				type: 'error',
 				title: t('Warning'),
 				text: handleError(error, false),
-				html: false
+				html: false,
 			});
 		}
 	});
@@ -89,7 +93,7 @@ export function erase(rid) {
 		confirmButtonText: t('Yes_delete_it'),
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
-		html: false
+		html: false,
 	}, async() => {
 		await call('eraseRoom', rid);
 		modal.open({
@@ -97,7 +101,7 @@ export function erase(rid) {
 			text: t('Room_has_been_deleted'),
 			type: 'success',
 			timer: 2000,
-			showConfirmButton: false
+			showConfirmButton: false,
 		});
 	});
 }

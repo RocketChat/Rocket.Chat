@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 export default function handleOnCreateUser(newUser) {
 	if (!newUser) {
 		return this.log('Invalid handleOnCreateUser call');
@@ -16,17 +19,17 @@ export default function handleOnCreateUser(newUser) {
 			'profile.irc.fromIRC': false,
 			'profile.irc.username': `${ newUser.username }-rkt`,
 			'profile.irc.nick': `${ newUser.username }-rkt`,
-			'profile.irc.hostname': 'rocket.chat'
-		}
+			'profile.irc.hostname': 'rocket.chat',
+		},
 	});
 
 	const user = RocketChat.models.Users.findOne({
-		_id: newUser._id
+		_id: newUser._id,
 	});
 
 	this.sendCommand('registerUser', user);
 
-	const rooms = RocketChat.models.Rooms.findWithUsername(user.username).fetch();
+	const rooms = RocketChat.models.Rooms.findBySubscriptionUserId(user._id).fetch();
 
-	rooms.forEach(room => this.sendCommand('joinedChannel', { room, user }));
+	rooms.forEach((room) => this.sendCommand('joinedChannel', { room, user }));
 }

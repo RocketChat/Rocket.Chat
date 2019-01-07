@@ -1,12 +1,10 @@
-/* eslint-env mocha */
-
 import { adminEmail, adminPassword } from '../../data/user.js';
 
 import {
 	api,
 	request,
 	getCredentials,
-	credentials
+	credentials,
 } from '../../data/api-data.js';
 import loginPage from '../../pageobjects/login.page';
 import sideNav from '../../pageobjects/side-nav.page';
@@ -19,13 +17,13 @@ const users = new Array(10).fill(null)
 		username: `user.test.mentions.${ uniqueId }`,
 		email: `user.test.mentions.${ uniqueId }@rocket.chat`,
 		password: 'rocket.chat',
-		isMentionable: i % 2 === 0
+		isMentionable: i % 2 === 0,
 	}));
 
 const createTestUser = async({ email, name, username, password, isMentionable }) => {
-	await new Promise(done => getCredentials(done));
+	await new Promise((done) => getCredentials(done));
 
-	await new Promise(done => request.post(api('users.create'))
+	await new Promise((done) => request.post(api('users.create'))
 		.set(credentials)
 		.send({
 			email,
@@ -33,9 +31,9 @@ const createTestUser = async({ email, name, username, password, isMentionable })
 			username,
 			password,
 			active: true,
-			roles: [ 'user' ],
+			roles: ['user'],
 			joinDefaultChannels: true,
-			verified: true
+			verified: true,
 		})
 		.end(done)
 	);
@@ -43,7 +41,7 @@ const createTestUser = async({ email, name, username, password, isMentionable })
 	if (isMentionable) {
 		const userCredentials = {};
 
-		await new Promise(done => request.post(api('login'))
+		await new Promise((done) => request.post(api('login'))
 			.send({ user: username, password })
 			.expect((res) => {
 				userCredentials['X-Auth-Token'] = res.body.data.authToken;
@@ -52,11 +50,11 @@ const createTestUser = async({ email, name, username, password, isMentionable })
 			.end(done)
 		);
 
-		await new Promise(done => request.post(api('chat.postMessage'))
+		await new Promise((done) => request.post(api('chat.postMessage'))
 			.set(userCredentials)
 			.send({
 				channel: 'general',
-				text: 'Test'
+				text: 'Test',
 			})
 			.end(done)
 		);
@@ -66,7 +64,7 @@ const createTestUser = async({ email, name, username, password, isMentionable })
 describe('[Message Popup]', () => {
 	describe('test user mentions in message popup', () => {
 		before(() => {
-			browser.executeAsync(done => {
+			browser.executeAsync((done) => {
 				const user = Meteor.user();
 				if (!user) {
 					return done();
@@ -88,7 +86,7 @@ describe('[Message Popup]', () => {
 		});
 
 		after(() => {
-			browser.executeAsync(done => {
+			browser.executeAsync((done) => {
 				Meteor.logout(done);
 			});
 		});
@@ -105,7 +103,7 @@ describe('[Message Popup]', () => {
 			mainContent.messagePopUpTitle.getText().should.be.equal('People');
 		});
 
-		it('should show the message popup bar items', ()=> {
+		it('should show the message popup bar items', () => {
 			mainContent.messagePopUpItems.isVisible().should.be.true;
 		});
 

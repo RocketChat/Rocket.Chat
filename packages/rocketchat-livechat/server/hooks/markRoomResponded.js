@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (!message || message.editedAt) {
@@ -15,14 +18,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	Meteor.defer(() => {
-		const now = new Date();
 		RocketChat.models.Rooms.setResponseByRoomId(room._id, {
 			user: {
 				_id: message.u._id,
-				username: message.u.username
+				username: message.u.username,
 			},
-			responseDate: now,
-			responseTime: (now.getTime() - room.ts) / 1000
 		});
 	});
 

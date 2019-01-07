@@ -1,7 +1,7 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
-
-import {validationService} from '../service/validationService';
+import { validationService } from '../service/validationService';
 import SearchLogger from '../logger/logger';
 
 class SearchProviderService {
@@ -29,18 +29,16 @@ class SearchProviderService {
 				reason = 'update';
 			}
 
-			const stopProvider = () => {
-				return new Promise((resolve, reject) => {
-					if (this.activeProvider) {
+			const stopProvider = () => new Promise((resolve, reject) => {
+				if (this.activeProvider) {
 
-						SearchLogger.debug(`Stopping provider '${ this.activeProvider.key }'`);
+					SearchLogger.debug(`Stopping provider '${ this.activeProvider.key }'`);
 
-						this.activeProvider.stop(resolve, reject);
-					} else {
-						resolve();
-					}
-				});
-			};
+					this.activeProvider.stop(resolve, reject);
+				} else {
+					resolve();
+				}
+			});
 
 			stopProvider().then(() => {
 				this.activeProvider = undefined;
@@ -77,18 +75,18 @@ class SearchProviderService {
 	start() {
 		SearchLogger.debug('Load data for all providers');
 
-		const providers = this.providers;
+		const { providers } = this;
 
-		//add settings for admininistration
+		// add settings for admininistration
 		RocketChat.settings.addGroup('Search', function() {
 
 			const self = this;
 
 			self.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
-				values: Object.keys(providers).map((key) => { return {key, i18nLabel: providers[key].i18nLabel}; }),
+				values: Object.keys(providers).map((key) => ({ key, i18nLabel: providers[key].i18nLabel })),
 				public: true,
-				i18nLabel: 'Search_Provider'
+				i18nLabel: 'Search_Provider',
 			});
 
 			Object.keys(providers)
@@ -99,14 +97,14 @@ class SearchProviderService {
 
 							const _options = {
 								type: setting.type,
-								...setting.options
+								...setting.options,
 							};
 
 							_options.enableQuery = _options.enableQuery || [];
 
 							_options.enableQuery.push({
 								_id: 'Search.Provider',
-								value: key
+								value: key,
 							});
 
 							this.add(setting.id, setting.defaultValue, _options);
@@ -115,12 +113,12 @@ class SearchProviderService {
 				});
 		});
 
-		//add listener to react on setting changes
+		// add listener to react on setting changes
 		const configProvider = _.debounce(Meteor.bindEnvironment(() => {
 			const providerId = RocketChat.settings.get('Search.Provider');
 
 			if (providerId) {
-				this.use(providerId);//TODO do something with success and errors
+				this.use(providerId);// TODO do something with success and errors
 			}
 
 		}), 1000);
@@ -149,7 +147,7 @@ Meteor.methods({
 
 		return new Promise((resolve, reject) => {
 
-			payload = payload !== null ? payload : undefined;//TODO is this cleanup necessary?
+			payload = payload !== null ? payload : undefined;// TODO is this cleanup necessary?
 
 			try {
 
@@ -174,7 +172,7 @@ Meteor.methods({
 	'rocketchatSearch.suggest'(text, context, payload) {
 
 		return new Promise((resolve, reject) => {
-			payload = payload !== null ? payload : undefined;//TODO is this cleanup necessary?
+			payload = payload !== null ? payload : undefined;// TODO is this cleanup necessary?
 
 			try {
 
@@ -208,10 +206,8 @@ Meteor.methods({
 			resultTemplate: searchProviderService.activeProvider.resultTemplate,
 			supportsSuggestions: searchProviderService.activeProvider.supportsSuggestions,
 			suggestionItemTemplate: searchProviderService.activeProvider.suggestionItemTemplate,
-			settings: _.mapObject(searchProviderService.activeProvider.settingsAsMap, (setting) => {
-				return setting.value;
-			})
+			settings: _.mapObject(searchProviderService.activeProvider.settingsAsMap, (setting) => setting.value),
 		};
-	}
+	},
 });
 

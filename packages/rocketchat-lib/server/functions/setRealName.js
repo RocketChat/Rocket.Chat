@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 RocketChat._setRealName = function(userId, name) {
@@ -23,7 +24,7 @@ RocketChat._setRealName = function(userId, name) {
 		RocketChat.Notifications.notifyLogged('Users:NameChanged', {
 			_id: user._id,
 			name: user.name,
-			username: user.username
+			username: user.username,
 		});
 	}
 
@@ -31,5 +32,5 @@ RocketChat._setRealName = function(userId, name) {
 };
 
 RocketChat.setRealName = RocketChat.RateLimiter.limitFunction(RocketChat._setRealName, 1, 60000, {
-	0() { return !Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info'); } // Administrators have permission to change others names, so don't limit those
+	0() { return !Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others names, so don't limit those
 });

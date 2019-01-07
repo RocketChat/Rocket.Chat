@@ -1,4 +1,7 @@
-/* globals facebookConnectPlugin Facebook*/
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Facebook } from 'meteor/facebook-oauth';
+
 Meteor.loginWithFacebookCordova = function(options, callback) {
 	if (!callback && typeof options === 'function') {
 		callback = options;
@@ -9,7 +12,7 @@ Meteor.loginWithFacebookCordova = function(options, callback) {
 		data.cordova = true;
 		return Accounts.callLoginMethod({
 			methodArguments: [data],
-			userCallback: callback
+			userCallback: callback,
 		});
 	};
 	if (typeof facebookConnectPlugin !== 'undefined') {

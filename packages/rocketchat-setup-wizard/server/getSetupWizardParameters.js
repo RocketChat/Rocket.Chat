@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	getSetupWizardParameters() {
 		const userId = Meteor.userId();
@@ -12,7 +15,7 @@ Meteor.methods({
 
 		return {
 			settings,
-			allowStandaloneServer
+			allowStandaloneServer,
 		};
-	}
+	},
 });

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	deleteOldOTRMessages(roomId) {
 		if (!Meteor.userId()) {
@@ -11,5 +14,5 @@ Meteor.methods({
 		} else {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'deleteOldOTRMessages' });
 		}
-	}
+	},
 });

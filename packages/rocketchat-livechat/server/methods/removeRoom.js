@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	'livechat:removeRoom'(rid) {
 		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'remove-closed-livechat-rooms')) {
@@ -8,24 +11,24 @@ Meteor.methods({
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'livechat:removeRoom'
+				method: 'livechat:removeRoom',
 			});
 		}
 
 		if (room.t !== 'l') {
 			throw new Meteor.Error('error-this-is-not-a-livechat-room', 'This is not a Livechat room', {
-				method: 'livechat:removeRoom'
+				method: 'livechat:removeRoom',
 			});
 		}
 
 		if (room.open) {
 			throw new Meteor.Error('error-room-is-not-closed', 'Room is not closed', {
-				method: 'livechat:removeRoom'
+				method: 'livechat:removeRoom',
 			});
 		}
 
 		RocketChat.models.Messages.removeByRoomId(rid);
 		RocketChat.models.Subscriptions.removeByRoomId(rid);
 		return RocketChat.models.Rooms.removeById(rid);
-	}
+	},
 });

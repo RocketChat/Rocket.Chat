@@ -1,22 +1,26 @@
-/* globals ChatSubscription popover */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { ChatSubscription, popover } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 const notificationLabels = {
 	all: 'All_messages',
 	mentions: 'Mentions',
-	nothing: 'Nothing'
+	nothing: 'Nothing',
 };
 
-const call = (method, ...params) => {
-	return new Promise((resolve, reject) => {
-		Meteor.call(method, ...params, (err, result)=> {
-			if (err) {
-				handleError(err);
-				return reject(err);
-			}
-			return resolve(result);
-		});
+const call = (method, ...params) => new Promise((resolve, reject) => {
+	Meteor.call(method, ...params, (err, result) => {
+		if (err) {
+			handleError(err);
+			return reject(err);
+		}
+		return resolve(result);
 	});
-};
+});
 
 Template.pushNotificationsFlexTab.helpers({
 	notificationIsEnabled() {
@@ -75,21 +79,21 @@ Template.pushNotificationsFlexTab.helpers({
 		}
 	},
 	defaultAudioNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'audioNotifications');
+		let preference = RocketChat.getUserPreference(Meteor.userId(), 'audioNotifications');
 		if (preference === 'default') {
 			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_audioNotifications');
 		}
 		return notificationLabels[preference];
 	},
 	defaultDesktopNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
+		let preference = RocketChat.getUserPreference(Meteor.userId(), 'desktopNotifications');
 		if (preference === 'default') {
 			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
 		}
 		return notificationLabels[preference];
 	},
 	defaultMobileNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'mobileNotifications');
+		let preference = RocketChat.getUserPreference(Meteor.userId(), 'mobileNotifications');
 		if (preference === 'default') {
 			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications');
 		}
@@ -97,13 +101,13 @@ Template.pushNotificationsFlexTab.helpers({
 	},
 	disabled() {
 		const { original, form } = Template.instance();
-		return Object.keys(original).every(key => original[key].get() === form[key].get());
-	}
+		return Object.keys(original).every((key) => original[key].get() === form[key].get());
+	},
 });
 
 Template.pushNotificationsFlexTab.onCreated(function() {
 	const rid = Session.get('openedRoom');
-	const sub = ChatSubscription.findOne({rid}, {
+	const sub = ChatSubscription.findOne({ rid }, {
 		fields: {
 			disableNotifications: 1,
 			hideUnreadStatus: 1,
@@ -113,8 +117,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			emailNotifications: 1,
 			desktopNotificationDuration: 1,
 			audioNotificationValue: 1,
-			muteGroupMentions: 1
-		}
+			muteGroupMentions: 1,
+		},
 	}) || {};
 
 	const {
@@ -126,7 +130,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		emailNotifications = 'default',
 		desktopNotificationDuration = 0,
 		audioNotificationValue = null,
-		muteGroupMentions = false
+		muteGroupMentions = false,
 	} = sub;
 
 	this.original = {
@@ -138,7 +142,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		emailNotifications: new ReactiveVar(emailNotifications),
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
-		muteGroupMentions: new ReactiveVar(muteGroupMentions)
+		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
 
 	this.form = {
@@ -150,17 +154,19 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		emailNotifications: new ReactiveVar(emailNotifications),
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
-		muteGroupMentions: new ReactiveVar(muteGroupMentions)
+		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
 
 	this.saveSetting = async() => {
-		Object.keys(this.original).forEach(async field => {
+		Object.keys(this.original).forEach(async(field) => {
 			if (this.original[field].get() === this.form[field].get()) {
 				return;
 			}
 			let value = this.form[field].get();
 
-			value = typeof value === 'boolean' ? value ? '1' : '0' : value;
+			if (typeof value === 'boolean') {
+				value = value ? '1' : '0';
+			}
 			const rid = Session.get('openedRoom');
 			switch (field) {
 				case 'desktopNotificationDuration':
@@ -190,7 +196,7 @@ Template.pushNotificationsFlexTab.events({
 
 	'click [data-play]'(e) {
 		e.preventDefault();
-		const user = Meteor.user();
+		const user = Meteor.userId();
 
 		let value = Template.instance().form.audioNotificationValue.get();
 		if (value === '0') {
@@ -202,7 +208,7 @@ Template.pushNotificationsFlexTab.events({
 			const $audio = $(`audio#${ value }`);
 
 			if ($audio && $audio[0] && $audio[0].play) {
-				$audio[0].volume = Number((audioVolume/100).toPrecision(2));
+				$audio[0].volume = Number((audioVolume / 100).toPrecision(2));
 				$audio[0].play();
 			}
 		}
@@ -223,29 +229,27 @@ Template.pushNotificationsFlexTab.events({
 
 		switch (key) {
 			case 'audioNotificationValue':
-				const audioAssets = RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList() || [];
-				const audioAssetsArray = audioAssets.map(audio => {
-					return {
-						id: `audioNotificationValue${ audio.name }`,
-						name: 'audioNotificationValue',
-						label: audio.name,
-						value: audio._id
-					};
-				});
+				const audioAssets = (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
+				const audioAssetsArray = audioAssets.map((audio) => ({
+					id: `audioNotificationValue${ audio.name }`,
+					name: 'audioNotificationValue',
+					label: audio.name,
+					value: audio._id,
+				}));
 				options = [
 					{
 						id: 'audioNotificationValueNone',
 						name: 'audioNotificationValue',
 						label: 'None',
-						value: 'none'
+						value: 'none',
 					},
 					{
 						id: 'audioNotificationValueDefault',
 						name: 'audioNotificationValue',
 						label: 'Default',
-						value: 0
+						value: 0,
 					},
-					...audioAssetsArray
+					...audioAssetsArray,
 				];
 				break;
 			case 'desktopNotificationDuration':
@@ -253,37 +257,37 @@ Template.pushNotificationsFlexTab.events({
 					id: 'desktopNotificationDuration',
 					name: 'desktopNotificationDuration',
 					label: 'Default',
-					value: 0
+					value: 0,
 				},
 				{
 					id: 'desktopNotificationDuration1s',
 					name: 'desktopNotificationDuration',
 					label: `1 ${ t('seconds') }`,
-					value: 1
+					value: 1,
 				},
 				{
 					id: 'desktopNotificationDuration2s',
 					name: 'desktopNotificationDuration',
 					label: `2 ${ t('seconds') }`,
-					value: 2
+					value: 2,
 				},
 				{
 					id: 'desktopNotificationDuration3s',
 					name: 'desktopNotificationDuration',
 					label: `3 ${ t('seconds') }`,
-					value: 3
+					value: 3,
 				},
 				{
 					id: 'desktopNotificationDuration4s',
 					name: 'desktopNotificationDuration',
 					label: `4 ${ t('seconds') }`,
-					value: 4
+					value: 4,
 				},
 				{
 					id: 'desktopNotificationDuration5s',
 					name: 'desktopNotificationDuration',
 					label: `5 ${ t('seconds') }`,
-					value: 5
+					value: 5,
 				}];
 				break;
 			default:
@@ -291,25 +295,25 @@ Template.pushNotificationsFlexTab.events({
 					id: 'desktopNotificationsDefault',
 					name: 'desktopNotifications',
 					label: 'Default',
-					value: 'default'
+					value: 'default',
 				},
 				{
 					id: 'desktopNotificationsAll_messages',
 					name: 'desktopNotifications',
 					label: 'All_messages',
-					value: 'all'
+					value: 'all',
 				},
 				{
 					id: 'desktopNotificationsMentions',
 					name: 'desktopNotifications',
 					label: 'Mentions',
-					value: 'mentions'
+					value: 'mentions',
 				},
 				{
 					id: 'desktopNotificationsNothing',
 					name: 'desktopNotifications',
 					label: 'Nothing',
-					value: 'nothing'
+					value: 'nothing',
 				}];
 		}
 
@@ -317,19 +321,16 @@ Template.pushNotificationsFlexTab.events({
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
-				change : (value) => {
-					return instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value);
-				},
+				change : (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
 				value: instance.form[key].get(),
-				options
+				options,
 			},
 			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight + 10
+			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 		popover.open(config);
-	}
+	},
 });
-
 
 
 Template.pushNotificationsPopover.onCreated(function() {
@@ -345,15 +346,15 @@ Template.pushNotificationsPopover.helpers({
 		return Template.instance().data.options;
 	},
 	defaultDesktopNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
+		let preference = RocketChat.getUserPreference(Meteor.userId(), 'desktopNotifications');
 		if (preference === 'default') {
 			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
 		}
 		return notificationLabels[preference];
-	}
+	},
 });
 Template.pushNotificationsPopover.events({
 	'change input'(e, instance) {
 		instance.change && instance.change(e.target.value);
-	}
+	},
 });

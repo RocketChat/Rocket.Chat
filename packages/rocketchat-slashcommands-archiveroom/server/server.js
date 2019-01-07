@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 function Archive(command, params, item) {
 	if (command !== 'archive' || !Match.test(params, String)) {
 		return;
@@ -23,8 +29,8 @@ function Archive(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Channel_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 	}
 
@@ -40,8 +46,8 @@ function Archive(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Duplicate_archived_channel_name', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 		return;
 	}
@@ -54,8 +60,8 @@ function Archive(command, params, item) {
 		ts: new Date(),
 		msg: TAPi18n.__('Channel_Archived', {
 			postProcess: 'sprintf',
-			sprintf: [channel]
-		}, user.language)
+			sprintf: [channel],
+		}, user.language),
 	});
 
 	return Archive;
@@ -63,5 +69,5 @@ function Archive(command, params, item) {
 
 RocketChat.slashCommands.add('archive', Archive, {
 	description: 'Archive',
-	params: '#channel'
+	params: '#channel',
 });

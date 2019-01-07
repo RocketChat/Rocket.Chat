@@ -1,9 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	snippetMessage(message, filename) {
 		if (Meteor.userId() == null) {
-			//noinspection JSUnresolvedFunction
+			// noinspection JSUnresolvedFunction
 			throw new Meteor.Error('error-invalid-user', 'Invalid user',
-				{method: 'snippetMessage'});
+				{ method: 'snippetMessage' });
 		}
 
 		const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
@@ -28,7 +31,7 @@ Meteor.methods({
 		message.snippetedAt = Date.now;
 		message.snippetedBy = {
 			_id: Meteor.userId(),
-			username: me.username
+			username: me.username,
 		};
 
 		message = RocketChat.callbacks.run('beforeSaveMessage', message);
@@ -36,8 +39,12 @@ Meteor.methods({
 		// Create the SnippetMessage
 		RocketChat.models.Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy,
 			message.snippeted, Date.now, filename);
+		if (RocketChat.isTheLastMessage(room, message)) {
+			RocketChat.models.Rooms.setLastMessageSnippeted(room._id, message, filename, message.snippetedBy,
+				message.snippeted, Date.now, filename);
+		}
 
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
-			'message_snippeted', message.rid, '', me, {	'snippetId': message._id, 'snippetName': filename });
-	}
+			'message_snippeted', message.rid, '', me, {	snippetId: message._id, snippetName: filename });
+	},
 });

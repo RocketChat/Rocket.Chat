@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { modal } from 'meteor/rocketchat:ui';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import qrcode from 'yaqrcode';
 
@@ -27,7 +33,7 @@ Template.accountSecurity.helpers({
 		if (Template.instance().codesRemaining.get()) {
 			return t('You_have_n_codes_remaining', { number: Template.instance().codesRemaining.get() });
 		}
-	}
+	},
 });
 
 Template.accountSecurity.events({
@@ -57,7 +63,7 @@ Template.accountSecurity.events({
 			showCancelButton: true,
 			closeOnConfirm: true,
 			confirmButtonText: t('Verify'),
-			cancelButtonText: t('Cancel')
+			cancelButtonText: t('Cancel'),
 		}, (code) => {
 			if (code === false) {
 				return;
@@ -104,7 +110,7 @@ Template.accountSecurity.events({
 			showCancelButton: true,
 			closeOnConfirm: false,
 			confirmButtonText: t('Verify'),
-			cancelButtonText: t('Cancel')
+			cancelButtonText: t('Cancel'),
 		}, (code) => {
 			if (code === false) {
 				return;
@@ -122,7 +128,7 @@ Template.accountSecurity.events({
 				}
 			});
 		});
-	}
+	},
 });
 
 Template.accountSecurity.onCreated(function() {
@@ -135,14 +141,12 @@ Template.accountSecurity.onCreated(function() {
 	this.codesRemaining = new ReactiveVar();
 
 	this.showBackupCodes = (userCodes) => {
-		const backupCodes = userCodes.map((value, index) => {
-			return (index + 1) % 4 === 0 && index < 11 ? `${ value }\n` : `${ value } `;
-		}).join('');
+		const backupCodes = userCodes.map((value, index) => ((index + 1) % 4 === 0 && index < 11 ? `${ value }\n` : `${ value } `)).join('');
 		const codes = `<code class="text-center allow-text-selection">${ backupCodes }</code>`;
 		modal.open({
 			title: t('Backup_codes'),
 			text: `${ t('Make_sure_you_have_a_copy_of_your_codes', { codes }) }`,
-			html: true
+			html: true,
 		});
 	};
 

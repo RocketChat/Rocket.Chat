@@ -1,18 +1,20 @@
-/* globals popover */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { popover } from 'meteor/rocketchat:ui';
 
 const checked = function(prop, field) {
-	const user = Meteor.userId();
+	const userId = Meteor.userId();
 	if (prop === 'sidebarShowFavorites') {
-		return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
+		return RocketChat.getUserPreference(userId, 'sidebarShowFavorites');
 	}
 	if (prop === 'sidebarGroupByType') {
-		return RocketChat.getUserPreference(user, 'sidebarGroupByType');
+		return RocketChat.getUserPreference(userId, 'sidebarGroupByType');
 	}
 	if (prop === 'sidebarShowUnread') {
-		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
+		return RocketChat.getUserPreference(userId, 'sidebarShowUnread');
 	}
 	if (prop === 'sidebarSortby') {
-		return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'alphabetical') === field;
+		return (RocketChat.getUserPreference(userId, 'sidebarSortby') || 'alphabetical') === field;
 	}
 };
 
@@ -23,11 +25,11 @@ Template.sortlist.helpers({
 	checked,
 	bold(...props) {
 		return checked(...props) ? 'rc-popover__item--bold' : '';
-	}
+	},
 });
 
 Template.sortlist.events({
-	'change input'({currentTarget}) {
+	'change input'({ currentTarget }) {
 		const name = currentTarget.getAttribute('name');
 		let value = currentTarget.getAttribute('type') === 'checkbox' ? currentTarget.checked : currentTarget.value;
 
@@ -36,8 +38,8 @@ Template.sortlist.events({
 			value = !value;
 		}
 		Meteor.call('saveUserPreferences', {
-			[name] : value
+			[name] : value,
 		});
 		popover.close();
-	}
+	},
 });

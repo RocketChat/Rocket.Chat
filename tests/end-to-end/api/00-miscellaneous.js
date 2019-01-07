@@ -1,15 +1,10 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
-import supertest from 'supertest';
 
 describe('miscellaneous', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	describe('API default', () => {
 		// Required by mobile apps
@@ -33,9 +28,9 @@ describe('miscellaneous', function() {
 		request.post(api('login'))
 			.send({
 				user: {
-					username: adminUsername
+					username: adminUsername,
 				},
-				password: adminPassword
+				password: adminPassword,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -53,9 +48,9 @@ describe('miscellaneous', function() {
 		request.post(api('login'))
 			.send({
 				user: {
-					email: adminEmail
+					email: adminEmail,
 				},
-				password: adminPassword
+				password: adminPassword,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -73,7 +68,7 @@ describe('miscellaneous', function() {
 		request.post(api('login'))
 			.send({
 				user: adminEmail,
-				password: adminPassword
+				password: adminPassword,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -91,7 +86,7 @@ describe('miscellaneous', function() {
 		request.post(api('login'))
 			.send({
 				username: adminUsername,
-				password: adminPassword
+				password: adminPassword,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -144,9 +139,9 @@ describe('miscellaneous', function() {
 					done();
 				});
 		});
-		after(done => {
+		after((done) => {
 			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id
+				userId: user._id,
 			}).end(done);
 			user = undefined;
 		});
@@ -154,7 +149,7 @@ describe('miscellaneous', function() {
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${ Date.now() }`
+					name: `channel.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -167,8 +162,8 @@ describe('miscellaneous', function() {
 				.query({
 					query: JSON.stringify({
 						text: user.username,
-						type: 'users'
-					})
+						type: 'users',
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -192,8 +187,8 @@ describe('miscellaneous', function() {
 				.query({
 					query: JSON.stringify({
 						text: testChannel.name,
-						type: 'channels'
-					})
+						type: 'channels',
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -216,11 +211,11 @@ describe('miscellaneous', function() {
 				.query({
 					query: JSON.stringify({
 						text: testChannel.name,
-						type: 'channels'
+						type: 'channels',
 					}),
 					sort: JSON.stringify(({
-						name: 1
-					}))
+						name: 1,
+					})),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -243,8 +238,8 @@ describe('miscellaneous', function() {
 				.query({
 					query: JSON.stringify({
 						text: 'invalid channel',
-						type: 'invalid'
-					})
+						type: 'invalid',
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -259,12 +254,12 @@ describe('miscellaneous', function() {
 				.query({
 					query: JSON.stringify({
 						text: testChannel.name,
-						type: 'channels'
+						type: 'channels',
 					}),
 					sort: JSON.stringify(({
 						name: 1,
-						test: 1
-					}))
+						test: 1,
+					})),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -294,7 +289,7 @@ describe('miscellaneous', function() {
 			request.post(api('login'))
 				.send({
 					user: user.username,
-					password
+					password,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -305,9 +300,9 @@ describe('miscellaneous', function() {
 				})
 				.end(done);
 		});
-		after(done => {
+		after((done) => {
 			request.post(api('users.delete')).set(credentials).send({
-				userId: user._id
+				userId: user._id,
 			}).end(done);
 			user = undefined;
 		});
@@ -315,7 +310,7 @@ describe('miscellaneous', function() {
 			request.post(api('channels.create'))
 				.set(userCredentials)
 				.send({
-					name: `channel.test.${ Date.now() }`
+					name: `channel.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -336,7 +331,7 @@ describe('miscellaneous', function() {
 		it('should return object inside users array when search by a valid user', (done) => {
 			request.get(api('spotlight'))
 				.query({
-					query: `@${ adminUsername }`
+					query: `@${ adminUsername }`,
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -355,7 +350,7 @@ describe('miscellaneous', function() {
 		it('must return the object inside the room array when searching for a valid room and that user is not a member of it', (done) => {
 			request.get(api('spotlight'))
 				.query({
-					query: `#${ testChannel.name }`
+					query: `#${ testChannel.name }`,
 				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')

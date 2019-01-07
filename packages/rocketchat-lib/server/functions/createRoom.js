@@ -1,8 +1,8 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData={}) {
+RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData = {}) {
 	name = s.trim(name);
 	owner = s.trim(owner);
 	members = [].concat(members);
@@ -11,7 +11,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
 	}
 
-	owner = RocketChat.models.Users.findOneByUsername(owner, { fields: { username: 1 }});
+	owner = RocketChat.models.Users.findOneByUsername(owner, { fields: { username: 1 } });
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
@@ -34,12 +34,12 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		usersCount: 0,
 		u: {
 			_id: owner._id,
-			username: owner.username
-		}
+			username: owner.username,
+		},
 	}, extraData, {
 		ts: now,
 		ro: readOnly === true,
-		sysMes: readOnly !== true
+		sysMes: readOnly !== true,
 	});
 
 	if (type === 'd') {
@@ -68,7 +68,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	room = RocketChat.models.Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {
-		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 }});
+		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });
 		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
@@ -111,6 +111,6 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 
 	return {
 		rid: room._id,
-		name: room.name
+		name: room.name,
 	};
 };

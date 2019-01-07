@@ -7,18 +7,18 @@ Meteor.startup(() => {
 	const mongodb = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
 
 	const mongoAdapter = new MongoAdapter(mongodb, {
-		convertUserIdToMongoObjectId: false
+		convertUserIdToMongoObjectId: false,
 	});
 
 	AccountsServer.config({
 		tokenConfigs: {
 			accessToken: {
-				expiresIn: '3d'
+				expiresIn: '3d',
 			},
 			refreshToken: {
-				expiresIn: '30d'
-			}
+				expiresIn: '30d',
+			},
 		},
-		passwordHashAlgorithm: 'sha256'
+		passwordHashAlgorithm: 'sha256',
 	}, mongoAdapter);
 });

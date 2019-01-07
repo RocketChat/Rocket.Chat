@@ -1,5 +1,6 @@
-/* eslint new-cap: [2, {"capIsNewExceptions": ["Match.Optional"]}] */
-
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
@@ -11,7 +12,7 @@ Meteor.methods({
 		check(transferData, {
 			roomId: String,
 			userId: Match.Optional(String),
-			departmentId: Match.Optional(String)
+			departmentId: Match.Optional(String),
 		});
 
 		const room = RocketChat.models.Rooms.findOneById(transferData.roomId);
@@ -24,5 +25,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.Livechat.transfer(room, guest, transferData);
-	}
+	},
 });

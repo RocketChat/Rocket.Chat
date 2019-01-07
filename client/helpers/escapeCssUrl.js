@@ -1,3 +1,3 @@
-Template.registerHelper('escapeCssUrl', url => {
-	return url.replace(/(['"])/g, '\\$1');
-});
+import { Template } from 'meteor/templating';
+
+Template.registerHelper('escapeCssUrl', (url) => url.replace(/(['"])/g, '\\$1'));

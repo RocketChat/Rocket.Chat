@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import s from 'underscore.string';
 
 const commands = {
@@ -17,7 +21,7 @@ const commands = {
 		const customOAuthCallback = (response) => {
 			event.source.postMessage({
 				event: 'custom-oauth-callback',
-				response
+				response,
 			}, event.origin);
 		};
 
@@ -27,20 +31,20 @@ const commands = {
 		}
 
 		if (typeof data.service === 'string' && window.ServiceConfiguration) {
-			const customOauth = ServiceConfiguration.configurations.findOne({service: data.service});
+			const customOauth = ServiceConfiguration.configurations.findOne({ service: data.service });
 
 			if (customOauth) {
 				const customLoginWith = Meteor[`loginWith${ s.capitalize(customOauth.service, true) }`];
 				const customRedirectUri = data.redirectUrl || siteUrl;
-				customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
+				customLoginWith.call(Meteor, { redirectUrl: customRedirectUri }, customOAuthCallback);
 			}
 		}
 	},
 
-	'login-with-token'(data) {
+	'login-with-token'(data, ...args) {
 		if (typeof data.token === 'string') {
 			Meteor.loginWithToken(data.token, function() {
-				console.log('Iframe command [login-with-token]: result', arguments);
+				console.log('Iframe command [login-with-token]: result', [data, ...args]);
 			});
 		}
 	},
@@ -64,7 +68,7 @@ const commands = {
 		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
 		delete toolbar.buttons[id];
 		Session.set('toolbarButtons', toolbar);
-	}
+	},
 };
 
 window.addEventListener('message', (e) => {

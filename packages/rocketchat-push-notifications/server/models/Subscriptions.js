@@ -1,6 +1,8 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Subscriptions.updateAudioNotificationsById = function(_id, audioNotifications) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {};
@@ -16,13 +18,13 @@ RocketChat.models.Subscriptions.updateAudioNotificationsById = function(_id, aud
 
 RocketChat.models.Subscriptions.updateAudioNotificationValueById = function(_id, audioNotificationValue) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {
 		$set: {
-			audioNotificationValue
-		}
+			audioNotificationValue,
+		},
 	};
 
 	return this.update(query, update);
@@ -30,7 +32,7 @@ RocketChat.models.Subscriptions.updateAudioNotificationValueById = function(_id,
 
 RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, desktopNotifications) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {};
@@ -38,12 +40,12 @@ RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, d
 	if (desktopNotifications === null) {
 		update.$unset = {
 			desktopNotifications: 1,
-			desktopPrefOrigin: 1
+			desktopPrefOrigin: 1,
 		};
 	} else {
 		update.$set = {
 			desktopNotifications: desktopNotifications.value,
-			desktopPrefOrigin: desktopNotifications.origin
+			desktopPrefOrigin: desktopNotifications.origin,
 		};
 	}
 
@@ -52,13 +54,13 @@ RocketChat.models.Subscriptions.updateDesktopNotificationsById = function(_id, d
 
 RocketChat.models.Subscriptions.updateDesktopNotificationDurationById = function(_id, value) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {
 		$set: {
-			desktopNotificationDuration: parseInt(value)
-		}
+			desktopNotificationDuration: parseInt(value),
+		},
 	};
 
 	return this.update(query, update);
@@ -66,7 +68,7 @@ RocketChat.models.Subscriptions.updateDesktopNotificationDurationById = function
 
 RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id, mobilePushNotifications) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {};
@@ -74,12 +76,12 @@ RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id
 	if (mobilePushNotifications === null) {
 		update.$unset = {
 			mobilePushNotifications: 1,
-			mobilePrefOrigin: 1
+			mobilePrefOrigin: 1,
 		};
 	} else {
 		update.$set = {
 			mobilePushNotifications: mobilePushNotifications.value,
-			mobilePrefOrigin: mobilePushNotifications.origin
+			mobilePrefOrigin: mobilePushNotifications.origin,
 		};
 	}
 
@@ -88,7 +90,7 @@ RocketChat.models.Subscriptions.updateMobilePushNotificationsById = function(_id
 
 RocketChat.models.Subscriptions.updateEmailNotificationsById = function(_id, emailNotifications) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {};
@@ -96,12 +98,12 @@ RocketChat.models.Subscriptions.updateEmailNotificationsById = function(_id, ema
 	if (emailNotifications === null) {
 		update.$unset = {
 			emailNotifications: 1,
-			emailPrefOrigin: 1
+			emailPrefOrigin: 1,
 		};
 	} else {
 		update.$set = {
 			emailNotifications: emailNotifications.value,
-			emailPrefOrigin: emailNotifications.origin
+			emailPrefOrigin: emailNotifications.origin,
 		};
 	}
 
@@ -110,13 +112,13 @@ RocketChat.models.Subscriptions.updateEmailNotificationsById = function(_id, ema
 
 RocketChat.models.Subscriptions.updateUnreadAlertById = function(_id, unreadAlert) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {
 		$set: {
-			unreadAlert
-		}
+			unreadAlert,
+		},
 	};
 
 	return this.update(query, update);
@@ -124,13 +126,13 @@ RocketChat.models.Subscriptions.updateUnreadAlertById = function(_id, unreadAler
 
 RocketChat.models.Subscriptions.updateDisableNotificationsById = function(_id, disableNotifications) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {
 		$set: {
-			disableNotifications
-		}
+			disableNotifications,
+		},
 	};
 
 	return this.update(query, update);
@@ -138,13 +140,13 @@ RocketChat.models.Subscriptions.updateDisableNotificationsById = function(_id, d
 
 RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideUnreadStatus) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {
 		$set: {
-			hideUnreadStatus
-		}
+			hideUnreadStatus,
+		},
 	};
 
 	return this.update(query, update);
@@ -152,13 +154,13 @@ RocketChat.models.Subscriptions.updateHideUnreadStatusById = function(_id, hideU
 
 RocketChat.models.Subscriptions.updateMuteGroupMentions = function(_id, muteGroupMentions) {
 	const query = {
-		_id
+		_id,
 	};
 
 	const update = {
 		$set: {
-			muteGroupMentions
-		}
+			muteGroupMentions,
+		},
 	};
 
 	return this.update(query, update);
@@ -167,7 +169,7 @@ RocketChat.models.Subscriptions.updateMuteGroupMentions = function(_id, muteGrou
 RocketChat.models.Subscriptions.findAlwaysNotifyAudioUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
-		audioNotifications: 'all'
+		audioNotifications: 'all',
 	};
 
 	return this.find(query);
@@ -176,7 +178,7 @@ RocketChat.models.Subscriptions.findAlwaysNotifyAudioUsersByRoomId = function(ro
 RocketChat.models.Subscriptions.findAlwaysNotifyDesktopUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
-		desktopNotifications: 'all'
+		desktopNotifications: 'all',
 	};
 
 	return this.find(query);
@@ -185,7 +187,7 @@ RocketChat.models.Subscriptions.findAlwaysNotifyDesktopUsersByRoomId = function(
 RocketChat.models.Subscriptions.findDontNotifyDesktopUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
-		desktopNotifications: 'nothing'
+		desktopNotifications: 'nothing',
 	};
 
 	return this.find(query);
@@ -194,7 +196,7 @@ RocketChat.models.Subscriptions.findDontNotifyDesktopUsersByRoomId = function(ro
 RocketChat.models.Subscriptions.findAlwaysNotifyMobileUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
-		mobilePushNotifications: 'all'
+		mobilePushNotifications: 'all',
 	};
 
 	return this.find(query);
@@ -203,7 +205,7 @@ RocketChat.models.Subscriptions.findAlwaysNotifyMobileUsersByRoomId = function(r
 RocketChat.models.Subscriptions.findDontNotifyMobileUsersByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
-		mobilePushNotifications: 'nothing'
+		mobilePushNotifications: 'nothing',
 	};
 
 	return this.find(query);
@@ -213,15 +215,15 @@ RocketChat.models.Subscriptions.findWithSendEmailByRoomId = function(roomId) {
 	const query = {
 		rid: roomId,
 		emailNotifications: {
-			$exists: true
-		}
+			$exists: true,
+		},
 	};
 
 	return this.find(query, { fields: { emailNotifications: 1, u: 1 } });
 };
 
 
-RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(query/*{ roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
+RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(query/* { roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
 
 	return this._db.find(query, {
 		fields: {
@@ -244,20 +246,20 @@ RocketChat.models.Subscriptions.findNotificationPreferencesByRoom = function(que
 			emailNotifications: 1,
 			disableNotifications: 1,
 			muteGroupMentions: 1,
-			userHighlights: 1
-		}
+			userHighlights: 1,
+		},
 	});
 };
 
 RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom = function(roomId) {
 	const query = {
 		rid: roomId,
-		'u._id': {$exists: true},
+		'u._id': { $exists: true },
 		$or: [
 			{ desktopNotifications: { $in: ['all', 'mentions'] } },
 			{ mobilePushNotifications: { $in: ['all', 'mentions'] } },
-			{ emailNotifications: { $in: ['all', 'mentions'] } }
-		]
+			{ emailNotifications: { $in: ['all', 'mentions'] } },
+		],
 	};
 
 	return this._db.find(query, {
@@ -270,7 +272,7 @@ RocketChat.models.Subscriptions.findAllMessagesNotificationPreferencesByRoom = f
 			mobilePushNotifications: 1,
 			emailNotifications: 1,
 			disableNotifications: 1,
-			muteGroupMentions: 1
-		}
+			muteGroupMentions: 1,
+		},
 	});
 };

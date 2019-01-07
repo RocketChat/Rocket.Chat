@@ -1,3 +1,5 @@
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
@@ -8,7 +10,7 @@ RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 
 		try {
 			check(this.urlParams, {
-				type: String
+				type: String,
 			});
 
 			let role;
@@ -23,7 +25,7 @@ RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 			const users = RocketChat.authz.getUsersInRole(role);
 
 			return RocketChat.API.v1.success({
-				users: users.fetch().map(user => _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat'))
+				users: users.fetch().map((user) => _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat')),
 			});
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.error);
@@ -35,11 +37,11 @@ RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 		}
 		try {
 			check(this.urlParams, {
-				type: String
+				type: String,
 			});
 
 			check(this.bodyParams, {
-				username: String
+				username: String,
 			});
 
 			if (this.urlParams.type === 'agent') {
@@ -60,7 +62,7 @@ RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.error);
 		}
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
@@ -72,7 +74,7 @@ RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, 
 		try {
 			check(this.urlParams, {
 				type: String,
-				_id: String
+				_id: String,
 			});
 
 			const user = RocketChat.models.Users.findOneById(this.urlParams._id);
@@ -93,12 +95,12 @@ RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, 
 
 			if (user.roles.indexOf(role) !== -1) {
 				return RocketChat.API.v1.success({
-					user: _.pick(user, '_id', 'username')
+					user: _.pick(user, '_id', 'username'),
 				});
 			}
 
 			return RocketChat.API.v1.success({
-				user: null
+				user: null,
 			});
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.error);
@@ -112,7 +114,7 @@ RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, 
 		try {
 			check(this.urlParams, {
 				type: String,
-				_id: String
+				_id: String,
 			});
 
 			const user = RocketChat.models.Users.findOneById(this.urlParams._id);
@@ -137,5 +139,5 @@ RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, 
 		} catch (e) {
 			return RocketChat.API.v1.failure(e.error);
 		}
-	}
+	},
 });

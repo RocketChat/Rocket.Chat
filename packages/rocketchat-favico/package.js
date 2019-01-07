@@ -1,9 +1,12 @@
 Package.describe({
 	name: 'rocketchat:favico',
 	version: '0.0.1',
-	summary: 'Favico.js for Rocket.Chat'
+	summary: 'Favico.js for Rocket.Chat',
 });
 
 Package.onUse(function(api) {
-	api.addFiles('client/favico.js', 'client');
+	api.use([
+		'ecmascript',
+	]);
+	api.mainModule('client/index.js', 'client');
 });

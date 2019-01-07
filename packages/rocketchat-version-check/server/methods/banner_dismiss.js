@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	'banner/dismiss'({ id }) {
 		if (!Meteor.userId()) {
@@ -5,7 +8,7 @@ Meteor.methods({
 		}
 
 		RocketChat.models.Users.removeBannerById(this.userId, {
-			id
+			id,
 		});
-	}
+	},
 });

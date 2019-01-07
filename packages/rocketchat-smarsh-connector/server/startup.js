@@ -1,4 +1,6 @@
-/* globals SyncedCron */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 import _ from 'underscore';
 
 const smarshJobName = 'Smarsh EML Connector';
@@ -12,7 +14,7 @@ const _addSmarshSyncedCronJob = _.debounce(Meteor.bindEnvironment(function __add
 		SyncedCron.add({
 			name: smarshJobName,
 			schedule: (parser) => parser.text(RocketChat.settings.get('Smarsh_Interval').replace(/_/g, ' ')),
-			job: RocketChat.smarsh.generateEml
+			job: RocketChat.smarsh.generateEml,
 		});
 	}
 }), 500);

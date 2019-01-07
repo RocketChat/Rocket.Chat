@@ -1,5 +1,3 @@
-/* globals FileUpload */
-
 import _ from 'underscore';
 import { FileUploadClass } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
@@ -13,7 +11,7 @@ const get = function(file, req, res) {
 		const storeType = file.store.split(':').pop();
 		if (RocketChat.settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
 			const request = /^https:/.test(fileUrl) ? https : http;
-			request.get(fileUrl, fileRes => fileRes.pipe(res));
+			request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 		} else {
 			res.removeHeader('Content-Length');
 			res.setHeader('Location', fileUrl);
@@ -30,7 +28,7 @@ const copy = function(file, out) {
 
 	if (fileUrl) {
 		const request = /^https:/.test(fileUrl) ? https : http;
-		request.get(fileUrl, fileRes => fileRes.pipe(out));
+		request.get(fileUrl, (fileRes) => fileRes.pipe(out));
 	} else {
 		out.end();
 	}
@@ -39,21 +37,21 @@ const copy = function(file, out) {
 const AmazonS3Uploads = new FileUploadClass({
 	name: 'AmazonS3:Uploads',
 	get,
-	copy
+	copy,
 	// store setted bellow
 });
 
 const AmazonS3Avatars = new FileUploadClass({
 	name: 'AmazonS3:Avatars',
 	get,
-	copy
+	copy,
 	// store setted bellow
 });
 
 const AmazonS3UserDataFiles = new FileUploadClass({
 	name: 'AmazonS3:UserDataFiles',
 	get,
-	copy
+	copy,
 	// store setted bellow
 });
 
@@ -79,11 +77,11 @@ const configure = _.debounce(function() {
 			s3ForcePathStyle: ForcePathStyle,
 			params: {
 				Bucket,
-				ACL: Acl
+				ACL: Acl,
 			},
-			region: Region
+			region: Region,
 		},
-		URLExpiryTimeSpan
+		URLExpiryTimeSpan,
 	};
 
 	if (AWSAccessKeyId) {

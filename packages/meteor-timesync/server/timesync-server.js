@@ -1,4 +1,4 @@
-/* eslint-disable */
+import { WebApp } from 'meteor/webapp';
 // Use rawConnectHandlers so we get a response as quickly as possible
 // https://github.com/meteor/meteor/blob/devel/packages/webapp/webapp_server.js
 

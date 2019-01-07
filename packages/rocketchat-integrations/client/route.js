@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { t } from 'meteor/rocketchat:utils';
+
 FlowRouter.route('/admin/integrations', {
 	name: 'admin-integrations',
 	subscriptions() {
@@ -6,9 +11,9 @@ FlowRouter.route('/admin/integrations', {
 	action() {
 		return BlazeLayout.render('main', {
 			center: 'integrations',
-			pageTitle: t('Integrations')
+			pageTitle: t('Integrations'),
 		});
-	}
+	},
 });
 
 FlowRouter.route('/admin/integrations/new', {
@@ -19,9 +24,9 @@ FlowRouter.route('/admin/integrations/new', {
 	action() {
 		return BlazeLayout.render('main', {
 			center: 'integrationsNew',
-			pageTitle: t('Integration_New')
+			pageTitle: t('Integration_New'),
 		});
-	}
+	},
 });
 
 FlowRouter.route('/admin/integrations/incoming/:id?', {
@@ -34,9 +39,9 @@ FlowRouter.route('/admin/integrations/incoming/:id?', {
 			center: 'pageSettingsContainer',
 			pageTitle: t('Integration_Incoming_WebHook'),
 			pageTemplate: 'integrationsIncoming',
-			params
+			params,
 		});
-	}
+	},
 });
 
 FlowRouter.route('/admin/integrations/outgoing/:id?', {
@@ -45,9 +50,9 @@ FlowRouter.route('/admin/integrations/outgoing/:id?', {
 		return BlazeLayout.render('main', {
 			center: 'integrationsOutgoing',
 			pageTitle: t('Integration_Outgoing_WebHook'),
-			params
+			params,
 		});
-	}
+	},
 });
 
 FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
@@ -56,16 +61,16 @@ FlowRouter.route('/admin/integrations/outgoing/:id?/history', {
 		return BlazeLayout.render('main', {
 			center: 'integrationsOutgoingHistory',
 			pageTitle: t('Integration_Outgoing_WebHook_History'),
-			params
+			params,
 		});
-	}
+	},
 });
 
 FlowRouter.route('/admin/integrations/additional/zapier', {
 	name: 'admin-integrations-additional-zapier',
 	action() {
 		BlazeLayout.render('main', {
-			center: 'integrationsAdditionalZapier'
+			center: 'integrationsAdditionalZapier',
 		});
-	}
+	},
 });

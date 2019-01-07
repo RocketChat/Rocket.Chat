@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+
 export const RoomSettingsEnum = {
 	NAME: 'roomName',
 	TOPIC: 'roomTopic',
@@ -8,14 +11,15 @@ export const RoomSettingsEnum = {
 	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
 	JOIN_CODE: 'joinCode',
 	BROADCAST: 'broadcast',
-	SYSTEM_MESSAGES: 'systemMessages'
+	SYSTEM_MESSAGES: 'systemMessages',
+	E2E: 'encrypted',
 };
 
 export const UiTextContext = {
 	CLOSE_WARNING: 'closeWarning',
 	HIDE_WARNING: 'hideWarning',
 	LEAVE_WARNING: 'leaveWarning',
-	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed'
+	NO_ROOMS_SUBSCRIBED: 'noRoomsSubscribed',
 };
 
 export class RoomTypeRouteConfig {
@@ -48,7 +52,7 @@ export class RoomTypeConfig {
 		icon,
 		header,
 		label,
-		route
+		route,
 	}) {
 		if (typeof identifier !== 'string' || identifier.length === 0) {
 			throw new Error('The identifier must be a string.');
@@ -162,14 +166,14 @@ export class RoomTypeConfig {
 
 	canBeCreated() {
 		return Meteor.isServer ?
-			RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), [`create-${ this._identifier }`]) :
-			RocketChat.authz.hasAtLeastOnePermission([`create-${ this._identifier }`]);
+			RocketChat.authz.hasPermission(Meteor.userId(), `create-${ this._identifier }`) :
+			RocketChat.authz.hasPermission([`create-${ this._identifier }`]);
 	}
 
 	canBeDeleted(room) {
 		return Meteor.isServer ?
-			RocketChat.authz.hasAtLeastOnePermission(Meteor.userId(), [`delete-${ room.t }`], room._id) :
-			RocketChat.authz.hasAtLeastOnePermission([`delete-${ room.t }`], room._id);
+			RocketChat.authz.hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id) :
+			RocketChat.authz.hasPermission(`delete-${ room.t }`, room._id);
 	}
 
 	supportMembersList(/* room */) {

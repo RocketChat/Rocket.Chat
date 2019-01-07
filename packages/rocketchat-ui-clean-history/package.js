@@ -7,7 +7,7 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -15,13 +15,9 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'rocketchat:lib'
+		'rocketchat:utils',
+		'rocketchat:lib',
 	]);
-
-	api.addFiles([
-		'client/lib/startup.js',
-		'client/views/cleanHistory.html',
-		'client/views/cleanHistory.js',
-		'client/views/stylesheets/cleanHistory.css'
-	], 'client');
+	api.addFiles('client/views/stylesheets/cleanHistory.css', 'client');
+	api.mainModule('client/index.js', 'client');
 });

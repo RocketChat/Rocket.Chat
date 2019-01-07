@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
@@ -9,9 +12,9 @@ Meteor.methods({
 			rid: roomId || Random.id(),
 			msg: '',
 			ts: new Date(),
-			token: guest.token
+			token: guest.token,
 		};
 
 		return RocketChat.Livechat.getRoom(guest, message);
-	}
+	},
 });
