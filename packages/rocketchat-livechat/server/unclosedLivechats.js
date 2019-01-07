@@ -79,7 +79,6 @@ RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
 });
 
 UserPresenceMonitor.onSetUserStatus((user, status/* , statusConnection*/) => {
-	RocketChat.Livechat.notifyAgentStatusChanged(user._id, status);
 	if (!monitorAgents) {
 		return;
 	}
