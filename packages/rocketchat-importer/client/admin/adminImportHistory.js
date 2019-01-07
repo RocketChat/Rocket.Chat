@@ -132,7 +132,7 @@ Template.adminImportHistory.helpers({
 			return '';
 		}
 
-		if (typeof this.error == 'string') {
+		if (typeof this.error === 'string') {
 			return this.error;
 		}
 
