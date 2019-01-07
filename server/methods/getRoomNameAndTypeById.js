@@ -1,18 +1,21 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	getRoomNameAndTypeByNameOrId(nameOrId) {
 		check(nameOrId, String);
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'getRoomNameAndTypeByNameOrId'
+				method: 'getRoomNameAndTypeByNameOrId',
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOne({$or: [{name: nameOrId}, {_id:nameOrId}]});
+		const room = RocketChat.models.Rooms.findOne({ $or: [{ name: nameOrId }, { _id:nameOrId }] });
 
 		if (room == null) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'getRoomNameAndTypeByNameOrId'
+				method: 'getRoomNameAndTypeByNameOrId',
 			});
 		}
 
@@ -23,10 +26,10 @@ Meteor.methods({
 
 		if (room.t !== 'c' || RocketChat.authz.hasPermission(userId, 'view-c-room') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'getRoomNameAndTypeByNameOrId'
+				method: 'getRoomNameAndTypeByNameOrId',
 			});
 		}
 
 		return { t: room.t, name: room.name };
-	}
+	},
 });
