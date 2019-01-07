@@ -213,6 +213,7 @@ rocketchat:reactions@0.0.1
 rocketchat:retention-policy@0.0.1
 rocketchat:sandstorm@0.0.1
 rocketchat:search@0.0.1
+rocketchat:settings@0.0.1
 rocketchat:setup-wizard@0.0.1
 rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
