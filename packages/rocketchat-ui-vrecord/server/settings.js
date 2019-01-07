@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.settings.addGroup('Message', function() {
 	this.add('Message_VideoRecorderEnabled', true, {
 		type: 'boolean',

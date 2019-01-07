@@ -1,4 +1,3 @@
-import './views/stylesheets/messagepin.css';
 import './actionButton';
 import './messageType';
 import './pinMessage';

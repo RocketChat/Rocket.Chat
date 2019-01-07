@@ -131,15 +131,13 @@ export class CROWD {
 		logger.info('Sync started...');
 
 		users.forEach(function(user) {
-
 			let username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
+			logger.info('Syncing user', username);
+
+			let crowdUser = null;
 
 			try {
-				logger.info('Syncing user', username);
-
-				const crowdUser = self.fetchCrowdUser(username);
-
-				self.syncDataToUser(crowdUser, user._id);
+				crowdUser = self.fetchCrowdUser(username);
 			} catch (error) {
 				logger.debug(error);
 				logger.error('Could not sync user with username', username);
@@ -148,17 +146,17 @@ export class CROWD {
 				logger.info('Attempting to find for user by email', email);
 
 				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
-				if (response.users && response.users.length === 1) {
-					username = response.users[0].name;
-					logger.info('User found. Syncing user', username);
-
-					const crowdUser = self.fetchCrowdUser(response.users[0].name);
-
-					self.syncDataToUser(crowdUser, user._id);
-				} else {
-					throw new Error('User does not exist or email is not unique');
+				if (!response || response.users.length === 0) {
+					logger.warning('Could not find user in CROWD with username or email:', username, email);
+					return;
 				}
+				username = response.users[0].name;
+				logger.info('User found. Syncing user', username);
+
+				crowdUser = self.fetchCrowdUser(response.users[0].name);
 			}
+
+			self.syncDataToUser(crowdUser, user._id);
 		});
 	}
 

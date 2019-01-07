@@ -1,7 +1,7 @@
-/* globals Push Servers*/
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Push } from 'meteor/rocketchat:push';
 
 if (Meteor.isCordova) {
 	// Push.addListener 'token', (token) ->

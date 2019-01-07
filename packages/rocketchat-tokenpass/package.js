@@ -12,11 +12,15 @@ Package.onUse(function(api) {
 		'service-configuration',
 		'templating',
 		'littledata:synced-cron',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:authorization',
 		'rocketchat:custom-oauth',
 		'rocketchat:channel-settings',
 	]);
+	api.addFiles('client/login-button.css', 'client');
+	api.addFiles('client/channelSettings.css', 'client');
+	api.addFiles('client/styles.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
