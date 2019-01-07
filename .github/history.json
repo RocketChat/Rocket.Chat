@@ -24507,6 +24507,30 @@
           ]
         }
       ]
+    },
+    "0.73.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13013",
+          "title": "[NEW] Cloud Integration",
+          "userLogin": "graywolf336",
+          "milestone": "0.73.2",
+          "contributors": [
+            "graywolf336",
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
