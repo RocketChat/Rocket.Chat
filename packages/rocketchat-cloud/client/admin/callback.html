@@ -1,0 +1,16 @@
+<template name="cloudCallback">
+	<div class="main-content-flex">
+		<section class="page-container page-home page-static page-settings">
+			{{> header sectionName="Cloud_connect"}}
+			<div class="content">
+				{{#requiresPermission 'manage-cloud'}}
+					{{#if callbackError.error}}
+						<p>{{_ "Cloud_error_in_authenticating"}}</p>
+
+						<p>{{_ "Cloud_error_code"}} {{ callbackError.errorCode }}</p>
+					{{/if}}
+				{{/requiresPermission}}
+			</div>
+		</section>
+	</div>
+</template>
