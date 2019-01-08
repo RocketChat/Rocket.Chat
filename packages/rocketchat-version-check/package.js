@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'rocketchat:logger',
+		'rocketchat:cloud',
 		'littledata:synced-cron',
 	]);
 
