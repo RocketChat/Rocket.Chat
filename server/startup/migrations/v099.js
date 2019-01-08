@@ -205,7 +205,7 @@ RocketChat.Migrations.add({
 						avatarsFiles.rawCollection().drop();
 						avatarsChunks.rawCollection().drop();
 					} catch (error) {
-						console.warn('Migration Error: avatars.files and avatars.chunks collection may not exists!');
+						console.warn('Migration Error: avatars.files and avatars.chunks collections may not exist!');
 					}
 					RocketChat.models.Settings.remove({ _id: 'Accounts_AvatarStoreType' });
 					RocketChat.models.Settings.remove({ _id: 'Accounts_AvatarStorePath' });
