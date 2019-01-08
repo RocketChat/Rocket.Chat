@@ -58,6 +58,42 @@ Template.adminImportPrepare.helpers({
 	},
 });
 
+function showToastrForErrorType(errorType, defaultErrorString) {
+	let errorCode;
+
+	if (typeof errorType === 'string') {
+		errorCode = errorType;
+	} else if (typeof errorType === 'object') {
+		if (errorType.error && typeof errorType.error === 'string') {
+			errorCode = errorType.error;
+		}
+	}
+
+	if (errorCode) {
+		const errorTranslation = t(errorCode);
+		if (errorTranslation !== errorCode) {
+			toastr.error(errorTranslation);
+			return;
+		}
+	}
+
+	toastr.error(t(defaultErrorString || 'Failed_To_upload_Import_File'));
+}
+
+function showException(error, defaultErrorString) {
+	console.error(error);
+	if (error && error.xhr && error.xhr.responseJSON) {
+		console.log(error.xhr.responseJSON);
+
+		if (error.xhr.responseJSON.errorType) {
+			showToastrForErrorType(error.xhr.responseJSON.errorType, defaultErrorString);
+			return;
+		}
+	}
+
+	toastr.error(t(defaultErrorString || 'Failed_To_upload_Import_File'));
+}
+
 function getImportFileData(importer, template) {
 	RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
 		if (!data) {
@@ -88,12 +124,11 @@ function getImportFileData(importer, template) {
 		template.preparing.set(false);
 	}).catch((error) => {
 		if (error) {
-			toastr.error(t('Failed_To_Load_Import_Data'));
+			showException(error, 'Failed_To_Load_Import_Data');
 			template.preparing.set(false);
 		}
 	});
 }
-
 
 Template.adminImportPrepare.events({
 	'change .import-file-input'(event, template) {
@@ -122,7 +157,7 @@ Template.adminImportPrepare.events({
 					getImportFileData(importer, template);
 				}).catch((error) => {
 					if (error) {
-						toastr.error(t('Failed_To_upload_Import_File'));
+						showException(error);
 						template.preparing.set(false);
 					}
 				});
@@ -146,7 +181,7 @@ Template.adminImportPrepare.events({
 			getImportFileData(importer, template);
 		}).catch((error) => {
 			if (error) {
-				toastr.error(t('Failed_To_upload_Import_File'));
+				showException(error);
 				template.preparing.set(false);
 			}
 		});

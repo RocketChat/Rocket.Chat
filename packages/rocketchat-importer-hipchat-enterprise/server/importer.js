@@ -181,7 +181,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 			this.extract.on('error', (err) => {
 				this.logger.warn('extract error:', err);
-				reject();
+				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 
 			this.extract.on('finish', Meteor.bindEnvironment(() => {
@@ -264,7 +264,7 @@ export class HipChatEnterpriseImporter extends Base {
 				if (tempUsers.length === 0 || tempRooms.length === 0 || messagesCount === 0) {
 					this.logger.warn(`The loaded users count ${ tempUsers.length }, the loaded rooms ${ tempRooms.length }, and the loaded messages ${ messagesCount }`);
 					super.updateProgress(ProgressStep.ERROR);
-					reject();
+					reject(new Meteor.Error('error-import-file-is-empty'));
 					return;
 				}
 
@@ -278,8 +278,13 @@ export class HipChatEnterpriseImporter extends Base {
 			}));
 
 			const rs = fs.createReadStream(fullFilePath);
+			const gunzip = this.zlib.createGunzip();
 
-			rs.pipe(this.zlib.createGunzip()).pipe(this.extract);
+			gunzip.on('error', (err) => {
+				this.logger.warn('extract error:', err);
+				reject(new Meteor.Error('error-import-file-extract-error'));
+			});
+			rs.pipe(gunzip).pipe(this.extract);
 		});
 
 		return promise;
