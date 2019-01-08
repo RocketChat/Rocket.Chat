@@ -3,6 +3,7 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { RocketChatFile } from 'meteor/rocketchat:file';
 import { SystemLogger } from 'meteor/rocketchat:logger';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import fs from 'fs';
 import path from 'path';
 
