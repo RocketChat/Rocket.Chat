@@ -11,12 +11,13 @@ Package.onUse(function(api) {
 		'rocketchat:emoji',
 		'rocketchat:file',
 		'rocketchat:lib',
+		'rocketchat:utils',
 		'templating',
 		'webapp',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 	]);
-
+	api.addFiles('assets/stylesheets/emojiCustomAdmin.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

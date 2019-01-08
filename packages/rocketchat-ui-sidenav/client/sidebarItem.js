@@ -1,11 +1,11 @@
-/* globals menu popover */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
 import moment from 'moment';
 import { renderMessageBody } from 'meteor/rocketchat:ui-message';
-
+import { popover } from 'meteor/rocketchat:ui';
 
 Template.sidebarItem.helpers({
 	or(...args) {

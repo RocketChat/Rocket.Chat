@@ -1,7 +1,3 @@
-/* globals alerts, modal */
-
-import './stylesheets/e2e';
-
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -351,7 +347,7 @@ class E2E {
 				modal.open({
 					title: TAPi18n.__('Enter_E2E_password_to_decode_your_key'),
 					type: 'input',
-					inputType: 'text',
+					inputType: 'password',
 					html: true,
 					text: `<div>${ TAPi18n.__('E2E_password_request_text') }</div>`,
 					showConfirmButton: true,

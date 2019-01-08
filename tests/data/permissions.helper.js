@@ -8,3 +8,12 @@ export const updatePermission = (permission, roles) => new Promise((resolve) => 
 		.expect(200)
 		.end(resolve);
 });
+
+export const updateSetting = (setting, value) => new Promise((resolve) => {
+	request.post(`/api/v1/settings/${ setting }`)
+		.set(credentials)
+		.send({ value })
+		.expect('Content-Type', 'application/json')
+		.expect(200)
+		.end(resolve);
+});

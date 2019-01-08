@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /**
  * Sets an user as (non)operator
@@ -39,6 +40,24 @@ RocketChat.models.Users.findOnlineAgents = function() {
 RocketChat.models.Users.findOneOnlineAgentByUsername = function(username) {
 	const query = {
 		username,
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		statusLivechat: 'available',
+		roles: 'livechat-agent',
+	};
+
+	return this.findOne(query);
+};
+
+/**
+ * Find an online agent by its user Id
+ * @return
+ */
+RocketChat.models.Users.findOneOnlineAgentById = function(_id) {
+	const query = {
+		_id,
 		status: {
 			$exists: true,
 			$ne: 'offline',
