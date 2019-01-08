@@ -51,6 +51,21 @@ Meteor.methods({
 	},
 
 	/**
+	 * This method provides the client a handler to request the asynchronous analysis of a room's messages
+	 * It can e. g. be issued from the widget once it's opened
+	 * @param {*} roomId The ID of the Rocket.Chat room which shall be analyzed
+	 */
+	analyze(roomId) {
+		return RocketChat.RateLimiter.limitFunction(
+			SmartiAdapter.triggerAnalysis, 5, 1000, {
+				userId(userId) {
+					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+				},
+			}
+		)(roomId);
+	},
+
+	/**
 	 * Returns the query builder results for the given conversation (used by Smarti widget)
 	 *
 	 * @param {String} conversationId - the conversation id to get results for
