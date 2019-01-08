@@ -6,6 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { t } from 'meteor/rocketchat:utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { mainReady } from 'meteor/rocketchat:ui-utils';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
@@ -123,7 +124,7 @@ Template.body.onRendered(function() {
 	}
 });
 
-RocketChat.mainReady = new ReactiveVar(false);
+RocketChat.mainReady = mainReady;
 Template.main.helpers({
 	removeSidenav() {
 		const { modal } = this;
