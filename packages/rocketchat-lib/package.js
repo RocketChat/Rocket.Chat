@@ -45,6 +45,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:custom-oauth');
 	api.use('konecty:multiple-instances-status');
 	api.use('rocketchat:file');
+	api.use('rocketchat:file-upload');
 	api.use('rocketchat:push');
 	api.use('rocketchat:push-notifications', { unordered: true });
 
