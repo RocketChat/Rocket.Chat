@@ -201,11 +201,15 @@ RocketChat.Migrations.add({
 				}).then(() => {
 					const avatarsFiles = new Mongo.Collection('avatars.files');
 					const avatarsChunks = new Mongo.Collection('avatars.chunks');
-					avatarsFiles.rawCollection().drop();
-					avatarsChunks.rawCollection().drop();
+					try {
+						avatarsFiles.rawCollection().drop();
+						avatarsChunks.rawCollection().drop();
+					} catch (error) {
+						console.warn('Migration Error: avatars.files and avatars.chunks collections may not exist!');
+					}
 					RocketChat.models.Settings.remove({ _id: 'Accounts_AvatarStoreType' });
 					RocketChat.models.Settings.remove({ _id: 'Accounts_AvatarStorePath' });
-				});
+				}).catch((error) => console.error(error));
 			}, 1000);
 		});
 	},
