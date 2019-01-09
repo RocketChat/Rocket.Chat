@@ -136,6 +136,23 @@ Template.adminImportHistory.helpers({
 			return this.error;
 		}
 
+		if (typeof this.error === 'object') {
+			if (this.error.message) {
+				return this.error.message;
+			}
+			if (this.error.error && typeof this.error.error === 'string') {
+				return this.error.error;
+			}
+
+			try {
+				const json = JSON.stringify(this.error);
+				console.log(json);
+				return json;
+			} catch (e) {
+				return t('Error');
+			}
+		}
+
 		return this.error.toString();
 	},
 });
