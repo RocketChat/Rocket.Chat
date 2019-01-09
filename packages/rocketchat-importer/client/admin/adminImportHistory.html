@@ -8,6 +8,8 @@
 				{{#if isPreparing}}
 					{{> loading}}
 				{{else}}
+					<button class="button primary import-list">{{_ "Back"}}</button>
+
 					{{#each history}}
 						<div class="section">
 							<!-- <h1>{{ name }}</h1> -->
@@ -49,7 +51,7 @@
 								{{/if}}
 
 								{{#if hasErrors}}
-									<span style="font-weight: 600;">{{_ "Errors_and_Warnings"}}:</span>
+									<h2>{{_ "Errors_and_Warnings"}}:</h2>
 									<br/>
 
 									{{#if fileData.users}}
@@ -66,6 +68,57 @@
 												<br/>
 											{{/if}}
 
+										{{/each}}
+									{{/if}}
+
+									{{#if errors}}
+										<br/>
+										<br/>
+										<h3>{{_ "Not_Imported_Messages_Title"}}</h3>
+										<br/>
+										{{#each errors}}
+											<br/>
+											{{#if msg}}
+												{{#if msg.id}}
+													<span style="font-weight: 600;">{{_ "Message_Id"}}:</span>
+													<span>{{ msg.id}}</span>
+													<br/>
+												{{/if}}
+												{{#if msg.userId}}
+													<span style="font-weight: 600;">{{_ "Message_UserId"}}:</span>
+													<span>{{ msg.userId}}</span>
+													<br/>
+												{{/if}}
+												{{#if msg.ts}}
+													<span style="font-weight: 600;">{{_ "Message_Time"}}:</span>
+													<span>{{ messageTime}}</span>
+													<br/>
+												{{/if}}
+<!-- 												{{#if msg.text}}
+													<span style="font-weight: 600;">{{_ "Message"}}:</span>
+													<span>{{ msg.text}}</span>
+													<br/>
+												{{/if}} -->
+											{{/if}}
+											{{#if error}}
+												{{#if error.error}}
+													<span style="font-weight: 500;">{{_ "Error"}}:</span>
+													<span style="color: red;">{{ error.error}}:</span>
+													<br/>
+												{{/if}}
+												{{#if error.message}}
+													<span style="font-weight: 500;">{{_ "Message"}}:</span>
+													<span style="color: red;">{{ error.message}}:</span>
+													<br/>
+												{{/if}}
+												{{#if error.details}}
+													{{#if error.details.method}}
+														<span style="font-weight: 500;">{{_ "Method"}}:</span>
+														<span style="color: red;">{{ error.details.method}}:</span>
+														<br/>
+													{{/if}}
+												{{/if}}
+											{{/if}}
 										{{/each}}
 									{{/if}}
 

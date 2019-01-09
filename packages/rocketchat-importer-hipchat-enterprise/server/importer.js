@@ -67,7 +67,13 @@ export class HipChatEnterpriseImporter extends Base {
 				stream.on('end', Meteor.bindEnvironment(() => {
 					this.logger.debug(`Processing the file: ${ header.name }`);
 					const dataString = Buffer.concat(data).toString();
-					const file = JSON.parse(dataString);
+					let file;
+					try {
+						file = JSON.parse(dataString);
+					} catch (e) {
+						console.error(e);
+						return next();
+					}
 
 					if (info.base === 'users.json') {
 						super.updateProgress(ProgressStep.PREPARING_USERS);
@@ -465,28 +471,33 @@ export class HipChatEnterpriseImporter extends Base {
 			return;
 		}
 
-		const creator = this.getRocketUserFromUserId(msg.userId);
-		if (creator) {
-			this._importAttachment(msg, room, creator);
+		try {
+			const creator = this.getRocketUserFromUserId(msg.userId);
+			if (creator) {
+				this._importAttachment(msg, room, creator);
 
-			switch (msg.type) {
-				case 'user':
-					RocketChat.sendMessage(creator, {
-						_id: msg.id,
-						ts: msg.ts,
-						msg: msg.text,
-						rid: room._id,
-						alias: msg.alias,
-						u: {
-							_id: creator._id,
-							username: creator.username,
-						},
-					}, room, true);
-					break;
-				case 'topic':
-					RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
-					break;
+				switch (msg.type) {
+					case 'user':
+						RocketChat.sendMessage(creator, {
+							_id: msg.id,
+							ts: msg.ts,
+							msg: msg.text,
+							rid: room._id,
+							alias: msg.alias,
+							u: {
+								_id: creator._id,
+								username: creator.username,
+							},
+						}, room, true);
+						break;
+					case 'topic':
+						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
+						break;
+				}
 			}
+		} catch (e) {
+			console.error(e);
+			this.addMessageError(e, msg);
 		}
 
 		super.addCountCompleted(1);
@@ -552,29 +563,34 @@ export class HipChatEnterpriseImporter extends Base {
 						});
 					}
 
-					Meteor.runAsUser(sender._id, () => {
-						if (msg.attachment_path) {
-							const details = {
-								message_id: `${ msg.id }-attachment`,
-								name: msg.attachment.name,
-								size: msg.attachment.size,
-								userId: sender._id,
-								rid: room._id,
-							};
-							this.uploadFile(details, msg.attachment.url, sender, room, msg.ts);
-						} else {
-							RocketChat.sendMessage(sender, {
-								_id: msg.id,
-								ts: msg.ts,
-								msg: msg.text,
-								rid: room._id,
-								u: {
-									_id: sender._id,
-									username: sender.username,
-								},
-							}, room, true);
-						}
-					});
+					try {
+						Meteor.runAsUser(sender._id, () => {
+							if (msg.attachment_path) {
+								const details = {
+									message_id: `${ msg.id }-attachment`,
+									name: msg.attachment.name,
+									size: msg.attachment.size,
+									userId: sender._id,
+									rid: room._id,
+								};
+								this.uploadFile(details, msg.attachment.url, sender, room, msg.ts);
+							} else {
+								RocketChat.sendMessage(sender, {
+									_id: msg.id,
+									ts: msg.ts,
+									msg: msg.text,
+									rid: room._id,
+									u: {
+										_id: sender._id,
+										username: sender.username,
+									},
+								}, room, true);
+							}
+						});
+					} catch (e) {
+						console.error(e);
+						this.addMessageError(e, msg);
+					}
 				}
 			}
 		}

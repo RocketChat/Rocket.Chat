@@ -307,6 +307,22 @@ export class Base {
 		});
 	}
 
+	addMessageError(error, msg) {
+		Imports.model.update({
+			_id: this.importRecord._id,
+		}, {
+			$push: {
+				errors: {
+					error,
+					msg,
+				},
+			},
+			$set: {
+				hasErrors: true,
+			},
+		});
+	}
+
 	/**
 	 * Updates the import record with the given fields being `set`.
 	 *

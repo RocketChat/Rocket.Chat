@@ -6,6 +6,7 @@ import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 Template.adminImportHistory.helpers({
 	isAdmin() {
@@ -124,6 +125,10 @@ Template.adminImportHistory.helpers({
 			}
 		}
 
+		if (this.errors && this.errors.length > 0) {
+			return true;
+		}
+
 		return false;
 	},
 
@@ -155,10 +160,21 @@ Template.adminImportHistory.helpers({
 
 		return this.error.toString();
 	},
+
+	messageTime() {
+		if (!this.msg || !this.msg.ts) {
+			return '';
+		}
+
+		const date = new Date(this.msg.ts);
+		return date.toLocaleString();
+	},
 });
 
 Template.adminImportHistory.events({
-
+	'click .import-list'() {
+		FlowRouter.go('/admin/import');
+	},
 });
 
 
