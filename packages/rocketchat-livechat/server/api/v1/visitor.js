@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
