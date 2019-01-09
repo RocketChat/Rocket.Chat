@@ -1,9 +1,14 @@
-/* globals popover isRtl */
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { isRtl } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 import { hide, leave } from 'meteor/rocketchat:lib';
 
-this.popover = {
+popover = {
 	renderedPopover: null,
 	open({ currentTarget, ...config }) {
 		// Popover position must be computed as soon as possible, avoiding DOM changes over currentTarget

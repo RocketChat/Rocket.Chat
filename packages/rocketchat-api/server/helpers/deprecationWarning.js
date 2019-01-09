@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.API.helperMethods.set('deprecationWarning', function _deprecationWarning({ endpoint, versionWillBeRemove, response }) {
 	const warningMessage = `The endpoint "${ endpoint }" is deprecated and will be removed after version ${ versionWillBeRemove }`;
 	console.warn(warningMessage);

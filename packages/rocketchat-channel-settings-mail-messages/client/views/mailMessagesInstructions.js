@@ -1,4 +1,13 @@
-/* global AutoComplete Deps */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
 
@@ -41,7 +50,7 @@ Template.mailMessagesInstructions.helpers({
 	},
 	roomName() {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
-		return room && room.name;
+		return room && RocketChat.roomTypes.getRoomName(room.t, room);
 	},
 	erroredEmails() {
 		const instance = Template.instance();

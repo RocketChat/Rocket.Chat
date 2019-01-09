@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { t } from 'meteor/rocketchat:utils';
+
 FlowRouter.route('/admin/integrations', {
 	name: 'admin-integrations',
 	subscriptions() {

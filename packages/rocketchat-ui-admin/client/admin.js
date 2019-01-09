@@ -1,4 +1,14 @@
-/* globals jscolor, i18nDefaultQuery */
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { SideNav, modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -115,6 +125,7 @@ Template.admin.helpers({
 
 		Object.keys(settings).forEach((key) => {
 			const setting = settings[key];
+			let i18nDefaultQuery;
 			if (setting.i18nDefaultQuery != null) {
 				if (_.isString(setting.i18nDefaultQuery)) {
 					i18nDefaultQuery = JSON.parse(setting.i18nDefaultQuery);
@@ -474,7 +485,7 @@ Template.admin.events({
 			}
 		});
 	},
-	'click .rc-header__section-button .remove-custom-oauth'() {
+	'click .remove-custom-oauth'() {
 		const name = this.section.replace('Custom OAuth: ', '');
 		const config = {
 			title: TAPi18n.__('Are_you_sure'),
@@ -519,15 +530,32 @@ Template.admin.events({
 		});
 	},
 	'click .expand'(e) {
-		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
-		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__('Collapse'));
+		const sectionTitle = e.currentTarget;
+		const section = sectionTitle.closest('.section');
+		const button = sectionTitle.querySelector('button');
+		const i = button.querySelector('i');
+
+		sectionTitle.classList.remove('expand');
+		sectionTitle.classList.add('collapse');
+		section.classList.remove('section-collapsed');
+		button.setAttribute('title', TAPi18n.__('Collapse'));
+		i.className = 'icon-angle-up';
+
 		$('.CodeMirror').each(function(index, codeMirror) {
 			codeMirror.CodeMirror.refresh();
 		});
 	},
 	'click .collapse'(e) {
-		$(e.currentTarget).closest('.section').addClass('section-collapsed');
-		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
+		const sectionTitle = e.currentTarget;
+		const section = sectionTitle.closest('.section');
+		const button = sectionTitle.querySelector('button');
+		const i = button.querySelector('i');
+
+		sectionTitle.classList.remove('collapse');
+		sectionTitle.classList.add('expand');
+		section.classList.add('section-collapsed');
+		button.setAttribute('title', TAPi18n.__('Expand'));
+		i.className = 'icon-angle-down';
 	},
 	'click button.action'() {
 		if (this.type !== 'action') {

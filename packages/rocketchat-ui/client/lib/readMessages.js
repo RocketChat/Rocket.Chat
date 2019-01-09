@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 import _ from 'underscore';
 
 /* DEFINITIONS
@@ -13,7 +15,7 @@ import _ from 'underscore';
 // window.addEventListener 'focus', ->
 // readMessage.refreshUnreadMark(undefined, true)
 
-const readMessage = new class {
+readMessage = new class {
 	constructor() {
 		this.debug = false;
 		this.callbacks = [];
@@ -140,15 +142,11 @@ const readMessage = new class {
 			ts: {
 				$lt: subscription.ls,
 			},
-		}
-			// 'u._id':
-			// 	$ne: Meteor.userId()
-			, {
+		}, {
 			sort: {
 				ts: -1,
 			},
-		}
-		);
+		});
 
 		if ((lastReadRecord == null) && (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() === 0)) {
 			lastReadRecord =
@@ -170,13 +168,11 @@ const readMessage = new class {
 				'u._id': {
 					$ne: Meteor.userId(),
 				},
-			}
-				, {
+			}, {
 				sort: {
 					ts: 1,
 				},
-			}
-			);
+			});
 
 			if (firstUnreadRecord != null) {
 				room.unreadFirstId = firstUnreadRecord._id;
@@ -215,5 +211,3 @@ Meteor.startup(function() {
 		}
 	});
 });
-export { readMessage };
-this.readMessage = readMessage;

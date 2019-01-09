@@ -1,4 +1,6 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	eraseRoom(rid) {

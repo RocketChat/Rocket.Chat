@@ -1,4 +1,5 @@
 import s from 'underscore.string';
+import { Accounts } from 'meteor/accounts-base';
 
 RocketChat._setUsername = function(userId, u) {
 	const username = s.trim(u);
@@ -34,7 +35,8 @@ RocketChat._setUsername = function(userId, u) {
 	} catch (e) {
 		console.error(e);
 	}
-	/* globals getAvatarSuggestionForUser */
+	// Set new username*
+	RocketChat.models.Users.setUsername(user._id, username);
 	user.username = username;
 	if (!previousUsername && RocketChat.settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = getAvatarSuggestionForUser(user);
@@ -74,8 +76,6 @@ RocketChat._setUsername = function(userId, u) {
 			fileStore.model.updateFileNameById(file._id, username);
 		}
 	}
-	// Set new username*
-	RocketChat.models.Users.setUsername(user._id, username);
 	return user;
 };
 

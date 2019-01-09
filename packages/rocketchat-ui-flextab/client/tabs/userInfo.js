@@ -1,9 +1,13 @@
-/* globals RoomRoles UserRoles popover */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
-import { DateFormat } from 'meteor/rocketchat:lib';
-
+import { DateFormat, RocketChat } from 'meteor/rocketchat:lib';
+import { RoomRoles, popover, UserRoles } from 'meteor/rocketchat:ui';
 import { getActions } from './userActions';
 
 const more = function() {

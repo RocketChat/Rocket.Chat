@@ -1,4 +1,5 @@
-/* globals MongoInternals */
+import { Match } from 'meteor/check';
+import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 
 const baseName = 'rocketchat_';

@@ -1,6 +1,6 @@
-import _ from 'underscore';
-
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
+import _ from 'underscore';
 
 RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	checkCondition(roomType) {
@@ -49,7 +49,6 @@ RocketChat.roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		if (!user) {
 			return room && room.ro;
 		}
-		/* globals RoomRoles */
 		const userOwner = RoomRoles.findOne({
 			rid: roomId,
 			'u._id': user._id,

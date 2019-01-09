@@ -1,4 +1,9 @@
 /* globals Department, Livechat, LivechatVideoCall */
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import visitor from '../../imports/client/visitor';
 
 function showDepartments() {
@@ -59,8 +64,36 @@ Template.livechatWindow.helpers({
 });
 
 Template.livechatWindow.events({
+	'mousedown .title'({ target, clientX: x, clientY: y }) {
+		parentCall('startDragWindow', { x, y });
+
+		this.onDrag = ({ clientX: x, clientY: y }) => {
+			parentCall('dragWindow', {
+				x: x - target.getBoundingClientRect().left,
+				y: y - target.getBoundingClientRect().top,
+			});
+		};
+
+		this.onDragStop = () => {
+			parentCall('stopDragWindow');
+			window.removeEventListener('mousemove', this.onDrag);
+			window.removeEventListener('mousedown', this.onDragStop);
+			this.onDrag = this.onDragStop = null;
+		};
+
+		window.addEventListener('mousemove', this.onDrag);
+		window.addEventListener('mouseup', this.onDragStop);
+	},
 	'click .title'() {
+		parentCall('restoreWindow');
+	},
+	'click .maximize'(e) {
 		parentCall('toggleWindow');
+		e.stopPropagation();
+	},
+	'click .minimize'(e) {
+		parentCall('toggleWindow');
+		e.stopPropagation();
 	},
 	'click .popout'(event) {
 		event.stopPropagation();
@@ -131,6 +164,7 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.registrationForm = result.registrationForm;
 			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
+			Livechat.registrationFormMessage = result.registrationFormMessage;
 
 			loadDepartments(result.departments);
 

@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatSubscription } from 'meteor/rocketchat:ui';
+
 function Open(command, params /* , item*/) {
 	const dict = {
 		'#': ['c', 'p'],

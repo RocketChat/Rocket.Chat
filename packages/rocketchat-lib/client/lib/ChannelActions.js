@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { call, UiTextContext } from 'meteor/rocketchat:lib';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { t } from 'meteor/rocketchat:utils';
 
 export function hide(type, rid, name) {
 	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);

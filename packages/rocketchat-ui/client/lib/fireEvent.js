@@ -1,4 +1,6 @@
-window.fireGlobalEvent = function _fireGlobalEvent(eventName, params) {
+import { Tracker } from 'meteor/tracker';
+
+fireGlobalEvent = function _fireGlobalEvent(eventName, params) {
 	window.dispatchEvent(new CustomEvent(eventName, { detail: params }));
 
 	Tracker.autorun((computation) => {

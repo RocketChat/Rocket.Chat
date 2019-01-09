@@ -1,5 +1,9 @@
-/* globals logger*/
-
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
+import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { logger } from './logger';
 import _ from 'underscore';
 
 export default class RocketAdapter {

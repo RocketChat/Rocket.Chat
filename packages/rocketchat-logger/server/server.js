@@ -1,9 +1,14 @@
-/* globals EventEmitter LoggerManager SystemLogger Log*/
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { EJSON } from 'meteor/ejson';
+import { Log } from 'meteor/logging';
+import { EventEmitter } from 'events';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-// TODO: change this global to import
-LoggerManager = new class extends EventEmitter { // eslint-disable-line no-undef
+let Logger;
+
+const LoggerManager = new class extends EventEmitter {
 	constructor() {
 		super();
 		this.enabled = false;
@@ -42,7 +47,6 @@ LoggerManager = new class extends EventEmitter { // eslint-disable-line no-undef
 		return (dispatchQueue === true) ? this.dispatchQueue() : this.clearQueue();
 	}
 };
-
 
 const defaultTypes = {
 	debug: {
@@ -294,8 +298,8 @@ class _Logger {
 		}
 	}
 }
-// TODO: change this global to import
-Logger = global.Logger = _Logger;
+
+Logger = _Logger;
 const processString = function(string, date) {
 	let obj;
 	try {
@@ -313,8 +317,8 @@ const processString = function(string, date) {
 		return string;
 	}
 };
-// TODO: change this global to import
-SystemLogger = new Logger('System', { // eslint-disable-line no-undef
+
+const SystemLogger = new Logger('System', {
 	methods: {
 		startup: {
 			type: 'success',

@@ -1,0 +1,21 @@
+{
+	"extends": ["@rocket.chat/eslint-config"],
+	"parser": "babel-eslint",
+	"globals": {
+		"AgentUsers"                  : false,
+		"Department"                  : false,
+		"getNextAgent"                : false,
+		"LivechatCustomField"         : false,
+		"LivechatDepartment"          : false,
+		"LivechatDepartmentAgents"    : false,
+		"livechatManagerRoutes"       : true,
+		"LivechatMonitoring"          : false,
+		"LivechatPageVisited"         : false,
+		"LivechatTrigger"             : false,
+		"parentCall"                  : false,
+		"t"                           : false,
+		"Trigger"                     : false,
+		"Triggers"                    : false,
+		"visitor"                     : false
+	}
+}
