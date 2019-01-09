@@ -9,6 +9,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'http',
 		'templating',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
