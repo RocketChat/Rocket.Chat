@@ -1,24 +1,36 @@
 /* globals TAPi18n, RocketChat */
 
 Template.AssistifySmarti.onCreated(function() {
-	this.helpRequest = new ReactiveVar(null);
+	this.room = new ReactiveVar(null);
 	this.smartiLoaded = new ReactiveVar(false);
 	this.maxTriesLoading = 10;
 	this.timeoutMs = 2000;
 	this.currentTryLoading = new ReactiveVar(0);
+	this.reactOnSmartiDirty = new ReactiveVar(true);
 
 	const instance = this;
 
 	this.autorun(() => {
 		if (instance.data.rid) {
-			const helpRequest = RocketChat.models.Rooms.findOne(instance.data.rid);
-			instance.helpRequest.set(helpRequest);
+			const room = RocketChat.models.Rooms.findOne(instance.data.rid);
+			instance.room.set(room);
 		}
 	});
 
+	/*
+	Once this template is created (meaning: Once the tab is opened),
+	the user is interested in what Smarti is analyzing =>
+	Hook into an event issued by the backend to allow requesting an analysis
+	*/
+	RocketChat.Notifications.onRoom(instance.data.rid, 'assistify-smarti-dirty', () => {
+		if (this.reactOnSmartiDirty.get()) {
+			Meteor.call('analyze', instance.data.rid);
+		}
+	});
 });
 
 Template.AssistifySmarti.onDestroyed(function() {
+	this.reactOnSmartiDirty.set(false);
 	clearTimeout(this.loading);
 });
 
@@ -88,10 +100,6 @@ Template.AssistifySmarti.helpers({
 	liveChatActions() {
 		const instance = Template.instance();
 		return { roomId: instance.data.rid };
-	},
-	helpRequestByRoom() {
-		const instance = Template.instance();
-		return instance.helpRequest.get();
 	},
 	loadingClass() {
 		const instance = Template.instance();

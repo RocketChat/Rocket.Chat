@@ -51,6 +51,21 @@ Meteor.methods({
 	},
 
 	/**
+	 * This method provides the client a handler to request the asynchronous analysis of a room's messages
+	 * It can e. g. be issued from the widget once it's opened
+	 * @param {*} roomId The ID of the Rocket.Chat room which shall be analyzed
+	 */
+	analyze(roomId) {
+		return RocketChat.RateLimiter.limitFunction(
+			SmartiAdapter.triggerAnalysis, 5, 1000, {
+				userId(userId) {
+					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+				},
+			}
+		)(roomId);
+	},
+
+	/**
 	 * Returns the query builder results for the given conversation (used by Smarti widget)
 	 *
 	 * @param {String} conversationId - the conversation id to get results for
@@ -114,22 +129,25 @@ let script;
 let timeoutHandle;
 
 function loadSmarti() {
-
-	let script = RocketChat.RateLimiter.limitFunction(
-		SmartiProxy.propagateToSmarti, 5, 1000, {
-			userId(userId) {
-				return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
-			},
+	if (SmartiAdapter.isEnabled()) {
+		let script = RocketChat.RateLimiter.limitFunction(
+			SmartiProxy.propagateToSmarti, 5, 1000, {
+				userId(userId) {
+					return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+				},
+			}
+		)(verbs.get, 'plugin/v1/rocket.chat.js');
+		if (!script.error && script) {
+			// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable
+			script = `${ script } //# sourceURL=SmartiWidget.js`;
+		} else {
+			SystemLogger.error('Could not load Smarti script from', '${SMARTI-SERVER}/plugin/v1/rocket.chat.js');
+			throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
 		}
-	)(verbs.get, 'plugin/v1/rocket.chat.js');
-	if (script) {
-		// add pseudo comment in order to make the script appear in the frontend as a file. This makes it de-buggable
-		script = `${ script } //# sourceURL=SmartiWidget.js`;
+		return script;
 	} else {
-		SystemLogger.error('Could not load Smarti script from', '${SMARTI-SERVER}/plugin/v1/rocket.chat.js');
-		throw new Meteor.Error('no-smarti-ui-script', 'no-smarti-ui-script');
+		return ''; // there is no script to be added, so return an empty source (and not null) - hte consumer expects a string
 	}
-	return script;
 }
 
 function delayedReload() {

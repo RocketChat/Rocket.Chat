@@ -1,3 +1,15 @@
+# Assistify 0.9.5
+
+General bug-fix release.
+
+# Assistify 0.9.4
+
+This is a Live chat bugfix release.
+
+# Assistify 0.9.3
+
+This is a bugfix release.
+
 # Assistify 0.9.2
 
 This is a bugfix release.
