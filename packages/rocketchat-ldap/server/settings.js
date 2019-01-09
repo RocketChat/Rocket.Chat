@@ -90,15 +90,6 @@ RocketChat.settings.addGroup('LDAP', function() {
 		this.add('LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: syncDataQuery });
 		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery });
 
-		this.add('LDAP_Background_Sync', false, { type: 'boolean', enableQuery });
-		this.add('LDAP_Background_Sync_Interval', 'Every 24 hours', { type: 'string', enableQuery: backgroundSyncQuery });
-		this.add('LDAP_Background_Sync_Import_New_Users', true, { type: 'boolean', enableQuery: backgroundSyncQuery });
-		this.add('LDAP_Background_Sync_Keep_Existant_Users_Updated', true, { type: 'boolean', enableQuery: backgroundSyncQuery });
-
-		this.add('LDAP_Sync_Now', 'ldap_sync_now', { type: 'action', actionText: 'Execute_Synchronization_Now' });
-	});
-
-	this.section('Group Sync / Import', function() {
 		this.add('LDAP_Group_Sync_Enable', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Group_Sync_ObjectClass', 'groupOfUniqueNames', { type: 'string', enableQuery: syncGroupDataQuery });
 		this.add('LDAP_Group_Sync_Member_Association', 'uniqueMember', {
@@ -121,5 +112,12 @@ RocketChat.settings.addGroup('LDAP', function() {
 			],
 			enableQuery: syncGroupDataQuery,
 		});
+
+		this.add('LDAP_Background_Sync', false, { type: 'boolean', enableQuery });
+		this.add('LDAP_Background_Sync_Interval', 'Every 24 hours', { type: 'string', enableQuery: backgroundSyncQuery });
+		this.add('LDAP_Background_Sync_Import_New_Users', true, { type: 'boolean', enableQuery: backgroundSyncQuery });
+		this.add('LDAP_Background_Sync_Keep_Existant_Users_Updated', true, { type: 'boolean', enableQuery: backgroundSyncQuery });
+
+		this.add('LDAP_Sync_Now', 'ldap_sync_now', { type: 'action', actionText: 'Execute_Synchronization_Now' });
 	});
 });
