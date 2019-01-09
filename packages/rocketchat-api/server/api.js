@@ -386,6 +386,7 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 		if (RocketChat.settings.get('API_Enable_CORS') === true) {
 			this.response.writeHead(200, {
 				'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
+				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
 				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
 			});
 		} else {
