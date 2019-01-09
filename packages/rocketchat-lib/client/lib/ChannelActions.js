@@ -101,3 +101,27 @@ export function erase(rid) {
 		});
 	});
 }
+
+export function hideOldSubscriptions() {
+	const DURATION_DAY = 1000 * 60 * 60 * 24;
+
+	modal.open({
+		title: t('Are_you_sure'),
+		text: t('You_are_hiding_unread_idle_rooms'),
+		type: 'input',
+		inputType: 'number',
+		inputPlaceholder: t('Duration_nothing_happened_in_days'),
+		showCancelButton: true,
+		confirmButtonColor: '#DD6B55',
+		confirmButtonText: t('Yes_hide_it'),
+		cancelButtonText: t('Cancel'),
+		closeOnConfirm: true,
+		html: false,
+	}, async function(inputValue) {
+		const days = parseInt(inputValue);
+		if (!days) {
+			return false;
+		}
+		await call('hideOldSubscriptions', Meteor.userId(), DURATION_DAY * days);
+	});
+}
