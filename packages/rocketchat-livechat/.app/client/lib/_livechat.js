@@ -209,10 +209,7 @@ this.Livechat = new (class Livechat {
 	}
 	set department(departmentId) {
 		const dept = Department.findOne({ _id: departmentId }) || Department.findOne({ name: departmentId });
-
-		if (dept) {
-			this._department.set(dept._id);
-		}
+		this._department.set(dept && dept._id);
 	}
 	set agent(agentData) {
 		this._agent.set(agentData);
