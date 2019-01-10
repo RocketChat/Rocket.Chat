@@ -51,6 +51,7 @@ rocketchat:bot-helpers
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
+rocketchat:cloud
 rocketchat:colors
 rocketchat:crowd
 rocketchat:custom-oauth
