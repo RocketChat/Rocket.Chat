@@ -141,6 +141,7 @@ rocketchat:autotranslate@0.0.1
 rocketchat:bigbluebutton@0.0.1
 rocketchat:blockstack@0.0.1
 rocketchat:bot-helpers@0.0.1
+rocketchat:callbacks@0.0.1
 rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1
