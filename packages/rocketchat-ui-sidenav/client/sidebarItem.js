@@ -95,7 +95,16 @@ Template.sidebarItem.onCreated(function() {
 });
 
 Template.sidebarItem.events({
-	'click [data-id], click .sidebar-item__link'() {
+	'click [data-id], click .sidebar-item__link'(e) {
+		const element = e.currentTarget;
+		const sidebarElements = document.getElementsByClassName('sidebar-item');
+		for (var i = sidebarElements.length - 5; i < sidebarElements.length; i++) {
+			var nonSelectedElement = sidebarElements[i].getElementsByTagName('a')[0];
+			if (nonSelectedElement.getAttribute('aria-label') != element.getAttribute('aria-label')) {
+				nonSelectedElement.classList.remove("selected-bg-shade");
+			}
+		}
+		element.classList.add("selected-bg-shade");
 		return menu.close();
 	},
 	'mouseenter .sidebar-item__link'(e) {
