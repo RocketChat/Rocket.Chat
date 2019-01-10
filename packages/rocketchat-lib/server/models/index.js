@@ -10,7 +10,7 @@ import { Uploads } from 'meteor/rocketchat:models';
 import { UserDataFiles } from 'meteor/rocketchat:models';
 import { Users } from 'meteor/rocketchat:models';
 
-Object.apply(RocketChat.models, {
+Object.assign(RocketChat.models, {
 	_Base,
 	Avatars,
 	ExportOperations,
