@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 	api.use('service-configuration');
 	api.use('check');
 	api.use('rocketchat:utils');
+	api.use('rocketchat:models');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
@@ -134,17 +135,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/passwordPolicy.js', 'server');
 
 	// SERVER MODELS
-	api.addFiles('server/models/_Base.js', 'server');
-	api.addFiles('server/models/Avatars.js', 'server');
-	api.addFiles('server/models/Messages.js', 'server');
-	api.addFiles('server/models/Reports.js', 'server');
-	api.addFiles('server/models/Rooms.js', 'server');
-	api.addFiles('server/models/Settings.js', 'server');
-	api.addFiles('server/models/Subscriptions.js', 'server');
-	api.addFiles('server/models/Uploads.js', 'server');
-	api.addFiles('server/models/Users.js', 'server');
-	api.addFiles('server/models/ExportOperations.js', 'server');
-	api.addFiles('server/models/UserDataFiles.js', 'server');
+	api.addFiles('server/models/index.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
 	api.addFiles('server/oauth/facebook.js', 'server');
@@ -243,9 +234,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/CustomTranslations.js', 'client');
 
 	// CLIENT MODELS
-	api.addFiles('client/models/_Base.js', 'client');
-	api.addFiles('client/models/Avatars.js', 'client');
-	api.addFiles('client/models/Uploads.js', 'client');
+	api.addFiles('client/models/index.js', 'client');
 
 	// CLIENT VIEWS
 	api.addFiles('client/views/customFieldsForm.html', 'client');

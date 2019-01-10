@@ -1,6 +1,7 @@
+import { Base } from './_Base';
 import _ from 'underscore';
 
-RocketChat.models.ExportOperations = new class ModelExportOperations extends RocketChat.models._Base {
+export class ExportOperations extends Base {
 	constructor() {
 		super('export_operations');
 
@@ -75,4 +76,6 @@ RocketChat.models.ExportOperations = new class ModelExportOperations extends Roc
 	removeById(_id) {
 		return this.remove(_id);
 	}
-};
+}
+
+export default new ExportOperations();
