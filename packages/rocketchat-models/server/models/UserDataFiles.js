@@ -1,6 +1,7 @@
+import { Base } from './_Base';
 import _ from 'underscore';
 
-RocketChat.models.UserDataFiles = new class ModelUserDataFiles extends RocketChat.models._Base {
+export class UserDataFiles extends Base {
 	constructor() {
 		super('user_data_files');
 
@@ -37,4 +38,6 @@ RocketChat.models.UserDataFiles = new class ModelUserDataFiles extends RocketCha
 	removeById(_id) {
 		return this.remove(_id);
 	}
-};
+}
+
+export default new UserDataFiles();
