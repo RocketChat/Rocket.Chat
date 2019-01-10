@@ -30,6 +30,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:metrics');
 	api.use('rocketchat:callbacks');
 	api.use('rocketchat:notifications');
+	api.use('rocketchat:promises');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
