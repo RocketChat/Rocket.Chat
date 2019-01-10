@@ -206,3 +206,4 @@ rocketchat:settings
 rocketchat:models
 rocketchat:metrics
 rocketchat:callbacks
+rocketchat:notifications
