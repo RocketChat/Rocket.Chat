@@ -1,11 +1,8 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
-if (_.isUndefined(RocketChat.models.Users)) {
-	RocketChat.models.Users = {};
-}
+const Users = {};
 
-Object.assign(RocketChat.models.Users, {
+Object.assign(Users, {
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,
@@ -25,3 +22,5 @@ Object.assign(RocketChat.models.Users, {
 		return this.find(query, options);
 	},
 });
+
+export { Users };

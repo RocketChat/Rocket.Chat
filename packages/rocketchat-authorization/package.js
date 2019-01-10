@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'mongo',
 		'rocketchat:utils',
+		'rocketchat:models',
 	]);
 	api.use([
 		'templating',
