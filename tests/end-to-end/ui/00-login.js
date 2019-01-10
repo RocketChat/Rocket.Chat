@@ -141,7 +141,7 @@ describe('[Setup Wizard]', () => {
 
 	describe('[Render - Final Step]', () => {
 		it('it should render "Go to your workspace button', () => {
-			setupWizard.goToWorkspace.waitForVisible(15000);
+			setupWizard.goToWorkspace.waitForVisible(20000);
 			setupWizard.goToWorkspace.isVisible().should.be.true;
 		});
 
