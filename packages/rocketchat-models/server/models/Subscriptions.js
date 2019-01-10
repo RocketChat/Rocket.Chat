@@ -48,7 +48,7 @@ export class Subscriptions extends Base {
 				$exists: false,
 			},
 		};
-	
+
 		return this.find(query, options);
 	}
 
@@ -69,7 +69,7 @@ export class Subscriptions extends Base {
 				$exists: false,
 			},
 		};
-	
+
 		return this.find(query, options);
 	}
 

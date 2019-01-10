@@ -30,13 +30,13 @@ export class Rooms extends Base {
 		const query = {
 			_id,
 		};
-	
+
 		const update = {
 			$set: {
 				e2eKeyId,
 			},
 		};
-	
+
 		return this.update(query, update, options);
 	}
 

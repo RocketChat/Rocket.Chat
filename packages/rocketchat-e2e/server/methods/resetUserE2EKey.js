@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Subscrtipions } from 'meteor/rocketchat:models';
+import { Users, Subscriptions } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({

@@ -34,11 +34,11 @@ export class Users extends Base {
 
 	fetchKeysByUserId(userId) {
 		const user = this.findOne({ _id: userId }, { fields: { e2e: 1 } });
-	
+
 		if (!user || !user.e2e || !user.e2e.public_key) {
 			return {};
 		}
-	
+
 		return {
 			public_key: user.e2e.public_key,
 			private_key: user.e2e.private_key,
@@ -54,7 +54,7 @@ export class Users extends Base {
 				$exists: 1,
 			},
 		};
-	
+
 		return this.find(query, options);
 	}
 
