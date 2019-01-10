@@ -151,9 +151,9 @@
 	--sidebar-small-width: 90%;
 	--sidebar-background: var(--rc-color-primary);
 	--sidebar-background-hover: var(--rc-color-primary-dark);
-	--sidebar-background-active: var(--rc-color-primary-dark);
 	--sidebar-background-light: var(--rc-color-primary-lightest);
 	--sidebar-background-light-hover: var(--rc-color-primary-light);
+	--sidebar-background-light-active: var(--rc-color-primary-light);
 	--sidebar-default-padding: 24px;
 	--sidebar-small-default-padding: 16px;
 	--sidebar-extra-small-default-padding: 12px;

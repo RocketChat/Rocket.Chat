@@ -15,7 +15,7 @@
 }
 
 .selected-bg-shade {
-	background-color: var(--sidebar-background-light-hover);
+	background-color: var(--sidebar-background-light-active);
 }
 
 .sidebar--hide-avatar .sidebar-item__picture {
