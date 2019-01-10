@@ -1,8 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { settings } from 'meteor/rocketchat:settings';
+import { Base } from './_Base';
+import Rooms from './Rooms';
+import Users from './Users';
 import _ from 'underscore';
 
-RocketChat.models.Messages = new class extends RocketChat.models._Base {
+export class Messages extends Base {
 	constructor() {
 		super('message');
 
@@ -366,7 +370,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 	}
 
 	cloneAndSaveAsHistoryById(_id) {
-		const me = RocketChat.models.Users.findOneById(Meteor.userId());
+		const me = Users.findOneById(Meteor.userId());
 		const record = this.findOneById(_id);
 		record._hidden = true;
 		record.parent = record._id;
@@ -580,7 +584,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
+		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
 		if ((room != null ? room.sysMes : undefined) === false) {
 			return;
 		}
@@ -596,20 +600,20 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			groupable: false,
 		};
 
-		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-		RocketChat.models.Rooms.incMsgCountById(room._id, 1);
+		Rooms.incMsgCountById(room._id, 1);
 		return record;
 	}
 
 	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
 		const type = 'livechat_navigation_history';
-		const room = RocketChat.models.Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
+		const room = Rooms.findOneById(roomId, { fields: { sysMes: 1 } });
 		if ((room != null ? room.sysMes : undefined) === false) {
 			return;
 		}
@@ -625,7 +629,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			groupable: false,
 		};
 
-		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -753,7 +757,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			query['u.username'] = { $in: users };
 		}
 
-		const messagesToDelete = RocketChat.models.Messages.find(query, {
+		const messagesToDelete = this.find(query, {
 			fields: {
 				_id: 1,
 			},
@@ -830,4 +834,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			},
 		});
 	}
-};
+}
+
+export default new Messages();

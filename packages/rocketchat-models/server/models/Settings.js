@@ -1,4 +1,6 @@
-class ModelSettings extends RocketChat.models._Base {
+import { Base } from './_Base';
+
+export class Settings extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -179,4 +181,4 @@ class ModelSettings extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.Settings = new ModelSettings('settings', true);
+export default new Settings('settings', true);
