@@ -89,7 +89,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/getUserPreference.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
-	api.addFiles('server/lib/metrics.js', 'server');
+	api.addFiles('server/lib/metrics_import.js', 'server');
 
 	api.addFiles('server/lib/RateLimiter.js', 'server');
 
@@ -147,7 +147,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/oauth/google.js', 'server');
 	api.addFiles('server/oauth/proxy.js', 'server');
 
-	api.addFiles('server/startup/statsTracker.js', 'server');
+	api.addFiles('server/startup/statsTracker_import.js', 'server');
 	api.addFiles('server/startup/robots.js', 'server');
 
 	// SERVER PUBLICATIONS
