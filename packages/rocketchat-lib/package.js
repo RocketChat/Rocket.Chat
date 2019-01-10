@@ -87,6 +87,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
 	api.addFiles('lib/info.js');
+	api.addFiles('lib/authorization.js');
 
 	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
@@ -242,6 +243,12 @@ Package.onUse(function(api) {
 
 	// CLIENT MODELS
 	api.addFiles('client/models/index.js', 'client');
+	api.addFiles('client/models/ChatPermissions.js', 'client');
+	api.addFiles('client/models/Messages.js', 'client');
+	api.addFiles('client/models/Roles.js', 'client');
+	api.addFiles('client/models/Rooms.js', 'client');
+	api.addFiles('client/models/Subscriptions.js', 'client');
+	api.addFiles('client/models/Users.js', 'client');
 
 	// CLIENT VIEWS
 	api.addFiles('client/views/customFieldsForm.html', 'client');

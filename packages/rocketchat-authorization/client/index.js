@@ -1,7 +1,3 @@
-import '../lib/rocketchat';
-import './lib/models/Roles';
-import './lib/models/Users';
-import './lib/models/Subscriptions';
 import './hasPermission';
 import './hasRole';
 import './usersNameChanged';

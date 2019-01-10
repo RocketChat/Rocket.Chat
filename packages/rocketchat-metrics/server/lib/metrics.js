@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from 'meteor/rocketchat:settings';
-import { Statistics } from 'meteor/rocketchat:models';
 import { Info } from 'meteor/rocketchat:utils';
 import { Migrations } from 'meteor/rocketchat:migrations';
 import client from 'prom-client';
@@ -83,7 +82,7 @@ client.register.setDefaultLabels({
 	siteUrl: settings.get('Site_Url'),
 });
 
-const setPrometheusData = () => {
+const setPrometheusData = async() => {
 	const date = new Date();
 
 	client.register.setDefaultLabels({
@@ -97,6 +96,7 @@ const setPrometheusData = () => {
 	metrics.ddpSessions.set(sessions.length, date);
 	metrics.ddpAthenticatedSessions.set(authenticatedSessions.length, date);
 	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length, date);
+	const { Statistics } = await import('meteor/rocketchat:models');
 
 	if (!Statistics) {
 		return;
@@ -166,7 +166,6 @@ let timer;
 const updatePrometheusConfig = () => {
 	const port = settings.get('Prometheus_Port');
 	const enabled = settings.get('Prometheus_Enabled');
-
 	if (port == null || enabled == null) {
 		return;
 	}

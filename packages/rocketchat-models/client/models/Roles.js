@@ -1,13 +1,13 @@
 import { Mongo } from 'meteor/mongo';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import * as Models from '..';
 
-RocketChat.models.Roles = new Mongo.Collection('rocketchat_roles');
+const Roles = new Mongo.Collection('rocketchat_roles');
 
-Object.assign(RocketChat.models.Roles, {
+Object.assign(Roles, {
 	findUsersInRole(name, scope, options) {
 		const role = this.findOne(name);
 		const roleScope = (role && role.scope) || 'Users';
-		const model = RocketChat.models[roleScope];
+		const model = Models[roleScope];
 		return model && model.findUsersInRoles && model.findUsersInRoles(name, scope, options);
 	},
 
@@ -16,8 +16,10 @@ Object.assign(RocketChat.models.Roles, {
 		return roles.some((roleName) => {
 			const role = this.findOne(roleName);
 			const roleScope = (role && role.scope) || 'Users';
-			const model = RocketChat.models[roleScope];
+			const model = Models[roleScope];
 			return model && model.isUserInRole && model.isUserInRole(userId, roleName, scope);
 		});
 	},
 });
+
+export { Roles };
