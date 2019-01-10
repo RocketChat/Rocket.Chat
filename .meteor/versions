@@ -205,6 +205,7 @@ rocketchat:message-star@0.0.1
 rocketchat:migrations@0.0.1
 rocketchat:models@1.0.0
 rocketchat:monitoring@2.30.2_3
+rocketchat:notifications@0.0.1
 rocketchat:nrr@1.0.0
 rocketchat:oauth2-server@2.0.0
 rocketchat:oauth2-server-config@1.0.0
