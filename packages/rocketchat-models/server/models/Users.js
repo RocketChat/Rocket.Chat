@@ -1,9 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { settings } from 'meteor/rocketchat:settings';
+import { Base } from './_Base';
+import Subscriptions from './Subscriptions';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-class ModelUsers extends RocketChat.models._Base {
+export class Users extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -83,7 +86,7 @@ class ModelUsers extends RocketChat.models._Base {
 	}
 
 	findByRoomId(rid, options) {
-		const data = RocketChat.models.Subscriptions.findByRoomId(rid).fetch().map((item) => item.u._id);
+		const data = Subscriptions.findByRoomId(rid).fetch().map((item) => item.u._id);
 		const query = {
 			_id: {
 				$in: data,
@@ -140,7 +143,7 @@ class ModelUsers extends RocketChat.models._Base {
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 
-		const orStmt = _.reduce(RocketChat.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+		const orStmt = _.reduce(settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
@@ -666,4 +669,4 @@ Find users to send a message by email if:
 	}
 }
 
-RocketChat.models.Users = new ModelUsers(Meteor.users, true);
+export default new Users(Meteor.users, true);

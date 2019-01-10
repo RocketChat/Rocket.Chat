@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 
-RocketChat.models._Base = class {
+export class Base {
 
 	_baseName() {
 		return 'rocketchat_';
@@ -52,4 +52,4 @@ RocketChat.models._Base = class {
 
 	tryDropIndex() {}
 
-};
+}

@@ -1,9 +1,10 @@
 import { Match } from 'meteor/check';
 import { Mongo, MongoInternals } from 'meteor/mongo';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
+import { EventEmitter } from 'events';
 
 const baseName = 'rocketchat_';
-import { EventEmitter } from 'events';
 
 const trash = new Mongo.Collection(`${ baseName }_trash`);
 try {
@@ -15,11 +16,11 @@ try {
 
 const isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
 let isOplogEnabled = isOplogAvailable;
-RocketChat.settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
+settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
 	isOplogEnabled = isOplogAvailable && value === false;
 });
 
-class ModelsBaseDb extends EventEmitter {
+export class BaseDb extends EventEmitter {
 	constructor(model, baseModel) {
 		super();
 
@@ -377,5 +378,3 @@ class ModelsBaseDb extends EventEmitter {
 		return trash.find(query, options);
 	}
 }
-
-export default ModelsBaseDb;
