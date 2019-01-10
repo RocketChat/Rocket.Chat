@@ -1,15 +1,16 @@
 Package.describe({
-	name: 'rocketchat:utils',
+	name: 'rocketchat:metrics',
 	version: '0.0.1',
-	summary: 'RocketChat utils',
+	summary: 'Rocketchat Metrics',
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'tap:i18n',
+		'rocketchat:settings',
+		'rocketchat:models',
 		'rocketchat:version',
 	]);
-	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

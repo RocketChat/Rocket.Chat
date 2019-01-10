@@ -192,6 +192,7 @@ rocketchat:mailer@0.0.1
 rocketchat:mailmessages@0.0.1
 rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.2
+rocketchat:metrics@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
 rocketchat:message-action@0.0.1
