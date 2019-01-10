@@ -1,7 +1,10 @@
+import { Base } from './_Base';
+import Messages from './Messages';
+import Subscriptions from './Subscriptions';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-class ModelRooms extends RocketChat.models._Base {
+export class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -103,7 +106,7 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findBySubscriptionUserId(userId, options) {
-		const data = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
+		const data = Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
 			.map((item) => item.rid);
 
 		const query = {
@@ -116,7 +119,7 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findBySubscriptionTypeAndUserId(type, userId, options) {
-		const data = RocketChat.models.Subscriptions.findByUserIdAndType(userId, type, { fields: { rid: 1 } }).fetch()
+		const data = Subscriptions.findByUserIdAndType(userId, type, { fields: { rid: 1 } }).fetch()
 			.map((item) => item.rid);
 
 		const query = {
@@ -130,7 +133,7 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 
 	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
-		const ids = RocketChat.models.Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
+		const ids = Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
 			.map((item) => item.rid);
 
 		const query = {
@@ -446,7 +449,7 @@ class ModelRooms extends RocketChat.models._Base {
 
 	resetLastMessageById(_id, messageId) {
 		const query = { _id };
-		const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
+		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
 		const update = lastMessage ? {
 			$set: {
@@ -803,4 +806,4 @@ class ModelRooms extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.Rooms = new ModelRooms('room', true);
+export default new Rooms('rooms', true);

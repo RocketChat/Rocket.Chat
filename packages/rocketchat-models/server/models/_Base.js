@@ -1,11 +1,11 @@
 import { check } from 'meteor/check';
-import ModelsBaseDb from './_BaseDb';
+import { BaseDb } from './_BaseDb';
 import objectPath from 'object-path';
 import _ from 'underscore';
 
-class ModelsBase {
+export class Base {
 	constructor(nameOrModel) {
-		this._db = new ModelsBaseDb(nameOrModel, this);
+		this._db = new BaseDb(nameOrModel, this);
 		this.model = this._db.model;
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
@@ -126,6 +126,10 @@ class ModelsBase {
 
 	trashFindDeletedAfter(...args/* deletedAt, query, options*/) {
 		return this._db.trashFindDeletedAfter(...args);
+	}
+
+	trashFindDeleted(...args) {
+		return this._db.trashFindDeleted(...args);
 	}
 
 	processQueryOptionsOnResult(result, options = {}) {
@@ -277,5 +281,3 @@ class ModelsBase {
 	// }
 
 }
-
-RocketChat.models._Base = ModelsBase;

@@ -1,14 +1,16 @@
 Package.describe({
-	name: 'rocketchat:utils',
-	version: '0.0.1',
-	summary: 'RocketChat utils',
+	name: 'rocketchat:models',
+	summary: 'RocketChat Models',
+	version: '1.0.0',
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'tap:i18n',
-		'rocketchat:version',
+		'rocketchat:settings',
+		'rocketchat:utils',
+		'konecty:multiple-instances-status',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

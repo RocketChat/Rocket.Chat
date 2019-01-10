@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from './_Base';
 
-RocketChat.models.Statistics = new class extends RocketChat.models._Base {
+export class Statistics extends Base {
 	constructor() {
 		super('statistics');
 
@@ -23,4 +23,6 @@ RocketChat.models.Statistics = new class extends RocketChat.models._Base {
 		const records = this.find({}, options).fetch();
 		return records && records[0];
 	}
-};
+}
+
+export default new Statistics();
