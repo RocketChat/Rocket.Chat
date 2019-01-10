@@ -1,8 +1,9 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { Base } from './_Base';
 
-RocketChat.models.Uploads = new class extends RocketChat.models._Base {
+export class Uploads extends Base {
 	constructor() {
 		super('uploads');
 
@@ -107,4 +108,6 @@ RocketChat.models.Uploads = new class extends RocketChat.models._Base {
 			return this.remove({ _id: fileId });
 		}
 	}
-};
+}
+
+export default new Uploads();

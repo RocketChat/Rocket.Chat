@@ -1,6 +1,9 @@
+import { Base } from './_Base';
 import { Match } from 'meteor/check';
+import Rooms from './Rooms';
+import { getDefaultSubscriptionPref } from 'meteor/rocketchat:utils';
 
-class ModelSubscriptions extends RocketChat.models._Base {
+export class Subscriptions extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -788,13 +791,13 @@ class ModelSubscriptions extends RocketChat.models._Base {
 				username: user.username,
 				name: user.name,
 			},
-			...RocketChat.getDefaultSubscriptionPref(user),
+			...getDefaultSubscriptionPref(user),
 			...extraData,
 		};
 
 		const result = this.insert(subscription);
 
-		RocketChat.models.Rooms.incUsersCountById(room._id);
+		Rooms.incUsersCountById(room._id);
 
 		return result;
 	}
@@ -811,7 +814,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			RocketChat.models.Rooms.incUsersCountByIds(roomIds, -1);
+			Rooms.incUsersCountByIds(roomIds, -1);
 		}
 
 		return result;
@@ -825,7 +828,7 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			RocketChat.models.Rooms.incUsersCountById(roomId, - result);
+			Rooms.incUsersCountById(roomId, - result);
 		}
 
 		return result;
@@ -840,11 +843,11 @@ class ModelSubscriptions extends RocketChat.models._Base {
 		const result = this.remove(query);
 
 		if (Match.test(result, Number) && result > 0) {
-			RocketChat.models.Rooms.incUsersCountById(roomId, - result);
+			Rooms.incUsersCountById(roomId, - result);
 		}
 
 		return result;
 	}
 }
 
-RocketChat.models.Subscriptions = new ModelSubscriptions('subscription', true);
+export default new Subscriptions('subscription', true);

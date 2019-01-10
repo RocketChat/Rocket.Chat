@@ -1,6 +1,7 @@
+import { Base } from './_Base';
 import _ from 'underscore';
 
-RocketChat.models.Reports = new class extends RocketChat.models._Base {
+export class Reports extends Base {
 	constructor() {
 		super('reports');
 	}
@@ -15,4 +16,6 @@ RocketChat.models.Reports = new class extends RocketChat.models._Base {
 		record._id = this.insert(record);
 		return record;
 	}
-};
+}
+
+export default new Reports();
