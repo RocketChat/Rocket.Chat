@@ -3,6 +3,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { Session } from 'meteor/session';
 import { t } from 'meteor/rocketchat:utils';
 import { MessageAction } from 'meteor/rocketchat:ui-utils';
+import { chatMessages } from 'meteor/rocketchat:ui';
 import moment from 'moment';
 import toastr from 'toastr';
 

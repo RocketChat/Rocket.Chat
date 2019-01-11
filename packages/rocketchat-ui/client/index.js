@@ -67,7 +67,7 @@ import './views/app/createChannel';
 import './views/app/fullModal';
 import './views/app/home';
 import './views/app/directory';
-export { chatMessages } from  './views/app/room';
+export { chatMessages } from './views/app/room';
 import './views/app/roomSearch';
 import './views/app/secretURL';
 import './views/app/videoCall/videoButtons';
@@ -91,5 +91,4 @@ import './components/header/header.html';
 import './components/header/header';
 import './components/contextualBar.html';
 import './components/contextualBar';
-
 export { getAvatarUrFromUsername } from 'meteor/rocketchat:utils';

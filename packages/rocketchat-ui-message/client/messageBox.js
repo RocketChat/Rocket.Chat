@@ -8,6 +8,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import { ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
 import { t } from 'meteor/rocketchat:utils';
+import { MsgTyping } from 'meteor/rocketchat:ui';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
