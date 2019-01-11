@@ -4,6 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { t } from 'meteor/rocketchat:utils';
+import { MessageAction } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -28,106 +29,7 @@ const success = function success(fn) {
 	};
 };
 
-RocketChat.MessageAction = new class {
-	/*
-  	config expects the following keys (only id is mandatory):
-  		id (mandatory)
-  		icon: string
-  		label: string
-  		action: function(event, instance)
-  		condition: function(message)
-			order: integer
-			group: string (message or menu)
-   */
-
-	constructor() {
-		this.buttons = new ReactiveVar({});
-	}
-
-	addButton(config) {
-		if (!config || !config.id) {
-			return false;
-		}
-
-		if (!config.group) {
-			config.group = 'menu';
-		}
-
-		return Tracker.nonreactive(() => {
-			const btns = this.buttons.get();
-			btns[config.id] = config;
-			return this.buttons.set(btns);
-		});
-	}
-
-	removeButton(id) {
-		return Tracker.nonreactive(() => {
-			const btns = this.buttons.get();
-			delete btns[id];
-			return this.buttons.set(btns);
-		});
-	}
-
-	updateButton(id, config) {
-		return Tracker.nonreactive(() => {
-			const btns = this.buttons.get();
-			if (btns[id]) {
-				btns[id] = _.extend(btns[id], config);
-				return this.buttons.set(btns);
-			}
-		});
-	}
-
-	getButtonById(id) {
-		const allButtons = this.buttons.get();
-		return allButtons[id];
-	}
-
-	getButtons(message, context, group) {
-		let allButtons = _.toArray(this.buttons.get());
-
-		if (group) {
-			allButtons = allButtons.filter((button) => button.group === group);
-		}
-
-		if (message) {
-			allButtons = _.compact(_.map(allButtons, function(button) {
-				if (button.context == null || button.context.includes(context)) {
-					if (button.condition == null || button.condition(message, context)) {
-						return button;
-					}
-				}
-			}));
-		}
-		return _.sortBy(allButtons, 'order');
-	}
-
-	resetButtons() {
-		return this.buttons.set({});
-	}
-
-	async getPermaLink(msgId) {
-		if (!msgId) {
-			throw new Error('invalid-parameter');
-		}
-
-		const msg = RocketChat.models.Messages.findOne(msgId) || await call('getSingleMessage', msgId);
-		if (!msg) {
-			throw new Error('message-not-found');
-		}
-		const roomData = RocketChat.models.Rooms.findOne({
-			_id: msg.rid,
-		});
-
-		if (!roomData) {
-			throw new Error('room-not-found');
-		}
-
-		const subData = RocketChat.models.Subscriptions.findOne({ rid: roomData._id, 'u._id': Meteor.userId() });
-		const roomURL = RocketChat.roomTypes.getURL(roomData.t, subData || roomData);
-		return `${ roomURL }?msg=${ msgId }`;
-	}
-};
+RocketChat.MessageAction = MessageAction;
 
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
