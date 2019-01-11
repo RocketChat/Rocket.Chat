@@ -1,22 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { t } from 'meteor/rocketchat:utils';
 import { MessageAction } from 'meteor/rocketchat:ui-utils';
-import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
-
-const call = (method, ...args) => new Promise((resolve, reject) => {
-	Meteor.call(method, ...args, function(err, data) {
-		if (err) {
-			return reject(err);
-		}
-		resolve(data);
-	});
-});
 
 const success = function success(fn) {
 	return function(error, result) {
