@@ -1,4 +1,3 @@
-/* globals device cordova*/
 import { Meteor } from 'meteor/meteor';
 
 if (Meteor.isCordova) {

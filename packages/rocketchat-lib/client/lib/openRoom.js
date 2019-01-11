@@ -1,4 +1,3 @@
-/* globals fireGlobalEvent readMessage currentTracker*/
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -6,9 +5,9 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 
-currentTracker = undefined;
+export let currentTracker = undefined;
 
-openRoom = function(type, name) { // eslint-disable-line
+openRoom = function(type, name) {
 	Session.set('openedRoom', null);
 
 	return Meteor.defer(() =>
@@ -34,7 +33,7 @@ openRoom = function(type, name) { // eslint-disable-line
 					Meteor.call('createDirectMessage', name, function(error) {
 						if (!error) {
 							RoomManager.close(type + name);
-							return openRoom('d', name); // eslint-disable-line
+							return openRoom('d', name);
 						} else {
 							Session.set('roomNotFound', { type, name, error });
 							BlazeLayout.render('main', { center: 'roomNotFound' });
@@ -49,7 +48,7 @@ openRoom = function(type, name) { // eslint-disable-line
 						} else {
 							RocketChat.models.Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
 							RoomManager.close(type + name);
-							return openRoom(type, name); // eslint-disable-line
+							return openRoom(type, name);
 						}
 					});
 				}

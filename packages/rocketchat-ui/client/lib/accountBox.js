@@ -6,7 +6,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 
-AccountBox = (function() { //eslint-disable-line
+AccountBox = (function() {
 	let status = 0;
 	const items = new ReactiveVar([]);
 	function setStatus(status) {

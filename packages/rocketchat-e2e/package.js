@@ -1,5 +1,3 @@
-/* globals Package: false */
-
 Package.describe({
 	name: 'rocketchat:e2e',
 	version: '0.0.1',
@@ -13,6 +11,7 @@ Package.onUse(function(api) {
 		'less',
 		'mizzao:timesync',
 		'rocketchat:lib',
+		'rocketchat:utils',
 		'templating',
 		'sha',
 	]);
