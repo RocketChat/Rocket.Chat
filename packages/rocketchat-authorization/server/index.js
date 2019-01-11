@@ -1,4 +1,3 @@
-import '../lib/rocketchat';
 import './models/Base';
 import './models/Permissions';
 import './models/Roles';

@@ -1,10 +1,13 @@
-/* globals fileUpload KonchatNotification chatMessages popover AudioRecorder chatMessages fileUploadHandler*/
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -227,7 +230,6 @@ Template.messageBox.helpers({
 			},
 		};
 	},
-	/* globals MsgTyping*/
 	usersTyping() {
 		const maxUsernames = 4;
 		const users = MsgTyping.get(this._id);
@@ -280,7 +282,7 @@ Template.messageBox.helpers({
 		return Template.instance().dataReply.get();
 	},
 	isAudioMessageAllowed() {
-		return (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+		return (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
 			navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
 			RocketChat.settings.get('FileUpload_Enabled') &&
 			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
@@ -643,6 +645,37 @@ Template.messageBox.events({
 		});
 		return false;
 	},
+
+	'click .emoji-picker-icon'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
+			return false;
+		}
+
+		if (RocketChat.EmojiPicker.isOpened()) {
+			RocketChat.EmojiPicker.close();
+		} else {
+			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
+				const { input } = chatMessages[RocketChat.openedRoom];
+
+				const emojiValue = `:${ emoji }:`;
+
+				const caretPos = input.selectionStart;
+				const textAreaTxt = input.value;
+				input.focus();
+				if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
+					input.value = textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos);
+				}
+
+				input.focus();
+
+				input.selectionStart = caretPos + emojiValue.length;
+				input.selectionEnd = caretPos + emojiValue.length;
+			});
+		}
+	},
 });
 
 Template.messageBox.onRendered(function() {
@@ -662,6 +695,7 @@ Template.messageBox.onRendered(function() {
 });
 
 Template.messageBox.onCreated(function() {
+	RocketChat.EmojiPicker.init();
 	this.dataReply = new ReactiveVar(''); // if user is replying to a mssg, this will contain data of the mssg being replied to
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);

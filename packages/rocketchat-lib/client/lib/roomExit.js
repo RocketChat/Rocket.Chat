@@ -1,6 +1,6 @@
-/* globals currentTracker */
 import { Blaze } from 'meteor/blaze';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { currentTracker } from './openRoom';
 
 this.roomExit = function() {
 	// 7370 - Close flex-tab when opening a room on mobile UI
@@ -23,7 +23,7 @@ this.roomExit = function() {
 	if (mainNode == null) {
 		return;
 	}
-	return [...mainNode.children].forEach((child) => {
+	return Array.from(mainNode.children).forEach((child) => {
 		if (child == null) {
 			return;
 		}

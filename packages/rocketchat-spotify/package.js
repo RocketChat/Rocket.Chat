@@ -12,9 +12,6 @@ Package.onUse(function(api) {
 		'rocketchat:oembed',
 		'rocketchat:lib',
 	]);
-
-	api.addFiles('lib/client/widget.js', 'client');
-	api.addFiles('lib/client/oembedSpotifyWidget.html', 'client');
-
-	api.addFiles('lib/spotify.js', ['server', 'client']);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

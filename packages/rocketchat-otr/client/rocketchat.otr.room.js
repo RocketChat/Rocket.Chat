@@ -6,9 +6,10 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
 import _ from 'underscore';
 import toastr from 'toastr';
-/* globals crypto */
 
 RocketChat.OTR.Room = class {
 	constructor(userId, roomId) {

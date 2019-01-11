@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import semver from 'semver';
 import getNewUpdates from './getNewUpdates';
 import logger from '../logger';
@@ -36,12 +37,18 @@ export default () => {
 	if (update.exists) {
 		RocketChat.settings.updateById('Update_LatestAvailableVersion', update.lastestVersion.version);
 		RocketChat.models.Roles.findUsersInRole('admin').forEach((adminUser) => {
-			const msg = {
-				msg: `*${ TAPi18n.__('Update_your_RocketChat', adminUser.language) }*\n${ TAPi18n.__('New_version_available_(s)', update.lastestVersion.version, adminUser.language) }\n${ update.lastestVersion.infoUrl }`,
-				rid: [adminUser._id, 'rocket.cat'].sort().join(''),
-			};
+			try {
+				Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
 
-			Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', msg));
+				const msg = {
+					msg: `*${ TAPi18n.__('Update_your_RocketChat', adminUser.language) }*\n${ TAPi18n.__('New_version_available_(s)', update.lastestVersion.version, adminUser.language) }\n${ update.lastestVersion.infoUrl }`,
+					rid: [adminUser._id, 'rocket.cat'].sort().join(''),
+				};
+
+				Meteor.runAsUser('rocket.cat', () => Meteor.call('sendMessage', msg));
+			} catch (e) {
+				console.error(e);
+			}
 
 			RocketChat.models.Users.addBannerById(adminUser._id, {
 				id: 'versionUpdate',
