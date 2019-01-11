@@ -208,3 +208,4 @@ rocketchat:metrics
 rocketchat:callbacks
 rocketchat:notifications
 rocketchat:promises
+rocketchat:ui-utils

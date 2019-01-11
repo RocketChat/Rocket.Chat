@@ -9,10 +9,11 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
 		'mongo',
 		'rocketchat:utils',
 		'rocketchat:models',
+		'rocketchat:notifications',
+		'rocketchat:ui-utils',
 	]);
 	api.use([
 		'templating',
