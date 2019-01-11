@@ -1,5 +1,5 @@
-import './hasPermission';
-import './hasRole';
+import { hasAllPermission, hasAtLeastOnePermission } from './hasPermission';
+import { hasRole } from './hasRole';
 import './usersNameChanged';
 import './requiresPermission.html';
 import './route';
@@ -8,3 +8,9 @@ import './views/permissions.html';
 import './views/permissions';
 import './views/permissionsRole.html';
 import './views/permissionsRole';
+
+export {
+	hasAllPermission,
+	hasAtLeastOnePermission,
+	hasRole,
+};

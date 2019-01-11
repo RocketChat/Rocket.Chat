@@ -9,6 +9,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'tap:i18n',
 		'rocketchat:version',
+		'rocketchat:models',
+		'rocketchat:settings',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

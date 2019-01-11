@@ -3,6 +3,8 @@ import { isChrome, isFirefox } from './lib/browsers';
 import { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 import { Info } from '../rocketchat.info';
 import { isEmail } from '../lib/isEmail';
+import { handleError } from './lib/handleError';
+import { getUserPreference } from '../lib/getUserPreference';
 
 export {
 	t,
@@ -12,4 +14,6 @@ export {
 	getDefaultSubscriptionPref,
 	Info,
 	isEmail,
+	handleError,
+	getUserPreference,
 };
