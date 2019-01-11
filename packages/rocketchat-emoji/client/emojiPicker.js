@@ -216,9 +216,9 @@ Template.emojiPicker.events({
 		for (const emojiPackage in emoji.packages) {
 			if (emoji.packages.hasOwnProperty(emojiPackage)) {
 				if (emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
-					for (const emoji in emoji.packages[emojiPackage].toneList) {
-						if (emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-							$(`.emoji-${ emoji }`).html(emoji.packages[emojiPackage].render(`:${ emoji }${ newTone }:`));
+					for (const _emoji in emoji.packages[emojiPackage].toneList) {
+						if (emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+							$(`.emoji-${ _emoji }`).html(emoji.packages[emojiPackage].render(`:${ _emoji }${ newTone }:`));
 						}
 					}
 				}
