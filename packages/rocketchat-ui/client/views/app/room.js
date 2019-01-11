@@ -30,10 +30,10 @@ import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
-import { ChatMessages } from '../../lib/chatMessages';
+import { ChatMessages } from '../../lib/chatMessages'
 import { fileUpload } from '../../lib/fileUpload';
 
-chatMessages = {};
+export const chatMessages = {};
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
