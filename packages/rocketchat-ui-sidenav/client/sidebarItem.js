@@ -100,11 +100,13 @@ Template.sidebarItem.events({
 		const sidebarElements = document.getElementsByClassName('sidebar-item');
 		for (let i = sidebarElements.length - 5; i < sidebarElements.length; i++) {
 			const nonSelectedElement = sidebarElements[i].getElementsByTagName('a')[0];
-			if (nonSelectedElement.getAttribute('aria-label') !== element.getAttribute('aria-label')) {
-				nonSelectedElement.classList.remove('selected-bg-shade');
+			if (nonSelectedElement.getAttribute('aria-label') == element.getAttribute('aria-label')) {
+				sidebarElements[i].classList.add('selected-bg-shade');
+			}
+			else {
+				sidebarElements[i].classList.remove('selected-bg-shade');
 			}
 		}
-		element.classList.add('selected-bg-shade');
 		return menu.close();
 	},
 	'mouseenter .sidebar-item__link'(e) {
