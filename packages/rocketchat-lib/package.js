@@ -26,6 +26,11 @@ Package.onUse(function(api) {
 	api.use('check');
 	api.use('rocketchat:utils');
 	api.use('rocketchat:models');
+	api.use('rocketchat:migrations');
+	api.use('rocketchat:metrics');
+	api.use('rocketchat:callbacks');
+	api.use('rocketchat:notifications');
+	api.use('rocketchat:promises');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
@@ -81,12 +86,14 @@ Package.onUse(function(api) {
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
+	api.addFiles('lib/info.js');
+	api.addFiles('lib/authorization.js');
 
 	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
-	api.addFiles('server/lib/metrics.js', 'server');
+	api.addFiles('server/lib/metrics_import.js', 'server');
 
 	api.addFiles('server/lib/RateLimiter.js', 'server');
 
@@ -133,6 +140,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
 	api.addFiles('server/lib/passwordPolicy.js', 'server');
+	api.addFiles('server/lib/migrations.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/index.js', 'server');
@@ -143,7 +151,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/oauth/google.js', 'server');
 	api.addFiles('server/oauth/proxy.js', 'server');
 
-	api.addFiles('server/startup/statsTracker.js', 'server');
+	api.addFiles('server/startup/statsTracker_import.js', 'server');
 	api.addFiles('server/startup/robots.js', 'server');
 
 	// SERVER PUBLICATIONS
@@ -235,6 +243,12 @@ Package.onUse(function(api) {
 
 	// CLIENT MODELS
 	api.addFiles('client/models/index.js', 'client');
+	api.addFiles('client/models/ChatPermissions.js', 'client');
+	api.addFiles('client/models/Messages.js', 'client');
+	api.addFiles('client/models/Roles.js', 'client');
+	api.addFiles('client/models/Rooms.js', 'client');
+	api.addFiles('client/models/Subscriptions.js', 'client');
+	api.addFiles('client/models/Users.js', 'client');
 
 	// CLIENT VIEWS
 	api.addFiles('client/views/customFieldsForm.html', 'client');
@@ -242,9 +256,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('startup/defaultRoomTypes.js');
 	api.addFiles('startup/index.js', 'server');
-
-	// VERSION
-	api.addFiles('rocketchat.info');
 
 	// EXPORT
 	api.export('RocketChat');

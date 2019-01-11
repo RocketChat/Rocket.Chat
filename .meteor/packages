@@ -204,3 +204,7 @@ littledata:synced-cron
 rocketchat:utils
 rocketchat:settings
 rocketchat:models
+rocketchat:metrics
+rocketchat:callbacks
+rocketchat:notifications
+rocketchat:promises

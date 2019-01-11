@@ -1,11 +1,9 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users } from '..';
 import _ from 'underscore';
 
-if (_.isUndefined(RocketChat.models.Subscriptions)) {
-	RocketChat.models.Subscriptions = {};
-}
+const Subscriptions = {};
 
-Object.assign(RocketChat.models.Subscriptions, {
+Object.assign(Subscriptions, {
 	isUserInRole(userId, roleName, roomId) {
 		if (roomId == null) {
 			return false;
@@ -38,6 +36,8 @@ Object.assign(RocketChat.models.Subscriptions, {
 			}
 		}));
 
-		return RocketChat.models.Users.find({ _id: { $in: users } }, options);
+		return Users.find({ _id: { $in: users } }, options);
 	},
 });
+
+export { Subscriptions };

@@ -1,6 +1,6 @@
 import { StatsD } from 'node-dogstatsd';
 
-RocketChat.statsTracker = new (class StatsTracker {
+export class StatsTracker {
 	constructor() {
 		this.StatsD = StatsD;
 		this.dogstatsd = new this.StatsD();
@@ -42,4 +42,7 @@ RocketChat.statsTracker = new (class StatsTracker {
 	set(stats, time, tags) {
 		this.track('set', stats, time, tags);
 	}
-});
+}
+
+export default new StatsTracker();
+
