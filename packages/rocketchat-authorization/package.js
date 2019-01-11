@@ -13,7 +13,6 @@ Package.onUse(function(api) {
 		'rocketchat:utils',
 		'rocketchat:models',
 		'rocketchat:notifications',
-		'rocketchat:ui-utils',
 	]);
 	api.use([
 		'templating',

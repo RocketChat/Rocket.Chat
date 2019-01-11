@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { call, UiTextContext } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { t } from 'meteor/rocketchat:utils';
+import { t, UiTextContext, roomTypes, handleError } from 'meteor/rocketchat:utils';
+import { modal } from './modal';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+import { call } from './callMethod';
 
 export function hide(type, rid, name) {
-	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
+	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
 
 	modal.open({
 		title: t('Are_you_sure'),
@@ -48,8 +50,9 @@ const leaveRoom = async(rid) => {
 	}
 };
 
-export function leave(type, rid, name) {
-	const warnText = RocketChat.roomTypes.roomTypes[type].getUiText(UiTextContext.LEAVE_WARNING);
+export async function leave(type, rid, name) {
+	const { RoomManager } = await import('meteor/rocketchat:ui');
+	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.LEAVE_WARNING);
 
 	modal.open({
 		title: t('Are_you_sure'),
