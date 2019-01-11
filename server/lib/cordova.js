@@ -1,7 +1,10 @@
-/* global Push, SystemLogger */
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
+import { Push } from 'meteor/rocketchat:push';
+
 
 Meteor.methods({
 	// log() {
@@ -79,7 +82,13 @@ function sendPush(service, token, options, tries = 0) {
 			token,
 			options,
 		},
+		headers: {},
 	};
+
+	const workspaceAccesstoken = getWorkspaceAccessToken();
+	if (token) {
+		data.headers.Authorization = `Bearer ${ workspaceAccesstoken }`;
+	}
 
 	return HTTP.post(`${ RocketChat.settings.get('Push_gateway') }/push/${ service }/send`, data, function(error, response) {
 		if (response && response.statusCode === 406) {

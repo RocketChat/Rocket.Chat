@@ -39,8 +39,14 @@ Meteor.methods({
 						'u.status': 1,
 					},
 				},
-				...(showAll ? [] : [{ $match: { 'u.status': 'online' } }]),
-				{ $replaceRoot: { newRoot: { $arrayElemAt: ['$u', 0] } } },
+				...(showAll ? [] : [{ $match: { 'u.status': { $in: ['online', 'away', 'busy'] } } }]),
+				{
+					$project: {
+						_id: { $arrayElemAt: ['$u._id', 0] },
+						name: { $arrayElemAt: ['$u.name', 0] },
+						username: { $arrayElemAt: ['$u.username', 0] },
+					},
+				},
 			]).toArray(),
 		};
 	},

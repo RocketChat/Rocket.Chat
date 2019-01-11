@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+
+const phoneUtil = PhoneNumberUtil.getInstance();
 
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {
@@ -173,5 +176,56 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 			offset,
 			total: result.total,
 		});
+	},
+});
+
+RocketChat.API.v1.addRoute('invite.email', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.email) {
+			throw new Meteor.Error('error-email-param-not-provided', 'The required "email" param is required.');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email]));
+		return RocketChat.API.v1.success();
+
+		// sendInvitationEmail always returns an empty list
+		/*
+		if(this.bodyParams.email in result){
+			return RocketChat.API.v1.success();
+		}else{
+			return RocketChat.API.v1.failure('Email Invite Failed');
+		}
+		*/
+	},
+});
+
+RocketChat.API.v1.addRoute('invite.sms', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.phone) {
+			throw new Meteor.Error('error-phone-param-not-provided', 'The required "phone" param is required.');
+		}
+		const phone = this.bodyParams.phone.replace(/-|\s/g, '');
+		if (!phoneUtil.isValidNumber(phoneUtil.parse(phone))) {
+			return RocketChat.API.v1.failure('Invalid number');
+		}
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', [phone]));
+		if (result.indexOf(phone) >= 0) {
+			return RocketChat.API.v1.success();
+		} else {
+			return RocketChat.API.v1.failure('SMS Invite Failed');
+		}
+	},
+});
+
+RocketChat.API.v1.addRoute('query.contacts', { authRequired: true }, {
+	post() {
+		const hashes = this.bodyParams.weakHashes;
+		if (!hashes) {
+			return RocketChat.API.v1.failure('weakHashes param not present.');
+		}
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('queryContacts', hashes));
+		return RocketChat.API.v1.success({ strongHashes:result });
+
 	},
 });

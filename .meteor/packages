@@ -51,6 +51,7 @@ rocketchat:bot-helpers
 rocketchat:cas
 rocketchat:channel-settings
 rocketchat:channel-settings-mail-messages
+rocketchat:cloud
 rocketchat:colors
 rocketchat:crowd
 rocketchat:custom-oauth
@@ -197,6 +198,9 @@ rocketchat:lazy-load
 tap:i18n
 underscore@1.0.10
 rocketchat:bigbluebutton
+rocketchat:contacts
 rocketchat:mailmessages
 juliancwirko:postcss
 littledata:synced-cron
+rocketchat:utils
+rocketchat:settings

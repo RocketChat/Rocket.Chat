@@ -144,7 +144,9 @@ rocketchat:bot-helpers@0.0.1
 rocketchat:cas@1.0.0
 rocketchat:channel-settings@0.0.1
 rocketchat:channel-settings-mail-messages@0.0.1
+rocketchat:cloud@0.0.1
 rocketchat:colors@0.0.1
+rocketchat:contacts@0.0.1
 rocketchat:cors@0.0.1
 rocketchat:crowd@1.0.0
 rocketchat:custom-oauth@1.0.0
@@ -212,6 +214,7 @@ rocketchat:reactions@0.0.1
 rocketchat:retention-policy@0.0.1
 rocketchat:sandstorm@0.0.1
 rocketchat:search@0.0.1
+rocketchat:settings@0.0.1
 rocketchat:setup-wizard@0.0.1
 rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
@@ -250,6 +253,7 @@ rocketchat:ui-message@0.1.0
 rocketchat:ui-sidenav@0.1.0
 rocketchat:ui-vrecord@0.0.1
 rocketchat:user-data-download@1.0.0
+rocketchat:utils@0.0.1
 rocketchat:version@1.0.0
 rocketchat:version-check@0.0.1
 rocketchat:videobridge@0.2.0
