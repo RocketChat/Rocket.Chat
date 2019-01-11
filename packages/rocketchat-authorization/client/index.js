@@ -14,5 +14,4 @@ export {
 	hasPermission,
 	hasAtLeastOnePermission,
 	hasRole,
-	hasPermission,
 };
