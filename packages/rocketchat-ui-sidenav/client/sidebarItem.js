@@ -100,10 +100,9 @@ Template.sidebarItem.events({
 		const sidebarElements = document.getElementsByClassName('sidebar-item');
 		for (let i = sidebarElements.length - 5; i < sidebarElements.length; i++) {
 			const nonSelectedElement = sidebarElements[i].getElementsByTagName('a')[0];
-			if (nonSelectedElement.getAttribute('aria-label') == element.getAttribute('aria-label')) {
+			if (nonSelectedElement.getAttribute('aria-label') === element.getAttribute('aria-label')) {
 				sidebarElements[i].classList.add('selected-bg-shade');
-			}
-			else {
+			} else {
 				sidebarElements[i].classList.remove('selected-bg-shade');
 			}
 		}
