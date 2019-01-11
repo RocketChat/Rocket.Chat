@@ -2,15 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { modal } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { Roles } from 'meteor/rocketchat:models';
+import { hasAllPermission } from '../hasPermission';
 import toastr from 'toastr';
 
 Template.permissionsRole.helpers({
 	role() {
-		return RocketChat.models.Roles.findOne({
+		return Roles.findOne({
 			_id: FlowRouter.getParam('name'),
 		}) || {};
 	},
@@ -30,7 +30,7 @@ Template.permissionsRole.helpers({
 	},
 
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('access-permissions');
+		return hasAllPermission('access-permissions');
 	},
 
 	protected() {
@@ -238,7 +238,7 @@ Template.permissionsRole.onCreated(function() {
 		const subscription = this.subscribe('usersInRole', FlowRouter.getParam('name'), this.searchRoom.get(), limit);
 		this.ready.set(subscription.ready());
 
-		this.usersInRole.set(RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), this.searchRoom.get(), {
+		this.usersInRole.set(Roles.findUsersInRole(FlowRouter.getParam('name'), this.searchRoom.get(), {
 			sort: {
 				username: 1,
 			},

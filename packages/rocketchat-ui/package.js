@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 		'rocketchat:ui-master',
 		'rocketchat:push',
 		'rocketchat:utils',
+		'rocketchat:ui-utils',
 		'rocketchat:models',
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load',
@@ -105,7 +106,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.html', 'client');
 	api.addFiles('client/views/app/popover.html', 'client');
-	api.addFiles('client/views/app/modal.html', 'client');
 	api.addFiles('client/views/app/photoswipe.html', 'client');
 
 	api.addFiles('client/views/cmsPage.js', 'client');
