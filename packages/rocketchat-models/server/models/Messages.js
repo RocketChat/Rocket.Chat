@@ -777,7 +777,11 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeFilesByRoomId(roomId) {
+	async removeFilesByRoomId(roomId) {
+		if (!this.FileUpload) {
+			const { FileUpload } = await import('meteor/rocketchat:file-upload');
+			this.FileUpload = FileUpload;
+		}
 		this.find({
 			rid: roomId,
 			'file._id': {
@@ -787,7 +791,7 @@ export class Messages extends Base {
 			fields: {
 				'file._id': 1,
 			},
-		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
+		}).fetch().forEach((document) => this.FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {

@@ -4,6 +4,10 @@ import { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 import { Info } from '../rocketchat.info';
 import { handleError } from './lib/handleError';
 import { getUserPreference } from '../lib/getUserPreference';
+import { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
+import { roomTypes } from './lib/roomTypes';
+import { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } from '../lib/RoomTypeConfig';
+import { RoomTypesCommon } from '../lib/RoomTypesCommon';
 
 export {
 	t,
@@ -14,4 +18,12 @@ export {
 	Info,
 	handleError,
 	getUserPreference,
+	fileUploadIsValidContentType,
+	fileUploadMediaWhiteList,
+	roomTypes,
+	RoomTypeRouteConfig,
+	RoomTypesCommon,
+	RoomTypeConfig,
+	RoomSettingsEnum,
+	UiTextContext,
 };

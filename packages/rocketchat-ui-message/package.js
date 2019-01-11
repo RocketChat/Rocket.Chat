@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:ui-account',
 		'rocketchat:ui-vrecord',
+		'rocketchat:file-upload',
 	]);
 	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
 	api.mainModule('client/index.js', 'client');
