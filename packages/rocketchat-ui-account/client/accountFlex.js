@@ -6,11 +6,22 @@ import { t } from 'meteor/rocketchat:utils';
 Template.accountFlex.events({
 	'click [data-action="close"]'() {
 		SideNav.closeFlex();
+		const sidebarElements = document.getElementsByClassName('sidebar-item');
+		for (let i = 0; i < sidebarElements.length; i++) {
+			const nonSelectedElement = sidebarElements[i].getElementsByTagName('a')[0];
+			if (!sidebarElements[i].hasAttribute('data-id')) {
+				if (nonSelectedElement.getAttribute('aria-label') !== 'Preferences') {
+					sidebarElements[i].classList.remove('selected-bg-shade');
+				} else {
+					sidebarElements[i].classList.add('selected-bg-shade');
+				}
+			}
+		}
 	},
 });
 
 // Template.accountFlex.onRendered(function() {
-// 	$(this.find('.rooms-list')).perfectScrollbar();
+// 	// $(this.find('.rooms-list')).perfectScrollbar();
 // });
 
 Template.accountFlex.helpers({
