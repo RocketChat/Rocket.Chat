@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',
 		'rocketchat:ui-message',
+		'rocketchat:ui-utils',
 	]);
 	api.addFiles('client/stylesheets/messageAttachments.css', 'client');
 	api.mainModule('client/index.js', 'client');
