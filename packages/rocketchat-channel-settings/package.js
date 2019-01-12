@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'tracker',
 		'templating',
 		'rocketchat:lib',
+		'rocketchat:authorization',
 		'rocketchat:ui',
 		'rocketchat:utils',
 	]);

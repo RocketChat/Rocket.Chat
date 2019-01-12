@@ -1,6 +1,7 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import * as Models from '..';
+import { Base } from './_Base';
 
-class ModelRoles extends RocketChat.models._Base {
+export class Roles extends Base {
 	constructor(...args) {
 		super(...args);
 		this.tryEnsureIndex({ name: 1 });
@@ -10,7 +11,7 @@ class ModelRoles extends RocketChat.models._Base {
 	findUsersInRole(name, scope, options) {
 		const role = this.findOne(name);
 		const roleScope = (role && role.scope) || 'Users';
-		const model = RocketChat.models[roleScope];
+		const model = Models[roleScope];
 
 		return model && model.findUsersInRoles && model.findUsersInRoles(name, scope, options);
 	}
@@ -20,7 +21,7 @@ class ModelRoles extends RocketChat.models._Base {
 		return roles.some((roleName) => {
 			const role = this.findOne(roleName);
 			const roleScope = (role && role.scope) || 'Users';
-			const model = RocketChat.models[roleScope];
+			const model = Models[roleScope];
 
 			return model && model.isUserInRole && model.isUserInRole(userId, roleName, scope);
 		});
@@ -51,7 +52,7 @@ class ModelRoles extends RocketChat.models._Base {
 		for (const roleName of roles) {
 			const role = this.findOne(roleName);
 			const roleScope = (role && role.scope) || 'Users';
-			const model = RocketChat.models[roleScope];
+			const model = Models[roleScope];
 
 			model && model.addRolesByUserId && model.addRolesByUserId(userId, roleName, scope);
 		}
@@ -63,7 +64,7 @@ class ModelRoles extends RocketChat.models._Base {
 		for (const roleName of roles) {
 			const role = this.findOne(roleName);
 			const roleScope = (role && role.scope) || 'Users';
-			const model = RocketChat.models[roleScope];
+			const model = Models[roleScope];
 
 			model && model.removeRolesByUserId && model.removeRolesByUserId(userId, roleName, scope);
 		}
@@ -83,4 +84,4 @@ class ModelRoles extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.Roles = new ModelRoles('roles');
+export default new Roles('roles');

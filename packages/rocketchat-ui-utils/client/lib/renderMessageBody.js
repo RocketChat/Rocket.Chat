@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import s from 'underscore.string';
 
 export const renderMessageBody = (msg) => {
@@ -8,7 +8,7 @@ export const renderMessageBody = (msg) => {
 		msg.html = s.escapeHTML(msg.html);
 	}
 
-	const message = RocketChat.callbacks.run('renderMessage', msg);
+	const message = callbacks.run('renderMessage', msg);
 
 	if (message.tokens && message.tokens.length > 0) {
 		// Unmounting tokens(LIFO)

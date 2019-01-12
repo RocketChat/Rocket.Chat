@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from './_Base';
 
-class ModelPermissions extends RocketChat.models._Base {
+export class Permissions extends Base {
 	constructor(...args) {
 		super(...args);
 	}
@@ -31,4 +31,4 @@ class ModelPermissions extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.Permissions = new ModelPermissions('permissions');
+export default new Permissions('permissions');
