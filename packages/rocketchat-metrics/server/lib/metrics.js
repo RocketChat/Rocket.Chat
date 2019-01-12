@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from 'meteor/rocketchat:settings';
-import { Info } from 'meteor/rocketchat:utils';
 import { Migrations } from 'meteor/rocketchat:migrations';
 import client from 'prom-client';
 import connect from 'connect';
@@ -10,6 +9,7 @@ import _ from 'underscore';
 client.collectDefaultMetrics();
 
 export const metrics = {};
+let Info;
 
 // one sample metrics only - a counter
 
@@ -84,6 +84,10 @@ client.register.setDefaultLabels({
 
 const setPrometheusData = async() => {
 	const date = new Date();
+	if (!Info) {
+		const Utils = await import('meteor/rocketchat:utils');
+		Info = Utils.Info;
+	}
 
 	client.register.setDefaultLabels({
 		unique_id: settings.get('uniqueID'),

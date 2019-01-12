@@ -9,7 +9,6 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:settings',
-		'rocketchat:utils',
 		'rocketchat:callbacks',
 		'konecty:multiple-instances-status',
 	]);

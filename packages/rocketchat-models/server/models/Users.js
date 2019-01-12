@@ -19,6 +19,20 @@ export class Users extends Base {
 		this.tryEnsureIndex({ type: 1 });
 	}
 
+	roleBaseQuery(userId) {
+		return { _id: userId };
+	}
+
+	findUsersInRoles(roles, scope, options) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+		};
+
+		return this.find(query, options);
+	}
+
 	findOneByImportId(_id, options) {
 		return this.findOne({ importIds: _id }, options);
 	}

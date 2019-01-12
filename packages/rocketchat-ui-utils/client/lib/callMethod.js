@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { handleError } from 'meteor/rocketchat:utils';
 
 /**
  * Wraps a Meteor method into a Promise.

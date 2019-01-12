@@ -1,5 +1,6 @@
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 RocketChat._setUsername = function(userId, u) {
 	const username = s.trim(u);

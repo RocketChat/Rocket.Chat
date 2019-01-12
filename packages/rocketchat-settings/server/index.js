@@ -1,4 +1,4 @@
-import { settings } from '../lib/settings';
+import { settings } from './functions/settings';
 
 export {
 	settings,
