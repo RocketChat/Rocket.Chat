@@ -98,12 +98,14 @@ Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'(e) {
 		const element = e.currentTarget;
 		const sidebarElements = document.getElementsByClassName('sidebar-item');
-		for (let i = sidebarElements.length - 5; i < sidebarElements.length; i++) {
+		for (let i = 0; i < sidebarElements.length; i++) {
 			const nonSelectedElement = sidebarElements[i].getElementsByTagName('a')[0];
-			if (nonSelectedElement.getAttribute('aria-label') === element.getAttribute('aria-label')) {
-				sidebarElements[i].classList.add('selected-bg-shade');
-			} else {
-				sidebarElements[i].classList.remove('selected-bg-shade');
+			if (!sidebarElements[i].hasAttribute('data-id')) {
+				if (nonSelectedElement.getAttribute('aria-label') === element.getAttribute('aria-label')) {
+					sidebarElements[i].classList.add('selected-bg-shade');
+				} else {
+					sidebarElements[i].classList.remove('selected-bg-shade');
+				}
 			}
 		}
 		return menu.close();
