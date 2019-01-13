@@ -472,8 +472,6 @@
 	}
 }(this || {}));
 
-/* globals EventEmitter */
-
 (function(w) {
 	w.RocketChat = w.RocketChat || { _: [] };
 	var config = {};

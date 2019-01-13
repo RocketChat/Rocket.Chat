@@ -1,7 +1,9 @@
-/* globals UploadFS, InstanceStatus */
-
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { Logger } from 'meteor/rocketchat:logger';
+import { isDocker } from 'meteor/rocketchat:utils';
 import http from 'http';
 import URL from 'url';
 
@@ -67,7 +69,7 @@ WebApp.connectHandlers.stack.unshift({
 			return;
 		}
 
-		if (instance.extraInformation.host === process.env.INSTANCE_IP && RocketChat.isDocker() === false) {
+		if (instance.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
 			instance.extraInformation.host = 'localhost';
 		}
 

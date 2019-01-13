@@ -16,10 +16,14 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'tracker',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
 		'rocketchat:emoji',
 		'rocketchat:lib',
 		'rocketchat:ui-account',
 		'rocketchat:ui-vrecord',
+		'rocketchat:ui-sidenav',
+		'rocketchat:file-upload',
 	]);
 	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
 	api.mainModule('client/index.js', 'client');

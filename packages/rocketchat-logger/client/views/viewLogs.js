@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { ansispan } from '../ansispan';
+import { stdout } from '../viewLogs';
 import _ from 'underscore';
 import moment from 'moment';
-// TODO: remove this globals
-/* globals ansispan stdout readMessage*/
 
 Template.viewLogs.onCreated(function() {
 	this.subscribe('stdout');

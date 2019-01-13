@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 
 const cannotSetup = () => {
@@ -72,6 +72,14 @@ const persistSettings = (state, callback) => {
 		.concat([
 			{
 				_id: 'Statistics_reporting',
+				value: state.registerServer,
+			},
+			{
+				_id: 'Apps_Framework_enabled',
+				value: state.registerServer,
+			},
+			{
+				_id: 'Register_Server',
 				value: state.registerServer,
 			},
 			{
