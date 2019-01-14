@@ -806,4 +806,4 @@ export class Rooms extends Base {
 	}
 }
 
-export default new Rooms('rooms', true);
+export default new Rooms('room', true);
