@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.saveStreamingOptions = function(rid, options) {
 	if (!Match.test(rid, String)) {
@@ -9,10 +10,11 @@ RocketChat.saveStreamingOptions = function(rid, options) {
 	}
 
 	check(options, {
+		id: Match.Optional(String),
 		type: Match.Optional(String),
 		url: Match.Optional(String),
 		thumbnail: Match.Optional(String),
-		isAudioOnly: Match.Optional(String),
+		isAudioOnly: Match.Optional(Boolean),
 		message: Match.Optional(String),
 	});
 

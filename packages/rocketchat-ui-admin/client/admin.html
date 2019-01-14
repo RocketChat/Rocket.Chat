@@ -29,12 +29,12 @@
 						{{#each sections}}
 							<div class="section {{#if section}}section-collapsed{{/if}}">
 								{{#if section}}
-									<div class="section-title">
+									<div class="section-title expand">
 										<div class="section-title-text">
 											{{translateSection section}}
 										</div>
 										<div class="section-title-right">
-											<button class="rc-button rc-button--nude expand"><i class="icon-angle-down"></i></button>
+											<button class="rc-button rc-button--nude"><i class="icon-angle-down"></i></button>
 										</div>
 									</div>
 								{{/if}}
@@ -138,8 +138,8 @@
 															{{> CodeMirror name=_id options=getEditorOptions code=value }}
 															{{setEditorOnBlur _id}}
 															<div class="buttons">
-																<button class="rc-button rc-button--primary button-fullscreen">Full Screen</button>
-																<button class="rc-button rc-button--primary button-restore">Exit Full Screen</button>
+																<button class="rc-button rc-button--primary button-fullscreen">{{_ "Full_Screen"}}</button>
+																<button class="rc-button rc-button--primary button-restore">{{_ "Exit_Full_Screen"}}</button>
 															</div>
 														</div>
 													{{/if}}

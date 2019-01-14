@@ -7,10 +7,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('rocketchat:lib');
-
-	api.addFiles('settings.js', 'server');
-	api.addFiles('SMS.js', 'server');
-	api.addFiles('services/twilio.js', 'server');
+	api.use([
+		'ecmascript',
+		'rocketchat:lib',
+	]);
+	api.mainModule('server/index.js', 'server');
 });

@@ -1,5 +1,6 @@
 // Every minute check if office closed
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.setInterval(function() {
 	if (RocketChat.settings.get('Livechat_enable_office_hours')) {

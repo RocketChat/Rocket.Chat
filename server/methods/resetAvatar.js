@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 Meteor.methods({
 	resetAvatar() {
