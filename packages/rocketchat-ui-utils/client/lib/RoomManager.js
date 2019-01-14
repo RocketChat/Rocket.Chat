@@ -65,6 +65,18 @@ export const RoomManager = new function() {
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
 											const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid });
+
+											const result = ChatMessage.findOne({ _id: msg._id });
+											if (result !== undefined) {
+												const collapsedValues = result.attachments.map(function(attachment) {
+													return attachment.collapsed;
+												});
+
+												msg.attachments.forEach(function(attachment, idx) {
+													attachment.collapsed = collapsedValues[idx];
+												});
+											}
+
 											upsertMessage({ msg, subscription });
 											msg.room = {
 												type,
