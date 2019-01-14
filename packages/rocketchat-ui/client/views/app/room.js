@@ -1,6 +1,14 @@
-/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
-
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { WebRTC } from 'meteor/rocketchat:webrtc';
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
@@ -8,7 +16,7 @@ import Clipboard from 'clipboard';
 
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
-window.chatMessages = window.chatMessages || {};
+chatMessages = {};
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
@@ -51,6 +59,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 	} else {
 		openProfileTab(e, instance, username);
 	}
+	e.stopPropagation();
 };
 
 const mountPopover = (e, i, outerContext) => {
@@ -400,8 +409,7 @@ Template.room.helpers({
 	},
 
 	messageViewMode() {
-		const user = Meteor.user();
-		const viewMode = RocketChat.getUserPreference(user, 'messageViewMode');
+		const viewMode = RocketChat.getUserPreference(Meteor.userId(), 'messageViewMode');
 		const modes = ['', 'cozy', 'compact'];
 		return modes[viewMode] || modes[0];
 	},
@@ -411,13 +419,11 @@ Template.room.helpers({
 	},
 
 	hideUsername() {
-		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'hideUsernames') ? 'hide-usernames' : undefined;
+		return RocketChat.getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 
 	hideAvatar() {
-		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'hideAvatars') ? 'hide-avatars' : undefined;
+		return RocketChat.getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
 
 	userCanDrop() {
@@ -495,9 +501,7 @@ Template.room.events({
 	},
 
 	'click .messages-container-main'() {
-		const user = Meteor.user();
-
-		if ((Template.instance().tabBar.getState() === 'opened') && RocketChat.getUserPreference(user, 'hideFlexTab')) {
+		if (Template.instance().tabBar.getState() === 'opened' && RocketChat.getUserPreference(Meteor.userId(), 'hideFlexTab')) {
 			Template.instance().tabBar.close();
 		}
 	},
@@ -641,7 +645,6 @@ Template.room.events({
 	},
 
 	'scroll .wrapper': _.throttle(function(e, t) {
-
 		lazyloadtick();
 
 		const $roomLeader = $('.room-leader');
@@ -654,10 +657,14 @@ Template.room.events({
 		}
 		lastScrollTop = e.target.scrollTop;
 
-		if ((RoomHistoryManager.isLoading(this._id) === false && RoomHistoryManager.hasMore(this._id) === true) || RoomHistoryManager.hasMoreNext(this._id) === true) {
-			if (RoomHistoryManager.hasMore(this._id) === true && e.target.scrollTop === 0) {
+		const isLoading = RoomHistoryManager.isLoading(this._id);
+		const hasMore = RoomHistoryManager.hasMore(this._id);
+		const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
+
+		if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
+			if (hasMore === true && e.target.scrollTop === 0) {
 				RoomHistoryManager.getMore(this._id);
-			} else if (RoomHistoryManager.hasMoreNext(this._id) === true && e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
+			} else if (hasMoreNext === true && Math.ceil(e.target.scrollTop) >= e.target.scrollHeight - e.target.clientHeight) {
 				RoomHistoryManager.getMoreNext(this._id);
 			}
 		}
@@ -847,6 +854,11 @@ Template.room.events({
 			return;
 		}
 		RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
+			const chatMessages = window.chatMessages[rid];
+			if (chatMessages && chatMessages.processSlashCommand(msgObject)) {
+				return;
+			}
+
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
@@ -1107,7 +1119,6 @@ Template.room.onRendered(function() {
 	});
 
 	wrapper.addEventListener('scroll', () => updateUnreadCount());
-	/* globals WebRTC */
 	// salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date);
 

@@ -1,27 +1,35 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import {
+	ChatMessage as chatMessage,
+	CachedChatRoom as cachedChatRoom,
+	ChatRoom as chatRoom,
+	CachedChatSubscription as cachedChatSubscription,
+	ChatSubscription as chatSubscription,
+	UserRoles as userRoles,
+	RoomRoles as roomRoles,
+	UserAndRoom as userAndRoom,
+	CachedChannelList as cachedChannelList,
+	CachedUserList as cachedUserList,
+} from 'meteor/rocketchat:models';
 
-this.ChatMessage = new Mongo.Collection(null);
-this.CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' });
-this.ChatRoom = this.CachedChatRoom.collection;
+ChatMessage = chatMessage;
+export const CachedChatRoom = cachedChatRoom;
+ChatRoom = chatRoom;
 
-this.CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscriptions' });
-this.ChatSubscription = this.CachedChatSubscription.collection;
-this.UserRoles = new Mongo.Collection(null);
-this.RoomRoles = new Mongo.Collection(null);
-this.UserAndRoom = new Mongo.Collection(null);
-this.CachedChannelList = new Mongo.Collection(null);
-this.CachedUserList = new Mongo.Collection(null);
-
-RocketChat.models.Users = _.extend({}, RocketChat.models.Users, Meteor.users);
-RocketChat.models.Subscriptions = _.extend({}, RocketChat.models.Subscriptions, this.ChatSubscription);
-RocketChat.models.Rooms = _.extend({}, RocketChat.models.Rooms, this.ChatRoom);
-RocketChat.models.Messages = _.extend({}, RocketChat.models.Messages, this.ChatMessage);
+CachedChatSubscription = cachedChatSubscription;
+ChatSubscription = chatSubscription;
+UserRoles = userRoles;
+RoomRoles = roomRoles;
+this.UserAndRoom = userAndRoom;
+this.CachedChannelList = cachedChannelList;
+this.CachedUserList = cachedUserList;
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
-			this.CachedChatRoom.init();
-			this.CachedChatSubscription.ready.set(true);
+			CachedChatRoom.init();
+			CachedChatSubscription.ready.set(true);
 		}
 	});
 });

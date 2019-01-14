@@ -1,3 +1,6 @@
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { VideoRecorder } from 'meteor/rocketchat:ui';
 import _ from 'underscore';
 
 export const VRecDialog = new class {

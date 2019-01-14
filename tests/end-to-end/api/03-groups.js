@@ -1,10 +1,5 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
-import { getCredentials, api, login, request, credentials, group, log, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
+import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
+import { adminUsername } from '../../data/user';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -43,22 +38,135 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.info', (done) => {
-		request.get(api('groups.info'))
-			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('group._id');
-				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
-				expect(res.body).to.have.nested.property('group.t', 'p');
-				expect(res.body).to.have.nested.property('group.msgs', 0);
-			})
-			.end(done);
+	describe('[/groups.info]', () => {
+		let testGroup = {};
+		let groupMessage = {};
+		it('creating new group...', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: apiPrivateChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testGroup = res.body.group;
+				})
+				.end(done);
+		});
+		it('should return group basic structure', (done) => {
+			request.get(api('groups.info'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+				})
+				.end(done);
+		});
+		it('sending a message...', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: testGroup._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					groupMessage = res.body.message;
+				})
+				.end(done);
+		});
+		it('REACTing with last message', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: groupMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('STARring last message', (done) => {
+			request.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: groupMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('PINning last message', (done) => {
+			request.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: groupMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return group structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
+			request.get(api('groups.info'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group').and.to.be.an('object');
+					const { group } = res.body;
+					expect(group).to.have.property('lastMessage').and.to.be.an('object');
+					expect(group.lastMessage).to.have.property('reactions').and.to.be.an('object');
+					expect(group.lastMessage).to.have.property('pinned').and.to.be.a('boolean');
+					expect(group.lastMessage).to.have.property('pinnedAt').and.to.be.a('string');
+					expect(group.lastMessage).to.have.property('pinnedBy').and.to.be.an('object');
+					expect(group.lastMessage).to.have.property('starred').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return all groups messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
+			request.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const { messages } = res.body;
+					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+				})
+				.end(done);
+		});
 	});
 
 	it('/groups.invite', async(done) => {

@@ -17,6 +17,9 @@ Package.onUse(function(api) {
 		'templating',
 		'reactive-var',
 		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:ui-sidenav',
 		'meteorhacks:inject-initial',
 	]);
 

@@ -1,4 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
+import { LivechatCustomField } from '../../collections/LivechatCustomField';
 import toastr from 'toastr';
+
 Template.livechatCustomFieldForm.helpers({
 	customField() {
 		return Template.instance().customField.get();

@@ -1,5 +1,3 @@
-/* globals Package: false */
-
 Package.describe({
 	name: 'rocketchat:e2e',
 	version: '0.0.1',
@@ -8,11 +6,16 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('less');
-	api.use('mizzao:timesync');
-
+	api.use([
+		'ecmascript',
+		'less',
+		'mizzao:timesync',
+		'rocketchat:lib',
+		'rocketchat:utils',
+		'templating',
+		'sha',
+	]);
+	api.addFiles('client/stylesheets/e2e.less', 'client');
 	api.mainModule('client/rocketchat.e2e.js', 'client');
-
 	api.mainModule('server/index.js', 'server');
 });

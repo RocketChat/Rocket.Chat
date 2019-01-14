@@ -1,5 +1,12 @@
-/* global Restivus, DDP, DDPCommon */
+import { Meteor } from 'meteor/meteor';
+import { DDPCommon } from 'meteor/ddp-common';
+import { DDP } from 'meteor/ddp';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Restivus } from 'meteor/nimble:restivus';
+import { Logger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
+
 const logger = new Logger('API', {});
 
 class API extends Restivus {
@@ -11,6 +18,7 @@ class API extends Restivus {
 			joinCode: 0,
 			members: 0,
 			importIds: 0,
+			e2e: 0,
 		};
 		this.limitedUserFieldsToExclude = {
 			avatarOrigin: 0,
@@ -261,16 +269,6 @@ class API extends Restivus {
 
 				this.userId = this.user._id;
 
-				// Remove tokenExpires to keep the old behavior
-				Meteor.users.update({
-					_id: this.user._id,
-					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(auth.token),
-				}, {
-					$unset: {
-						'services.resume.loginTokens.$.when': 1,
-					},
-				});
-
 				const response = {
 					status: 'success',
 					data: {
@@ -388,7 +386,8 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 		if (RocketChat.settings.get('API_Enable_CORS') === true) {
 			this.response.writeHead(200, {
 				'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token',
+				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
+				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
 			});
 		} else {
 			this.response.writeHead(405);

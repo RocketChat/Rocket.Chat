@@ -1,3 +1,4 @@
-RocketChat.authz.getUsersInRole = function(roleName, scope, options) {
-	return RocketChat.models.Roles.findUsersInRole(roleName, scope, options);
-};
+import { Roles } from 'meteor/rocketchat:models';
+
+export const getUsersInRole = (roleName, scope, options) => Roles.findUsersInRole(roleName, scope, options);
+

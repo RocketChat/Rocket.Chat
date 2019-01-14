@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import s from 'underscore.string';
 
 const commands = {

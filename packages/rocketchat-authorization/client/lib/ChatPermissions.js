@@ -1,6 +1,3 @@
-RocketChat.authz.cachedCollection = new RocketChat.CachedCollection({
-	name: 'permissions',
-	eventType: 'onLogged',
-});
+import { AuthzCachedCollection } from 'meteor/rocketchat:models';
 
-this.ChatPermissions = RocketChat.authz.cachedCollection.collection;
+export const ChatPermissions = AuthzCachedCollection.collection;

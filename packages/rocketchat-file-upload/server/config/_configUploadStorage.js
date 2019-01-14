@@ -1,5 +1,5 @@
-/* globals UploadFS */
-
+import { UploadFS } from 'meteor/jalik:ufs';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import './AmazonS3.js';
 import './FileSystem.js';
@@ -9,7 +9,7 @@ import './Webdav.js';
 import './Slingshot_DEPRECATED.js';
 
 const configStore = _.debounce(() => {
-	const store = RocketChat.settings.get('FileUpload_Storage_Type');
+	const store = settings.get('FileUpload_Storage_Type');
 
 	if (store) {
 		console.log('Setting default file store to', store);
@@ -19,4 +19,4 @@ const configStore = _.debounce(() => {
 	}
 }, 1000);
 
-RocketChat.settings.get(/^FileUpload_/, configStore);
+settings.get(/^FileUpload_/, configStore);

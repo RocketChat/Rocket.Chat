@@ -1,3 +1,7 @@
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Template } from 'meteor/templating';
 let oldRoute = '';
 const parent = document.querySelector('.main-content');
 

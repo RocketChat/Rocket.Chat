@@ -1,11 +1,16 @@
-/* globals toolbarSearch, menu, fireGlobalEvent, CachedChatSubscription, DynamicCss, popover */
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { t } from 'meteor/rocketchat:utils';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { mainReady } from 'meteor/rocketchat:ui-utils';
+import { toolbarSearch } from 'meteor/rocketchat:ui-sidenav';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
 RocketChat.settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true); } });
-
-this.isFirefox = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
-this.isChrome = navigator.userAgent.match(/Chrome\/(\d+)\.\d/);
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -14,10 +19,10 @@ Template.body.onRendered(function() {
 		if ((e.keyCode === 80 || e.keyCode === 75) && (e.ctrlKey === true || e.metaKey === true) && e.shiftKey === false) {
 			e.preventDefault();
 			e.stopPropagation();
-			toolbarSearch.focus(true);
+			toolbarSearch.show(true);
 		}
 		const unread = Session.get('unread');
-		if (e.keyCode === 27 && e.shiftKey === true && (unread != null) && unread !== '') {
+		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
 			modal.open({
@@ -119,7 +124,7 @@ Template.body.onRendered(function() {
 	}
 });
 
-RocketChat.mainReady = new ReactiveVar(false);
+RocketChat.mainReady = mainReady;
 Template.main.helpers({
 	removeSidenav() {
 		const { modal } = this;
@@ -162,6 +167,17 @@ Template.main.helpers({
 	requirePasswordChange() {
 		const user = Meteor.user();
 		return user && user.requirePasswordChange === true;
+	},
+	require2faSetup() {
+		const user = Meteor.user();
+
+		// User is already using 2fa
+		if (user.services.totp !== undefined && user.services.totp.enabled) {
+			return false;
+		}
+
+		const mandatoryRole = RocketChat.models.Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+		return mandatoryRole !== undefined;
 	},
 	CustomScriptLoggedOut() {
 		const script = RocketChat.settings.get('Custom_Script_Logged_Out') || '';

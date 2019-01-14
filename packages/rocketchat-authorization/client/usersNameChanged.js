@@ -1,6 +1,9 @@
-/* globals RoomRoles */
+import { Meteor } from 'meteor/meteor';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { RoomRoles } from 'meteor/rocketchat:models';
+
 Meteor.startup(function() {
-	RocketChat.Notifications.onLogged('Users:NameChanged', function({ _id, name }) {
+	Notifications.onLogged('Users:NameChanged', function({ _id, name }) {
 		RoomRoles.update({
 			'u._id': _id,
 		}, {

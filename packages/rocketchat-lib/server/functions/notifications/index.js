@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
 
 /**
@@ -58,9 +60,9 @@ export function messageContainsHighlight(message, highlights) {
 	});
 }
 
-export function callJoinRoom(user, rid) {
+export function callJoinRoom(userId, rid) {
 	return new Promise((resolve, reject) => {
-		Meteor.runAsUser(user._id, () => Meteor.call('joinRoom', rid, (error, result) => {
+		Meteor.runAsUser(userId, () => Meteor.call('joinRoom', rid, (error, result) => {
 			if (error) {
 				return reject(error);
 			}

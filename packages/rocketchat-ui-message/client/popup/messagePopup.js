@@ -1,7 +1,10 @@
-/* globals toolbarSearch */
 // This is not supposed to be a complete list
 // it is just to improve readability in this file
 
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { toolbarSearch } from 'meteor/rocketchat:ui-sidenav';
 import _ from 'underscore';
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 
@@ -96,6 +99,9 @@ Template.messagePopup.onCreated(function() {
 		}
 	};
 	template.verifySelection = () => {
+		if (!template.open.curValue) {
+			return;
+		}
 		const current = template.find('.popup-item.selected');
 		if (current == null) {
 			const first = template.find('.popup-item');
@@ -145,7 +151,7 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			$('.toolbar').css('display', 'none');
+			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -211,10 +217,7 @@ Template.messagePopup.onCreated(function() {
 		return setCursorPosition(template.input, firstPartValue.length);
 	};
 	template.records = new ReactiveVar([]);
-	Tracker.autorun(function() {
-		if (template.data.collection.findOne != null) {
-			template.data.collection.find().count();
-		}
+	template.autorun(function() {
 		const filter = template.textFilter.get();
 		if (filter != null) {
 			const filterCallback = (result) => {
@@ -261,14 +264,14 @@ Template.messagePopup.onRendered(function() {
 	$(this.input).on('keyup', this.onInputKeyup.bind(this));
 	$(this.input).on('keydown', this.onInputKeydown.bind(this));
 	$(this.input).on('focus', this.onFocus.bind(this));
-	return $(this.input).on('blur', this.onBlur.bind(this));
+	$(this.input).on('blur', this.onBlur.bind(this));
 });
 
 Template.messagePopup.onDestroyed(function() {
 	$(this.input).off('keyup', this.onInputKeyup);
 	$(this.input).off('keydown', this.onInputKeydown);
 	$(this.input).off('focus', this.onFocus);
-	return $(this.input).off('blur', this.onBlur);
+	$(this.input).off('blur', this.onBlur);
 });
 
 Template.messagePopup.events({
@@ -297,7 +300,6 @@ Template.messagePopup.events({
 		template.value.set(this._id);
 		template.enterValue();
 		template.open.set(false);
-		return toolbarSearch.clear();
 	},
 });
 
