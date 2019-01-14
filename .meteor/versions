@@ -249,6 +249,7 @@ rocketchat:tooltip@0.0.1
 rocketchat:ui@0.1.0
 rocketchat:ui-account@0.1.0
 rocketchat:ui-admin@0.1.0
+rocketchat:ui-cached-collection@0.0.1
 rocketchat:ui-clean-history@0.0.1
 rocketchat:ui-flextab@0.1.0
 rocketchat:ui-login@0.1.0

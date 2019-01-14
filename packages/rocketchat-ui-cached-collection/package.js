@@ -1,6 +1,6 @@
 Package.describe({
-	name: 'rocketchat:ui-master',
-	version: '0.1.0',
+	name: 'rocketchat:ui-cached-collection',
+	version: '0.0.1',
 	// Brief, one-line summary of the package.
 	summary: '',
 	// URL to the Git repository containing the source code for this package.
@@ -12,18 +12,8 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'mongo',
 		'ecmascript',
-		'templating',
-		'reactive-var',
-		'rocketchat:utils',
-		'rocketchat:tooltip',
-		'rocketchat:ui-utils',
-		'rocketchat:ui-sidenav',
-		'meteorhacks:inject-initial',
+		'rocketchat:callbacks',
 	]);
 	api.mainModule('client/index.js', 'client');
-	api.mainModule('server/index.js', 'server');
-	api.addAssets('server/dynamic-css.js', 'server');
-	api.addAssets('public/icons.svg', 'server');
 });

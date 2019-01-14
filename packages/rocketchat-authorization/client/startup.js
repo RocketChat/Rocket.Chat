@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { CachedCollectionManager } from 'meteor/rocketchat:models';
+import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
 import { hasAllPermission } from './hasPermission';
 
 Meteor.startup(async() => {
