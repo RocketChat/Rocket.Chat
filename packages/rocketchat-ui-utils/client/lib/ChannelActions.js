@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { t, UiTextContext, roomTypes, handleError } from 'meteor/rocketchat:utils';
 import { modal } from './modal';
-import { ChatSubscription } from 'meteor/rocketchat:models';
 import { call } from './callMethod';
 
 export function hide(type, rid, name) {

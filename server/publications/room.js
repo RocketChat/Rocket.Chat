@@ -112,11 +112,9 @@ Meteor.methods({
 	},
 });
 
-const getSubscriptions = (clientAction, id) => {
+const getSubscriptions = (id) => {
 	const fields = { 'u._id': 1 };
-	return clientAction === 'removed'
-		? RocketChat.models.Subscriptions.trashFind({ rid: id }, { fields })
-		: RocketChat.models.Subscriptions.findByRoomId(id, { fields });
+	return RocketChat.models.Subscriptions.trashFind({ rid: id }, { fields });
 };
 
 RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
@@ -133,9 +131,11 @@ RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
 	}
 
 	if (data) {
-		getSubscriptions(clientAction, id).forEach(({ u }) => {
-			RocketChat.Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
-		});
+		if (clientAction === 'removed') {
+			getSubscriptions(clientAction, id).forEach(({ u }) => {
+				RocketChat.Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
+			});
+		}
 		RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
 	}
 });

@@ -345,20 +345,29 @@ export class CachedCollection {
 		CachedChatRoom.saveCache();
 	}
 
-	setupListener(eventType, eventName) {
-		RocketChat.Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
+	async setupListener(eventType, eventName) {
+		if (!this.Notifications) {
+			const { Notifications } = await import('meteor/rocketchat:notifications');
+			this.Notifications = Notifications;
+		}
+		if (!this.RoomManager) {
+			const { RoomManager } = await import('meteor/rocketchat:ui');
+			this.RoomManager = RoomManager;
+		}
+		this.Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
-			RocketChat.callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
+			callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
 			if (t === 'removed') {
 				let room;
 				if (this.eventName === 'subscriptions-changed') {
 					room = ChatRoom.findOne(this.collection.findOne({ _id: record._id }).rid);
+					room = ChatRoom.findOne(record.rid);
 					this.removeRoomFromCacheWhenUserLeaves(room._id);
 				} else {
 					room = this.collection.findOne({ _id: record._id });
 				}
 				if (room) {
-					RoomManager.close(room.t + room.name);
+					this.RoomManager.close(room.t + room.name);
 				}
 				this.collection.remove(record._id);
 			} else {
