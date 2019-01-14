@@ -41,6 +41,45 @@ export class Subscriptions extends Base {
 		return query;
 	}
 
+	findByRidWithoutE2EKey(rid, options) {
+		const query = {
+			rid,
+			E2EKey: {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	resetUserE2EKey(userId) {
+		this.update({ 'u._id': userId }, {
+			$unset: {
+				E2EKey: '',
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	findByUserIdWithoutE2E(userId, options) {
+		const query = {
+			'u._id': userId,
+			E2EKey: {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	updateGroupE2EKey(_id, key) {
+		const query = { _id };
+		const update = { $set: { E2EKey: key } };
+		this.update(query, update);
+		return this.findOne({ _id });
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 

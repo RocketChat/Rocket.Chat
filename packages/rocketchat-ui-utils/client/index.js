@@ -13,6 +13,9 @@ import { RoomManager } from './lib/RoomManager';
 import { upsertMessage, RoomHistoryManager } from './lib/RoomHistoryManager';
 import { mainReady } from './lib/mainReady';
 import { renderMessageBody } from './lib/renderMessageBody';
+import { Layout } from './lib/Layout';
+import { IframeLogin, iframeLogin } from './lib/IframeLogin';
+import { fireGlobalEvent } from './lib/fireGlobalEvent';
 
 export {
 	AdminBox,
@@ -33,4 +36,8 @@ export {
 	mainReady,
 	renderMessageBody,
 	upsertMessage,
+	Layout,
+	IframeLogin,
+	iframeLogin,
+	fireGlobalEvent,
 };
