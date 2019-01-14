@@ -1,4 +1,6 @@
-RocketChat.settings.addGroup('WebRTC', function() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('WebRTC', function() {
 	this.add('WebRTC_Enable_Channel', false, {
 		type: 'boolean',
 		group: 'WebRTC',
