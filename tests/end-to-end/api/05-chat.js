@@ -8,6 +8,7 @@ import {
 import { password } from '../../data/user';
 import { createRoom } from '../../data/rooms.helper.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper.js';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('[Chat]', function() {
 	this.retries(0);
@@ -789,4 +790,113 @@ describe('[Chat]', function() {
 		});
 	});
 
+	describe('[/chat.pinMessage]', () => {
+		it('should return an error when pinMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowPinning', false).then(() => {
+				request.post(api('chat.pinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when pinMessage is allowed in server but user dont have permission', (done) => {
+			updateSetting('Message_AllowPinning', true).then(() => {
+				updatePermission('pin-message', []).then(() => {
+					request.post(api('chat.pinMessage'))
+						.set(credentials)
+						.send({
+							messageId: message._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should pin Message successfully', (done) => {
+			updatePermission('pin-message', ['admin']).then(() => {
+				request.post(api('chat.pinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.unPinMessage]', () => {
+		it('should return an error when pinMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowPinning', false).then(() => {
+				request.post(api('chat.unPinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when pinMessage is allowed in server but users dont have permission', (done) => {
+			updateSetting('Message_AllowPinning', true).then(() => {
+				updatePermission('pin-message', []).then(() => {
+					request.post(api('chat.unPinMessage'))
+						.set(credentials)
+						.send({
+							messageId: message._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should unpin Message successfully', (done) => {
+			updatePermission('pin-message', ['admin']).then(() => {
+				request.post(api('chat.unPinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
 });

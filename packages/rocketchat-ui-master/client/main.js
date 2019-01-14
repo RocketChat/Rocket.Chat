@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { t } from 'meteor/rocketchat:utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { mainReady } from 'meteor/rocketchat:ui-utils';
+import { toolbarSearch } from 'meteor/rocketchat:ui-sidenav';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
@@ -123,7 +124,7 @@ Template.body.onRendered(function() {
 	}
 });
 
-RocketChat.mainReady = new ReactiveVar(false);
+RocketChat.mainReady = mainReady;
 Template.main.helpers({
 	removeSidenav() {
 		const { modal } = this;
@@ -166,6 +167,17 @@ Template.main.helpers({
 	requirePasswordChange() {
 		const user = Meteor.user();
 		return user && user.requirePasswordChange === true;
+	},
+	require2faSetup() {
+		const user = Meteor.user();
+
+		// User is already using 2fa
+		if (user.services.totp !== undefined && user.services.totp.enabled) {
+			return false;
+		}
+
+		const mandatoryRole = RocketChat.models.Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
+		return mandatoryRole !== undefined;
 	},
 	CustomScriptLoggedOut() {
 		const script = RocketChat.settings.get('Custom_Script_Logged_Out') || '';

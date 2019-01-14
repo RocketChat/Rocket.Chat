@@ -1,24 +1,29 @@
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
+import {
+	ChatMessage as chatMessage,
+	CachedChatRoom as cachedChatRoom,
+	ChatRoom as chatRoom,
+	CachedChatSubscription as cachedChatSubscription,
+	ChatSubscription as chatSubscription,
+	UserRoles as userRoles,
+	RoomRoles as roomRoles,
+	UserAndRoom as userAndRoom,
+	CachedChannelList as cachedChannelList,
+	CachedUserList as cachedUserList,
+} from 'meteor/rocketchat:models';
 
-ChatMessage = new Mongo.Collection(null);
-export const CachedChatRoom = new RocketChat.CachedCollection({ name: 'rooms' });
-ChatRoom = CachedChatRoom.collection;
+ChatMessage = chatMessage;
+export const CachedChatRoom = cachedChatRoom;
+ChatRoom = chatRoom;
 
-CachedChatSubscription = new RocketChat.CachedCollection({ name: 'subscriptions' });
-ChatSubscription = CachedChatSubscription.collection;
-UserRoles = new Mongo.Collection(null);
-RoomRoles = new Mongo.Collection(null);
-this.UserAndRoom = new Mongo.Collection(null);
-this.CachedChannelList = new Mongo.Collection(null);
-this.CachedUserList = new Mongo.Collection(null);
-
-RocketChat.models.Users = _.extend({}, RocketChat.models.Users, Meteor.users);
-RocketChat.models.Subscriptions = _.extend({}, RocketChat.models.Subscriptions, ChatSubscription);
-RocketChat.models.Rooms = _.extend({}, RocketChat.models.Rooms, ChatRoom);
-RocketChat.models.Messages = _.extend({}, RocketChat.models.Messages, ChatMessage);
+CachedChatSubscription = cachedChatSubscription;
+ChatSubscription = chatSubscription;
+UserRoles = userRoles;
+RoomRoles = roomRoles;
+this.UserAndRoom = userAndRoom;
+this.CachedChannelList = cachedChannelList;
+this.CachedUserList = cachedUserList;
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

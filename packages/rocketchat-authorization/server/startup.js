@@ -1,6 +1,6 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Roles, Permissions } from 'meteor/rocketchat:models';
 
 Meteor.startup(function() {
 	// Note:
@@ -78,8 +78,8 @@ Meteor.startup(function() {
 	];
 
 	for (const permission of permissions) {
-		if (!RocketChat.models.Permissions.findOneById(permission._id)) {
-			RocketChat.models.Permissions.upsert(permission._id, { $set: permission });
+		if (!Permissions.findOneById(permission._id)) {
+			Permissions.upsert(permission._id, { $set: permission });
 		}
 	}
 
@@ -95,6 +95,6 @@ Meteor.startup(function() {
 	];
 
 	for (const role of defaultRoles) {
-		RocketChat.models.Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true } });
+		Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true, mandatory2fa: false } });
 	}
 });
