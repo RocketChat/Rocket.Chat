@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
+import { RoomManager } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 
 export let currentTracker = undefined;
@@ -68,7 +69,7 @@ openRoom = function(type, name) {
 			}
 
 			Session.set('openedRoom', room._id);
-			RocketChat.openedRoom = room._id;
+			RoomManager.openedRoom = room._id;
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 

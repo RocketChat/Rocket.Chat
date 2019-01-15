@@ -34,6 +34,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:ui-utils');
 	api.use('rocketchat:tooltip');
 	api.use('rocketchat:emoji');
+	api.use('rocketchat:ui');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
@@ -240,6 +241,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/authorization.js', 'client');
 	api.addFiles('client/lib/tooltip.js', 'client');
 	api.addFiles('client/lib/EmojiPicker.js', 'client');
+	api.addFiles('client/lib/ui-buttons.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');
