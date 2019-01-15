@@ -8,6 +8,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import { ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
 import { t } from 'meteor/rocketchat:utils';
+import { openedRoom } from 'meteor/rocketchat:ui-utils';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -499,7 +500,7 @@ Template.messageBox.events({
 		const timer = document.querySelector('.rc-message-box__timer');
 		const mic = document.querySelector('.rc-message-box__icon.mic');
 
-		chatMessages[RocketChat.openedRoom].recording = true;
+		chatMessages[openedRoom].recording = true;
 		AudioRecorder.start(function() {
 			const startTime = new Date;
 			timer.innerHTML = '00:00';
@@ -531,7 +532,7 @@ Template.messageBox.events({
 		}
 
 		AudioRecorder.stop();
-		chatMessages[RocketChat.openedRoom].recording = false;
+		chatMessages[openedRoom].recording = false;
 	},
 	'click .js-audio-message-check'(event) {
 		event.preventDefault();
@@ -547,7 +548,7 @@ Template.messageBox.events({
 			clearInterval(audioMessageIntervalId);
 		}
 
-		chatMessages[RocketChat.openedRoom].recording = false;
+		chatMessages[openedRoom].recording = false;
 		AudioRecorder.stop(function(blob) {
 
 			loader.classList.remove('active');
@@ -658,7 +659,7 @@ Template.messageBox.events({
 			RocketChat.EmojiPicker.close();
 		} else {
 			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
-				const { input } = chatMessages[RocketChat.openedRoom];
+				const { input } = chatMessages[openedRoom];
 
 				const emojiValue = `:${ emoji }:`;
 
@@ -685,8 +686,8 @@ Template.messageBox.onRendered(function() {
 		const reply = $(input).data('reply');
 		self.dataReply.set(reply);
 	});
-	chatMessages[RocketChat.openedRoom] = chatMessages[RocketChat.openedRoom] || new ChatMessages;
-	chatMessages[RocketChat.openedRoom].input = this.$('.js-input-message').autogrow({
+	chatMessages[openedRoom] = chatMessages[openedRoom] || new ChatMessages;
+	chatMessages[openedRoom].input = this.$('.js-input-message').autogrow({
 		animate: true,
 		onInitialize: true,
 	}).on('autogrow', () => {
@@ -724,9 +725,9 @@ Meteor.startup(function() {
 	});
 	RocketChat.callbacks.add('enter-room', function() {
 		setTimeout(() => {
-			if (chatMessages[RocketChat.openedRoom].input) {
-				chatMessages[RocketChat.openedRoom].input.focus();
-				chatMessages[RocketChat.openedRoom].restoreText(RocketChat.openedRoom);
+			if (chatMessages[openedRoom].input) {
+				chatMessages[openedRoom].input.focus();
+				chatMessages[openedRoom].restoreText(openedRoom);
 			}
 		}, 200);
 	});
