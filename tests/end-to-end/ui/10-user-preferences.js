@@ -37,7 +37,7 @@ describe('[User Preferences]', () => {
 				preferencesMainContent.userNameTextInput.isVisible().should.be.true;
 			});
 
-			it('it should show the real name input', () => {
+			it.skip('it should show the real name input', () => {
 				preferencesMainContent.realNameTextInput.isVisible().should.be.true;
 			});
 
@@ -45,7 +45,7 @@ describe('[User Preferences]', () => {
 				preferencesMainContent.emailTextInput.isVisible().should.be.true;
 			});
 
-			it('it should show the password input', () => {
+			it.skip('it should show the password input', () => {
 				preferencesMainContent.passwordTextInput.isVisible().should.be.true;
 			});
 
@@ -60,7 +60,7 @@ describe('[User Preferences]', () => {
 				sideNav.profile.click();
 			});
 
-			it('it should change the name field', () => {
+			it.skip('it should change the name field', () => {
 				preferencesMainContent.changeRealName(`EditedRealName${ username }`);
 			});
 
