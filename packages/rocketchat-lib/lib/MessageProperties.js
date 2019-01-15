@@ -1,7 +1,10 @@
 import { messageProperties } from 'meteor/rocketchat:ui-utils';
 
-RocketChat.messageProperties = messageProperties;
-
 export {
 	messageProperties,
 };
+
+// check for tests
+if (typeof RocketChat !== 'undefined') {
+	RocketChat.messageProperties = messageProperties;
+}
