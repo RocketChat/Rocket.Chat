@@ -1,3 +1,4 @@
+import { ChatRoom } from 'meteor/rocketchat:ui';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';

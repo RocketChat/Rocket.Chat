@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Subscriptions } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'e2e.updateGroupKey'(rid, uid, key) {
-		const mySub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		const mySub = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
 		if (mySub) { // I have a subscription to this room
-			const userSub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, uid);
+			const userSub = Subscriptions.findOneByRoomIdAndUserId(rid, uid);
 			if (userSub) { // uid also has subscription to this room
-				return RocketChat.models.Subscriptions.updateGroupE2EKey(userSub._id, key);
+				return Subscriptions.updateGroupE2EKey(userSub._id, key);
 			}
 		}
 	},

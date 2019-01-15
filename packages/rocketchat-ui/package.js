@@ -23,10 +23,17 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:ui-master',
 		'rocketchat:push',
+		'rocketchat:utils',
+		'rocketchat:emoji',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',
 		'mizzao:autocomplete',
+		'rocketchat:file-upload',
+		'konecty:user-presence',
+		'rocketchat:webrtc',
 	]);
 
 	api.use('kadira:flow-router', 'client');
@@ -55,7 +62,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/RoomHistoryManager.js', 'client');
 	api.addFiles('client/lib/RoomManager.js', 'client');
 	api.addFiles('client/lib/sideNav.js', 'client');
-	api.addFiles('client/lib/tapi18n.js');
 	api.addFiles('client/lib/textarea-autogrow.js', 'client');
 
 	api.addFiles('client/lib/codeMirror/codeMirror.js', 'client');
@@ -100,8 +106,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/userSearch.html', 'client');
 	api.addFiles('client/views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.html', 'client');
-	api.addFiles('client/views/app/popover.html', 'client');
-	api.addFiles('client/views/app/modal.html', 'client');
 	api.addFiles('client/views/app/photoswipe.html', 'client');
 
 	api.addFiles('client/views/cmsPage.js', 'client');
@@ -146,7 +150,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/components/contextualBar.js', 'client');
 
 	api.export('fileUpload');
-	api.export('t');
 	api.export('modal', 'client');
 	api.export('popover', 'client');
 	api.export('fireGlobalEvent', 'client');
@@ -164,7 +167,10 @@ Package.onUse(function(api) {
 	api.export('AudioRecorder', 'client');
 	api.export('VideoRecorder', 'client');
 	api.export('UserRoles', 'client');
-	api.export('isRtl', 'client');
 	api.export('alerts', 'client');
+	api.export('AccountBox', 'client');
 	api.export('chatMessages', 'client');
+	api.export('CachedChatSubscription', 'client');
+	api.export('readMessage', 'client');
+	api.export('updateAvatarOfUsername', 'client');
 });

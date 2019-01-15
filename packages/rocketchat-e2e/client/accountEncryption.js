@@ -1,12 +1,14 @@
-/* globals Template, t, ReactiveVar */
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import toastr from 'toastr';
 import s from 'underscore.string';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { t } from 'meteor/rocketchat:utils';
 import { e2e } from 'meteor/rocketchat:e2e';
 
 Template.accountEncryption.helpers({
 	isEnabled() {
-		return RocketChat.settings.get('E2E_Enable');
+		return settings.get('E2E_Enable');
 	},
 	allowKeyChange() {
 		return localStorage.getItem('public_key') && localStorage.getItem('private_key');

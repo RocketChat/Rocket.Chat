@@ -1,11 +1,13 @@
-/* global InstanceStatus, DDP, LoggerManager, UserPresence */
-
+/* global UserPresence */
 import { Meteor } from 'meteor/meteor';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import { DDPCommon } from 'meteor/ddp-common';
+import { DDP } from 'meteor/ddp';
 import {
 	Streamer,
 } from 'meteor/rocketchat:lib';
+import { Logger, LoggerManager } from 'meteor/rocketchat:logger';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();

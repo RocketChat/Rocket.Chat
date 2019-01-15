@@ -1,4 +1,5 @@
 import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {

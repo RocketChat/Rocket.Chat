@@ -1,3 +1,6 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { AccountBox } from 'meteor/rocketchat:ui';
+
 AccountBox.addItem({
 	name: 'Livechat',
 	icon: 'livechat',
