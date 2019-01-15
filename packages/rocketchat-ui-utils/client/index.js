@@ -19,7 +19,6 @@ export { fireGlobalEvent } from './lib/fireGlobalEvent';
 export { getAvatarAsPng, updateAvatarOfUsername } from './lib/avatar';
 export { TabBar } from './lib/TabBar';
 export { RocketChatTabBar } from './lib/RocketChatTabBar';
-export { openedRoom } from './lib/openedRoom';
 export { popout } from './lib/popout';
 export { messageProperties } from '../lib/MessageProperties';
 export { MessageTypes } from '../lib/MessageTypes';
