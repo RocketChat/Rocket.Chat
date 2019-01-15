@@ -1,3 +1,6 @@
+import { SideNav } from 'meteor/rocketchat:ui-utils';
+import { VideoRecorder } from './recorderjs/videoRecorder';
+
 const escapify = {
 	init() {
 		const that = this;
@@ -6,7 +9,7 @@ const escapify = {
 			if (keyName === 'Escape') {
 				that.sideNavIcon();
 				that.flextTabButton();
-				that.videoDialog();
+				that.videoDialog().then();
 				that.sweetAlerts();
 			}
 		}, false);
@@ -36,7 +39,8 @@ const escapify = {
 		}
 	},
 
-	videoDialog() {
+	async videoDialog() {
+		const { VRecDialog } = await import('meteor/rocketchat:ui-vrecord');
 		const vrecDialog = document.querySelector('.vrec-dialog');
 		if (vrecDialog && Number(window.getComputedStyle(vrecDialog).opacity) === 1) {
 			VideoRecorder.stop();
