@@ -309,10 +309,7 @@ export function importNewUsers(ldap) {
 
 				logger.debug('userQuery merge', userQuery);
 
-				user = Meteor.users.findOne(userQuery);
-				if (user) {
-					syncUserData(user, ldapUser);
-				}
+				syncUserData(user, ldapUser);
 			}
 
 			if (!user) {
