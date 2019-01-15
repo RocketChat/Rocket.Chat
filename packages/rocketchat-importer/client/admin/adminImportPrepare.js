@@ -106,7 +106,7 @@ function getImportFileData(importer, template) {
 		if (data.waiting) {
 			setTimeout(() => {
 				getImportFileData(importer, template);
-			}, 500);
+			}, 1000);
 			return;
 		}
 
