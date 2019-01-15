@@ -20,10 +20,12 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
 		'rocketchat:ui-master',
 		'rocketchat:push',
 		'rocketchat:utils',
+		'rocketchat:emoji',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
 		'raix:ui-dropped-event',
 		'rocketchat:lazy-load',
 		'rocketchat:e2e',
@@ -49,7 +51,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/fireEvent.js', 'client');
 	api.addFiles('client/lib/iframeCommands.js', 'client');
 	api.addFiles('client/lib/menu.js', 'client');
-	api.addFiles('client/lib/modal.js', 'client');
 	api.addFiles('client/lib/Modernizr.js', 'client');
 	api.addFiles('client/lib/msgTyping.js', 'client');
 	api.addFiles('client/lib/notification.js', 'client');
@@ -94,8 +95,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/notAuthorized.html', 'client');
 	api.addFiles('client/views/app/pageContainer.html', 'client');
 	api.addFiles('client/views/app/pageSettingsContainer.html', 'client');
-	api.addFiles('client/views/app/popout.html', 'client');
-	api.addFiles('client/views/app/alerts.html', 'client');
 
 	api.addFiles('client/views/app/room.html', 'client');
 	api.addFiles('client/views/app/roomSearch.html', 'client');
@@ -103,8 +102,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/userSearch.html', 'client');
 	api.addFiles('client/views/app/videoCall/videoButtons.html', 'client');
 	api.addFiles('client/views/app/videoCall/videoCall.html', 'client');
-	api.addFiles('client/views/app/popover.html', 'client');
-	api.addFiles('client/views/app/modal.html', 'client');
 	api.addFiles('client/views/app/photoswipe.html', 'client');
 
 	api.addFiles('client/views/cmsPage.js', 'client');
@@ -147,6 +144,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/components/contextualBar.html', 'client');
 	api.addFiles('client/components/contextualBar.js', 'client');
+
+	api.mainModule('client/index.js', 'client');
 
 	api.export('fileUpload');
 	api.export('modal', 'client');
