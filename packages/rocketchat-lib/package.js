@@ -32,6 +32,8 @@ Package.onUse(function(api) {
 	api.use('rocketchat:notifications');
 	api.use('rocketchat:promises');
 	api.use('rocketchat:ui-utils');
+	api.use('rocketchat:tooltip');
+	api.use('rocketchat:emoji');
 	api.use('rocketchat:accounts');
 	api.use('modules');
 	api.use('rocketchat:i18n');
@@ -93,6 +95,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
+	api.addFiles('lib/emoji.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics_import.js', 'server');
@@ -235,6 +238,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/Layout.js', 'client');
 	api.addFiles('client/lib/handleError.js', 'client');
 	api.addFiles('client/lib/authorization.js', 'client');
+	api.addFiles('client/lib/tooltip.js', 'client');
+	api.addFiles('client/lib/EmojiPicker.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');

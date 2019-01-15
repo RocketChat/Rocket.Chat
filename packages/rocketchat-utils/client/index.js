@@ -8,6 +8,8 @@ import { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/f
 import { roomTypes } from './lib/roomTypes';
 import { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } from '../lib/RoomTypeConfig';
 import { RoomTypesCommon } from '../lib/RoomTypesCommon';
+import { getAvatarUrlFromUsername } from '../lib/getAvatarUrlFromUsername';
+import { slashCommands } from '../lib/slashCommand';
 
 export {
 	t,
@@ -26,4 +28,6 @@ export {
 	RoomTypeConfig,
 	RoomSettingsEnum,
 	UiTextContext,
+	getAvatarUrlFromUsername,
+	slashCommands,
 };
