@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'e2e.fetchMyKeys'() {
@@ -7,6 +7,6 @@ Meteor.methods({
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'e2e.fetchMyKeys' });
 		}
-		return RocketChat.models.Users.fetchKeysByUserId(userId);
+		return Users.fetchKeysByUserId(userId);
 	},
 });

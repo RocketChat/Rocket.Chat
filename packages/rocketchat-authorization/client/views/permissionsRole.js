@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { modal } from 'meteor/rocketchat:ui-utils';
 import { t, handleError } from 'meteor/rocketchat:utils';
 import { Roles } from 'meteor/rocketchat:models';
 import { hasAllPermission } from '../hasPermission';
 import toastr from 'toastr';
+
+let _modal;
 
 Template.permissionsRole.helpers({
 	role() {
@@ -111,9 +112,13 @@ Template.permissionsRole.helpers({
 });
 
 Template.permissionsRole.events({
-	'click .remove-user'(e, instance) {
+	async 'click .remove-user'(e, instance) {
+		if (!_modal) {
+			const { modal } = await import('meteor/rocketchat:ui-utils');
+			_modal = modal;
+		}
 		e.preventDefault();
-		modal.open({
+		_modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -128,7 +133,7 @@ Template.permissionsRole.events({
 					return handleError(error);
 				}
 
-				modal.open({
+				_modal.open({
 					title: t('Removed'),
 					text: t('User_removed'),
 					type: 'success',

@@ -8,6 +8,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'tap:i18n',
+		'kadira:flow-router',
 		'rocketchat:version',
 		'rocketchat:models',
 		'rocketchat:settings',

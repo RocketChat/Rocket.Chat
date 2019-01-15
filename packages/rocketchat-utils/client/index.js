@@ -5,6 +5,12 @@ import { Info } from '../rocketchat.info';
 import { isEmail } from '../lib/isEmail';
 import { handleError } from './lib/handleError';
 import { getUserPreference } from '../lib/getUserPreference';
+import { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
+import { roomTypes } from './lib/roomTypes';
+import { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } from '../lib/RoomTypeConfig';
+import { RoomTypesCommon } from '../lib/RoomTypesCommon';
+import { getAvatarUrlFromUsername } from '../lib/getAvatarUrlFromUsername';
+import { slashCommands } from '../lib/slashCommand';
 
 export {
 	t,
@@ -16,4 +22,14 @@ export {
 	isEmail,
 	handleError,
 	getUserPreference,
+	fileUploadIsValidContentType,
+	fileUploadMediaWhiteList,
+	roomTypes,
+	RoomTypeRouteConfig,
+	RoomTypesCommon,
+	RoomTypeConfig,
+	RoomSettingsEnum,
+	UiTextContext,
+	getAvatarUrlFromUsername,
+	slashCommands,
 };
