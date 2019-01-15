@@ -46,7 +46,10 @@
 									<span>{{_ "Total"}}:</span>
 									<span>{{ totalCount}}</span>
 									<br/>
-									
+									<span>{{_ "Imported"}}:</span>
+									<span>{{ imported}}</span>
+									<br/>
+
 									<br/>
 								{{/if}}
 
@@ -61,7 +64,7 @@
 												<span>{{ email}}</span>
 												<br/>
 											{{/if}}
-											
+
 											{{#if error}}
 												<span>{{ email}}:</span>
 												<span style="color: red;">{{ formatedError}}</span>

@@ -169,6 +169,14 @@ Template.adminImportHistory.helpers({
 		const date = new Date(this.msg.ts);
 		return date.toLocaleString();
 	},
+
+	imported() {
+		if (!this.imported) {
+			return 0;
+		}
+
+		return this.imported;
+	}
 });
 
 Template.adminImportHistory.events({
