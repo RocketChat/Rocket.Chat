@@ -24,16 +24,6 @@ const sendNotification = async({
 		return;
 	}
 
-	// notifications disabled
-	// if (subscription.disableNotifications) {
-	// 	return;
-	// }
-
-	// dont send notification to users who ignored the sender
-	// if (Array.isArray(subscription.ignored) && subscription.ignored.includes(sender._id)) {
-	// 	return;
-	// }
-
 	const hasMentionToUser = mentionIds.includes(subscription.u._id);
 
 	// mute group notifications (@here and @all) if not directly mentioned as well
@@ -42,10 +32,6 @@ const sendNotification = async({
 	}
 
 	const [receiver] = subscription.receiver;
-
-	// if (!receiver || !receiver.active) {
-	// 	return;
-	// }
 
 	const roomType = room.t;
 	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
@@ -173,9 +159,9 @@ const project = {
 const filter = {
 	$match: {
 		'receiver.active': true,
-		// 'receiver.statusConnection': { $ne: 'online' },
 	},
 };
+
 const lookup = {
 	$lookup: {
 		from: 'users',
