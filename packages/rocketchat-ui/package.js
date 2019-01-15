@@ -20,7 +20,6 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
 		'rocketchat:ui-master',
 		'rocketchat:push',
 		'rocketchat:utils',
@@ -52,7 +51,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/fireEvent.js', 'client');
 	api.addFiles('client/lib/iframeCommands.js', 'client');
 	api.addFiles('client/lib/menu.js', 'client');
-	api.addFiles('client/lib/modal.js', 'client');
 	api.addFiles('client/lib/Modernizr.js', 'client');
 	api.addFiles('client/lib/msgTyping.js', 'client');
 	api.addFiles('client/lib/notification.js', 'client');
@@ -146,6 +144,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('client/components/contextualBar.html', 'client');
 	api.addFiles('client/components/contextualBar.js', 'client');
+
+	api.mainModule('client/index.js', 'client');
 
 	api.export('fileUpload');
 	api.export('modal', 'client');

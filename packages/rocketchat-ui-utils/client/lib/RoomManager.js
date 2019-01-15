@@ -31,7 +31,6 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 
 export const RoomManager = new function() {
 	const openedRooms = {};
-	let openedRoom = undefined; //eslint-disable-line
 	const msgStream = new Meteor.Streamer('room-messages');
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();

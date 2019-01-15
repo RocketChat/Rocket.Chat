@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { UserPresence } from 'meteor/konecty:user-presence';
+import { readMessage } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 
 let timer = undefined;
