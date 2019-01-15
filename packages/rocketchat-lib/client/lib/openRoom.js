@@ -70,7 +70,7 @@ openRoom = function(type, name) {
 			}
 
 			Session.set('openedRoom', room._id);
-			RocketChat.openedRoom = room._id;
+			RoomManager.openedRoom = room._id;
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
