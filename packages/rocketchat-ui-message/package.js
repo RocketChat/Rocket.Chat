@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 		'templating',
 		'tracker',
 		'rocketchat:utils',
+		'rocketchat:ui',
 		'rocketchat:ui-utils',
 		'rocketchat:emoji',
 		'rocketchat:lib',

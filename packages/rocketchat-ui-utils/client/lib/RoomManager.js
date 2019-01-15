@@ -5,6 +5,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { roomTypes as _roomTypes } from 'meteor/rocketchat:utils';
+import { fireGlobalEvent } from './fireGlobalEvent';
 import { promises } from 'meteor/rocketchat:promises';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Notifications } from 'meteor/rocketchat:notifications';
@@ -30,6 +31,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, users }) => {
 
 export const RoomManager = new function() {
 	const openedRooms = {};
+	let openedRoom = undefined; //eslint-disable-line
 	const msgStream = new Meteor.Streamer('room-messages');
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
@@ -77,7 +79,7 @@ export const RoomManager = new function() {
 
 										callbacks.run('streamMessage', msg);
 
-										return window.fireGlobalEvent('new-message', msg);
+										return fireGlobalEvent('new-message', msg);
 									}
 								})
 							);

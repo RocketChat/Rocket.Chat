@@ -672,7 +672,7 @@ Template.room.events({
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
-		chatMessages[RocketChat.openedRoom].input.focus();
+		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
 		let context = $(e.target).parents('.message').data('context');

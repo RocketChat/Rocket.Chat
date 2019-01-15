@@ -97,8 +97,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/views/app/notAuthorized.html', 'client');
 	api.addFiles('client/views/app/pageContainer.html', 'client');
 	api.addFiles('client/views/app/pageSettingsContainer.html', 'client');
-	api.addFiles('client/views/app/popout.html', 'client');
-	api.addFiles('client/views/app/alerts.html', 'client');
 
 	api.addFiles('client/views/app/room.html', 'client');
 	api.addFiles('client/views/app/roomSearch.html', 'client');
