@@ -46,7 +46,16 @@ RocketChat.API.v1.addRoute('livechat/message', {
 
 			const result = RocketChat.Livechat.sendMessage(sendMessage);
 			if (result) {
-				const message = { _id: result._id, rid: result.rid, msg: result.msg, u: result.u, ts: result.ts };
+
+				const message = {
+					_id: result._id,
+					rid: result.rid,
+					msg: result.msg,
+					u: result.u,
+					ts: result.ts,
+					showConnecting: result.showConnecting,
+				};
+
 				return RocketChat.API.v1.success({ message });
 			}
 
