@@ -13,6 +13,11 @@ Meteor.methods({
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-c')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
+
+		if (readOnly && !RocketChat.authz.hasPermission(Meteor.userId(), 'create-ro')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
+		}
+
 		return RocketChat.createRoom('c', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
 	},
 });
