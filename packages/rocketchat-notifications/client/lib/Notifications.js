@@ -69,6 +69,9 @@ class Notifications {
 		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
 	}
 	onUser(eventName, callback) {
+		if (eventName === 'rooms-changed') {
+			return this.streamUser.on(`${ eventName }`, callback);
+		}
 		return this.streamUser.on(`${ Meteor.userId() }/${ eventName }`, callback);
 	}
 	unAll(callback) {
@@ -83,6 +86,7 @@ class Notifications {
 	unUser(eventName, callback) {
 		return this.streamUser.removeListener(`${ Meteor.userId() }/${ eventName }`, callback);
 	}
+
 }
 
 export default new Notifications();
