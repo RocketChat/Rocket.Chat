@@ -9,7 +9,6 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t } from 'meteor/rocketchat:utils';
 import { WebRTC } from 'meteor/rocketchat:webrtc';
-import { openedRoom } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
@@ -673,7 +672,7 @@ Template.room.events({
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
-		chatMessages[openedRoom].input.focus();
+		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
 		let context = $(e.target).parents('.message').data('context');
