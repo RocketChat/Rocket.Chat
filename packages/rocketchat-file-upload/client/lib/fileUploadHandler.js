@@ -3,9 +3,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { FileUploadBase } from '../../lib/FileUploadBase';
+import { Uploads, Avatars } from 'meteor/rocketchat:models';
+import { FileUpload } from '../../lib/FileUpload';
 
 new UploadFS.Store({
-	collection: RocketChat.models.Uploads.model,
+	collection: Uploads.model,
 	name: 'Uploads',
 	filter: new UploadFS.Filter({
 		onCheck: FileUpload.validateFileUpload,
@@ -13,14 +15,14 @@ new UploadFS.Store({
 });
 
 new UploadFS.Store({
-	collection: RocketChat.models.Avatars.model,
+	collection: Avatars.model,
 	name: 'Avatars',
 	filter: new UploadFS.Filter({
 		onCheck: FileUpload.validateFileUpload,
 	}),
 });
 
-fileUploadHandler = (directive, meta, file) => {
+export const fileUploadHandler = (directive, meta, file) => {
 	const store = UploadFS.getStore(directive);
 
 	if (store) {

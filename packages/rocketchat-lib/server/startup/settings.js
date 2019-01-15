@@ -2529,6 +2529,134 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 		this.add('Allow_Marketing_Emails', true, {
 			type: 'boolean',
 		});
+		this.add('Register_Server', true, {
+			type: 'boolean',
+		});
+		this.add('Organization_Email', '', {
+			type: 'string',
+		});
+	});
+
+	this.section('Cloud_Info', function() {
+		this.add('Cloud_Url', 'https://cloud.rocket.chat', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Id', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Name', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Id', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Secret', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
+			type: 'int',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Registration_Client_Uri', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_License', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Access_Token', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+			type: 'date',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Registration_State', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Account_Associated', false, {
+			type: 'boolean',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
 	});
 });
 
