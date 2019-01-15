@@ -513,7 +513,11 @@ export class HipChatEnterpriseImporter extends Base {
 			const room = RocketChat.models.Rooms.findOneById(hipChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 			Meteor.runAsUser(startedByUserId, () => {
 				for (const [msgGroupData, msgs] of messagesMap.entries()) {
-					super.updateRecord({ messagesstatus: `${ ch }/${ msgGroupData }.${ msgs.messages.length }` });
+					super.updateRecord({
+						messagesstatus: `${ ch }/${ msgGroupData }.${ msgs.messages.length }`,
+						'count.completed': this.progress.count.completed,
+					});
+
 					for (const msg of msgs.messages) {
 						this._importSingleMessage(msg, ch, msgGroupData, room);
 					}
@@ -535,7 +539,11 @@ export class HipChatEnterpriseImporter extends Base {
 			}
 
 			for (const [msgGroupData, msgs] of directMessagesMap.entries()) {
-				super.updateRecord({ messagesstatus: `${ directMsgRoom }/${ msgGroupData }.${ msgs.messages.length }` });
+				super.updateRecord({
+					messagesstatus: `${ directMsgRoom }/${ msgGroupData }.${ msgs.messages.length }`,
+					'count.completed': this.progress.count.completed,
+				});
+
 				for (const msg of msgs.messages) {
 					if (isNaN(msg.ts)) {
 						this.logger.warn(`Timestamp on a message in ${ directMsgRoom }/${ msgGroupData } is invalid`);
@@ -546,12 +554,14 @@ export class HipChatEnterpriseImporter extends Base {
 					// make sure the message sender is a valid user inside rocket.chat
 					const sender = this.getRocketUserFromUserId(msg.senderId);
 					if (!sender) {
+						super.addCountCompleted(1);
 						continue;
 					}
 
 					// make sure the receiver of the message is a valid rocket.chat user
 					const receiver = this.getRocketUserFromUserId(msg.receiverId);
 					if (!receiver) {
+						super.addCountCompleted(1);
 						continue;
 					}
 
@@ -591,6 +601,8 @@ export class HipChatEnterpriseImporter extends Base {
 						console.error(e);
 						this.addMessageError(e, msg);
 					}
+
+					super.addCountCompleted(1);
 				}
 			}
 		}

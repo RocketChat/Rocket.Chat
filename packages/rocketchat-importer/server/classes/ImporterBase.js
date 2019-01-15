@@ -285,6 +285,7 @@ export class Base {
 		}
 
 		ImporterWebsocket.progressUpdated(this.progress);
+		this.logger.log(`${ this.progress.count.completed } messages imported`);
 
 		return this.progress;
 	}
