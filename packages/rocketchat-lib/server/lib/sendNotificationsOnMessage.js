@@ -41,7 +41,7 @@ const sendNotification = async({
 		return;
 	}
 
-	const receiver = subscription.u;
+	const [receiver] = subscription.receiver;
 
 	// if (!receiver || !receiver.active) {
 	// 	return;
@@ -56,7 +56,6 @@ const sendNotification = async({
 	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
-
 
 	const {
 		audioNotifications,
@@ -150,33 +149,31 @@ const sendNotification = async({
 		RocketChat.Sandstorm.notify(message, [subscription.u._id], `@${ sender.username }: ${ message.msg }`, room.t === 'p' ? 'privateMessage' : 'message');
 	}
 };
+
 const project = {
 	$project: {
-		ls: 0,
-		_updatedAt: 0,
-		rid: 0,
-		unread: 0,
-		groupMentions: 0,
-		ts: 0,
-		open: 0,
-		alert: 0,
-		userMentions: 0,
-		'u.services': 0,
-		'u.createdAt': 0,
-		'u._updatedAt': 0,
-		'u.roles': 0,
-		'u.avatarOrigin': 0,
-		'u.operator': 0,
-		'u.statusDefault': 0,
-		'u.statusLivechat': 0,
-		'u.utcOffset': 0,
-		'u.settings': 0,
+		audioNotifications: 1,
+		desktopNotificationDuration: 1,
+		desktopNotifications: 1,
+		emailNotifications: 1,
+		mobilePushNotifications: 1,
+		muteGroupMentions: 1,
+		name: 1,
+		userHighlights: 1,
+		'u._id': 1,
+		'receiver.active': 1,
+		'receiver.emails': 1,
+		'receiver.language': 1,
+		'receiver.status': 1,
+		'receiver.statusConnection': 1,
+		'receiver.username': 1,
 	},
 };
+
 const filter = {
 	$match: {
-		'u.active': true,
-		'u.statusConnection': { $ne: 'online' },
+		'receiver.active': true,
+		// 'receiver.statusConnection': { $ne: 'online' },
 	},
 };
 const lookup = {
@@ -184,10 +181,9 @@ const lookup = {
 		from: 'users',
 		localField: 'u._id',
 		foreignField: '_id',
-		as: 'u',
+		as: 'receiver',
 	},
 };
-const unwind = { $unwind: '$u' };
 
 async function sendAllNotifications(message, room) {
 
@@ -273,11 +269,8 @@ async function sendAllNotifications(message, room) {
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 
 	const subscriptions = await RocketChat.models.Subscriptions.model.rawCollection().aggregate([
-		{
-			$match: query,
-		},
+		{ $match: query },
 		lookup,
-		unwind,
 		filter,
 		project,
 	]).toArray();
@@ -334,7 +327,6 @@ async function sendAllNotifications(message, room) {
 	return message;
 }
 
-RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
-
+RocketChat.callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
 
 export { sendNotification, sendAllNotifications };
