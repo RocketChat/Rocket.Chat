@@ -275,7 +275,7 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 
 				const selectionUsers = tempUsers.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
-				const selectionChannels = tempRooms.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate));
+				const selectionChannels = tempRooms.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
 				const selectionMessages = this.importRecord.count.messages;
 
 				super.updateProgress(ProgressStep.USER_SELECTION);
