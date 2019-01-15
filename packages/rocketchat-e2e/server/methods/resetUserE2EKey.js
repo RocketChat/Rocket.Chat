@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users, Subscriptions } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	'e2e.resetUserE2EKey'(userId) {
@@ -9,17 +10,17 @@ Meteor.methods({
 			});
 		}
 
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'reset-other-user-e2e-key') !== true) {
+		if (hasPermission(Meteor.userId(), 'reset-other-user-e2e-key') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'resetUserE2EKey',
 			});
 		}
 
-		RocketChat.models.Users.resetE2EKey(userId);
-		RocketChat.models.Subscriptions.resetUserE2EKey(userId);
+		Users.resetE2EKey(userId);
+		Subscriptions.resetUserE2EKey(userId);
 
 		// Force the user to logout, so that the keys can be generated again
-		RocketChat.models.Users.removeResumeService(userId);
+		Users.removeResumeService(userId);
 		return true;
 	},
 });

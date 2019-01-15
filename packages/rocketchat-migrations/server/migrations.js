@@ -2,7 +2,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { Log } from 'meteor/logging';
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -45,7 +44,7 @@ const DefaultMigration = {
 	},
 };
 
-const Migrations = this.Migrations = {
+export const Migrations = {
 	_list: [DefaultMigration],
 	options: {
 		// false disables logging
@@ -411,5 +410,3 @@ Migrations._reset = function() {
 	}];
 	this._collection.remove({});
 };
-
-RocketChat.Migrations = Migrations;
