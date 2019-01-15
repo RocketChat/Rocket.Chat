@@ -176,7 +176,7 @@ Template.adminImportHistory.helpers({
 		}
 
 		return this.imported;
-	}
+	},
 });
 
 Template.adminImportHistory.events({
