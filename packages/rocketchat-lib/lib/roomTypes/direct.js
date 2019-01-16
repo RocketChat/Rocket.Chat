@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
+import { ChatRoom } from 'meteor/rocketchat:models';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {

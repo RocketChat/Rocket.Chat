@@ -1,3 +1,1 @@
-import { AccountBox as accountBox } from 'meteor/rocketchat:ui-utils';
-
-AccountBox = accountBox;
+export { AccountBox } from 'meteor/rocketchat:ui-utils';

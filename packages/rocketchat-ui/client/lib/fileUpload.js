@@ -4,7 +4,8 @@ import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import { Handlebars } from 'meteor/ui';
-import { t } from 'meteor/rocketchat:utils';
+import { t, fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -135,7 +136,7 @@ const getUploadPreview = async(file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-fileUpload = async(files) => { //eslint-disable-line
+export const fileUpload = async(files) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');
@@ -147,7 +148,7 @@ fileUpload = async(files) => { //eslint-disable-line
 			return;
 		}
 
-		if (!RocketChat.fileUploadIsValidContentType(file.file.type)) {
+		if (!fileUploadIsValidContentType(file.file.type)) {
 			modal.open({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,
