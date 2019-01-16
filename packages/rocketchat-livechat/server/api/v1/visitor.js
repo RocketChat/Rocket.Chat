@@ -1,6 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
+import { findGuest } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/visitor', {
 	post() {
@@ -92,5 +94,29 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true 
 			},
 		}).fetch();
 		return RocketChat.API.v1.success({ rooms });
+	},
+});
+
+RocketChat.API.v1.addRoute('livechat/visitor.status', {
+	post() {
+		try {
+			check(this.bodyParams, {
+				token: String,
+				status: String,
+			});
+
+			const { token, status } = this.bodyParams;
+
+			const guest = findGuest(token);
+			if (!guest) {
+				throw new Meteor.Error('invalid-token');
+			}
+
+			RocketChat.Livechat.notifyGuestStatusChanged(token, status);
+
+			return RocketChat.API.v1.success({ token, status });
+		} catch (e) {
+			return RocketChat.API.v1.failure(e);
+		}
 	},
 });
