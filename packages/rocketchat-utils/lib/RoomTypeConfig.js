@@ -166,25 +166,22 @@ export class RoomTypeConfig {
 		return '';
 	}
 
-	async loadHasPermission() {
-		if (!this.hasPermission) {
-			const { hasPermission } = await import('meteor/rocketchat:authorization');
-			this.hasPermission = hasPermission;
+	canBeCreated(hasPermission) {
+		if (!hasPermission && typeof hasPermission !== 'function') {
+			throw new Error('You MUST provide the "hasPermission" to canBeCreated function');
 		}
+		return Meteor.isServer ?
+			hasPermission(Meteor.userId(), `create-${ this._identifier }`) :
+			hasPermission([`create-${ this._identifier }`]);
 	}
 
-	async canBeCreated() {
-		await this.loadHasPermission();
+	canBeDeleted(hasPermission, room) {
+		if (!hasPermission && typeof hasPermission !== 'function') {
+			throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
+		}
 		return Meteor.isServer ?
-			this.hasPermission(Meteor.userId(), `create-${ this._identifier }`) :
-			this.hasPermission([`create-${ this._identifier }`]);
-	}
-
-	async canBeDeleted(room) {
-		await this.loadHasPermission();
-		return Meteor.isServer ?
-			this.hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id) :
-			this.hasPermission(`delete-${ room.t }`, room._id);
+			hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id) :
+			hasPermission(`delete-${ room.t }`, room._id);
 	}
 
 	supportMembersList(/* room */) {
