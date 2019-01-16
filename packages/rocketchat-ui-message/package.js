@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 		'rocketchat:ui-utils',
 		'rocketchat:emoji',
 		'rocketchat:lib',
+		'rocketchat:ui',
 		'rocketchat:ui-account',
 		'rocketchat:ui-vrecord',
 		'rocketchat:ui-sidenav',

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ansispan } from '../ansispan';
 import { stdout } from '../viewLogs';
+import { readMessage } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import moment from 'moment';
 

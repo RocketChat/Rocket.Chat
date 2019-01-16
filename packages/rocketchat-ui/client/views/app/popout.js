@@ -1,3 +1,1 @@
-import { popout as _popout } from 'meteor/rocketchat:ui-utils';
-
-popout = _popout;
+export { popout } from 'meteor/rocketchat:ui-utils';
