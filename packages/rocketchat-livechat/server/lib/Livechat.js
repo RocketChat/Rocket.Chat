@@ -832,6 +832,11 @@ RocketChat.Livechat = {
 		return true;
 	},
 
+	notifyGuestStatusChanged(token, status) {
+		RocketChat.models.LivechatInquiry.updateVisitorStatus(token, status);
+		RocketChat.models.Rooms.updateVisitorStatus(token, status);
+	},
+
 	sendOfflineMessage(data = {}) {
 		if (!RocketChat.settings.get('Livechat_display_offline_form')) {
 			return false;
