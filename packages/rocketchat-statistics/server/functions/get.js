@@ -70,6 +70,12 @@ RocketChat.statistics.get = function _getStatistics() {
 	// livechat visitors
 	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
+	// livechat agents
+	statistics.totalLivechatAgents = RocketChat.models.Users.findAgents().count();
+
+	// livechat enabled
+	statistics.livechatEnabled = RocketChat.settings.get('Livechat_enabled');
+
 	// Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count();
 	statistics.totalChannelMessages = _.reduce(RocketChat.models.Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
