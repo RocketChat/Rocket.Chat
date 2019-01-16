@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { settings } from 'meteor/rocketchat:settings';
 import {
 	ChatMessage as chatMessage,
 	CachedChatRoom as cachedChatRoom,
@@ -27,7 +28,7 @@ this.CachedUserList = cachedUserList;
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
+		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === true) {
 			CachedChatRoom.init();
 			CachedChatSubscription.ready.set(true);
 		}
