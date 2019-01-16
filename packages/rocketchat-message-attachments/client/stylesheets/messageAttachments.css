@@ -166,6 +166,7 @@ html.rtl .attachment {
 	& .pdf-block-freeze {
 
 		position: absolute;
+
 		width: 100%;
 
 		height: 2em;
