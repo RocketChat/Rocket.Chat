@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { CustomSounds } from '../lib/CustomSounds';
 
 Meteor.startup(() =>
-	RocketChat.CachedCollectionManager.onLogin(() =>
-		RocketChat.Notifications.onAll('updateCustomSound', (data) => RocketChat.CustomSounds.update(data.soundData))
+	CachedCollectionManager.onLogin(() =>
+		Notifications.onAll('updateCustomSound', (data) => CustomSounds.update(data.soundData))
 	)
 );

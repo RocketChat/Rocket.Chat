@@ -17,6 +17,7 @@ import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
 import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
+import CustomSounds from './models/CustomSounds';
 import _ from 'underscore';
 
 const Users = _.extend({}, users, Meteor.users);
@@ -47,4 +48,5 @@ export {
 	ChatMessage,
 	ChatSubscription,
 	Rooms,
+	CustomSounds,
 };
