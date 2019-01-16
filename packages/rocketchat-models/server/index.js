@@ -13,6 +13,7 @@ import Users from './models/Users';
 import Statistics from './models/Statistics';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
+import CustomSounds from './models/CustomSounds';
 
 export {
 	Base,
@@ -30,4 +31,5 @@ export {
 	Statistics,
 	Permissions,
 	Roles,
+	CustomSounds,
 };
