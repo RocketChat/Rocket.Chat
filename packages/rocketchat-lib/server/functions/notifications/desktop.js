@@ -48,7 +48,7 @@ export function shouldNotifyDesktop({
 	hasMentionToUser,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && desktopNotifications == null) {
+	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser) {
 		return false;
 	}
 
