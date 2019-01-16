@@ -1,36 +1,25 @@
-import { AdminBox } from './lib/AdminBox';
-import { modal } from './lib/modal';
-import { SideNav } from './lib/SideNav';
-import { AccountBox } from './lib/AccountBox';
-import { menu } from './lib/menu';
-import { call } from './lib/callMethod';
-import { erase, hide, leave } from './lib/ChannelActions';
-import { MessageAction } from './lib/MessageAction';
-import { messageBox } from './lib/messageBox';
-import { popover } from './lib/popover';
-import { readMessage } from './lib/readMessages';
-import { RoomManager } from './lib/RoomManager';
-import { upsertMessage, RoomHistoryManager } from './lib/RoomHistoryManager';
-import { mainReady } from './lib/mainReady';
-import { renderMessageBody } from './lib/renderMessageBody';
-
-export {
-	AdminBox,
-	modal,
-	SideNav,
-	AccountBox,
-	menu,
-	call,
-	erase,
-	hide,
-	leave,
-	MessageAction,
-	messageBox,
-	popover,
-	readMessage,
-	RoomManager,
-	RoomHistoryManager,
-	mainReady,
-	renderMessageBody,
-	upsertMessage,
-};
+export { AdminBox } from './lib/AdminBox';
+export { modal } from './lib/modal';
+export { SideNav } from './lib/SideNav';
+export { AccountBox } from './lib/AccountBox';
+export { menu } from './lib/menu';
+export { call } from './lib/callMethod';
+export { erase, hide, leave } from './lib/ChannelActions';
+export { MessageAction } from './lib/MessageAction';
+export { messageBox } from './lib/messageBox';
+export { popover } from './lib/popover';
+export { readMessage } from './lib/readMessages';
+export { RoomManager } from './lib/RoomManager';
+export { upsertMessage, RoomHistoryManager } from './lib/RoomHistoryManager';
+export { mainReady } from './lib/mainReady';
+export { renderMessageBody } from './lib/renderMessageBody';
+export { Layout } from './lib/Layout';
+export { IframeLogin, iframeLogin } from './lib/IframeLogin';
+export { fireGlobalEvent } from './lib/fireGlobalEvent';
+export { getAvatarAsPng, updateAvatarOfUsername } from './lib/avatar';
+export { TabBar } from './lib/TabBar';
+export { RocketChatTabBar } from './lib/RocketChatTabBar';
+export { popout } from './lib/popout';
+export { messageProperties } from '../lib/MessageProperties';
+export { MessageTypes } from '../lib/MessageTypes';
+export { alerts } from './lib/alerts';
