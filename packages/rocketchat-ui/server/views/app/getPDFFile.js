@@ -1,6 +1,5 @@
 const fs = require('fs');
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	async getPDFFile(pdfId) {
