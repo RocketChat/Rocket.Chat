@@ -881,6 +881,15 @@ RocketChat.Livechat = {
 
 		return true;
 	},
+
+	notifyAgentStatusChanged(userId, status) {
+		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
+			RocketChat.Livechat.stream.emit(room._id, {
+				type: 'agentStatus',
+				status,
+			});
+		});
+	},
 };
 
 RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');
