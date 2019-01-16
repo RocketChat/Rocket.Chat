@@ -60,6 +60,7 @@ import './methods/saveOfficeHours';
 import './methods/sendTranscript';
 import './models/Users';
 import './models/Rooms';
+import './models/Subscriptions';
 import './models/Messages';
 import '../lib/LivechatExternalMessage';
 import './models/LivechatCustomField';

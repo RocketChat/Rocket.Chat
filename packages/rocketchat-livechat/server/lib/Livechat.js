@@ -200,7 +200,9 @@ RocketChat.Livechat = {
 					username,
 				};
 
-				if (this.connection) {
+				const storeHttpHeaderData = RocketChat.settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations');
+
+				if (this.connection && storeHttpHeaderData) {
 					userData.userAgent = this.connection.httpHeaders['user-agent'];
 					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.httpHeaders['x-forwarded-for'] || this.connection.clientAddress;
 					userData.host = this.connection.httpHeaders.host;
@@ -366,6 +368,8 @@ RocketChat.Livechat = {
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',
+			'Livechat_force_accept_data_processing_consent',
+			'Livechat_data_processing_consent_text',
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
@@ -715,6 +719,35 @@ RocketChat.Livechat = {
 		}
 
 		return RocketChat.authz.removeUserFromRoles(user._id, 'livechat-manager');
+	},
+
+	removeGuest(_id) {
+		check(_id, String);
+
+		const guest = LivechatVisitors.findById(_id);
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
+		}
+
+		this.cleanGuestHistory(_id);
+		return LivechatVisitors.removeById(_id);
+	},
+
+	cleanGuestHistory(_id) {
+		const guest = LivechatVisitors.findById(_id);
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
+		}
+
+		const { token } = guest;
+
+		RocketChat.models.Rooms.findByVisitorToken(token).forEach((room) => {
+			RocketChat.models.Messages.removeFilesByRoomId(room._id);
+			RocketChat.models.Messages.removeByRoomId(room._id);
+		});
+
+		RocketChat.models.Subscriptions.removeByVisitorToken(token);
+		RocketChat.models.Rooms.removeByVisitorToken(token);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
