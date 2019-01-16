@@ -22,12 +22,14 @@ export function findGuest(token) {
 			name: 1,
 			username: 1,
 			token: 1,
+			visitorEmails: 1,
 		},
 	});
 }
 
 export function findRoom(token, rid) {
 	const fields = {
+		t: 1,
 		departmentId: 1,
 		servedBy: 1,
 		open: 1,
@@ -96,6 +98,7 @@ export function settings() {
 			transcript: initSettings.Livechat_enable_transcript,
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
+			showConnecting: initSettings.Livechat_Show_Connecting,
 		},
 		theme: {
 			title: initSettings.Livechat_title,

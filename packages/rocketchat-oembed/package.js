@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'konecty:change-case',
 		'rocketchat:lib',
+		'rocketchat:utils',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

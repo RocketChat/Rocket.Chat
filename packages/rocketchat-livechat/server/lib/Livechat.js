@@ -378,6 +378,8 @@ RocketChat.Livechat = {
 			settings[key] = value;
 		});
 
+		settings.Livechat_Show_Connecting = this.showConnecting();
+
 		return settings;
 	},
 
@@ -863,6 +865,11 @@ RocketChat.Livechat = {
 		return true;
 	},
 
+	notifyGuestStatusChanged(token, status) {
+		RocketChat.models.LivechatInquiry.updateVisitorStatus(token, status);
+		RocketChat.models.Rooms.updateVisitorStatus(token, status);
+	},
+
 	sendOfflineMessage(data = {}) {
 		if (!RocketChat.settings.get('Livechat_display_offline_form')) {
 			return false;
@@ -906,6 +913,15 @@ RocketChat.Livechat = {
 		});
 
 		return true;
+	},
+
+	notifyAgentStatusChanged(userId, status) {
+		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
+			RocketChat.Livechat.stream.emit(room._id, {
+				type: 'agentStatus',
+				status,
+			});
+		});
 	},
 };
 

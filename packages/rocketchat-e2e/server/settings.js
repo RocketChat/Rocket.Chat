@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.addGroup('E2E Encryption', function() {
+settings.addGroup('E2E Encryption', function() {
 	this.add('E2E_Enable', false, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',

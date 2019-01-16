@@ -3,7 +3,8 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { ChatRoom, RoomManager } from 'meteor/rocketchat:ui';
+import { RoomManager } from 'meteor/rocketchat:ui-utils';
+import { ChatRoom, ChatSubscription } from 'meteor/rocketchat:models';
 
 Meteor.startup(function() {
 	const roomSettingsChangedCallback = (msg) => {
