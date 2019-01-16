@@ -1,18 +1,18 @@
 pipeline:
-  restore-cache:
-    image: drillster/drone-volume-cache
-    restore: true
-    mount:
-      - /drone/.meteor/
-      - ./node_modules
-      - ./.meteor/local
-    volumes:
-      - /tmp/cache/Rocket.Chat:/cache
-    when:
-        event: push
-        branch:
-          - staging
-          - master
+  # restore-cache:
+  #   image: drillster/drone-volume-cache
+  #   restore: true
+  #   mount:
+  #     - /drone/.meteor/
+  #     - ./node_modules
+  #     - ./.meteor/local
+  #   volumes:
+  #     - /tmp/cache/Rocket.Chat:/cache
+  #   when:
+  #       event: push
+  #       branch:
+  #         - staging
+  #         - master
   build:
     image: ubuntu:16.04
     environment:
@@ -38,20 +38,20 @@ pipeline:
       branch:
         - staging
         - master
-  rebuild-cache:
-    image: drillster/drone-volume-cache
-    rebuild: true
-    mount:
-      - /drone/.meteor/
-      - ./node_modules
-      - ./.meteor/local
-    volumes:
-      - /tmp/cache/Rocket.Chat:/cache
-    when:
-        event: push
-        branch:
-          - staging
-          - master
+  # rebuild-cache:
+  #   image: drillster/drone-volume-cache
+  #   rebuild: true
+  #   mount:
+  #     - /drone/.meteor/
+  #     - ./node_modules
+  #     - ./.meteor/local
+  #   volumes:
+  #     - /tmp/cache/Rocket.Chat:/cache
+  #   when:
+  #       event: push
+  #       branch:
+  #         - staging
+  #         - master
   s3-sync-dist-test:
       image: plugins/s3-sync:1
       secrets:
