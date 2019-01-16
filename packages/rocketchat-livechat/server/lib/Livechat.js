@@ -1,8 +1,10 @@
-/* globals HTTP */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -363,7 +365,7 @@ RocketChat.Livechat = {
 			'Livechat_conversation_finished_message',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
-
+			'Livechat_registration_form_message',
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
@@ -371,6 +373,8 @@ RocketChat.Livechat = {
 		RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
 			settings[key] = value;
 		});
+
+		settings.Livechat_Show_Connecting = this.showConnecting();
 
 		return settings;
 	},
@@ -437,11 +441,13 @@ RocketChat.Livechat = {
 		let agent;
 
 		if (transferData.userId) {
-			const user = RocketChat.models.Users.findOneById(transferData.userId);
-			agent = {
-				agentId: user._id,
-				username: user.username,
-			};
+			const user = RocketChat.models.Users.findOneOnlineAgentById(transferData.userId);
+			if (!user) {
+				return false;
+			}
+
+			const { _id: agentId, username } = user;
+			agent = Object.assign({}, { agentId, username });
 		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
 			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
 		} else {
@@ -824,6 +830,11 @@ RocketChat.Livechat = {
 		});
 
 		return true;
+	},
+
+	notifyGuestStatusChanged(token, status) {
+		RocketChat.models.LivechatInquiry.updateVisitorStatus(token, status);
+		RocketChat.models.Rooms.updateVisitorStatus(token, status);
 	},
 
 	sendOfflineMessage(data = {}) {

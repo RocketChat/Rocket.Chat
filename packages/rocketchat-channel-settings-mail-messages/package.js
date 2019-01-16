@@ -15,17 +15,8 @@ Package.onUse(function(api) {
 		'rocketchat:channel-settings',
 		'mizzao:autocomplete',
 		'mongo',
+		'rocketchat:utils',
 	]);
-
-	api.addFiles([
-		'client/lib/startup.js',
-		'client/views/mailMessagesInstructions.html',
-		'client/views/mailMessagesInstructions.js',
-	], 'client');
-
-
-	api.addFiles([
-		'server/lib/startup.js',
-		'server/methods/mailMessages.js',
-	], 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

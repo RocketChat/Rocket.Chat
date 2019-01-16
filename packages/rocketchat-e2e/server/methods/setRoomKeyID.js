@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'e2e.setRoomKeyID'(rid, keyID) {
@@ -17,6 +17,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-room-e2e-key-already-exists', 'E2E Key ID already exists', { method: 'e2e.setRoomKeyID' });
 		}
 
-		return RocketChat.models.Rooms.setE2eKeyId(room._id, keyID);
+		return Rooms.setE2eKeyId(room._id, keyID);
 	},
 });

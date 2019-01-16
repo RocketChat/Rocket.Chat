@@ -8,8 +8,13 @@ import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { e2e } from 'meteor/rocketchat:e2e';
+import { Users, ChatSubscription } from 'meteor/rocketchat:models';
+import { getUserPreference } from 'meteor/rocketchat:utils';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui-utils';
+import { promises } from 'meteor/rocketchat:promises';
+import { getAvatarAsPng } from './avatar';
 
-const KonchatNotification = {
+export const KonchatNotification = {
 	notificationStatus: new ReactiveVar,
 
 	// notificacoes HTML5
@@ -27,7 +32,7 @@ const KonchatNotification = {
 	notify(notification) {
 		if (window.Notification && Notification.permission === 'granted') {
 			const message = { rid: (notification.payload != null ? notification.payload.rid : undefined), msg: notification.text, notification: true };
-			return RocketChat.promises.run('onClientMessageReceived', message).then(function(message) {
+			return promises.run('onClientMessageReceived', message).then(function(message) {
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getAvatarUrlFromUsername(notification.payload.sender.username),
 					body: s.stripTags(message.msg),
@@ -36,7 +41,7 @@ const KonchatNotification = {
 					canReply: true,
 				});
 
-				const notificationDuration = notification.duration - 0 || RocketChat.getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
+				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
 				if (notificationDuration > 0) {
 					setTimeout((() => n.close()), notificationDuration * 1000);
 				}
@@ -85,7 +90,6 @@ const KonchatNotification = {
 			}
 		}
 
-		/* globals getAvatarAsPng*/
 		return getAvatarAsPng(notification.payload.sender.username, function(avatarAsPng) {
 			notification.icon = avatarAsPng;
 			return KonchatNotification.notify(notification);
@@ -95,8 +99,8 @@ const KonchatNotification = {
 	newMessage(rid) {
 		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
 			const userId = Meteor.userId();
-			const newMessageNotification = RocketChat.getUserPreference(userId, 'newMessageNotification');
-			const audioVolume = RocketChat.getUserPreference(userId, 'notificationsSoundVolume');
+			const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
+			const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 
 			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
@@ -144,14 +148,14 @@ const KonchatNotification = {
 
 Meteor.startup(() => {
 	Tracker.autorun(function() {
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+		const user = Users.findOne(Meteor.userId(), {
 			fields: {
 				'settings.preferences.newRoomNotification': 1,
 				'settings.preferences.notificationsSoundVolume': 1,
 			},
 		});
-		const newRoomNotification = RocketChat.getUserPreference(user, 'newRoomNotification');
-		const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
+		const newRoomNotification = getUserPreference(user, 'newRoomNotification');
+		const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
 
 		if ((Session.get('newRoomSound') || []).length > 0) {
 			Meteor.defer(function() {
@@ -175,5 +179,3 @@ Meteor.startup(() => {
 		}
 	});
 });
-export { KonchatNotification };
-this.KonchatNotification = KonchatNotification;

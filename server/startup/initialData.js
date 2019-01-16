@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import _ from 'underscore';
 
 Meteor.startup(function() {

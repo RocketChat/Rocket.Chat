@@ -1,5 +1,6 @@
-/* globals getAvatarUrlFromUsername */
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';

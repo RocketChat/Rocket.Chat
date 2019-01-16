@@ -7,16 +7,10 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('templating', 'client');
-	api.use('rocketchat:lib');
-	api.use('rocketchat:theme');
-	api.use('rocketchat:ui-master');
-
+	api.use([
+		'ecmascript',
+		'templating',
+	]);
 	api.addFiles('client/tooltip.css', 'client');
-
-	api.addFiles('client/rocketchat-tooltip.html', 'client');
-	api.addFiles('client/rocketchat-tooltip.js', 'client');
-
-	api.addFiles('client/init.js', 'client');
+	api.mainModule('client/index.js', 'client');
 });

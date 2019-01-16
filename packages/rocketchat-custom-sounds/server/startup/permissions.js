@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { Permissions } from 'meteor/rocketchat:models';
 
 Meteor.startup(() => {
-	if (RocketChat.models && RocketChat.models.Permissions) {
-		RocketChat.models.Permissions.createOrUpdate('manage-sounds', ['admin']);
+	if (Permissions) {
+		Permissions.createOrUpdate('manage-sounds', ['admin']);
 	}
 });

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.publish('starredMessages', function(rid, limit = 50) {
 	if (!this.userId) {
@@ -7,6 +8,9 @@ Meteor.publish('starredMessages', function(rid, limit = 50) {
 	const publication = this;
 	const user = RocketChat.models.Users.findOneById(this.userId);
 	if (!user) {
+		return this.ready();
+	}
+	if (!Meteor.call('canAccessRoom', rid, this.userId)) {
 		return this.ready();
 	}
 	const cursorHandle = RocketChat.models.Messages.findStarredByUserAtRoom(this.userId, rid, {

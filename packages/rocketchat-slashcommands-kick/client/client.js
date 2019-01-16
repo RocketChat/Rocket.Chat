@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.slashCommands.add('kick', function(command, params) {
 	const username = params.trim();
 	if (username === '') {

@@ -9,26 +9,10 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'rocketchat:lib',
+		'rocketchat:utils',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'client/lib/PinnedMessage.js',
-		'client/actionButton.js',
-		'client/messageType.js',
-		'client/pinMessage.js',
-		'client/tabBar.js',
-		'client/views/pinnedMessages.html',
-		'client/views/pinnedMessages.js',
-		'client/views/stylesheets/messagepin.css',
-	], 'client');
-
-	api.addFiles([
-		'server/models/Rooms.js',
-		'server/settings.js',
-		'server/pinMessage.js',
-		'server/publications/pinnedMessages.js',
-		'server/startup/indexes.js',
-	], 'server');
+	api.addFiles('client/views/stylesheets/messagepin.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

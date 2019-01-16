@@ -1,7 +1,6 @@
-/* globals FileUpload */
-
 import _ from 'underscore';
-import { FileUploadClass } from '../lib/FileUpload';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+import { settings } from 'meteor/rocketchat:settings';
 import '../../ufs/GoogleStorage/server.js';
 import http from 'http';
 import https from 'https';
@@ -14,7 +13,7 @@ const get = function(file, req, res) {
 
 		if (fileUrl) {
 			const storeType = file.store.split(':').pop();
-			if (RocketChat.settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
+			if (settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
 				const request = /^https:/.test(fileUrl) ? https : http;
 				request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 			} else {
@@ -66,10 +65,10 @@ const GoogleCloudStorageUserDataFiles = new FileUploadClass({
 });
 
 const configure = _.debounce(function() {
-	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');
-	const accessId = RocketChat.settings.get('FileUpload_GoogleStorage_AccessId');
-	const secret = RocketChat.settings.get('FileUpload_GoogleStorage_Secret');
-	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
+	const bucket = settings.get('FileUpload_GoogleStorage_Bucket');
+	const accessId = settings.get('FileUpload_GoogleStorage_AccessId');
+	const secret = settings.get('FileUpload_GoogleStorage_Secret');
+	const URLExpiryTimeSpan = settings.get('FileUpload_S3_URLExpiryTimeSpan');
 
 	if (!bucket || !accessId || !secret) {
 		return;
@@ -91,4 +90,4 @@ const configure = _.debounce(function() {
 	GoogleCloudStorageUserDataFiles.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUserDataFiles.name, config);
 }, 500);
 
-RocketChat.settings.get(/^FileUpload_GoogleStorage_/, configure);
+settings.get(/^FileUpload_GoogleStorage_/, configure);

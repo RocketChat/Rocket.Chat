@@ -1,8 +1,10 @@
-/* global InstanceStatus, MongoInternals */
 import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
 import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 const wizardFields = [
 	'Organization_Type',
@@ -30,10 +32,12 @@ RocketChat.statistics.get = function _getStatistics() {
 		}
 	});
 
-	if (statistics.wizard.allowMarketingEmails) {
-		const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
-		statistics.wizard.contactName = firstUser && firstUser.name;
-		statistics.wizard.contactEmail = firstUser && firstUser.emails[0].address;
+	const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
+	statistics.wizard.contactName = firstUser && firstUser.name;
+	statistics.wizard.contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
+
+	if (RocketChat.settings.get('Organization_Email')) {
+		statistics.wizard.contactEmail = RocketChat.settings.get('Organization_Email');
 	}
 
 	// Version
@@ -103,8 +107,17 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.migration = RocketChat.Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
-	if (MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
 		statistics.oplogEnabled = true;
+	}
+
+	try {
+		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));
+		statistics.mongoVersion = version;
+	} catch (e) {
+		console.error('Error getting MongoDB version');
 	}
 
 	return statistics;
