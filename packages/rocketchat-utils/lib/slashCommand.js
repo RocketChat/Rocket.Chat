@@ -65,3 +65,21 @@ slashCommands.executePreview = function _executeSlashCommandPreview(command, par
 		return slashCommands.commands[command].previewCallback(command, params, message, preview);
 	}
 };
+
+Meteor.methods({
+	slashCommand(command) {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'slashCommand',
+			});
+		}
+
+		if (!command || !command.cmd || !slashCommands.commands[command.cmd]) {
+			throw new Meteor.Error('error-invalid-command', 'Invalid Command Provided', {
+				method: 'executeSlashCommandPreview',
+			});
+		}
+
+		return slashCommands.run(command.cmd, command.params, command.msg);
+	},
+});

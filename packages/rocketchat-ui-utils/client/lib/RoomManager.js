@@ -5,7 +5,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { roomTypes as _roomTypes } from 'meteor/rocketchat:utils';
-import { fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
+import { fireGlobalEvent } from './fireGlobalEvent';
 import { promises } from 'meteor/rocketchat:promises';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Notifications } from 'meteor/rocketchat:notifications';
