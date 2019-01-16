@@ -2,6 +2,8 @@ export { AccountBox } from './lib/accountBox';
 import './lib/accounts';
 export { getAvatarAsPng, updateAvatarOfUsername } from './lib/avatar';
 export { ChatMessages } from './lib/chatMessages';
+export { RoomManager } from './lib/RoomManager';
+export { RoomHistoryManager } from './lib/RoomHistoryManager';
 export {
 	ChatMessage,
 	CachedChatRoom,

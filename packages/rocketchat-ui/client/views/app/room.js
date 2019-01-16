@@ -19,7 +19,6 @@ import {
 	Layout,
 	MessageAction,
 	RocketChatTabBar,
-	openedRoom,
 } from 'meteor/rocketchat:ui-utils';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
@@ -689,7 +688,7 @@ Template.room.events({
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
-		chatMessages[openedRoom].input.focus();
+		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
 		let context = $(e.target).parents('.message').data('context');
