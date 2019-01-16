@@ -42,16 +42,311 @@ export class HipChatEnterpriseImporter extends Base {
 		this.path = path;
 		this.messages = new Map();
 		this.directMessages = new Map();
+
+		this.emailList = [];
+	}
+
+	async parseData(data) {
+		const dataString = Buffer.concat(data).toString();
+		let file;
+		try {
+			this.logger.debug('parsing file contents');
+			file = JSON.parse(dataString);
+			this.logger.debug('file parsed');
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+
+		return file;
+	}
+
+	async storeTempUsers(tempUsers) {
+		const result = await this.collection.upsert({
+			import: this.importRecord._id,
+			importer: this.name,
+		}, {
+			$set: {
+				import: this.importRecord._id,
+				importer: this.name,
+			},
+			$addToSet: {
+				users: { $each: tempUsers },
+			},
+		});
+
+		if (result.insertedId) {
+			this.usersId = result.insertedId;
+		}
+	}
+
+	async prepareUsersFile(file) {
+		super.updateProgress(ProgressStep.PREPARING_USERS);
+		let tempUsers = [];
+		let count = 0;
+		this.usersId = false;
+
+		for (const u of file) {
+			const userData = {
+				id: u.User.id,
+				email: u.User.email,
+				name: u.User.name,
+				username: u.User.mention_name,
+				avatar: u.User.avatar && u.User.avatar.replace(/\n/g, ''),
+				timezone: u.User.timezone,
+				isDeleted: u.User.is_deleted,
+			};
+			count++;
+
+			if (u.User.email) {
+				if (this.emailList.indexOf(u.User.email) >= 0) {
+					userData.is_email_taken = true;
+				} else {
+					this.emailList.push(u.User.email);
+				}
+			}
+
+			tempUsers.push(userData);
+			if (tempUsers.length >= 100) {
+				await this.storeTempUsers(tempUsers);
+				tempUsers = [];
+			}
+		}
+
+		if (tempUsers.length > 0) {
+			this.storeTempUsers(tempUsers);
+		}
+
+		// this.users = this.collection.findOne(this.usersId);
+		super.updateRecord({ 'count.users': count });
+		super.addCountToTotal(count);
+	}
+
+	async storeTempRooms(tempRooms) {
+		const result = await this.collection.upsert({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'channels',
+		}, {
+			$set: {
+				import: this.importRecord._id,
+				importer: this.name,
+				type: 'channels',
+			},
+			$addToSet: {
+				channels: { $each: tempRooms },
+			},
+		});
+
+		if (result.insertedId) {
+			this.channelsId = result.insertedId;
+		}
+	}
+
+	async prepareRoomsFile(file) {
+		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		let tempRooms = [];
+		let count = 0;
+		this.channelsId = false;
+
+		for (const r of file) {
+			tempRooms.push({
+				id: r.Room.id,
+				creator: r.Room.owner,
+				created: new Date(r.Room.created),
+				name: s.slugify(r.Room.name),
+				isPrivate: r.Room.privacy === 'private',
+				isArchived: r.Room.is_archived,
+				topic: r.Room.topic,
+			});
+			count++;
+
+			if (tempRooms.length >= 100) {
+				await this.storeTempRooms(tempRooms);
+				tempRooms = [];
+			}
+		}
+
+		if (tempRooms.length > 0) {
+			await this.storeTempRooms(tempRooms);
+		}
+
+		// this.channels = this.collection.findOne(this.channelsId);
+		super.updateRecord({ 'count.channels': count });
+		super.addCountToTotal(count);
+	}
+
+	async storeTempMessages(tempMessages, roomIdentifier, index, subIndex) {
+		this.logger.debug('dumping messages to database');
+		const name = subIndex ? `${ roomIdentifier }/${ index }/${ subIndex }` : `${ roomIdentifier }/${ index }`;
+
+		const messagesId = await this.collection.insert({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'channels',
+			name,
+			messages: tempMessages,
+		});
+
+		this.messagesIds.push(messagesId);
+	}
+
+	async storeUserTempMessages(tempMessages, roomIdentifier, index) {
+		this.logger.debug('dumping messages to database');
+		const messagesId = await this.collection.insert({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'messages',
+			name: `${ roomIdentifier }/${ index }`,
+			messages: tempMessages,
+		});
+
+		this.userMessagesIds.push(messagesId);
+	}
+
+	async prepareUserMessagesFile(file, roomIdentifier, index) {
+		let msgs = [];
+		for (const m of file) {
+			if (m.PrivateUserMessage) {
+				msgs.push({
+					type: 'user',
+					id: `hipchatenterprise-${ m.PrivateUserMessage.id }`,
+					senderId: m.PrivateUserMessage.sender.id,
+					receiverId: m.PrivateUserMessage.receiver.id,
+					text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
+					ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
+					attachment: m.PrivateUserMessage.attachment,
+					attachment_path: m.PrivateUserMessage.attachment_path,
+				});
+			}
+
+			if (msgs.length >= 500) {
+				await this.storeUserTempMessages(msgs, roomIdentifier, index);
+				msgs = [];
+			}
+		}
+
+		if (msgs.length > 0) {
+			await this.storeUserTempMessages(msgs, roomIdentifier, index);
+		}
+
+		return msgs.length;
+	}
+
+	async prepareRoomMessagesFile(file, roomIdentifier, id, index) {
+		let roomMsgs = [];
+		this.logger.debug(`preparing room with ${ file.length } messages `);
+		let subIndex = 0;
+
+		for (const m of file) {
+			if (m.UserMessage) {
+				roomMsgs.push({
+					type: 'user',
+					id: `hipchatenterprise-${ id }-${ m.UserMessage.id }`,
+					userId: m.UserMessage.sender.id,
+					text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
+					ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
+					attachment: m.UserMessage.attachment,
+					attachment_path: m.UserMessage.attachment_path,
+				});
+			} else if (m.NotificationMessage) {
+				const text = m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`;
+
+				roomMsgs.push({
+					type: 'user',
+					id: `hipchatenterprise-${ id }-${ m.NotificationMessage.id }`,
+					userId: 'rocket.cat',
+					alias: m.NotificationMessage.sender,
+					text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
+					ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
+					attachment: m.NotificationMessage.attachment,
+					attachment_path: m.NotificationMessage.attachment_path,
+				});
+			} else if (m.TopicRoomMessage) {
+				roomMsgs.push({
+					type: 'topic',
+					id: `hipchatenterprise-${ id }-${ m.TopicRoomMessage.id }`,
+					userId: m.TopicRoomMessage.sender.id,
+					ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
+					text: m.TopicRoomMessage.message,
+				});
+			} else {
+				this.logger.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
+			}
+
+			if (roomMsgs.length >= 500) {
+				subIndex++;
+				await this.storeTempMessages(roomMsgs, roomIdentifier, index, subIndex);
+				roomMsgs = [];
+			}
+		}
+
+		if (roomMsgs.length > 0) {
+			await this.storeTempMessages(roomMsgs, roomIdentifier, index, subIndex > 0 ? subIndex + 1 : undefined);
+		}
+
+		return roomMsgs.length;
+	}
+
+	async prepareMessagesFile(file, info) {
+		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+		let messageGroupIndex = 0;
+		let userMessageGroupIndex = 0;
+
+		const [type, id] = info.dir.split('/'); // ['users', '1']
+		const roomIdentifier = `${ type }/${ id }`;
+
+		super.updateRecord({ messagesstatus: roomIdentifier });
+
+		switch (type) {
+			case 'users':
+				userMessageGroupIndex++;
+				return this.prepareUserMessagesFile(file, roomIdentifier, userMessageGroupIndex);
+			case 'rooms':
+				messageGroupIndex++;
+				return this.prepareRoomMessagesFile(file, roomIdentifier, id, messageGroupIndex);
+			default:
+				this.logger.warn(`HipChat Enterprise importer isn't configured to handle "${ type }" files.`);
+				return 0;
+		}
+	}
+
+	async prepareFile(info, data, fileName) {
+		const file = await this.parseData(data);
+		if (file === false) {
+			this.logger.warn('failed to parse data');
+			return false;
+		}
+
+		switch (info.base) {
+			case 'users.json':
+				await this.prepareUsersFile(file);
+				break;
+			case 'rooms.json':
+				await this.prepareRoomsFile(file);
+				break;
+			case 'history.json':
+				return await this.prepareMessagesFile(file, info);
+			default:
+				this.logger.warn(`HipChat Enterprise importer doesn't know what to do with the file "${ fileName }" :o`, info);
+				break;
+		}
+
+		return 0;
 	}
 
 	prepareUsingLocalFile(fullFilePath) {
-		const tempUsers = [];
-		const tempRooms = [];
-		const emails = [];
-		const tempMessages = new Map();
-		const tempDirectMessages = new Map();
+		this.logger.debug('start preparing import operation');
+		this.messagesIds = [];
+		this.userMessagesIds = [];
+		this.channelsId = false;
+		this.usersId = false;
+		this.emailList = [];
+		let messageCount = 0;
+
 		const promise = new Promise((resolve, reject) => {
 			this.extract.on('entry', Meteor.bindEnvironment((header, stream, next) => {
+				this.logger.debug(`new entry from import file: ${ header.name }`);
 				if (!header.name.endsWith('.json')) {
 					stream.resume();
 					return next();
@@ -64,124 +359,15 @@ export class HipChatEnterpriseImporter extends Base {
 					data.push(chunk);
 				}));
 
-				stream.on('end', Meteor.bindEnvironment(() => {
+				stream.on('end', Meteor.bindEnvironment(async() => {
 					this.logger.debug(`Processing the file: ${ header.name }`);
-					const dataString = Buffer.concat(data).toString();
-					let file;
-					try {
-						file = JSON.parse(dataString);
-					} catch (e) {
-						console.error(e);
-						return next();
-					}
+					messageCount += await this.prepareFile(info, data, header.name);
 
-					if (info.base === 'users.json') {
-						super.updateProgress(ProgressStep.PREPARING_USERS);
-						for (const u of file) {
-							const userData = {
-								id: u.User.id,
-								email: u.User.email,
-								name: u.User.name,
-								username: u.User.mention_name,
-								avatar: u.User.avatar && u.User.avatar.replace(/\n/g, ''),
-								timezone: u.User.timezone,
-								isDeleted: u.User.is_deleted,
-							};
-
-							if (u.User.email) {
-								if (emails.indexOf(u.User.email) >= 0) {
-									userData.is_email_taken = true;
-								} else {
-									emails.push(u.User.email);
-								}
-							}
-
-							tempUsers.push(userData);
-						}
-					} else if (info.base === 'rooms.json') {
-						super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-						for (const r of file) {
-							tempRooms.push({
-								id: r.Room.id,
-								creator: r.Room.owner,
-								created: new Date(r.Room.created),
-								name: s.slugify(r.Room.name),
-								isPrivate: r.Room.privacy === 'private',
-								isArchived: r.Room.is_archived,
-								topic: r.Room.topic,
-							});
-						}
-					} else if (info.base === 'history.json') {
-						const [type, id] = info.dir.split('/'); // ['users', '1']
-						const roomIdentifier = `${ type }/${ id }`;
-						if (type === 'users') {
-							const msgs = [];
-							for (const m of file) {
-								if (m.PrivateUserMessage) {
-									msgs.push({
-										type: 'user',
-										id: `hipchatenterprise-${ m.PrivateUserMessage.id }`,
-										senderId: m.PrivateUserMessage.sender.id,
-										receiverId: m.PrivateUserMessage.receiver.id,
-										text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
-										ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
-										attachment: m.PrivateUserMessage.attachment,
-										attachment_path: m.PrivateUserMessage.attachment_path,
-									});
-								}
-							}
-							tempDirectMessages.set(roomIdentifier, msgs);
-						} else if (type === 'rooms') {
-							const roomMsgs = [];
-
-							for (const m of file) {
-								if (m.UserMessage) {
-									roomMsgs.push({
-										type: 'user',
-										id: `hipchatenterprise-${ id }-${ m.UserMessage.id }`,
-										userId: m.UserMessage.sender.id,
-										text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
-										ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
-										attachment: m.UserMessage.attachment,
-										attachment_path: m.UserMessage.attachment_path,
-									});
-								} else if (m.NotificationMessage) {
-									const text = m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`;
-
-									roomMsgs.push({
-										type: 'user',
-										id: `hipchatenterprise-${ id }-${ m.NotificationMessage.id }`,
-										userId: 'rocket.cat',
-										alias: m.NotificationMessage.sender,
-										text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
-										ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
-										attachment: m.NotificationMessage.attachment,
-										attachment_path: m.NotificationMessage.attachment_path,
-									});
-								} else if (m.TopicRoomMessage) {
-									roomMsgs.push({
-										type: 'topic',
-										id: `hipchatenterprise-${ id }-${ m.TopicRoomMessage.id }`,
-										userId: m.TopicRoomMessage.sender.id,
-										ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
-										text: m.TopicRoomMessage.message,
-									});
-								} else {
-									this.logger.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
-								}
-							}
-							tempMessages.set(roomIdentifier, roomMsgs);
-						} else {
-							this.logger.warn(`HipChat Enterprise importer isn't configured to handle "${ type }" files.`);
-						}
-					} else {
-						// What are these files!?
-						this.logger.warn(`HipChat Enterprise importer doesn't know what to do with the file "${ header.name }" :o`, info);
-					}
+					this.logger.debug('next import entry');
 					next();
 				}));
-				stream.on('error', () => next());
 
+				stream.on('error', () => next());
 				stream.resume();
 			}));
 
@@ -191,92 +377,44 @@ export class HipChatEnterpriseImporter extends Base {
 			});
 
 			this.extract.on('finish', Meteor.bindEnvironment(() => {
+				this.logger.debug('finished parsing files, checking for errors now');
+
+				super.updateRecord({ 'count.messages': messageCount, messagesstatus: null });
+				super.addCountToTotal(messageCount);
+
 				// Check if any of the emails used are already taken
-				if (emails.length > 0) {
-					const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: emails } });
 
-					conflictingUsers.forEach((conflictingUser) => tempUsers.forEach((newUser) => conflictingUser.emails.forEach((email) => {
-						if (email && email.address === newUser.email) {
-							if (conflictingUser.username !== newUser.username) {
-								newUser.is_email_taken = true;
-								newUser.do_import = false;
-								return false;
-							}
+				if (this.emailList.length > 0) {
+					const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: this.emailList } });
+					const conflictingUserEmails = [];
+
+					conflictingUsers.forEach((conflictingUser) => {
+						if (conflictingUser.emails && conflictingUser.emails.length) {
+							conflictingUser.emails.forEach((email) => {
+								conflictingUserEmails.push(email.address);
+							});
 						}
+					});
 
-						return true;
-					})));
-				}
-
-				// Insert the users record, eventually this might have to be split into several ones as well
-				// if someone tries to import a several thousands users instance
-				const usersId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
-				this.users = this.collection.findOne(usersId);
-				super.updateRecord({ 'count.users': tempUsers.length });
-				super.addCountToTotal(tempUsers.length);
-
-				// Insert the channels records.
-				const channelsId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'channels', channels: tempRooms });
-				this.channels = this.collection.findOne(channelsId);
-				super.updateRecord({ 'count.channels': tempRooms.length });
-				super.addCountToTotal(tempRooms.length);
-
-				// Save the messages records to the import record for `startImport` usage
-				super.updateProgress(ProgressStep.PREPARING_MESSAGES);
-				let messagesCount = 0;
-				for (const [channel, msgs] of tempMessages.entries()) {
-					if (!this.messages.get(channel)) {
-						this.messages.set(channel, new Map());
-					}
-
-					messagesCount += msgs.length;
-					super.updateRecord({ messagesstatus: channel });
-
-					if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
-						Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
-							const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }/${ i }`, messages: splitMsg });
-							this.messages.get(channel).set(`${ channel }.${ i }`, this.collection.findOne(messagesId));
-						});
-					} else {
-						const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'messages', name: `${ channel }`, messages: msgs });
-						this.messages.get(channel).set(channel, this.collection.findOne(messagesId));
+					if (conflictingUserEmails.length > 0) {
+						this.flagConflictingEmails(conflictingUserEmails);
 					}
 				}
-
-				for (const [directMsgUser, msgs] of tempDirectMessages.entries()) {
-					this.logger.debug(`Preparing the direct messages for: ${ directMsgUser }`);
-					if (!this.directMessages.get(directMsgUser)) {
-						this.directMessages.set(directMsgUser, new Map());
-					}
-
-					messagesCount += msgs.length;
-					super.updateRecord({ messagesstatus: directMsgUser });
-
-					if (Base.getBSONSize(msgs) > Base.getMaxBSONSize()) {
-						Base.getBSONSafeArraysFromAnArray(msgs).forEach((splitMsg, i) => {
-							const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'directMessages', name: `${ directMsgUser }/${ i }`, messages: splitMsg });
-							this.directMessages.get(directMsgUser).set(`${ directMsgUser }.${ i }`, this.collection.findOne(messagesId));
-						});
-					} else {
-						const messagesId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'directMessages', name: `${ directMsgUser }`, messages: msgs });
-						this.directMessages.get(directMsgUser).set(directMsgUser, this.collection.findOne(messagesId));
-					}
-				}
-
-				super.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
-				super.addCountToTotal(messagesCount);
 
 				// Ensure we have some users, channels, and messages
-				if (tempUsers.length === 0 || tempRooms.length === 0 || messagesCount === 0) {
-					this.logger.warn(`The loaded users count ${ tempUsers.length }, the loaded rooms ${ tempRooms.length }, and the loaded messages ${ messagesCount }`);
+				if (!this.usersId || !this.channelsId || messageCount === 0) {
 					super.updateProgress(ProgressStep.ERROR);
 					reject(new Meteor.Error('error-import-file-is-empty'));
 					return;
 				}
 
-				const selectionUsers = tempUsers.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
-				const selectionChannels = tempRooms.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
-				const selectionMessages = this.importRecord.count.messages;
+				// const selectionUsers = tempUsers.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
+				// const selectionChannels = tempRooms.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
+				// const selectionMessages = this.importRecord.count.messages;
+
+				const selectionUsers = [];
+				const selectionChannels = [];
+				const selectionMessages = [];
 
 				super.updateProgress(ProgressStep.USER_SELECTION);
 
@@ -290,6 +428,7 @@ export class HipChatEnterpriseImporter extends Base {
 				this.logger.warn('extract error:', err);
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
+			this.logger.debug('start extracting import file');
 			rs.pipe(gunzip).pipe(this.extract);
 		});
 

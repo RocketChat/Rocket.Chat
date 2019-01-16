@@ -25,7 +25,15 @@ Meteor.methods({
 			return undefined;
 		}
 
-		if (importer.instance.progress.step === ProgressStep.DOWNLOADING_FILE_URL) {
+		const waitingSteps = [
+			ProgressStep.DOWNLOADING_FILE_URL,
+			ProgressStep.PREPARING_CHANNELS,
+			ProgressStep.PREPARING_MESSAGES,
+			ProgressStep.PREPARING_USERS,
+			ProgressStep.PREPARING_STARTED,
+		];
+
+		if (waitingSteps.indexOf(importer.instance.progress.step) >= 0) {
 			return { waiting: true };
 		}
 

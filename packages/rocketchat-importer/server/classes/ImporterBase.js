@@ -324,6 +324,18 @@ export class Base {
 		});
 	}
 
+	flagConflictingEmails(emailList) {
+		Imports.model.update({
+			_id: this.importRecord._id,
+			'fileData.users.email': { $in: emailList },
+		}, {
+			$set: {
+				'fileData.users.$.is_email_taken': true,
+				'fileData.users.$.do_import': false,
+			},
+		});
+	}
+
 	/**
 	 * Updates the import record with the given fields being `set`.
 	 *
