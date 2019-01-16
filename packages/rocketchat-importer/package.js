@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:logger',
+		'rocketchat:file-upload',
 	]);
 
 	api.mainModule('client/index.js', 'client');

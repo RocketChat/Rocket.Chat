@@ -1,13 +1,13 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { emoji } from '../../lib/rocketchat';
 import { isSetNotNull } from '../function-isSet';
 import { HTML } from 'meteor/htmljs';
 
-export const renderEmoji = function(emoji) {
-	if (isSetNotNull(() => RocketChat.emoji.list[emoji].emojiPackage)) {
-		const { emojiPackage } = RocketChat.emoji.list[emoji];
-		return RocketChat.emoji.packages[emojiPackage].render(emoji);
+export const renderEmoji = function(_emoji) {
+	if (isSetNotNull(() => emoji.list[_emoji].emojiPackage)) {
+		const { emojiPackage } = emoji.list[_emoji];
+		return emoji.packages[emojiPackage].render(_emoji);
 	}
 };
 
@@ -15,11 +15,11 @@ Blaze.registerHelper('renderEmoji', renderEmoji);
 
 Template.registerHelper('renderEmoji', new Template('renderEmoji', function() {
 	const view = this;
-	const emoji = Blaze.getData(view);
+	const _emoji = Blaze.getData(view);
 
-	if (isSetNotNull(() => RocketChat.emoji.list[emoji].emojiPackage)) {
-		const { emojiPackage } = RocketChat.emoji.list[emoji];
-		return new HTML.Raw(RocketChat.emoji.packages[emojiPackage].render(emoji));
+	if (isSetNotNull(() => emoji.list[_emoji].emojiPackage)) {
+		const { emojiPackage } = emoji.list[_emoji];
+		return new HTML.Raw(emoji.packages[emojiPackage].render(_emoji));
 	}
 
 	return '';
