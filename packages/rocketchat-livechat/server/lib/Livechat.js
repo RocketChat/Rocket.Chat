@@ -374,6 +374,8 @@ RocketChat.Livechat = {
 			settings[key] = value;
 		});
 
+		settings.Livechat_Show_Connecting = this.showConnecting();
+
 		return settings;
 	},
 
@@ -828,6 +830,11 @@ RocketChat.Livechat = {
 		});
 
 		return true;
+	},
+
+	notifyGuestStatusChanged(token, status) {
+		RocketChat.models.LivechatInquiry.updateVisitorStatus(token, status);
+		RocketChat.models.Rooms.updateVisitorStatus(token, status);
 	},
 
 	sendOfflineMessage(data = {}) {
