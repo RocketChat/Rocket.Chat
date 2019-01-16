@@ -300,7 +300,7 @@ export function importNewUsers(ldap) {
 			}
 
 			// Add user if it was not added before
-			let user = Meteor.users.findOne(userQuery);
+			const user = Meteor.users.findOne(userQuery);
 
 			if (user && username && RocketChat.settings.get('LDAP_Merge_Existing_Users') === true) {
 				const userQuery = {
