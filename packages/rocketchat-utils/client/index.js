@@ -10,6 +10,7 @@ import { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } 
 import { RoomTypesCommon } from '../lib/RoomTypesCommon';
 import { getAvatarUrlFromUsername } from '../lib/getAvatarUrlFromUsername';
 import { slashCommands } from '../lib/slashCommand';
+import { getUserNotificationPreference } from '../lib/getUserNotificationPreference';
 
 export {
 	t,
@@ -30,4 +31,5 @@ export {
 	UiTextContext,
 	getAvatarUrlFromUsername,
 	slashCommands,
+	getUserNotificationPreference,
 };
