@@ -95,6 +95,7 @@ export function settings() {
 			language: initSettings.Language,
 			transcript: initSettings.Livechat_enable_transcript,
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
+			showConnecting: initSettings.Livechat_Show_Connecting,
 		},
 		theme: {
 			title: initSettings.Livechat_title,

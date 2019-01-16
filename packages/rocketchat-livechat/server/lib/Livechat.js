@@ -374,6 +374,8 @@ RocketChat.Livechat = {
 			settings[key] = value;
 		});
 
+		settings.Livechat_Show_Connecting = this.showConnecting();
+
 		return settings;
 	},
 
