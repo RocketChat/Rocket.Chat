@@ -3,7 +3,8 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
-import { RoomManager } from 'meteor/rocketchat:ui-utils';
+import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from 'meteor/rocketchat:ui-utils';
+import { ChatSubscription } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
 export let currentTracker = undefined;

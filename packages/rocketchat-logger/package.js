@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 		'raix:eventemitter',
 		'templating',
 		'rocketchat:utils',
+		'rocketchat:ui-utils',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 	]);
