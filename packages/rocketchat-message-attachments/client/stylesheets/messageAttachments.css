@@ -162,4 +162,10 @@ html.rtl .attachment {
 	& .actions-container {
 		margin-top: 6px;
 	}
+
+	& .pdf-block-freeze {
+		width: 100%;
+		height: 2em;
+		position: absolute;
+	}
 }
