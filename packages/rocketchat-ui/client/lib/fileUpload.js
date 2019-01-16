@@ -136,7 +136,7 @@ const getUploadPreview = async(file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-fileUpload = async(files) => {
+export const fileUpload = async(files) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');

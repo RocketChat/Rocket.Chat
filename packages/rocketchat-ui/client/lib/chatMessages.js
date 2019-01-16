@@ -13,6 +13,8 @@ import { promises } from 'meteor/rocketchat:promises';
 import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { Messages, Rooms, ChatMessage } from 'meteor/rocketchat:models';
 import { emoji } from 'meteor/rocketchat:emoji';
+import { KonchatNotification } from './notification';
+import { MsgTyping } from './msgTyping';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -27,7 +29,7 @@ Meteor.startup(() => {
 	});
 });
 
-ChatMessages = class ChatMessages {
+export const ChatMessages = class ChatMessages {
 	constructor() {
 
 		this.saveTextMessageBox = _.debounce((rid, value) => {

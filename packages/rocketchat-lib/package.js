@@ -36,6 +36,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:emoji');
 	api.use('rocketchat:ui');
 	api.use('rocketchat:accounts');
+	api.use('rocketchat:ui');
 	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
