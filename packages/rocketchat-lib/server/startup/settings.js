@@ -1252,6 +1252,10 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
+		this.add('UI_DisplayDirectory', true, {
+			type: 'boolean',
+			public: true,
+		});
 		this.add('UI_Display_Security', true, {
 			type: 'boolean',
 			public: true,
