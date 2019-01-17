@@ -26,7 +26,7 @@
 					</div>
 					<div class="rc-switch">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input" name="readOnly" checked={{readOnly}} disabled="{{broadcast}}">
+							<input type="checkbox" class="rc-switch__input" name="readOnly" checked={{readOnly}} disabled="{{readOnlyDisabled}}">
 							<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
@@ -54,7 +54,7 @@
 					{{/if}}
 					<div class="rc-switch">
 						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input" name="broadcast">
+							<input type="checkbox" class="rc-switch__input" name="broadcast" disabled="{{broadcastDisabled}}">
 							<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
 						</span>
