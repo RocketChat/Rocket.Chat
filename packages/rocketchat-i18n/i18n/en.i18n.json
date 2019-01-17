@@ -176,6 +176,8 @@
   "Accounts_RequireNameForSignUp": "Require Name For Signup",
   "Accounts_RequirePasswordConfirmation": "Require Password Confirmation",
   "Accounts_SearchFields": "Fields to Consider in Search",
+  "Accounts_Send_Email_When_Activating": "Send email to user when user is activated",
+  "Accounts_Send_Email_When_Deactivating": "Send email to user when user is deactivated",
   "Accounts_Directory_DefaultView": "Default Directory Listing",
   "Accounts_SetDefaultAvatar": "Set Default Avatar",
   "Accounts_SetDefaultAvatar_Description": "Tries to determine default avatar based on OAuth Account or Gravatar",

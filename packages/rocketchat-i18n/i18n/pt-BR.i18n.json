@@ -175,6 +175,8 @@
   "Accounts_RequireNameForSignUp": "Nome é obrigatório para cadastro",
   "Accounts_RequirePasswordConfirmation": "Requer Confirmação de Senha",
   "Accounts_SearchFields": "Campos a considerar na busca",
+  "Accounts_Send_Email_When_Activating": "Enviar email para o usuário quando ele for ativado",
+  "Accounts_Send_Email_When_Deactivating": "Enviar email para o usuário quando ele for desativado",
   "Accounts_Directory_DefaultView": "Lista de directoria por defeito",
   "Accounts_SetDefaultAvatar": "Definir Avatar Padrão",
   "Accounts_SetDefaultAvatar_Description": "Tenta determinar o avatar padrão com base em OAuth Account ou Gravatar",
