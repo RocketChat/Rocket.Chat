@@ -97,6 +97,7 @@ export function settings() {
 			language: initSettings.Language,
 			transcript: initSettings.Livechat_enable_transcript,
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
+			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
 		},
 		theme: {
@@ -116,6 +117,7 @@ export function settings() {
 			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
 			transcriptMessage: initSettings.Livechat_transcript_message,
 			registrationFormMessage: initSettings.Livechat_registration_form_message,
+			dataProcessingConsentText: initSettings.Livechat_data_processing_consent_text,
 		},
 		survey: {
 			items: ['satisfaction', 'agentKnowledge', 'agentResposiveness', 'agentFriendliness'],
