@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { t } from 'meteor/rocketchat:utils';
+import { ChatMessage } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
