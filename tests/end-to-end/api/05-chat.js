@@ -6,7 +6,7 @@ import {
 	message,
 } from '../../data/api-data.js';
 import { password } from '../../data/user';
-import { createRoom } from '../../data/rooms.helper.js';
+import { createRoom, archiveRoom, unarchiveRoom } from '../../data/rooms.helper.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
@@ -159,6 +159,47 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
+		it('should throw an error when user try to send a message and the channel has been archived', (done) => {
+			archiveRoom({ type: 'channels', roomId: 'GENERAL' })
+				.end(() => {
+					request.post(api('chat.postMessage'))
+						.set(credentials)
+						.send({
+							channel: 'general',
+							text: 'Sample message',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('You can\'t send messages because the room is archived');
+						})
+						.end(() => {
+							unarchiveRoom({ type: 'channels', roomId: 'GENERAL' }).end(done);
+						});
+				});
+		});
+
+		it('should throw an error when user try to send a message that exceeds the maximum size allowed', (done) => {
+			updateSetting('Message_MaxAllowedSize', 2).then(() => {
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('error-message-size-exceeded');
+					})
+					.end(() => {
+						updateSetting('Message_MaxAllowedSize', 5000).then(done);
+					});
+			});
+		});
+
 	});
 
 	describe('/chat.getMessage', () => {
@@ -286,6 +327,51 @@ describe('[Chat]', function() {
 					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 				})
 				.end(done);
+
+			it('should throw an error when user try to send a message and the channel has been archived', (done) => {
+				archiveRoom({ type: 'channels', roomId: 'GENERAL' })
+					.end(() => {
+						request.post(api('chat.sendMessage'))
+							.set(credentials)
+							.send({
+								message: {
+									rid: 'GENERAL',
+									msg: 'Sample message',
+								},
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(400)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', false);
+								expect(res.body.errorType).to.be.equal('You can\'t send messages because the room is archived');
+							})
+							.end(() => {
+								unarchiveRoom({ type: 'channels', roomId: 'GENERAL' }).end(done);
+							});
+					});
+			});
+
+			it('should throw an error when user try to send a message that exceeds the maximum size allowed', (done) => {
+				updateSetting('Message_MaxAllowedSize', 2).then(() => {
+					request.post(api('chat.sendMessage'))
+						.set(credentials)
+						.send({
+							message: {
+								rid: 'GENERAL',
+								msg: 'Sample message',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('error-message-size-exceeded');
+						})
+						.end(() => {
+							updateSetting('Message_MaxAllowedSize', 5000).then(done);
+						});
+				});
+			});
 		});
 
 		describe('Read only channel', () => {

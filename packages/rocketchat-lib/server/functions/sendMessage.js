@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
@@ -94,9 +96,60 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		validateBodyAttachments(message.attachments);
 	}
 
-	if (!message.ts) {
-		message.ts = new Date();
+	if (!user._id) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'sendMessage',
+		});
 	}
+
+	if (message.msg) {
+		const adjustedMessage = RocketChat.messageProperties.messageWithoutEmojiShortnames(message.msg);
+
+		if (RocketChat.messageProperties.length(adjustedMessage) > RocketChat.settings.get('Message_MaxAllowedSize')) {
+			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+				method: 'sendMessage',
+			});
+		}
+	}
+
+	if (!Meteor.call('canAccessRoom', message.rid || room._id, user._id)) {
+		return false;
+	}
+
+	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
+	if (subscription && (subscription.blocked || subscription.blocker)) {
+		RocketChat.Notifications.notifyUser(user._id, 'message', {
+			_id: Random.id(),
+			rid: room._id,
+			ts: new Date,
+			msg: TAPi18n.__('room_is_blocked', {}, user.language),
+		});
+		throw new Meteor.Error('You can\'t send messages because you are blocked');
+	}
+
+	if ((room.muted || []).includes(user.username)) {
+		RocketChat.Notifications.notifyUser(user._id, 'message', {
+			_id: Random.id(),
+			rid: room._id,
+			ts: new Date,
+			msg: TAPi18n.__('You_have_been_muted', {}, user.language),
+		});
+		throw new Meteor.Error('You can\'t send messages because you have been muted');
+	}
+
+	if (room.archived) {
+		RocketChat.Notifications.notifyUser(user._id, 'message', {
+			_id: Random.id(),
+			rid: room._id,
+			ts: new Date(),
+			msg: TAPi18n.__('Channel_Archived', {
+				postProcess: 'sprintf',
+				sprintf: [room.name],
+			}, user.language),
+		});
+		throw new Meteor.Error('You can\'t send messages because the room is archived');
+	}
+
 	const { _id, username, name } = user;
 	message.u = {
 		_id,
