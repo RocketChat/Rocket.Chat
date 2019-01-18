@@ -3,6 +3,8 @@ import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { PhoneNumberUtil } from 'google-libphonenumber';
+import * as Mailer from 'meteor/rocketchat:mailer';
+
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -185,17 +187,16 @@ RocketChat.API.v1.addRoute('invite.email', { authRequired: true }, {
 			throw new Meteor.Error('error-email-param-not-provided', 'The required "email" param is required.');
 		}
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email]));
-		return RocketChat.API.v1.success();
+		if (!Mailer.checkAddressFormat(this.bodyParams.email)) {
+			return RocketChat.API.v1.failure('Invalid email address');
+		}
 
-		// sendInvitationEmail always returns an empty list
-		/*
-		if(this.bodyParams.email in result){
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email]));
+		if (result.indexOf(this.bodyParams.email) >= 0) {
 			return RocketChat.API.v1.success();
-		}else{
+		} else {
 			return RocketChat.API.v1.failure('Email Invite Failed');
 		}
-		*/
 	},
 });
 
