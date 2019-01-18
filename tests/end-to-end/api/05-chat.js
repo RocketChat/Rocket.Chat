@@ -430,6 +430,48 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
+		it('should throw an error when user try to update a message and the channel has been archived', (done) => {
+			archiveRoom({ type: 'channels', roomId: 'GENERAL' })
+				.end(() => {
+					request.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: 'GENERAL',
+							msgId: message._id,
+							text: 'This message was edited via API',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body.errorType).to.be.equal('You can\'t send messages because the room is archived');
+						})
+						.end(() => {
+							unarchiveRoom({ type: 'channels', roomId: 'GENERAL' }).end(done);
+						});
+				});
+		});
+
+		it('should throw an error when user try to update a message that exceeds the maximum size allowed', (done) => {
+			updateSetting('Message_MaxAllowedSize', 2).then(() => {
+				request.post(api('chat.update'))
+					.set(credentials)
+					.send({
+						roomId: 'GENERAL',
+						msgId: message._id,
+						text: 'This message was edited via API',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('error-message-size-exceeded');
+					})
+					.end(() => {
+						updateSetting('Message_MaxAllowedSize', 5000).then(done);
+					});
+			});
+		});
 	});
 
 	describe('[/chat.delete]', () => {
