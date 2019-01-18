@@ -19,7 +19,7 @@ const wizardFields = [
 	'Allow_Marketing_Emails',
 ];
 
-RocketChat.statistics.get = function _getStatistics() {
+RocketChat.statistics.get = async function _getStatistics() {
 	const statistics = {};
 
 	// Setup Wizard
@@ -111,7 +111,8 @@ RocketChat.statistics.get = function _getStatistics() {
 	};
 
 	statistics.uploadsTotal = RocketChat.models.Uploads.find().count();
-	statistics.uploadsTotalSize = _.reduce(RocketChat.models.Uploads.find({}, { fields: { size: 1 } }).fetch(), function _totalStorageUsed(total, file) { return total + file.size; }, 0);
+	const [result] = await RocketChat.models.Uploads.model.rawCollection().aggregate([{ '$group': { _id: 'total', 'total': { '$sum': '$size' } } }]).toArray();
+	statistics.uploadsTotalSize = result.total;
 
 	statistics.migration = RocketChat.Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
