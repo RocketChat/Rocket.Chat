@@ -103,9 +103,11 @@ export class Base {
 		const importRecord = Imports.findPendingImport(this.info.key);
 
 		if (importRecord) {
+			this.logger.debug('Found existing import operation');
 			this.importRecord = importRecord;
 			this.progress.step = this.importRecord.status;
 		} else {
+			this.logger.debug('Starting new import operation');
 			const importId = Imports.insert({ type: this.info.name, importerKey: this.info.key, ts: Date.now(), status: this.progress.step, valid: true, user: userId });
 			this.importRecord = Imports.findOne(importId);
 		}
@@ -159,6 +161,7 @@ export class Base {
 	 * @returns {Progress} The progress record of the import.
 	 */
 	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
+		this.collection.remove({});
 		if (!skipTypeCheck) {
 			const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);

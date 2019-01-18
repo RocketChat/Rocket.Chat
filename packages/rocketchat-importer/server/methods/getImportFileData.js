@@ -37,6 +37,19 @@ Meteor.methods({
 			return { waiting: true };
 		}
 
+		const readySteps = [
+			ProgressStep.USER_SELECTION,
+			ProgressStep.DONE,
+			ProgressStep.CANCELLED,
+			ProgressStep.ERROR,
+		];
+
+		if (readySteps.indexOf(importer.instance.progress.step) >= 0) {
+			if (importer.instance.importRecord && importer.instance.importRecord.fileData) {
+				return importer.instance.importRecord.fileData;
+			}
+		}
+
 		const fileName = importer.instance.importRecord.file;
 		const fullFilePath = path.join(RocketChatImportFileInstance.absolutePath, fileName);
 		const results = importer.instance.prepareUsingLocalFile(fullFilePath);
