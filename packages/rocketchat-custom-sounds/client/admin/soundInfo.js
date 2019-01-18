@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { t, modal } from 'meteor/rocketchat:ui';
-import { handleError } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+import { t, handleError } from 'meteor/rocketchat:utils';
 
 Template.soundInfo.helpers({
 	name() {

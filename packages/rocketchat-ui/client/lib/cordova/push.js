@@ -1,7 +1,8 @@
-/* globals Push Servers*/
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Push } from 'meteor/rocketchat:push';
+import { settings } from 'meteor/rocketchat:settings';
 
 if (Meteor.isCordova) {
 	// Push.addListener 'token', (token) ->
@@ -72,7 +73,7 @@ if (Meteor.isCordova) {
 
 	Meteor.startup(() =>
 		Tracker.autorun(() => {
-			if (RocketChat.settings.get('Push_enable') === true) {
+			if (settings.get('Push_enable') === true) {
 
 				Push.Configure({
 					android: {

@@ -1,8 +1,11 @@
-/* globals OAuth*/
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { Logger } from 'meteor/rocketchat:logger';
+import { Users } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');
@@ -289,7 +292,7 @@ export class CustomOAuth {
 			if (this.usernameField) {
 				const username = this.getUsername(serviceData);
 
-				const user = RocketChat.models.Users.findOneByUsername(username);
+				const user = Users.findOneByUsername(username);
 				if (!user) {
 					return;
 				}
@@ -310,7 +313,7 @@ export class CustomOAuth {
 					},
 				};
 
-				RocketChat.models.Users.update({ _id: user._id }, update);
+				Users.update({ _id: user._id }, update);
 			}
 		});
 
