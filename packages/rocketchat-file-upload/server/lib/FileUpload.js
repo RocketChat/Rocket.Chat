@@ -101,12 +101,20 @@ export const FileUpload = Object.assign(_FileUpload, {
 				metadata = {};
 			}
 
-			s.toFormat(sharp.format.jpeg)
-				.resize(Math.min(height || 0, metadata.width || Infinity), Math.min(height || 0, metadata.height || Infinity))
+			s.flatten({ background: '#FFFFFF' })
+				.jpeg()
+				.resize({
+					width: Math.min(height || 0, metadata.width || Infinity),
+					height: Math.min(height || 0, metadata.height || Infinity),
+					fit: sharp.fit.cover,
+				})
 				.pipe(sharp()
-					.resize(height, height)
-					.background('#FFFFFF')
-					.embed()
+					.resize({
+						height,
+						width: height,
+						fit: sharp.fit.contain,
+						background: '#FFFFFF',
+					})
 				)
 				// Use buffer to get the result in memory then replace the existing file
 				// There is no option to override a file using this library
