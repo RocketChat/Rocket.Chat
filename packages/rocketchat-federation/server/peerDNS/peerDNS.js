@@ -9,11 +9,15 @@ const dnsResolveTXT = Meteor.wrapAsync(dns.resolveTxt);
 
 class PeerDNS {
 	constructor(config) {
+		this.updateConfig(config);
+	}
+
+	updateConfig(config) {
 		// General
 		this.config = config;
 
 		// Setup HubPeer
-		const { hub: { url } } = this.config;
+		const { hub: { url } } = config;
 		this.HubPeer = { url };
 	}
 

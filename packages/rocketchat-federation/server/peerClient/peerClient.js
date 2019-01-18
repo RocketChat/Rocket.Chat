@@ -10,11 +10,15 @@ const { FederationKeys } = RocketChat.models;
 
 class PeerClient {
 	constructor(config) {
-		// General
-		this.config = config;
-
 		// Keep resources we should skip callbacks
 		this.callbacksToSkip = {};
+
+		this.updateConfig(config);
+	}
+
+	updateConfig(config) {
+		// General
+		this.config = config;
 
 		// Setup HubPeer
 		const { hub: { url } } = this.config;
@@ -129,10 +133,34 @@ class PeerClient {
 
 				RocketChat.models.FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
-				console.log(err);
 				this.log(`[${ e.t }] Event was refused by peer:${ domain }`);
 
-				RocketChat.models.FederationEvents.setEventAsErrored(e, err.toString());
+				if (err.errorType === 'error-app-prevented-sending') {
+					const { payload: {
+						message: {
+							rid: roomId,
+							u: {
+								username,
+								federation: { _id: userId },
+							},
+						},
+					} } = e;
+
+					const localUsername = username.split('@')[0];
+
+					// Create system message
+					RocketChat.models.Messages.createRejectedMessageByPeer(roomId, localUsername, {
+						u: {
+							_id: userId,
+							username: localUsername,
+						},
+						peer: domain,
+					});
+
+					return RocketChat.models.FederationEvents.setEventAsErrored(e, err.error, true);
+				}
+
+				return RocketChat.models.FederationEvents.setEventAsErrored(e, `Could not send request to ${ domain }`);
 			}
 		}
 	}

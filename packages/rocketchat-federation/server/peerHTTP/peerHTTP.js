@@ -4,6 +4,10 @@ import { HTTP } from 'meteor/http';
 class PeerHTTP {
 
 	constructor(config) {
+		this.updateConfig(config);
+	}
+
+	updateConfig(config) {
 		// General
 		this.config = config;
 	}
@@ -33,13 +37,22 @@ class PeerHTTP {
 	//
 	// Request trying to find DNS entries
 	request(peer, method, uri, body) {
+		function handleError(err) {
+			this.log(err);
+
+			// Rocket.Chat API failure
+			if (err.response) {
+				throw err.response.data;
+			}
+
+			throw err;
+		}
+
 		try {
 			return this.simpleRequest(peer, method, uri, body);
 		} catch (err) {
 			if (err.code !== 'ENOTFOUND') {
-				this.log(err);
-
-				throw new Error(`Could not send request to ${ peer.domain }`);
+				handleError.call(this, err);
 			}
 
 			this.log(`Trying to update local DNS cache for peer:${ peer.domain }`);
@@ -50,9 +63,7 @@ class PeerHTTP {
 			try {
 				return this.simpleRequest(newPeer, method, uri, body);
 			} catch (err) {
-				this.log(err);
-
-				throw new Error(`Could not send request to ${ peer.domain }`);
+				handleError.call(this, err);
 			}
 		}
 	}

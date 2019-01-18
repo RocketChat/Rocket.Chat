@@ -6,10 +6,11 @@ class FederationEvents extends RocketChat.models._Base {
 		super('federation_events');
 	}
 
-	setEventAsErrored(e, error) {
+	// Sometimes events errored but the error is final
+	setEventAsErrored(e, error, fulfilled = false) {
 		this.update({ _id: e._id }, {
 			$set: {
-				fulfilled: false,
+				fulfilled,
 				lastAttemptAt: new Date(),
 				error,
 			},

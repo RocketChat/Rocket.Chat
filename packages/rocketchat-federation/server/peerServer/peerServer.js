@@ -10,6 +10,10 @@ import usersRoutes from './routes/users';
 
 class PeerServer {
 	constructor(config) {
+		this.updateConfig(config);
+	}
+
+	updateConfig(config) {
 		// General
 		this.config = config;
 	}

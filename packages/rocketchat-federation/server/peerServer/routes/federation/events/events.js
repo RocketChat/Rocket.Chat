@@ -95,7 +95,7 @@ export default function eventsRoutes() {
 			} catch (err) {
 				self.log(`Error handling event:${ e.t } - ${ err.toString() }`);
 
-				return RocketChat.API.v1.failure(`Error handling event:${ e.t } - ${ err.toString() }`);
+				return RocketChat.API.v1.failure(`Error handling event:${ e.t } - ${ err.toString() }`, err.error || 'unknown-error');
 			}
 		},
 	});
