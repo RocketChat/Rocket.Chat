@@ -6,7 +6,7 @@ class ContactsProvider {
 		this.contactsWeakHashMap = {};
 	}
 
-	addContact(contact, username) {
+	addContact(contact, username, _id) {
 		const weakHash = this.getWeakHash(contact);
 		const strongHash = this.getStrongHash(contact);
 
@@ -15,10 +15,11 @@ class ContactsProvider {
 				this.contactsWeakHashMap[weakHash].push({
 					h:strongHash,
 					u:username,
+					_id,
 				});
 			}
 		} else {
-			this.contactsWeakHashMap[weakHash] = [{ h:strongHash, u:username }];
+			this.contactsWeakHashMap[weakHash] = [{ h:strongHash, u:username, _id }];
 		}
 	}
 
@@ -29,10 +30,10 @@ class ContactsProvider {
 			const strongHash = this.getStrongHash(contact.d);
 			if (weakHash in contactsWeakHashMap) {
 				if (contactsWeakHashMap[weakHash].indexOf(strongHash) === -1) {
-					contactsWeakHashMap[weakHash].push({ h:strongHash, u:contact.u });
+					contactsWeakHashMap[weakHash].push({ h:strongHash, u:contact.u, _id:contact._id });
 				}
 			} else {
-				contactsWeakHashMap[weakHash] = [{ h:strongHash, u:contact.u }];
+				contactsWeakHashMap[weakHash] = [{ h:strongHash, u:contact.u, _id:contact._id }];
 			}
 		});
 		return contactsWeakHashMap;
@@ -60,12 +61,12 @@ class ContactsProvider {
 		return result;
 	}
 
-	removeContact(contact, username) {
+	removeContact(contact, username, _id) {
 		const weakHash = this.getWeakHash(contact);
 		const strongHash = this.getStrongHash(contact);
 
 		if (weakHash in this.contactsWeakHashMap && this.contactsWeakHashMap[weakHash].indexOf(strongHash) >= 0) {
-			this.contactsWeakHashMap[weakHash].splice(this.contactsWeakHashMap[weakHash].indexOf({ h:strongHash, u:username }), 1);
+			this.contactsWeakHashMap[weakHash].splice(this.contactsWeakHashMap[weakHash].indexOf({ h:strongHash, u:username, _id }), 1);
 
 			if (!this.contactsWeakHashMap[weakHash].length) { delete this.contactsWeakHashMap[weakHash]; }
 		}
