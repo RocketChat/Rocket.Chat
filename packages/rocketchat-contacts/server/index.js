@@ -52,7 +52,7 @@ function refreshContactsHashMap() {
 				if (phone && _.isString(phone)) {
 					phone = phone.replace(/[^0-9+]|_/g, '');
 					if (phonePattern.test(phone)) {
-						contacts.push({ d:phone, u:user.username });
+						contacts.push({ d:phone, u:user.username, _id:user._id });
 					}
 				}
 
@@ -68,7 +68,7 @@ function refreshContactsHashMap() {
 				const email = dict[emailFieldArray[emailFieldArray.length - 1]];
 				if (email && _.isString(email)) {
 					if (rfcMailPattern.test(email)) {
-						contacts.push({ d:email, u:user.username });
+						contacts.push({ d:email, u:user.username, _id:user._id });
 					}
 				}
 			}
@@ -76,7 +76,7 @@ function refreshContactsHashMap() {
 			if (useDefaultEmails && 'emails' in user) {
 				user.emails.forEach((email) => {
 					if (email.verified) {
-						contacts.push({ d:email.address, u:user.username });
+						contacts.push({ d:email.address, u:user.username, _id:user._id });
 					}
 				});
 			}
