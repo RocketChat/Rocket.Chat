@@ -113,20 +113,6 @@ const mountPopover = (e, i, outerContext) => {
 		groups.push({ items: deleteItem });
 	}
 
-	if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
-		groups.push({
-			items: [
-				{
-					icon: 'warning',
-					name: t('Report_Abuse'),
-					type: 'message-action',
-					id: 'report-abuse',
-					modifier: 'alert',
-				},
-			],
-		});
-	}
-
 	const config = {
 		columns: [
 			{
@@ -579,11 +565,7 @@ Template.room.events({
 				return;
 			}
 
-			if ((typeof cordova !== 'undefined' && cordova !== null ? cordova.InAppBrowser : undefined) != null) {
-				cordova.InAppBrowser.open(e.target.href, '_system');
-			} else {
-				window.open(e.target.href);
-			}
+			window.open(e.target.href);
 		}
 	},
 
