@@ -110,6 +110,9 @@ RocketChat.statistics.get = function _getStatistics() {
 		platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 	};
 
+	statistics.uploadsTotal = RocketChat.models.Uploads.find().count();
+	statistics.uploadsTotalSize = _.reduce(RocketChat.models.Uploads.find({}, { fields: { size: 1 } }).fetch(), function _totalStorageUsed(total, file) { return total + file.size; }, 0);
+
 	statistics.migration = RocketChat.Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
