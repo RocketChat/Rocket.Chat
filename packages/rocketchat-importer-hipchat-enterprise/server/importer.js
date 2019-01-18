@@ -205,6 +205,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 	async prepareUserMessagesFile(file, roomIdentifier, index) {
 		let msgs = [];
+		this.logger.debug(`preparing room with ${ file.length } messages `);
 		for (const m of file) {
 			if (m.PrivateUserMessage) {
 				msgs.push({
@@ -802,13 +803,18 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	_importMessages(startedByUserId) {
-		const messageLists = this.collection.find({
+		const messageListIds = this.collection.find({
 			import: this.importRecord._id,
 			importer: this.name,
 			type: 'messages',
-		});
+		}, { _id : true }).fetch();
 
-		messageLists.forEach((list) => {
+		messageListIds.forEach((item) => {
+			const list = this.collection.findOneById(item._id);
+			if (!list) {
+				return;
+			}
+
 			if (!list.messages) {
 				return;
 			}
@@ -837,13 +843,18 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	_importDirectMessages() {
-		const messageLists = this.collection.find({
+		const messageListIds = this.collection.find({
 			import: this.importRecord._id,
 			importer: this.name,
 			type: 'user-messages',
-		});
+		}, { _id : true }).fetch();
 
-		messageLists.forEach((list) => {
+		messageListIds.forEach((item) => {
+			const list = this.collection.findOneById(item._id);
+			if (!list) {
+				return;
+			}
+
 			if (!list.messages) {
 				return;
 			}
