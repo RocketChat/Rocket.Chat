@@ -320,8 +320,8 @@ export class CustomOAuth {
 						[serviceIdKey]: serviceData.id,
 					},
 				};
-        
-        Users.update({ _id: user._id }, update);
+
+				Users.update({ _id: user._id }, update);
 			}
 		});
 
