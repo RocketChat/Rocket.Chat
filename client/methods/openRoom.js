@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+
 Meteor.methods({
 	openRoom(rid) {
 		if (!Meteor.userId()) {

@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 		'rocketchat:settings',
 		'rocketchat:callbacks',
 		'rocketchat:authorization',
+		'rocketchat:logger',
 		'random',
 		'accounts-base',
 		'tracker',

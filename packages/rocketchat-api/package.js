@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'nimble:restivus',
 		'rate-limit',
 		'rocketchat:lib',
+		'rocketchat:models',
 		'rocketchat:integrations',
 		'rocketchat:file-upload',
 	]);
