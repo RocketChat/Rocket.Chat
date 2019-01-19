@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'nimble:restivus',
 		'rocketchat:lib',
+		'rocketchat:models',
 		'rocketchat:integrations',
 		'rocketchat:file-upload',
 	]);
