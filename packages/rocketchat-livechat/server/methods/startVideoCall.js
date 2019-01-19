@@ -1,4 +1,3 @@
-/* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';

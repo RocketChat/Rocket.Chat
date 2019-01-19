@@ -16,7 +16,9 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'sha',
+		'rocketchat:utils',
 		'rocketchat:lazy-load',
+		'rocketchat:file-upload',
 	]);
 	api.mainModule('client/index.js', 'client');
 });

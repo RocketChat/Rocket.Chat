@@ -12,6 +12,11 @@ Package.onUse(function(api) {
 		'tracker',
 		'templating',
 		'rocketchat:lib',
+		'rocketchat:authorization',
+		'rocketchat:ui',
+		'rocketchat:ui-utils',
+		'rocketchat:utils',
+		'rocketchat:models',
 	]);
 	api.addFiles('client/stylesheets/channel-settings.css', 'client');
 	api.mainModule('client/index.js', 'client');

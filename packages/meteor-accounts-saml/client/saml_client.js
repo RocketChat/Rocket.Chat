@@ -1,4 +1,3 @@
-/* globals cordova */
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
@@ -45,45 +44,24 @@ Meteor.logout = function(...args) {
 };
 
 const openCenteredPopup = function(url, width, height) {
-	let newwindow;
+	const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
+	const screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
+	const outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
+	const outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+	// XXX what is the 22?
 
-	if (typeof cordova !== 'undefined' && typeof cordova.InAppBrowser !== 'undefined') {
-		newwindow = cordova.InAppBrowser.open(url, '_blank');
-		newwindow.closed = false;
+	// Use `outerWidth - width` and `outerHeight - height` for help in
+	// positioning the popup centered relative to the current window
+	const left = screenX + (outerWidth - width) / 2;
+	const top = screenY + (outerHeight - height) / 2;
+	const features = (`width=${ width },height=${ height
+	},left=${ left },top=${ top },scrollbars=yes`);
 
-		const intervalId = setInterval(function() {
-			newwindow.executeScript({
-				code: 'document.getElementsByTagName("script")[0].textContent',
-			}, function(data) {
-				if (data && data.length > 0 && data[0] === 'window.close()') {
-					newwindow.close();
-					newwindow.closed = true;
-				}
-			});
-		}, 100);
-
-		newwindow.addEventListener('exit', function() {
-			clearInterval(intervalId);
-		});
-	} else {
-		const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
-		const screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
-		const outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
-		const outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
-		// XXX what is the 22?
-
-		// Use `outerWidth - width` and `outerHeight - height` for help in
-		// positioning the popup centered relative to the current window
-		const left = screenX + (outerWidth - width) / 2;
-		const top = screenY + (outerHeight - height) / 2;
-		const features = (`width=${ width },height=${ height
-		},left=${ left },top=${ top },scrollbars=yes`);
-
-		newwindow = window.open(url, 'Login', features);
-		if (newwindow.focus) {
-			newwindow.focus();
-		}
+	const newwindow = window.open(url, 'Login', features);
+	if (newwindow.focus) {
+		newwindow.focus();
 	}
+
 	return newwindow;
 };
 
