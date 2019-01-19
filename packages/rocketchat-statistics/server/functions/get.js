@@ -19,7 +19,7 @@ const wizardFields = [
 	'Allow_Marketing_Emails',
 ];
 
-RocketChat.statistics.get = async function _getStatistics() {
+RocketChat.statistics.get = function _getStatistics() {
 	const statistics = {};
 
 	// Setup Wizard
