@@ -644,10 +644,38 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	bannerExistsById(_id, bannerId) {
+		const query = {
+			_id,
+			[`banners.${ bannerId }`]: {
+				$exists: true,
+			},
+		};
+
+		return this.find(query).count() !== 0;
+	}
+
 	addBannerById(_id, banner) {
+		const query = {
+			_id,
+			[`banners.${ banner.id }.read`]: {
+				$ne: true,
+			},
+		};
+
 		const update = {
 			$set: {
 				[`banners.${ banner.id }`]: banner,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setBannerReadById(_id, bannerId) {
+		const update = {
+			$set: {
+				[`banners.${ bannerId }.read`]: true,
 			},
 		};
 
