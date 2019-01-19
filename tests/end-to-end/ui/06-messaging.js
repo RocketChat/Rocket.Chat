@@ -1,23 +1,20 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import Global from '../../pageobjects/global';
 
-//test data imports
-import {username, email, password} from '../../data/user.js';
-import {publicChannelName, privateChannelName} from '../../data/channel.js';
-import {targetUser, imgURL} from '../../data/interactions.js';
-import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../../data/checks';
+// test data imports
+import { username, email, password } from '../../data/user.js';
+import { publicChannelName, privateChannelName } from '../../data/channel.js';
+import { targetUser, imgURL } from '../../data/interactions.js';
+import { checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated } from '../../data/checks';
 
 
-//Test data
+// Test data
 const message = `message from ${ username }`;
 let currentTest = 'none';
 
 function messagingTest() {
-	describe('Normal message:', ()=> {
+	describe('Normal message:', () => {
 		it('it should send a message', () => {
 			mainContent.sendMessage(message);
 		});
@@ -39,7 +36,7 @@ function messagingTest() {
 		}
 	});
 
-	describe.skip('fileUpload:', ()=> {
+	describe.skip('fileUpload:', () => {
 		after(() => {
 		});
 		it('it should send a attachment', () => {
@@ -47,44 +44,44 @@ function messagingTest() {
 		});
 
 		it('it should show the confirm button', () => {
-			Global.sweetAlertConfirm.isVisible().should.be.true;
+			Global.modalConfirm.isVisible().should.be.true;
 		});
 
 		it('it should show the cancel button', () => {
-			Global.sweetAlertCancel.isVisible().should.be.true;
+			Global.modalCancel.isVisible().should.be.true;
 		});
 
 		it('it should show the file preview', () => {
-			Global.sweetAlertFilePreview.isVisible().should.be.true;
+			Global.modalFilePreview.isVisible().should.be.true;
 		});
 
 		it('it should show the confirm button', () => {
-			Global.sweetAlertConfirm.isVisible().should.be.true;
+			Global.modalConfirm.isVisible().should.be.true;
 		});
 
 		it('it should show the file title', () => {
-			Global.sweetAlertFileTitle.isVisible().should.be.true;
+			Global.modalFileTitle.isVisible().should.be.true;
 		});
 
 		it('it should show the file name input', () => {
-			Global.sweetAlertFileName.isVisible().should.be.true;
+			Global.modalFileName.isVisible().should.be.true;
 		});
 
 		it('it should fill the file name input', () => {
-			Global.sweetAlertFileName.setValue('File Name');
+			Global.modalFileName.setValue('File Name');
 		});
 
 		it('it should show the file name input', () => {
-			Global.sweetAlertFileDescription.isVisible().should.be.true;
+			Global.modalFileDescription.isVisible().should.be.true;
 		});
 
 		it('it should fill the file name input', () => {
-			Global.sweetAlertFileDescription.setValue('File Description');
+			Global.modalFileDescription.setValue('File Description');
 		});
 
 		it('it should click the confirm', () => {
-			Global.sweetAlertConfirm.click();
-			Global.sweetAlertConfirm.waitForVisible(5000, true);
+			Global.modalConfirm.click();
+			Global.modalConfirm.waitForVisible(5000, true);
 		});
 
 		it('it should show the file in the message', () => {
@@ -95,11 +92,11 @@ function messagingTest() {
 }
 
 function messageActionsTest() {
-	describe('[Actions]', ()=> {
+	describe('[Actions]', () => {
 		before(() => {
 			mainContent.sendMessage('Message for Message Actions Tests');
 		});
-		describe('Render:', ()=> {
+		describe('Render:', () => {
 			before(() => {
 				mainContent.openMessageActionMenu();
 			});
@@ -195,8 +192,8 @@ function messageActionsTest() {
 
 				it('it should delete the message', () => {
 					mainContent.selectAction('delete');
-					Global.sweetAlertConfirm.click();
-					Global.sweetAlertOverlay.waitForVisible(3000, true);
+					Global.modalConfirm.click();
+					Global.modalOverlay.waitForVisible(3000, true);
 				});
 
 				it('it should not show the deleted message', () => {
@@ -257,15 +254,15 @@ function messageActionsTest() {
 }
 
 describe('[Message]', () => {
-	before(()=>{
+	before(() => {
 		checkIfUserIsValid(username, email, password);
-		sideNav.spotlightSearch.waitForVisible(10000);
-		sideNav.searchChannel('general');
 	});
 
 
 	describe('[GENERAL Channel]', () => {
-		before(()=>{
+		before(() => {
+			checkIfUserIsValid(username, email, password);
+			sideNav.spotlightSearchIcon.click();
 			sideNav.spotlightSearch.waitForVisible(10000);
 			sideNav.searchChannel('general');
 			currentTest = 'general';
@@ -275,7 +272,7 @@ describe('[Message]', () => {
 	});
 
 	describe('[Public Channel]', () => {
-		before(()=>{
+		before(() => {
 			if (!publicChannelCreated) {
 				sideNav.createChannel(publicChannelName, false, false);
 				setPublicChannelCreated(true);
@@ -289,7 +286,7 @@ describe('[Message]', () => {
 	});
 
 	describe('[Private Channel]', () => {
-		before(()=>{
+		before(() => {
 			if (!privateChannelCreated) {
 				sideNav.createChannel(privateChannelName, true, false);
 				setPrivateChannelCreated(true);
@@ -303,7 +300,7 @@ describe('[Message]', () => {
 	});
 
 	describe('[Direct Message]', () => {
-		before(()=>{
+		before(() => {
 			if (!directMessageCreated) {
 				sideNav.searchChannel(targetUser);
 				setDirectMessageCreated(true);

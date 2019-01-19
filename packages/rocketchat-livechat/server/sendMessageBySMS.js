@@ -1,3 +1,6 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+import LivechatVisitors from './models/LivechatVisitors';
+
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -29,9 +32,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	const visitor = RocketChat.models.Users.getVisitorByToken(room.v.token);
+	const visitor = LivechatVisitors.getVisitorByToken(room.v.token);
 
-	if (!visitor || !visitor.profile || !visitor.phone || visitor.phone.length === 0) {
+	if (!visitor || !visitor.phone || visitor.phone.length === 0) {
 		return message;
 	}
 

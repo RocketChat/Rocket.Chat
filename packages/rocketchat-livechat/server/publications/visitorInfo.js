@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import LivechatVisitors from '../models/LivechatVisitors';
+
 Meteor.publish('livechat:visitorInfo', function({ rid: roomId }) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorInfo' }));
@@ -10,7 +14,7 @@ Meteor.publish('livechat:visitorInfo', function({ rid: roomId }) {
 	const room = RocketChat.models.Rooms.findOneById(roomId);
 
 	if (room && room.v && room.v._id) {
-		return RocketChat.models.Users.findById(room.v._id);
+		return LivechatVisitors.findById(room.v._id);
 	} else {
 		return this.ready();
 	}

@@ -1,17 +1,13 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import sideNav from '../../pageobjects/side-nav.page';
 import flexTab from '../../pageobjects/flex-tab.page';
 import admin from '../../pageobjects/administration.page';
 import mainContent from '../../pageobjects/main-content.page';
-import {checkIfUserIsValid} from '../../data/checks';
+import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 
-//test data imports
-import {checkIfUserIsAdmin} from '../../data/checks';
-import {username, email, password, adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+// test data imports
+import { username, email, password, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 
-describe('[Permissions]', () => {
+describe.skip('[Permissions]', () => {
 	before(() => {
 		checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
 		sideNav.spotlightSearch.waitForVisible(10000);
@@ -185,11 +181,11 @@ describe('[Permissions]', () => {
 		});
 
 		it.skip('it should not be able to delete own message ', () => {
-			//waiting for changes in the delete-message permission
+			// waiting for changes in the delete-message permission
 		});
 
 		it.skip('it should not be able to edit own message ', () => {
-			//waiting for changes in the edit-message permission
+			// waiting for changes in the edit-message permission
 		});
 	});
 });

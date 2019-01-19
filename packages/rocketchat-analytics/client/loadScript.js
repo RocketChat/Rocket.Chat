@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
 		const piwikUrl = RocketChat.settings.get('PiwikAnalytics_enabled') && RocketChat.settings.get('PiwikAnalytics_url');
@@ -44,14 +49,14 @@ Template.body.onRendered(() => {
 							const addTrackers = JSON.parse(piwikAdditionalTracker);
 							for (let i = 0; i < addTrackers.length; i++) {
 								const tracker = addTrackers[i];
-								window._paq.push(['addTracker', `${ tracker['trackerURL'] }piwik.php`, tracker['siteId']]);
+								window._paq.push(['addTracker', `${ tracker.trackerURL }js/`, tracker.siteId]);
 							}
 						}
 					} catch (e) {
 						// parsing JSON faild
 						console.log('Error while parsing JSON value of "piwikAdditionalTracker": ', e);
 					}
-					window._paq.push(['setTrackerUrl', `${ piwikUrl }piwik.php`]);
+					window._paq.push(['setTrackerUrl', `${ piwikUrl }js/`]);
 					window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
 					const d = document;
 					const g = d.createElement('script');
@@ -59,7 +64,7 @@ Template.body.onRendered(() => {
 					g.type = 'text/javascript';
 					g.async = true;
 					g.defer = true;
-					g.src = `${ piwikUrl }piwik.js`;
+					g.src = `${ piwikUrl }js/`;
 					s.parentNode.insertBefore(g, s);
 				})();
 			}
@@ -73,7 +78,7 @@ Template.body.onRendered(() => {
 
 			  ga('create', googleId, 'auto');
 			  ga('send', 'pageview');
-				/*eslint-enable */
+				/* eslint-enable */
 			}
 		}
 	});

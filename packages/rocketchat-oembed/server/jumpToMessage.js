@@ -1,11 +1,13 @@
-/* globals getAvatarUrlFromUsername */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
+import URL from 'url';
+import QueryString from 'querystring';
 
-const URL = Npm.require('url');
-const QueryString = Npm.require('querystring');
 const recursiveRemove = (message, deep = 1) => {
 	if (message) {
-		if ('attachments' in message && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
+		if ('attachments' in message && message.attachments !== null && deep < RocketChat.settings.get('Message_QuoteChainLimit')) {
 			message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
 		} else {
 			delete(message.attachments);
@@ -25,14 +27,20 @@ RocketChat.callbacks.add('beforeSaveMessage', (msg) => {
 						const jumpToMessage = recursiveRemove(RocketChat.models.Messages.findOneById(queryString.msg));
 						if (jumpToMessage) {
 							msg.attachments = msg.attachments || [];
+
+							const index = msg.attachments.findIndex((a) => a.message_link === item.url);
+							if (index > -1) {
+								msg.attachments.splice(index, 1);
+							}
+
 							msg.attachments.push({
-								'text' : jumpToMessage.msg,
-								'translations': jumpToMessage.translations,
-								'author_name' : jumpToMessage.alias || jumpToMessage.u.username,
-								'author_icon' : getAvatarUrlFromUsername(jumpToMessage.u.username),
-								'message_link' : item.url,
-								'attachments' : jumpToMessage.attachments || [],
-								'ts': jumpToMessage.ts
+								text: jumpToMessage.msg,
+								translations: jumpToMessage.translations,
+								author_name: jumpToMessage.alias || jumpToMessage.u.username,
+								author_icon: getAvatarUrlFromUsername(jumpToMessage.u.username),
+								message_link: item.url,
+								attachments: jumpToMessage.attachments || [],
+								ts: jumpToMessage.ts,
 							});
 							item.ignoreParse = true;
 						}

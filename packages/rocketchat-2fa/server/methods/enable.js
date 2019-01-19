@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	'2fa:enable'() {
 		if (!Meteor.userId()) {
@@ -12,7 +15,7 @@ Meteor.methods({
 
 		return {
 			secret: secret.base32,
-			url: RocketChat.TOTP.generateOtpauthURL(secret, user.username)
+			url: RocketChat.TOTP.generateOtpauthURL(secret, user.username),
 		};
-	}
+	},
 });

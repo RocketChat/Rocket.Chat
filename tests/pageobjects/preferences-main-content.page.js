@@ -11,6 +11,9 @@ class PreferencesMainContent extends Page {
 	get useUploadedAvatar() { return browser.element('.avatar-suggestion-item:nth-of-type(2) .select-service'); }
 	get submitBtn() { return browser.element('.rc-button[type="submit"]'); }
 
+	realNameTextInputEnabled() { return browser.isEnabled('input[name="realname"]'); }
+	userNameTextInputEnabled() { return browser.isEnabled('input[name="username"]'); }
+
 	changeUsername(userName) {
 		this.userNameTextInput.waitForVisible(5000);
 		this.userNameTextInput.setValue(userName);
@@ -40,7 +43,6 @@ class PreferencesMainContent extends Page {
 		browser.pause(1000);
 	}
 }
-
 
 
 module.exports = new PreferencesMainContent();

@@ -1,0 +1,20 @@
+bot:
+  name: "@rocket-cat"
+whitelist:
+  users:
+    - TwizzyDizzy
+    - theorenck
+    - JSzaszvari
+    - reetp
+  labels:
+    - "Contributions: welcome"
+    - "Contributions: only core team"
+    - "Feature: Request"
+    - "Feature: Planned"
+    - "type: bug"
+    - "help wanted"    
+    - duplicate
+    - enhancement
+    - invalid
+    - question
+    - wontfix

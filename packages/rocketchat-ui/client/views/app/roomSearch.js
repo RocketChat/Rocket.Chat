@@ -1,15 +1,18 @@
+import { Template } from 'meteor/templating';
+import { roomTypes } from 'meteor/rocketchat:utils';
+
 Template.roomSearch.helpers({
 	roomIcon() {
 		if (this.type === 'u') {
 			return 'icon-at';
 		}
 		if (this.type === 'r') {
-			return RocketChat.roomTypes.getIcon(this.t);
+			return roomTypes.getIcon(this.t);
 		}
 	},
 	userStatus() {
 		if (this.type === 'u') {
 			return `status-${ this.status }`;
 		}
-	}
+	},
 });

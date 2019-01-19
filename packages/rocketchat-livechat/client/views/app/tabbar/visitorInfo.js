@@ -1,3 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { modal, ChatRoom } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -18,8 +27,9 @@ Template.visitorInfo.helpers({
 			}
 			user.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
 			user.browserIcon = `icon-${ ua.getBrowser().name.toLowerCase() }`;
-		}
 
+			user.status = RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+		}
 		return user;
 	},
 
@@ -96,7 +106,7 @@ Template.visitorInfo.helpers({
 			},
 			cancel() {
 				instance.action.set();
-			}
+			},
 		};
 	},
 
@@ -111,7 +121,7 @@ Template.visitorInfo.helpers({
 			},
 			cancel() {
 				instance.action.set();
-			}
+			},
 		};
 	},
 
@@ -142,7 +152,7 @@ Template.visitorInfo.helpers({
 			return subscription !== undefined;
 		}
 		return false;
-	}
+	},
 });
 
 Template.visitorInfo.events({
@@ -154,33 +164,33 @@ Template.visitorInfo.events({
 	'click .close-livechat'(event) {
 		event.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Closing_chat'),
 			type: 'input',
 			inputPlaceholder: t('Please_add_a_comment'),
 			showCancelButton: true,
-			closeOnConfirm: false
+			closeOnConfirm: false,
 		}, (inputValue) => {
 			if (!inputValue) {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
 				return false;
 			}
 
 			if (s.trim(inputValue) === '') {
-				swal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
 				return false;
 			}
 
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/*, result*/) {
+			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
-				swal({
+				modal.open({
 					title: t('Chat_closed'),
 					text: t('Chat_closed_successfully'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 			});
 		});
@@ -189,15 +199,15 @@ Template.visitorInfo.events({
 	'click .return-inquiry'(event) {
 		event.preventDefault();
 
-		swal({
+		modal.open({
 			title: t('Would_you_like_to_return_the_inquiry'),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
-			confirmButtonText: t('Yes')
+			confirmButtonText: t('Yes'),
 		}, () => {
-			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/*, result*/) {
+			Meteor.call('livechat:returnAsInquiry', this.rid, function(error/* , result*/) {
 				if (error) {
 					console.log(error);
 				} else {
@@ -212,7 +222,7 @@ Template.visitorInfo.events({
 		event.preventDefault();
 
 		instance.action.set('forward');
-	}
+	},
 });
 
 Template.visitorInfo.onCreated(function() {
@@ -243,6 +253,6 @@ Template.visitorInfo.onCreated(function() {
 	}
 
 	this.autorun(() => {
-		this.user.set(Meteor.users.findOne({ '_id': this.visitorId.get() }));
+		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));
 	});
 });

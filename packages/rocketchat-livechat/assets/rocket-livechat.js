@@ -472,8 +472,6 @@
 	}
 }(this || {}));
 
-/* globals EventEmitter */
-
 (function(w) {
 	w.RocketChat = w.RocketChat || { _: [] };
 	var config = {};
@@ -540,6 +538,8 @@
 
 		widget.dataset.state = 'closed';
 		widget.style.height = widgetHeightClosed;
+		widget.style.right = '50px';
+		widget.style.bottom = '0px';
 		callHook('widgetClosed');
 
 		emitCallback('chat-minimized');
@@ -581,6 +581,33 @@
 				closeWidget();
 			}
 		},
+		restoreWindow: function() {
+			if (widget.dataset.state === 'closed') {
+				openWidget();
+			}
+		},
+		startDragWindow: function(offset) {
+			if (widget.dataset.state !== 'opened') {
+				return;
+			}
+			this.dragOffset = offset;
+		},
+		stopDragWindow: function() {
+			if (widget.dataset.state !== 'opened') {
+				return;
+			}
+			this.dragOffset = null;
+		},
+		dragWindow: function(displacement) {
+			if (!this.dragOffset) {
+				return;
+			}
+
+			var right = parseInt(widget.style.right.replace(/px$/, ''), 10);
+			var bottom = parseInt(widget.style.bottom.replace(/px$/, ''), 10);
+			widget.style.right = (right - (displacement.x - this.dragOffset.x)) + 'px';
+			widget.style.bottom = (bottom - (displacement.y - this.dragOffset.y)) + 'px';
+		},
 		openPopout: function() {
 			closeWidget();
 			var popup = window.open(config.url + '?mode=popout', 'livechat-popout', 'width=400, height=450, toolbars=no');
@@ -618,6 +645,22 @@
 
 	var setDepartment = function(department) {
 		callHook('setDepartment', department);
+	};
+
+	var setGuestToken = function(token) {
+		callHook('setGuestToken', token);
+	};
+
+	var setGuestName = function(name) {
+		callHook('setGuestName', name);
+	};
+
+	var setGuestEmail = function(email) {
+		callHook('setGuestEmail', email);
+	};
+
+	var registerGuest = function(guest) {
+		callHook('registerGuest', guest);
 	};
 
 	var clearDepartment = function() {
@@ -722,6 +765,10 @@
 		setTheme: setTheme,
 		setDepartment: setDepartment,
 		clearDepartment: clearDepartment,
+		setGuestToken: setGuestToken,
+		setGuestName: setGuestName,
+		setGuestEmail: setGuestEmail,
+		registerGuest: registerGuest,
 
 		// callbacks
 		onChatMaximized: function(fn) { registerCallback('chat-maximized', fn); },

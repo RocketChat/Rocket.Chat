@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({
 		id: 'snippeted-message',
@@ -6,25 +11,26 @@ Meteor.startup(function() {
 		context: [
 			'snippeted',
 			'message',
-			'message-mobile'
+			'message-mobile',
 		],
+		order: 10,
+		group: 'menu',
 		action() {
 			const message = this._arguments[1];
 
-			swal({
+			modal.open({
 				title: 'Create a Snippet',
 				text: 'The name of your snippet (with file extension):',
 				type: 'input',
 				showCancelButton: true,
 				closeOnConfirm: false,
-				animation: 'slide-from-top',
-				inputPlaceholder: 'Snippet name'
+				inputPlaceholder: 'Snippet name',
 			}, function(filename) {
 				if (filename === false) {
 					return false;
 				}
 				if (filename === '') {
-					swal.showInputError('You need to write something!');
+					modal.showInputError('You need to write something!');
 					return false;
 				}
 				message.snippeted = true;
@@ -32,7 +38,12 @@ Meteor.startup(function() {
 					if (error) {
 						return handleError(error);
 					}
-					swal('Nice!', `Snippet '${ filename }' created.`, 'success');
+					modal.open({
+						title: t('Nice'),
+						text: `Snippet '${ filename }' created.`,
+						type: 'success',
+						timer: 2000,
+					});
 				});
 			});
 
@@ -48,7 +59,7 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			RocketChat.authz.hasAtLeastOnePermission('snippet-message', message.rid);
-		}
+			return RocketChat.authz.hasAtLeastOnePermission('snippet-message', message.rid);
+		},
 	});
 });

@@ -1,11 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.oembedImageWidget.helpers({
 	loadImage() {
-		const user = Meteor.user();
-
-		if (user && user.settings && user.settings.preferences && user.settings.preferences.autoImageLoad === false && this.downloadImages == null) {
+		if (RocketChat.getUserPreference(Meteor.userId(), 'autoImageLoad') === false && this.downloadImages == null) {
 			return false;
 		}
-		if (Meteor.Device.isPhone() && user && user.settings && user.settings.preferences && user.settings.preferences.saveMobileBandwidth && this.downloadImages == null) {
+		if (Meteor.Device.isPhone() && RocketChat.getUserPreference(Meteor.userId(), 'saveMobileBandwidth') && this.downloadImages == null) {
 			return false;
 		}
 		return true;
@@ -14,8 +16,7 @@ Template.oembedImageWidget.helpers({
 		if (this.collapsed != null) {
 			return this.collapsed;
 		} else {
-			const user = Meteor.user();
-			return user && user.settings && user.settings.preferences && user.settings.preferences.collapseMediaByDefault === true;
+			return RocketChat.getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
-	}
+	},
 });

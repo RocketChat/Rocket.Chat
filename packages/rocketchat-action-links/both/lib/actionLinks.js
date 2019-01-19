@@ -1,11 +1,15 @@
-//Action Links namespace creation.
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
+// Action Links namespace creation.
 RocketChat.actionLinks = {
 	actions: {},
 	register(name, funct) {
 		RocketChat.actionLinks.actions[name] = funct;
 	},
 	getMessage(name, messageId) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'actionLinks.getMessage' });
 		}
 
@@ -14,8 +18,11 @@ RocketChat.actionLinks = {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { function: 'actionLinks.getMessage' });
 		}
 
-		const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
-		if (Array.isArray(room.usernames) && room.usernames.indexOf(Meteor.user().username) === -1) {
+		const subscription = RocketChat.models.Subscriptions.findOne({
+			rid: message.rid,
+			'u._id': userId,
+		});
+		if (!subscription) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { function: 'actionLinks.getMessage' });
 		}
 
@@ -24,5 +31,5 @@ RocketChat.actionLinks = {
 		}
 
 		return message;
-	}
+	},
 };

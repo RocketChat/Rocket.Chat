@@ -1,12 +1,15 @@
-/* globals CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
+import { Logger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
 
 const logger = new Logger('rocketchat:lib', {
 	methods: {
 		oauth_updated: {
-			type: 'info'
-		}
-	}
+			type: 'info',
+		},
+	},
 });
 
 function _OAuthServicesUpdate() {
@@ -23,7 +26,7 @@ function _OAuthServicesUpdate() {
 		if (service.value === true) {
 			const data = {
 				clientId: RocketChat.settings.get(`${ service.key }_id`),
-				secret: RocketChat.settings.get(`${ service.key }_secret`)
+				secret: RocketChat.settings.get(`${ service.key }_secret`),
 			};
 			if (/Accounts_OAuth_Custom-/.test(service.key)) {
 				data.custom = true;
@@ -39,6 +42,7 @@ function _OAuthServicesUpdate() {
 				data.loginStyle = RocketChat.settings.get(`${ service.key }-login_style`);
 				data.buttonColor = RocketChat.settings.get(`${ service.key }-button_color`);
 				data.tokenSentVia = RocketChat.settings.get(`${ service.key }-token_sent_via`);
+				data.identityTokenSentVia = RocketChat.settings.get(`${ service.key }-identity_token_sent_via`);
 				data.usernameField = RocketChat.settings.get(`${ service.key }-username_field`);
 				data.mergeUsers = RocketChat.settings.get(`${ service.key }-merge_users`);
 				new CustomOAuth(serviceName.toLowerCase(), {
@@ -49,8 +53,9 @@ function _OAuthServicesUpdate() {
 					scope: data.scope,
 					loginStyle: data.loginStyle,
 					tokenSentVia: data.tokenSentVia,
+					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
-					mergeUsers: data.mergeUsers
+					mergeUsers: data.mergeUsers,
 				});
 			}
 			if (serviceName === 'Facebook') {
@@ -62,13 +67,13 @@ function _OAuthServicesUpdate() {
 				delete data.clientId;
 			}
 			ServiceConfiguration.configurations.upsert({
-				service: serviceName.toLowerCase()
+				service: serviceName.toLowerCase(),
 			}, {
-				$set: data
+				$set: data,
 			});
 		} else {
 			ServiceConfiguration.configurations.remove({
-				service: serviceName.toLowerCase()
+				service: serviceName.toLowerCase(),
 			});
 		}
 	});
@@ -79,7 +84,7 @@ const OAuthServicesUpdate = _.debounce(Meteor.bindEnvironment(_OAuthServicesUpda
 function OAuthServicesRemove(_id) {
 	const serviceName = _id.replace('Accounts_OAuth_Custom-', '');
 	return ServiceConfiguration.configurations.remove({
-		service: serviceName.toLowerCase()
+		service: serviceName.toLowerCase(),
 	});
 }
 

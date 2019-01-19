@@ -1,11 +1,10 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
 		this.unblock();
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true && record['public'] === true;
-		});
+		const records = RocketChat.models.Settings.findNotHiddenPublic().fetch();
+
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {
@@ -13,15 +12,15 @@ Meteor.methods({
 				}),
 				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
-						$ne: true
+						$ne: true,
 					},
-					'public': true
+					public: true,
 				}, {
 					fields: {
 						_id: 1,
-						_deletedAt: 1
-					}
-				}).fetch()
+						_deletedAt: 1,
+					},
+				}).fetch(),
 			};
 		}
 		return records;
@@ -34,9 +33,7 @@ Meteor.methods({
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-privileged-setting')) {
 			return [];
 		}
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true;
-		});
+		const records = RocketChat.models.Settings.findNotHidden().fetch();
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {
@@ -44,25 +41,47 @@ Meteor.methods({
 				}),
 				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
-						$ne: true
-					}
+						$ne: true,
+					},
 				}, {
 					fields: {
 						_id: 1,
-						_deletedAt: 1
-					}
-				}).fetch()
+						_deletedAt: 1,
+					},
+				}).fetch(),
 			};
 		}
 		return records;
-	}
+	},
 });
 
-RocketChat.models.Settings.cache.on('changed', function(type, setting) {
-	if (setting['public'] === true) {
-		RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', type, _.pick(setting, '_id', 'value', 'editor', 'properties'));
+RocketChat.models.Settings.on('change', ({ clientAction, id, data, diff }) => {
+	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
+		return;
 	}
-	return RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', type, setting);
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted':
+			const setting = data || RocketChat.models.Settings.findOneById(id);
+			const value = {
+				_id: setting._id,
+				value: setting.value,
+				editor: setting.editor,
+				properties: setting.properties,
+			};
+
+			if (setting.public === true) {
+				RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
+			} else {
+				RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);
+			}
+			break;
+
+		case 'removed':
+			RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });
+			RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
+			break;
+	}
 });
 
 RocketChat.Notifications.streamAll.allowRead('private-settings-changed', function() {

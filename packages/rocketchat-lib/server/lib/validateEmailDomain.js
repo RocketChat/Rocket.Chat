@@ -1,5 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-const dns = Npm.require('dns');
+import dns from 'dns';
 
 let emailDomainBlackList = [];
 let emailDomainWhiteList = [];

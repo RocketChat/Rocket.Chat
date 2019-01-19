@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 function Archive(command, params, item) {
 	if (command !== 'archive' || !Match.test(params, String)) {
 		return;
@@ -14,12 +20,24 @@ function Archive(command, params, item) {
 		room = RocketChat.models.Rooms.findOneByName(channel);
 	}
 
+	const user = Meteor.users.findOne(Meteor.userId());
+
+	if (!room) {
+		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			_id: Random.id(),
+			rid: item.rid,
+			ts: new Date(),
+			msg: TAPi18n.__('Channel_doesnt_exist', {
+				postProcess: 'sprintf',
+				sprintf: [channel],
+			}, user.language),
+		});
+	}
+
 	// You can not archive direct messages.
 	if (room.t === 'd') {
 		return;
 	}
-
-	const user = Meteor.users.findOne(Meteor.userId());
 
 	if (room.archived) {
 		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
@@ -28,8 +46,8 @@ function Archive(command, params, item) {
 			ts: new Date(),
 			msg: TAPi18n.__('Duplicate_archived_channel_name', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 		return;
 	}
@@ -42,11 +60,14 @@ function Archive(command, params, item) {
 		ts: new Date(),
 		msg: TAPi18n.__('Channel_Archived', {
 			postProcess: 'sprintf',
-			sprintf: [channel]
-		}, user.language)
+			sprintf: [channel],
+		}, user.language),
 	});
 
 	return Archive;
 }
 
-RocketChat.slashCommands.add('archive', Archive);
+RocketChat.slashCommands.add('archive', Archive, {
+	description: 'Archive',
+	params: '#channel',
+});

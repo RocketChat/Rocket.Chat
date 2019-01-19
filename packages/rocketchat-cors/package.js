@@ -2,15 +2,17 @@ Package.describe({
 	name: 'rocketchat:cors',
 	version: '0.0.1',
 	summary: 'Enable CORS',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'webapp'
+		'webapp',
+		'mongo',
+		'rocketchat:lib',
 	]);
 
-	api.addFiles('cors.js', 'server');
-	api.addFiles('common.js');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

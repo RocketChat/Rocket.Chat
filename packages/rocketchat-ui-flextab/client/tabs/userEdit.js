@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
@@ -20,7 +27,7 @@ Template.userEdit.helpers({
 
 	role() {
 		const roles = Template.instance().roles.get();
-		return RocketChat.models.Roles.find({_id: {$nin:roles}, scope: 'Users'}, { sort: { description: 1, _id: 1 } });
+		return RocketChat.models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {
@@ -29,7 +36,7 @@ Template.userEdit.helpers({
 
 	name() {
 		return this.description || this._id;
-	}
+	},
 });
 
 Template.userEdit.events({
@@ -44,7 +51,7 @@ Template.userEdit.events({
 		e.stopPropagation();
 		e.preventDefault();
 		let roles = t.roles.get();
-		roles = roles.filter(el => el !== this.valueOf());
+		roles = roles.filter((el) => el !== this.valueOf());
 		t.roles.set(roles);
 		$(`[title=${ this }]`).remove();
 	},
@@ -52,7 +59,20 @@ Template.userEdit.events({
 	'click #randomPassword'(e) {
 		e.stopPropagation();
 		e.preventDefault();
-		$('#password').val(Random.id());
+		e.target.classList.add('loading');
+		$('#password').val('');
+		setTimeout(() => {
+			$('#password').val(Random.id());
+			e.target.classList.remove('loading');
+		}, 1000);
+	},
+
+	'mouseover #password'(e) {
+		e.target.type = 'text';
+	},
+
+	'mouseout #password'(e) {
+		e.target.type = 'password';
 	},
 
 	'click #addRole'(e, instance) {
@@ -71,12 +91,10 @@ Template.userEdit.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.save(e.currentTarget);
-	}
+	},
 });
 
-
 Template.userEdit.onCreated(function() {
-	let userData;
 	this.user = this.data != null ? this.data.user : undefined;
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
 
@@ -94,7 +112,7 @@ Template.userEdit.onCreated(function() {
 	};
 
 	this.getUserData = () => {
-		userData = { _id: (this.user != null ? this.user._id : undefined) };
+		const userData = { _id: (this.user != null ? this.user._id : undefined) };
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
 		userData.email = s.trim(this.$('#email').val());
@@ -106,17 +124,15 @@ Template.userEdit.onCreated(function() {
 		const roleSelect = this.$('.remove-role').toArray();
 
 		if (roleSelect.length > 0) {
-			const notSorted = roleSelect.map(role => {
-				return role.title;
-			});
-			//Remove duplicate strings from the array
+			const notSorted = roleSelect.map((role) => role.title);
+			// Remove duplicate strings from the array
 			userData.roles = notSorted.filter((el, index) => notSorted.indexOf(el) === index);
 		}
 		return userData;
 	};
 
 	this.validate = () => {
-		userData = this.getUserData();
+		const userData = this.getUserData();
 
 		const errors = [];
 		if (!userData.name) {
@@ -140,38 +156,31 @@ Template.userEdit.onCreated(function() {
 		return errors.length === 0;
 	};
 
-	return this.save = form => {
-		if (this.validate()) {
-			userData = this.getUserData();
+	this.save = (form) => {
+		if (!this.validate()) {
+			return;
+		}
+		const userData = this.getUserData();
 
-			if (this.user != null) {
-				for (const key in userData) {
-					if (key) {
-						const value = userData[key];
-						if (!['_id'].includes(key)) {
-							if (value === this.user[key]) {
-								delete userData[key];
-							}
+		if (this.user != null) {
+			for (const key in userData) {
+				if (key) {
+					const value = userData[key];
+					if (!['_id'].includes(key)) {
+						if (value === this.user[key]) {
+							delete userData[key];
 						}
 					}
 				}
 			}
-
-			return Meteor.call('insertOrUpdateUser', userData, (error, result) => {
-				if (result) {
-					if (userData._id) {
-						toastr.success(t('User_updated_successfully'));
-					} else {
-						toastr.success(t('User_added_successfully'));
-					}
-
-					this.cancel(form, userData.username);
-				}
-
-				if (error) {
-					return handleError(error);
-				}
-			});
 		}
+
+		Meteor.call('insertOrUpdateUser', userData, (error) => {
+			if (error) {
+				return handleError(error);
+			}
+			toastr.success(userData._id ? t('User_updated_successfully') : t('User_added_successfully'));
+			this.cancel(form, userData.username);
+		});
 	};
 });

@@ -1,0 +1,29 @@
+<template name="alerts">
+	<div class="rc-alerts {{modifiers}} {{customclass}}" data-popover="popover">
+		{{#if icon}}
+			<div class="rc-alerts__big-icon rc-alerts__icon {{hasAction}} js-action">
+				{{> icon icon=icon }}
+			</div>
+		{{/if}}
+		<div class="rc-alerts__content {{hasAction}} js-action">
+			{{#if template}}
+				{{> Template.dynamic template=template data=data}}
+			{{else}}
+				{{#if title}}
+					<div class="rc-alerts__title">
+						{{title}}
+					</div>
+				{{/if}}
+				<div class="rc-alerts__line">
+					{{text}}
+				</div>
+				{{{html}}}
+			{{/if}}
+		</div>
+		{{#if closable}}
+			<div class="rc-alerts__icon js-close">
+				{{> icon block="rc-alerts__icon rc-alerts__icon--close" icon='plus'}}
+			</div>
+		{{/if}}
+	</div>
+</template>

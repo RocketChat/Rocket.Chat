@@ -1,23 +1,18 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import LivechatVisitors from '../models/LivechatVisitors';
+
 Meteor.methods({
-	'livechat:closeByVisitor'(roomId) {
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeByVisitor' });
-		}
+	'livechat:closeByVisitor'({ roomId, token }) {
+		const visitor = LivechatVisitors.getVisitorByToken(token);
 
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorId(Meteor.userId(), roomId);
-
-		if (!room || !room.open) {
-			return false;
-		}
-
-		const user = Meteor.user();
-
-		const language = (user && user.language) || RocketChat.settings.get('language') || 'en';
+		const language = (visitor && visitor.language) || RocketChat.settings.get('language') || 'en';
 
 		return RocketChat.Livechat.closeRoom({
-			user,
-			room,
-			comment: TAPi18n.__('Closed_by_visitor', { lng: language })
+			visitor,
+			room: RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, token),
+			comment: TAPi18n.__('Closed_by_visitor', { lng: language }),
 		});
-	}
+	},
 });

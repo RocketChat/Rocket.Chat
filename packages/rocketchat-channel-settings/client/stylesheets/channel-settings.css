@@ -1,17 +1,19 @@
 html.rtl .flex-tab {
-  direction: rtl;
+	direction: rtl;
 
-  & .channel-settings {
-	& .editing {
-	  padding-right: 8px;
-	  padding-left: 80px;
+	& .channel-settings {
+		& .editing {
+			padding-right: 8px;
+			padding-left: 80px;
+		}
+
+		& .buttons {
+			right: auto;
+			left: 1px;
+
+			border-radius: 4px 0 0 4px;
+		}
 	}
-	& .buttons {
-	  right: auto;
-	  left: 1px;
-	  border-radius: 4px 0 0 4px;
-	}
-  }
 }
 
 .flex-tab {
@@ -40,6 +42,7 @@ html.rtl .flex-tab {
 
 			cursor: pointer;
 			vertical-align: middle;
+			word-wrap: break-word;
 
 			font-size: 14px;
 
@@ -50,8 +53,8 @@ html.rtl .flex-tab {
 		}
 
 		& .editing {
-			margin: -2px 0 -1px -9px;
 			padding-right: 80px;
+
 			font-size: 14px;
 		}
 
@@ -59,7 +62,6 @@ html.rtl .flex-tab {
 			position: absolute;
 			top: -1px;
 			right: 10px;
-			bottom: 0;
 
 			border-radius: 0 4px 4px 0;
 
@@ -109,9 +111,9 @@ html.rtl .flex-tab {
 		& .setting-block {
 			position: relative;
 
-			font-size: 0;
-
 			display: flex;
+
+			font-size: 0;
 
 			& .loading-animation {
 				top: 30px;

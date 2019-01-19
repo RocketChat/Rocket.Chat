@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 //
 // AutoLinker is a named function that will replace links on messages
@@ -20,11 +22,12 @@ function AutoLinker(message) {
 			urls: {
 				schemeMatches: RocketChat.settings.get('AutoLinker_Urls_Scheme'),
 				wwwMatches: RocketChat.settings.get('AutoLinker_Urls_www'),
-				tldMatches: RocketChat.settings.get('AutoLinker_Urls_TLD')
+				tldMatches: RocketChat.settings.get('AutoLinker_Urls_TLD'),
 			},
 			email: RocketChat.settings.get('AutoLinker_Email'),
 			phone: RocketChat.settings.get('AutoLinker_Phone'),
 			twitter: false,
+			stripTrailingSlash: false,
 			replaceFn(match) {
 				if (match.getType() === 'url') {
 					if (regUrls.test(match.matchedText)) {
@@ -41,7 +44,7 @@ function AutoLinker(message) {
 				}
 
 				return null;
-			}
+			},
 		});
 
 		let regNonAutoLink = /(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/;
@@ -69,4 +72,4 @@ function AutoLinker(message) {
 	return message;
 }
 
-RocketChat.callbacks.add('renderMessage', AutoLinker);
+RocketChat.callbacks.add('renderMessage', AutoLinker, RocketChat.callbacks.priority.LOW, 'autolinker');

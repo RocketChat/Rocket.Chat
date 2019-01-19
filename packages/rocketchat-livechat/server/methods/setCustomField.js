@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import LivechatVisitors from '../models/LivechatVisitors';
+
 Meteor.methods({
 	'livechat:setCustomField'(token, key, value, overwrite = true) {
 		const customField = RocketChat.models.LivechatCustomField.findOneById(key);
@@ -6,10 +10,10 @@ Meteor.methods({
 				return RocketChat.models.Rooms.updateLivechatDataByToken(token, key, value, overwrite);
 			} else {
 				// Save in user
-				return RocketChat.models.Users.updateLivechatDataByToken(token, key, value, overwrite);
+				return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 			}
 		}
 
 		return true;
-	}
+	},
 });

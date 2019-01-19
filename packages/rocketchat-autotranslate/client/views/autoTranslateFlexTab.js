@@ -1,39 +1,45 @@
-/* globals ChatSubscription */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatSubscription } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import toastr from 'toastr';
 
 Template.autoTranslateFlexTab.helpers({
 	autoTranslate() {
 		const sub = ChatSubscription.findOne({
-			rid: Template.instance().rid
+			rid: Template.instance().rid,
 		}, {
 			fields: {
-				autoTranslate: 1
-			}
+				autoTranslate: 1,
+			},
 		});
-		return sub && sub.autoTranslate ? true : false;
+		return !!(sub && sub.autoTranslate);
 	},
 
 	autoTranslateValue() {
 		const sub = ChatSubscription.findOne({
-			rid: Template.instance().rid
+			rid: Template.instance().rid,
 		}, {
 			fields: {
-				autoTranslate: 1
-			}
+				autoTranslate: 1,
+			},
 		});
 		return sub && sub.autoTranslate ? t('True') : t('False');
 	},
 
 	autoTranslateLanguage() {
 		const sub = ChatSubscription.findOne({
-			rid: Template.instance().rid
+			rid: Template.instance().rid,
 		}, {
 			fields: {
-				autoTranslateLanguage: 1
-			}
+				autoTranslateLanguage: 1,
+			},
 		});
-		const autoTranslateLanguage = sub && sub.autoTranslateLanguage || Meteor.user().language || window.defaultUserLanguage() || '';
+		const autoTranslateLanguage = (sub && sub.autoTranslateLanguage) || Meteor.user().language || window.defaultUserLanguage() || '';
 		const supportedLanguages = Template.instance().supportedLanguages.get();
 		let language = _.findWhere(supportedLanguages, { language: autoTranslateLanguage });
 		if (language) {
@@ -63,7 +69,7 @@ Template.autoTranslateFlexTab.helpers({
 				return language && language.name;
 			}
 		}
-	}
+	},
 });
 
 Template.autoTranslateFlexTab.onCreated(function() {
@@ -105,16 +111,16 @@ Template.autoTranslateFlexTab.onCreated(function() {
 		}
 
 		if (this.validateSetting(field)) {
-			Meteor.call('autoTranslate.saveSettings', this.data.rid, field, value, { defaultLanguage: Meteor.user().language || window.defaultUserLanguage() }, (err/*, result*/) => {
+			Meteor.call('autoTranslate.saveSettings', this.data.rid, field, value, { defaultLanguage: Meteor.user().language || window.defaultUserLanguage() }, (err/* , result*/) => {
 				if (err) {
 					return handleError(err);
 				}
 
 				const query = { rid: this.data.rid, 'u._id': { $ne: Meteor.userId() } };
 				if (field === 'autoTranslateLanguage') {
-					query.$or = [ { [`translations.${ previousLanguage }`]: { $exists: 1 } }, { [`translations.${ value }`]: { $exists: 1 } }, { [`attachments.translations.${ previousLanguage }`]: { $exists: 1 } }, { [`attachments.translations.${ value }`]: { $exists: 1 } } ];
+					query.$or = [{ [`translations.${ previousLanguage }`]: { $exists: 1 } }, { [`translations.${ value }`]: { $exists: 1 } }, { [`attachments.translations.${ previousLanguage }`]: { $exists: 1 } }, { [`attachments.translations.${ value }`]: { $exists: 1 } }];
 				} else {
-					query.$or = [ { [`translations.${ subscription.autoTranslateLanguage }`]: { $exists: 1 } }, { [`attachments.translations.${ subscription.autoTranslateLanguage }`]: { $exists: 1 } } ];
+					query.$or = [{ [`translations.${ subscription.autoTranslateLanguage }`]: { $exists: 1 } }, { [`attachments.translations.${ subscription.autoTranslateLanguage }`]: { $exists: 1 } }];
 				}
 
 				if (field === 'autoTranslate' && value === '0') {
@@ -163,5 +169,5 @@ Template.autoTranslateFlexTab.events({
 	'click .save'(e, instance) {
 		e.preventDefault();
 		instance.saveSetting();
-	}
+	},
 });

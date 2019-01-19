@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { modal } from 'meteor/rocketchat:ui';
+import { t, handleError } from 'meteor/rocketchat:utils';
+
 Template.soundInfo.helpers({
 	name() {
 		const sound = Template.instance().sound.get();
@@ -27,9 +33,9 @@ Template.soundInfo.helpers({
 						return instance.loadedName.set(name);
 					}
 				}
-			}
+			},
 		};
-	}
+	},
 });
 
 Template.soundInfo.events({
@@ -38,8 +44,8 @@ Template.soundInfo.events({
 		e.preventDefault();
 		const sound = instance.sound.get();
 		if (sound != null) {
-			const _id = sound._id;
-			swal({
+			const { _id } = sound;
+			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Custom_Sound_Delete_Warning'),
 				type: 'warning',
@@ -48,21 +54,18 @@ Template.soundInfo.events({
 				confirmButtonText: t('Yes_delete_it'),
 				cancelButtonText: t('Cancel'),
 				closeOnConfirm: false,
-				html: false
+				html: false,
 			}, function() {
-				swal.disableButtons();
-
-				Meteor.call('deleteCustomSound', _id, (error/*, result*/) => {
+				Meteor.call('deleteCustomSound', _id, (error/* , result*/) => {
 					if (error) {
 						handleError(error);
-						swal.enableButtons();
 					} else {
-						swal({
+						modal.open({
 							title: t('Deleted'),
 							text: t('Custom_Sound_Has_Been_Deleted'),
 							type: 'success',
 							timer: 2000,
-							showConfirmButton: false
+							showConfirmButton: false,
 						});
 
 						instance.data.tabBar.showGroup('custom-sounds');
@@ -78,7 +81,7 @@ Template.soundInfo.events({
 		e.preventDefault();
 
 		instance.editingSound.set(instance.sound.get()._id);
-	}
+	},
 });
 
 Template.soundInfo.onCreated(function() {
@@ -90,7 +93,7 @@ Template.soundInfo.onCreated(function() {
 
 	this.autorun(() => {
 		const data = Template.currentData();
-		if (data.clear != null) {
+		if (data && data.clear != null) {
 			this.clear = data.clear;
 		}
 	});
@@ -98,7 +101,7 @@ Template.soundInfo.onCreated(function() {
 	this.autorun(() => {
 		const data = Template.currentData();
 		const sound = this.sound.get();
-		if (sound.name != null) {
+		if (sound && sound.name != null) {
 			this.loadedName.set(sound.name);
 		} else if (data.name != null) {
 			this.loadedName.set(data.name);

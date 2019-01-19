@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(function() {
 	return RocketChat.TabBar.addButton({
 		groups: ['channel', 'group'],
@@ -5,6 +8,6 @@ Meteor.startup(function() {
 		i18nTitle: 'Mentions',
 		icon: 'at',
 		template: 'mentionsFlexTab',
-		order: 3
+		order: 3,
 	});
 });

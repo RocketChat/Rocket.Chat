@@ -1,10 +1,4 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
-import {getCredentials, api, login, request, credentials, integration, log } from '../../data/api-data.js';
-import {adminEmail, password} from '../../data/user.js';
-import supertest from 'supertest';
+import { api, request, credentials, integration } from '../../data/api-data.js';
 
 describe('Outgoing Integrations', function() {
 	this.retries(0);
@@ -24,18 +18,18 @@ describe('Outgoing Integrations', function() {
 				alias: 'guggy',
 				avatar: 'http://res.guggy.com/logo_128.png',
 				emoji: ':ghost:',
-				event: 'sendMessage'
+				event: 'sendMessage',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				integration._id = res.body.integration._id;
-				expect(res.body).to.have.deep.property('integration.name', 'Guggy');
-				expect(res.body).to.have.deep.property('integration.type', 'webhook-outgoing');
-				expect(res.body).to.have.deep.property('integration.enabled', true);
-				expect(res.body).to.have.deep.property('integration.username', 'rocket.cat');
-				expect(res.body).to.have.deep.property('integration.event', 'sendMessage');
+				expect(res.body).to.have.nested.property('integration.name', 'Guggy');
+				expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
+				expect(res.body).to.have.nested.property('integration.enabled', true);
+				expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
+				expect(res.body).to.have.nested.property('integration.event', 'sendMessage');
 			})
 			.end(done);
 	});
@@ -59,16 +53,16 @@ describe('Outgoing Integrations', function() {
 			.set(credentials)
 			.send({
 				type: 'webhook-outgoing',
-				integrationId: integration._id
+				integrationId: integration._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.deep.property('integration.name', 'Guggy');
-				expect(res.body).to.have.deep.property('integration.type', 'webhook-outgoing');
-				expect(res.body).to.have.deep.property('integration.enabled', true);
-				expect(res.body).to.have.deep.property('integration.username', 'rocket.cat');
+				expect(res.body).to.have.nested.property('integration.name', 'Guggy');
+				expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
+				expect(res.body).to.have.nested.property('integration.enabled', true);
+				expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
 			})
 			.end(done);
 	});

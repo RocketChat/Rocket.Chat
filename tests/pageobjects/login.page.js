@@ -1,4 +1,5 @@
 import Page from './Page';
+import mainContent from './main-content.page';
 
 class LoginPage extends Page {
 	get registerButton() { return browser.element('button.register'); }
@@ -11,6 +12,7 @@ class LoginPage extends Page {
 	get emailField() { return browser.element('[name=email]'); }
 	get passwordField() { return browser.element('[name=pass]'); }
 	get confirmPasswordField() { return browser.element('[name=confirm-pass]'); }
+	get reasonField() { return browser.element('[name=reason]'); }
 	get inputUsername() { return browser.element('form#login-card input#username'); }
 
 	get emailOrUsernameInvalidText() { return browser.element('[name=emailOrUsername]~.input-error'); }
@@ -38,7 +40,7 @@ class LoginPage extends Page {
 		this.emailField.waitForVisible(15000);
 	}
 
-	registerNewUser({username, email, password}) {
+	registerNewUser({ username, email, password }) {
 		this.nameField.waitForVisible(5000);
 		this.nameField.setValue(username);
 		this.emailField.setValue(email);
@@ -48,7 +50,7 @@ class LoginPage extends Page {
 		this.submit();
 	}
 
-	registerNewAdmin({adminUsername, adminEmail, adminPassword}) {
+	registerNewAdmin({ adminUsername, adminEmail, adminPassword }) {
 		this.nameField.waitForVisible(5000);
 		this.nameField.setValue(adminUsername);
 		this.emailField.setValue(adminEmail);
@@ -58,12 +60,18 @@ class LoginPage extends Page {
 		this.submit();
 	}
 
-	login({email, password}) {
+	login({ email, password }) {
 		this.emailOrUsernameField.waitForVisible(5000);
 		this.emailOrUsernameField.setValue(email);
 		this.passwordField.setValue(password);
 
 		this.submit();
+	}
+
+	loginSucceded({ email, password }) {
+		this.login({ email, password });
+
+		mainContent.mainContent.waitForVisible(5000);
 	}
 
 	submit() {

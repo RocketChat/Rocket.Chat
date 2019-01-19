@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { SideNav } from 'meteor/rocketchat:ui';
 import s from 'underscore.string';
 import moment from 'moment';
 
@@ -49,8 +56,8 @@ Template.adminInfo.helpers({
 		return RocketChat.Info;
 	},
 	build() {
-		return RocketChat.Info && RocketChat.Info.compile || RocketChat.Info && RocketChat.Info.build;
-	}
+		return RocketChat.Info && (RocketChat.Info.compile || RocketChat.Info.build);
+	},
 });
 
 Template.adminInfo.events({
@@ -64,7 +71,7 @@ Template.adminInfo.events({
 				return instance.statistics.set(statistics);
 			}
 		});
-	}
+	},
 });
 
 Template.adminInfo.onRendered(function() {

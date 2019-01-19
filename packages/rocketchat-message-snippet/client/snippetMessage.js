@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatMessage } from 'meteor/rocketchat:ui';
+
 Meteor.methods({
 	snippetMessage(message) {
 		if (typeof Meteor.userId() === 'undefined' || Meteor.userId() === null) {
@@ -15,11 +19,11 @@ Meteor.methods({
 			return false;
 		}
 		ChatMessage.update({
-			_id: message._id
+			_id: message._id,
 		}, {
 			$set: {
-				snippeted: true
-			}
+				snippeted: true,
+			},
 		});
-	}
+	},
 });

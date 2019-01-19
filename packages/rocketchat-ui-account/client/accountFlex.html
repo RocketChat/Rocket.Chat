@@ -1,5 +1,5 @@
 <template name="accountFlex">
-	<aside class="sidebar-light" role="navigation">
+	<aside class="sidebar-light sidebar--medium" role="navigation">
 		<header class="sidebar-flex__header">
 			<h1 class="sidebar-flex__title">{{_ "My_Account"}}</h1>
 			{{#unless embeddedVersion}}
@@ -17,6 +17,18 @@
 				{{/if}}
 
 				{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
+
+				{{#if encryptionEnabled}}
+					{{> sidebarItem menuItem "Encryption" "key" "account" "encryption" }}
+				{{/if}}
+
+				{{#if webdavIntegrationEnabled}}
+					{{> sidebarItem menuItem "Integrations" "code" "account" "integrations" }}
+				{{/if}}
+
+				{{#if accessTokensEnabled}}
+					{{> sidebarItem menuItem "Personal_Access_Tokens" "key" "account" "tokens" }}
+				{{/if}}
 			</ul>
 		</div>
 	</aside>

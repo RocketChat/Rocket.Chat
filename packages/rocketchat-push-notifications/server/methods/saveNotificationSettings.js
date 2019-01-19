@@ -1,68 +1,107 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { getUserNotificationPreference } from 'meteor/rocketchat:utils';
+
 Meteor.methods({
-	saveNotificationSettings(rid, field, value) {
+	saveNotificationSettings(roomId, field, value) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveNotificationSettings' });
 		}
-
-		check(rid, String);
+		check(roomId, String);
 		check(field, String);
 		check(value, String);
 
-		if (['audioNotifications', 'desktopNotifications', 'mobilePushNotifications', 'emailNotifications', 'unreadAlert', 'disableNotifications', 'hideUnreadStatus'].indexOf(field) === -1) {
+		const notifications = {
+			audioNotifications: {
+				updateMethod: (subscription, value) => Subscriptions.updateAudioNotificationsById(subscription._id, value),
+			},
+			desktopNotifications: {
+				updateMethod: (subscription, value) => {
+					if (value === 'default') {
+						const userPref = getUserNotificationPreference(Meteor.userId(), 'desktop');
+						Subscriptions.updateDesktopNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
+					} else {
+						Subscriptions.updateDesktopNotificationsById(subscription._id, { value, origin: 'subscription' });
+					}
+				},
+			},
+			mobilePushNotifications: {
+				updateMethod: (subscription, value) => {
+					if (value === 'default') {
+						const userPref = getUserNotificationPreference(Meteor.userId(), 'mobile');
+						Subscriptions.updateMobilePushNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
+					} else {
+						Subscriptions.updateMobilePushNotificationsById(subscription._id, { value, origin: 'subscription' });
+					}
+				},
+			},
+			emailNotifications: {
+				updateMethod: (subscription, value) => {
+					if (value === 'default') {
+						const userPref = getUserNotificationPreference(Meteor.userId(), 'email');
+						Subscriptions.updateEmailNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
+					} else {
+						Subscriptions.updateEmailNotificationsById(subscription._id, { value, origin: 'subscription' });
+					}
+				},
+			},
+			unreadAlert: {
+				updateMethod: (subscription, value) => Subscriptions.updateUnreadAlertById(subscription._id, value),
+			},
+			disableNotifications: {
+				updateMethod: (subscription, value) => Subscriptions.updateDisableNotificationsById(subscription._id, value === '1'),
+			},
+			hideUnreadStatus: {
+				updateMethod: (subscription, value) => Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1'),
+			},
+			muteGroupMentions: {
+				updateMethod: (subscription, value) => Subscriptions.updateMuteGroupMentions(subscription._id, value === '1'),
+			},
+			desktopNotificationDuration: {
+				updateMethod: (subscription, value) => Subscriptions.updateDesktopNotificationDurationById(subscription._id, value),
+			},
+			audioNotificationValue: {
+				updateMethod: (subscription, value) => Subscriptions.updateAudioNotificationValueById(subscription._id, value),
+			},
+		};
+		const isInvalidNotification = !Object.keys(notifications).includes(field);
+		const basicValuesForNotifications = ['all', 'mentions', 'nothing', 'default'];
+		const fieldsMustHaveBasicValues = ['emailNotifications', 'audioNotifications', 'mobilePushNotifications', 'desktopNotifications'];
+
+		if (isInvalidNotification) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
 		}
 
-		if (field !== 'hideUnreadStatus' && field !== 'disableNotifications' && ['all', 'mentions', 'nothing', 'default'].indexOf(value) === -1) {
+		if (fieldsMustHaveBasicValues.includes(field) && !basicValuesForNotifications.includes(value)) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', { method: 'saveNotificationSettings' });
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, Meteor.userId());
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'saveNotificationSettings' });
 		}
 
-		switch (field) {
-			case 'audioNotifications':
-				RocketChat.models.Subscriptions.updateAudioNotificationsById(subscription._id, value);
-				break;
-			case 'desktopNotifications':
-				RocketChat.models.Subscriptions.updateDesktopNotificationsById(subscription._id, value);
-				break;
-			case 'mobilePushNotifications':
-				RocketChat.models.Subscriptions.updateMobilePushNotificationsById(subscription._id, value);
-				break;
-			case 'emailNotifications':
-				RocketChat.models.Subscriptions.updateEmailNotificationsById(subscription._id, value);
-				break;
-			case 'unreadAlert':
-				RocketChat.models.Subscriptions.updateUnreadAlertById(subscription._id, value);
-				break;
-			case 'disableNotifications':
-				RocketChat.models.Subscriptions.updateDisableNotificationsById(subscription._id, value === '1' ? true : false);
-				break;
-			case 'hideUnreadStatus':
-				RocketChat.models.Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1' ? true : false);
-				break;
-		}
+		notifications[field].updateMethod(subscription, value);
 
 		return true;
 	},
 
 	saveAudioNotificationValue(rid, value) {
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'saveAudioNotificationValue' });
 		}
-		RocketChat.models.Subscriptions.updateAudioNotificationValueById(subscription._id, value);
+		Subscriptions.updateAudioNotificationValueById(subscription._id, value);
 		return true;
 	},
 
 	saveDesktopNotificationDuration(rid, value) {
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'saveDesktopNotificationDuration' });
 		}
-		RocketChat.models.Subscriptions.updateDesktopNotificationDurationById(subscription._id, value);
+		Subscriptions.updateDesktopNotificationDurationById(subscription._id, value);
 		return true;
-	}
+	},
 });

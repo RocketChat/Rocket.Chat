@@ -1,5 +1,7 @@
-import {UploadFS} from 'meteor/jalik:ufs';
-import gcStorage from '@google-cloud/storage';
+import { check } from 'meteor/check';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { Random } from 'meteor/random';
+import { Storage } from '@google-cloud/storage';
 
 /**
  * GoogleStorage store
@@ -11,7 +13,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 	constructor(options) {
 		super(options);
 
-		const gcs = gcStorage(options.connection);
+		const gcs = new Storage(options.connection);
 		this.bucket = gcs.bucket(options.bucket);
 
 		options.getPath = options.getPath || function(file) {
@@ -33,7 +35,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 			const params = {
 				action: 'read',
 				responseDisposition: 'inline',
-				expires: Date.now()+this.options.URLExpiryTimeSpan*1000
+				expires: Date.now() + this.options.URLExpiryTimeSpan * 1000,
 			};
 
 			this.bucket.file(this.getPath(file)).getSignedUrl(params, callback);
@@ -53,7 +55,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 			}
 
 			file.GoogleStorage = {
-				path: this.options.getPath(file)
+				path: this.options.getPath(file),
 			};
 
 			file.store = this.options.name; // assign store to file
@@ -66,7 +68,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 		 * @param callback
 		 */
 		this.delete = function(fileId, callback) {
-			const file = this.getCollection().findOne({_id: fileId});
+			const file = this.getCollection().findOne({ _id: fileId });
 			this.bucket.file(this.getPath(file)).delete(function(err, data) {
 				if (err) {
 					console.error(err);
@@ -104,16 +106,16 @@ export class GoogleStorageStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getWriteStream = function(fileId, file/*, options*/) {
+		this.getWriteStream = function(fileId, file/* , options*/) {
 			return this.bucket.file(this.getPath(file)).createWriteStream({
 				gzip: false,
 				metadata: {
 					contentType: file.type,
-					contentDisposition: `inline; filename=${ file.name }`
+					contentDisposition: `inline; filename=${ file.name }`,
 					// metadata: {
 					// 	custom: 'metadata'
 					// }
-				}
+				},
 			});
 		};
 	}

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import s from 'underscore.string';
 
 Meteor.methods({
@@ -22,6 +24,7 @@ Meteor.methods({
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-authorize_path`);
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-scope`);
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-token_sent_via`);
+		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-identity_token_sent_via`);
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-id`);
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-secret`);
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-button_label_text`);
@@ -30,5 +33,5 @@ Meteor.methods({
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-login_style`);
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-username_field`);
 		RocketChat.settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_users`);
-	}
+	},
 });

@@ -1,48 +1,74 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import LivechatVisitors from '../../../server/models/LivechatVisitors';
+
 RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
 		const SMSService = RocketChat.SMS.getService(this.urlParams.service);
 
 		const sms = SMSService.parse(this.bodyParams);
 
-		let visitor = RocketChat.models.Users.findOneVisitorByPhone(sms.from);
+		let visitor = LivechatVisitors.findOneVisitorByPhone(sms.from);
 
 		const sendMessage = {
 			message: {
-				_id: Random.id()
+				_id: Random.id(),
 			},
 			roomInfo: {
 				sms: {
-					from: sms.to
-				}
-			}
+					from: sms.to,
+				},
+			},
 		};
 
 		if (visitor) {
-			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.profile.token).fetch();
+			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.token).fetch();
 
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
 			} else {
 				sendMessage.message.rid = Random.id();
 			}
-			sendMessage.message.token = visitor.profile.token;
+			sendMessage.message.token = visitor.token;
 		} else {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = Random.id();
 
-			const userId = RocketChat.Livechat.registerGuest({
+			const visitorId = RocketChat.Livechat.registerGuest({
 				username: sms.from.replace(/[^0-9]/g, ''),
 				token: sendMessage.message.token,
 				phone: {
-					number: sms.from
-				}
+					number: sms.from,
+				},
 			});
 
-			visitor = RocketChat.models.Users.findOneById(userId);
+			visitor = LivechatVisitors.findOneById(visitorId);
 		}
 
 		sendMessage.message.msg = sms.body;
 		sendMessage.guest = visitor;
+
+		sendMessage.message.attachments = sms.media.map((curr) => {
+			const attachment = {
+				message_link: curr.url,
+			};
+
+			const { contentType } = curr;
+			switch (contentType.substr(0, contentType.indexOf('/'))) {
+				case 'image':
+					attachment.image_url = curr.url;
+					break;
+				case 'video':
+					attachment.video_url = curr.url;
+					break;
+				case 'audio':
+					attachment.audio_url = curr.url;
+					break;
+			}
+
+			return attachment;
+		});
 
 		try {
 			const message = SMSService.response.call(this, RocketChat.Livechat.sendMessage(sendMessage));
@@ -65,5 +91,5 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 		} catch (e) {
 			return SMSService.error.call(this, e);
 		}
-	}
+	},
 });

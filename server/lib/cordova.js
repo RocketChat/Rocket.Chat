@@ -1,4 +1,10 @@
-/* global Push, SystemLogger */
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
+import { Push } from 'meteor/rocketchat:push';
+
 
 Meteor.methods({
 	// log() {
@@ -10,43 +16,43 @@ Meteor.methods({
 
 		if (!user) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'push_test'
+				method: 'push_test',
 			});
 		}
 
 		if (!RocketChat.authz.hasRole(user._id, 'admin')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'push_test'
+				method: 'push_test',
 			});
 		}
 
 		if (Push.enabled !== true) {
 			throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
-				method: 'push_test'
+				method: 'push_test',
 			});
 		}
 
 		const query = {
 			$and: [{
-				userId: user._id
+				userId: user._id,
 			}, {
 				$or: [{
 					'token.apn': {
-						$exists: true
-					}
+						$exists: true,
+					},
 				}, {
 					'token.gcm': {
-						$exists: true
-					}
-				}]
-			}]
+						$exists: true,
+					},
+				}],
+			}],
 		};
 
 		const tokens = Push.appCollection.find(query).count();
 
 		if (tokens === 0) {
 			throw new Meteor.Error('error-no-tokens-for-this-user', 'There are no tokens for this user', {
-				method: 'push_test'
+				method: 'push_test',
 			});
 		}
 
@@ -55,38 +61,44 @@ Meteor.methods({
 			title: `@${ user.username }`,
 			text: TAPi18n.__('This_is_a_push_test_messsage'),
 			apn: {
-				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`
+				text: `@${ user.username }:\n${ TAPi18n.__('This_is_a_push_test_messsage') }`,
 			},
 			sound: 'default',
 			query: {
-				userId: user._id
-			}
+				userId: user._id,
+			},
 		});
 
 		return {
 			message: 'Your_push_was_sent_to_s_devices',
-			params: [tokens]
+			params: [tokens],
 		};
-	}
+	},
 });
 
 function sendPush(service, token, options, tries = 0) {
 	const data = {
 		data: {
 			token,
-			options
-		}
+			options,
+		},
+		headers: {},
 	};
+
+	const workspaceAccesstoken = getWorkspaceAccessToken();
+	if (token) {
+		data.headers.Authorization = `Bearer ${ workspaceAccesstoken }`;
+	}
 
 	return HTTP.post(`${ RocketChat.settings.get('Push_gateway') }/push/${ service }/send`, data, function(error, response) {
 		if (response && response.statusCode === 406) {
 			console.log('removing push token', token);
 			Push.appCollection.remove({
 				$or: [{
-					'token.apn': token
+					'token.apn': token,
 				}, {
-					'token.gcm': token
-				}]
+					'token.gcm': token,
+				}],
 			});
 			return;
 		}
@@ -117,9 +129,9 @@ function configurePush() {
 
 	if (RocketChat.settings.get('Push_enable') === true) {
 		Push.allow({
-			send(userId/*, notification*/) {
+			send(userId/* , notification*/) {
 				return RocketChat.authz.hasRole(userId, 'admin');
-			}
+			},
 		});
 
 		let apn;
@@ -128,13 +140,13 @@ function configurePush() {
 		if (RocketChat.settings.get('Push_enable_gateway') === false) {
 			gcm = {
 				apiKey: RocketChat.settings.get('Push_gcm_api_key'),
-				projectNumber: RocketChat.settings.get('Push_gcm_project_number')
+				projectNumber: RocketChat.settings.get('Push_gcm_project_number'),
 			};
 
 			apn = {
 				passphrase: RocketChat.settings.get('Push_apn_passphrase'),
 				keyData: RocketChat.settings.get('Push_apn_key'),
-				certData: RocketChat.settings.get('Push_apn_cert')
+				certData: RocketChat.settings.get('Push_apn_cert'),
 			};
 
 			if (RocketChat.settings.get('Push_production') !== true) {
@@ -142,7 +154,7 @@ function configurePush() {
 					passphrase: RocketChat.settings.get('Push_apn_dev_passphrase'),
 					keyData: RocketChat.settings.get('Push_apn_dev_key'),
 					certData: RocketChat.settings.get('Push_apn_dev_cert'),
-					gateway: 'gateway.sandbox.push.apple.com'
+					gateway: 'gateway.sandbox.push.apple.com',
 				};
 			}
 
@@ -159,12 +171,12 @@ function configurePush() {
 			apn,
 			gcm,
 			production: RocketChat.settings.get('Push_production'),
-			sendInterval: 1000,
-			sendBatchSize: 10
+			sendInterval: 5000,
+			sendBatchSize: 10,
 		});
 
 		if (RocketChat.settings.get('Push_enable_gateway') === true) {
-			Push.serverSend = function(options = {badge: 0}) {
+			Push.serverSend = function(options = { badge: 0 }) {
 				if (options.from !== String(options.from)) {
 					throw new Error('Push.send: option "from" not a string');
 				}
@@ -182,14 +194,14 @@ function configurePush() {
 					$and: [options.query, {
 						$or: [{
 							'token.apn': {
-								$exists: true
-							}
+								$exists: true,
+							},
 						}, {
 							'token.gcm': {
-								$exists: true
-							}
-						}]
-					}]
+								$exists: true,
+							},
+						}],
+					}],
 				};
 
 				return Push.appCollection.find(query).forEach((app) => {
@@ -208,10 +220,9 @@ function configurePush() {
 				});
 			};
 		}
-		return Push.enabled = true;
+
+		Push.enabled = true;
 	}
 }
 
-Meteor.startup(function() {
-	return configurePush();
-});
+Meteor.startup(configurePush);

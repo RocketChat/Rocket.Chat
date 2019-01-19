@@ -1,12 +1,15 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(function() {
 	RocketChat.settings.add('Message_AllowPinning', true, {
 		type: 'boolean',
 		group: 'Message',
-		'public': true
+		public: true,
 	});
 	return RocketChat.models.Permissions.upsert('pin-message', {
 		$setOnInsert: {
-			roles: ['owner', 'moderator', 'admin']
-		}
+			roles: ['owner', 'moderator', 'admin'],
+		},
 	});
 });

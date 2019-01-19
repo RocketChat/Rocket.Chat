@@ -1,11 +1,6 @@
 <template name="adminInfo">
 	<section class="page-container page-list">
-		<header class="fixed-title border-component-color">
-			{{> burger}}
-			<h2>
-				<span class="room-title">{{_ "Info"}}</span>
-			</h2>
-		</header>
+		{{> header sectionName="Info"}}
 		<div class="content">
 			{{#if $gt statistics.instanceCount 1}}
 				{{#unless statistics.oplogEnabled}}
@@ -24,6 +19,12 @@
 						<th class="content-background-color border-component-color">{{_ "Version"}}</th>
 						<td class="border-component-color">{{statistics.version}}</td>
 					</tr>
+					{{#if info.marketplaceApiVersion}}
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Apps_Engine_Version"}}</th>
+							<td class="border-component-color">{{info.marketplaceApiVersion}}</td>
+						</tr>
+					{{/if}}
 					<tr class="admin-table-row">
 						<th class="content-background-color border-component-color">{{_ "DB_Migration"}}</th>
 						<td class="border-component-color">{{statistics.migration.version}}</td>
@@ -202,7 +203,7 @@
 						</tr>
 						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Livechat_Rooms"}}</th>
-							<td class="border-component-color">{{statistics.totalDirect}}</td>
+							<td class="border-component-color">{{statistics.totalLivechat}}</td>
 						</tr>
 						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages"}}</th>
@@ -224,6 +225,15 @@
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages_Livechat"}}</th>
 							<td class="border-component-color">{{statistics.totalLivechatMessages}}</td>
 						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Uploads"}}</th>
+							<td class="border-component-color">{{statistics.uploadsTotal}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Uploads_Size"}}</th>
+							<td class="border-component-color">{{inGB statistics.uploadsTotalSize}}</td>
+						</tr>
+
 					</table>
 
 					{{#if instances}}
@@ -270,7 +280,7 @@
 						{{/each}}
 					{{/if}}
 
-					<button type="button" class="button primary refresh">Refresh</button>
+					<button name="refresh" type="button" class="button primary refresh">{{_ "Refresh"}}</button>
 				{{else}}
 					{{_ "Loading..."}}
 				{{/if}}

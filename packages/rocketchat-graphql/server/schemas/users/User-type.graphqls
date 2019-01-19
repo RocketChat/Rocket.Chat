@@ -1,0 +1,8 @@
+extend type User {
+	status: UserStatus
+	avatar: String
+	name: String
+	lastLogin: String
+	channels: [Channel]
+	directMessages: [Channel]
+}

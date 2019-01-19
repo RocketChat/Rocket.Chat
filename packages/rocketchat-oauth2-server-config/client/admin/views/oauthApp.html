@@ -1,0 +1,72 @@
+<template name="oauthApp">
+	<div class="permissions-manager">
+		{{#if hasPermission}}
+			<a href="{{pathFor "admin-oauth-apps"}}"><i class="icon-angle-left"></i> {{_ "Back_to_applications"}}</a><br><br>
+			<div class="rocket-form">
+				<div class="section">
+					<div class="section-content">
+						<div class="input-line double-col">
+							<label>{{_ "Active"}}</label>
+							<div>
+								<label><input class="input-monitor" type="radio" name="active" value="1" checked="{{$eq data.active true}}" /> {{_ "True"}}</label>
+								<label><input class="input-monitor" type="radio" name="active" value="0" checked="{{$eq data.active false}}" /> {{_ "False"}}</label>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Application_Name"}}</label>
+							<div>
+								<input type="text" class="rc-input__element" name="name" value="{{data.name}}" />
+								<div class="settings-description secondary-font-color">{{_ "Give_the_application_a_name_This_will_be_seen_by_your_users"}}</div>
+							</div>
+						</div>
+						<div class="input-line double-col">
+							<label>{{_ "Redirect_URI"}}</label>
+							<div>
+								<input type="text" class="rc-input__element" name="redirectUri" value="{{data.redirectUri}}" />
+								<div class="settings-description secondary-font-color">{{_ "After_OAuth2_authentication_users_will_be_redirected_to_this_URL"}}</div>
+							</div>
+						</div>
+						{{#if data.clientId}}
+							<div class="input-line double-col">
+								<label>{{_ "Client_ID"}}</label>
+								<div>
+									<input type="text" class="rc-input__element" name="clientId" value="{{data.clientId}}" readonly="readonly" />
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=clientId]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Client_Secret"}}</label>
+								<div>
+									<input type="text" class="rc-input__element" name="clientSecret" value="{{data.clientSecret}}" readonly="readonly" />
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=clientSecret]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Authorization_URL"}}</label>
+								<div>
+									<input type="text" class="rc-input__element" name="authorization_url" value="{{data.authorization_url}}" readonly="readonly" />
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=authorization_url]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+								</div>
+							</div>
+							<div class="input-line double-col">
+								<label>{{_ "Access_Token_URL"}}</label>
+								<div>
+									<input type="text" class="rc-input__element" name="access_token_url" value="{{data.access_token_url}}" readonly="readonly" />
+									<div class="settings-description secondary-font-color"><button class="clipboard" data-clipboard-target="[name=access_token_url]">{{_ "COPY_TO_CLIPBOARD"}}</button></div>
+								</div>
+							</div>
+						{{/if}}
+					</div>
+				</div>
+				<div class="submit">
+					{{#if data.clientId}}
+						<button class="button danger delete"><i class="icon-trash"></i><span>{{_ "Delete"}}</span></button>
+					{{/if}}
+					<button class="button primary save"><i class="icon-send"></i><span>{{_ "Save_changes"}}</span></button>
+				</div>
+			</div>
+		{{else}}
+			{{_ "Not_authorized"}}
+		{{/if}}
+	</div>
+</template>

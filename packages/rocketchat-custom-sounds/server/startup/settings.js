@@ -1,22 +1,24 @@
-RocketChat.settings.addGroup('CustomSoundsFilesystem', function() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('CustomSoundsFilesystem', function() {
 	this.add('CustomSounds_Storage_Type', 'GridFS', {
 		type: 'select',
 		values: [{
 			key: 'GridFS',
-			i18nLabel: 'GridFS'
+			i18nLabel: 'GridFS',
 		}, {
 			key: 'FileSystem',
-			i18nLabel: 'FileSystem'
+			i18nLabel: 'FileSystem',
 		}],
-		i18nLabel: 'FileUpload_Storage_Type'
+		i18nLabel: 'FileUpload_Storage_Type',
 	});
 
 	this.add('CustomSounds_FileSystemPath', '', {
 		type: 'string',
 		enableQuery: {
 			_id: 'CustomSounds_Storage_Type',
-			value: 'FileSystem'
+			value: 'FileSystem',
 		},
-		i18nLabel: 'FileUpload_FileSystemPath'
+		i18nLabel: 'FileUpload_FileSystemPath',
 	});
 });

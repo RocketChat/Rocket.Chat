@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 /**
  * Livechat Page Visited model
  */
@@ -5,11 +7,11 @@ class LivechatPageVisited extends RocketChat.models._Base {
 	constructor() {
 		super('livechat_page_visited');
 
-		this.tryEnsureIndex({ 'token': 1 });
-		this.tryEnsureIndex({ 'ts': 1 });
+		this.tryEnsureIndex({ token: 1 });
+		this.tryEnsureIndex({ ts: 1 });
 
 		// keep history for 1 month if the visitor does not register
-		this.tryEnsureIndex({ 'expireAt': 1 }, { sparse: 1, expireAfterSeconds: 0 });
+		this.tryEnsureIndex({ expireAt: 1 }, { sparse: 1, expireAfterSeconds: 0 });
 	}
 
 	saveByToken(token, pageInfo) {
@@ -20,7 +22,7 @@ class LivechatPageVisited extends RocketChat.models._Base {
 			token,
 			page: pageInfo,
 			ts: new Date(),
-			expireAt: new Date().getTime() + keepHistoryMiliseconds
+			expireAt: new Date().getTime() + keepHistoryMiliseconds,
 		});
 	}
 
@@ -32,14 +34,14 @@ class LivechatPageVisited extends RocketChat.models._Base {
 		return this.update({
 			token,
 			expireAt: {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}, {
 			$unset: {
-				expireAt: 1
-			}
+				expireAt: 1,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 	}
 }

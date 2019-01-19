@@ -2,7 +2,7 @@
 
 ### Overview
 
-Internet Relay Chat (IRC) is a text-based group communication tool. Users join uniquely named channels, or rooms, for open discussion. IRC also supports private messages between indivdiual users and file sharing capabilities. This package integrates these layers of functionality with Rocket.Chat.
+Internet Relay Chat (IRC) is a text-based group communication tool. Users join uniquely named channels, or rooms, for open discussion. IRC also supports private messages between individual users and file sharing capabilities. This package integrates these layers of functionality with Rocket.Chat.
 
 This package does not attempt to replace Rocket.Chat functionality nor operate as an IRC server for third-party client support. Rather, it utilizes Slack's similarities to IRC by allowing users to transparently access external IRC servers (e.g. Freenode) through Rocket.Chat's desktop and mobile app frontends.
 

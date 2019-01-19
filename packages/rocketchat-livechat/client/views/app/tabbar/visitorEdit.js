@@ -1,4 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import toastr from 'toastr';
+
 Template.visitorEdit.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
@@ -24,7 +31,7 @@ Template.visitorEdit.helpers({
 
 	joinTags() {
 		return this.tags && this.tags.join(', ');
-	}
+	},
 });
 
 Template.visitorEdit.onCreated(function() {
@@ -32,7 +39,7 @@ Template.visitorEdit.onCreated(function() {
 	this.room = new ReactiveVar();
 
 	this.autorun(() => {
-		this.visitor.set(Meteor.users.findOne({ _id: Template.currentData().visitorId }));
+		this.visitor.set(LivechatVisitor.findOne({ _id: Template.currentData().visitorId }));
 	});
 
 	this.autorun(() => {
@@ -42,17 +49,16 @@ Template.visitorEdit.onCreated(function() {
 
 Template.visitorEdit.events({
 	'submit form'(event, instance) {
-		console.log('this ->', this);
 		event.preventDefault();
 		const userData = { _id: instance.visitor.get()._id };
 		const roomData = { _id: instance.room.get()._id };
 
-		userData.name = event.currentTarget.elements['name'].value;
-		userData.email = event.currentTarget.elements['email'].value;
-		userData.phone = event.currentTarget.elements['phone'].value;
+		userData.name = event.currentTarget.elements.name.value;
+		userData.email = event.currentTarget.elements.email.value;
+		userData.phone = event.currentTarget.elements.phone.value;
 
-		roomData.topic = event.currentTarget.elements['topic'].value;
-		roomData.tags = event.currentTarget.elements['tags'].value;
+		roomData.topic = event.currentTarget.elements.topic.value;
+		roomData.tags = event.currentTarget.elements.tags.value;
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
@@ -69,5 +75,5 @@ Template.visitorEdit.events({
 
 	'click .cancel'() {
 		this.cancel();
-	}
+	},
 });

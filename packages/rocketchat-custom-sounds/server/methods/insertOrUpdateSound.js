@@ -1,9 +1,13 @@
-/* globals RocketChatFileCustomSoundsInstance */
+import { Meteor } from 'meteor/meteor';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { CustomSounds } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 import s from 'underscore.string';
 
 Meteor.methods({
 	insertOrUpdateSound(soundData) {
-		if (!RocketChat.authz.hasPermission(this.userId, 'manage-sounds')) {
+		if (!hasPermission(this.userId, 'manage-sounds')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
@@ -11,13 +15,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateSound', field: 'Name' });
 		}
 
-		//let nameValidation = new RegExp('^[0-9a-zA-Z-_+;.]+$');
+		// let nameValidation = new RegExp('^[0-9a-zA-Z-_+;.]+$');
 
-		//allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
-		//more practical than allowing specific sets of characters; also allows foreign languages
+		// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
+		// more practical than allowing specific sets of characters; also allows foreign languages
 		const nameValidation = /[\s,:><&"'\/\\\(\)]/;
 
-		//silently strip colon; this allows for uploading :soundname: as soundname
+		// silently strip colon; this allows for uploading :soundname: as soundname
 		soundData.name = soundData.name.replace(/:/g, '');
 
 		if (nameValidation.test(soundData.name)) {
@@ -27,9 +31,9 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (soundData._id) {
-			matchingResults = RocketChat.models.CustomSounds.findByNameExceptID(soundData.name, soundData._id).fetch();
+			matchingResults = CustomSounds.findByNameExceptID(soundData.name, soundData._id).fetch();
 		} else {
-			matchingResults = RocketChat.models.CustomSounds.findByName(soundData.name).fetch();
+			matchingResults = CustomSounds.findByName(soundData.name).fetch();
 		}
 
 		if (matchingResults.length > 0) {
@@ -37,28 +41,28 @@ Meteor.methods({
 		}
 
 		if (!soundData._id) {
-			//insert sound
+			// insert sound
 			const createSound = {
 				name: soundData.name,
-				extension: soundData.extension
+				extension: soundData.extension,
 			};
 
-			const _id = RocketChat.models.CustomSounds.create(createSound);
+			const _id = CustomSounds.create(createSound);
 			createSound._id = _id;
 
 			return _id;
 		} else {
-			//update sound
+			// update sound
 			if (soundData.newFile) {
 				RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.previousExtension }`);
 			}
 
 			if (soundData.name !== soundData.previousName) {
-				RocketChat.models.CustomSounds.setName(soundData._id, soundData.name);
-				RocketChat.Notifications.notifyAll('updateCustomSound', {soundData});
+				CustomSounds.setName(soundData._id, soundData.name);
+				Notifications.notifyAll('updateCustomSound', { soundData });
 			}
 
 			return soundData._id;
 		}
-	}
+	},
 });

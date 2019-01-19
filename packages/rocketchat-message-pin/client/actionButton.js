@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { RoomHistoryManager } from 'meteor/rocketchat:ui';
 import toastr from 'toastr';
 
 Meteor.startup(function() {
@@ -16,14 +21,14 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if	(!RocketChat.settings.get('Message_AllowPinning') || message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if	(!RocketChat.settings.get('Message_AllowPinning') || message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 
 			return RocketChat.authz.hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 20,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -41,14 +46,14 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if	(!RocketChat.settings.get('Message_AllowPinning') || !message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if	(!RocketChat.settings.get('Message_AllowPinning') || !message.pinned || !RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 
 			return RocketChat.authz.hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 21,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -64,13 +69,13 @@ Meteor.startup(function() {
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition(message) {
-			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 			return true;
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -79,18 +84,18 @@ Meteor.startup(function() {
 		label: 'Permalink',
 		classes: 'clipboard',
 		context: ['pinned'],
-		action(event) {
+		async action(event) {
 			const message = this._arguments[1];
-			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
+			$(event.currentTarget).attr('data-clipboard-text', await RocketChat.MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
-			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, {fields: {_id: 1}})) {
+			if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { _id: 1 } })) {
 				return false;
 			}
 			return true;
 		},
 		order: 101,
-		group: 'menu'
+		group: 'menu',
 	});
 });

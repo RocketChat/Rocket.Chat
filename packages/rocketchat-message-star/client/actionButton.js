@@ -1,4 +1,8 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { RoomHistoryManager } from 'meteor/rocketchat:ui';
 import toastr from 'toastr';
 
 Meteor.startup(function() {
@@ -21,10 +25,10 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return !_.findWhere(message.starred, {_id: Meteor.userId()});
+			return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
 		},
 		order: 10,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -46,10 +50,10 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return Boolean(_.findWhere(message.starred, {_id: Meteor.userId()}));
+			return message.starred && message.starred.find((star) => star._id === Meteor.userId());
 		},
 		order: 10,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -71,7 +75,7 @@ Meteor.startup(function() {
 			return true;
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 
 	RocketChat.MessageAction.addButton({
@@ -80,9 +84,9 @@ Meteor.startup(function() {
 		label: 'Permalink',
 		classes: 'clipboard',
 		context: ['starred'],
-		action(event) {
+		async action(event) {
 			const message = this._arguments[1];
-			$(event.currentTarget).attr('data-clipboard-text', RocketChat.MessageAction.getPermaLink(message._id));
+			$(event.currentTarget).attr('data-clipboard-text', await RocketChat.MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
@@ -92,6 +96,6 @@ Meteor.startup(function() {
 			return true;
 		},
 		order: 101,
-		group: 'menu'
+		group: 'menu',
 	});
 });

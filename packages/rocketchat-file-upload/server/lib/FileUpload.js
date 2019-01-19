@@ -1,11 +1,19 @@
-/* globals UploadFS */
-
+import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
+import sharp from 'sharp';
+import { Cookies } from 'meteor/ostrio:cookies';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { settings } from 'meteor/rocketchat:settings';
+import * as Models from 'meteor/rocketchat:models';
+import { FileUpload as _FileUpload } from '../../lib/FileUpload';
+import { roomTypes } from 'meteor/rocketchat:utils';
 
-Object.assign(FileUpload, {
+const cookie = new Cookies();
+
+export const FileUpload = Object.assign(_FileUpload, {
 	handlers: {},
 
 	configureUploadsStore(store, name, options) {
@@ -14,99 +22,134 @@ Object.assign(FileUpload, {
 		delete stores[name];
 
 		return new UploadFS.store[store](Object.assign({
-			name
+			name,
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
 	defaultUploads() {
 		return {
-			collection: RocketChat.models.Uploads.model,
+			collection: Models.Uploads.model,
 			filter: new UploadFS.Filter({
-				onCheck: FileUpload.validateFileUpload
+				onCheck: FileUpload.validateFileUpload,
 			}),
 			getPath(file) {
-				return `${ RocketChat.settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
+				return `${ settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
 			},
-			// transformWrite: FileUpload.uploadsTransformWrite
-			onValidate: FileUpload.uploadsOnValidate
+			onValidate: FileUpload.uploadsOnValidate,
+			onRead(fileId, file, req, res) {
+				if (!FileUpload.requestCanAccessFiles(req)) {
+					res.writeHead(403);
+					return false;
+				}
+
+				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				return true;
+			},
 		};
 	},
 
 	defaultAvatars() {
 		return {
-			collection: RocketChat.models.Avatars.model,
+			collection: Models.Avatars.model,
 			// filter: new UploadFS.Filter({
 			// 	onCheck: FileUpload.validateFileUpload
 			// }),
-			// transformWrite: FileUpload.avatarTransformWrite,
 			getPath(file) {
-				return `${ RocketChat.settings.get('uniqueID') }/avatars/${ file.userId }`;
+				return `${ settings.get('uniqueID') }/avatars/${ file.userId }`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
-			onFinishUpload: FileUpload.avatarsOnFinishUpload
+			onFinishUpload: FileUpload.avatarsOnFinishUpload,
 		};
 	},
 
-	avatarTransformWrite(readStream, writeStream/*, fileId, file*/) {
-		if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
-			return readStream.pipe(writeStream);
-		}
-		const height = RocketChat.settings.get('Accounts_AvatarSize');
-		const width = height;
-		return (file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(readStream).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).stream('jpeg').pipe(writeStream);
+	defaultUserDataFiles() {
+		return {
+			collection: Models.UserDataFiles.model,
+			getPath(file) {
+				return `${ settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
+			},
+			onValidate: FileUpload.uploadsOnValidate,
+			onRead(fileId, file, req, res) {
+				if (!FileUpload.requestCanAccessFiles(req)) {
+					res.writeHead(403);
+					return false;
+				}
+
+				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
+				return true;
+			},
+		};
 	},
 
 	avatarsOnValidate(file) {
-		if (RocketChatFile.enabled === false || RocketChat.settings.get('Accounts_AvatarResize') !== true) {
+		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
-		const height = RocketChat.settings.get('Accounts_AvatarSize');
-		const width = height;
+		const height = settings.get('Accounts_AvatarSize');
 		const future = new Future();
 
-		(file => RocketChat.Info.GraphicsMagick.enabled ? file: file.alpha('remove'))(RocketChatFile.gm(tempFilePath).background('#FFFFFF')).resize(width, `${ height }^`).gravity('Center').crop(width, height).extent(width, height).setFormat('jpeg').write(tempFilePath, Meteor.bindEnvironment(err => {
-			if (err != null) {
-				console.error(err);
+		const s = sharp(tempFilePath);
+		s.rotate();
+		// Get metadata to resize the image the first time to keep "inside" the dimensions
+		// then resize again to create the canvas around
+
+		s.metadata(Meteor.bindEnvironment((err, metadata) => {
+			if (!metadata) {
+				metadata = {};
 			}
-			const size = fs.lstatSync(tempFilePath).size;
-			this.getCollection().direct.update({_id: file._id}, {$set: {size}});
-			future.return();
+
+			s.flatten({ background: '#FFFFFF' })
+				.jpeg()
+				.resize({
+					width: Math.min(height || 0, metadata.width || Infinity),
+					height: Math.min(height || 0, metadata.height || Infinity),
+					fit: sharp.fit.cover,
+				})
+				.pipe(sharp()
+					.resize({
+						height,
+						width: height,
+						fit: sharp.fit.contain,
+						background: '#FFFFFF',
+					})
+				)
+				// Use buffer to get the result in memory then replace the existing file
+				// There is no option to override a file using this library
+				.toBuffer()
+				.then(Meteor.bindEnvironment((outputBuffer) => {
+					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment((err) => {
+						if (err != null) {
+							console.error(err);
+						}
+						const { size } = fs.lstatSync(tempFilePath);
+						this.getCollection().direct.update({ _id: file._id }, { $set: { size } });
+						future.return();
+					}));
+				}));
 		}));
+
 		return future.wait();
 	},
 
-	uploadsTransformWrite(readStream, writeStream, fileId, file) {
-		if (RocketChatFile.enabled === false || !/^image\/.+/.test(file.type)) {
-			return readStream.pipe(writeStream);
-		}
+	resizeImagePreview(file) {
+		file = Models.Uploads.findOneById(file._id);
+		file = FileUpload.addExtensionTo(file);
+		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
-		let stream = undefined;
-
-		const identify = function(err, data) {
-			if (err) {
-				return stream.pipe(writeStream);
-			}
-
-			file.identify = {
-				format: data.format,
-				size: data.size
-			};
-
-			if (data.Orientation && !['', 'Unknown', 'Undefined'].includes(data.Orientation)) {
-				RocketChatFile.gm(stream).autoOrient().stream().pipe(writeStream);
-			} else {
-				stream.pipe(writeStream);
-			}
-		};
-
-		stream = RocketChatFile.gm(readStream).identify(identify).stream();
+		const transformer = sharp()
+			.resize({ width: 32, height: 32, fit: 'inside' })
+			.jpeg()
+			.blur();
+		const result = transformer.toBuffer().then((out) => out.toString('base64'));
+		image.pipe(transformer);
+		return result;
 	},
 
 	uploadsOnValidate(file) {
-		if (RocketChatFile.enabled === false || !/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
+		if (!/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
 			return;
 		}
 
@@ -114,48 +157,84 @@ Object.assign(FileUpload, {
 
 		const fut = new Future();
 
-		const identify = Meteor.bindEnvironment((err, data) => {
+		const s = sharp(tmpFile);
+		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (err != null) {
 				console.error(err);
 				return fut.return();
 			}
 
-			file.identify = {
-				format: data.format,
-				size: data.size
+			const identify = {
+				format: metadata.format,
+				size: {
+					width: metadata.width,
+					height: metadata.height,
+				},
 			};
 
-			if ([null, undefined, '', 'Unknown', 'Undefined'].includes(data.Orientation)) {
-				return fut.return();
-			}
-
-			RocketChatFile.gm(tmpFile).autoOrient().write(tmpFile, Meteor.bindEnvironment((err) => {
-				if (err != null) {
-					console.error(err);
+			const reorientation = (cb) => {
+				if (!metadata.orientation) {
+					return cb();
 				}
+				s.rotate()
+					.toFile(`${ tmpFile }.tmp`)
+					.then(Meteor.bindEnvironment(() => {
+						fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
+							fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
+								cb();
+							}));
+						}));
+					})).catch((err) => {
+						console.error(err);
+						fut.return();
+					});
 
-				const size = fs.lstatSync(tmpFile).size;
-				this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+				return;
+			};
+
+			reorientation(() => {
+				const { size } = fs.lstatSync(tmpFile);
+				this.getCollection().direct.update({ _id: file._id }, {
+					$set: { size, identify },
+				});
+
 				fut.return();
-			}));
-		});
-
-		RocketChatFile.gm(tmpFile).identify(identify);
+			});
+		}));
 
 		return fut.wait();
 	},
 
 	avatarsOnFinishUpload(file) {
 		// update file record to match user's username
-		const user = RocketChat.models.Users.findOneById(file.userId);
-		const oldAvatar = RocketChat.models.Avatars.findOneByName(user.username);
+		const user = Models.Users.findOneById(file.userId);
+		const oldAvatar = Models.Avatars.findOneByName(user.username);
 		if (oldAvatar) {
-			RocketChat.models.Avatars.deleteFile(oldAvatar._id);
+			Models.Avatars.deleteFile(oldAvatar._id);
 		}
-		RocketChat.models.Avatars.updateFileNameById(file._id, user.username);
+		Models.Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
 	},
 
+	requestCanAccessFiles({ headers = {}, query = {} }) {
+		if (!settings.get('FileUpload_ProtectFiles')) {
+			return true;
+		}
+
+		let { rc_uid, rc_token, rc_rid, rc_room_type } = query;
+
+		if (!rc_uid && headers.cookie) {
+			rc_uid = cookie.get('rc_uid', headers.cookie);
+			rc_token = cookie.get('rc_token', headers.cookie);
+			rc_rid = cookie.get('rc_rid', headers.cookie);
+			rc_room_type = cookie.get('rc_room_type', headers.cookie);
+		}
+
+		const isAuthorizedByCookies = rc_uid && rc_token && Models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Models.Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
+		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
+	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
 			return file;
@@ -170,7 +249,7 @@ Object.assign(FileUpload, {
 	},
 
 	getStore(modelName) {
-		const storageType = RocketChat.settings.get('FileUpload_Storage_Type');
+		const storageType = settings.get('FileUpload_Storage_Type');
 		const handlerName = `${ storageType }:${ modelName }`;
 
 		return this.getStoreByName(handlerName);
@@ -190,16 +269,30 @@ Object.assign(FileUpload, {
 		}
 		res.writeHead(404);
 		res.end();
-	}
+	},
+
+	copy(file, targetFile) {
+		const store = this.getStoreByName(file.store);
+		const out = fs.createWriteStream(targetFile);
+
+		file = FileUpload.addExtensionTo(file);
+
+		if (store.copy) {
+			store.copy(file, out);
+			return true;
+		}
+
+		return false;
+	},
 });
 
-
 export class FileUploadClass {
-	constructor({ name, model, store, get, insert, getStore }) {
+	constructor({ name, model, store, get, insert, getStore, copy }) {
 		this.name = name;
 		this.model = model || this.getModelFromName();
 		this._store = store || UploadFS.getStore(name);
 		this.get = get;
+		this.copy = copy;
 
 		if (insert) {
 			this.insert = insert;
@@ -225,7 +318,7 @@ export class FileUploadClass {
 	}
 
 	getModelFromName() {
-		return RocketChat.models[this.name.split(':')[1]];
+		return Models[this.name.split(':')[1]];
 	}
 
 	delete(fileId) {
@@ -261,6 +354,14 @@ export class FileUploadClass {
 	}
 
 	insert(fileData, streamOrBuffer, cb) {
+		fileData.size = parseInt(fileData.size) || 0;
+
+		// Check if the fileData matches store filter
+		const filter = this.store.getFilter();
+		if (filter && filter.check) {
+			filter.check(fileData);
+		}
+
 		const fileId = this.store.create(fileData);
 		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);

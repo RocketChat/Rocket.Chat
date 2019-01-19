@@ -1,6 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
 import _ from 'underscore';
 
-class CustomSounds {
+class CustomSoundsClass {
 	constructor() {
 		this.list = new ReactiveVar({});
 		this.add({ _id: 'beep', name: 'Beep', extension: 'mp3', src: 'sounds/beep.mp3' });
@@ -12,10 +15,6 @@ class CustomSounds {
 	}
 
 	add(sound) {
-		if (Meteor.isCordova) {
-			return;
-		}
-
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
@@ -49,7 +48,7 @@ class CustomSounds {
 	}
 
 	getURL(sound) {
-		const path = (Meteor.isCordova) ? Meteor.absoluteUrl().replace(/\/$/, '') : __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+		const path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 		return `${ path }/custom-sounds/${ sound._id }.${ sound.extension }?_dc=${ sound.random || 0 }`;
 	}
 
@@ -58,13 +57,14 @@ class CustomSounds {
 		return _.sortBy(list, 'name');
 	}
 }
-
-RocketChat.CustomSounds = new CustomSounds;
+export const CustomSounds = new CustomSoundsClass();
 
 Meteor.startup(() =>
-	Meteor.call('listCustomSounds', (error, result) => {
-		for (const sound of result) {
-			RocketChat.CustomSounds.add(sound);
-		}
+	CachedCollectionManager.onLogin(() => {
+		Meteor.call('listCustomSounds', (error, result) => {
+			for (const sound of result) {
+				CustomSounds.add(sound);
+			}
+		});
 	})
 );

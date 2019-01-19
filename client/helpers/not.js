@@ -1,3 +1,3 @@
-Template.registerHelper('not', (value) => {
-	return !value;
-});
+import { Template } from 'meteor/templating';
+
+Template.registerHelper('not', (value) => !value);

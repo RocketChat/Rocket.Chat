@@ -2,20 +2,16 @@ Package.describe({
 	name: 'rocketchat:importer-csv',
 	version: '1.0.0',
 	summary: 'Importer for CSV Files',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
-		'rocketchat:importer'
+		'rocketchat:importer',
+		'rocketchat:logger',
 	]);
-	api.use('rocketchat:logger', 'server');
-	api.addFiles('server.js', 'server');
-	api.addFiles('main.js', ['client', 'server']);
-});
-
-Npm.depends({
-	'csv-parse': '1.2.0'
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

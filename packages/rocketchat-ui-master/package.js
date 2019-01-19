@@ -7,11 +7,7 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
-});
-
-Npm.depends({
-	clipboard: '1.7.1'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -20,17 +16,14 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'reactive-var',
-		'rocketchat:lib',
-		'meteorhacks:inject-initial'
+		'rocketchat:utils',
+		'rocketchat:tooltip',
+		'rocketchat:ui-utils',
+		'rocketchat:ui-sidenav',
+		'meteorhacks:inject-initial',
 	]);
-
-	api.addFiles('client/main.html', 'client');
-	api.addFiles('client/loading.html', 'client');
-	api.addFiles('client/error.html', 'client');
-	api.addFiles('client/logoLayout.html', 'client');
-	api.addFiles('client/main.js', 'client');
-
-	api.addFiles('server/inject.js', 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
+	api.addAssets('server/dynamic-css.js', 'server');
 	api.addAssets('public/icons.svg', 'server');
-	api.addAssets('public/loading.css', 'server');
 });
