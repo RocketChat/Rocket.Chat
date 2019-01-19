@@ -30,11 +30,6 @@ export { Login, animationSupport, animeBack, Button, preLoadImgs } from './lib/r
 export { SideNav } from './lib/sideNav';
 import './lib/textarea-autogrow';
 import './lib/codeMirror/codeMirror';
-import './lib/cordova/facebook-login';
-import './lib/cordova/keyboard-fix';
-import './lib/cordova/push';
-import './lib/cordova/urls';
-import './lib/cordova/user-state';
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 import './lib/recorderjs/recorder';
