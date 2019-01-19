@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'nimble:restivus',
+		'rate-limit',
 		'rocketchat:lib',
 		'rocketchat:models',
 		'rocketchat:integrations',
