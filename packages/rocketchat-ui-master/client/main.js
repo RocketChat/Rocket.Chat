@@ -124,9 +124,6 @@ Template.body.onRendered(function() {
 			}(w, d, script, l, i));
 		}
 	});
-	if (Meteor.isCordova) {
-		return $(document.body).addClass('is-cordova');
-	}
 });
 
 Template.main.onCreated(function() {
