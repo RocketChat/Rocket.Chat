@@ -111,7 +111,7 @@ RocketChat.statistics.get = async function _getStatistics() {
 	};
 
 	statistics.uploadsTotal = RocketChat.models.Uploads.find().count();
-	const [result] = await RocketChat.models.Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray();
+	const [result] = Promise.await(RocketChat.models.Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
 	statistics.uploadsTotalSize = result.total;
 
 	statistics.migration = RocketChat.Migrations._getControl();
