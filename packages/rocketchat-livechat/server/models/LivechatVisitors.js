@@ -199,6 +199,12 @@ class LivechatVisitors extends RocketChat.models._Base {
 
 		return this.update({ _id }, update);
 	}
+
+	// REMOVE
+	removeById(_id) {
+		const query = { _id };
+		return this.remove(query);
+	}
 }
 
 export default new LivechatVisitors();

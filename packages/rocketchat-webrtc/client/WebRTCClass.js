@@ -7,6 +7,8 @@ import { t } from 'meteor/rocketchat:utils';
 import { ChromeScreenShare } from './screenShare';
 import { Notifications } from 'meteor/rocketchat:notifications';
 import { settings } from 'meteor/rocketchat:settings';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { ChatSubscription } from 'meteor/rocketchat:models';
 
 class WebRTCTransportClass {
 	constructor(webrtcInstance) {
