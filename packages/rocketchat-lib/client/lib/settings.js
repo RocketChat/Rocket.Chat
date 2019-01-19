@@ -4,9 +4,6 @@ import { t } from 'meteor/rocketchat:utils';
 import { modal } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
-	if (Meteor.isCordova === true) {
-		return;
-	}
 	Tracker.autorun(function(c) {
 		const siteUrl = RocketChat.settings.get('Site_Url');
 		if (!siteUrl || (Meteor.userId() == null)) {
