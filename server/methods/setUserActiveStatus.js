@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import * as Mailer from 'meteor/rocketchat:mailer';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	setUserActiveStatus(userId, active) {
@@ -36,6 +37,12 @@ Meteor.methods({
 			RocketChat.models.Users.unsetLoginTokens(userId);
 		} else {
 			RocketChat.models.Users.unsetReason(userId);
+		}
+		if (active && !settings.get('Accounts_Send_Email_When_Activating')) {
+			return true;
+		}
+		if (!active && !settings.get('Accounts_Send_Email_When_Deactivating')) {
+			return true;
 		}
 
 		const destinations = Array.isArray(user.emails) && user.emails.map((email) => `${ user.name || user.username }<${ email.address }>`);
