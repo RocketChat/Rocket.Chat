@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { SideNav } from 'meteor/rocketchat:ui-utils';
+import { handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 Template.createCombinedFlex.helpers({
@@ -42,10 +50,10 @@ Template.createCombinedFlex.helpers({
 		};
 	},
 	privateSwitchDisabled() {
-		return RocketChat.authz.hasAllPermission(['create-c', 'create-p']) ? '' : 'disabled';
+		return hasAllPermission(['create-c', 'create-p']) ? '' : 'disabled';
 	},
 	privateSwitchChecked() {
-		return RocketChat.authz.hasAllPermission('create-c') ? '' : 'checked';
+		return hasAllPermission('create-c') ? '' : 'checked';
 	},
 });
 
@@ -124,7 +132,7 @@ Template.createCombinedFlex.events({
 				SideNav.closeFlex(() => instance.clearForm());
 
 				if (!privateGroup) {
-					RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
+					callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 				}
 
 				return FlowRouter.go(successRoute, { name: result.name }, FlowRouter.current().queryParams);

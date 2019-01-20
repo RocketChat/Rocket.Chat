@@ -1,4 +1,7 @@
-/* global ChatIntegrations */
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatIntegrations } from '../collections';
 import moment from 'moment';
 
 Template.integrations.helpers({

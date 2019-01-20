@@ -1,36 +1,11 @@
-/* globals getEmojiUrlFromName:true, updateEmojiCustom:true, deleteEmojiCustom:true, isSetNotNull */
-RocketChat.emoji.packages.emojiCustom = {
-	emojiCategories: { rocket: 'Custom' },
-	toneList: {},
-	list: [],
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { isSetNotNull } from '../lib/function-isSet';
+import { RoomManager } from 'meteor/rocketchat:ui';
 
-	render(html) {
-		const regShortNames = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ RocketChat.emoji.packages.emojiCustom.list.join('|') })`, 'gi');
-
-		// replace regular shortnames first
-		html = html.replace(regShortNames, function(shortname) {
-			// console.log('shortname (preif) ->', shortname, html);
-			if ((typeof shortname === 'undefined') || (shortname === '') || (RocketChat.emoji.packages.emojiCustom.list.indexOf(shortname) === -1)) {
-				// if the shortname doesnt exist just return the entire match
-				return shortname;
-			} else {
-				let emojiAlias = shortname.replace(/:/g, '');
-
-				let dataCheck = RocketChat.emoji.list[shortname];
-				if (dataCheck.hasOwnProperty('aliasOf')) {
-					emojiAlias = dataCheck.aliasOf;
-					dataCheck = RocketChat.emoji.list[`:${ emojiAlias }:`];
-				}
-
-				return `<span class="emoji" style="background-image:url(${ getEmojiUrlFromName(emojiAlias, dataCheck.extension) });" data-emoji="${ emojiAlias }" title="${ shortname }">${ shortname }</span>`;
-			}
-		});
-
-		return html;
-	},
-};
-
-getEmojiUrlFromName = function(name, extension) {
+export const getEmojiUrlFromName = function(name, extension) {
 	Session.get;
 
 	const key = `emoji_random_${ name }`;
@@ -43,13 +18,13 @@ getEmojiUrlFromName = function(name, extension) {
 	if (name == null) {
 		return;
 	}
-	const path = (Meteor.isCordova) ? Meteor.absoluteUrl().replace(/\/$/, '') : __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+	const path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 	return `${ path }/emoji-custom/${ encodeURIComponent(name) }.${ extension }?_dc=${ random }`;
 };
 
 Blaze.registerHelper('emojiUrlFromName', getEmojiUrlFromName);
 
-deleteEmojiCustom = function(emojiData) {
+export const deleteEmojiCustom = function(emojiData) {
 	delete RocketChat.emoji.list[`:${ emojiData.name }:`];
 	const arrayIndex = RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.name);
 	if (arrayIndex !== -1) {
@@ -71,7 +46,7 @@ deleteEmojiCustom = function(emojiData) {
 	RocketChat.EmojiPicker.updateRecent();
 };
 
-updateEmojiCustom = function(emojiData) {
+export const updateEmojiCustom = function(emojiData) {
 	let key = `emoji_random_${ emojiData.name }`;
 	Session.set(key, Math.round(Math.random() * 1000));
 
@@ -147,6 +122,37 @@ updateEmojiCustom = function(emojiData) {
 	RocketChat.EmojiPicker.updateRecent();
 };
 
+RocketChat.emoji.packages.emojiCustom = {
+	emojiCategories: { rocket: 'Custom' },
+	toneList: {},
+	list: [],
+
+	render(html) {
+		const regShortNames = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ RocketChat.emoji.packages.emojiCustom.list.join('|') })`, 'gi');
+
+		// replace regular shortnames first
+		html = html.replace(regShortNames, function(shortname) {
+			// console.log('shortname (preif) ->', shortname, html);
+			if ((typeof shortname === 'undefined') || (shortname === '') || (RocketChat.emoji.packages.emojiCustom.list.indexOf(shortname) === -1)) {
+				// if the shortname doesnt exist just return the entire match
+				return shortname;
+			} else {
+				let emojiAlias = shortname.replace(/:/g, '');
+
+				let dataCheck = RocketChat.emoji.list[shortname];
+				if (dataCheck.hasOwnProperty('aliasOf')) {
+					emojiAlias = dataCheck.aliasOf;
+					dataCheck = RocketChat.emoji.list[`:${ emojiAlias }:`];
+				}
+
+				return `<span class="emoji" style="background-image:url(${ getEmojiUrlFromName(emojiAlias, dataCheck.extension) });" data-emoji="${ emojiAlias }" title="${ shortname }">${ shortname }</span>`;
+			}
+		});
+
+		return html;
+	},
+};
+
 Meteor.startup(() =>
 	RocketChat.CachedCollectionManager.onLogin(() => {
 		Meteor.call('listEmojiCustom', (error, result) => {
@@ -167,5 +173,3 @@ Meteor.startup(() =>
 		});
 	})
 );
-
-/* exported getEmojiUrlFromName, updateEmojiCustom, deleteEmojiCustom */

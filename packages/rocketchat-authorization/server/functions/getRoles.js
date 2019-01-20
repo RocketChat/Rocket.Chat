@@ -1,3 +1,3 @@
-RocketChat.authz.getRoles = function() {
-	return RocketChat.models.Roles.find().fetch();
-};
+import { Roles } from 'meteor/rocketchat:models';
+
+export const getRoles = () => Roles.find().fetch();

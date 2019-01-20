@@ -1,5 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import Future from 'fibers/future';
-import Webdav from 'webdav';
+import { createClient } from 'webdav';
 import stream from 'stream';
 
 Meteor.methods({
@@ -16,10 +18,12 @@ Meteor.methods({
 		if (!account) {
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'uploadFileToWebdav' });
 		}
-		const client = new Webdav(
+		const client = createClient(
 			account.server_url,
-			account.username,
-			account.password
+			{
+				username: account.username,
+				password: account.password,
+			}
 		);
 		const future = new Future();
 

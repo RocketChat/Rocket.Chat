@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import { adminEmail, adminPassword } from '../../data/user.js';
 
 import {

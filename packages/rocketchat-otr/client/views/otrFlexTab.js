@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+
 Template.otrFlexTab.helpers({
 	otrAvailable() {
 		return RocketChat.OTR && RocketChat.OTR.isEnabled();

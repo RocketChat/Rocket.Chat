@@ -1,3 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { t, roomTypes } from 'meteor/rocketchat:utils';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 
 const acEvents = {
@@ -26,20 +37,20 @@ const acEvents = {
 };
 
 const validateChannelName = (name) => {
-	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		return true;
 	}
 
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return name.length === 0 || reg.test(name);
 };
 
 const filterNames = (old) => {
-	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		return old;
 	}
 
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
@@ -93,7 +104,7 @@ Template.createChannel.helpers({
 		return Template.instance().type.get() !== 'p' || Template.instance().broadcast.get();
 	},
 	e2eEnabled() {
-		return RocketChat.settings.get('E2E_Enable');
+		return settings.get('E2E_Enable');
 	},
 	readOnly() {
 		return Template.instance().readOnly.get();
@@ -102,7 +113,7 @@ Template.createChannel.helpers({
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
 	cantCreateBothTypes() {
-		return !RocketChat.authz.hasAllPermission(['create-c', 'create-p']);
+		return !hasAllPermission(['create-c', 'create-p']);
 	},
 	roomTypeIsP() {
 		return Template.instance().type.get() === 'p';
@@ -123,7 +134,7 @@ Template.createChannel.helpers({
 		return Template.instance().type.get() === 'p' ? 'lock' : 'hashtag';
 	},
 	tokenAccessEnabled() {
-		return RocketChat.settings.get('API_Tokenpass_URL') !== '';
+		return settings.get('API_Tokenpass_URL') !== '';
 	},
 	tokenIsDisabled() {
 		return Template.instance().type.get() !== 'p' ? 'disabled' : null;
@@ -140,19 +151,19 @@ Template.createChannel.helpers({
 		};
 	},
 	roomTypesBeforeStandard() {
-		const orderLow = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
-		return RocketChat.roomTypes.roomTypesOrder.filter(
+		const orderLow = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'c')[0].order;
+		return roomTypes.roomTypesOrder.filter(
 			(roomTypeOrder) => roomTypeOrder.order < orderLow
 		).map(
-			(roomTypeOrder) => RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier]
+			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
 		).filter((roomType) => roomType.creationTemplate);
 	},
 	roomTypesAfterStandard() {
-		const orderHigh = RocketChat.roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
-		return RocketChat.roomTypes.roomTypesOrder.filter(
+		const orderHigh = roomTypes.roomTypesOrder.filter((roomTypeOrder) => roomTypeOrder.identifier === 'd')[0].order;
+		return roomTypes.roomTypesOrder.filter(
 			(roomTypeOrder) => roomTypeOrder.order > orderHigh
 		).map(
-			(roomTypeOrder) => RocketChat.roomTypes.roomTypes[roomTypeOrder.identifier]
+			(roomTypeOrder) => roomTypes.roomTypes[roomTypeOrder.identifier]
 		).filter((roomType) => roomType.creationTemplate);
 	},
 });
@@ -239,7 +250,7 @@ Template.createChannel.events({
 			}
 
 			if (!isPrivate) {
-				RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
+				callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 			}
 
 			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
@@ -260,7 +271,7 @@ Template.createChannel.onRendered(function() {
 		users.set(usersArr);
 	});
 });
-/* global AutoComplete */
+
 Template.createChannel.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 
@@ -272,7 +283,7 @@ Template.createChannel.onCreated(function() {
 	this.extensions_validations = {};
 	this.extensions_submits = {};
 	this.name = new ReactiveVar('');
-	this.type = new ReactiveVar(RocketChat.authz.hasAllPermission(['create-p']) ? 'p' : 'c');
+	this.type = new ReactiveVar(hasAllPermission(['create-p']) ? 'p' : 'c');
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
 	this.encrypted = new ReactiveVar(false);
@@ -347,7 +358,7 @@ Template.createChannel.onCreated(function() {
 
 Template.tokenpass.onCreated(function() {
 	this.data.validations.tokenpass = (instance) => {
-		const result = (RocketChat.settings.get('API_Tokenpass_URL') !== '' && instance.tokensRequired.get() && instance.type.get() === 'p') && this.selectedTokens.get().length === 0;
+		const result = (settings.get('API_Tokenpass_URL') !== '' && instance.tokensRequired.get() && instance.type.get() === 'p') && this.selectedTokens.get().length === 0;
 		this.invalid.set(result);
 		return !result;
 	};

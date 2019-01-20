@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 export default function handleNickChanged(args) {
 	const user = RocketChat.models.Users.findOne({
 		'profile.irc.nick': args.nick,

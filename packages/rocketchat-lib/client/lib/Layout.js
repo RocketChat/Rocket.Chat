@@ -1,11 +1,4 @@
-RocketChat.Layout = new (class RocketChatLayout {
-	constructor() {
-		Tracker.autorun(() => {
-			this.layout = FlowRouter.getQueryParam('layout');
-		});
-	}
+import { Layout } from 'meteor/rocketchat:ui-utils';
 
-	isEmbedded() {
-		return this.layout === 'embedded';
-	}
-});
+RocketChat.Layout = Layout;
+

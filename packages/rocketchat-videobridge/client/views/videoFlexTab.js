@@ -1,13 +1,13 @@
-/* globals JitsiMeetExternalAPI */
-/* eslint new-cap: [2, {"capIsNewExceptions": ["MD5"]}] */
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {
-		if (Meteor.isCordova) {
-			return true;
-		} else {
-			return RocketChat.settings.get('Jitsi_Open_New_Window');
-		}
+		return RocketChat.settings.get('Jitsi_Open_New_Window');
 	},
 });
 
@@ -77,25 +77,18 @@ Template.videoFlexTab.onRendered(function() {
 
 						RocketChat.TabBar.updateButton('video', { class: 'red' });
 
-						if (RocketChat.settings.get('Jitsi_Open_New_Window') || Meteor.isCordova) {
+						if (RocketChat.settings.get('Jitsi_Open_New_Window')) {
 							Meteor.call('jitsi:updateTimeout', roomId);
 
 							timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10 * 1000);
-							let newWindow = null;
-							if (Meteor.isCordova) {
-								newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`, '_system');
-								closePanel();
-								clearInterval(timeOut);
-							} else {
-								newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`, jitsiRoom);
-								const closeInterval = setInterval(() => {
-									if (newWindow.closed !== false) {
-										closePanel();
-										clearInterval(closeInterval);
-										clearInterval(timeOut);
-									}
-								}, 300);
-							}
+							const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`, jitsiRoom);
+							const closeInterval = setInterval(() => {
+								if (newWindow.closed !== false) {
+									closePanel();
+									clearInterval(closeInterval);
+									clearInterval(timeOut);
+								}
+							}, 300);
 							if (newWindow) {
 								newWindow.focus();
 							}
@@ -104,7 +97,7 @@ Template.videoFlexTab.onRendered(function() {
 						// Lets make sure its loaded before we try to show it.
 						} else if (typeof JitsiMeetExternalAPI !== 'undefined') {
 
-						// Keep it from showing duplicates when re-evaluated on variable change.
+							// Keep it from showing duplicates when re-evaluated on variable change.
 							if (!$('[id^=jitsiConference]').length) {
 								this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl);
 

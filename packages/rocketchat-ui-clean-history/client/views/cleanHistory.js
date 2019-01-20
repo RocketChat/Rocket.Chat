@@ -1,7 +1,13 @@
-/* globals AutoComplete */
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { ChatRoom, modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { RocketChat, call } from 'meteor/rocketchat:lib';
 import moment from 'moment';
-
-import { call } from 'meteor/rocketchat:lib';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));

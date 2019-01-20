@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+
 Template.popupList.helpers({
 	config() {
 		return {
@@ -32,6 +35,6 @@ Template.popupList_default.helpers({
 
 Template.popupList_item_default.helpers({
 	showRealNames() {
-		return RocketChat.settings.get('UI_Use_Real_Name');
+		return settings.get('UI_Use_Real_Name');
 	},
 });

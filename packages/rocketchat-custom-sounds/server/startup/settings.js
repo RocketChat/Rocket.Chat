@@ -1,4 +1,6 @@
-RocketChat.settings.addGroup('CustomSoundsFilesystem', function() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('CustomSoundsFilesystem', function() {
 	this.add('CustomSounds_Storage_Type', 'GridFS', {
 		type: 'select',
 		values: [{

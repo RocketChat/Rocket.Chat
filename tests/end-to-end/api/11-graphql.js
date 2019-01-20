@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 const supertest = require('supertest');
 const request = supertest('http://localhost:3000');
 
