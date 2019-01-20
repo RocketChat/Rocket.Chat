@@ -15,10 +15,6 @@ class CustomSoundsClass {
 	}
 
 	add(sound) {
-		if (Meteor.isCordova) {
-			return;
-		}
-
 		if (!sound.src) {
 			sound.src = this.getURL(sound);
 		}
@@ -52,7 +48,7 @@ class CustomSoundsClass {
 	}
 
 	getURL(sound) {
-		const path = (Meteor.isCordova) ? Meteor.absoluteUrl().replace(/\/$/, '') : __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+		const path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 		return `${ path }/custom-sounds/${ sound._id }.${ sound.extension }?_dc=${ sound.random || 0 }`;
 	}
 
