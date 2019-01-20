@@ -24468,6 +24468,681 @@
           ]
         }
       ]
+    },
+    "0.74.0-rc.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "12294",
+          "title": "[IMPROVE] Dutch translations",
+          "userLogin": "Jeroeny",
+          "contributors": [
+            "Jeroeny",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13112",
+          "title": "[FIX] Few polish translating",
+          "userLogin": "theundefined",
+          "contributors": [
+            "theundefined"
+          ]
+        },
+        {
+          "pr": "13114",
+          "title": "[IMPROVE] Persian translations",
+          "userLogin": "behnejad",
+          "contributors": [
+            "behnejad",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13201",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13053",
+          "title": "[FIX] Update Message: Does not show edited when message was not edited.",
+          "userLogin": "Kailash0311",
+          "contributors": [
+            "Kailash0311",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13067",
+          "title": "[FIX] Notifications for mentions not working on large rooms and don't emit desktop notifications for offline users",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "12153",
+          "title": "[NEW] SAML: Adds possibility to decrypt encrypted assertions",
+          "userLogin": "gerbsen",
+          "milestone": "0.74.0",
+          "contributors": [
+            "gerbsen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13177",
+          "title": "Language: Edit typo \"Обновлить\"",
+          "userLogin": "zpavlig",
+          "milestone": "0.74.0",
+          "contributors": [
+            "zpavlig",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11251",
+          "title": "[NEW] Add rate limiter to REST endpoints",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "geekgonecrazy",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "12858",
+          "title": "[FIX] Emoticons not displayed in room topic",
+          "userLogin": "alexbartsch",
+          "milestone": "0.74.0",
+          "contributors": [
+            "alexbartsch",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13129",
+          "title": "[IMPROVE] Change the way the app detail screen shows support link when it's an email",
+          "userLogin": "d-gubert",
+          "milestone": "0.74.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13183",
+          "title": "[NEW] Added an option to disable email when activate and deactivate users",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13160",
+          "title": "[NEW] Add create, update and delete endpoint for custom emojis",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13150",
+          "title": "[FIX] REST API endpoint `users.getPersonalAccessTokens` error when user has no access tokens",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13192",
+          "title": "Regression: Fix export AudioRecorder",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13167",
+          "title": "[NEW] Added endpoint to update timeout of the jitsi video conference",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13188",
+          "title": "[FIX] Remove unused code for Cordova",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13194",
+          "title": "[IMPROVE] Process alerts from update checking",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13184",
+          "title": "[NEW] Display total number of files and total upload size in admin",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.74.0",
+          "contributors": [
+            "geekgonecrazy",
+            "sampaiodiego",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13181",
+          "title": "[FIX] Avatars with transparency were being converted to black",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13180",
+          "title": "[FIX] REST api client base url on subdir",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "13170",
+          "title": "[FIX] Change webdav creation, due to changes in the npm lib after last update",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "12927",
+          "title": "[FIX] Invite command was not accpeting @ in username",
+          "userLogin": "piotrkochan",
+          "milestone": "0.74.0",
+          "contributors": [
+            "piotrkochan",
+            "marceloschmidt",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13105",
+          "title": "[FIX] Remove ES6 code from Livechat widget script",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13169",
+          "title": "[IMPROVE] Add \"Apps Engine Version\" to Administration > Info",
+          "userLogin": "d-gubert",
+          "milestone": "0.74.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "12982",
+          "title": "[NEW] Livechat GDPR compliance",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13168",
+          "title": "[IMPROVE] New Livechat statistics added to statistics collector",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13076",
+          "title": "[NEW] Added stream to notify when agent status change",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13078",
+          "title": "[IMPROVE] Return room type field on Livechat findRoom method",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13097",
+          "title": "[IMPROVE] Return visitorEmails field on Livechat findGuest method",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13108",
+          "title": "[NEW] Add new Livechat REST endpoint to update the visitor's status",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13158",
+          "title": "[IMPROVE] Adds the \"showConnecting\" property to Livechat Config payload",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13137",
+          "title": " Remove dependency of RocketChat namespace and push-notifications",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13136",
+          "title": "Remove dependency of RocketChat namespace and custom-sounds",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13135",
+          "title": "Remove dependency of RocketChat namespace and logger",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13133",
+          "title": "Remove dependency between RocketChat namespace and migrations",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13132",
+          "title": "Convert rocketchat:ui to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13131",
+          "title": "Remove dependency of RocketChat namespace inside rocketchat:ui",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13123",
+          "title": "Move some ui function to ui-utils",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13157",
+          "title": "Regression: fix upload permissions",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13122",
+          "title": "Move some function to utils",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13118",
+          "title": "Remove directly dependency between rocketchat:lib and emoji",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13117",
+          "title": "Convert rocketchat-webrtc to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13115",
+          "title": "Remove directly dependency between lib and e2e",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13107",
+          "title": "Convert rocketchat-ui-master to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13146",
+          "title": "Regression: fix rooms model's collection name",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13098",
+          "title": "Convert rocketchat-ui-sidenav to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13094",
+          "title": "Convert rocketchat-file-upload to main module structure",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13066",
+          "title": "Remove dependency between lib and authz",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13037",
+          "title": "Globals/main module custom oauth",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13064",
+          "title": "Move UI Collections to rocketchat:models",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13036",
+          "title": "Rocketchat mailer",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13039",
+          "title": "Move rocketchat promises",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13035",
+          "title": "Globals/move rocketchat notifications",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13119",
+          "title": "Test only MongoDB with oplog versions 3.2 and 4.0 for PRs",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13034",
+          "title": "Move/create rocketchat callbacks",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13032",
+          "title": "Move/create rocketchat metrics",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13027",
+          "title": "Move rocketchat models",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13096",
+          "title": "[FIX] User status on header and user info are not translated",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13091",
+          "title": "[FIX] #11692 - Suppress error when drop collection in migration to suit to …",
+          "userLogin": "Xuhao",
+          "contributors": [
+            "Xuhao",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13073",
+          "title": "[NEW] Add Allow Methods directive to CORS",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13026",
+          "title": "Move rocketchat settings to specific package",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "0.74.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13013",
+          "title": "[NEW] Cloud Integration",
+          "userLogin": "graywolf336",
+          "milestone": "0.73.2",
+          "contributors": [
+            "graywolf336",
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13077",
+          "title": "[FIX] Change input type of e2e to password",
+          "userLogin": "supra08",
+          "milestone": "0.74.0",
+          "contributors": [
+            "supra08"
+          ]
+        },
+        {
+          "pr": "13074",
+          "title": "Remove incorrect pt-BR translation",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13049",
+          "title": "Execute tests with versions 3.2, 3.4, 3.6 and 4.0 of MongoDB",
+          "userLogin": "rodrigok",
+          "milestone": "0.73.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13051",
+          "title": "Regression: Get room's members list not working on MongoDB 3.2",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.73.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13045",
+          "title": "[FIX] Default importer path",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.73.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13050",
+          "title": "Merge master into develop & Set version to 0.74.0-develop",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "Hudell",
+            "MarcosSpessatto",
+            "piotrkochan",
+            "ohmonster",
+            "d-gubert",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
