@@ -52,8 +52,8 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 
 		$input.click();
 
-		// Simple hack for cordova aka codegueira
-		if ((typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') || navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+		// Simple hack for iOS aka codegueira
+		if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
 			$input.click();
 		}
 	},
