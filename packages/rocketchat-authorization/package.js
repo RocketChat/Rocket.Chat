@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:utils',
 		'rocketchat:models',
 		'rocketchat:notifications',
+		'rocketchat:ui-cached-collection',
 	]);
 	api.use([
 		'templating',

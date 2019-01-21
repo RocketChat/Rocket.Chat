@@ -41,6 +41,321 @@ export class Subscriptions extends Base {
 		return query;
 	}
 
+	findByRidWithoutE2EKey(rid, options) {
+		const query = {
+			rid,
+			E2EKey: {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	updateAudioNotificationsById(_id, audioNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (audioNotifications === 'default') {
+			update.$unset = { audioNotifications: 1 };
+		} else {
+			update.$set = { audioNotifications };
+		}
+
+		return this.update(query, update);
+	}
+
+	updateAudioNotificationValueById(_id, audioNotificationValue) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				audioNotificationValue,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateDesktopNotificationsById(_id, desktopNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (desktopNotifications === null) {
+			update.$unset = {
+				desktopNotifications: 1,
+				desktopPrefOrigin: 1,
+			};
+		} else {
+			update.$set = {
+				desktopNotifications: desktopNotifications.value,
+				desktopPrefOrigin: desktopNotifications.origin,
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	updateDesktopNotificationDurationById(_id, value) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				desktopNotificationDuration: parseInt(value),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateMobilePushNotificationsById(_id, mobilePushNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (mobilePushNotifications === null) {
+			update.$unset = {
+				mobilePushNotifications: 1,
+				mobilePrefOrigin: 1,
+			};
+		} else {
+			update.$set = {
+				mobilePushNotifications: mobilePushNotifications.value,
+				mobilePrefOrigin: mobilePushNotifications.origin,
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	updateEmailNotificationsById(_id, emailNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (emailNotifications === null) {
+			update.$unset = {
+				emailNotifications: 1,
+				emailPrefOrigin: 1,
+			};
+		} else {
+			update.$set = {
+				emailNotifications: emailNotifications.value,
+				emailPrefOrigin: emailNotifications.origin,
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	updateUnreadAlertById(_id, unreadAlert) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				unreadAlert,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateDisableNotificationsById(_id, disableNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				disableNotifications,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateHideUnreadStatusById(_id, hideUnreadStatus) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				hideUnreadStatus,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateMuteGroupMentions(_id, muteGroupMentions) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				muteGroupMentions,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findAlwaysNotifyAudioUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			audioNotifications: 'all',
+		};
+
+		return this.find(query);
+	}
+
+	findAlwaysNotifyDesktopUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			desktopNotifications: 'all',
+		};
+
+		return this.find(query);
+	}
+
+	findDontNotifyDesktopUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			desktopNotifications: 'nothing',
+		};
+
+		return this.find(query);
+	}
+
+	findAlwaysNotifyMobileUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			mobilePushNotifications: 'all',
+		};
+
+		return this.find(query);
+	}
+
+	findDontNotifyMobileUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			mobilePushNotifications: 'nothing',
+		};
+
+		return this.find(query);
+	}
+
+	findWithSendEmailByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			emailNotifications: {
+				$exists: true,
+			},
+		};
+
+		return this.find(query, { fields: { emailNotifications: 1, u: 1 } });
+	}
+
+	findNotificationPreferencesByRoom(query/* { roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
+
+		return this._db.find(query, {
+			fields: {
+
+				// fields needed for notifications
+				rid: 1,
+				t: 1,
+				u: 1,
+				name: 1,
+				fname: 1,
+				code: 1,
+
+				// fields to define if should send a notification
+				ignored: 1,
+				audioNotifications: 1,
+				audioNotificationValue: 1,
+				desktopNotificationDuration: 1,
+				desktopNotifications: 1,
+				mobilePushNotifications: 1,
+				emailNotifications: 1,
+				disableNotifications: 1,
+				muteGroupMentions: 1,
+				userHighlights: 1,
+			},
+		});
+	}
+
+	findAllMessagesNotificationPreferencesByRoom(roomId) {
+		const query = {
+			rid: roomId,
+			'u._id': { $exists: true },
+			$or: [
+				{ desktopNotifications: { $in: ['all', 'mentions'] } },
+				{ mobilePushNotifications: { $in: ['all', 'mentions'] } },
+				{ emailNotifications: { $in: ['all', 'mentions'] } },
+			],
+		};
+
+		return this._db.find(query, {
+			fields: {
+				'u._id': 1,
+				audioNotifications: 1,
+				audioNotificationValue: 1,
+				desktopNotificationDuration: 1,
+				desktopNotifications: 1,
+				mobilePushNotifications: 1,
+				emailNotifications: 1,
+				disableNotifications: 1,
+				muteGroupMentions: 1,
+			},
+		});
+	}
+
+	resetUserE2EKey(userId) {
+		this.update({ 'u._id': userId }, {
+			$unset: {
+				E2EKey: '',
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	findByUserIdWithoutE2E(userId, options) {
+		const query = {
+			'u._id': userId,
+			E2EKey: {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	updateGroupE2EKey(_id, key) {
+		const query = { _id };
+		const update = { $set: { E2EKey: key } };
+		this.update(query, update);
+		return this.findOne({ _id });
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
