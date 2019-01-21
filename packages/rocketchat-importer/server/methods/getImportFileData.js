@@ -25,8 +25,29 @@ Meteor.methods({
 			return undefined;
 		}
 
-		if (importer.instance.progress.step === ProgressStep.DOWNLOADING_FILE_URL) {
+		const waitingSteps = [
+			ProgressStep.DOWNLOADING_FILE_URL,
+			ProgressStep.PREPARING_CHANNELS,
+			ProgressStep.PREPARING_MESSAGES,
+			ProgressStep.PREPARING_USERS,
+			ProgressStep.PREPARING_STARTED,
+		];
+
+		if (waitingSteps.indexOf(importer.instance.progress.step) >= 0) {
 			return { waiting: true };
+		}
+
+		const readySteps = [
+			ProgressStep.USER_SELECTION,
+			ProgressStep.DONE,
+			ProgressStep.CANCELLED,
+			ProgressStep.ERROR,
+		];
+
+		if (readySteps.indexOf(importer.instance.progress.step) >= 0) {
+			if (importer.instance.importRecord && importer.instance.importRecord.fileData) {
+				return importer.instance.importRecord.fileData;
+			}
 		}
 
 		const fileName = importer.instance.importRecord.file;
