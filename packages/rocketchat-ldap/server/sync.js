@@ -298,16 +298,14 @@ export function syncUserGroups(ldap, ldapUser, user) {
 		filter.push(`(objectclass=${ RocketChat.settings.get('LDAP_Group_Sync_ObjectClass') })`);
 	}
 
-	if (RocketChat.settings.get('LDAP_Group_Sync_Member_Association') !== 'memberUid') {
-		filter.push(`(${ RocketChat.settings.get('LDAP_Group_Sync_Member_Association') }=${ 'memberFormat' })`);
-	} else {
-		filter.push(`(${ RocketChat.settings.get('LDAP_Group_Sync_Member_Association') }=${ 'uid' })`);
-	}
+	
+	filter.push(`(${ RocketChat.settings.get('LDAP_Group_Sync_Member_Association') }=${ 'memberFormat' })`);
+
 
 	filter.push(')');
 
 	const searchOptions = {
-		filter: filter.join('').replace(/#{username}/g, user.username).replace(/#{memberFormat}/g, ldapUser._raw[RocketChat.settings.get('LDAP_Group_Sync_Member_Attribute')]),
+		filter: filter.join('').replace(/username/g, user.username).replace(/memberFormat/g, ldapUser[RocketChat.settings.get('LDAP_Group_Sync_Member_Attribute')]),
 		scope: 'sub',
 	};
 
