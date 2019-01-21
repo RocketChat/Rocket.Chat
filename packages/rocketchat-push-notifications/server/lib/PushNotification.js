@@ -1,8 +1,10 @@
 import { Push } from 'meteor/rocketchat:push';
+import { settings } from 'meteor/rocketchat:settings';
+import { metrics } from 'meteor/rocketchat:metrics';
 
-class PushNotification {
+export class PushNotification {
 	getNotificationId(roomId) {
-		const serverId = RocketChat.settings.get('uniqueID');
+		const serverId = settings.get('uniqueID');
 		return this.hash(`${ serverId }|${ roomId }`); // hash
 	}
 
@@ -47,9 +49,9 @@ class PushNotification {
 			};
 		}
 
-		RocketChat.metrics.notificationsSent.inc({ notification_type: 'mobile' });
+		metrics.notificationsSent.inc({ notification_type: 'mobile' });
 		return Push.send(config);
 	}
 }
 
-RocketChat.PushNotification = new PushNotification();
+export default new PushNotification();
