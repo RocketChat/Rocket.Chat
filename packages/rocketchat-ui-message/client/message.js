@@ -281,12 +281,13 @@ Template.message.helpers({
 	},
 	reactions() {
 		const userUsername = Meteor.user() && Meteor.user().username;
+		const userId = Meteor.user() && Meteor.user()._id;
 		return Object.keys(this.reactions || {}).map((emoji) => {
 			const reaction = this.reactions[emoji];
-			const total = reaction.usernames.length;
-			let usernames = reaction.usernames
+			const total = reaction.users.length;
+			let usernames = reaction.users
 				.slice(0, 15)
-				.map((username) => (username === userUsername ? t('You').toLowerCase() : `@${ username }`))
+				.map((user) => (user.id === userId ? t('You').toLowerCase() : `@${ user.username }`))
 				.join(', ');
 			if (total > 15) {
 				usernames = `${ usernames } ${ t('And_more', {
@@ -300,10 +301,10 @@ Template.message.helpers({
 			}
 			return {
 				emoji,
-				count: reaction.usernames.length,
+				count: reaction.users.length,
 				usernames,
 				reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-				userReacted: reaction.usernames.indexOf(userUsername) > -1,
+				userReacted: reaction.users.map((user) => user.username).indexOf(userUsername) > -1,
 			};
 		});
 	},

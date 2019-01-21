@@ -4,9 +4,10 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
-const removeUserReaction = (message, reaction, username) => {
-	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
-	if (message.reactions[reaction].usernames.length === 0) {
+const removeUserReaction = (message, reaction, id) => {
+	const index = message.reactions[reaction].users.map((user) => user.id).indexOf(id);
+	message.reactions[reaction].users.splice(index, 1);
+	if (message.reactions[reaction].users.length === 0) {
 		delete message.reactions[reaction];
 	}
 	return message;
@@ -50,7 +51,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+		const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].users.map((user) => user.id).indexOf(user._id) !== -1;
 		// When shouldReact was not informed, toggle the reaction.
 		if (shouldReact === undefined) {
 			shouldReact = !userAlreadyReacted;
@@ -60,7 +61,7 @@ Meteor.methods({
 			return;
 		}
 		if (userAlreadyReacted) {
-			removeUserReaction(message, reaction, user.username);
+			removeUserReaction(message, reaction, user._id);
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
@@ -82,10 +83,10 @@ Meteor.methods({
 			}
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
-					usernames: [],
+					users:[],
 				};
 			}
-			message.reactions[reaction].usernames.push(user.username);
+			message.reactions[reaction].users.push({ id: user._id, username: user.username });
 			if (RocketChat.isTheLastMessage(room, message)) {
 				RocketChat.models.Rooms.setReactionsInLastMessage(room._id, message);
 			}

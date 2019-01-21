@@ -23,10 +23,11 @@ Meteor.methods({
 			return false;
 		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
-			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
+		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].users.map((user) => user.id).indexOf(user._id) !== -1) {
+			const index = message.reactions[reaction].users.map((user) => user.id).indexOf(user._id);
+			message.reactions[reaction].users.slice(index, 1);
 
-			if (message.reactions[reaction].usernames.length === 0) {
+			if (message.reactions[reaction].users.length === 0) {
 				delete message.reactions[reaction];
 			}
 
@@ -44,10 +45,11 @@ Meteor.methods({
 			}
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
-					usernames: [],
+					users:[],
 				};
 			}
-			message.reactions[reaction].usernames.push(user.username);
+
+			message.reactions[reaction].users.push({ id: user._id, username:user.username });
 
 			RocketChat.models.Messages.setReactions(messageId, message.reactions);
 			RocketChat.callbacks.run('setReaction', messageId, reaction);
