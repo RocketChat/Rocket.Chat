@@ -1,6 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
-
-RocketChat.emoji = {
+export const emoji = {
 	packages: {
 		base: {
 			emojiCategories: { recent: 'Frequently_Used' },

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Roles } from 'meteor/rocketchat:models';
 
 Meteor.publish('roles', function() {
 	if (!this.userId) {
 		return this.ready();
 	}
 
-	return RocketChat.models.Roles.find();
+	return Roles.find();
 });
