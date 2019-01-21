@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Users } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import s from 'underscore.string';
 
 RocketChat._setEmail = function(userId, email, shouldSendVerificationEmail = true) {
@@ -13,7 +15,7 @@ RocketChat._setEmail = function(userId, email, shouldSendVerificationEmail = tru
 
 	RocketChat.validateEmailDomain(email);
 
-	const user = RocketChat.models.Users.findOneById(userId);
+	const user = Users.findOneById(userId);
 
 	// User already has desired username, return
 	if (user.emails && user.emails[0] && user.emails[0].address === email) {
@@ -26,7 +28,7 @@ RocketChat._setEmail = function(userId, email, shouldSendVerificationEmail = tru
 	}
 
 	// Set new email
-	RocketChat.models.Users.setEmail(user._id, email);
+	Users.setEmail(user._id, email);
 	user.email = email;
 	if (shouldSendVerificationEmail === true) {
 		Meteor.call('sendConfirmationEmail', user.email);
@@ -35,5 +37,5 @@ RocketChat._setEmail = function(userId, email, shouldSendVerificationEmail = tru
 };
 
 RocketChat.setEmail = RocketChat.RateLimiter.limitFunction(RocketChat._setEmail, 1, 60000, {
-	0() { return !Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others emails, so don't limit those
+	0() { return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others emails, so don't limit those
 });

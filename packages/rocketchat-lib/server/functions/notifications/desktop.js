@@ -1,3 +1,7 @@
+import { metrics } from 'meteor/rocketchat:metrics';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { roomTypes } from 'meteor/rocketchat:utils';
 /**
  * Send notification to user
  *
@@ -16,10 +20,10 @@ export function notifyDesktopUser({
 	duration,
 	notificationMessage,
 }) {
-	const { title, text } = RocketChat.roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
+	const { title, text } = roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
 
-	RocketChat.metrics.notificationsSent.inc({ notification_type: 'desktop' });
-	RocketChat.Notifications.notifyUser(userId, 'notification', {
+	metrics.notificationsSent.inc({ notification_type: 'desktop' });
+	Notifications.notifyUser(userId, 'notification', {
 		title,
 		text,
 		duration,
@@ -57,10 +61,10 @@ export function shouldNotifyDesktop({
 	}
 
 	if (!desktopNotifications) {
-		if (RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all') {
 			return true;
 		}
-		if (RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
+		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
 			return false;
 		}
 	}
