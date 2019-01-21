@@ -273,15 +273,15 @@ jobs:
             rm Rocket.Chat.tar.gz
 
             export CIRCLE_TAG=${CIRCLE_TAG:=}
-            # if [[ $CIRCLE_TAG ]]; then
-            #   docker login -u $DOCKER_USER -p $DOCKER_PASS
+             if [[ $CIRCLE_TAG ]]; then
+               docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-            #   echo "Build official Docker image"
-            #   cp ~/repo/.docker/Dockerfile .
-            #   docker build -t assistify/chat:$CIRCLE_TAG .
-            #   docker push assistify/chat:$CIRCLE_TAG
+               echo "Build official Docker image"
+               cp ~/repo/.docker/Dockerfile .
+               docker build -t assistify/chat:$CIRCLE_TAG .
+               docker push assistify/chat:$CIRCLE_TAG
 
-            #   # echo "Build preview Docker image"
+            #   # echo "Build preview Docker image" 
             #   # cp ~/repo/.docker-mongo/Dockerfile .
             #   # cp ~/repo/.docker-mongo/entrypoint.sh .
             #   # docker build -t assistify/chat.preview:$CIRCLE_TAG .
@@ -301,8 +301,8 @@ jobs:
             #     docker push assistify/chat.preview:release-candidate
             #   fi
 
-            #   exit 0
-            # fi;
+               exit 0
+             fi;
 
             if [[ $CIRCLE_BRANCH == 'develop' ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
