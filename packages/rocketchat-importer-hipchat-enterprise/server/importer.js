@@ -479,15 +479,52 @@ export class HipChatEnterpriseImporter extends Base {
 		return this._roomIdReference[hipchatId];
 	}
 
+	_updateImportedUser(userToImport, existingUserId) {
+		userToImport.rocketId = existingUserId;
+		this._saveUserIdReference(userToImport.id, existingUserId);
+
+		Meteor.runAsUser(existingUserId, () => {
+			RocketChat.models.Users.update({ _id: existingUserId }, { $addToSet: { importIds: userToImport.id } });
+
+			Meteor.call('setUsername', userToImport.username, { joinDefaultChannelsSilenced: true });
+
+			// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
+			RocketChat.models.Users.setName(existingUserId, userToImport.name);
+			// TODO: Think about using a custom field for the users "title" field
+
+			if (userToImport.avatar) {
+				Meteor.call('setAvatarFromService', `data:image/png;base64,${ userToImport.avatar }`);
+			}
+
+			// Deleted users are 'inactive' users in Rocket.Chat
+			if (userToImport.deleted) {
+				Meteor.call('setUserActiveStatus', existingUserId, false);
+			}
+		});
+	}
+
 	_importUser(userToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			const existingUser = RocketChat.models.Users.findOneByUsername(userToImport.username);
+			let existingUser = RocketChat.models.Users.findOneByUsername(userToImport.username);
+			if (!existingUser) {
+				// If there's no user with that username, but there's an imported user with the same original ID and no username, use that
+				existingUser = RocketChat.models.Users.findOne({
+					importIds: userToImport.id,
+					username: { $exists: false },
+				});
+			}
 
 			if (existingUser) {
 				// since we have an existing user, let's try a few things
 				this._saveUserIdReference(userToImport.id, existingUser._id);
 				userToImport.rocketId = existingUser._id;
-				RocketChat.models.Users.update({ _id: userToImport.rocketId }, { $addToSet: { importIds: userToImport.id } });
+
+				try {
+					this._updateImportedUser(userToImport, existingUser._id);
+				} catch (e) {
+					this.logger.error(e);
+					this.addUserError(userToImport.id, e);
+				}
 			} else {
 				const user = { email: userToImport.email, password: Random.id() };
 				// if (u.is_email_taken && u.email) {
@@ -500,26 +537,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 				try {
 					const userId = Accounts.createUser(user);
-					Meteor.runAsUser(userId, () => {
-						Meteor.call('setUsername', userToImport.username, { joinDefaultChannelsSilenced: true });
-						// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
-						RocketChat.models.Users.setName(userId, userToImport.name);
-						// TODO: Think about using a custom field for the users "title" field
-
-						if (userToImport.avatar) {
-							Meteor.call('setAvatarFromService', `data:image/png;base64,${ userToImport.avatar }`);
-						}
-
-						// Deleted users are 'inactive' users in Rocket.Chat
-						if (userToImport.deleted) {
-							Meteor.call('setUserActiveStatus', userId, false);
-						}
-
-						RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: userToImport.id } });
-
-						userToImport.rocketId = userId;
-						this._saveUserIdReference(userToImport.id, userId);
-					});
+					this._updateImportedUser(userToImport, userId);
 				} catch (e) {
 					this.logger.error(e);
 					this.addUserError(userToImport.id, e);
@@ -701,6 +719,7 @@ export class HipChatEnterpriseImporter extends Base {
 			// If the room exists or the name of it is 'general', then we don't need to create it again
 			if (existingRoom || channelToImport.name.toUpperCase() === 'GENERAL') {
 				channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;
+				this._saveRoomIdReference(channelToImport.id, channelToImport.rocketId);
 				RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $addToSet: { importIds: channelToImport.id } });
 			} else {
 				// Find the rocketchatId of the user who created this channel
