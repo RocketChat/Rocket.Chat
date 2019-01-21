@@ -10,10 +10,12 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'http',
+		'tap:i18n',
 		'templating',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 		'rocketchat:utils',
+		'rocketchat:settings',
 		'rocketchat:promises',
 		'rocketchat:notifications',
 		'rocketchat:authorization',

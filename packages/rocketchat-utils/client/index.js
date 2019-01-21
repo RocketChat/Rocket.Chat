@@ -13,3 +13,7 @@ export { getAvatarUrlFromUsername } from '../lib/getAvatarUrlFromUsername';
 export { slashCommands } from '../lib/slashCommand';
 export { getUserNotificationPreference } from '../lib/getUserNotificationPreference';
 export { applyCustomTranslations } from './lib/CustomTranslations';
+export { getAvatarColor } from '../lib/getAvatarColor';
+export { getURL } from '../lib/getURL';
+export { getValidRoomName } from '../lib/getValidRoomName';
+export { placeholders } from '../lib/placeholders';

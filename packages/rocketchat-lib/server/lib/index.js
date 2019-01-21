@@ -8,6 +8,7 @@
 
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../../lib/RoomTypeConfig';
 import { sendNotification } from './sendNotificationsOnMessage.js';
+export { hostname } from '../../lib/startup/settingsOnLoadSiteUrl';
 
 export {
 	RoomSettingsEnum,
