@@ -16,11 +16,9 @@ Package.onUse(function(api) {
 		'templating',
 		'juliancwirko:postcss',
 	]);
-	// Compiled stylesheets
-	api.addFiles('client/main.css', 'client');
+	api.addAssets('variables.css', 'server');
 	// Photoswipe
 	api.addFiles('client/vendor/photoswipe.css', 'client');
-	api.addAssets('client/imports/general/variables.css', 'server');
 	// Fontello
 	api.addFiles('client/vendor/fontello/css/fontello.css', 'client');
 	api.addAssets('client/vendor/fontello/font/fontello.eot', 'client');
