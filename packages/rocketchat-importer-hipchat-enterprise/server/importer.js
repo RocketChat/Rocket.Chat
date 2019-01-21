@@ -144,7 +144,6 @@ export class HipChatEnterpriseImporter extends Base {
 		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		let tempRooms = [];
 		let count = 0;
-		this.channelsId = false;
 
 		for (const r of file) {
 			tempRooms.push({
