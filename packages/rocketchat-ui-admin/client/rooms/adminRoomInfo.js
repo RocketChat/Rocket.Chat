@@ -43,6 +43,11 @@ Template.adminRoomInfo.helpers({
 		const room = AdminChatRoom.findOne(this.rid, { fields: { name: 1 } });
 		return room && room.name;
 	},
+	roomOwner() {
+		const room = AdminChatRoom.findOne(this.rid, { fields: { u: 1 } });
+		const owner = room && room.u && Meteor.users.findOne(room.u._id);
+		return owner && (owner.name || owner.username);
+	},
 	roomTopic() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { topic: 1 } });
 		return room && room.topic;
