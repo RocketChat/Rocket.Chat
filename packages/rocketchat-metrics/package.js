@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:migrations',
 		'rocketchat:version',
 	]);
 	api.mainModule('server/index.js', 'server');

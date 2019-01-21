@@ -190,6 +190,7 @@ RocketChat.models.Users.getAgentInfo = function(agentId) {
 			username: 1,
 			phone: 1,
 			customFields: 1,
+			status: 1,
 		},
 	};
 

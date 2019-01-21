@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Migrations } from 'meteor/rocketchat:migrations';
 import client from 'prom-client';
 import connect from 'connect';
 import http from 'http';
@@ -9,6 +8,7 @@ client.collectDefaultMetrics();
 
 export const metrics = {};
 let Info;
+let _Migrations;
 
 // one sample metrics only - a counter
 
@@ -87,6 +87,10 @@ const setPrometheusData = async() => {
 		const Utils = await import('meteor/rocketchat:utils');
 		Info = Utils.Info;
 	}
+	if (!_Migrations) {
+		const { Migrations } = await import('meteor/rocketchat:migrations');
+		_Migrations = Migrations;
+	}
 
 	client.register.setDefaultLabels({
 		unique_id: settings.get('uniqueID'),
@@ -111,7 +115,7 @@ const setPrometheusData = async() => {
 	}
 
 	metrics.version.set({ version: statistics.version }, 1, date);
-	metrics.migration.set(Migrations._getControl().version, date);
+	metrics.migration.set(_Migrations._getControl().version, date);
 	metrics.instanceCount.set(statistics.instanceCount, date);
 	metrics.oplogEnabled.set({ enabled: statistics.oplogEnabled }, 1, date);
 

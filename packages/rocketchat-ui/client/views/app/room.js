@@ -32,7 +32,7 @@ import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 
-chatMessages = {};
+export const chatMessages = {};
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
@@ -111,20 +111,6 @@ const mountPopover = (e, i, outerContext) => {
 
 	if (deleteItem.length) {
 		groups.push({ items: deleteItem });
-	}
-
-	if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
-		groups.push({
-			items: [
-				{
-					icon: 'warning',
-					name: t('Report_Abuse'),
-					type: 'message-action',
-					id: 'report-abuse',
-					modifier: 'alert',
-				},
-			],
-		});
 	}
 
 	const config = {
@@ -579,11 +565,7 @@ Template.room.events({
 				return;
 			}
 
-			if ((typeof cordova !== 'undefined' && cordova !== null ? cordova.InAppBrowser : undefined) != null) {
-				cordova.InAppBrowser.open(e.target.href, '_system');
-			} else {
-				window.open(e.target.href);
-			}
+			window.open(e.target.href);
 		}
 	},
 

@@ -14,7 +14,7 @@ import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui-utils';
 import { promises } from 'meteor/rocketchat:promises';
 import { getAvatarAsPng } from './avatar';
 
-KonchatNotification = {
+export const KonchatNotification = {
 	notificationStatus: new ReactiveVar,
 
 	// notificacoes HTML5
