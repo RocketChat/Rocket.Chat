@@ -79,50 +79,53 @@ export class CROWD {
 		logger.info('Extracting crowd_username');
 		let user = null;
 		let crowd_username = username;
-		try {
-			user = Meteor.users.findOne({
-				username,
-			});
-			crowd_username = user.crowd_username;
-		} catch (error) {
-			logger.debug(error);
-			logger.debug('Could not find user by username. Checking email');
-		}
 
-		if (!crowd_username) {
-			logger.debug('Local user found, redirecting to fallback login');
-			return;
-		}
-
-		if (user == null && username.indexOf('@') !== -1) {
+		if (username.indexOf('@') !== -1) {
 			const email = username;
 
-			try {
-				user = Meteor.users.findOne({
-					emails: {
-						$elemMatch:	{ address: email },
-					},
-				});
+			user = Meteor.users
+				.findOne({ 'emails.address': email })
+				.project({ username: 1, crowd_username: 1, crowd: 1 });
+			if (user) {
 				crowd_username = user.crowd_username;
-			} catch (error) {
-				logger.debug(error);
-				logger.debug('Could not find a user with given email', username);
+			} else {
+				logger.debug('Could not find a user by email', username);
 			}
 		}
 
 		if (user == null) {
-			try {
-				user = Meteor.users.findOne({
-					crowd_username: username,
-				});
+			user = Meteor.users
+				.findOne({ username })
+				.project({ username: 1, crowd_username: 1, crowd: 1 });
+			if (user) {
 				crowd_username = user.crowd_username;
-			} catch (error) {
-				logger.debug(error);
-				logger.debug('Could not find a user with given crowd_username', username);
+			} else {
+				logger.debug('Could not find a user by username');
 			}
 		}
 
-		logger.info('Going to crowd:', crowd_username);
+		if (user == null) {
+			user = Meteor.users
+				.findOne({ crowd_username: username })
+				.project({ username: 1, crowd_username: 1, crowd: 1 });
+			if (user) {
+				crowd_username = user.crowd_username;
+			} else {
+				logger.debug('Could not find a user with by crowd_username', username);
+			}
+		}
+
+		if (user && !crowd_username) {
+			logger.debug('Local user found, redirecting to fallback login');
+			return {
+				crowd: false,
+			};
+		}
+
+		if (!user && crowd_username) {
+			logger.debug('New user. User is not synced yet.');
+		}
+		logger.debug('Going to crowd:', crowd_username);
 		const auth = this.crowdClient.user.authenticateSync(crowd_username, password);
 
 		if (!auth) {
@@ -281,16 +284,20 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 		const crowd = new CROWD();
 		const user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
-		if (!user) {
+		if (user && (user.crowd === false)) {
 			logger.debug(`User ${ loginRequest.username } is not a valid crowd user, falling back`);
 			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
+		}
+
+		if (!user) {
+			logger.debug(`User ${ loginRequest.username } is not allowd to access Rocket.Chat`);
+			return new Meteor.Error('not-authorized', 'User is not authorized by crowd');
 		}
 
 		return crowd.updateUserCollection(user);
 	} catch (error) {
 		logger.debug(error);
-		logger.error('Crowd user not authenticated due to an error, falling back');
-		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
+		logger.error('Crowd user not authenticated due to an error');
 	}
 });
 
