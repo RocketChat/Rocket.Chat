@@ -1,5 +1,6 @@
 import { Blaze } from 'meteor/blaze';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import { currentTracker } from './openRoom';
 
 this.roomExit = function() {
@@ -11,7 +12,7 @@ this.roomExit = function() {
 			templateData && templateData.tabBar && templateData.tabBar.close();
 		}
 	}
-	RocketChat.callbacks.run('roomExit');
+	callbacks.run('roomExit');
 	BlazeLayout.render('main', {
 		center: 'none',
 	});

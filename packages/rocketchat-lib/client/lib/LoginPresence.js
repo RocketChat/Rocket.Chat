@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
 
 export const LoginPresence = {
 	awayTime: 600000, // 10 minutes
@@ -17,7 +18,7 @@ export const LoginPresence = {
 	disconnect() {
 		const status = Meteor.status();
 		if (status && status.status !== 'offline') {
-			if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') !== true) {
+			if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') !== true) {
 				Meteor.disconnect();
 			}
 		}

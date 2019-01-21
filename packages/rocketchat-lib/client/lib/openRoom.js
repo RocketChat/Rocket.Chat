@@ -3,8 +3,11 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
-import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from 'meteor/rocketchat:ui-utils';
-import { ChatSubscription } from 'meteor/rocketchat:models';
+import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager, Layout } from 'meteor/rocketchat:ui-utils';
+import { ChatSubscription, Rooms } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { roomTypes, handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 export let currentTracker = undefined;
@@ -15,13 +18,13 @@ openRoom = function(type, name) {
 	return Meteor.defer(() =>
 		currentTracker = Tracker.autorun(function(c) {
 			const user = Meteor.user();
-			if ((user && user.username == null) || (user == null && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false)) {
+			if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
 				BlazeLayout.render('main');
 				return;
 			}
 
 			if (RoomManager.open(type + name).ready() !== true) {
-				BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
+				BlazeLayout.render('main', { modal: Layout.isEmbedded(), center: 'loading' });
 				return;
 			}
 			if (currentTracker) {
@@ -29,7 +32,7 @@ openRoom = function(type, name) {
 			}
 			c.stop();
 
-			const room = RocketChat.roomTypes.findRoom(type, name, user);
+			const room = roomTypes.findRoom(type, name, user);
 			if (room == null) {
 				if (type === 'd') {
 					Meteor.call('createDirectMessage', name, function(error) {
@@ -48,7 +51,7 @@ openRoom = function(type, name) {
 							Session.set('roomNotFound', { type, name, error });
 							return BlazeLayout.render('main', { center: 'roomNotFound' });
 						} else {
-							RocketChat.models.Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
+							Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
 							RoomManager.close(type + name);
 							return openRoom(type, name);
 						}
@@ -93,7 +96,7 @@ openRoom = function(type, name) {
 				RoomHistoryManager.getSurroundingMessages(msg);
 			}
 
-			return RocketChat.callbacks.run('enter-room', sub);
+			return callbacks.run('enter-room', sub);
 		})
 	);
 };
