@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from 'meteor/rocketchat:settings';
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import _ from 'underscore';
@@ -17,6 +16,14 @@ export class Users extends Base {
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
+		this.loadSettings();
+	}
+
+	loadSettings() {
+		Meteor.startup(async() => {
+			const { settings } = await import('meteor/rocketchat:settings');
+			this.settings = settings;
+		});
 	}
 
 	roleBaseQuery(userId) {
@@ -200,7 +207,7 @@ export class Users extends Base {
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 
-		const orStmt = _.reduce(settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+		const orStmt = _.reduce(this.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
