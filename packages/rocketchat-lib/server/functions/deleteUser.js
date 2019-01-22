@@ -6,7 +6,7 @@ import { hasRole, getUsersInRole } from 'meteor/rocketchat:authorization';
 import { settings } from 'meteor/rocketchat:settings';
 import { Notifications } from 'meteor/rocketchat:notifications';
 
-RocketChat.deleteUser = function(userId) {
+export const deleteUser = function(userId) {
 	const user = Users.findOneById(userId, {
 		fields: { username: 1, avatarOrigin: 1 },
 	});
@@ -97,3 +97,5 @@ RocketChat.deleteUser = function(userId) {
 
 	Users.removeById(userId); // Remove user from users database
 };
+
+RocketChat.deleteUser = deleteUser;

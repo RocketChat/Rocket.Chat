@@ -5,7 +5,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Users, Messages, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 
-RocketChat._setUsername = function(userId, u) {
+const _setUsername = function(userId, u) {
 	const username = s.trim(u);
 	if (!userId || !username) {
 		return false;
@@ -83,8 +83,10 @@ RocketChat._setUsername = function(userId, u) {
 	return user;
 };
 
-RocketChat.setUsername = RocketChat.RateLimiter.limitFunction(RocketChat._setUsername, 1, 60000, {
+export const setUsername = RocketChat.RateLimiter.limitFunction(_setUsername, 1, 60000, {
 	[0](userId) {
 		return !userId || !hasPermission(userId, 'edit-other-user-info');
 	},
 });
+
+RocketChat.setUsername = setUsername;

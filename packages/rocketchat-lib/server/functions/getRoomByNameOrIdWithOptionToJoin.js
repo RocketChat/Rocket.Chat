@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Rooms, Users, Subscriptions } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
-RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type = '', tryDirectByUserIdOnly = false, joinChannel = true, errorOnEmpty = true }) {
+export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type = '', tryDirectByUserIdOnly = false, joinChannel = true, errorOnEmpty = true }) {
 	let room;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
@@ -79,3 +79,5 @@ RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOp
 
 	return room;
 };
+
+RocketChat.getRoomByNameOrIdWithOptionToJoin = getRoomByNameOrIdWithOptionToJoin;

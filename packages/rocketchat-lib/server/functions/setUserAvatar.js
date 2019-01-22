@@ -5,7 +5,7 @@ import { FileUpload } from 'meteor/rocketchat:file-upload';
 import { Users } from 'meteor/rocketchat:models';
 import { Notifications } from 'meteor/rocketchat:notifications';
 
-RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
+export const setUserAvatar = function(user, dataURI, contentType, service) {
 	let encoding;
 	let image;
 
@@ -63,3 +63,5 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 		}, 500);
 	});
 };
+
+RocketChat.setUserAvatar = setUserAvatar;

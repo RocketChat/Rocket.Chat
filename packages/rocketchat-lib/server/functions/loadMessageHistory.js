@@ -21,7 +21,7 @@ settings.get(/Message_HideType_.+/, function(key, value) {
 	});
 });
 
-RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
+export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 	const options = {
 		sort: {
 			ts: -1,
@@ -69,3 +69,5 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 		unreadNotLoaded,
 	};
 };
+
+RocketChat.loadMessageHistory = loadMessageHistory;

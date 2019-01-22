@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from 'meteor/rocketchat:settings';
 import s from 'underscore.string';
 
-RocketChat.validateCustomFields = function(fields) {
+export const validateCustomFields = function(fields) {
 	// Special Case:
 	// If an admin didn't set any custom fields there's nothing to validate against so consider any customFields valid
 	if (s.trim(settings.get('Accounts_CustomFields')) === '') {
@@ -41,3 +41,5 @@ RocketChat.validateCustomFields = function(fields) {
 		}
 	});
 };
+
+RocketChat.validateCustomFields = validateCustomFields;

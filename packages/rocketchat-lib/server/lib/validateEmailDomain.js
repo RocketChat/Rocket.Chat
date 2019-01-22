@@ -22,7 +22,7 @@ settings.get('Accounts_UseDNSDomainCheck', function(key, value) {
 	useDNSDomainCheck = value;
 });
 
-RocketChat.validateEmailDomain = function(email) {
+export const validateEmailDomain = function(email) {
 	const emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 	if (!emailValidation.test(email)) {
 		throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, { function: 'RocketChat.validateEmailDomain', email });
@@ -45,3 +45,5 @@ RocketChat.validateEmailDomain = function(email) {
 		}
 	}
 };
+
+RocketChat.validateEmailDomain = validateEmailDomain;

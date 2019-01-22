@@ -2,7 +2,7 @@ import { Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 
-RocketChat.addUserToDefaultChannels = function(user, silenced) {
+export const addUserToDefaultChannels = function(user, silenced) {
 	callbacks.run('beforeJoinDefaultChannels', user);
 	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], { fields: { usernames: 0 } }).fetch();
 	defaultRooms.forEach((room) => {
@@ -32,3 +32,6 @@ RocketChat.addUserToDefaultChannels = function(user, silenced) {
 		}
 	});
 };
+
+RocketChat.addUserToDefaultChannels = addUserToDefaultChannels;
+

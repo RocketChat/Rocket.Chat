@@ -3,7 +3,7 @@ import { Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 
-RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
+export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
 	const room = Rooms.findOneById(rid);
 
@@ -53,3 +53,5 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 
 	return true;
 };
+
+RocketChat.addUserToRoom = addUserToRoom;
