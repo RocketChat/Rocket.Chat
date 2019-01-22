@@ -1,6 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Mongo, MongoInternals } from 'meteor/mongo';
-import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import { EventEmitter } from 'events';
 
@@ -16,9 +16,6 @@ try {
 
 const isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
 let isOplogEnabled = isOplogAvailable;
-settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
-	isOplogEnabled = isOplogAvailable && value === false;
-});
 
 export class BaseDb extends EventEmitter {
 	constructor(model, baseModel) {
@@ -39,6 +36,7 @@ export class BaseDb extends EventEmitter {
 		this.wrapModel();
 
 		let alreadyListeningToOplog = false;
+		this.listenSettings();
 		// When someone start listening for changes we start oplog if available
 		this.on('newListener', (event/* , listener*/) => {
 			if (event === 'change' && alreadyListeningToOplog === false) {
@@ -55,6 +53,15 @@ export class BaseDb extends EventEmitter {
 		});
 
 		this.tryEnsureIndex({ _updatedAt: 1 });
+	}
+
+	listenSettings() {
+		Meteor.startup(async() => {
+			const { settings } = await import('meteor/rocketchat:settings');
+			settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
+				isOplogEnabled = isOplogAvailable && value === false;
+			});
+		});
 	}
 
 	get baseName() {

@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:settings',
 		'rocketchat:callbacks',
 		'rocketchat:ui-cached-collection',
 		'konecty:multiple-instances-status',

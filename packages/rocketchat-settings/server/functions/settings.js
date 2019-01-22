@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from '../../lib/settings';
+import { Settings } from 'meteor/rocketchat:models';
 import _ from 'underscore';
-
-let _Settings;
 
 const blockedSettings = {};
 
@@ -25,11 +24,7 @@ settings._sorter = {};
 * @param {Object} setting
 */
 
-settings.add = async function(_id, value, options = {}) {
-	if (!_Settings) {
-		const { Settings } = await import('meteor/rocketchat:models');
-		_Settings = Settings;
-	}
+settings.add = function(_id, value, options = {}) {
 	if (options == null) {
 		options = {};
 	}
@@ -128,7 +123,7 @@ settings.add = async function(_id, value, options = {}) {
 			$exists: false,
 		};
 	}
-	const existantSetting = _Settings.db.findOne(query);
+	const existantSetting = Settings.db.findOne(query);
 	if (existantSetting != null) {
 		if (existantSetting.editor == null && updateOperations.$setOnInsert.editor != null) {
 			updateOperations.$set.editor = updateOperations.$setOnInsert.editor;
@@ -137,7 +132,7 @@ settings.add = async function(_id, value, options = {}) {
 	} else {
 		updateOperations.$set.ts = new Date;
 	}
-	return _Settings.upsert({
+	return Settings.upsert({
 		_id,
 	}, updateOperations);
 };
@@ -148,11 +143,7 @@ settings.add = async function(_id, value, options = {}) {
 * @param {String} _id
 */
 
-settings.addGroup = async function(_id, options = {}, cb) {
-	if (!_Settings) {
-		const { Settings } = await import('meteor/rocketchat:models');
-		_Settings = Settings;
-	}
+settings.addGroup = function(_id, options = {}, cb) {
 	if (!_id) {
 		return false;
 	}
@@ -175,7 +166,7 @@ settings.addGroup = async function(_id, options = {}, cb) {
 	if (hiddenSettings[_id] != null) {
 		options.hidden = true;
 	}
-	_Settings.upsert({
+	Settings.upsert({
 		_id,
 	}, {
 		$set: options,
@@ -215,15 +206,11 @@ settings.addGroup = async function(_id, options = {}, cb) {
 * @param {String} _id
 */
 
-settings.removeById = async function(_id) {
-	if (!_Settings) {
-		const { Settings } = await import('meteor/rocketchat:models');
-		_Settings = Settings;
-	}
+settings.removeById = function(_id) {
 	if (!_id) {
 		return false;
 	}
-	return _Settings.removeById(_id);
+	return Settings.removeById(_id);
 };
 
 
@@ -232,18 +219,14 @@ settings.removeById = async function(_id) {
 * @param {String} _id
 */
 
-settings.updateById = async function(_id, value, editor) {
-	if (!_Settings) {
-		const { Settings } = await import('meteor/rocketchat:models');
-		_Settings = Settings;
-	}
+settings.updateById = function(_id, value, editor) {
 	if (!_id || value == null) {
 		return false;
 	}
 	if (editor != null) {
-		return _Settings.updateValueAndEditorById(_id, value, editor);
+		return Settings.updateValueAndEditorById(_id, value, editor);
 	}
-	return _Settings.updateValueById(_id, value);
+	return Settings.updateValueById(_id, value);
 };
 
 
@@ -252,15 +235,11 @@ settings.updateById = async function(_id, value, editor) {
 * @param {String} _id
 */
 
-settings.updateOptionsById = async function(_id, options) {
-	if (!_Settings) {
-		const { Settings } = await import('meteor/rocketchat:models');
-		_Settings = Settings;
-	}
+settings.updateOptionsById = function(_id, options) {
 	if (!_id || options == null) {
 		return false;
 	}
-	return _Settings.updateOptionsById(_id, options);
+	return Settings.updateOptionsById(_id, options);
 };
 
 
@@ -269,15 +248,11 @@ settings.updateOptionsById = async function(_id, options) {
 * @param {String} _id
 */
 
-settings.clearById = async function(_id) {
-	if (!_Settings) {
-		const { Settings } = await import('meteor/rocketchat:models');
-		_Settings = Settings;
-	}
+settings.clearById = function(_id) {
 	if (_id == null) {
 		return false;
 	}
-	return _Settings.updateValueById(_id, undefined);
+	return Settings.updateValueById(_id, undefined);
 };
 
 
@@ -285,13 +260,9 @@ settings.clearById = async function(_id) {
 * Update a setting by id
 */
 
-settings.init = async function() {
-	if (!_Settings) {
-		const { Settings } = await import('meteor/rocketchat:models');
-		_Settings = Settings;
-	}
+settings.init = function() {
 	settings.initialLoad = true;
-	_Settings.find().observe({
+	Settings.find().observe({
 		added(record) {
 			Meteor.settings[record._id] = record.value;
 			if (record.env === true) {

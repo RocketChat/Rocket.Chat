@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
@@ -24,6 +23,14 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.loadSettings();
+	}
+
+	loadSettings() {
+		Meteor.startup(async() => {
+			const { settings } = await import('meteor/rocketchat:settings');
+			this.settings = settings;
+		});
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -600,7 +607,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (this.settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -629,7 +636,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (this.settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
