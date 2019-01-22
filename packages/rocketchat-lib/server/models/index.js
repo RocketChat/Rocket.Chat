@@ -13,6 +13,8 @@ import {
 	Integrations,
 	IntegrationHistory,
 	Base as _Base,
+	Permissions,
+	Roles,
 } from 'meteor/rocketchat:models';
 
 Object.assign(RocketChat.models, {
@@ -30,4 +32,6 @@ Object.assign(RocketChat.models, {
 	CustomSounds,
 	Integrations,
 	IntegrationHistory,
+	Permissions,
+	Roles,
 });
