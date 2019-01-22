@@ -24469,6 +24469,88 @@
         }
       ]
     },
+    "0.73.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13052",
+          "title": "Release 0.73.1",
+          "userLogin": "rodrigok",
+          "milestone": "0.73.1",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13049",
+          "title": "Execute tests with versions 3.2, 3.4, 3.6 and 4.0 of MongoDB",
+          "userLogin": "rodrigok",
+          "milestone": "0.73.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13051",
+          "title": "Regression: Get room's members list not working on MongoDB 3.2",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.73.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13045",
+          "title": "[FIX] Default importer path",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.73.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.73.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13086",
+          "title": "Release 0.73.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "graywolf336",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13013",
+          "title": "[NEW] Cloud Integration",
+          "userLogin": "graywolf336",
+          "milestone": "0.73.2",
+          "contributors": [
+            "graywolf336",
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
     "0.74.0-rc.0": {
       "node_version": "8.11.4",
       "npm_version": "6.4.1",
@@ -25140,6 +25222,111 @@
             "d-gubert",
             "sampaiodiego",
             "web-flow"
+          ]
+        },
+        {
+          "pr": "13086",
+          "title": "Release 0.73.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "graywolf336",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13049",
+          "title": "Execute tests with versions 3.2, 3.4, 3.6 and 4.0 of MongoDB",
+          "userLogin": "rodrigok",
+          "milestone": "0.73.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13051",
+          "title": "Regression: Get room's members list not working on MongoDB 3.2",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.73.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13045",
+          "title": "[FIX] Default importer path",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.73.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "0.74.0-rc.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13224",
+          "title": "Regression: Fix audio message upload",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.0-rc.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13213",
+          "title": "Regression: Fix message pinning",
+          "userLogin": "TkTech",
+          "milestone": "0.74.0-rc.1",
+          "contributors": [
+            "TkTech"
+          ]
+        },
+        {
+          "pr": "13203",
+          "title": "[FIX] LDAP login of new users overwriting `fname` from all subscriptions",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.0-rc.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13153",
+          "title": "[FIX] Snap upgrade add post-refresh hook",
+          "userLogin": "LuluGO",
+          "milestone": "0.74.0-rc.1",
+          "contributors": [
+            "LuluGO",
+            "geekgonecrazy",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13083",
+          "title": "[IMPROVE] Adds history log for all Importers and improves HipChat import performance",
+          "userLogin": "Hudell",
+          "milestone": "0.74.0-rc.1",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "13207",
+          "title": "Regression: Fix emoji search",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.0-rc.1",
+          "contributors": [
+            "sampaiodiego"
           ]
         }
       ]
