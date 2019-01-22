@@ -8,6 +8,8 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Notifications } from 'meteor/rocketchat:notifications';
 import { messageProperties } from 'meteor/rocketchat:ui-utils';
 import { Subscriptions, Users } from 'meteor/rocketchat:models';
+import { sendMessage } from '../functions';
+import { RateLimiter } from '../lib';
 import moment from 'moment';
 
 Meteor.methods({
@@ -91,11 +93,11 @@ Meteor.methods({
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return RocketChat.sendMessage(user, message, room);
+		return sendMessage(user, message, room);
 	},
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second
-RocketChat.RateLimiter.limitMethod('sendMessage', 5, 1000, {
+RateLimiter.limitMethod('sendMessage', 5, 1000, {
 	userId(userId) {
 		return !hasPermission(userId, 'send-many-messages');
 	},

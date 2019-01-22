@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { Subscriptions, Messages } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
+import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -56,7 +57,7 @@ Meteor.methods({
 			records = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
 		}
 
-		const messages = records.map((record) => RocketChat.composeMessageObjectWithUser(record, fromUserId));
+		const messages = records.map((record) => composeMessageObjectWithUser(record, fromUserId));
 
 		if (unreads) {
 			let unreadNotLoaded = 0;

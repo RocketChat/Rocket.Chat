@@ -4,6 +4,7 @@ import { Messages } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import moment from 'moment';
+import { updateMessage } from '../functions';
 
 Meteor.methods({
 	updateMessage(message) {
@@ -55,6 +56,6 @@ Meteor.methods({
 
 		message.u = originalMessage.u;
 
-		return RocketChat.updateMessage(message, Meteor.user(), originalMessage);
+		return updateMessage(message, Meteor.user(), originalMessage);
 	},
 });

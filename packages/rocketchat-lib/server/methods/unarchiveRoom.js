@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { Rooms } from 'meteor/rocketchat:models';
+import { unarchiveRoom } from '../functions';
 
 Meteor.methods({
 	unarchiveRoom(rid) {
@@ -22,6 +23,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'unarchiveRoom' });
 		}
 
-		return RocketChat.unarchiveRoom(rid);
+		return unarchiveRoom(rid);
 	},
 });

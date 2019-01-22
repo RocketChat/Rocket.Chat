@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Rooms } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { archiveRoom } from '../functions';
 
 Meteor.methods({
 	archiveRoom(rid) {
@@ -26,6 +27,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-direct-message-room', 'Direct Messages can not be archived', { method: 'archiveRoom' });
 		}
 
-		return RocketChat.archiveRoom(rid);
+		return archiveRoom(rid);
 	},
 });

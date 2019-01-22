@@ -3,6 +3,7 @@ import { Users, Subscriptions } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { Notifications } from 'meteor/rocketchat:notifications';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { RateLimiter } from '../lib';
 import s from 'underscore.string';
 
 const _setRealName = function(userId, name) {
@@ -35,7 +36,7 @@ const _setRealName = function(userId, name) {
 	return user;
 };
 
-export const setRealName = RocketChat.RateLimiter.limitFunction(_setRealName, 1, 60000, {
+export const setRealName = RateLimiter.limitFunction(_setRealName, 1, 60000, {
 	0() { return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others names, so don't limit those
 });
 

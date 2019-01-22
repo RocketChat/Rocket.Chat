@@ -3,6 +3,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import IMAP from 'imap';
 import POP3 from 'poplib';
 import { simpleParser } from 'mailparser';
+import { processDirectEmail } from '.';
 
 export class IMAPIntercepter {
 	constructor() {
@@ -128,7 +129,7 @@ export class IMAPIntercepter {
 								if (err) { console.log(`Mark deleted error: ${ err }`); }
 							});
 						}
-						RocketChat.processDirectEmail(email);
+						processDirectEmail(email);
 					}));
 				}));
 				f.once('error', (err) => {
@@ -232,7 +233,7 @@ export class POP3Intercepter {
 			body: mail.text,
 		};
 
-		RocketChat.processDirectEmail(email);
+		processDirectEmail(email);
 	}
 }
 

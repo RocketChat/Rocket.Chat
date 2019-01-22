@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { hasPermission, hasRole, getUsersInRole } from 'meteor/rocketchat:authorization';
 import { Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { removeUserFromRoom } from '../functions';
 
 Meteor.methods({
 	leaveRoom(rid) {
@@ -34,6 +35,6 @@ Meteor.methods({
 			}
 		}
 
-		return RocketChat.removeUserFromRoom(rid, user);
+		return removeUserFromRoom(rid, user);
 	},
 });

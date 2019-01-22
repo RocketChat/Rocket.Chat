@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { settings } from 'meteor/rocketchat:settings';
 import { Messages } from 'meteor/rocketchat:models';
+import { deleteMessage } from '../functions';
 import moment from 'moment';
 
 Meteor.methods({
@@ -55,6 +56,6 @@ Meteor.methods({
 				});
 			}
 		}
-		return RocketChat.deleteMessage(originalMessage, Meteor.user());
+		return deleteMessage(originalMessage, Meteor.user());
 	},
 });

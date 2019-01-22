@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { settings } from 'meteor/rocketchat:settings';
 import { Users } from 'meteor/rocketchat:models';
+import { deleteUser } from '../functions';
 import s from 'underscore.string';
 
 Meteor.methods({
@@ -35,7 +36,7 @@ Meteor.methods({
 		}
 
 		Meteor.defer(function() {
-			RocketChat.deleteUser(userId);
+			deleteUser(userId);
 		});
 
 		return true;

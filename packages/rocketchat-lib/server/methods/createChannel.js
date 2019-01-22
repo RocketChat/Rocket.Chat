@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { createRoom } from '../functions';
 
 Meteor.methods({
 	createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
@@ -14,6 +15,6 @@ Meteor.methods({
 		if (!hasPermission(Meteor.userId(), 'create-c')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
-		return RocketChat.createRoom('c', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+		return createRoom('c', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
 	},
 });

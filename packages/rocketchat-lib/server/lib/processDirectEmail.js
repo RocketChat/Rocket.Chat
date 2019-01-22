@@ -3,9 +3,10 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Rooms, Messages, Users, Subscriptions } from 'meteor/rocketchat:models';
 import { metrics } from 'meteor/rocketchat:metrics';
 import { EmailReplyParser as reply } from 'emailreplyparser';
+import { sendMessage as _sendMessage } from '../functions';
 import moment from 'moment';
 
-RocketChat.processDirectEmail = function(email) {
+export const processDirectEmail = function(email) {
 	function sendMessage(email) {
 		const message = {
 			ts: new Date(email.headers.date),
@@ -95,7 +96,7 @@ RocketChat.processDirectEmail = function(email) {
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 
-		return RocketChat.sendMessage(user, message, room);
+		return _sendMessage(user, message, room);
 	}
 
 	// Extract/parse reply from email body
@@ -120,3 +121,5 @@ RocketChat.processDirectEmail = function(email) {
 		console.log('Invalid Email....If not. Please report it.');
 	}
 };
+
+RocketChat.processDirectEmail = processDirectEmail;
