@@ -49,8 +49,7 @@ Package.onUse(function(api) {
 	api.use('konecty:multiple-instances-status');
 	api.use('rocketchat:file');
 	api.use('rocketchat:file-upload');
-	api.use('rocketchat:push');
-	api.use('rocketchat:push-notifications', { unordered: true });
+	api.use('rocketchat:push-notifications');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -111,7 +110,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/archiveRoom.js', 'server');
 	api.addFiles('server/functions/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
-	api.addFiles('server/functions/composeMessageObjectWithUser.js', 'server');
+	api.addFiles('server/functions/composeMessageObjectWithUser_import.js', 'server');
 	api.addFiles('server/functions/createRoom.js', 'server');
 	api.addFiles('server/functions/cleanRoomHistory.js', 'server');
 	api.addFiles('server/functions/deleteMessage.js', 'server');
@@ -137,7 +136,7 @@ Package.onUse(function(api) {
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');
-	api.addFiles('server/lib/PushNotification.js', 'server');
+	api.addFiles('server/lib/PushNotification_import.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/interceptDirectReplyEmails.js', 'server');
 	api.addFiles('server/lib/loginErrorMessageOverride.js', 'server');

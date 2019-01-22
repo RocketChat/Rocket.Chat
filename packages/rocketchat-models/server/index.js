@@ -14,6 +14,8 @@ import Statistics from './models/Statistics';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
+import Integrations from './models/Integrations';
+import IntegrationHistory from './models/IntegrationHistory';
 
 export {
 	Base,
@@ -32,4 +34,6 @@ export {
 	Permissions,
 	Roles,
 	CustomSounds,
+	Integrations,
+	IntegrationHistory,
 };

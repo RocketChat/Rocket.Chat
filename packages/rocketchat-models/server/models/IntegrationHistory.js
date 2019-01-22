@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from './_Base';
 
-RocketChat.models.IntegrationHistory = new class IntegrationHistory extends RocketChat.models._Base {
+export class IntegrationHistory extends Base {
 	constructor() {
 		super('integration_history');
 	}
@@ -37,4 +37,7 @@ RocketChat.models.IntegrationHistory = new class IntegrationHistory extends Rock
 	removeByIntegrationId(integrationId) {
 		return this.remove({ 'integration._id': integrationId });
 	}
-};
+}
+
+export default new IntegrationHistory();
+
