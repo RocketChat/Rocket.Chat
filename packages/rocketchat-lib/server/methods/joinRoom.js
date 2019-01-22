@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { hasPermission, canAccessRoom } from 'meteor/rocketchat:authorization';
+import { Rooms } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	joinRoom(rid, code) {
@@ -9,7 +11,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
@@ -24,10 +26,10 @@ Meteor.methods({
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 			}
 		} else {
-			if (!RocketChat.authz.canAccessRoom(room, Meteor.user())) {
+			if (!canAccessRoom(room, Meteor.user())) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 			}
-			if ((room.joinCodeRequired === true) && (code !== room.joinCode) && !RocketChat.authz.hasPermission(Meteor.userId(), 'join-without-join-code')) {
+			if ((room.joinCodeRequired === true) && (code !== room.joinCode) && !hasPermission(Meteor.userId(), 'join-without-join-code')) {
 				throw new Meteor.Error('error-code-invalid', 'Invalid Room Password', { method: 'joinRoom' });
 			}
 		}

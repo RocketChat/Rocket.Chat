@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Messages } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import moment from 'moment';
 
 Meteor.methods({
@@ -11,7 +14,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 		}
 
-		const originalMessage = RocketChat.models.Messages.findOneById(message._id);
+		const originalMessage = Messages.findOneById(message._id);
 
 		if (!originalMessage || !originalMessage._id) {
 			return;
@@ -19,15 +22,15 @@ Meteor.methods({
 		if (originalMessage.msg === message.msg) {
 			return;
 		}
-		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'edit-message', message.rid);
-		const editAllowed = RocketChat.settings.get('Message_AllowEditing');
+		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', message.rid);
+		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = originalMessage.u && originalMessage.u._id === Meteor.userId();
 
-		if (!hasPermission && (!editAllowed || !editOwn)) {
+		if (!_hasPermission && (!editAllowed || !editOwn)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'updateMessage', action: 'Message_editing' });
 		}
 
-		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
+		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 			let currentTsDiff;
 			let msgTs;

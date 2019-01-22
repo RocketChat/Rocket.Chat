@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	setRealName(name) {
@@ -10,7 +11,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setRealName' });
 		}
 
-		if (!RocketChat.settings.get('Accounts_AllowRealNameChange')) {
+		if (!settings.get('Accounts_AllowRealNameChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setRealName' });
 		}
 

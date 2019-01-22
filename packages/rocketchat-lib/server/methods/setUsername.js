@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -13,7 +16,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (user.username && !RocketChat.settings.get('Accounts_AllowUsernameChange')) {
+		if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 		}
 
@@ -23,7 +26,7 @@ Meteor.methods({
 
 		let nameValidation;
 		try {
-			nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+			nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 		} catch (error) {
 			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 		}
@@ -43,7 +46,7 @@ Meteor.methods({
 		if (!user.username) {
 			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
 			Meteor.defer(function() {
-				return RocketChat.callbacks.run('afterCreateUser', RocketChat.models.Users.findOneById(user._id));
+				return callbacks.run('afterCreateUser', Users.findOneById(user._id));
 			});
 		}
 

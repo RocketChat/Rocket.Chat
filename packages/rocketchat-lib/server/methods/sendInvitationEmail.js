@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import * as Mailer from 'meteor/rocketchat:mailer';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
 
 let html = '';
 Meteor.startup(() => {
@@ -17,20 +19,20 @@ Meteor.methods({
 				method: 'sendInvitationEmail',
 			});
 		}
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'bulk-register-user')) {
+		if (!hasPermission(Meteor.userId(), 'bulk-register-user')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'sendInvitationEmail',
 			});
 		}
 		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
-		const subject = RocketChat.settings.get('Invitation_Subject');
+		const subject = settings.get('Invitation_Subject');
 
 		return validEmails.filter((email) => {
 			try {
 				return Mailer.send({
 					to: email,
-					from: RocketChat.settings.get('From_Email'),
+					from: settings.get('From_Email'),
 					subject,
 					html,
 					data: {
