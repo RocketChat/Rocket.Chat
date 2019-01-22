@@ -150,8 +150,6 @@ Package.onUse(function(api) {
 
 	// SERVER MODELS
 	api.addFiles('server/models/index.js', 'server');
-	api.addFiles('server/models/Permissions.js', 'server');
-	api.addFiles('server/models/Roles.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
 	api.addFiles('server/oauth/facebook.js', 'server');
