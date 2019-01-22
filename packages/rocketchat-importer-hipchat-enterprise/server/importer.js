@@ -207,15 +207,18 @@ export class HipChatEnterpriseImporter extends Base {
 		this.logger.debug(`preparing room with ${ file.length } messages `);
 		for (const m of file) {
 			if (m.PrivateUserMessage) {
+				const newId = `hipchatenterprise-private-${ m.PrivateUserMessage.id }`;
 				msgs.push({
 					type: 'user',
-					id: `hipchatenterprise-${ m.PrivateUserMessage.id }`,
+					id: newId,
 					senderId: m.PrivateUserMessage.sender.id,
 					receiverId: m.PrivateUserMessage.receiver.id,
 					text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
 					ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
 					attachment: m.PrivateUserMessage.attachment,
 					attachment_path: m.PrivateUserMessage.attachment_path,
+					skip: this._checkIfMessageExists(newId),
+					skipAttachment: m.PrivateUserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : false,
 				});
 			}
 
@@ -232,6 +235,10 @@ export class HipChatEnterpriseImporter extends Base {
 		return msgs.length;
 	}
 
+	_checkIfMessageExists(messageId) {
+		return Boolean(RocketChat.models.Messages.findOne({ _id: messageId }, { fields: { _id : 1 }, limit: 1 }));
+	}
+
 	async prepareRoomMessagesFile(file, roomIdentifier, id, index) {
 		let roomMsgs = [];
 		this.logger.debug(`preparing room with ${ file.length } messages `);
@@ -239,35 +246,43 @@ export class HipChatEnterpriseImporter extends Base {
 
 		for (const m of file) {
 			if (m.UserMessage) {
+				const newId = `hipchatenterprise-${ id }-user-${ m.UserMessage.id }`;
 				roomMsgs.push({
 					type: 'user',
-					id: `hipchatenterprise-${ id }-${ m.UserMessage.id }`,
+					id: newId,
 					userId: m.UserMessage.sender.id,
 					text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
 					ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
 					attachment: m.UserMessage.attachment,
 					attachment_path: m.UserMessage.attachment_path,
+					skip: this._checkIfMessageExists(newId),
+					skipAttachment: m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : false,
 				});
 			} else if (m.NotificationMessage) {
 				const text = m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`;
+				const newId = `hipchatenterprise-${ id }-notif-${ m.NotificationMessage.id }`;
 
 				roomMsgs.push({
 					type: 'user',
-					id: `hipchatenterprise-${ id }-${ m.NotificationMessage.id }`,
+					id: newId,
 					userId: 'rocket.cat',
 					alias: m.NotificationMessage.sender,
 					text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
 					ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
 					attachment: m.NotificationMessage.attachment,
 					attachment_path: m.NotificationMessage.attachment_path,
+					skip: this._checkIfMessageExists(newId),
+					skipAttachment: m.NotificationMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : false,
 				});
 			} else if (m.TopicRoomMessage) {
+				const newId = `hipchatenterprise-${ id }-topic-${ m.TopicRoomMessage.id }`;
 				roomMsgs.push({
 					type: 'topic',
-					id: `hipchatenterprise-${ id }-${ m.TopicRoomMessage.id }`,
+					id: newId,
 					userId: m.TopicRoomMessage.sender.id,
 					ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
 					text: m.TopicRoomMessage.message,
+					skip: this._checkIfMessageExists(newId),
 				});
 			} else {
 				this.logger.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
@@ -485,7 +500,7 @@ export class HipChatEnterpriseImporter extends Base {
 		Meteor.runAsUser(existingUserId, () => {
 			RocketChat.models.Users.update({ _id: existingUserId }, { $addToSet: { importIds: userToImport.id } });
 
-			Meteor.call('setUsername', userToImport.username, { joinDefaultChannelsSilenced: true });
+			// Meteor.call('setUsername', userToImport.username, { joinDefaultChannelsSilenced: true });
 
 			// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
 			RocketChat.models.Users.setName(existingUserId, userToImport.name);
@@ -525,13 +540,16 @@ export class HipChatEnterpriseImporter extends Base {
 					this.addUserError(userToImport.id, e);
 				}
 			} else {
-				const user = { email: userToImport.email, password: Random.id() };
+				const user = { email: userToImport.email, password: Random.id(), username: userToImport.username };
 				// if (u.is_email_taken && u.email) {
 				// 	user.email = user.email.replace('@', `+rocket.chat_${ Math.floor(Math.random() * 10000).toString() }@`);
 				// }
 				if (!user.email) {
 					delete user.email;
-					user.username = userToImport.username;
+					// user.username = userToImport.username;
+				}
+				if (!user.username) {
+					delete user.username;
 				}
 
 				try {
@@ -768,7 +786,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	_importAttachment(msg, room, sender) {
-		if (msg.attachment_path) {
+		if (msg.attachment_path && !msg.skipAttachment) {
 			const details = {
 				message_id: `${ msg.id }-attachment`,
 				name: msg.attachment.name,
@@ -795,17 +813,19 @@ export class HipChatEnterpriseImporter extends Base {
 
 				switch (msg.type) {
 					case 'user':
-						RocketChat.sendMessage(creator, {
-							_id: msg.id,
-							ts: msg.ts,
-							msg: msg.text,
-							rid: room._id,
-							alias: msg.alias,
-							u: {
-								_id: creator._id,
-								username: creator.username,
-							},
-						}, room, true);
+						if (!msg.skip) {
+							RocketChat.insertMessage(creator, {
+								_id: msg.id,
+								ts: msg.ts,
+								msg: msg.text,
+								rid: room._id,
+								alias: msg.alias,
+								u: {
+									_id: creator._id,
+									username: creator.username,
+								},
+							}, room, false);
+						}
 						break;
 					case 'topic':
 						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
@@ -866,6 +886,10 @@ export class HipChatEnterpriseImporter extends Base {
 			importer: this.name,
 			type: 'user-messages',
 		}, { _id : true }).fetch();
+
+		// HipChat duplicates direct messages (one for each user)
+		// This object will keep track of messages that have already been imported so it doesn't try to insert them twice
+		const importedMessages = {};
 
 		messageListIds.forEach((item) => {
 			const list = this.collection.findOneById(item._id);
@@ -940,17 +964,26 @@ export class HipChatEnterpriseImporter extends Base {
 
 				try {
 					Meteor.runAsUser(sender._id, () => {
+						if (importedMessages[msg.id] !== undefined) {
+							return;
+						}
+						importedMessages[msg.id] = true;
+
 						if (msg.attachment_path) {
-							const details = {
-								message_id: `${ msg.id }-attachment`,
-								name: msg.attachment.name,
-								size: msg.attachment.size,
-								userId: sender._id,
-								rid: room._id,
-							};
-							this.uploadFile(details, msg.attachment.url, sender, room, msg.ts);
-						} else {
-							RocketChat.sendMessage(sender, {
+							if (!msg.skipAttachment) {
+								const details = {
+									message_id: `${ msg.id }-attachment`,
+									name: msg.attachment.name,
+									size: msg.attachment.size,
+									userId: sender._id,
+									rid: room._id,
+								};
+								this.uploadFile(details, msg.attachment.url, sender, room, msg.ts);
+							}
+						}
+
+						if (!msg.skip) {
+							RocketChat.insertMessage(sender, {
 								_id: msg.id,
 								ts: msg.ts,
 								msg: msg.text,
@@ -959,7 +992,7 @@ export class HipChatEnterpriseImporter extends Base {
 									_id: sender._id,
 									username: sender.username,
 								},
-							}, room, true);
+							}, room, false);
 						}
 					});
 				} catch (e) {
