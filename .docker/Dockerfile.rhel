@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/rhscl/nodejs-8-rhel7
 
-ENV RC_VERSION 0.74.0-rc.0
+ENV RC_VERSION 0.74.0-rc.1
 
 MAINTAINER buildmaster@rocket.chat
 
