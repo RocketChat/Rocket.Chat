@@ -43,6 +43,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 	api.use('rocketchat:mailer');
 	api.use('rocketchat:settings');
+	api.use('rocketchat:sandstorm');
 	api.use('rocketchat:authorization');
 	api.use('mizzao:timesync');
 	api.use('rocketchat:custom-oauth');
@@ -146,6 +147,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
 	api.addFiles('server/lib/passwordPolicy.js', 'server');
 	api.addFiles('server/lib/migrations.js', 'server');
+	api.addFiles('server/lib/sandstorm.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/index.js', 'server');
@@ -238,6 +240,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/tooltip.js', 'client');
 	api.addFiles('client/lib/EmojiPicker.js', 'client');
 	api.addFiles('client/lib/ui-buttons.js', 'client');
+	api.addFiles('client/lib/sandstorm.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');

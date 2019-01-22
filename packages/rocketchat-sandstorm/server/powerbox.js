@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Sandstorm } from './lib';
 import { getHttpBridge, waitPromise } from './lib';
 
-RocketChat.Sandstorm.offerUiView = function() {};
+Sandstorm.offerUiView = function() {};
 
 if (process.env.SANDSTORM === '1') {
 	const Capnp = require('capnp');
 	const Powerbox = Capnp.importSystem('sandstorm/powerbox.capnp');
 	const Grain = Capnp.importSystem('sandstorm/grain.capnp');
 
-	RocketChat.Sandstorm.offerUiView = function(token, serializedDescriptor, sessionId) {
+	Sandstorm.offerUiView = function(token, serializedDescriptor, sessionId) {
 		const httpBridge = getHttpBridge();
 		const session = httpBridge.getSessionContext(sessionId).context;
 		const { api } = httpBridge.getSandstormApi(sessionId);
@@ -43,7 +43,7 @@ if (process.env.SANDSTORM === '1') {
 			};
 		},
 		sandstormOffer(token, serializedDescriptor) {
-			RocketChat.Sandstorm.offerUiView(token, serializedDescriptor,
+			Sandstorm.offerUiView(token, serializedDescriptor,
 				this.connection.sandstormSessionId());
 		},
 	});
