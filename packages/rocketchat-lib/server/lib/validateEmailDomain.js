@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
 import _ from 'underscore';
 import dns from 'dns';
 
@@ -7,16 +9,16 @@ let emailDomainWhiteList = [];
 let useDefaultBlackList = false;
 let useDNSDomainCheck = false;
 
-RocketChat.settings.get('Accounts_BlockedDomainsList', function(key, value) {
+settings.get('Accounts_BlockedDomainsList', function(key, value) {
 	emailDomainBlackList = _.map(value.split(','), (domain) => domain.trim());
 });
-RocketChat.settings.get('Accounts_AllowedDomainsList', function(key, value) {
+settings.get('Accounts_AllowedDomainsList', function(key, value) {
 	emailDomainWhiteList = _.map(value.split(','), (domain) => domain.trim());
 });
-RocketChat.settings.get('Accounts_UseDefaultBlockedDomainsList', function(key, value) {
+settings.get('Accounts_UseDefaultBlockedDomainsList', function(key, value) {
 	useDefaultBlackList = value;
 });
-RocketChat.settings.get('Accounts_UseDNSDomainCheck', function(key, value) {
+settings.get('Accounts_UseDNSDomainCheck', function(key, value) {
 	useDNSDomainCheck = value;
 });
 
@@ -30,7 +32,7 @@ RocketChat.validateEmailDomain = function(email) {
 
 	// if not in whitelist
 	if (emailDomainWhiteList.indexOf(emailDomain) === -1) {
-		if (emailDomainBlackList.indexOf(emailDomain) !== -1 || (useDefaultBlackList && RocketChat.emailDomainDefaultBlackList.indexOf(emailDomain) !== -1)) {
+		if (emailDomainBlackList.indexOf(emailDomain) !== -1 || (useDefaultBlackList && emailDomainDefaultBlackList.indexOf(emailDomain) !== -1)) {
 			throw new Meteor.Error('error-email-domain-blacklisted', 'The email domain is blacklisted', { function: 'RocketChat.validateEmailDomain' });
 		}
 	}
