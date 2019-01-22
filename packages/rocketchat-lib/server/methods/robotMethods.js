@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import * as Models from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -11,19 +13,19 @@ Meteor.methods({
 				method: 'robot.modelCall',
 			});
 		}
-		if (!RocketChat.authz.hasRole(Meteor.userId(), 'robot')) {
+		if (!hasRole(Meteor.userId(), 'robot')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'robot.modelCall',
 			});
 		}
-		const m = RocketChat.models[model];
+		const m = Models[model];
 
 		if (!m || !_.isFunction(m[method])) {
 			throw new Meteor.Error('error-invalid-method', 'Invalid method', {
 				method: 'robot.modelCall',
 			});
 		}
-		const cursor = RocketChat.models[model][method].apply(RocketChat.models[model], args);
+		const cursor = Models[model][method].apply(Models[model], args);
 		return cursor && cursor.fetch ? cursor.fetch() : cursor;
 	},
 });
