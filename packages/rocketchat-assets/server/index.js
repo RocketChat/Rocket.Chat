@@ -1,1 +1,1 @@
-import './assets';
+export { Assets } from './assets';

@@ -10,7 +10,10 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'webapp',
 		'rocketchat:file',
-		'rocketchat:lib',
+		'rocketchat:authorization',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:utils',
 		'webapp-hashing',
 	]);
 
