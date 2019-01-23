@@ -1,17 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
-		const piwikUrl = RocketChat.settings.get('PiwikAnalytics_enabled') && RocketChat.settings.get('PiwikAnalytics_url');
-		const piwikSiteId = piwikUrl && RocketChat.settings.get('PiwikAnalytics_siteId');
-		const piwikPrependDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_prependDomain');
-		const piwikCookieDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_cookieDomain');
-		const piwikDomains = piwikUrl && RocketChat.settings.get('PiwikAnalytics_domains');
-		const piwikAdditionalTracker = piwikUrl && RocketChat.settings.get('PiwikAdditionalTrackers');
-		const googleId = RocketChat.settings.get('GoogleAnalytics_enabled') && RocketChat.settings.get('GoogleAnalytics_ID');
+		const piwikUrl = settings.get('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url');
+		const piwikSiteId = piwikUrl && settings.get('PiwikAnalytics_siteId');
+		const piwikPrependDomain = piwikUrl && settings.get('PiwikAnalytics_prependDomain');
+		const piwikCookieDomain = piwikUrl && settings.get('PiwikAnalytics_cookieDomain');
+		const piwikDomains = piwikUrl && settings.get('PiwikAnalytics_domains');
+		const piwikAdditionalTracker = piwikUrl && settings.get('PiwikAdditionalTrackers');
+		const googleId = settings.get('GoogleAnalytics_enabled') && settings.get('GoogleAnalytics_ID');
 		if (piwikSiteId || googleId) {
 			c.stop();
 
