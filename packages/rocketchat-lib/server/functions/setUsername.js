@@ -92,3 +92,4 @@ export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
 });
 
 RocketChat.setUsername = setUsername;
+RocketChat._setUsername = _setUsername;
