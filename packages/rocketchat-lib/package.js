@@ -54,6 +54,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:push-notifications');
 	api.use('rocketchat:action-links');
 	api.use('rocketchat:assets');
+	api.use('rocketchat:markdown');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -97,6 +98,7 @@ Package.onUse(function(api) {
 	api.addFiles('lib/info.js');
 	api.addFiles('lib/authorization.js');
 	api.addFiles('lib/actionLinks.js');
+	api.addFiles('lib/Markdown.js');
 
 	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
