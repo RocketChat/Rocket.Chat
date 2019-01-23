@@ -53,6 +53,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:file-upload');
 	api.use('rocketchat:push-notifications');
 	api.use('rocketchat:action-links');
+	api.use('rocketchat:assets');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -152,6 +153,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/passwordPolicy.js', 'server');
 	api.addFiles('server/lib/migrations.js', 'server');
 	api.addFiles('server/lib/sandstorm.js', 'server');
+	api.addFiles('server/lib/Assets.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/index.js', 'server');
