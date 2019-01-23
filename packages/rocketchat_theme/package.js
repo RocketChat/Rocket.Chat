@@ -12,7 +12,6 @@ Package.onUse(function(api) {
 		'webapp-hashing',
 		'rocketchat:settings',
 		'rocketchat:logger',
-		'rocketchat:assets',
 		'templating',
 		'juliancwirko:postcss',
 	]);
