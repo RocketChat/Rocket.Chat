@@ -45,6 +45,7 @@ function _OAuthServicesUpdate() {
 				data.identityTokenSentVia = RocketChat.settings.get(`${ service.key }-identity_token_sent_via`);
 				data.usernameField = RocketChat.settings.get(`${ service.key }-username_field`);
 				data.mergeUsers = RocketChat.settings.get(`${ service.key }-merge_users`);
+				data.useChromeCustomTab = RocketChat.settings.get(`${ service.key }-use_chrome_custom_tab`);
 				new CustomOAuth(serviceName.toLowerCase(), {
 					serverURL: data.serverURL,
 					tokenPath: data.tokenPath,
@@ -56,6 +57,7 @@ function _OAuthServicesUpdate() {
 					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
 					mergeUsers: data.mergeUsers,
+					useChromeCustomTab: data.useChromeCustomTab,
 				});
 			}
 			if (serviceName === 'Facebook') {

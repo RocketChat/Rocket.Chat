@@ -35,4 +35,5 @@ Meteor.methods({
 		RocketChat.settings.add(`Accounts_OAuth_Custom-${ name }-button_color`           , '#13679A'         , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Button_Color', persistent: true });
 		RocketChat.settings.add(`Accounts_OAuth_Custom-${ name }-username_field`         , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Username_Field', persistent: true });
 		RocketChat.settings.add(`Accounts_OAuth_Custom-${ name }-merge_users`            , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Users', persistent: true });
+		RocketChat.settings.add(`Accounts_OAuth_Custom-${ name }-use_chrome_custom_tab`  , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Use_Chrome_Custom_Tab', persistent: true });
 	} });

@@ -15,6 +15,7 @@ const config = {
 	tokenSentVia: 'payload',
 	usernameField: 'preferred_username',
 	mergeUsers: true,
+	useChromeCustomTab: false,
 	addAutopublishFields: {
 		forLoggedInUser: ['services.drupal'],
 		forOtherUsers: ['services.drupal.name'],

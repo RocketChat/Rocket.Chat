@@ -65,6 +65,7 @@ export class CustomOAuth {
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+		this.useChromeCustomTab = options.useChromeCustomTab;
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
