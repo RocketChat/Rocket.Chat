@@ -1,3 +1,3 @@
-import { Assets } from 'meteor/rocketchat:assets';
+import { RocketChatAssets } from 'meteor/rocketchat:assets';
 
-RocketChat.Assets = Assets;
+RocketChat.Assets = RocketChatAssets;

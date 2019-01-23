@@ -186,7 +186,7 @@ const assets = {
 	},
 };
 
-export const Assets = new (class {
+export const RocketChatAssets = new (class {
 	get mime() {
 		return mime;
 	}
