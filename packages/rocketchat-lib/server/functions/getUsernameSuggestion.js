@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { slugify } from 'meteor/yasaricli:slugify';
+import { Users } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 
 function slug(text) {
 	return slugify(text, '.').replace(/[^0-9a-z-_.]/g, '');
@@ -14,13 +16,13 @@ function usernameIsAvaliable(username) {
 		return false;
 	}
 
-	return !RocketChat.models.Users.findOneByUsername(username);
+	return !Users.findOneByUsername(username);
 }
 
 
-const name = (username) => (RocketChat.settings.get('UTF8_Names_Slugify') ? slug(username) : username);
+const name = (username) => (settings.get('UTF8_Names_Slugify') ? slug(username) : username);
 
-function generateSuggestion(user) {
+export function generateUsernameSuggestion(user) {
 	let usernames = [];
 
 	if (Meteor.settings.public.sandstorm) {
@@ -67,9 +69,9 @@ function generateSuggestion(user) {
 		}
 	}
 
-	usernames.push(RocketChat.settings.get('Accounts_DefaultUsernamePrefixSuggestion'));
+	usernames.push(settings.get('Accounts_DefaultUsernamePrefixSuggestion'));
 
-	let index = RocketChat.models.Users.find({ username: new RegExp(`^${ usernames[0] }-[0-9]+`) }).count();
+	let index = Users.find({ username: new RegExp(`^${ usernames[0] }-[0-9]+`) }).count();
 	const username = '';
 	while (!username) {
 		if (usernameIsAvaliable(`${ usernames[0] }-${ index }`)) {
@@ -79,18 +81,4 @@ function generateSuggestion(user) {
 	}
 }
 
-RocketChat.generateUsernameSuggestion = generateSuggestion;
-
-Meteor.methods({
-	getUsernameSuggestion() {
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'getUsernameSuggestion',
-			});
-		}
-
-		const user = Meteor.user();
-
-		return generateSuggestion(user);
-	},
-});
+RocketChat.generateUsernameSuggestion = generateUsernameSuggestion;

@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 	api.use('mongo');
 	api.use('oauth');
 	api.use('matb33:collection-hooks');
+	api.use('yasaricli:slugify');
 	api.use('service-configuration');
 	api.use('check');
 	api.use('rocketchat:utils');
@@ -133,6 +134,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
 	api.addFiles('server/functions/authorization.js', 'server');
+	api.addFiles('server/functions/getUsernameSuggestion.js', 'server');
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');
@@ -209,6 +211,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
 	api.addFiles('server/methods/updateMessage.js', 'server');
+	api.addFiles('server/methods/getUsernameSuggestion.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');
@@ -275,7 +278,7 @@ Package.onUse(function(api) {
 	api.export('openRoom', 'client');
 
 	// exports
-	api.mainModule('server/lib/index.js', 'server');
+	api.mainModule('server/index.js', 'server');
 	api.mainModule('client/lib/index.js', 'client');
 
 	api.imply('tap:i18n');
