@@ -1,9 +1,10 @@
 import { SHA256 } from 'meteor/sha';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import speakeasy from 'speakeasy';
 
-RocketChat.TOTP = {
+export const TOTP = {
 	generateSecret() {
 		return speakeasy.generateSecret();
 	},
@@ -25,14 +26,14 @@ RocketChat.TOTP = {
 				backupTokens.splice(usedCode, 1);
 
 				// mark the code as used (remove it from the list)
-				RocketChat.models.Users.update2FABackupCodesByUserId(userId, backupTokens);
+				Users.update2FABackupCodesByUserId(userId, backupTokens);
 				return true;
 			}
 
 			return false;
 		}
 
-		const maxDelta = RocketChat.settings.get('Accounts_TwoFactorAuthentication_MaxDelta');
+		const maxDelta = settings.get('Accounts_TwoFactorAuthentication_MaxDelta');
 		if (maxDelta) {
 			const verifiedDelta = speakeasy.totp.verifyDelta({
 				secret,
