@@ -8,42 +8,7 @@ import { t, roomTypes } from 'meteor/rocketchat:utils';
 import { settings } from 'meteor/rocketchat:settings';
 import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 
-function directorySearch() {
-	const searchConfig = {
-		text: this.searchText.get(),
-		type: this.searchType.get(),
-		sortBy: this.searchSortBy.get(),
-		sortDirection: this.sortDirection.get(),
-		limit: this.limit.get(),
-		page: this.page.get(),
-	};
-
-	if (this.end.get() || this.loading) {
-		return;
-	}
-
-	this.loading = true;
-
-	this.isLoading.set(true);
-
-	doDirectorySearch(searchConfig, (result) => { // eslint-disable-line no-use-before-define
-		this.loading = false;
-		this.isLoading.set(false);
-		this.end.set(!result);
-
-		if (!Array.isArray(result)) {
-			result = [];
-		}
-
-		if (this.page.get() > 0) {
-			return this.results.set([...this.results.get(), ...result]);
-		}
-
-		return this.results.set(result);
-	});
-}
-
-function doDirectorySearch(config, cb) {
+function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
 		cb(result && result.results && result.results.length && result.results.map((result) => {
 			if (config.type === 'channels') {
@@ -62,16 +27,10 @@ function doDirectorySearch(config, cb) {
 				return {
 					name: result.name,
 					username: result.username,
+					// If there is no email address (probably only rocket.cat) show the username)
+					email: (result.emails && result.emails[0] && result.emails[0].address) || result.username,
 					createdAt: timeAgo(result.createdAt, t),
-				};
-			}
-
-			if (config.type === 'federated_users') {
-				return {
-					name: result.name,
-					username: result.username,
-					createdAt: timeAgo(result.createdAt, t),
-					peer: result.federation.peer,
+					domain: result.federation && result.federation.peer,
 				};
 			}
 			return null;
@@ -80,11 +39,11 @@ function doDirectorySearch(config, cb) {
 }
 
 Template.directory.helpers({
-	tAddUser() {
-		return t('Add_user');
-	},
 	searchText() {
 		return Template.instance().searchText.get();
+	},
+	searchWorkspace() {
+		return Template.instance().searchWorkspace.get();
 	},
 	showLastMessage() {
 		return settings.get('Store_Last_Message');
@@ -117,41 +76,27 @@ Template.directory.helpers({
 			end,
 			page,
 		} = Template.instance();
-
-		const tabDefinitions = {
-			channels: {
-				label: t('Channels'),
-				value: 'channels',
-				condition() {
-					return true;
-				},
-			},
-			users: {
-				label: t('Users'),
-				value: 'users',
-				condition() {
-					return true;
-				},
-			},
-			federated_users: {
-				label: t('Federated Users'),
-				value: 'federated_users',
-				condition() {
-					return true;
-				},
+		const channelsTab = {
+			label: t('Channels'),
+			value: 'channels',
+			condition() {
+				return true;
 			},
 		};
-
-		tabDefinitions[searchType.get() || 'channels'].active = true;
-
-		const tabs = [tabDefinitions.channels, tabDefinitions.users];
-
-		if (!!RocketChat.settings.get('FEDERATION_Enabled') === true) {
-			tabs.push(tabDefinitions.federated_users);
+		const usersTab = {
+			label: t('Users'),
+			value: 'users',
+			condition() {
+				return true;
+			},
+		};
+		if (searchType.get() === 'channels') {
+			channelsTab.active = true;
+		} else {
+			usersTab.active = true;
 		}
-
 		return {
-			tabs,
+			tabs: [channelsTab, usersTab],
 			onChange(value) {
 				results.set([]);
 				end.set(false);
@@ -168,18 +113,35 @@ Template.directory.helpers({
 		};
 	},
 	onTableItemClick() {
-		const { searchType } = Template.instance();
+		const instance = Template.instance();
+
+		const { searchType } = instance;
+
 		let type;
 		let routeConfig;
+
 		return function(item) {
-			if (searchType.get() === 'channels') {
-				type = 'c';
-				routeConfig = { name: item.name };
+			// This means we need to add this user locally first
+			if (item.remoteOnly) {
+				Meteor.call('federationAddUser', item.email, (error, federatedUser) => {
+					if (!federatedUser) { return; }
+
+					// Reload
+					instance.end.set(false);
+					directorySearch.call(instance);
+
+					roomTypes.openRouteLink('d', { name: item.username });
+				});
 			} else {
-				type = 'd';
-				routeConfig = { name: item.username };
+				if (searchType.get() === 'channels') {
+					type = 'c';
+					routeConfig = { name: item.name };
+				} else {
+					type = 'd';
+					routeConfig = { name: item.username };
+				}
+				roomTypes.openRouteLink(type, routeConfig);
 			}
-			roomTypes.openRouteLink(type, routeConfig);
 		};
 	},
 	isLoading() {
@@ -231,31 +193,77 @@ Template.directory.events({
 		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
 	}, 300),
-	'click .js-add'(e, instance) {
-		const email = $('[name=add-federated-user]').val();
-
-		$('[name=add-federated-user]').attr('disabled', true);
-		$('.js-add').attr('disabled', true);
-
-		Meteor.call('federationInviteUser', email, (error) => {
-			$('[name=add-federated-user]').val('');
-			$('[name=add-federated-user]').removeAttr('disabled');
-			$('.js-add').removeAttr('disabled');
-
-			if (error) {
-				return alert(error.reason);
-			}
-
-			// Reload
-			instance.end.set(false);
-			directorySearch.call(instance);
-		});
+	'change .js-workspace': (e, t) => {
+		t.end.set(false);
+		t.sortDirection.set('asc');
+		t.page.set(0);
+		t.searchWorkspace.set(e.target.value);
 	},
 });
 
 Template.directory.onRendered(function() {
+	function setResults(result) {
+		if (!Array.isArray(result)) {
+			result = [];
+		}
+
+		if (this.page.get() > 0) {
+			return this.results.set([...this.results.get(), ...result]);
+		}
+
+		return this.results.set(result);
+	}
+
 	Tracker.autorun(() => {
-		directorySearch.call(this);
+
+		const searchConfig = {
+			text: this.searchText.get(),
+			workspace: this.searchWorkspace.get(),
+			type: this.searchType.get(),
+			sortBy: this.searchSortBy.get(),
+			sortDirection: this.sortDirection.get(),
+			limit: this.limit.get(),
+			page: this.page.get(),
+		};
+
+		if (this.end.get() || this.loading) {
+			return;
+		}
+
+		this.loading = true;
+		this.isLoading.set(true);
+
+		directorySearch(searchConfig, (result) => {
+			this.loading = false;
+			this.isLoading.set(false);
+			this.end.set(!result);
+
+			// If there is no result, searching every workspace and
+			// the search text is an email address, try to find a federated user
+			if (!result && this.searchWorkspace.get() === 'all' && this.searchText.get().indexOf('@') !== -1) {
+				const email = this.searchText.get();
+
+				Meteor.call('federationSearchUser', email, (error, federatedUser) => {
+					if (!federatedUser) { return; }
+
+					const { user } = federatedUser;
+
+					// Add the federated user to the results
+					result = [{
+						remoteOnly: true,
+						name: user.name,
+						username: user.username,
+						email: user.username,
+						createdAt: timeAgo(user.createdAt, t),
+						domain: user.federation.peer,
+					}];
+
+					setResults.call(this, result);
+				});
+			}
+
+			setResults.call(this, result);
+		});
 	});
 });
 
@@ -270,6 +278,7 @@ Template.directory.onCreated(function() {
 		this.sortDirection = new ReactiveVar('asc');
 	}
 	this.searchText = new ReactiveVar('');
+	this.searchWorkspace = new ReactiveVar('local');
 	this.limit = new ReactiveVar(0);
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);

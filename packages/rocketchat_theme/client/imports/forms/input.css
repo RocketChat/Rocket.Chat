@@ -5,6 +5,10 @@
 
 	&__label {
 		cursor: pointer;
+
+		&&--inline-block {
+			display: inline-block;
+		}
 	}
 
 	&__title {
@@ -17,6 +21,10 @@
 		padding: 0.5rem 0;
 
 		color: var(--input-icon-color);
+
+		&--no-padding {
+			padding: 0;
+		}
 	}
 
 	&__icon {
@@ -119,6 +127,14 @@
 				border-color: var(--input-error-color);
 			}
 		}
+	}
+
+	&--size-one {
+		flex: 1 0 0;
+	}
+
+	&--size-six {
+		flex: 6 0 0;
 	}
 }
 

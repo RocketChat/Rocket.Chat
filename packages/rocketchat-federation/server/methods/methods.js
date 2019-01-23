@@ -1,1 +1,2 @@
-require('./federationInviteUser');
+require('./federationSearchUser');
+require('./federationAddUser');

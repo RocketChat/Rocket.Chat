@@ -25,10 +25,10 @@ const sortUsers = function(field, direction) {
 };
 
 Meteor.methods({
-	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
+	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
-		if (!['channels', 'users', 'federated_users'].includes(type)) {
+		if (!['channels', 'users'].includes(type)) {
 			return;
 		}
 
@@ -92,19 +92,19 @@ Meteor.methods({
 		let exceptions = [user.username];
 
 		// Get exceptions
-		if (type === 'federated_users') {
+		if (type === 'users' && workspace === 'all') {
 			const nonFederatedUsers = RocketChat.models.Users.find({
 				$or: [
 					{ federation: { $exists: false } },
-					{ 'federation.peer': Meteor.federationLocalIdentifier },
+					{ 'federation.domain': Meteor.federationLocalIdentifier },
 				],
 			}, { fields: { username: 1 } }).map((u) => u.username);
 
 			exceptions = exceptions.concat(nonFederatedUsers);
-		} else {
+		} else if (type === 'users' && workspace === 'local') {
 			const federatedUsers = RocketChat.models.Users.find({
 				federation: { $exists: true },
-				'federation.peer': { $ne: Meteor.federationLocalIdentifier },
+				'federation.domain': { $ne: Meteor.federationLocalIdentifier },
 			}, { fields: { username: 1 } }).map((u) => u.username);
 
 			exceptions = exceptions.concat(federatedUsers);

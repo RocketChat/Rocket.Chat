@@ -252,8 +252,6 @@ class PeerClient {
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
 
-		console.log(localPeerDomain);
-
 		RocketChat.models.FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
 	}
 

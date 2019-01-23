@@ -82,7 +82,7 @@ function setupFederation() {
 	} else {
 		// Add global information
 		Meteor.federationEnabled = true;
-		Meteor.federationLocalIdentifier = config.identifier;
+		Meteor.federationLocalIdentifier = config.peer.domain;
 		Meteor.federationPeerDNS = new PeerDNS(config);
 		Meteor.federationPeerHTTP = new PeerHTTP(config);
 		Meteor.federationPeerClient = new PeerClient(config);

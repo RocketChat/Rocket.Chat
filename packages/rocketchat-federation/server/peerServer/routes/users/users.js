@@ -29,9 +29,6 @@ export default function usersRoutes() {
 
 			const federatedUser = new FederationUser(localPeerDomain, user);
 
-			console.log('piroca');
-			console.log(JSON.stringify(federatedUser, null, 2));
-
 			return RocketChat.API.v1.success({ federatedUser });
 		},
 	});
