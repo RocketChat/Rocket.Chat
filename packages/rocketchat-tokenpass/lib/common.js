@@ -12,7 +12,7 @@ const config = {
 	tokenSentVia: 'payload',
 	usernameField: 'username',
 	mergeUsers: true,
-	useChromeCustomTab: true,
+	useChromeCustomTab: false,
 	addAutopublishFields: {
 		forLoggedInUser: ['services.tokenpass'],
 		forOtherUsers: ['services.tokenpass.name'],
