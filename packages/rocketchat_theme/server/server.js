@@ -1,6 +1,6 @@
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import { Logger } from 'meteor/rocketchat:logger';
 import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
@@ -16,54 +16,15 @@ const logger = new Logger('rocketchat:theme', {
 	},
 });
 
-WebApp.rawConnectHandlers.use(function(req, res, next) {
-	const path = req.url.split('?')[0];
-	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-	if (path === `${ prefix }/theme.css`) {
-		const css = RocketChat.theme.getCss();
-		const hash = crypto.createHash('sha1').update(css).digest('hex');
-		res.setHeader('Content-Type', 'text/css; charset=UTF-8');
-		res.setHeader('ETag', `"${ hash }"`);
-		res.write(css);
-		return res.end();
-	} else {
-		return next();
-	}
-});
-
-const { calculateClientHash } = WebAppHashing;
-
-WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
-	const css = RocketChat.theme.getCss();
-	if (css.trim() !== '') {
-		const hash = crypto.createHash('sha1').update(css).digest('hex');
-		let themeManifestItem = _.find(manifest, function(item) {
-			return item.path === 'app/theme.css';
-		});
-		if (themeManifestItem == null) {
-			themeManifestItem = {};
-			manifest.push(themeManifestItem);
-		}
-		themeManifestItem.path = 'app/theme.css';
-		themeManifestItem.type = 'css';
-		themeManifestItem.cacheable = true;
-		themeManifestItem.where = 'client';
-		themeManifestItem.url = `/theme.css?${ hash }`;
-		themeManifestItem.size = css.length;
-		themeManifestItem.hash = hash;
-	}
-	return calculateClientHash.call(this, manifest, includeFilter, runtimeConfigOverride);
-};
-
-RocketChat.theme = new class {
+export const theme = new class {
 	constructor() {
 		this.variables = {};
 		this.packageCallbacks = [];
 		this.files = ['server/colors.less'];
 		this.customCSS = '';
-		RocketChat.settings.add('css', '');
-		RocketChat.settings.addGroup('Layout');
-		RocketChat.settings.onload('css', Meteor.bindEnvironment((key, value, initialLoad) => {
+		settings.add('css', '');
+		settings.addGroup('Layout');
+		settings.onload('css', Meteor.bindEnvironment((key, value, initialLoad) => {
 			if (!initialLoad) {
 				Meteor.startup(function() {
 					process.emit('message', {
@@ -74,8 +35,8 @@ RocketChat.theme = new class {
 		}));
 		this.compileDelayed = _.debounce(Meteor.bindEnvironment(this.compile.bind(this)), 100);
 		Meteor.startup(() => {
-			RocketChat.settings.onAfterInitialLoad(() => {
-				RocketChat.settings.get(/^theme-./, Meteor.bindEnvironment((key, value) => {
+			settings.onAfterInitialLoad(() => {
+				settings.get(/^theme-./, Meteor.bindEnvironment((key, value) => {
 					if (key === 'theme-custom-css' && value != null) {
 						this.customCSS = value;
 					} else {
@@ -110,7 +71,7 @@ RocketChat.theme = new class {
 			if (err != null) {
 				return console.log(err);
 			}
-			RocketChat.settings.updateById('css', data.css);
+			settings.updateById('css', data.css);
 			return Meteor.startup(function() {
 				return Meteor.setTimeout(function() {
 					return process.emit('message', {
@@ -131,7 +92,7 @@ RocketChat.theme = new class {
 			section,
 		};
 
-		return RocketChat.settings.add(`theme-color-${ name }`, value, config);
+		return settings.add(`theme-color-${ name }`, value, config);
 	}
 
 	addVariable(type, name, value, section, persist = true, editor, allowedTypes, property) {
@@ -149,7 +110,7 @@ RocketChat.theme = new class {
 				allowedTypes,
 				property,
 			};
-			return RocketChat.settings.add(`theme-${ type }-${ name }`, value, config);
+			return settings.add(`theme-${ type }-${ name }`, value, config);
 		}
 
 	}
@@ -182,7 +143,47 @@ RocketChat.theme = new class {
 	}
 
 	getCss() {
-		return RocketChat.settings.get('css') || '';
+		return settings.get('css') || '';
 	}
 
+};
+
+
+WebApp.rawConnectHandlers.use(function(req, res, next) {
+	const path = req.url.split('?')[0];
+	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+	if (path === `${ prefix }/theme.css`) {
+		const css = theme.getCss();
+		const hash = crypto.createHash('sha1').update(css).digest('hex');
+		res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+		res.setHeader('ETag', `"${ hash }"`);
+		res.write(css);
+		return res.end();
+	} else {
+		return next();
+	}
+});
+
+const { calculateClientHash } = WebAppHashing;
+
+WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
+	const css = theme.getCss();
+	if (css.trim() !== '') {
+		const hash = crypto.createHash('sha1').update(css).digest('hex');
+		let themeManifestItem = _.find(manifest, function(item) {
+			return item.path === 'app/theme.css';
+		});
+		if (themeManifestItem == null) {
+			themeManifestItem = {};
+			manifest.push(themeManifestItem);
+		}
+		themeManifestItem.path = 'app/theme.css';
+		themeManifestItem.type = 'css';
+		themeManifestItem.cacheable = true;
+		themeManifestItem.where = 'client';
+		themeManifestItem.url = `/theme.css?${ hash }`;
+		themeManifestItem.size = css.length;
+		themeManifestItem.hash = hash;
+	}
+	return calculateClientHash.call(this, manifest, includeFilter, runtimeConfigOverride);
 };

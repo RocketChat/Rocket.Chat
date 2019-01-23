@@ -1,4 +1,5 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { theme } from './server';
 // TODO: Define registers/getters/setters for packages to work with established
 // 			heirarchy of colors instead of making duplicate definitions
 // TODO: Settings pages to show simple separation of major/minor/addon colors
@@ -21,9 +22,9 @@ const colors = [...Assets.getText('client/imports/general/variables.css').match(
 colors.forEach(([key, color]) => 	{
 	if (/var/.test(color)) {
 		const [, value] = color.match(/var\(--(.*?)\)/i);
-		return RocketChat.theme.addPublicColor(key, value, 'Colors', 'expression');
+		return theme.addPublicColor(key, value, 'Colors', 'expression');
 	}
-	RocketChat.theme.addPublicColor(key, color, 'Colors');
+	theme.addPublicColor(key, color, 'Colors');
 });
 
 const majorColors = {
@@ -58,17 +59,17 @@ const minorColors = {
 // Bulk-add settings for color scheme
 Object.keys(majorColors).forEach((key) => {
 	const value = majorColors[key];
-	RocketChat.theme.addPublicColor(key, value, 'Old Colors');
+	theme.addPublicColor(key, value, 'Old Colors');
 });
 
 Object.keys(minorColors).forEach((key) => {
 	const value = minorColors[key];
-	RocketChat.theme.addPublicColor(key, value, 'Old Colors (minor)', 'expression');
+	theme.addPublicColor(key, value, 'Old Colors (minor)', 'expression');
 });
 
-RocketChat.theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Helvetica Neue\', \'Apple Color Emoji\', \'Segoe UI Emoji\', \'Segoe UI Symbol\', \'Meiryo UI\', Arial, sans-serif');
+theme.addPublicFont('body-font-family', '-apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Helvetica Neue\', \'Apple Color Emoji\', \'Segoe UI Emoji\', \'Segoe UI Symbol\', \'Meiryo UI\', Arial, sans-serif');
 
-RocketChat.settings.add('theme-custom-css', '', {
+settings.add('theme-custom-css', '', {
 	group: 'Layout',
 	type: 'code',
 	code: 'text/css',
