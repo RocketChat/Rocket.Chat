@@ -90,3 +90,4 @@ export const setUsername = RocketChat.RateLimiter.limitFunction(_setUsername, 1,
 });
 
 RocketChat.setUsername = setUsername;
+RocketChat._setUsername = _setUsername;

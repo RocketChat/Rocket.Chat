@@ -40,3 +40,4 @@ export const setRealName = RocketChat.RateLimiter.limitFunction(_setRealName, 1,
 });
 
 RocketChat.setRealName = setRealName;
+RocketChat._setRealName = _setRealName;
