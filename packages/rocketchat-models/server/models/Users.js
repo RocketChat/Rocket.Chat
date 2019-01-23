@@ -52,6 +52,56 @@ export class Users extends Base {
 		};
 	}
 
+	disable2FAAndSetTempSecretByUserId(userId, tempToken) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.totp': {
+					enabled: false,
+					tempSecret: tempToken,
+				},
+			},
+		});
+	}
+
+	enable2FAAndSetSecretAndCodesByUserId(userId, secret, backupCodes) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.totp.enabled': true,
+				'services.totp.secret': secret,
+				'services.totp.hashedBackup': backupCodes,
+			},
+			$unset: {
+				'services.totp.tempSecret': 1,
+			},
+		});
+	}
+
+	disable2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.totp': {
+					enabled: false,
+				},
+			},
+		});
+	}
+
+	update2FABackupCodesByUserId(userId, backupCodes) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.totp.hashedBackup': backupCodes,
+			},
+		});
+	}
+
 	findByIdsWithPublicE2EKey(ids, options) {
 		const query = {
 			_id: {
