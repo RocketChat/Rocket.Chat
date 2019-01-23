@@ -3,7 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { Subscriptions } from 'meteor/rocketchat:models';
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
@@ -91,17 +92,17 @@ Template.ChatpalSearchSingleMessage.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return RocketChat.roomTypes.getIcon(room && room.t);
+		return roomTypes.getIcon(room && room.t);
 	},
 
 	roomLink() {
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid });
-		return RocketChat.roomTypes.getRouteLink(subscription.t, subscription);
+		const subscription = Subscriptions.findOne({ rid: this.rid });
+		return roomTypes.getRouteLink(subscription.t, subscription);
 	},
 
 	roomName() {
 		const room = Session.get(`roomData${ this.rid }`);
-		return RocketChat.roomTypes.getRoomName(room.t, room);
+		return roomTypes.getRoomName(room.t, room);
 	},
 
 	time() {
@@ -118,11 +119,11 @@ Template.ChatpalSearchSingleRoom.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return RocketChat.roomTypes.getIcon(room && room.t);
+		return roomTypes.getIcon(room && room.t);
 	},
 	roomLink() {
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid: this._id });
-		return RocketChat.roomTypes.getRouteLink(subscription.t, subscription);
+		const subscription = Subscriptions.findOne({ rid: this._id });
+		return roomTypes.getRouteLink(subscription.t, subscription);
 	},
 });
 
