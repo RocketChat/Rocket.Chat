@@ -146,8 +146,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/components/contextualBar.html', 'client');
 	api.addFiles('client/components/contextualBar.js', 'client');
 
-	api.addFiles('server/views/app/getPDFFile.js', 'server');
-
 	api.mainModule('client/index.js', 'client');
 
 	api.export('fileUpload');
