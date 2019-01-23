@@ -3,8 +3,6 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Info } from 'meteor/rocketchat:utils';
 import bugsnag from 'bugsnag';
 
-RocketChat.bugsnag = bugsnag;
-
 settings.get('Bugsnag_api_key', (key, value) => {
 	if (value) {
 		bugsnag.register(value);
@@ -21,7 +19,7 @@ const notify = function(message, stack) {
 	}
 	const error = new Error(message);
 	error.stack = stack;
-	RocketChat.bugsnag.notify(error, options);
+	bugsnag.notify(error, options);
 };
 
 process.on('uncaughtException', Meteor.bindEnvironment((error) => {

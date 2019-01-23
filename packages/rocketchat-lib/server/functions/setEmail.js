@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Users } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { RateLimiter, validateEmailDomain } from '../lib';
+import { checkEmailAvailability } from '.';
 import s from 'underscore.string';
 
 const _setEmail = function(userId, email, shouldSendVerificationEmail = true) {
@@ -13,7 +15,7 @@ const _setEmail = function(userId, email, shouldSendVerificationEmail = true) {
 		throw new Meteor.Error('error-invalid-email', 'Invalid email', { function: '_setEmail' });
 	}
 
-	RocketChat.validateEmailDomain(email);
+	validateEmailDomain(email);
 
 	const user = Users.findOneById(userId);
 
@@ -23,7 +25,7 @@ const _setEmail = function(userId, email, shouldSendVerificationEmail = true) {
 	}
 
 	// Check email availability
-	if (!RocketChat.checkEmailAvailability(email)) {
+	if (!checkEmailAvailability(email)) {
 		throw new Meteor.Error('error-field-unavailable', `${ email } is already in use :(`, { function: '_setEmail', field: email });
 	}
 
@@ -36,7 +38,7 @@ const _setEmail = function(userId, email, shouldSendVerificationEmail = true) {
 	return user;
 };
 
-export const setEmail = RocketChat.RateLimiter.limitFunction(_setEmail, 1, 60000, {
+export const setEmail = RateLimiter.limitFunction(_setEmail, 1, 60000, {
 	0() { return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others emails, so don't limit those
 });
 

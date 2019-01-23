@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { settings } from 'meteor/rocketchat:settings';
+import { checkUsernameAvailability } from '../functions';
+import { RateLimiter } from '../lib';
 
 Meteor.methods({
 	checkUsernameAvailability(username) {
@@ -19,10 +21,10 @@ Meteor.methods({
 		if (user.username === username) {
 			return true;
 		}
-		return RocketChat.checkUsernameAvailability(username);
+		return checkUsernameAvailability(username);
 	},
 });
 
-RocketChat.RateLimiter.limitMethod('checkUsernameAvailability', 1, 1000, {
+RateLimiter.limitMethod('checkUsernameAvailability', 1, 1000, {
 	userId() { return true; },
 });

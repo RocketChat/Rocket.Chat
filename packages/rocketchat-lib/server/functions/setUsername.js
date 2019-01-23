@@ -4,6 +4,8 @@ import { FileUpload } from 'meteor/rocketchat:file-upload';
 import { settings } from 'meteor/rocketchat:settings';
 import { Users, Messages, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { RateLimiter } from '../lib';
+import { checkUsernameAvailability, setUserAvatar } from '.';
 
 const _setUsername = function(userId, u) {
 	const username = s.trim(u);
@@ -27,7 +29,7 @@ const _setUsername = function(userId, u) {
 	const previousUsername = user.username;
 	// Check username availability or if the user already owns a different casing of the name
 	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
-		if (!RocketChat.checkUsernameAvailability(username)) {
+		if (!checkUsernameAvailability(username)) {
 			return false;
 		}
 	}
@@ -48,7 +50,7 @@ const _setUsername = function(userId, u) {
 		Object.keys(avatarSuggestions).some((service) => {
 			const avatarData = avatarSuggestions[service];
 			if (service !== 'gravatar') {
-				RocketChat.setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
+				setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
 				gravatar = null;
 				return true;
 			}
@@ -56,7 +58,7 @@ const _setUsername = function(userId, u) {
 			return false;
 		});
 		if (gravatar != null) {
-			RocketChat.setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
+			setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
 		}
 	}
 	// Username is available; if coming from old username, update all references
@@ -83,7 +85,7 @@ const _setUsername = function(userId, u) {
 	return user;
 };
 
-export const setUsername = RocketChat.RateLimiter.limitFunction(_setUsername, 1, 60000, {
+export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
 	[0](userId) {
 		return !userId || !hasPermission(userId, 'edit-other-user-info');
 	},

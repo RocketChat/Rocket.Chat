@@ -7,6 +7,8 @@ import { Gravatar } from 'meteor/jparker:gravatar';
 import { getRoles, hasPermission } from 'meteor/rocketchat:authorization';
 import { settings } from 'meteor/rocketchat:settings';
 import PasswordPolicy from '../lib/PasswordPolicyClass';
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername } from '.';
+import { validateEmailDomain } from '../lib';
 
 const passwordPolicy = new PasswordPolicy();
 
@@ -86,14 +88,14 @@ function validateUserData(userId, userData) {
 	}
 
 	if (!userData._id) {
-		if (!RocketChat.checkUsernameAvailability(userData.username)) {
+		if (!checkUsernameAvailability(userData.username)) {
 			throw new Meteor.Error('error-field-unavailable', `${ _.escape(userData.username) } is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.username,
 			});
 		}
 
-		if (userData.email && !RocketChat.checkEmailAvailability(userData.email)) {
+		if (userData.email && !checkEmailAvailability(userData.email)) {
 			throw new Meteor.Error('error-field-unavailable', `${ _.escape(userData.email) } is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.email,
@@ -148,7 +150,7 @@ export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 
 	if (!userData._id) {
-		RocketChat.validateEmailDomain(userData.email);
+		validateEmailDomain(userData.email);
 
 		// insert user
 		const createUser = {
@@ -211,7 +213,7 @@ export const saveUser = function(userId, userData) {
 			const gravatarUrl = Gravatar.imageUrl(userData.email, { default: '404', size: 200, secure: true });
 
 			try {
-				RocketChat.setUserAvatar(userData, gravatarUrl, '', 'url');
+				setUserAvatar(userData, gravatarUrl, '', 'url');
 			} catch (e) {
 				// Ignore this error for now, as it not being successful isn't bad
 			}
@@ -224,16 +226,16 @@ export const saveUser = function(userId, userData) {
 
 	// update user
 	if (userData.username) {
-		RocketChat.setUsername(userData._id, userData.username);
+		setUsername(userData._id, userData.username);
 	}
 
 	if (userData.name) {
-		RocketChat.setRealName(userData._id, userData.name);
+		setRealName(userData._id, userData.name);
 	}
 
 	if (userData.email) {
 		const shouldSendVerificationEmailToUser = userData.verified !== true;
-		RocketChat.setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
+		setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
 	}
 
 	if (userData.password && userData.password.trim() && hasPermission(userId, 'edit-other-user-password') && passwordPolicy.validate(userData.password)) {

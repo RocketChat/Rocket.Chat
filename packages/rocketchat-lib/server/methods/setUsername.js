@@ -3,6 +3,8 @@ import { check } from 'meteor/check';
 import { settings } from 'meteor/rocketchat:settings';
 import { Users } from 'meteor/rocketchat:models';
 import { callbacks } from 'meteor/rocketchat:callbacks';
+import { setUsername, checkUsernameAvailability } from '../functions';
+import { RateLimiter } from '../lib';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -35,11 +37,11 @@ Meteor.methods({
 			throw new Meteor.Error('username-invalid', `${ _.escape(username) } is not a valid username, use only letters, numbers, dots, hyphens and underscores`);
 		}
 
-		if (!RocketChat.checkUsernameAvailability(username)) {
+		if (!checkUsernameAvailability(username)) {
 			throw new Meteor.Error('error-field-unavailable', `<strong>${ _.escape(username) }</strong> is already in use :(`, { method: 'setUsername', field: username });
 		}
 
-		if (!RocketChat.setUsername(user._id, username)) {
+		if (!setUsername(user._id, username)) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', { method: 'setUsername' });
 		}
 
@@ -54,6 +56,6 @@ Meteor.methods({
 	},
 });
 
-RocketChat.RateLimiter.limitMethod('setUsername', 1, 1000, {
+RateLimiter.limitMethod('setUsername', 1, 1000, {
 	userId() { return true; },
 });

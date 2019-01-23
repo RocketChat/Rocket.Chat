@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { createRoom } from '../functions';
 
 Meteor.methods({
 	createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
@@ -26,6 +27,6 @@ Meteor.methods({
 			}),
 		}));
 
-		return RocketChat.createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
 	},
 });

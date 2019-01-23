@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { hasPermission, canAccessRoom } from 'meteor/rocketchat:authorization';
 import { Rooms } from 'meteor/rocketchat:models';
+import { addUserToRoom } from '../functions';
 
 Meteor.methods({
 	joinRoom(rid, code) {
@@ -34,6 +35,6 @@ Meteor.methods({
 			}
 		}
 
-		return RocketChat.addUserToRoom(rid, user);
+		return addUserToRoom(rid, user);
 	},
 });

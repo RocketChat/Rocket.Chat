@@ -6,7 +6,7 @@ import _ from 'underscore';
 
 const AccessTokenServices = {};
 
-RocketChat.registerAccessTokenService = function(serviceName, handleAccessTokenRequest) {
+export const registerAccessTokenService = function(serviceName, handleAccessTokenRequest) {
 	AccessTokenServices[serviceName] = {
 		serviceName,
 		handleAccessTokenRequest,
