@@ -208,18 +208,23 @@ export class HipChatEnterpriseImporter extends Base {
 		for (const m of file) {
 			if (m.PrivateUserMessage) {
 				const newId = `hipchatenterprise-private-${ m.PrivateUserMessage.id }`;
-				msgs.push({
-					type: 'user',
-					id: newId,
-					senderId: m.PrivateUserMessage.sender.id,
-					receiverId: m.PrivateUserMessage.receiver.id,
-					text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
-					ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
-					attachment: m.PrivateUserMessage.attachment,
-					attachment_path: m.PrivateUserMessage.attachment_path,
-					skip: this._checkIfMessageExists(newId),
-					skipAttachment: m.PrivateUserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : false,
-				});
+				const skipMessage = this._checkIfMessageExists(newId);
+				const skipAttachment = skipMessage && (m.PrivateUserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
+
+				if (!skipMessage || !skipAttachment) {
+					msgs.push({
+						type: 'user',
+						id: newId,
+						senderId: m.PrivateUserMessage.sender.id,
+						receiverId: m.PrivateUserMessage.receiver.id,
+						text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
+						ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
+						attachment: m.PrivateUserMessage.attachment,
+						attachment_path: m.PrivateUserMessage.attachment_path,
+						skip: skipMessage,
+						skipAttachment,
+					});
+				}
 			}
 
 			if (msgs.length >= 500) {
@@ -236,6 +241,10 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	_checkIfMessageExists(messageId) {
+		if (this._hasAnyImportedMessage === false) {
+			return false;
+		}
+
 		return Boolean(RocketChat.models.Messages.findOne({ _id: messageId }, { fields: { _id : 1 }, limit: 1 }));
 	}
 
@@ -247,43 +256,55 @@ export class HipChatEnterpriseImporter extends Base {
 		for (const m of file) {
 			if (m.UserMessage) {
 				const newId = `hipchatenterprise-${ id }-user-${ m.UserMessage.id }`;
-				roomMsgs.push({
-					type: 'user',
-					id: newId,
-					userId: m.UserMessage.sender.id,
-					text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
-					ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
-					attachment: m.UserMessage.attachment,
-					attachment_path: m.UserMessage.attachment_path,
-					skip: this._checkIfMessageExists(newId),
-					skipAttachment: m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : false,
-				});
+				const skipMessage = this._checkIfMessageExists(newId);
+				const skipAttachment = (skipMessage && m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
+
+				if (!skipMessage || !skipAttachment) {
+					roomMsgs.push({
+						type: 'user',
+						id: newId,
+						userId: m.UserMessage.sender.id,
+						text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
+						ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
+						attachment: m.UserMessage.attachment,
+						attachment_path: m.UserMessage.attachment_path,
+						skip: skipMessage,
+						skipAttachment,
+					});
+				}
 			} else if (m.NotificationMessage) {
 				const text = m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`;
 				const newId = `hipchatenterprise-${ id }-notif-${ m.NotificationMessage.id }`;
+				const skipMessage = this._checkIfMessageExists(newId);
+				const skipAttachment = skipMessage && (m.NotificationMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
 
-				roomMsgs.push({
-					type: 'user',
-					id: newId,
-					userId: 'rocket.cat',
-					alias: m.NotificationMessage.sender,
-					text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
-					ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
-					attachment: m.NotificationMessage.attachment,
-					attachment_path: m.NotificationMessage.attachment_path,
-					skip: this._checkIfMessageExists(newId),
-					skipAttachment: m.NotificationMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : false,
-				});
+				if (!skipMessage || !skipAttachment) {
+					roomMsgs.push({
+						type: 'user',
+						id: newId,
+						userId: 'rocket.cat',
+						alias: m.NotificationMessage.sender,
+						text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
+						ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
+						attachment: m.NotificationMessage.attachment,
+						attachment_path: m.NotificationMessage.attachment_path,
+						skip: skipMessage,
+						skipAttachment,
+					});
+				}
 			} else if (m.TopicRoomMessage) {
 				const newId = `hipchatenterprise-${ id }-topic-${ m.TopicRoomMessage.id }`;
-				roomMsgs.push({
-					type: 'topic',
-					id: newId,
-					userId: m.TopicRoomMessage.sender.id,
-					ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
-					text: m.TopicRoomMessage.message,
-					skip: this._checkIfMessageExists(newId),
-				});
+				const skipMessage = this._checkIfMessageExists(newId);
+				if (!skipMessage) {
+					roomMsgs.push({
+						type: 'topic',
+						id: newId,
+						userId: m.TopicRoomMessage.sender.id,
+						ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
+						text: m.TopicRoomMessage.message,
+						skip: skipMessage,
+					});
+				}
 			} else {
 				this.logger.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
 			}
@@ -354,6 +375,8 @@ export class HipChatEnterpriseImporter extends Base {
 		this.collection.remove({});
 		this.emailList = [];
 
+		this._hasAnyImportedMessage = Boolean(RocketChat.models.Messages.findOne({ _id: /hipchatenterprise\-.*/ }));
+
 		this.usersCount = 0;
 		this.channelsCount = 0;
 		this.messagesCount = 0;
@@ -416,7 +439,7 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 
 				// Ensure we have some users, channels, and messages
-				if (!this.usersCount || !this.channelsCount || this.messagesCount === 0) {
+				if (!this.usersCount && this.channelsCount && !this.messagesCount) {
 					this.logger.debug(`users: ${ this.usersCount }, channels: ${ this.channelsCount }, messages = ${ this.messagesCount }`);
 					super.updateProgress(ProgressStep.ERROR);
 					reject(new Meteor.Error('error-import-file-is-empty'));
