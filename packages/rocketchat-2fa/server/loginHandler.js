@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { TOTP } from './lib/totp';
 
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
@@ -10,8 +12,8 @@ Accounts.registerLoginHandler('totp', function(options) {
 	return Accounts._runLoginHandlers(this, options.totp.login);
 });
 
-RocketChat.callbacks.add('onValidateLogin', (login) => {
-	if (!RocketChat.settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+callbacks.add('onValidateLogin', (login) => {
+	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
 		return;
 	}
 
@@ -22,7 +24,7 @@ RocketChat.callbacks.add('onValidateLogin', (login) => {
 			throw new Meteor.Error('totp-required', 'TOTP Required');
 		}
 
-		const verified = RocketChat.TOTP.verify({
+		const verified = TOTP.verify({
 			secret: login.user.services.totp.secret,
 			token: totp.code,
 			userId: login.user._id,
