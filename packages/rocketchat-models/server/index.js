@@ -16,6 +16,7 @@ import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
+import CredentialTokens from './models/CredentialTokens';
 
 export {
 	Base,
@@ -36,4 +37,5 @@ export {
 	CustomSounds,
 	Integrations,
 	IntegrationHistory,
+	CredentialTokens,
 };

@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from './_Base';
 
-RocketChat.models.CredentialTokens = new class extends RocketChat.models._Base {
+export class CredentialTokens extends Base {
 	constructor() {
 		super('credential_tokens');
 
@@ -27,4 +27,6 @@ RocketChat.models.CredentialTokens = new class extends RocketChat.models._Base {
 
 		return this.findOne(query);
 	}
-};
+}
+
+export default new CredentialTokens();
