@@ -144,7 +144,7 @@ function validateUserEditing(userId, userData) {
 	}
 }
 
-RocketChat.saveUser = function(userId, userData) {
+export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 
 	if (!userData._id) {
@@ -267,3 +267,5 @@ RocketChat.saveUser = function(userId, userData) {
 
 	return true;
 };
+
+RocketChat.saveUser = saveUser;

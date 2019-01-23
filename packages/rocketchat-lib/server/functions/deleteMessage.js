@@ -5,7 +5,7 @@ import { Messages, Uploads, Rooms } from 'meteor/rocketchat:models';
 import { Notifications } from 'meteor/rocketchat:notifications';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 
-RocketChat.deleteMessage = function(message, user) {
+export const deleteMessage = function(message, user) {
 	const keepHistory = settings.get('Message_KeepHistory');
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus');
 	const deletedMsg = Messages.findOneById(message._id);
@@ -59,3 +59,5 @@ RocketChat.deleteMessage = function(message, user) {
 		Apps.getBridges().getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg);
 	}
 };
+
+RocketChat.deleteMessage = deleteMessage;

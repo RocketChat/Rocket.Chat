@@ -5,7 +5,7 @@ import { metrics } from 'meteor/rocketchat:metrics';
 import { EmailReplyParser as reply } from 'emailreplyparser';
 import moment from 'moment';
 
-RocketChat.processDirectEmail = function(email) {
+export const processDirectEmail = function(email) {
 	function sendMessage(email) {
 		const message = {
 			ts: new Date(email.headers.date),
@@ -120,3 +120,5 @@ RocketChat.processDirectEmail = function(email) {
 		console.log('Invalid Email....If not. Please report it.');
 	}
 };
+
+RocketChat.processDirectEmail = processDirectEmail;

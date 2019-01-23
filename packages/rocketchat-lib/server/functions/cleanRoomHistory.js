@@ -3,7 +3,7 @@ import { FileUpload } from 'meteor/rocketchat:file-upload';
 import { Messages, Rooms } from 'meteor/rocketchat:models';
 import { Notifications } from 'meteor/rocketchat:notifications';
 
-RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, filesOnly = false, fromUsers = [] }) {
+export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, filesOnly = false, fromUsers = [] }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -42,3 +42,5 @@ RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new 
 	}
 	return count;
 };
+
+RocketChat.cleanRoomHistory = cleanRoomHistory;

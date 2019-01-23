@@ -13,7 +13,7 @@ settings.get('Accounts_BlockedUsernameList', (key, value) => {
 const usernameIsBlocked = (username, usernameBlackList) => usernameBlackList.length
 	&& usernameBlackList.some((restrictedUsername) => restrictedUsername.test(s.trim(s.escapeRegExp(username))));
 
-RocketChat.checkUsernameAvailability = function(username) {
+export const checkUsernameAvailability = function(username) {
 
 	if (usernameIsBlocked(username, usernameBlackList)) {
 		return false;
@@ -25,3 +25,5 @@ RocketChat.checkUsernameAvailability = function(username) {
 		},
 	}, { fields: { _id: 1 } });
 };
+
+RocketChat.checkUsernameAvailability = checkUsernameAvailability;

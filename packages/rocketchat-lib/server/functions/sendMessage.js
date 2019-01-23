@@ -78,7 +78,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-RocketChat.sendMessage = function(user, message, room, upsert = false) {
+export const sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -189,3 +189,5 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		return message;
 	}
 };
+
+RocketChat.sendMessage = sendMessage;

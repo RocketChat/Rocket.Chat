@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Rooms, Messages, Subscriptions } from 'meteor/rocketchat:models';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 
-RocketChat.removeUserFromRoom = function(rid, user) {
+export const removeUserFromRoom = function(rid, user) {
 	const room = Rooms.findOneById(rid);
 
 	if (room) {
@@ -27,3 +27,5 @@ RocketChat.removeUserFromRoom = function(rid, user) {
 		});
 	}
 };
+
+RocketChat.removeUserFromRoom = removeUserFromRoom;

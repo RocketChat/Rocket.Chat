@@ -53,7 +53,7 @@ settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
-RocketChat.getFullUserData = function({ userId, filter, limit: l }) {
+export const getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
 	const userToRetrieveFullUserData = Users.findOneByUsername(username);
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
@@ -83,3 +83,6 @@ RocketChat.getFullUserData = function({ userId, filter, limit: l }) {
 	const usernameReg = new RegExp(s.escapeRegExp(username), 'i');
 	return Users.findByUsernameNameOrEmailAddress(usernameReg, options);
 };
+
+RocketChat.getFullUserData = getFullUserData;
+

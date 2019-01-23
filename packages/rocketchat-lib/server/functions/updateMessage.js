@@ -3,7 +3,7 @@ import { Messages, Rooms } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 
-RocketChat.updateMessage = function(message, user, originalMessage) {
+export const updateMessage = function(message, user, originalMessage) {
 	if (!originalMessage) {
 		originalMessage = Messages.findOneById(message._id);
 	}
@@ -59,3 +59,5 @@ RocketChat.updateMessage = function(message, user, originalMessage) {
 		callbacks.run('afterSaveMessage', Messages.findOneById(tempid), room, user._id);
 	});
 };
+
+RocketChat.updateMessage = updateMessage;

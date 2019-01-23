@@ -3,7 +3,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Users, Subscriptions } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
-RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
+export const saveCustomFieldsWithoutValidation = function(userId, formData) {
 	if (s.trim(settings.get('Accounts_CustomFields')) !== '') {
 		let customFieldsMeta;
 		try {
@@ -38,3 +38,5 @@ RocketChat.saveCustomFieldsWithoutValidation = function(userId, formData) {
 		});
 	}
 };
+
+RocketChat.saveCustomFieldsWithoutValidation = saveCustomFieldsWithoutValidation;
