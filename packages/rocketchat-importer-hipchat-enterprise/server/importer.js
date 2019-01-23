@@ -564,12 +564,8 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 			} else {
 				const user = { email: userToImport.email, password: Random.id(), username: userToImport.username };
-				// if (u.is_email_taken && u.email) {
-				// 	user.email = user.email.replace('@', `+rocket.chat_${ Math.floor(Math.random() * 10000).toString() }@`);
-				// }
 				if (!user.email) {
 					delete user.email;
-					// user.username = userToImport.username;
 				}
 				if (!user.username) {
 					delete user.username;
@@ -696,25 +692,26 @@ export class HipChatEnterpriseImporter extends Base {
 
 	startImport(importSelection) {
 		super.startImport(importSelection);
+		this._userDataCache = {};
 		const started = Date.now();
 
 		this._applyUserSelections(importSelection);
 
 		const startedByUserId = Meteor.userId();
-		Meteor.defer(() => {
+		Meteor.defer(async() => {
 			try {
-				super.updateProgress(ProgressStep.IMPORTING_USERS);
-				this._importUsers(startedByUserId);
+				await super.updateProgress(ProgressStep.IMPORTING_USERS);
+				await this._importUsers(startedByUserId);
 
-				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
-				this._importChannels(startedByUserId);
+				await super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
+				await this._importChannels(startedByUserId);
 
-				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				this._importMessages(startedByUserId);
-				this._importDirectMessages();
+				await super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
+				await this._importMessages(startedByUserId);
+				await this._importDirectMessages();
 
 				// super.updateProgress(ProgressStep.FINISHING);
-				super.updateProgress(ProgressStep.DONE);
+				await super.updateProgress(ProgressStep.DONE);
 			} catch (e) {
 				super.updateRecord({ 'error-record': JSON.stringify(e, Object.getOwnPropertyNames(e)) });
 				this.logger.error(e);
@@ -825,7 +822,6 @@ export class HipChatEnterpriseImporter extends Base {
 	_importSingleMessage(msg, roomIdentifier, room) {
 		if (isNaN(msg.ts)) {
 			this.logger.warn(`Timestamp on a message in ${ roomIdentifier } is invalid`);
-			super.addCountCompleted(1);
 			return;
 		}
 
@@ -859,47 +855,87 @@ export class HipChatEnterpriseImporter extends Base {
 			console.error(e);
 			this.addMessageError(e, msg);
 		}
-
-		super.addCountCompleted(1);
 	}
 
-	_importMessages(startedByUserId) {
+	_delay(ms) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
+	}
+
+	async _sleep(ms) {
+		await this._delay(ms);
+	}
+
+	async _importMessageList(startedByUserId, messageListId) {
+		const list = this.collection.findOneById(messageListId);
+		if (!list) {
+			return;
+		}
+
+		if (!list.messages) {
+			return;
+		}
+
+		const { roomIdentifier, hipchatRoomId, name } = list;
+		const rid = await this._getRoomRocketId(hipchatRoomId);
+
+		// If there's no rocketId for the channel, then it wasn't imported
+		if (!rid) {
+			this.logger.debug(`Ignoring room ${ roomIdentifier } ( ${ name } ), as there's no rid to use.`);
+			return;
+		}
+
+		const room = await RocketChat.models.Rooms.findOneById(rid, { fields: { usernames: 1, t: 1, name: 1 } });
+		await super.updateRecord({
+			messagesstatus: `${ roomIdentifier }.${ list.messages.length }`,
+			'count.completed': this.progress.count.completed,
+		});
+
+		await Meteor.runAsUser(startedByUserId, async() => {
+			let msgCount = 0;
+			try {
+				for (const msg of list.messages) {
+					await this._importSingleMessage(msg, roomIdentifier, room);
+					msgCount++;
+					if (msgCount >= 50) {
+						super.addCountCompleted(msgCount);
+						msgCount = 0;
+					}
+				}
+			} catch (e) {
+				this.logger.error(e);
+			}
+
+			if (msgCount > 0) {
+				super.addCountCompleted(msgCount);
+			}
+		});
+
+	}
+
+	async _importMessages(startedByUserId) {
 		const messageListIds = this.collection.find({
 			import: this.importRecord._id,
 			importer: this.name,
 			type: 'messages',
 		}, { _id : true }).fetch();
 
-		messageListIds.forEach((item) => {
-			const list = this.collection.findOneById(item._id);
-			if (!list) {
-				return;
+		for (const item of messageListIds) {
+			await this._importMessageList(startedByUserId, item._id);
+			await this._sleep(100);
+		}
+
+		let previousRoomName = null;
+		messageListIds.forEach(async(item) => {
+			const roomNameData = item.name.split('/');
+			if (roomNameData.length >= 2) {
+				if (roomNameData[1] !== previousRoomName) {
+					previousRoomName = roomNameData[1];
+					// Clear the user cache after every room
+					this._userDataCache = {};
+				}
 			}
 
-			if (!list.messages) {
-				return;
-			}
-
-			const { roomIdentifier, hipchatRoomId, name } = list;
-			const rid = this._getRoomRocketId(hipchatRoomId);
-
-			// If there's no rocketId for the channel, then it wasn't imported
-			if (!rid) {
-				this.logger.debug(`Ignoring room ${ roomIdentifier } ( ${ name } ), as there's no rid to use.`);
-				return;
-			}
-
-			const room = RocketChat.models.Rooms.findOneById(rid, { fields: { usernames: 1, t: 1, name: 1 } });
-			super.updateRecord({
-				messagesstatus: `${ roomIdentifier }.${ list.messages.length }`,
-				'count.completed': this.progress.count.completed,
-			});
-
-			Meteor.runAsUser(startedByUserId, () => {
-				list.messages.forEach((msg) => {
-					this._importSingleMessage(msg, roomIdentifier, room);
-				});
-			});
+			await this._importMessageList(startedByUserId, item._id);
 		});
 	}
 
@@ -1048,14 +1084,23 @@ export class HipChatEnterpriseImporter extends Base {
 		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
+	_getBasicUserData(userId) {
+		if (this._userDataCache[userId]) {
+			return this._userDataCache[userId];
+		}
+
+		this._userDataCache[userId] = RocketChat.models.Users.findOneById(userId, { fields: { username: 1 } });
+		return this._userDataCache[userId];
+	}
+
 	getRocketUserFromUserId(userId) {
 		if (userId === 'rocket.cat') {
-			return RocketChat.models.Users.findOneById(userId, { fields: { username: 1 } });
+			return this._getBasicUserData('rocket.cat');
 		}
 
 		const rocketId = this._getUserRocketId(userId);
 		if (rocketId) {
-			return RocketChat.models.Users.findOneById(rocketId, { fields: { username: 1 } });
+			return this._getBasicUserData(rocketId);
 		}
 	}
 

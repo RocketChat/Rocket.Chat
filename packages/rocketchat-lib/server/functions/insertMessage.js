@@ -95,11 +95,10 @@ RocketChat.insertMessage = function(user, message, room, upsert = false) {
 	if (!message.ts) {
 		message.ts = new Date();
 	}
-	const { _id, username, name } = user;
+	const { _id, username } = user;
 	message.u = {
 		_id,
 		username,
-		name,
 	};
 	message.rid = room._id;
 
@@ -126,28 +125,25 @@ RocketChat.insertMessage = function(user, message, room, upsert = false) {
 		delete message.tokens;
 	}
 
-	message = RocketChat.callbacks.run('beforeSaveMessage', message);
-	if (message) {
-		// Avoid saving sandstormSessionId to the database
-		let sandstormSessionId = null;
-		if (message.sandstormSessionId) {
-			sandstormSessionId = message.sandstormSessionId;
-			delete message.sandstormSessionId;
-		}
-
-		if (message._id && upsert) {
-			const { _id } = message;
-			delete message._id;
-			RocketChat.models.Messages.upsert({
-				_id,
-				'u._id': message.u._id,
-			}, message);
-			message._id = _id;
-		} else {
-			message._id = RocketChat.models.Messages.insert(message);
-		}
-
-		message.sandstormSessionId = sandstormSessionId;
-		return message;
+	// Avoid saving sandstormSessionId to the database
+	let sandstormSessionId = null;
+	if (message.sandstormSessionId) {
+		sandstormSessionId = message.sandstormSessionId;
+		delete message.sandstormSessionId;
 	}
+
+	if (message._id && upsert) {
+		const { _id } = message;
+		delete message._id;
+		RocketChat.models.Messages.upsert({
+			_id,
+			'u._id': message.u._id,
+		}, message);
+		message._id = _id;
+	} else {
+		message._id = RocketChat.models.Messages.insert(message);
+	}
+
+	message.sandstormSessionId = sandstormSessionId;
+	return message;
 };
