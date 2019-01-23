@@ -33,6 +33,24 @@ export class Messages extends Base {
 		});
 	}
 
+	addTranslations(messageId, translations) {
+		const updateObj = {};
+		Object.keys(translations).forEach((key) => {
+			const translation = translations[key];
+			updateObj[`translations.${ key }`] = translation;
+		});
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
+	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
+		const updateObj = {};
+		Object.keys(translations).forEach((key) => {
+			const translation = translations[key];
+			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
+		});
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
 		const query = {
 			_hidden: {
