@@ -26,6 +26,7 @@ Package.onUse(function(api) {
 		'rocketchat:ui-vrecord',
 		'rocketchat:ui-sidenav',
 		'rocketchat:file-upload',
+		'rocketchat:autotranslate',
 	]);
 	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
 	api.mainModule('client/index.js', 'client');
