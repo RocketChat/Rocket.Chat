@@ -10,7 +10,7 @@ import { renderEmoji } from 'meteor/rocketchat:emoji';
 import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
-import { AutoTranslate } from 'meteor/rocketchat:autotranslate'
+import { AutoTranslate } from 'meteor/rocketchat:autotranslate';
 import { t } from 'meteor/rocketchat:utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {

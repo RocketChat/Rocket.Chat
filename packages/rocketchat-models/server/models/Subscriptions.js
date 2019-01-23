@@ -34,7 +34,7 @@ export class Subscriptions extends Base {
 		const query = {
 			_id,
 		};
-	
+
 		let update;
 		if (autoTranslate) {
 			update = {
@@ -49,7 +49,7 @@ export class Subscriptions extends Base {
 				},
 			};
 		}
-	
+
 		return this.update(query, update);
 	}
 
@@ -57,13 +57,13 @@ export class Subscriptions extends Base {
 		const query = {
 			_id,
 		};
-	
+
 		const update = {
 			$set: {
 				autoTranslateLanguage,
 			},
 		};
-	
+
 		return this.update(query, update);
 	}
 
