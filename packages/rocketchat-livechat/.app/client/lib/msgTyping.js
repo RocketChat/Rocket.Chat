@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import visitor from '../../imports/client/visitor';
+import { getUserPreference } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 export const MsgTyping = (function() {
@@ -14,9 +15,10 @@ export const MsgTyping = (function() {
 	const usersTyping = {};
 	const dep = new Tracker.Dependency;
 	let oldRoom;
+	const userId = Meteor.userId();
 
 	const addStream = function(room) {
-		if (!_.isEmpty(usersTyping[room] && usersTyping[room].users)) {
+		if (!_.isEmpty(usersTyping[room] && usersTyping[room].users) || !getUserPreference(userId, 'hideUserTyping')) {
 			return;
 		}
 		usersTyping[room] = { users: {} };
@@ -41,6 +43,9 @@ export const MsgTyping = (function() {
 	};
 
 	Tracker.autorun(() => {
+		if (getUserPreference(userId, 'hideUserTyping')) {
+			return;
+		}
 		if (Livechat.room && visitor.getId()) {
 			if (oldRoom) {
 				Notifications.unRoom(oldRoom, 'typing');
@@ -51,6 +56,9 @@ export const MsgTyping = (function() {
 	});
 
 	const stop = function(room) {
+		if (getUserPreference(userId, 'hideUserTyping')) {
+			return;
+		}
 		renew = true;
 		selfTyping.set(false);
 		if (timeouts && timeouts[room]) {
@@ -61,6 +69,9 @@ export const MsgTyping = (function() {
 		return Notifications.notifyRoom(room, 'typing', visitorData && visitorData.username, false, { token: visitor.getToken() });
 	};
 	const start = function(room) {
+		if (getUserPreference(userId, 'hideUserTyping')) {
+			return;
+		}
 		if (!renew) { return; }
 
 		setTimeout(() => renew = true, renewTimeout);
@@ -74,6 +85,9 @@ export const MsgTyping = (function() {
 	};
 
 	const get = function(room) {
+		if (getUserPreference(userId, 'hideUserTyping')) {
+			return;
+		}
 		dep.depend();
 		if (!usersTyping[room]) {
 			usersTyping[room] = { users: {} };

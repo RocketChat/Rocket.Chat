@@ -185,6 +185,10 @@ class Administration extends Page {
 	get accountsHideAvatarsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_hideAvatars"]'); }
 	get accountsHideAvatarsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_hideAvatars"]'); }
 
+	get accountsHideUserTypingTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_hideUserTyping"]'); }
+	get accountsHideUserTypingFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_hideUserTyping"]'); }
+	get accountsHideUserTypingReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_hideUserTyping"]'); }
+
 	get accountsMergeChannelsTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_mergeChannels"]'); }
 	get accountsMergeChannelsFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_mergeChannels"]'); }
 	get accountsMergeChannelsReset() { return browser.element('.reset-setting[data-setting="Accounts_Default_User_Preferences_mergeChannels"]'); }
