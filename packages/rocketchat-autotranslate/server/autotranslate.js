@@ -3,6 +3,7 @@ import { HTTP } from 'meteor/http';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { Markdown } from 'meteor/rocketchat:markdown';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -93,7 +94,7 @@ class AutoTranslate {
 		let count = message.tokens.length;
 
 		message.html = message.msg;
-		message = RocketChat.Markdown.parseMessageNotEscaped(message);
+		message = Markdown.parseMessageNotEscaped(message);
 		message.msg = message.html;
 
 		for (const tokenIndex in message.tokens) {

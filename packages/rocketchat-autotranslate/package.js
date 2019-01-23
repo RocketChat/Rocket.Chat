@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 		'rocketchat:ui-cached-collection',
 		'templating',
 		'rocketchat:utils',
+		'rocketchat:markdown',
 	]);
 	api.addFiles('client/stylesheets/autotranslate.css', 'client');
 	api.mainModule('client/index.js', 'client');
