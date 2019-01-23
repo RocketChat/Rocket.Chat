@@ -9,7 +9,12 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'ddp-rate-limiter',
-		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'rocketchat:authorization',
+		'rocketchat:ui-utils',
+		'rocketchat:ui-cached-collection',
 		'templating',
 		'rocketchat:utils',
 	]);
