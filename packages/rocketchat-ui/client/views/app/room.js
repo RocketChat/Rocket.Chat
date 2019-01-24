@@ -831,10 +831,11 @@ Template.room.events({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
 		let announcementText = roomData.announcement;
-		markdownLink = announcementText.match(/\[.+\]\((https\:\/\/.+\))|(http\:\/\/).+\)/ig)[0];
-		markdownUrl = markdownLink.match(/\(.+\)/ig)[0].slice(1, -1);
-		markdownText = markdownLink.match(/\[.+\]/ig)[0].slice(1, -1);
-		const linkTemplate = `<a href="` + markdownUrl + `">` + markdownText + `</a>`;
+		const markdownLink = announcementText.match(/\[.+\]\((https\:\/\/.+\))|(http\:\/\/).+\)/ig)[0];
+		const markdownUrl = markdownLink.match(/\(.+\)/ig)[0].slice(1, -1);
+		const markdownText = markdownLink.match(/\[.+\]/ig)[0].slice(1, -1);
+		let linkTemplate = '<a href=\'%s1\'>%s2</a>'.replace(/%s1/, markdownUrl);
+		linkTemplate = linkTemplate.replace(/%s2/, markdownText);
 		announcementText = announcementText.replace(/\[.+\]\((https\:\/\/.+\))|(http\:\/\/).+\)/ig, linkTemplate);
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return RocketChat.callbacks.run(roomData.announcementDetails.callback, this._id);
