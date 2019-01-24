@@ -76,5 +76,9 @@ RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOp
 		}
 	}
 
+	if (!Meteor.call('canAccessRoom', room._id, currentUserId)) {
+		throw new Meteor.Error('unauthorized');
+	}
+
 	return room;
 };
