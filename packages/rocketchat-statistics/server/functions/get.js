@@ -32,10 +32,12 @@ RocketChat.statistics.get = function _getStatistics() {
 		}
 	});
 
-	if (statistics.wizard.allowMarketingEmails) {
-		const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
-		statistics.wizard.contactName = firstUser && firstUser.name;
-		statistics.wizard.contactEmail = firstUser && firstUser.emails[0].address;
+	const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
+	statistics.wizard.contactName = firstUser && firstUser.name;
+	statistics.wizard.contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
+
+	if (RocketChat.settings.get('Organization_Email')) {
+		statistics.wizard.contactEmail = RocketChat.settings.get('Organization_Email');
 	}
 
 	// Version
@@ -67,6 +69,12 @@ RocketChat.statistics.get = function _getStatistics() {
 
 	// livechat visitors
 	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
+
+	// livechat agents
+	statistics.totalLivechatAgents = RocketChat.models.Users.findAgents().count();
+
+	// livechat enabled
+	statistics.livechatEnabled = RocketChat.settings.get('Livechat_enabled');
 
 	// Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count();
@@ -101,6 +109,10 @@ RocketChat.statistics.get = function _getStatistics() {
 		method: process.env.DEPLOY_METHOD || 'tar',
 		platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 	};
+
+	statistics.uploadsTotal = RocketChat.models.Uploads.find().count();
+	const [result] = Promise.await(RocketChat.models.Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
+	statistics.uploadsTotalSize = result ? result.total : 0;
 
 	statistics.migration = RocketChat.Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();

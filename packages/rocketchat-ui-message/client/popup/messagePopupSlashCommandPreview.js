@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { toolbarSearch } from 'meteor/rocketchat:ui-sidenav';
 import _ from 'underscore';
 
 const keys = {

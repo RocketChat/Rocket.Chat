@@ -25,3 +25,6 @@ fi
 # sharp needs execution stack removed - https://forum.snapcraft.io/t/snap-and-executable-stacks/1812
 ls -l npm/node_modules/sharp/vendor
 execstack --clear-execstack npm/node_modules/sharp/vendor/lib/librsvg-2.so*
+
+# Having to manually remove because of latest warning
+rm -rf npm/node_modules/meteor/konecty_user-presence/node_modules/colors/lib/.colors.js.swp

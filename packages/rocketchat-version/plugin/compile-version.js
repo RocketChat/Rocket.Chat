@@ -48,7 +48,6 @@ class VersionCompiler {
 					if (err == null && output.commit != null) {
 						output.commit.tag = result.replace('\n', '');
 					}
-
 					exec('git rev-parse --abbrev-ref HEAD', function(err, result) {
 						if (err == null && output.commit != null) {
 							output.commit.branch = result.replace('\n', '');
@@ -57,7 +56,7 @@ class VersionCompiler {
 						const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
 						output.marketplaceApiVersion = pkg.dependencies['@rocket.chat/apps-engine'].replace(/[^0-9.]/g, '');
 
-						output = `RocketChat.Info = ${ JSON.stringify(output, null, 4) };`;
+						output = `exports.Info = ${ JSON.stringify(output, null, 4) };`;
 						file.addJavaScript({
 							data: output,
 							path: `${ file.getPathInPackage() }.js`,

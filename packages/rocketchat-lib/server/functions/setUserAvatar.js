@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { RocketChatFile } from 'meteor/rocketchat:file';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
 RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 	let encoding;
 	let image;
