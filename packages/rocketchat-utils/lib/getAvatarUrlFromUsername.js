@@ -2,12 +2,11 @@ import { Session } from 'meteor/session';
 import { settings } from 'meteor/rocketchat:settings';
 
 export const getAvatarUrlFromUsername = function(username) {
-	const externalSource = (RocketChat.settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
+	const externalSource = (settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
 	if (externalSource.length) {
 		const url = externalSource.replace('{username}', username);
 		return `${ url }`;
 	}
-	
 	const key = `avatar_random_${ username }`;
 	const random = typeof Session !== 'undefined' && typeof Session.keys[key] !== 'undefined' ? Session.keys[key] : 0;
 	if (username == null) {
