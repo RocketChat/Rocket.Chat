@@ -142,6 +142,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/authorization.js', 'server');
 	api.addFiles('server/functions/getUsernameSuggestion.js', 'server');
 	api.addFiles('server/functions/saveRoomTopic.js', 'server');
+	api.addFiles('server/functions/saveRoomName.js', 'server');
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');
