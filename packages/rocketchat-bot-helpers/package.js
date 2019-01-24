@@ -8,7 +8,9 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:authorization',
 		'accounts-base',
 	]);
 	api.mainModule('server/index.js', 'server');

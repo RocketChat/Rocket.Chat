@@ -17,7 +17,7 @@ export { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutVali
 export { saveUser } from './saveUser';
 export { sendMessage } from './sendMessage';
 export { setEmail } from './setEmail';
-export { setRealName } from './setRealName';
+export { setRealName, _setRealName } from './setRealName';
 export { setUserAvatar } from './setUserAvatar';
 export { setUsername } from './setUsername';
 export { unarchiveRoom } from './unarchiveRoom';
