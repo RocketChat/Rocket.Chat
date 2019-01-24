@@ -1,4 +1,5 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import s from 'underscore.string';
 
 //
@@ -8,7 +9,7 @@ import s from 'underscore.string';
 
 function HexColorPreview(message) {
 	let msg;
-	if (s.trim(message.html) && RocketChat.settings.get('HexColorPreview_Enabled')) {
+	if (s.trim(message.html) && settings.get('HexColorPreview_Enabled')) {
 		msg = message.html;
 		msg = msg.replace(/(?:^|\s|\n)(#[A-Fa-f0-9]{3}([A-Fa-f0-9]{3})?)\b/g, function(match, completeColor) {
 			return match.replace(completeColor, `<div class="message-color"><div class="message-color-sample" style="background-color:${ completeColor }"></div>${ completeColor.toUpperCase() }</div>`);
@@ -18,4 +19,4 @@ function HexColorPreview(message) {
 	return message;
 }
 
-RocketChat.callbacks.add('renderMessage', HexColorPreview, RocketChat.callbacks.priority.MEDIUM, 'hexcolor');
+callbacks.add('renderMessage', HexColorPreview, callbacks.priority.MEDIUM, 'hexcolor');
