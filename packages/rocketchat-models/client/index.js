@@ -18,6 +18,7 @@ import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
 import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
 import CustomSounds from './models/CustomSounds';
+import EmojiCustom from './models/EmojiCustom';
 import _ from 'underscore';
 
 const Users = _.extend({}, users, Meteor.users);
@@ -49,4 +50,5 @@ export {
 	ChatSubscription,
 	Rooms,
 	CustomSounds,
+	EmojiCustom,
 };

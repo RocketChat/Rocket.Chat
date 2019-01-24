@@ -17,6 +17,7 @@ import CustomSounds from './models/CustomSounds';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
 import CredentialTokens from './models/CredentialTokens';
+import EmojiCustom from './models/EmojiCustom';
 
 export {
 	Base,
@@ -38,4 +39,5 @@ export {
 	Integrations,
 	IntegrationHistory,
 	CredentialTokens,
+	EmojiCustom,
 };
