@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
 
 // Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
@@ -25,7 +25,7 @@ const Drupal = new CustomOAuth('drupal', config);
 
 if (Meteor.isServer) {
 	Meteor.startup(function() {
-		RocketChat.settings.get('API_Drupal_URL', function(key, value) {
+		settings.get('API_Drupal_URL', function(key, value) {
 			config.serverURL = value;
 			Drupal.configure(config);
 		});
@@ -33,8 +33,8 @@ if (Meteor.isServer) {
 } else {
 	Meteor.startup(function() {
 		Tracker.autorun(function() {
-			if (RocketChat.settings.get('API_Drupal_URL')) {
-				config.serverURL = RocketChat.settings.get('API_Drupal_URL');
+			if (settings.get('API_Drupal_URL')) {
+				config.serverURL = settings.get('API_Drupal_URL');
 				Drupal.configure(config);
 			}
 		});
