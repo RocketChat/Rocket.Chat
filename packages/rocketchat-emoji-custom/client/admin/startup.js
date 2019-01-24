@@ -1,10 +1,11 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { AdminBox } from 'meteor/rocketchat:ui-utils';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
-RocketChat.AdminBox.addOption({
+AdminBox.addOption({
 	href: 'emoji-custom',
 	i18nLabel: 'Custom_Emoji',
 	icon: 'emoji',
 	permissionGranted() {
-		return RocketChat.authz.hasPermission('manage-emoji');
+		return hasPermission('manage-emoji');
 	},
 });

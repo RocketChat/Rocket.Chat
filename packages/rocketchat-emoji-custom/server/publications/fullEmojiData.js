@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { EmojiCustom } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 Meteor.publish('fullEmojiData', function(filter, limit) {
@@ -23,8 +23,8 @@ Meteor.publish('fullEmojiData', function(filter, limit) {
 
 	if (filter) {
 		const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-		return RocketChat.models.EmojiCustom.findByNameOrAlias(filterReg, options);
+		return EmojiCustom.findByNameOrAlias(filterReg, options);
 	}
 
-	return RocketChat.models.EmojiCustom.find({}, options);
+	return EmojiCustom.find({}, options);
 });
