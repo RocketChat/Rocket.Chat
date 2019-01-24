@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { RocketChat } from 'meteor/rocketchat:lib';
-
+import { settings } from 'meteor/rocketchat:settings';
+import { Users } from 'meteor/rocketchat:models';
+import { setUserAvatar } from 'meteor/rocketchat:lib';
 import { updateOrCreateUser } from './userHandler';
 import { handleAccessToken } from './tokenHandler';
 import { logger } from './logger';
@@ -12,7 +13,7 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 		return;
 	}
 
-	if (!RocketChat.settings.get('Blockstack_Enable')) {
+	if (!settings.get('Blockstack_Enable')) {
 		return;
 	}
 
@@ -35,10 +36,10 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 
 	if (result.isNew) {
 		try {
-			const user = RocketChat.models.Users.findOneById(result.userId, { fields: { 'services.blockstack.image': 1, username: 1 } });
+			const user = Users.findOneById(result.userId, { fields: { 'services.blockstack.image': 1, username: 1 } });
 			if (user && user.services && user.services.blockstack && user.services.blockstack.image) {
 				Meteor.runAsUser(user._id, () => {
-					RocketChat.setUserAvatar(user, user.services.blockstack.image, undefined, 'url');
+					setUserAvatar(user, user.services.blockstack.image, undefined, 'url');
 				});
 			}
 		} catch (e) {
