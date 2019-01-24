@@ -1,4 +1,8 @@
-const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal'];
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
+const fields = ['roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionOverrideGlobal', 'encrypted'];
 Meteor.methods({
 	saveRoomSettings(rid, settings, value) {
 		const userId = Meteor.userId();
@@ -35,16 +39,16 @@ Meteor.methods({
 
 		const room = RocketChat.models.Rooms.findOneById(rid);
 
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'saveRoomSettings',
+			});
+		}
+
 		if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
-			});
-		}
-
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'saveRoomSettings',
 			});
 		}
 
@@ -70,6 +74,12 @@ Meteor.methods({
 				throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Type',
+				});
+			}
+			if (setting === 'encrypted' && value !== room.encrypted && (room.t !== 'd' && room.t !== 'p')) {
+				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
 				});
 			}
 
@@ -183,6 +193,9 @@ Meteor.methods({
 					break;
 				case 'retentionOverrideGlobal':
 					RocketChat.models.Rooms.saveRetentionOverrideGlobalById(rid, value);
+					break;
+				case 'encrypted':
+					RocketChat.models.Rooms.saveEncryptedById(rid, value);
 					break;
 			}
 		});

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+
 Meteor.methods({
 	hideRoom(rid) {
 		if (!Meteor.userId()) {

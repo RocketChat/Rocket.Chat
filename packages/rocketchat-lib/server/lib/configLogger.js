@@ -1,4 +1,6 @@
-/* globals LoggerManager */
+import { Meteor } from 'meteor/meteor';
+import { LoggerManager } from 'meteor/rocketchat:logger';
+
 RocketChat.settings.get('Log_Package', function(key, value) {
 	return LoggerManager.showPackage = value;
 });

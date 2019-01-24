@@ -1,4 +1,6 @@
-/* globals FileUpload */
+import { Meteor } from 'meteor/meteor';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
 RocketChat.deleteMessage = function(message, user) {
 	const keepHistory = RocketChat.settings.get('Message_KeepHistory');
 	const showDeletedStatus = RocketChat.settings.get('Message_ShowDeletedStatus');
@@ -39,7 +41,7 @@ RocketChat.deleteMessage = function(message, user) {
 	if (RocketChat.settings.get('Store_Last_Message')) {
 		const room = RocketChat.models.Rooms.findOneById(message.rid, { fields: { lastMessage: 1 } });
 		if (!room.lastMessage || room.lastMessage._id === message._id) {
-			RocketChat.models.Rooms.resetLastMessageById(message.rid);
+			RocketChat.models.Rooms.resetLastMessageById(message.rid, message._id);
 		}
 	}
 

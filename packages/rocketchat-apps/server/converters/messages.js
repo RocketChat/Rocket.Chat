@@ -1,3 +1,5 @@
+import { Random } from 'meteor/random';
+
 export class AppMessagesConverter {
 	constructor(orch) {
 		this.orch = orch;
@@ -45,7 +47,9 @@ export class AppMessagesConverter {
 			avatarUrl: msgObj.avatar,
 			alias: msgObj.alias,
 			customFields: msgObj.customFields,
+			groupable: msgObj.groupable,
 			attachments,
+			reactions: msgObj.reactions,
 		};
 	}
 
@@ -103,7 +107,9 @@ export class AppMessagesConverter {
 			avatar: message.avatarUrl,
 			alias: message.alias,
 			customFields: message.customFields,
+			groupable: message.groupable,
 			attachments,
+			reactions: message.reactions,
 		};
 	}
 
@@ -116,7 +122,7 @@ export class AppMessagesConverter {
 			collapsed: attachment.collapsed,
 			color: attachment.color,
 			text: attachment.text,
-			ts: attachment.timestamp,
+			ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
 			message_link: attachment.timestampLink,
 			thumb_url: attachment.thumbnailUrl,
 			author_name: attachment.author ? attachment.author.name : undefined,
@@ -129,6 +135,8 @@ export class AppMessagesConverter {
 			audio_url: attachment.audioUrl,
 			video_url: attachment.videoUrl,
 			fields: attachment.fields,
+			button_alignment: attachment.actionButtonsAlignment,
+			actions: attachment.actions,
 			type: attachment.type,
 			description: attachment.description,
 		})).map((a) => {
@@ -170,7 +178,7 @@ export class AppMessagesConverter {
 				collapsed: attachment.collapsed,
 				color: attachment.color,
 				text: attachment.text,
-				timestamp: attachment.ts,
+				timestamp: new Date(attachment.ts),
 				timestampLink: attachment.message_link,
 				thumbnailUrl: attachment.thumb_url,
 				author,
@@ -179,6 +187,8 @@ export class AppMessagesConverter {
 				audioUrl: attachment.audio_url,
 				videoUrl: attachment.video_url,
 				fields: attachment.fields,
+				actionButtonsAlignment: attachment.button_alignment,
+				actions: attachment.actions,
 				type: attachment.type,
 				description: attachment.description,
 			};

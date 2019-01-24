@@ -1,5 +1,10 @@
-/* globals RoutePolicy, logger */
-/* jshint newcap: false */
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
+import { WebApp } from 'meteor/webapp';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoutePolicy } from 'meteor/routepolicy';
+import { logger } from './cas_rocketchat';
 import _ from 'underscore';
 
 import fiber from 'fibers';
@@ -155,19 +160,35 @@ Accounts.registerLoginHandler(function(options) {
 		_.each(attr_map, function(source, int_name) {
 			// Source is our String to interpolate
 			if (_.isString(source)) {
+				let replacedValue = source;
 				_.each(ext_attrs, function(value, ext_name) {
-					source = source.replace(`%${ ext_name }%`, ext_attrs[ext_name]);
+					replacedValue = replacedValue.replace(`%${ ext_name }%`, ext_attrs[ext_name]);
 				});
 
-				int_attrs[int_name] = source;
-				logger.debug(`Sourced internal attribute: ${ int_name } = ${ source }`);
+				if (source !== replacedValue) {
+					int_attrs[int_name] = replacedValue;
+					logger.debug(`Sourced internal attribute: ${ int_name } = ${ replacedValue }`);
+				} else {
+					logger.debug(`Sourced internal attribute: ${ int_name } skipped.`);
+				}
 			}
 		});
 	}
 
 	// Search existing user by its external service id
 	logger.debug(`Looking up user by id: ${ result.username }`);
+	// First, look for a user that has logged in from CAS with this username before
 	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
+	if (!user) {
+		// If that user was not found, check if there's any CAS user that is currently using that username on Rocket.Chat
+		// With this, CAS login will continue to work if the user is renamed on both sides and also if the user is renamed only on Rocket.Chat.
+		const username = new RegExp(`^${ result.username }$`, 'i');
+		user = Meteor.users.findOne({ 'services.cas.external_id': { $exists: true }, username });
+		if (user) {
+			// Update the user's external_id to reflect this new username.
+			Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
+		}
+	}
 
 	if (user) {
 		logger.debug(`Using existing user for '${ result.username }' with id: ${ user._id }`);

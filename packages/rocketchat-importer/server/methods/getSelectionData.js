@@ -1,7 +1,9 @@
+import { Meteor } from 'meteor/meteor';
 import {
 	Importers,
 	ProgressStep,
 } from 'meteor/rocketchat:importer';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	getSelectionData(key) {

@@ -1,3 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoomManager } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);
@@ -159,7 +169,7 @@ const getEmojis = function(collection, filter) {
 		return [];
 	}
 
-	const regExp = new RegExp(`^${ RegExp.escape(key) }`, 'i');
+	const regExp = new RegExp(RegExp.escape(filter), 'i');
 	const recents = RocketChat.EmojiPicker.getRecent().map((item) => `:${ item }:`);
 	return Object.keys(collection).map((_id) => {
 		const data = collection[key];
@@ -295,7 +305,7 @@ Template.messagePopupConfig.helpers({
 
 				// Get users from Server
 				if (items.length < 5 && filterText !== '') {
-					fetchUsersFromServerDelayed(filterText, items, cb, RocketChat.openedRoom);
+					fetchUsersFromServerDelayed(filterText, items, cb, RoomManager.openedRoom);
 				}
 
 				const all = {
@@ -356,7 +366,7 @@ Template.messagePopupConfig.helpers({
 				}).fetch();
 
 				if (records.length < 5 && filter && filter.trim() !== '') {
-					fetchRoomsFromServerDelayed(filter, records, cb, RocketChat.openedRoom);
+					fetchRoomsFromServerDelayed(filter, records, cb, RoomManager.openedRoom);
 				}
 				return records;
 			},

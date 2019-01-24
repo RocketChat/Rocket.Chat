@@ -1,5 +1,7 @@
-/* globals openRoom */
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
+import { ChatRoom } from 'meteor/rocketchat:models';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -29,7 +31,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	findRoom(identifier) {
-		if (!RocketChat.authz.hasAtLeastOnePermission('view-d-room')) {
+		if (!RocketChat.authz.hasPermission('view-d-room')) {
 			return null;
 		}
 
@@ -92,6 +94,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE:
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
+			case RoomSettingsEnum.E2E:
+				return RocketChat.settings.get('E2E_Enable') === true;
 			default:
 				return true;
 		}

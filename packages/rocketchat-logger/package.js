@@ -5,24 +5,21 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('mongo');
-	api.use('ecmascript');
-	api.use('random');
-	api.use('logging');
-	api.use('nooitaf:colors');
-	api.use('raix:eventemitter');
-	api.use('templating', 'client');
-	api.use('kadira:flow-router', 'client');
-
-	api.addFiles('client/ansispan.js', 'client');
-	api.addFiles('client/logger.js', 'client');
-	api.addFiles('client/viewLogs.js', 'client');
-	api.addFiles('client/views/viewLogs.html', 'client');
-	api.addFiles('client/views/viewLogs.js', 'client');
-
-	api.addFiles('server/server.js', 'server');
-
-	api.export('Logger');
-	api.export('SystemLogger');
-	api.export('LoggerManager');
+	api.use([
+		'ecmascript',
+		'mongo',
+		'random',
+		'logging',
+		'nooitaf:colors',
+		'raix:eventemitter',
+		'templating',
+		'rocketchat:utils',
+		'rocketchat:settings',
+		'rocketchat:ui-utils',
+		'rocketchat:authorization',
+		'kadira:flow-router',
+		'kadira:blaze-layout',
+	]);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

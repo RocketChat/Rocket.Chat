@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
+
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {
 		return;
@@ -33,6 +37,10 @@ Meteor.methods({
 			});
 		}
 
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+		}
+
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			return false;
@@ -50,7 +58,7 @@ Meteor.methods({
 		if (RocketChat.settings.get('Message_KeepHistory')) {
 			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
 		}
-
+		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 		const me = RocketChat.models.Users.findOneById(userId);
 
 		originalMessage.pinned = true;
@@ -63,6 +71,9 @@ Meteor.methods({
 		originalMessage = RocketChat.callbacks.run('beforeSaveMessage', originalMessage);
 
 		RocketChat.models.Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		if (RocketChat.isTheLastMessage(room, message)) {
+			RocketChat.models.Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+		}
 
 		const attachments = [];
 
@@ -108,6 +119,10 @@ Meteor.methods({
 			});
 		}
 
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+		}
+
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			return false;
@@ -134,6 +149,10 @@ Meteor.methods({
 			username: me.username,
 		};
 		originalMessage = RocketChat.callbacks.run('beforeSaveMessage', originalMessage);
+		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
+		if (RocketChat.isTheLastMessage(room, message)) {
+			RocketChat.models.Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+		}
 
 		return RocketChat.models.Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 	},

@@ -1,4 +1,6 @@
-class RawImportsModel extends RocketChat.models._Base {
+import { Base as _Base } from 'meteor/rocketchat:models';
+
+class RawImportsModel extends _Base {
 	constructor() {
 		super('raw_imports');
 	}

@@ -1,5 +1,7 @@
-/* globals Google */
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
+import { HTTP } from 'meteor/http';
+import { Google } from 'meteor/google-oauth';
 
 function getIdentity(accessToken) {
 	try {

@@ -1,4 +1,6 @@
-/* globals UserPresenceMonitor */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
 
 let agentsHandler;
 let monitorAgents = false;

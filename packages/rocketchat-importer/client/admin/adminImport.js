@@ -1,4 +1,10 @@
+import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
 
 Template.adminImport.helpers({
 	isAdmin() {
@@ -13,6 +19,10 @@ Template.adminImport.helpers({
 });
 
 Template.adminImport.events({
+	'click .import-history'() {
+		FlowRouter.go('/admin/import/history');
+	},
+
 	'click .start-import'() {
 		const importer = this;
 

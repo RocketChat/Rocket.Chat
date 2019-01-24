@@ -5,21 +5,19 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('modules');
-	api.use('check');
-	api.use('oauth');
-	api.use('oauth2');
-	api.use('ecmascript');
-	api.use('accounts-oauth');
-	api.use('service-configuration');
-
-	api.use('templating', 'client');
-
-	api.use('http', 'server');
-
-
+	api.use([
+		'ecmascript',
+		'check',
+		'oauth',
+		'oauth2',
+		'accounts-oauth',
+		'service-configuration',
+		'rocketchat:logger',
+		'rocketchat:models',
+		'templating',
+		'http',
+	]);
 	api.mainModule('client/custom_oauth_client.js', 'client');
-
 	api.mainModule('server/custom_oauth_server.js', 'server');
 
 	api.export('CustomOAuth');

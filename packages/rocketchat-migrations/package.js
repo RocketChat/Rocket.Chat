@@ -6,11 +6,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('rocketchat:lib');
-	api.use('rocketchat:version');
-	api.use('ecmascript');
-	api.use('check');
-	api.use('mongo');
-
-	api.addFiles('migrations.js', 'server');
+	api.use([
+		'ecmascript',
+		'rocketchat:version',
+		'rocketchat:utils',
+		'logging',
+		'check',
+		'mongo',
+	]);
+	api.mainModule('server/index.js', 'server');
 });

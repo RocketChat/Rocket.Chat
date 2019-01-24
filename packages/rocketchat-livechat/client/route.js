@@ -1,4 +1,7 @@
-livechatManagerRoutes = FlowRouter.group({
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { AccountBox } from 'meteor/rocketchat:ui';
+
+const livechatManagerRoutes = FlowRouter.group({
 	prefix: '/livechat-manager',
 	name: 'livechat-manager',
 });
@@ -17,6 +20,22 @@ AccountBox.addRoute({
 	sideNav: 'livechatFlex',
 	i18nPageTitle: 'Current_Chats',
 	pageTemplate: 'livechatCurrentChats',
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-analytics',
+	path: '/analytics',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Analytics',
+	pageTemplate: 'livechatAnalytics',
+}, livechatManagerRoutes);
+
+AccountBox.addRoute({
+	name: 'livechat-real-time-monitoring',
+	path: '/real-time-monitoring',
+	sideNav: 'livechatFlex',
+	i18nPageTitle: 'Real_Time_Monitoring',
+	pageTemplate: 'livechatRealTimeMonitoring',
 }, livechatManagerRoutes);
 
 AccountBox.addRoute({
@@ -145,5 +164,3 @@ AccountBox.addRoute({
 	i18nPageTitle: 'Livechat_Queue',
 	pageTemplate: 'livechatQueue',
 });
-
-

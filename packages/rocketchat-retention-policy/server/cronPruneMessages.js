@@ -1,4 +1,6 @@
-/* globals SyncedCron */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 let types = [];
 

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	createDirectMessage(username) {
 		check(username, String);
@@ -66,7 +69,6 @@ Meteor.methods({
 		// Make user I have a subcription to this room
 		const upsertSubscription = {
 			$set: {
-				ts: now,
 				ls: now,
 				open: true,
 			},
@@ -83,6 +85,7 @@ Meteor.methods({
 					_id: me._id,
 					username: me.username,
 				},
+				ts: now,
 				...myNotificationPref,
 			},
 		};
@@ -103,7 +106,7 @@ Meteor.methods({
 			$and: [{ 'u._id': to._id }], // work around to solve problems with upsert and dot
 		}, {
 			$setOnInsert: {
-				fname: me.username,
+				fname: me.name,
 				name: me.username,
 				t: 'd',
 				open: false,
@@ -116,6 +119,7 @@ Meteor.methods({
 					_id: to._id,
 					username: to.username,
 				},
+				ts: now,
 				...toNotificationPref,
 			},
 		});

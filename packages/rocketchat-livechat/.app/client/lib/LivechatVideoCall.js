@@ -1,4 +1,6 @@
-/* globals LivechatVideoCall, cordova, JitsiMeetExternalAPI */
+/* globals LivechatVideoCall, JitsiMeetExternalAPI */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import visitor from '../../imports/client/visitor';
 
 LivechatVideoCall = new (class LivechatVideoCall {
@@ -13,19 +15,7 @@ LivechatVideoCall = new (class LivechatVideoCall {
 	}
 
 	askPermissions(callback) {
-		if (Meteor.isCordova) {
-			cordova.plugins.diagnostic.requestCameraAuthorization(() => {
-				cordova.plugins.diagnostic.requestMicrophoneAuthorization(() => {
-					callback(true);
-				}, (error) => {
-					console.error(error);
-				});
-			}, (error) => {
-				console.error(error);
-			});
-		} else {
-			return callback(true);
-		}
+		return callback(true);
 	}
 
 	request() {

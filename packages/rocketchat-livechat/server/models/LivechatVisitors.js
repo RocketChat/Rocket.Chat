@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -73,6 +75,17 @@ class LivechatVisitors extends RocketChat.models._Base {
 		};
 
 		return this.findOne(query);
+	}
+
+	getVisitorsBetweenDate(date) {
+		const query = {
+			_updatedAt: {
+				$gte: date.gte,	// ISO Date, ts >= date.gte
+				$lt: date.lt,	// ISODate, ts < date.lt
+			},
+		};
+
+		return this.find(query, { fields: { _id: 1 } });
 	}
 
 	/**
@@ -185,6 +198,12 @@ class LivechatVisitors extends RocketChat.models._Base {
 		}
 
 		return this.update({ _id }, update);
+	}
+
+	// REMOVE
+	removeById(_id) {
+		const query = { _id };
+		return this.remove(query);
 	}
 }
 

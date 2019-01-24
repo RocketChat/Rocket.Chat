@@ -1,8 +1,14 @@
-/* globals popover */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
 import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
+import { modal, ChatRoom, popover } from 'meteor/rocketchat:ui';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { t } from 'meteor/rocketchat:utils';
 
 const common = {
 	canLeaveRoom() {
@@ -17,7 +23,7 @@ const common = {
 		});
 
 		const roomType = room && room.t;
-		return roomType && RocketChat.roomTypes.roomTypes[roomType].canBeDeleted(room);
+		return roomType && RocketChat.roomTypes.roomTypes[roomType].canBeDeleted(hasPermission, room);
 	},
 	canEditRoom() {
 		const { _id } = Template.instance().room;
@@ -118,7 +124,20 @@ function roomMaxAge(room) {
 	return roomMaxAgeDefault(room.t);
 }
 
+const fixRoomName = (old) => {
+	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+		return old;
+	}
+	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
+};
+
 Template.channelSettingsEditing.events({
+	'input [name="name"]'(e) {
+		const input = e.currentTarget;
+		const modified = fixRoomName(input.value);
+		input.value = modified;
+	},
 	'input .js-input'(e) {
 		this.value.set(e.currentTarget.value);
 	},
@@ -622,6 +641,25 @@ Template.channelSettingsEditing.onCreated(function() {
 						);
 					}
 				);
+			},
+		},
+		encrypted: {
+			type: 'boolean',
+			label: 'Encrypted',
+			isToggle: true,
+			processing: new ReactiveVar(false),
+			canView() {
+				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E);
+			},
+			canEdit() {
+				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+			},
+			save(value) {
+				return call('saveRoomSettings', room._id, 'encrypted', value).then(() => {
+					toastr.success(
+						t('Encrypted_setting_changed_successfully')
+					);
+				});
 			},
 		},
 	};

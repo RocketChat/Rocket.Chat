@@ -8,10 +8,11 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'rocketchat:api',
+		'rocketchat:utils',
 		'templating',
 	]);
 
-	api.use(['reactive-var', 'kadira:flow-router', 'underscore'], 'client');
+	api.use(['reactive-var', 'kadira:flow-router', 'kadira:blaze-layout', 'underscore'], 'client');
 
 	api.addFiles('lib/Apps.js', ['client', 'server']);
 
@@ -85,10 +86,4 @@ Package.onUse(function(api) {
 
 	// Add what this package actually does export (needs updated to the module import style)
 	api.export('Apps');
-});
-
-Npm.depends({
-	busboy: '0.2.13',
-	'@rocket.chat/apps-engine': '0.6.10',
-	'@rocket.chat/apps-ts-definition': '0.9.13',
 });

@@ -1,5 +1,9 @@
-/* globals toolbarSearch */
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { toolbarSearch } from 'meteor/rocketchat:ui-sidenav';
 import _ from 'underscore';
 
 const keys = {
@@ -168,7 +172,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			$('.toolbar').css('display', 'none');
+			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -293,7 +297,6 @@ Template.messagePopupSlashCommandPreview.events({
 		const template = Template.instance();
 		template.clickingItem = false;
 		template.enterKeyAction();
-		toolbarSearch.clear();
 	},
 });
 

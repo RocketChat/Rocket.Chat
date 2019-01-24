@@ -1,4 +1,5 @@
-/* globals getAvatarSuggestionForUser */
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 RocketChat.Migrations.add({
 	version: 2,

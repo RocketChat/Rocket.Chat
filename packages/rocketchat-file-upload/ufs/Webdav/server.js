@@ -1,5 +1,7 @@
+import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
-import Webdav from 'webdav';
+import { Random } from 'meteor/random';
+import { createClient } from 'webdav';
 import stream from 'stream';
 /**
  * WebDAV store
@@ -12,11 +14,12 @@ export class WebdavStore extends UploadFS.Store {
 
 		super(options);
 
-
-		const client = new Webdav(
+		const client = createClient(
 			options.connection.credentials.server,
-			options.connection.credentials.username,
-			options.connection.credentials.password,
+			{
+				username:options.connection.credentials.username,
+				password:options.connection.credentials.password,
+			}
 		);
 
 		options.getPath = function(file) {
@@ -127,7 +130,6 @@ export class WebdavStore extends UploadFS.Store {
 			writeStream.pipe(webdavStream);
 			return writeStream;
 		};
-
 	}
 }
 

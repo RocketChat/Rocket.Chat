@@ -1,5 +1,6 @@
-/* globals getHttpBridge, waitPromise */
-
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { getHttpBridge, waitPromise } from './lib';
 import _ from 'underscore';
 
 RocketChat.Sandstorm.notify = function() {};

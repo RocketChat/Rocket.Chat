@@ -1,5 +1,6 @@
-/* globals openRoom */
+import { Meteor } from 'meteor/meteor';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../RoomTypeConfig';
+import { ChatRoom } from 'meteor/rocketchat:models';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -44,7 +45,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	condition() {
 		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && RocketChat.authz.hasAllPermission('view-p-room');
+		return groupByType && RocketChat.authz.hasPermission('view-p-room');
 	}
 
 	isGroupChat() {
@@ -66,6 +67,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 				return !room.broadcast && room.ro;
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
+			case RoomSettingsEnum.E2E:
+				return RocketChat.settings.get('E2E_Enable') === true;
 			default:
 				return true;
 		}

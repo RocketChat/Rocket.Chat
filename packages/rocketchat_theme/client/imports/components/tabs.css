@@ -1,0 +1,36 @@
+.tabs {
+	margin-bottom: 0.5rem;
+
+	border-bottom: 2px solid var(--input-border-color);
+}
+
+.tabs-wrapper {
+	display: flex;
+
+	width: 100%;
+
+	margin: 0 -1rem -2px -1rem;
+}
+
+.tab {
+	margin: 0 1rem;
+	padding: 1rem 0;
+
+	cursor: pointer;
+
+	transition: all 0.3s;
+
+	color: var(--rc-color-primary-light);
+
+	border-bottom: 2px solid transparent;
+
+	font-size: 1rem;
+
+	font-weight: 500;
+	line-height: 1.25rem;
+
+	&.active {
+		color: var(--rc-color-button-primary);
+		border-bottom-color: var(--rc-color-button-primary);
+	}
+}
