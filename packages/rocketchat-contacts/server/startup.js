@@ -22,4 +22,19 @@ RocketChat.settings.addGroup('Contacts', function() {
 		public: true,
 		i18nDescription: 'Contacts_Background_Sync_Interval_Description',
 	});
+	this.add('Contacts_Dynamic_Link_APIKey', '', {
+		type: 'string',
+		public: true,
+		i18nDescription: 'Contacts_Dynamic_Link_APIKey',
+	});
+	this.add('Contacts_Dynamic_Link_DomainURIPrefix', '', {
+		type: 'string',
+		public: true,
+		i18nDescription: 'Contacts_Dynamic_Link_DomainURIPrefix',
+	});
+	this.add('Contacts_Dynamic_Link_AndroidPackageName', '', {
+		type: 'string',
+		public: true,
+		i18nDescription: 'Contacts_Dynamic_Link_AndroidPackageName',
+	});
 });

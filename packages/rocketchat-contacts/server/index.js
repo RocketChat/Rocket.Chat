@@ -1,6 +1,7 @@
 /* globals SyncedCron */
 
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 const service = require('./service.js');
 const provider = new service.Provider();
@@ -93,6 +94,57 @@ Meteor.methods({
 			});
 		}
 		return provider.queryContacts(weakHashes);
+	},
+	getInviteLink() {
+		const user = Meteor.user();
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'getInviteLink',
+			});
+		}
+		if (!RocketChat.settings.get('Contacts_Dynamic_Link_APIKey')) {
+			throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_APIKey not configured', {
+				method: 'getInviteLink',
+			});
+		}
+
+		if (!RocketChat.settings.get('Contacts_Dynamic_Link_DomainURIPrefix')) {
+			throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_DomainURIPrefix not configured', {
+				method: 'getInviteLink',
+			});
+		}
+
+		if (!RocketChat.settings.get('Contacts_Dynamic_Link_AndroidPackageName')) {
+			throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_AndroidPackageName not configured', {
+				method: 'getInviteLink',
+			});
+		}
+
+		const server = RocketChat.settings.get('Site_Url');
+
+		this.unblock();
+		try {
+			const result = HTTP.call('POST', `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${ RocketChat.settings.get('Contacts_Dynamic_Link_APIKey') }`, {
+				data: {
+					dynamicLinkInfo:{
+						domainUriPrefix: RocketChat.settings.get('Contacts_Dynamic_Link_DomainURIPrefix'),
+						link: `${ server }direct/${ user.username }`,
+						androidInfo:{
+							androidPackageName:RocketChat.settings.get('Contacts_Dynamic_Link_AndroidPackageName'),
+						},
+						socialMetaTagInfo: {
+							socialTitle: user.username,
+							socialDescription: `Chat with ${ user.username } on ${ server }`,
+						},
+					},
+				},
+			});
+			return result.data.shortLink;
+		} catch (e) {
+			throw new Meteor.Error('dynamic-link-request-failed', 'API request to generate dynamic link failed', {
+				method: 'getInviteLink',
+			});
+		}
 	},
 });
 
