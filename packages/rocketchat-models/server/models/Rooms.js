@@ -26,6 +26,16 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setTokenpassById(_id, tokenpass) {
+		const update = {
+			$set: {
+				tokenpass,
+			},
+		};
+	
+		return this.update({ _id }, update);
+	}
+
 	setE2eKeyId(_id, e2eKeyId, options) {
 		const query = {
 			_id,
