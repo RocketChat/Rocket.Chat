@@ -470,9 +470,9 @@ RocketChat.settings.addGroup('Accounts', function() {
 			},
 		});
 
-		this.add('Accounts_ExternalSource', '', {
+		this.add('Accounts_AvatarExternalProviderUrl', '', {
 			type: 'string',
-			'public': true
+			public: true,
 		});
 
 		this.add('Accounts_AvatarCacheTime', 3600, {

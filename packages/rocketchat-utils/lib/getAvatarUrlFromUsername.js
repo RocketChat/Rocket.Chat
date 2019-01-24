@@ -2,7 +2,7 @@ import { Session } from 'meteor/session';
 import { settings } from 'meteor/rocketchat:settings';
 
 export const getAvatarUrlFromUsername = function(username) {
-	const externalSource = (RocketChat.settings.get('Accounts_ExternalSource') || '').trim().replace(/\/$/, '');
+	const externalSource = (RocketChat.settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
 	if (externalSource.length) {
 		const url = externalSource.replace('{username}', username);
 		return `${ url }`;
