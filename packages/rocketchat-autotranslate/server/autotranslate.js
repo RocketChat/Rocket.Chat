@@ -260,4 +260,4 @@ class AutoTranslate {
 	}
 }
 
-export default new AutoTranslate;
+export default new AutoTranslate();
