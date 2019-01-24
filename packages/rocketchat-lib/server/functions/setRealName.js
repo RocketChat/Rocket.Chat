@@ -6,7 +6,7 @@ import { hasPermission } from 'meteor/rocketchat:authorization';
 import { RateLimiter } from '../lib';
 import s from 'underscore.string';
 
-const _setRealName = function(userId, name) {
+export const _setRealName = function(userId, name) {
 	name = s.trim(name);
 	if (!userId || !name) {
 		return false;
