@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'webapp',
 		'mongo',
 		'rocketchat:lib',
+		'rocketchat:settings',
 	]);
 
 	api.mainModule('client/index.js', 'client');

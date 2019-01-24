@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(function() {
-	RocketChat.settings.addGroup('AtlassianCrowd', function() {
+	settings.addGroup('AtlassianCrowd', function() {
 		const enableQuery = { _id: 'CROWD_Enable', value: true };
 		const enableSyncQuery = [enableQuery, { _id: 'CROWD_Sync_User_Data', value: true }];
 

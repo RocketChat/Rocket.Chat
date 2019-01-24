@@ -8,7 +8,8 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
 	]);
 	api.addFiles('client/style.css', 'client');
 	api.mainModule('client/index.js', 'client');

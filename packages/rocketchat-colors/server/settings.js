@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.add('HexColorPreview_Enabled', true, {
+settings.add('HexColorPreview_Enabled', true, {
 	type: 'boolean',
 	i18nLabel: 'Enabled',
 	group: 'Message',
