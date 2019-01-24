@@ -1,13 +1,4 @@
 import './startup';
-import './models/Messages';
+export { saveRoomTopic } from './functions/saveRoomTopic';
 export { saveStreamingOptions } from './functions/saveStreamingOptions';
-import './functions/saveReactWhenReadOnly';
-import './functions/saveRoomAnnouncement';
-import './functions/saveRoomCustomFields';
-import './functions/saveRoomDescription';
-import './functions/saveRoomName';
-import './functions/saveRoomReadOnly';
-import './functions/saveRoomSystemMessages';
-import './functions/saveRoomTopic';
-import './functions/saveRoomType';
 import './methods/saveRoomSettings';

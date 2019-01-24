@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, Messages, Subscriptions } from 'meteor/rocketchat:models';
+import { roomTypes, getValidRoomName } from 'meteor/rocketchat:utils';
 
-RocketChat.saveRoomName = function(rid, displayName, user, sendMessage = true) {
-	const room = RocketChat.models.Rooms.findOneById(rid);
-	if (RocketChat.roomTypes.roomTypes[room.t].preventRenaming()) {
+export const saveRoomName = function(rid, displayName, user, sendMessage = true) {
+	const room = Rooms.findOneById(rid);
+	if (roomTypes.roomTypes[room.t].preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			function: 'RocketChat.saveRoomdisplayName',
 		});
@@ -12,12 +13,12 @@ RocketChat.saveRoomName = function(rid, displayName, user, sendMessage = true) {
 		return;
 	}
 
-	const slugifiedRoomName = RocketChat.getValidRoomName(displayName, rid);
+	const slugifiedRoomName = getValidRoomName(displayName, rid);
 
-	const update = RocketChat.models.Rooms.setNameById(rid, slugifiedRoomName, displayName) && RocketChat.models.Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
+	const update = Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
 
 	if (update && sendMessage) {
-		RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
+		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
 	}
 	return displayName;
 };

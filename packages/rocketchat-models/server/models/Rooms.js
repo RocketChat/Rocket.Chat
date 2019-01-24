@@ -26,6 +26,18 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setDescriptionById(_id, description) {
+		const query = {
+			_id,
+		};
+		const update = {
+			$set: {
+				description,
+			},
+		};
+		return this.update(query, update);
+	}
+
 	setStreamingOptionsById(_id, streamingOptions) {
 		const update = {
 			$set: {
@@ -41,8 +53,65 @@ export class Rooms extends Base {
 				tokenpass,
 			},
 		};
-	
+
 		return this.update({ _id }, update);
+	}
+
+	setReadOnlyById(_id, readOnly, hasPermission) {
+		if (!hasPermission) {
+			throw new Error('You must provide "hasPermission" function to be able to call this method');
+		}
+		const query = {
+			_id,
+		};
+		const update = {
+			$set: {
+				ro: readOnly,
+				muted: [],
+			},
+		};
+		if (readOnly) {
+			Subscriptions.findByRoomIdWhenUsernameExists(_id, { fields: { 'u._id': 1, 'u.username': 1 } }).forEach(function({ u: user }) {
+				if (hasPermission(user._id, 'post-readonly')) {
+					return;
+				}
+				return update.$set.muted.push(user.username);
+			});
+		} else {
+			update.$unset = {
+				muted: '',
+			};
+		}
+
+		if (update.$set.muted.length === 0) {
+			delete update.$set.muted;
+		}
+
+		return this.update(query, update);
+	}
+
+	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
+		const query = {
+			_id,
+		};
+		const update = {
+			$set: {
+				reactWhenReadOnly: allowReacting,
+			},
+		};
+		return this.update(query, update);
+	}
+
+	setSystemMessagesById = function(_id, systemMessages) {
+		const query = {
+			_id,
+		};
+		const update = {
+			$set: {
+				sysMes: systemMessages,
+			},
+		};
+		return this.update(query, update);
 	}
 
 	setE2eKeyId(_id, e2eKeyId, options) {

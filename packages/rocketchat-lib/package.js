@@ -252,6 +252,7 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/EmojiPicker.js', 'client');
 	api.addFiles('client/lib/ui-buttons.js', 'client');
 	api.addFiles('client/lib/sandstorm.js', 'client');
+	api.addFiles('client/lib/ChannelSettings.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');
