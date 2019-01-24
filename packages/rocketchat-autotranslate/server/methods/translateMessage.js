@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms } from 'meteor/rocketchat:models';
-import { AutoTranslate } from '../autotranslate';
+import AutoTranslate from '../autotranslate';
 
 Meteor.methods({
 	'autoTranslate.translateMessage'(message, targetLanguage) {
