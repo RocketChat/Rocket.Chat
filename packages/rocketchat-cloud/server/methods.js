@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Settings } from 'meteor/rocketchat:models';
 
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { connectWorkspace } from './functions/connectWorkspace';
@@ -12,7 +14,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:checkRegisterStatus' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:checkRegisterStatus' });
 		}
 
@@ -25,11 +27,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:updateEmail' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:updateEmail' });
 		}
 
-		RocketChat.models.Settings.updateValueById('Organization_Email', email);
+		Settings.updateValueById('Organization_Email', email);
 	},
 	'cloud:connectWorkspace'(token) {
 		check(token, String);
@@ -38,7 +40,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:connectServer' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:connectServer' });
 		}
 
@@ -49,7 +51,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:connectServer' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:connectServer' });
 		}
 
@@ -63,7 +65,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:finishOAuthAuthorization' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'manage-cloud')) {
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:connectServer' });
 		}
 
