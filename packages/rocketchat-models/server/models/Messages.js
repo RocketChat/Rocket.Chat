@@ -40,7 +40,7 @@ export class Messages extends Base {
 				updateObj[`attachments.0.${ index }`] = visionData[index];
 			}
 		}
-	
+
 		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 

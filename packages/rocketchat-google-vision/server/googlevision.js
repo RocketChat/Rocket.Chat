@@ -3,8 +3,8 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
-import { notifications } from 'meteor/rocketchat:notifications';
-import { Uploads, Settings, Users } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { Uploads, Settings, Users, Messages } from 'meteor/rocketchat:models';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 class GoogleVision {
