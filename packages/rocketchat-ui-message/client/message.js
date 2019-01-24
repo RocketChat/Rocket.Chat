@@ -10,6 +10,7 @@ import { renderEmoji } from 'meteor/rocketchat:emoji';
 import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
+import { AutoTranslate } from 'meteor/rocketchat:autotranslate';
 import { t } from 'meteor/rocketchat:utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
@@ -192,7 +193,7 @@ Template.message.helpers({
 					autoTranslateLanguage: 1,
 				},
 			});
-			const language = RocketChat.AutoTranslate.getLanguage(this.rid);
+			const language = AutoTranslate.getLanguage(this.rid);
 			return this.autoTranslateFetching || (subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language]);
 		}
 	},

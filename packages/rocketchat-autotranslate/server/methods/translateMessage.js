@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
+import AutoTranslate from '../autotranslate';
 
 Meteor.methods({
 	'autoTranslate.translateMessage'(message, targetLanguage) {
-		const room = RocketChat.models.Rooms.findOneById(message && message.rid);
-		if (message && room && RocketChat.AutoTranslate) {
-			return RocketChat.AutoTranslate.translateMessage(message, room, targetLanguage);
+		const room = Rooms.findOneById(message && message.rid);
+		if (message && room && AutoTranslate) {
+			return AutoTranslate.translateMessage(message, room, targetLanguage);
 		}
 	},
 });
