@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 
-RocketChat.saveRoomTokenpass = function(rid, tokenpass) {
+export const saveRoomTokenpass = function(rid, tokenpass) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomTokens',
 		});
 	}
 
-	return RocketChat.models.Rooms.setTokenpassById(rid, tokenpass);
+	return Rooms.setTokenpassById(rid, tokenpass);
 };

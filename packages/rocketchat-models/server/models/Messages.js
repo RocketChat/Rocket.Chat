@@ -33,6 +33,14 @@ export class Messages extends Base {
 		});
 	}
 
+	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
+	}
+
+	createRoomRenamedWithRoomIdRoomNameAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
+	}
+
 	addTranslations(messageId, translations) {
 		const updateObj = {};
 		Object.keys(translations).forEach((key) => {

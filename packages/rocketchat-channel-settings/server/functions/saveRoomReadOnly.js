@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
-RocketChat.saveRoomReadOnly = function(rid, readOnly) {
+export const saveRoomReadOnly = function(rid, readOnly) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomReadOnly',
 		});
 	}
-	return RocketChat.models.Rooms.setReadOnlyById(rid, readOnly);
+	return Rooms.setReadOnlyById(rid, readOnly, hasPermission);
 };

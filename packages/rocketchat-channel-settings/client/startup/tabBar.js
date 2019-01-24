@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(() => {
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['channel', 'group', 'direct'],
 		id: 'channel-settings',
 		anonymous: true,
