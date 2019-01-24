@@ -236,7 +236,7 @@ export const RocketChatAssets = new (class {
 				};
 
 				settings.updateById(key, value);
-				return Assets.processAsset(key, value);
+				return RocketChatAssets.processAsset(key, value);
 			}, 200);
 		}));
 
@@ -257,7 +257,7 @@ export const RocketChatAssets = new (class {
 		};
 
 		settings.updateById(key, value);
-		Assets.processAsset(key, value);
+		RocketChatAssets.processAsset(key, value);
 	}
 
 	refreshClients() {
@@ -354,15 +354,15 @@ for (const key of Object.keys(assets)) {
 
 Settings.find().observe({
 	added(record) {
-		return Assets.processAsset(record._id, record.value);
+		return RocketChatAssets.processAsset(record._id, record.value);
 	},
 
 	changed(record) {
-		return Assets.processAsset(record._id, record.value);
+		return RocketChatAssets.processAsset(record._id, record.value);
 	},
 
 	removed(record) {
-		return Assets.processAsset(record._id, undefined);
+		return RocketChatAssets.processAsset(record._id, undefined);
 	},
 });
 
@@ -439,7 +439,7 @@ Meteor.methods({
 			});
 		}
 
-		return Assets.refreshClients();
+		return RocketChatAssets.refreshClients();
 	},
 
 	unsetAsset(asset) {
@@ -457,7 +457,7 @@ Meteor.methods({
 			});
 		}
 
-		return Assets.unsetAsset(asset);
+		return RocketChatAssets.unsetAsset(asset);
 	},
 
 	setAsset(binaryContent, contentType, asset) {
@@ -475,7 +475,7 @@ Meteor.methods({
 			});
 		}
 
-		Assets.setAsset(binaryContent, contentType, asset);
+		RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
 });
 
