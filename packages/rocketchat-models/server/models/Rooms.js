@@ -26,6 +26,15 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setStreamingOptionsById(_id, streamingOptions) {
+		const update = {
+			$set: {
+				streamingOptions,
+			},
+		};
+		return this.update({ _id }, update);
+	}
+
 	setTokenpassById(_id, tokenpass) {
 		const update = {
 			$set: {

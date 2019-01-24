@@ -55,6 +55,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:action-links');
 	api.use('rocketchat:assets');
 	api.use('rocketchat:markdown');
+	api.use('rocketchat:channel-settings');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -140,6 +141,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/Notifications.js', 'server');
 	api.addFiles('server/functions/authorization.js', 'server');
 	api.addFiles('server/functions/getUsernameSuggestion.js', 'server');
+	api.addFiles('server/functions/saveRoomTopic.js', 'server');
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');

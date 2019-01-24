@@ -1,6 +1,6 @@
 import './startup';
 import './models/Messages';
-import './models/Rooms';
+export { saveStreamingOptions } from './functions/saveStreamingOptions';
 import './functions/saveReactWhenReadOnly';
 import './functions/saveRoomAnnouncement';
 import './functions/saveRoomCustomFields';
