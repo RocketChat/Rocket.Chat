@@ -35,6 +35,7 @@ Meteor.methods({
 					html,
 					data: {
 						email,
+						Invite_Link:Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
 					},
 				});
 			} catch ({ message }) {

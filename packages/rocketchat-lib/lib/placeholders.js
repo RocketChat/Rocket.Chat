@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 RocketChat.placeholders = {};
@@ -9,6 +10,11 @@ RocketChat.placeholders.replace = function(str, data) {
 
 	str = str.replace(/\[Site_Name\]/g, RocketChat.settings.get('Site_Name') || '');
 	str = str.replace(/\[Site_URL\]/g, RocketChat.settings.get('Site_Url') || '');
+
+	if (str.includes('[Invite_Link]')) {
+		const invite_link = Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink'));
+		str = str.replace(/\[Invite_Link\]/g, invite_link);
+	}
 
 	if (data) {
 		str = str.replace(/\[name\]/g, data.name || '');
