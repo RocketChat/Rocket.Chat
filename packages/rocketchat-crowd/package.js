@@ -9,6 +9,9 @@ Package.onUse(function(api) {
 	api.use([
 		'rocketchat:logger',
 		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:authorization',
 		'ecmascript',
 		'sha',
 		'templating',
