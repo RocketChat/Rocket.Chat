@@ -3,6 +3,7 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui';
 const service = require('./service.js');
 const provider = new service.Provider();
 
@@ -135,6 +136,7 @@ Meteor.methods({
 						socialMetaTagInfo: {
 							socialTitle: user.username,
 							socialDescription: `Chat with ${ user.username } on ${ server }`,
+							socialImageLink: `${ server.slice(0, -1) }${ getAvatarUrlFromUsername(user.username) }`,
 						},
 					},
 				},
