@@ -12,9 +12,8 @@ Package.onUse(function(api) {
 		'check',
 		'ecmascript',
 		'rocketchat:utils',
-		'rocketchat:lib',
 		'rocketchat:accounts',
-		'rocketchat:ui',
+		'rocketchat:models',
 	]);
 
 	api.mainModule('server/index.js', 'server');
