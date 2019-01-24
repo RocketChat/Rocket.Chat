@@ -830,12 +830,19 @@ Template.room.events({
 	'click .announcement'() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
+		let announcementText = roomData.announcement;
+		markdownLink = announcementText.match(/\[.+\]\((https\:\/\/.+\))|(http\:\/\/).+\)/ig)[0];
+		markdownUrl = markdownLink.match(/\(.+\)/ig)[0].slice(1, -1);
+		markdownText = markdownLink.match(/\[.+\]/ig)[0].slice(1, -1);
+		const linkTemplate = `<a href="` + markdownUrl + `">` + markdownText + `</a>`;
+		announcementText = announcementText.replace(/\[.+\]\((https\:\/\/.+\))|(http\:\/\/).+\)/ig, linkTemplate);
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return RocketChat.callbacks.run(roomData.announcementDetails.callback, this._id);
 		} else {
 			modal.open({
 				title: t('Announcement'),
-				text: roomData.announcement,
+				text: announcementText,
+				html: true,
 				showConfirmButton: false,
 				showCancelButton: true,
 				cancelButtonText: t('Close'),
