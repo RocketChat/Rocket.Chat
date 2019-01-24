@@ -10,7 +10,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'emojione:emojione@2.2.6',
 		'rocketchat:emoji',
-		'rocketchat:lib',
+		'rocketchat:callbacks',
+		'rocketchat:utils',
 	]);
 	api.addFiles('client/sprites.css', 'client');
 	api.mainModule('client/index.js', 'client');
