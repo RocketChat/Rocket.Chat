@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { Settings } from 'meteor/rocketchat:models';
+import { getURL } from 'meteor/rocketchat:utils';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import { RocketChatFile } from 'meteor/rocketchat:file';
 import { WebAppHashing } from 'meteor/webapp-hashing';
 import { WebAppInternals } from 'meteor/webapp';
@@ -15,8 +18,6 @@ mime.extensions['image/vnd.microsoft.icon'] = ['ico'];
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
 });
-
-this.RocketChatAssetsInstance = RocketChatAssetsInstance;
 
 const assets = {
 	logo: {
@@ -185,7 +186,7 @@ const assets = {
 	},
 };
 
-RocketChat.Assets = new (class {
+export const RocketChatAssets = new (class {
 	get mime() {
 		return mime;
 	}
@@ -234,8 +235,8 @@ RocketChat.Assets = new (class {
 					defaultUrl: assets[asset].defaultUrl,
 				};
 
-				RocketChat.settings.updateById(key, value);
-				return RocketChat.Assets.processAsset(key, value);
+				settings.updateById(key, value);
+				return RocketChatAssets.processAsset(key, value);
 			}, 200);
 		}));
 
@@ -255,8 +256,8 @@ RocketChat.Assets = new (class {
 			defaultUrl: assets[asset].defaultUrl,
 		};
 
-		RocketChat.settings.updateById(key, value);
-		RocketChat.Assets.processAsset(key, value);
+		settings.updateById(key, value);
+		RocketChatAssets.processAsset(key, value);
 	}
 
 	refreshClients() {
@@ -308,16 +309,16 @@ RocketChat.Assets = new (class {
 	}
 
 	getURL(assetName, options = { cdn: false, full: true }) {
-		const asset = RocketChat.settings.get(assetName);
+		const asset = settings.get(assetName);
 		const url = asset.url || asset.defaultUrl;
 
-		return RocketChat.getURL(url, options);
+		return getURL(url, options);
 	}
 });
 
-RocketChat.settings.addGroup('Assets');
+settings.addGroup('Assets');
 
-RocketChat.settings.add('Assets_SvgFavicon_Enable', true, {
+settings.add('Assets_SvgFavicon_Enable', true, {
 	type: 'boolean',
 	group: 'Assets',
 	i18nLabel: 'Enable_Svg_Favicon',
@@ -326,7 +327,7 @@ RocketChat.settings.add('Assets_SvgFavicon_Enable', true, {
 function addAssetToSetting(asset, value) {
 	const key = `Assets_${ asset }`;
 
-	RocketChat.settings.add(key, {
+	settings.add(key, {
 		defaultUrl: value.defaultUrl,
 	}, {
 		type: 'asset',
@@ -338,11 +339,11 @@ function addAssetToSetting(asset, value) {
 		wizard: value.wizard,
 	});
 
-	const currentValue = RocketChat.settings.get(key);
+	const currentValue = settings.get(key);
 
 	if (typeof currentValue === 'object' && currentValue.defaultUrl !== assets[asset].defaultUrl) {
 		currentValue.defaultUrl = assets[asset].defaultUrl;
-		RocketChat.settings.updateById(key, currentValue);
+		settings.updateById(key, currentValue);
 	}
 }
 
@@ -351,17 +352,17 @@ for (const key of Object.keys(assets)) {
 	addAssetToSetting(key, value);
 }
 
-RocketChat.models.Settings.find().observe({
+Settings.find().observe({
 	added(record) {
-		return RocketChat.Assets.processAsset(record._id, record.value);
+		return RocketChatAssets.processAsset(record._id, record.value);
 	},
 
 	changed(record) {
-		return RocketChat.Assets.processAsset(record._id, record.value);
+		return RocketChatAssets.processAsset(record._id, record.value);
 	},
 
 	removed(record) {
-		return RocketChat.Assets.processAsset(record._id, undefined);
+		return RocketChatAssets.processAsset(record._id, undefined);
 	},
 });
 
@@ -430,15 +431,15 @@ Meteor.methods({
 			});
 		}
 
-		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
-		if (!hasPermission) {
+		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'refreshClients',
 				action: 'Managing_assets',
 			});
 		}
 
-		return RocketChat.Assets.refreshClients();
+		return RocketChatAssets.refreshClients();
 	},
 
 	unsetAsset(asset) {
@@ -448,15 +449,15 @@ Meteor.methods({
 			});
 		}
 
-		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
-		if (!hasPermission) {
+		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'unsetAsset',
 				action: 'Managing_assets',
 			});
 		}
 
-		return RocketChat.Assets.unsetAsset(asset);
+		return RocketChatAssets.unsetAsset(asset);
 	},
 
 	setAsset(binaryContent, contentType, asset) {
@@ -466,15 +467,15 @@ Meteor.methods({
 			});
 		}
 
-		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'manage-assets');
-		if (!hasPermission) {
+		const _hasPermission = hasPermission(Meteor.userId(), 'manage-assets');
+		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'setAsset',
 				action: 'Managing_assets',
 			});
 		}
 
-		RocketChat.Assets.setAsset(binaryContent, contentType, asset);
+		RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
 });
 

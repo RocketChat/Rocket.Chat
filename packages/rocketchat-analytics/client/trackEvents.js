@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { ChatRoom } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { ChatRoom } from 'meteor/rocketchat:models';
 import { Tracker } from 'meteor/tracker';
 
 function trackEvent(category, action, label) {
@@ -29,60 +30,60 @@ if (!window._paq || window.ga) {
 	}]);
 
 	// Login page has manual switches
-	RocketChat.callbacks.add('loginPageStateChange', (state) => {
+	callbacks.add('loginPageStateChange', (state) => {
 		trackEvent('Navigation', 'Login Page State Change', state);
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-login-state-change');
+	}, callbacks.priority.MEDIUM, 'analytics-login-state-change');
 
 	// Messsages
-	RocketChat.callbacks.add('afterSaveMessage', (message) => {
-		if ((window._paq || window.ga) && RocketChat.settings.get('Analytics_features_messages')) {
+	callbacks.add('afterSaveMessage', (message) => {
+		if ((window._paq || window.ga) && settings.get('Analytics_features_messages')) {
 			const room = ChatRoom.findOne({ _id: message.rid });
 			trackEvent('Message', 'Send', `${ room.name } (${ room._id })`);
 		}
 	}, 2000, 'trackEvents');
 
 	// Rooms
-	RocketChat.callbacks.add('afterCreateChannel', (owner, room) => {
-		if (RocketChat.settings.get('Analytics_features_rooms')) {
+	callbacks.add('afterCreateChannel', (owner, room) => {
+		if (settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Create', `${ room.name } (${ room._id })`);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-after-create-channel');
+	}, callbacks.priority.MEDIUM, 'analytics-after-create-channel');
 
-	RocketChat.callbacks.add('roomNameChanged', (room) => {
-		if (RocketChat.settings.get('Analytics_features_rooms')) {
+	callbacks.add('roomNameChanged', (room) => {
+		if (settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Changed Name', `${ room.name } (${ room._id })`);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-name-changed');
+	}, callbacks.priority.MEDIUM, 'analytics-room-name-changed');
 
-	RocketChat.callbacks.add('roomTopicChanged', (room) => {
-		if (RocketChat.settings.get('Analytics_features_rooms')) {
+	callbacks.add('roomTopicChanged', (room) => {
+		if (settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Changed Topic', `${ room.name } (${ room._id })`);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-topic-changed');
+	}, callbacks.priority.MEDIUM, 'analytics-room-topic-changed');
 
-	RocketChat.callbacks.add('roomAnnouncementChanged', (room) => {
-		if (RocketChat.settings.get('Analytics_features_rooms')) {
+	callbacks.add('roomAnnouncementChanged', (room) => {
+		if (settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Changed Announcement', `${ room.name } (${ room._id })`);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-announcement-changed');
+	}, callbacks.priority.MEDIUM, 'analytics-room-announcement-changed');
 
-	RocketChat.callbacks.add('roomTypeChanged', (room) => {
-		if (RocketChat.settings.get('Analytics_features_rooms')) {
+	callbacks.add('roomTypeChanged', (room) => {
+		if (settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Changed Room Type', `${ room.name } (${ room._id })`);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-room-type-changed');
+	}, callbacks.priority.MEDIUM, 'analytics-room-type-changed');
 
-	RocketChat.callbacks.add('archiveRoom', (room) => {
-		if (RocketChat.settings.get('Analytics_features_rooms')) {
+	callbacks.add('archiveRoom', (room) => {
+		if (settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Archived', `${ room.name } (${ room._id })`);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-archive-room');
+	}, callbacks.priority.MEDIUM, 'analytics-archive-room');
 
-	RocketChat.callbacks.add('unarchiveRoom', (room) => {
-		if (RocketChat.settings.get('Analytics_features_rooms')) {
+	callbacks.add('unarchiveRoom', (room) => {
+		if (settings.get('Analytics_features_rooms')) {
 			trackEvent('Room', 'Unarchived', `${ room.name } (${ room._id })`);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-unarchive-room');
+	}, callbacks.priority.MEDIUM, 'analytics-unarchive-room');
 
 	// Users
 	// Track logins and associate user ids with piwik
@@ -92,12 +93,12 @@ if (!window._paq || window.ga) {
 		Tracker.autorun(() => {
 			const newUserId = Meteor.userId();
 			if (oldUserId === null && newUserId) {
-				if (window._paq && RocketChat.settings.get('Analytics_features_users')) {
+				if (window._paq && settings.get('Analytics_features_users')) {
 					trackEvent('User', 'Login', newUserId);
 					window._paq.push(['setUserId', newUserId]);
 				}
 			} else if (newUserId === null && oldUserId) {
-				if (window._paq && RocketChat.settings.get('Analytics_features_users')) {
+				if (window._paq && settings.get('Analytics_features_users')) {
 					trackEvent('User', 'Logout', oldUserId);
 				}
 			}
@@ -105,45 +106,45 @@ if (!window._paq || window.ga) {
 		});
 	})();
 
-	RocketChat.callbacks.add('userRegistered', () => {
-		if (RocketChat.settings.get('Analytics_features_users')) {
+	callbacks.add('userRegistered', () => {
+		if (settings.get('Analytics_features_users')) {
 			trackEvent('User', 'Registered');
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'piwik-user-resitered');
+	}, callbacks.priority.MEDIUM, 'piwik-user-resitered');
 
-	RocketChat.callbacks.add('usernameSet', () => {
-		if (RocketChat.settings.get('Analytics_features_users')) {
+	callbacks.add('usernameSet', () => {
+		if (settings.get('Analytics_features_users')) {
 			trackEvent('User', 'Username Set');
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'piweik-username-set');
+	}, callbacks.priority.MEDIUM, 'piweik-username-set');
 
-	RocketChat.callbacks.add('userPasswordReset', () => {
-		if (RocketChat.settings.get('Analytics_features_users')) {
+	callbacks.add('userPasswordReset', () => {
+		if (settings.get('Analytics_features_users')) {
 			trackEvent('User', 'Reset Password');
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'piwik-user-password-reset');
+	}, callbacks.priority.MEDIUM, 'piwik-user-password-reset');
 
-	RocketChat.callbacks.add('userConfirmationEmailRequested', () => {
-		if (RocketChat.settings.get('Analytics_features_users')) {
+	callbacks.add('userConfirmationEmailRequested', () => {
+		if (settings.get('Analytics_features_users')) {
 			trackEvent('User', 'Confirmation Email Requested');
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'piwik-user-confirmation-email-requested');
+	}, callbacks.priority.MEDIUM, 'piwik-user-confirmation-email-requested');
 
-	RocketChat.callbacks.add('userForgotPasswordEmailRequested', () => {
-		if (RocketChat.settings.get('Analytics_features_users')) {
+	callbacks.add('userForgotPasswordEmailRequested', () => {
+		if (settings.get('Analytics_features_users')) {
 			trackEvent('User', 'Forgot Password Email Requested');
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'piwik-user-forgot-password-email-requested');
+	}, callbacks.priority.MEDIUM, 'piwik-user-forgot-password-email-requested');
 
-	RocketChat.callbacks.add('userStatusManuallySet', (status) => {
-		if (RocketChat.settings.get('Analytics_features_users')) {
+	callbacks.add('userStatusManuallySet', (status) => {
+		if (settings.get('Analytics_features_users')) {
 			trackEvent('User', 'Status Manually Changed', status);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-user-status-manually-set');
+	}, callbacks.priority.MEDIUM, 'analytics-user-status-manually-set');
 
-	RocketChat.callbacks.add('userAvatarSet', (service) => {
-		if (RocketChat.settings.get('Analytics_features_users')) {
+	callbacks.add('userAvatarSet', (service) => {
+		if (settings.get('Analytics_features_users')) {
 			trackEvent('User', 'Avatar Changed', service);
 		}
-	}, RocketChat.callbacks.priority.MEDIUM, 'analytics-user-avatar-set');
+	}, callbacks.priority.MEDIUM, 'analytics-user-avatar-set');
 }

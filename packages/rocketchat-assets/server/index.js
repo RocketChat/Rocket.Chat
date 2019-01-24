@@ -1,1 +1,1 @@
-import './assets';
+export { RocketChatAssets } from './assets';

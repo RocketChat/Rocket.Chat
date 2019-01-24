@@ -10,7 +10,9 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:settings',
 		'tracker',
 	]);
 	api.use([
