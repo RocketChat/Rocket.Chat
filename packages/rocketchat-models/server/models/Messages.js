@@ -33,6 +33,17 @@ export class Messages extends Base {
 		});
 	}
 
+	setGoogleVisionData(messageId, visionData) {
+		const updateObj = {};
+		for (const index in visionData) {
+			if (visionData.hasOwnProperty(index)) {
+				updateObj[`attachments.0.${ index }`] = visionData[index];
+			}
+		}
+	
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
 	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
 	}
