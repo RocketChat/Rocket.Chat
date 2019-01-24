@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
+		'rocketchat:models',
 		'rocketchat:importer',
 		'rocketchat:logger',
 	]);
