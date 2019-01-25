@@ -158,6 +158,9 @@ class Katex {
 		try {
 			rendered = katex.renderToString(latex, {
 				displayMode,
+				macros: {
+					'\\href': '\\@secondoftwo',
+				},
 			});
 		} catch (error) {
 			const e = error;
