@@ -1,5 +1,5 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.addGroup('Logs', function() {
+settings.addGroup('Logs', function() {
 	this.add('Log_Exceptions_to_Channel', '', { type: 'string' });
 });
