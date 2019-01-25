@@ -9,13 +9,14 @@
 	&-fields {
 		display: flex;
 		flex-direction: row;
+
 		height: 89px;
-		padding: 10px 0 10px 0;
+		padding: 10px 0;
 	}
 
 	&-dropdown {
-		margin-right: 10px;
 		height: 48px;
+		margin-right: 10px;
 	}
 
 	&-search {
