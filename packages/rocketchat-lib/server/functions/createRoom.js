@@ -43,8 +43,12 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		sysMes: readOnly !== true,
 	});
 
-	if(extraData.messageDelayMS) {
-		room.messageDelayMS = extraData.messageDelayMS;
+	if(extraData.messageDelayType) {
+		room.messageDelayType = extraData.messageDelayType;
+
+		if(extraData.messageDelayType == 'custom' && extraData.messageDelayMS) {
+			room.messageDelayMS = extraData.messageDelayMS;
+		}
 	}
 
 	if (type === 'd') {

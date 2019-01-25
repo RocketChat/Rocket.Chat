@@ -90,6 +90,44 @@
 					</div>
 					<div class="rc-input">
 						<label class="rc-input__label">
+							<div class="rc-input__title">Message Delay Type</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-select">
+									<select class="input-monitor rc-select__element" name="messageDelayType">
+										<option value="default" selected>Default</option>
+										<option value="custom">Custom</option>
+									</select>
+									<svg class="rc-icon rc-select__arrow rc-select__arrow--arrow-down" aria-hidden="true">
+										<use xlink:href="#icon-arrow-down"></use>
+									</svg>
+								</div>
+							</div>
+						</label>
+					</div>
+					{{#if isCustomMessageDelay}}
+					<div class="rc-input  {{#if invalidMessageDelay}}rc-input--error{{/if}}">
+						<label class="rc-input__label">
+							<div class="rc-input__title">Custom Message Delay</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+									{{> icon block="rc-input__icon-svg" icon="clock" }}
+								</div>
+								<input name="messageDelay" type="number" class="rc-input__element"
+										placeholder="Please enter channel message delay..." autofocus>
+							</div>
+						</label>
+						{{#if invalidMessageDelay}}
+							<div class="rc-input__error">
+								<div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								</div>
+								<div class="rc-input__error-message">Message delay must be a positive integer.</div>
+							</div>
+						{{/if}}
+					</div>
+					{{/if}}
+					<div class="rc-input">
+						<label class="rc-input__label">
 							<div class="rc-input__title">{{_ "Invite_Users"}}</div>
 							<div class="rc-input__wrapper">
 								<div class="rc-input__icon">
