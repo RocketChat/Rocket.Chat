@@ -26,6 +26,10 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setSentiment(roomId, sentiment) {
+		return this.update({ _id: roomId }, { $set: { sentiment } });
+	}
+
 	setDescriptionById(_id, description) {
 		const query = {
 			_id,
