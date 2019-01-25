@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import UAParser from 'ua-parser-js';
 import { UAParserMobile } from './UAParserMobile';
-import { Sessions } from '../models/Sessions';
+import { Sessions } from 'meteor/rocketchat:models';
 import { Logger } from 'meteor/rocketchat:logger';
 
 const getDateObj = (dateTime) => {

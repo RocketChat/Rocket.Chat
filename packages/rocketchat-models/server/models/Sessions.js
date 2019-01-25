@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from './_Base';
 
-class ModelSessions extends RocketChat.models._Base {
+export class Sessions extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -105,4 +105,4 @@ class ModelSessions extends RocketChat.models._Base {
 	}
 }
 
-export const Sessions = new ModelSessions('sessions');
+export default new Sessions('sessions');
