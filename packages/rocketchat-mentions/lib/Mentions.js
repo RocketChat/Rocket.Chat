@@ -2,12 +2,14 @@
 * Mentions is a named function that will process Mentions
 * @param {Object} message - The message object
 */
+import { RocketChat } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 export default class {
 	constructor({ pattern, useRealName, me }) {
 		this.pattern = pattern;
 		this.useRealName = useRealName;
 		this.me = me;
+		this.room = undefined;
 	}
 	set me(m) {
 		this._me = m;
@@ -48,14 +50,14 @@ export default class {
 			return `${ prefix }<a class="mention-link ${ username === me ? 'mention-link-me' : '' }" data-username="${ username }" title="${ name ? username : '' }">${ name || `@${ username }` }</a>`;
 		});
 	}
-	replaceChannels(str, message) {
+	replaceChannels(str, message, room1) {
 		// since apostrophe escaped contains # we need to unescape it
 		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, prefix, name) => {
 			if (!message.temp && !(message.channels && message.channels.find((c) => c.name === name))) {
 				return match;
 			}
-
-			return `${ prefix }<a class="mention-link" data-channel="${ name }">${ `#${ name }` }</a>`;
+			const room = room1 || RocketChat.models || RocketChat.models.Rooms.findOne({ name });
+			return `${ prefix }<a class="mention-link" data-channel="${ room._id }">${ `#${ name }` }</a>`;
 		});
 	}
 	getUserMentions(str) {

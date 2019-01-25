@@ -718,12 +718,15 @@ Template.room.events({
 			return;
 		}
 		const channel = $(e.currentTarget).data('channel');
+		console.log('channel is', channel);
+		const room = Rooms.findOne({ _id: channel });
+		console.log(room);
 		if (channel != null) {
 			if (Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: room.name }), channel });
 			}
 
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
+			FlowRouter.go('channel', { name: room.name }, FlowRouter.current().queryParams);
 			return;
 		}
 
