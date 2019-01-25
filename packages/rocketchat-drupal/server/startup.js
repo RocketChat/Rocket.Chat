@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.addGroup('OAuth', function() {
+settings.addGroup('OAuth', function() {
 	this.section('Drupal', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Drupal',

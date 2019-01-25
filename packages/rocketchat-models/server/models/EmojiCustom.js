@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from './_Base';
 
-class EmojiCustom extends RocketChat.models._Base {
+class EmojiCustom extends Base {
 	constructor() {
 		super('custom_emoji');
 
@@ -88,4 +88,4 @@ class EmojiCustom extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.EmojiCustom = new EmojiCustom();
+export default new EmojiCustom();

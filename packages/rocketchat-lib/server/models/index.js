@@ -15,6 +15,7 @@ import {
 	Base as _Base,
 	Permissions,
 	Roles,
+	EmojiCustom,
 } from 'meteor/rocketchat:models';
 
 Object.assign(RocketChat.models, {
@@ -34,4 +35,5 @@ Object.assign(RocketChat.models, {
 	IntegrationHistory,
 	Permissions,
 	Roles,
+	EmojiCustom,
 });
