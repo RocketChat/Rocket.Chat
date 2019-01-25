@@ -235,15 +235,21 @@ export default class RocketAdapter {
 	addChannel(slackChannelID, hasRetried = false) {
 		logger.rocket.debug('Adding Rocket.Chat channel from Slack', slackChannelID);
 		let slackResults = null;
-		let isGroup = false;
-		if (slackChannelID.charAt(0) === 'C') {
-			slackResults = HTTP.get('https://slack.com/api/channels.info', { params: { token: this.slackBridge.apiToken, channel: slackChannelID } });
-		} else if (slackChannelID.charAt(0) === 'G') {
-			slackResults = HTTP.get('https://slack.com/api/groups.info', { params: { token: this.slackBridge.apiToken, channel: slackChannelID } });
-			isGroup = true;
-		}
+		let slackMembers = null;
+
+		slackResults = HTTP.get('https://slack.com/api/conversations.info', { params: { token: this.slackBridge.apiToken, channel: slackChannelID } });
 		if (slackResults && slackResults.data && slackResults.data.ok === true) {
-			const rocketChannelData = isGroup ? slackResults.data.group : slackResults.data.channel;
+			slackMembers = HTTP.get('https://slack.com/api/conversations.members', { params: { token: this.slackBridge.apiToken, channel: slackChannelID } });
+			if (slackMembers && slackMembers.data && slackMembers.data.ok === true) {
+				slackResults.data.channel.members = slackMembers.data.members;
+			} else {
+				slackResults = null;
+				logger.rocket.error('Could not fetch room members');
+			}
+		}
+
+		if (slackResults && slackResults.data && slackResults.data.ok === true) {
+			const rocketChannelData = slackResults.data.channel;
 			const existingRocketRoom = RocketChat.models.Rooms.findOneByName(rocketChannelData.name);
 
 			// If the room exists, make sure we have its id in importIds
@@ -267,7 +273,8 @@ export default class RocketAdapter {
 				}
 
 				try {
-					const rocketChannel = RocketChat.createRoom(isGroup ? 'p' : 'c', rocketChannelData.name, rocketUserCreator.username, rocketUsers);
+					const isPrivate = rocketChannelData.is_private;
+					const rocketChannel = RocketChat.createRoom(isPrivate ? 'p' : 'c', rocketChannelData.name, rocketUserCreator.username, rocketUsers);
 					rocketChannelData.rocketId = rocketChannel.rid;
 				} catch (e) {
 					if (!hasRetried) {
