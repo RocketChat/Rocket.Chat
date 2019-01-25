@@ -25,7 +25,18 @@ Package.onUse(function(api) {
 	api.use('service-configuration');
 	api.use('check');
 	api.use('rocketchat:utils');
+	api.use('rocketchat:models');
+	api.use('rocketchat:migrations');
+	api.use('rocketchat:metrics');
+	api.use('rocketchat:callbacks');
+	api.use('rocketchat:notifications');
+	api.use('rocketchat:promises');
+	api.use('rocketchat:ui-utils');
+	api.use('rocketchat:tooltip');
+	api.use('rocketchat:emoji');
+	api.use('rocketchat:ui');
 	api.use('rocketchat:accounts');
+	api.use('rocketchat:ui');
 	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
@@ -33,12 +44,13 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 	api.use('rocketchat:mailer');
 	api.use('rocketchat:settings');
+	api.use('rocketchat:authorization');
 	api.use('mizzao:timesync');
 	api.use('rocketchat:custom-oauth');
 	api.use('konecty:multiple-instances-status');
 	api.use('rocketchat:file');
+	api.use('rocketchat:file-upload');
 	api.use('rocketchat:push');
-	api.use('rocketchat:authorization', { unordered: true });
 	api.use('rocketchat:push-notifications', { unordered: true });
 
 	api.use('templating', 'client');
@@ -80,12 +92,15 @@ Package.onUse(function(api) {
 	api.addFiles('lib/messageBox.js');
 	api.addFiles('lib/MessageTypes.js');
 	api.addFiles('lib/templateVarHandler.js');
+	api.addFiles('lib/info.js');
+	api.addFiles('lib/authorization.js');
 
 	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
+	api.addFiles('lib/emoji.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
-	api.addFiles('server/lib/metrics.js', 'server');
+	api.addFiles('server/lib/metrics_import.js', 'server');
 
 	api.addFiles('server/lib/RateLimiter.js', 'server');
 
@@ -119,6 +134,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/updateMessage.js', 'server');
 	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
+	api.addFiles('server/functions/authorization.js', 'server');
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');
@@ -132,19 +148,12 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/sendNotificationsOnMessage.js', 'server');
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
 	api.addFiles('server/lib/passwordPolicy.js', 'server');
+	api.addFiles('server/lib/migrations.js', 'server');
 
 	// SERVER MODELS
-	api.addFiles('server/models/_Base.js', 'server');
-	api.addFiles('server/models/Avatars.js', 'server');
-	api.addFiles('server/models/Messages.js', 'server');
-	api.addFiles('server/models/Reports.js', 'server');
-	api.addFiles('server/models/Rooms.js', 'server');
-	api.addFiles('server/models/Settings.js', 'server');
-	api.addFiles('server/models/Subscriptions.js', 'server');
-	api.addFiles('server/models/Uploads.js', 'server');
-	api.addFiles('server/models/Users.js', 'server');
-	api.addFiles('server/models/ExportOperations.js', 'server');
-	api.addFiles('server/models/UserDataFiles.js', 'server');
+	api.addFiles('server/models/index.js', 'server');
+	api.addFiles('server/models/Permissions.js', 'server');
+	api.addFiles('server/models/Roles.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
 	api.addFiles('server/oauth/facebook.js', 'server');
@@ -152,7 +161,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/oauth/google.js', 'server');
 	api.addFiles('server/oauth/proxy.js', 'server');
 
-	api.addFiles('server/startup/statsTracker.js', 'server');
+	api.addFiles('server/startup/statsTracker_import.js', 'server');
 	api.addFiles('server/startup/robots.js', 'server');
 
 	// SERVER PUBLICATIONS
@@ -230,6 +239,10 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/userRoles.js', 'client');
 	api.addFiles('client/lib/Layout.js', 'client');
 	api.addFiles('client/lib/handleError.js', 'client');
+	api.addFiles('client/lib/authorization.js', 'client');
+	api.addFiles('client/lib/tooltip.js', 'client');
+	api.addFiles('client/lib/EmojiPicker.js', 'client');
+	api.addFiles('client/lib/ui-buttons.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');
@@ -243,9 +256,13 @@ Package.onUse(function(api) {
 	api.addFiles('client/CustomTranslations.js', 'client');
 
 	// CLIENT MODELS
-	api.addFiles('client/models/_Base.js', 'client');
-	api.addFiles('client/models/Avatars.js', 'client');
-	api.addFiles('client/models/Uploads.js', 'client');
+	api.addFiles('client/models/index.js', 'client');
+	api.addFiles('client/models/ChatPermissions.js', 'client');
+	api.addFiles('client/models/Messages.js', 'client');
+	api.addFiles('client/models/Roles.js', 'client');
+	api.addFiles('client/models/Rooms.js', 'client');
+	api.addFiles('client/models/Subscriptions.js', 'client');
+	api.addFiles('client/models/Users.js', 'client');
 
 	// CLIENT VIEWS
 	api.addFiles('client/views/customFieldsForm.html', 'client');
@@ -253,9 +270,6 @@ Package.onUse(function(api) {
 
 	api.addFiles('startup/defaultRoomTypes.js');
 	api.addFiles('startup/index.js', 'server');
-
-	// VERSION
-	api.addFiles('rocketchat.info');
 
 	// EXPORT
 	api.export('RocketChat');

@@ -1,5 +1,5 @@
 import '../lib/rocketchat';
-import './models/Statistics';
+import './models/Statistics_import';
 import './models/Sessions';
 import './functions/get';
 import './functions/save';

@@ -18,7 +18,7 @@ export const getEmojiUrlFromName = function(name, extension) {
 	if (name == null) {
 		return;
 	}
-	const path = (Meteor.isCordova) ? Meteor.absoluteUrl().replace(/\/$/, '') : __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+	const path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 	return `${ path }/emoji-custom/${ encodeURIComponent(name) }.${ extension }?_dc=${ random }`;
 };
 

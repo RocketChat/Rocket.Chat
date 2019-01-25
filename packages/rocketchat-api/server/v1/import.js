@@ -40,3 +40,11 @@ RocketChat.API.v1.addRoute('getImportFileData', { authRequired: true }, {
 
 });
 
+RocketChat.API.v1.addRoute('getLatestImportOperations', { authRequired: true }, {
+	get() {
+		let result;
+		Meteor.runAsUser(this.userId, () => result = Meteor.call('getLatestImportOperations'));
+
+		return RocketChat.API.v1.success(result);
+	},
+});

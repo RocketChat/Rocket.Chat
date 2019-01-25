@@ -106,6 +106,12 @@ RocketChat.settings.addGroup('Accounts', function() {
 		public: true,
 	});
 	this.section('Registration', function() {
+		this.add('Accounts_Send_Email_When_Activating', true, {
+			type: 'boolean',
+		});
+		this.add('Accounts_Send_Email_When_Deactivating', true, {
+			type: 'boolean',
+		});
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
