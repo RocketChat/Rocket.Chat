@@ -15,7 +15,12 @@ import './methods/prepareImport';
 import './methods/restartImport';
 import './methods/setupImporter';
 import './methods/startImport';
+import './methods/uploadImportFile';
+import './methods/getImportFileData';
+import './methods/downloadPublicImportFile';
+import './methods/getLatestImportOperations';
 import './startup/setImportsToInvalid';
+import './startup/store';
 
 export {
 	Base,

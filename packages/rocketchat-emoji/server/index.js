@@ -1,1 +1,1 @@
-import '../lib/rocketchat';
+export { emoji } from '../lib/rocketchat';

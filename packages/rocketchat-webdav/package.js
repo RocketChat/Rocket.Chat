@@ -15,9 +15,11 @@ Package.onUse(function(api) {
 		'mongo',
 		'templating',
 		'less',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:api',
 		'rocketchat:grant',
+		'rocketchat:file-upload',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

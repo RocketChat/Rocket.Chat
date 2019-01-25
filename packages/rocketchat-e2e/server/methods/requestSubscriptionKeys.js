@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 Meteor.methods({
 	'e2e.requestSubscriptionKeys'() {
@@ -10,7 +11,7 @@ Meteor.methods({
 		}
 
 		// Get all encrypted rooms that the user is subscribed to and has no E2E key yet
-		const subscriptions = RocketChat.models.Subscriptions.findByUserIdWithoutE2E(Meteor.userId());
+		const subscriptions = Subscriptions.findByUserIdWithoutE2E(Meteor.userId());
 		const roomIds = subscriptions.map((subscription) => subscription.rid);
 
 		// For all subscriptions without E2E key, get the rooms that have encryption enabled
@@ -23,9 +24,9 @@ Meteor.methods({
 			},
 		};
 
-		const rooms = RocketChat.models.Rooms.find(query);
+		const rooms = Rooms.find(query);
 		rooms.forEach((room) => {
-			RocketChat.Notifications.notifyRoom('e2e.keyRequest', room._id, room.e2eKeyId);
+			Notifications.notifyRoom('e2e.keyRequest', room._id, room.e2eKeyId);
 		});
 
 		return true;

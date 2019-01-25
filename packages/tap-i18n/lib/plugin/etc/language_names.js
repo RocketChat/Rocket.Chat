@@ -1,5 +1,4 @@
 /* eslint no-unused-vars: 0 */
-/* globals language_names: 1 */
 
 language_names = {
 	af: ['Afrikaans', 'Afrikaans'],
