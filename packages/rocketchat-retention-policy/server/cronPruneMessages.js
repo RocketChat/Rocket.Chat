@@ -27,10 +27,13 @@ function job() {
 
 		RocketChat.models.Rooms.find({
 			t: type,
-			_updatedAt: { $gte: lastPrune },
-			$or: [{ 'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
+			_updatedAt: { $gte: latest },
+			$or: [
+				{ 'retention.enabled': { $eq: true } },
+				{ 'retention.enabled': { $exists: false } },
+			],
 			'retention.overrideGlobal': { $ne: true },
-		}).forEach(({ _id: rid }) => {
+		}, { fields : { _id: 1 } }).forEach(({ _id: rid }) => {
 			RocketChat.cleanRoomHistory({ rid, latest, oldest, filesOnly, excludePinned });
 		});
 	});
