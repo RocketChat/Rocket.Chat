@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import Webdav from 'webdav';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { createClient } from 'webdav';
 
 Meteor.methods({
 	async addWebdavAccount(formData) {
@@ -21,10 +22,12 @@ Meteor.methods({
 			pass: String,
 		}));
 
-		const client = new Webdav(
+		const client = createClient(
 			formData.serverURL,
-			formData.username,
-			formData.pass
+			{
+				username: formData.username,
+				password: formData.pass,
+			}
 		);
 
 		try {

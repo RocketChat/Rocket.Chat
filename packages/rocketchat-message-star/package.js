@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'templating',
 	]);
+	api.addFiles('client/views/stylesheets/messagestar.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

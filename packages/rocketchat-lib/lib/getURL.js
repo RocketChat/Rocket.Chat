@@ -11,7 +11,7 @@ RocketChat.getURL = (path, { cdn = true, full = false } = {}) => {
 
 	if (cdn && cdnPrefix !== '') {
 		basePath = cdnPrefix + pathPrefix;
-	} else if (full || Meteor.isCordova) {
+	} else if (full) {
 		return Meteor.absoluteUrl(finalPath);
 	} else {
 		basePath = pathPrefix;

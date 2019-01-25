@@ -9,8 +9,10 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'rocketchat:lib',
+		'rocketchat:utils',
 		'templating',
 	]);
+	api.addFiles('client/views/stylesheets/messagepin.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

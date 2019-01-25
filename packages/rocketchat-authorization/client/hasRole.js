@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Roles } from 'meteor/rocketchat:models';
 
-RocketChat.authz.hasRole = function(userId, roleNames, scope) {
+export const hasRole = (userId, roleNames, scope) => {
 	roleNames = [].concat(roleNames);
-	return RocketChat.models.Roles.isUserInRoles(userId, roleNames, scope);
+	return Roles.isUserInRoles(userId, roleNames, scope);
 };

@@ -1,7 +1,8 @@
-/* globals WebAppHashing */
-
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefix';
@@ -18,7 +19,7 @@ const logger = new Logger('rocketchat:theme', {
 WebApp.rawConnectHandlers.use(function(req, res, next) {
 	const path = req.url.split('?')[0];
 	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-	if (path === `${ prefix }/__cordova/theme.css` || path === `${ prefix }/theme.css`) {
+	if (path === `${ prefix }/theme.css`) {
 		const css = RocketChat.theme.getCss();
 		const hash = crypto.createHash('sha1').update(css).digest('hex');
 		res.setHeader('Content-Type', 'text/css; charset=UTF-8');
