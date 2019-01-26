@@ -8,6 +8,7 @@
 
 		<div class="content">
 			<form id="preferences" autocomplete="off">
+				{{#if showLocalization}}					
 				<div class="section">
 					<h1>{{_ "Localization"}}</h1>
 					<div class="section-content border-component-color">
@@ -24,6 +25,8 @@
 						</div>
 					</div>
 				</div>
+				{{/if}}
+				{{#if showGlobal}}
 				<div class="section">
 					<h1>{{_ "Global"}}</h1>
 					<div class="section-content border-component-color">
@@ -47,6 +50,8 @@
 						</div>
 					</div>
 				</div>
+				{{/if}}
+				{{#if showUserPresence}}
 				<div class="section">
 					<h1>{{_ "User_Presence"}}</h1>
 					<div class="section-content border-component-color">
@@ -70,8 +75,9 @@
 							</div>
 						</div>
 					</div>
-
 				</div>
+				{{/if}}
+				{{#if showNotifications}}
 				<div class="section">
 					<h1>{{_ "Notifications"}}</h1>
 					<div class="section-content border-component-color">
@@ -140,6 +146,8 @@
 						</div>
 					</div>
 				</div>
+				{{/if}}
+				{{#if showMessages}}
 				<div class="section">
 					<h1>{{_ "Messages"}}</h1>
 					<div class="section-content border-component-color">
@@ -258,6 +266,8 @@
 						</div>
 					</div>
 				</div>
+				{{/if}}
+				{{#if showSidebar}}
 				<div class="section">
 					<h1>{{_ "Sidebar"}}</h1>
 					<div class="section-content border-component-color">
@@ -270,6 +280,8 @@
 						</div>
 					</div>
 				</div>
+				{{/if}}
+				{{#if showHighlights}}
 				<div class="section">
 					<h1>{{_ "Highlights"}}</h1>
 					<div class="section-content border-component-color">
@@ -282,6 +294,8 @@
 						</div>
 					</div>
 				</div>
+				{{/if}}
+				{{#if showSound}}
 				<div class="section">
 					<h1>{{_ "Sound"}}</h1>
 					<div class="section-content border-component-color">
@@ -326,8 +340,8 @@
 						</div>
 					</div>
 				</div>
-
-				{{#if userDataDownloadEnabled}}
+				{{/if}}
+				{{#if showMyData}}
 					<div class="section">
 						<h1>{{_ "My Data"}}</h1>
 						<div class="section-content border-component-color">

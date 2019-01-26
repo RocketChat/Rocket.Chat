@@ -1252,6 +1252,42 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
+		this.add('UI_DisplayLocalization', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayGlobal', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayUserPresence', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayNotifications', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayMessages', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplaySidebar', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayHighlights', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplaySound', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayMyData', true, {
+			type: 'boolean',
+			public: true,
+		});
 		this.add('UI_DisplayDirectory', true, {
 			type: 'boolean',
 			public: true,
