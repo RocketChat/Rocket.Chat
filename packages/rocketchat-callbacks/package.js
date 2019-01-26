@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:metrics',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
