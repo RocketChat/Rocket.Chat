@@ -60,9 +60,8 @@
 			padding-left: 150px;
 		}
 	}
-
-         	& thead {
-	                position: sticky;
-	                top: -25px;
+	& thead {
+	    position: sticky;
+	    top: -25px;
 	}
 }
