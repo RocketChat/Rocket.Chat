@@ -62,7 +62,7 @@
 	}
 
 	& thead {
-	        position: sticky;
-	        top: -25px;
+	    position: sticky;
+	    top: -25px;
 	}
 }
