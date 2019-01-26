@@ -61,7 +61,8 @@
 		}
 	}
 	thead{
-            position: sticky;
+	    position: sticky;
 	    top: -25px;
 	}
+	
 }
