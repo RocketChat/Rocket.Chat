@@ -4,6 +4,7 @@ import UAParser from 'ua-parser-js';
 import { UAParserMobile } from './UAParserMobile';
 import { Sessions } from 'meteor/rocketchat:models';
 import { Logger } from 'meteor/rocketchat:logger';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 const getDateObj = (dateTime) => {
 	if (!dateTime) {
@@ -95,6 +96,7 @@ export class SAUMonitorClass {
 			await this._handleOnConnection();
 			await this._startSessionControl();
 			await this._initActiveServerSessions();
+			this._startAggregation();
 			if (callback) {
 				callback();
 			}
@@ -195,6 +197,7 @@ export class SAUMonitorClass {
 		const ip = connection.httpHeaders ? connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] : connection.clientAddress;
 		const host = connection.httpHeaders && connection.httpHeaders.host;
 		const info = {
+			type: 'session',
 			sessionId: connection.id,
 			instanceId: this._instanceId,
 			ip,
@@ -225,7 +228,9 @@ export class SAUMonitorClass {
 			result = ua.getResult();
 		}
 
-		const info = {};
+		const info = {
+			type: 'other',
+		};
 
 		const removeEmptyProps = (obj) => {
 			Object.keys(obj).forEach((p) => (!obj[p] || obj[p] === undefined) && delete obj[p]);
@@ -233,7 +238,9 @@ export class SAUMonitorClass {
 		};
 
 		if (result.browser && result.browser.name) {
-			info.browser = removeEmptyProps(result.browser);
+			info.type = 'browser';
+			info.name = result.browser.name;
+			info.version = result.browser.version;
 		}
 
 		if (result.os && result.os.name) {
@@ -241,14 +248,20 @@ export class SAUMonitorClass {
 		}
 
 		if (result.device && (result.device.type || result.device.model)) {
-			info.device = removeEmptyProps(result.device);
+			info.type = 'mobile-app';
+
+			if (result.app && result.app.name) {
+				info.name = result.app.name;
+				info.version = result.app.version;
+				if (result.app.bundle) {
+					info.version += ` ${ result.app.bundle }`;
+				}
+			}
 		}
 
-		if (result.app && result.app.name) {
-			info.app = removeEmptyProps(result.app);
-		}
-
-		return info;
+		return {
+			device: info,
+		};
 	}
 
 	_initActiveServerSessions() {
@@ -313,5 +326,78 @@ export class SAUMonitorClass {
 
 		const sessions = Object.values(Meteor.server.sessions);
 		batch(sessions, 500);
+	}
+
+	_startAggregation() {
+		logger.info('[aggregate] - Start Cron.');
+		SyncedCron.add({
+			name: 'aggregate-sessions',
+			schedule: (parser) => parser.text('every 10 seconds'),
+			job: () => {
+				this.aggregate();
+			},
+		});
+
+		SyncedCron.start();
+	}
+
+	aggregate() {
+		logger.info('[aggregate] - Aggregatting data.');
+
+		const date = new Date();
+		date.setDate(date.getDate() - 1); // yesterday
+		const yesterday = getDateObj(date);
+
+		const match = {
+			userId: { $exists: true },
+			lastActivityAt: { $exists: true },
+			device: { $exists: true },
+			type: 'session',
+			year: { $lte: yesterday.year },
+			month: { $lte: yesterday.month },
+			day: { $lte: yesterday.day },
+		};
+
+		Sessions.model.rawCollection().aggregate([{
+			$match: match,
+		}, {
+			$group: {
+				_id: {
+					userId: '$userId',
+					day: '$day',
+					month: '$month',
+					year: '$year',
+				},
+				times: { $push: { $trunc: { $divide: [{ $subtract: ['$lastActivityAt', '$loginAt'] }, 1000] } } },
+				devices: { $addToSet: '$device' },
+			},
+		}, {
+			$project: {
+				_id: '$_id',
+				times: { $filter: { input: '$times', as: 'item', cond: { $gt: ['$$item', 0] } } },
+				devices: '$devices',
+			},
+		}, {
+			$project: {
+				type: 'user_daily',
+				day: '$_id.day',
+				month: '$_id.month',
+				year: '$_id.year',
+				userId: '$_id.userId',
+				time: { $sum: '$times' },
+				count: { $size: '$times' },
+				devices: '$devices',
+			},
+		}]).forEach(Meteor.bindEnvironment((record) => {
+			record._id = `${ record.userId }-${ record.year }-${ record.month }-${ record.day }`;
+			Sessions.upsert({ _id: record._id }, record);
+		}));
+
+		Sessions.update(match, {
+			$set: {
+				type: 'computed-session',
+				_computedAt: new Date(),
+			},
+		}, { multi: true });
 	}
 }
