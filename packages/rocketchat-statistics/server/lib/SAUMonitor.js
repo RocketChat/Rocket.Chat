@@ -125,7 +125,7 @@ export class SAUMonitorClass {
 		}
 
 		Meteor.onConnection((connection) => {
-			this._handleSession(connection, getDateObj());
+			// this._handleSession(connection, getDateObj());
 
 			connection.onClose(() => {
 				Sessions.closeByInstanceIdAndSessionId(this._instanceId, connection.id);
@@ -185,7 +185,7 @@ export class SAUMonitorClass {
 
 		// Otherwise, just update the lastActivityAt field
 		this._applyAllServerSessionsIds((sessions) => {
-			Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, 	this._instanceId, sessions, { lastActivityAt: currentDateTime });
+			Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: currentDateTime });
 		});
 	}
 
@@ -240,7 +240,7 @@ export class SAUMonitorClass {
 		if (result.browser && result.browser.name) {
 			info.type = 'browser';
 			info.name = result.browser.name;
-			info.version = result.browser.version;
+			info.longVersion = result.browser.version;
 		}
 
 		if (result.os && result.os.name) {
@@ -252,11 +252,15 @@ export class SAUMonitorClass {
 
 			if (result.app && result.app.name) {
 				info.name = result.app.name;
-				info.version = result.app.version;
+				info.longVersion = result.app.version;
 				if (result.app.bundle) {
-					info.version += ` ${ result.app.bundle }`;
+					info.longVersion += ` ${ result.app.bundle }`;
 				}
 			}
+		}
+
+		if (typeof info.longVersion === 'string') {
+			info.version = info.longVersion.match(/(\d+\.){0,2}\d+/)[0];
 		}
 
 		return {
@@ -275,7 +279,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const sessions = Object.values(Meteor.server.sessions);
+		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
 		sessions.forEach((session) => {
 			callback(session.connectionHandle);
 		});
@@ -286,7 +290,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const sessions = Object.values(Meteor.server.sessions);
+		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
 		const sessionIds = sessions.map((s) => s.id);
 		while (sessionIds.length) {
 			callback(sessionIds.splice(0, 500));
@@ -324,7 +328,7 @@ export class SAUMonitorClass {
 			});
 		};
 
-		const sessions = Object.values(Meteor.server.sessions);
+		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
 		batch(sessions, 500);
 	}
 
@@ -332,7 +336,7 @@ export class SAUMonitorClass {
 		logger.info('[aggregate] - Start Cron.');
 		SyncedCron.add({
 			name: 'aggregate-sessions',
-			schedule: (parser) => parser.text('every 10 seconds'),
+			schedule: (parser) => parser.text('at 2:00 am'),
 			job: () => {
 				this.aggregate();
 			},
@@ -345,13 +349,10 @@ export class SAUMonitorClass {
 		logger.info('[aggregate] - Aggregatting data.');
 
 		const date = new Date();
-		date.setDate(date.getDate() - 1); // yesterday
+		date.setDate(date.getDate() - 0); // yesterday
 		const yesterday = getDateObj(date);
 
 		const match = {
-			userId: { $exists: true },
-			lastActivityAt: { $exists: true },
-			device: { $exists: true },
 			type: 'session',
 			year: { $lte: yesterday.year },
 			month: { $lte: yesterday.month },
@@ -359,7 +360,12 @@ export class SAUMonitorClass {
 		};
 
 		Sessions.model.rawCollection().aggregate([{
-			$match: match,
+			$match: {
+				userId: { $exists: true },
+				lastActivityAt: { $exists: true },
+				device: { $exists: true },
+				...match,
+			},
 		}, {
 			$group: {
 				_id: {
@@ -380,6 +386,7 @@ export class SAUMonitorClass {
 		}, {
 			$project: {
 				type: 'user_daily',
+				_computedAt: new Date(),
 				day: '$_id.day',
 				month: '$_id.month',
 				year: '$_id.year',

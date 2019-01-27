@@ -4,11 +4,182 @@ export class Sessions extends Base {
 	constructor(...args) {
 		super(...args);
 
-		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 }, { unique: 1 });
+		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 });
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, userId: 1 });
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1 });
-		this.tryEnsureIndex({ year: 1, month: 1, day: 1 });
+		this.tryEnsureIndex({ year: 1, month: 1, day: 1, type: 1 });
 		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });
+	}
+
+	getUniqueUsersOfYesterday() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(this.model.rawCollection().aggregate([{
+				$match: {
+					year,
+					month,
+					day,
+					type: 'user_daily',
+				},
+			}, {
+				$group: {
+					_id: {
+						day: '$day',
+						month: '$month',
+						year: '$year',
+					},
+					count: {
+						$sum: '$count',
+					},
+					time: {
+						$sum: '$time',
+					},
+				},
+			}, {
+				$project: {
+					_id: 0,
+					count: 1,
+					time: 1,
+				},
+			}]).toArray()),
+		};
+	}
+
+	getUniqueUsersOfLastMonth() {
+		const date = new Date();
+		date.setMonth(date.getMonth() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+
+		return {
+			year,
+			month,
+			data: Promise.await(this.model.rawCollection().aggregate([{
+				$match: {
+					year,
+					month,
+					type: 'user_daily',
+				},
+			}, {
+				$group: {
+					_id: {
+						month: '$month',
+						year: '$year',
+					},
+					count: {
+						$sum: '$count',
+					},
+					time: {
+						$sum: '$time',
+					},
+				},
+			}, {
+				$project: {
+					_id: 0,
+					count: 1,
+					time: 1,
+				},
+			}]).toArray()),
+		};
+	}
+
+	getUniqueDevicesOfYesterday() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(this.model.rawCollection().aggregate([{
+				$match: {
+					year,
+					month,
+					day,
+					type: 'user_daily',
+				},
+			}, {
+				$unwind: '$devices',
+			}, {
+				$group: {
+					_id: {
+						type : '$devices.type',
+						name : '$devices.name',
+						version : '$devices.version',
+					},
+					count: {
+						$sum: '$count',
+					},
+				},
+			}, {
+				$project: {
+					_id: 0,
+					type: '$_id.type',
+					name: '$_id.name',
+					version: '$_id.version',
+					count: 1,
+				},
+			}]).toArray()),
+		};
+	}
+
+	getUniqueOSOfYesterday() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(this.model.rawCollection().aggregate([{
+				$match: {
+					year,
+					month,
+					day,
+					type: 'user_daily',
+					'devices.os.name': {
+						$exists: true,
+					},
+				},
+			}, {
+				$unwind: '$devices',
+			}, {
+				$group: {
+					_id: {
+						name : '$devices.os.name',
+						version : '$devices.os.version',
+					},
+					count: {
+						$sum: '$count',
+					},
+				},
+			}, {
+				$project: {
+					_id: 0,
+					name: '$_id.name',
+					version: '$_id.version',
+					count: 1,
+				},
+			}]).toArray()),
+		};
 	}
 
 	createOrUpdate(data = {}) {
