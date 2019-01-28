@@ -1,16 +1,16 @@
-import { Meteor } from 'meteor/meteor';
 import client from 'prom-client';
 import connect from 'connect';
 import http from 'http';
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { Info } from 'meteor/rocketchat:utils';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { settings } from 'meteor/rocketchat:settings';
+import { Statistics } from 'meteor/rocketchat:models';
 
 client.collectDefaultMetrics();
 
 export const metrics = {};
-let Info;
-let _Migrations;
-
-// one sample metrics only - a counter
 
 metrics.meteorMethods = new client.Summary({
 	name: 'rocketchat_meteor_methods',
@@ -77,21 +77,11 @@ metrics.totalDirectMessages = new client.Gauge({ name: 'rocketchat_direct_messag
 metrics.totalLivechatMessages = new client.Gauge({ name: 'rocketchat_livechat_messages_total', help: 'total of messages in livechat rooms' });
 
 const setPrometheusData = async() => {
-	const { settings } = await import('meteor/rocketchat:settings');
 	client.register.setDefaultLabels({
 		uniqueId: settings.get('uniqueID'),
 		siteUrl: settings.get('Site_Url'),
 	});
 	const date = new Date();
-	if (!Info) {
-		const Utils = await import('meteor/rocketchat:utils');
-		Info = Utils.Info;
-	}
-	if (!_Migrations) {
-		const { Migrations } = await import('meteor/rocketchat:migrations');
-		_Migrations = Migrations;
-	}
-
 	client.register.setDefaultLabels({
 		unique_id: settings.get('uniqueID'),
 		site_url: settings.get('Site_Url'),
@@ -103,11 +93,6 @@ const setPrometheusData = async() => {
 	metrics.ddpSessions.set(sessions.length, date);
 	metrics.ddpAthenticatedSessions.set(authenticatedSessions.length, date);
 	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length, date);
-	const { Statistics } = await import('meteor/rocketchat:models');
-
-	if (!Statistics) {
-		return;
-	}
 
 	const statistics = Statistics.findLast();
 	if (!statistics) {
@@ -115,7 +100,7 @@ const setPrometheusData = async() => {
 	}
 
 	metrics.version.set({ version: statistics.version }, 1, date);
-	metrics.migration.set(_Migrations._getControl().version, date);
+	metrics.migration.set(Migrations._getControl().version, date);
 	metrics.instanceCount.set(statistics.instanceCount, date);
 	metrics.oplogEnabled.set({ enabled: statistics.oplogEnabled }, 1, date);
 
@@ -171,7 +156,6 @@ const server = http.createServer(app);
 
 let timer;
 const updatePrometheusConfig = async() => {
-	const { settings } = await import('meteor/rocketchat:settings');
 	const port = settings.get('Prometheus_Port');
 	const enabled = settings.get('Prometheus_Enabled');
 	if (port == null || enabled == null) {
@@ -191,7 +175,6 @@ const updatePrometheusConfig = async() => {
 };
 
 Meteor.startup(async() => {
-	const { settings } = await import('meteor/rocketchat:settings');
 	settings.get('Prometheus_Enabled', updatePrometheusConfig);
 	settings.get('Prometheus_Port', updatePrometheusConfig);
 });
