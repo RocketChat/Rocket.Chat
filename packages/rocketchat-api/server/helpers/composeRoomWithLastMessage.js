@@ -1,8 +1,9 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
+import { API } from '../api';
 
-RocketChat.API.helperMethods.set('composeRoomWithLastMessage', function _composeRoomWithLastMessage(room, userId) {
+API.helperMethods.set('composeRoomWithLastMessage', function _composeRoomWithLastMessage(room, userId) {
 	if (room.lastMessage) {
-		room.lastMessage = RocketChat.composeMessageObjectWithUser(room.lastMessage, userId);
+		room.lastMessage = composeMessageObjectWithUser(room.lastMessage, userId);
 	}
 	return room;
 });

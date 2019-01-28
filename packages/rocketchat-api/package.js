@@ -12,6 +12,10 @@ Package.onUse(function(api) {
 		'rate-limit',
 		'rocketchat:lib',
 		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:utils',
+		'rocketchat:metrics',
+		'rocketchat:authorization',
 		'rocketchat:integrations',
 		'rocketchat:file-upload',
 	]);
