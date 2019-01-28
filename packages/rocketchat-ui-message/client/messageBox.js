@@ -8,6 +8,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import { ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages, MsgTyping } from 'meteor/rocketchat:ui';
 import { t } from 'meteor/rocketchat:utils';
+import { katex } from 'meteor/rocketchat:katex';
 import toastr from 'toastr';
 import moment from 'moment';
 import _ from 'underscore';
@@ -15,11 +16,11 @@ import _ from 'underscore';
 let audioMessageIntervalId;
 
 function katexSyntax() {
-	if (RocketChat.katex.katex_enabled()) {
-		if (RocketChat.katex.dollar_syntax_enabled()) {
+	if (katex.isEnabled()) {
+		if (katex.isDollarSyntaxEnabled()) {
 			return '$$KaTeX$$';
 		}
-		if (RocketChat.katex.parenthesis_syntax_enabled()) {
+		if (katex.isParenthesisSyntaxEnabled()) {
 			return '\\[KaTeX\\]';
 		}
 	}
@@ -134,7 +135,7 @@ const markdownButtons = [
 	{
 		label: katexSyntax,
 		link: 'https://khan.github.io/KaTeX/function-support.html',
-		condition: () => RocketChat.katex.katex_enabled(),
+		condition: () => katex.isEnabled(),
 	},
 ];
 
