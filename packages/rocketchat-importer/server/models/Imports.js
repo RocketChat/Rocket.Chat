@@ -1,7 +1,7 @@
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from 'meteor/rocketchat:models';
 
-class ImportsModel extends RocketChat.models._Base {
+class ImportsModel extends Base {
 	constructor() {
 		super('import');
 	}

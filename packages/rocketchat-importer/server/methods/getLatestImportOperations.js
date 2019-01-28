@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Imports } from '../models/Imports';
+import { hasRole } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	getLatestImportOperations() {
@@ -9,7 +10,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getLatestImportOperations' });
 		}
 
-		if (!RocketChat.authz.hasRole(userId, 'admin')) {
+		if (!hasRole(userId, 'admin')) {
 			throw new Meteor.Error('not_authorized', 'User not authorized', { method: 'getLatestImportOperations' });
 		}
 

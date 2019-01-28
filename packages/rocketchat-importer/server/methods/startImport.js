@@ -5,7 +5,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	startImport(key, input) {
@@ -14,7 +14,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'startImport' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
+		if (!hasPermission(Meteor.userId(), 'run-import')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'startImport' });
 		}
 
