@@ -19,6 +19,12 @@
 						<th class="content-background-color border-component-color">{{_ "Version"}}</th>
 						<td class="border-component-color">{{statistics.version}}</td>
 					</tr>
+					{{#if info.marketplaceApiVersion}}
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Apps_Engine_Version"}}</th>
+							<td class="border-component-color">{{info.marketplaceApiVersion}}</td>
+						</tr>
+					{{/if}}
 					<tr class="admin-table-row">
 						<th class="content-background-color border-component-color">{{_ "DB_Migration"}}</th>
 						<td class="border-component-color">{{statistics.migration.version}}</td>
@@ -219,6 +225,15 @@
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages_Livechat"}}</th>
 							<td class="border-component-color">{{statistics.totalLivechatMessages}}</td>
 						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Uploads"}}</th>
+							<td class="border-component-color">{{statistics.uploadsTotal}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Uploads_Size"}}</th>
+							<td class="border-component-color">{{inGB statistics.uploadsTotalSize}}</td>
+						</tr>
+
 					</table>
 
 					{{#if instances}}
