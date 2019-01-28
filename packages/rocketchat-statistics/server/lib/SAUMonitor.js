@@ -6,20 +6,13 @@ import { Sessions } from 'meteor/rocketchat:models';
 import { Logger } from 'meteor/rocketchat:logger';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-const getDateObj = (dateTime) => {
-	if (!dateTime) {
-		dateTime = new Date();
-	}
+const getDateObj = (dateTime = new Date()) => ({
+	day: dateTime.getDate(),
+	month: dateTime.getMonth() + 1,
+	year: dateTime.getFullYear(),
+});
 
-	return { day: dateTime.getDate(), month: dateTime.getMonth() + 1, year: dateTime.getFullYear() };
-};
-
-const isSameDateObj = (oldest, newest) => {
-	const oldDate = new Date(oldest.year, oldest.month - 1, oldest.day);
-	const newDate = new Date(newest.year, newest.month - 1, newest.day);
-
-	return oldDate.valueOf() === newDate.valueOf();
-};
+const isSameDateObj = (oldest, newest) => oldest.year === newest.year && oldest.month === newest.month && oldest.day === newest.day;
 
 const logger = new Logger('SAUMonitor');
 
@@ -28,9 +21,7 @@ const logger = new Logger('SAUMonitor');
  */
 export class SAUMonitorClass {
 	constructor() {
-		this._serviceName = 'SAUMonitor';
 		this._started = false;
-		this._debug = false;
 		this._monitorTime = 60000;
 		this._timer = null;
 		this._today = getDateObj();
@@ -46,13 +37,11 @@ export class SAUMonitorClass {
 
 		if (!this._instanceId) {
 			logger.debug('[start] - InstanceId is not defined.');
-			this._log(`${ this._serviceName } - Error starting monitor: InstanceID is not defined.`);
 			return;
 		}
 
 		this._startMonitoring(() => {
 			this._started = true;
-			this._log(`${ this._serviceName } - Started: ${ this._instanceId }`);
 			logger.debug(`[start] - InstanceId: ${ this._instanceId }`);
 		});
 	}
@@ -68,7 +57,6 @@ export class SAUMonitorClass {
 			Meteor.clearInterval(this._timer);
 		}
 
-		this.log(`${ this._serviceName } - Stopped.`);
 		logger.debug(`[stop] - InstanceId: ${ this._instanceId }`);
 	}
 
@@ -76,26 +64,12 @@ export class SAUMonitorClass {
 		return this._started === true;
 	}
 
-	_log(...args) {
-		if (this._debug === true) {
-			console.log.apply(console, args);
-		}
-	}
-
-	setDebug(mode) {
-		if (typeof mode !== 'boolean') {
-			return;
-		}
-
-		this._debug = mode;
-	}
-
-	async _startMonitoring(callback) {
+	_startMonitoring(callback) {
 		try {
-			await this._handleAccountEvents();
-			await this._handleOnConnection();
-			await this._startSessionControl();
-			await this._initActiveServerSessions();
+			this._handleAccountEvents();
+			this._handleOnConnection();
+			this._startSessionControl();
+			this._initActiveServerSessions();
 			this._startAggregation();
 			if (callback) {
 				callback();
@@ -290,8 +264,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
-		const sessionIds = sessions.map((s) => s.id);
+		const sessionIds = Object.values(Meteor.server.sessions).filter((session) => session.userId).map((s) => s.id);
 		while (sessionIds.length) {
 			callback(sessionIds.splice(0, 500));
 		}
@@ -324,7 +297,6 @@ export class SAUMonitorClass {
 				return batch(arr, limit);
 			}).catch((e) => {
 				logger.debug(`Error: ${ e.message }`);
-				this._log(`${ this._serviceName } - Error: ${ e.message }`);
 			});
 		};
 
