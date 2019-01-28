@@ -1,13 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { Logger } from 'meteor/rocketchat:logger';
 
 let logger;
 
 if (Meteor.isServer) {
-	logger = new Logger('TemplateVarHandler', {});
+	Meteor.startup(async() => {
+		const { Logger } = await import('meteor/rocketchat:logger');
+		logger = new Logger('TemplateVarHandler', {});
+	});
 }
 
-RocketChat.templateVarHandler = function(variable, object) {
+export const templateVarHandler = function(variable, object) {
 
 	const templateRegex = /#{([\w\-]+)}/gi;
 	let match = templateRegex.exec(variable);
@@ -38,6 +40,3 @@ RocketChat.templateVarHandler = function(variable, object) {
 		return tmpVariable;
 	}
 };
-import { templateVarHandler } from 'meteor/rocketchat:utils';
-
-RocketChat.templateVarHandler = templateVarHandler;
