@@ -1,5 +1,5 @@
 import './methods';
-import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessTokens';
+import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
 
 if (RocketChat.models && RocketChat.models.Permissions) {
