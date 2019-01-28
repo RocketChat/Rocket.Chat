@@ -1,0 +1,7 @@
+<svg id="post" viewBox="0 0 20 20">
+  <g fill="none" fill-rule="evenodd">
+    <path d="M0 0h20v20H0z"/>
+    <path stroke="currentColor" stroke-width="1.5" d="M5 3h6l4 4v10H5z"/>
+    <path d="M8.5 10.5h3M8.5 13.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+  </g>
+</svg>

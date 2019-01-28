@@ -1,0 +1,7 @@
+<svg id="help" viewBox="0 0 20 20">
+  <g stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd">
+    <circle cx="10" cy="10" r="8.333"/>
+    <circle cx="10" cy="10" r="4.167"/>
+    <path d="M10 2.083v3.434m0 9.066v3.434m3.958-14.873l-1.716 2.973M7.708 13.97l-1.716 2.973M17.912 10.276l-3.431-.12M5.42 9.84l-3.432-.12m14.726 4.475l-2.912-1.82M6.113 7.571l-2.912-1.82" stroke-linecap="square"/>
+  </g>
+</svg>

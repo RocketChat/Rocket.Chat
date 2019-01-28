@@ -1,0 +1,6 @@
+<svg id="message" viewBox="0 0 20 20">
+  <g stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd">
+    <path d="M11 18c1.219 0 7 .127 8-2 .506-1.076-2.891-1.076-2-3 .391-.943 1-1.915 1-3a8 8 0 1 0-16 0c0 4.418 3.582 8 9 8z"/>
+    <path d="M6.5 8.5h6.083m-6.083 3h7.083" stroke-linecap="square"/>
+  </g>
+</svg>

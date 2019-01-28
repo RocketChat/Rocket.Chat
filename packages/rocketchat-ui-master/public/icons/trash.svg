@@ -1,0 +1,7 @@
+<svg id="trash" viewBox="0 0 20 20  ">
+  <g stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd">
+    <path d="M4 6h12l-1 12H5zm8-2.5a2 2 0 1 0-4 0"/>
+    <path d="M8 10v5m4-5v5" stroke-linecap="square"/>
+    <path d="M2.5 3.5h15" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

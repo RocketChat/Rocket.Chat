@@ -1,0 +1,6 @@
+<svg id="edit" viewBox="0 0 20 20">
+  <g stroke-width="1.2" stroke="currentColor" fill="none" fill-rule="evenodd">
+    <path d="M12.73 3.412c.78-.78 2.044-.78 2.83.006l.7.7c.783.783.788 2.047.005 2.83l-8.901 8.901-4.596 1.06 1.06-4.595 8.902-8.902z"/>
+    <path d="M11.24 5.609l2.829 2.828" stroke-linecap="square"/>
+  </g>
+</svg>

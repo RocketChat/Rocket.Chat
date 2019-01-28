@@ -1,0 +1,6 @@
+<svg id="map-pin" viewBox="0 0 20 20">
+  <g stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd">
+    <path d="M10 17s5-4.15 5-9.027C15 5.226 12.761 3 10 3S5 5.226 5 7.973C5 12.85 10 17 10 17z"/>
+    <circle cx="10" cy="8" r="2"/>
+  </g>
+</svg>

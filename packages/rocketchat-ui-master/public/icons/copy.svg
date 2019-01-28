@@ -1,0 +1,7 @@
+<svg id="copy" viewBox="0 0 20 20">
+  <g fill="none" fill-rule="evenodd">
+    <path d="M0 0h20v20H0z"/>
+    <path stroke="currentColor" stroke-width="1.5" d="M7 5h5l5 5v8H7z"/>
+    <path stroke="currentColor" stroke-width="1.5" d="M6.959 15H3V2h5l3.043 3.043M17 10h-5V5"/>
+  </g>
+</svg>

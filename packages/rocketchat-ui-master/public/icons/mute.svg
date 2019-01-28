@@ -1,0 +1,8 @@
+<svg id="mute" viewBox="0 0 20 20">
+  <g fill="none" fill-rule="evenodd">
+    <path d="M9.47 2.265A2.735 2.735 0 0 0 6.737 5v3.53a2.735 2.735 0 0 0 5.47 0V5A2.735 2.735 0 0 0 9.47 2.265zm0 11.559v3.529-3.53z" stroke="currentColor" stroke-width="1.5"/>
+    <path fill="currentColor" fill-rule="nonzero" d="M6.824 16.47h5.294v1.324H6.824z"/>
+    <path d="M4.176 8.53c.052 3.529 1.817 5.294 5.295 5.294 3.477 0 5.242-1.765 5.294-5.294" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M18.238 2.353L1.529 16.676" stroke="currentColor" stroke-width="2.5"/>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+<svg id="back" viewBox="0 0 20 20">
+  <g stroke-width="1.5" stroke="currentColor" fill="none" fill-rule="evenodd">
+    <path d="M7.5 15.06L2.44 10 7.5 4.94"/>
+    <path d="M3.333 10h11.67c.918 0 1.664.74 1.664 1.667v2.916"/>
+  </g>
+</svg>

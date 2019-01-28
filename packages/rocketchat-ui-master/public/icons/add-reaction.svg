@@ -1,0 +1,10 @@
+<svg id="add-reaction" viewBox="0 0 20 20">
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(3 3)">
+      <circle fill="currentColor" cx="9" cy="5" r="1"/>
+      <circle fill="currentColor" cx="5" cy="5" r="1"/>
+      <path d="M7 0a7 7 0 1 0 0 14 7 7 0 0 0 7-7M4.172 9.328a4 4 0 0 0 5.656 0" stroke="currentColor" stroke-width="1.5"/>
+    </g>
+    <path d="M16.2 1.2v5.2m-2.6-2.6h5.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+  </g>
+</svg>

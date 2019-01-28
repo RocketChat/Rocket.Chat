@@ -1,0 +1,7 @@
+<svg id="mic" viewBox="0 0 20 20">
+  <g fill="none" fill-rule="evenodd">
+    <path d="M10 2.75A2.75 2.75 0 0 0 7.25 5.5v3a2.75 2.75 0 0 0 5.5 0v-3A2.75 2.75 0 0 0 10 2.75zM10 14v3" stroke="currentColor" stroke-width="1.5"/>
+    <path fill="currentColor" d="M7 17h6v1H7z"/>
+    <path d="M5 8c.049 4 1.716 6 5 6s4.951-2 5-6" stroke="currentColor" stroke-width="1.5"/>
+  </g>
+</svg>

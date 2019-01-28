@@ -1,0 +1,6 @@
+<svg id="video" viewBox="0 0 20 20">
+  <g stroke-width="1.5" stroke="currentColor" fill="none" fill-rule="evenodd">
+    <path d="M3 8h10v8H3zm10 2.376l4.048-1.314c.526-.171.952.137.952.69v4.494c0 .552-.426.862-.952.69L13 13.624v-3.247z"/>
+    <path d="M5.5 5h5" stroke-linecap="square"/>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+<svg id="multi-line" viewBox="0 0 20 20">
+  <g stroke-width="1.5" stroke="currentColor" fill="none" fill-rule="evenodd">
+    <path d="M12.5 5h5v6.25H5"/>
+    <path d="M8.17 15.714l-4.42-4.42 4.42-4.419"/>
+  </g>
+</svg>

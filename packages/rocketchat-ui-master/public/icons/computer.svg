@@ -1,0 +1,6 @@
+<svg id="computer" viewBox="0 0 20 20">
+  <g stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd">
+    <path d="M3 4h14v9H3z"/>
+    <path d="M7.5 16h5" stroke-linecap="square"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<svg id="discover" viewBox="0 0 20 20">
+  <g transform="translate(1 1)" fill="none" fill-rule="evenodd">
+    <path d="M0 0h18v18H0z"/>
+    <path d="M9 15.75c1.5 0 3-3.022 3-6.75s-1.5-6.75-3-6.75S6 5.272 6 9s1.5 6.75 3 6.75z" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M2.25 9c0 1.5 3.022 3 6.75 3s6.75-1.5 6.75-3S12.728 6 9 6 2.25 7.5 2.25 9z" stroke="currentColor" stroke-width="1.5"/>
+    <circle stroke="currentColor" stroke-width="1.5" cx="9" cy="9" r="6.75"/>
+  </g>
+</svg>

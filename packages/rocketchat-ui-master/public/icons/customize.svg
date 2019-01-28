@@ -1,0 +1,8 @@
+<svg id="customize" viewBox="0 0 20 20">
+  <g transform="translate(3 3)" stroke="currentColor" stroke-width="1.5" fill="none" fill-rule="evenodd">
+    <path d="M0 7h8m4 0h2M0 2h2m3.996 0H14M0 12h3m4 0h7" stroke-linecap="square"/>
+    <circle cx="4" cy="2" r="2"/>
+    <circle cx="10" cy="7" r="2"/>
+    <circle cx="5" cy="12" r="2"/>
+  </g>
+</svg>

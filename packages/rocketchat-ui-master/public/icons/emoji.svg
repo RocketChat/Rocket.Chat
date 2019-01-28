@@ -1,0 +1,9 @@
+<svg id="emoji" viewBox="0 0 20 20">
+  <g fill="none" fill-rule="evenodd">
+    <path d="M0 0h20v20H0z"/>
+    <path d="M7.172 12.328a4 4 0 0 0 5.656 0" stroke="currentColor" stroke-width="1.5"/>
+    <circle fill="currentColor" cx="12" cy="8" r="1"/>
+    <circle fill="currentColor" cx="8" cy="8" r="1"/>
+    <circle stroke="currentColor" stroke-width="1.5" cx="10" cy="10" r="7"/>
+  </g>
+</svg>
