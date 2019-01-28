@@ -25330,6 +25330,36 @@
           ]
         }
       ]
+    },
+    "0.74.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13266",
+          "title": "[IMPROVE] Inject metrics on callbacks",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.0-rc.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13239",
+          "title": "Change apps engine persistence bridge method to updateByAssociations",
+          "userLogin": "d-gubert",
+          "milestone": "0.74.0-rc.2",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }
