@@ -29,18 +29,18 @@
 	width: 100%;
 	max-width: 365px;
 
-	border-radius: 5px;
-	box-shadow:
-		0 1px 1px 0 rgba(0, 0, 0, 0.2),
-		0 2px 10px 0 rgba(0, 0, 0, 0.16);
-
-	background-color: #FFF;
-
 	padding: 1rem;
 
 	white-space: initial;
 
 	opacity: 1;
+
+	border-radius: 5px;
+
+	background-color: #ffffff;
+	box-shadow:
+		0 1px 1px 0 rgba(0, 0, 0, 0.2),
+		0 2px 10px 0 rgba(0, 0, 0, 0.16);
 
 	&.show {
 		display: block;
