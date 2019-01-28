@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
+import { API } from 'meteor/rocketchat:api';
 
 const oauth2server = new OAuth2Server({
 	accessTokensCollectionName: 'rocketchat_oauth_access_tokens',
@@ -55,7 +56,7 @@ Meteor.publish('oauthClient', function(clientId) {
 	});
 });
 
-RocketChat.API.v1.addAuthMethod(function() {
+API.v1.addAuthMethod(function() {
 	let headerToken = this.request.headers.authorization;
 	const getToken = this.request.query.access_token;
 	if (headerToken != null) {

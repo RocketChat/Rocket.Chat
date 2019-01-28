@@ -9,9 +9,11 @@ import { slashCommands } from 'meteor/rocketchat:utils';
 	Tracker.autorun(() => {
 		const newUserId = Meteor.userId();
 		if (oldUserId === null && newUserId) {
-			RocketChat.API.v1.get('commands.list').then(function _loadedCommands(result) {
-				result.commands.forEach((command) => {
-					slashCommands.commands[command.command] = command;
+			import('meteor/rocketchat:api').then(({ API }) => {
+				API.v1.get('commands.list').then(function _loadedCommands(result) {
+					result.commands.forEach((command) => {
+						slashCommands.commands[command.command] = command;
+					});
 				});
 			});
 		}

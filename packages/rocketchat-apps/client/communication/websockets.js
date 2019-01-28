@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { API } from 'meteor/rocketchat:api';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -49,7 +50,7 @@ export class AppWebsocketReceiver {
 	}
 
 	onAppAdded(appId) {
-		RocketChat.API.get(`apps/${ appId }/languages`).then((result) => {
+		API.get(`apps/${ appId }/languages`).then((result) => {
 			this.orch.parseAndLoadLanguages(result.languages, appId);
 		});
 
@@ -73,7 +74,7 @@ export class AppWebsocketReceiver {
 	}
 
 	onCommandAdded(command) {
-		RocketChat.API.v1.get('commands.get', { command }).then((result) => {
+		API.v1.get('commands.get', { command }).then((result) => {
 			RocketChat.slashCommands.commands[command] = result.command;
 		});
 	}
@@ -83,7 +84,7 @@ export class AppWebsocketReceiver {
 	}
 
 	onCommandUpdated(command) {
-		RocketChat.API.v1.get('commands.get', { command }).then((result) => {
+		API.v1.get('commands.get', { command }).then((result) => {
 			RocketChat.slashCommands.commands[command] = result.command;
 		});
 	}

@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
 import { findGuest } from '../lib/livechat';
 
-RocketChat.API.v1.addRoute('livechat/custom.field', {
+API.v1.addRoute('livechat/custom.field', {
 	post() {
 		try {
 			check(this.bodyParams, {
@@ -21,17 +22,17 @@ RocketChat.API.v1.addRoute('livechat/custom.field', {
 			}
 
 			if (!RocketChat.Livechat.setCustomFields({ token, key, value, overwrite })) {
-				return RocketChat.API.v1.failure();
+				return API.v1.failure();
 			}
 
-			return RocketChat.API.v1.success({ field: { key, value, overwrite } });
+			return API.v1.success({ field: { key, value, overwrite } });
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/custom.fields', {
+API.v1.addRoute('livechat/custom.fields', {
 	post() {
 		check(this.bodyParams, {
 			token: String,
@@ -53,13 +54,13 @@ RocketChat.API.v1.addRoute('livechat/custom.fields', {
 		const fields = this.bodyParams.customFields.map((customField) => {
 			const data = Object.assign({ token }, customField);
 			if (!RocketChat.Livechat.setCustomFields(data)) {
-				return RocketChat.API.v1.failure();
+				return API.v1.failure();
 			}
 
 			return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
 		});
 
-		return RocketChat.API.v1.success({ fields });
+		return API.v1.success({ fields });
 	},
 });
 

@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'check',
 		'rocketchat:utils',
 		'rocketchat:lib',
+		'rocketchat:api',
 		'rocketchat:logger',
 		'rocketchat:file-upload',
 	]);

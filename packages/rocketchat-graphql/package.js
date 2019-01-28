@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:api',
 		'rocketchat:accounts',
+		'rocketchat:integrations',
 		'swydo:graphql',
 	]);
 	api.mainModule('server/index.js', 'server');

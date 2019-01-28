@@ -6,6 +6,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat, handleError } from 'meteor/rocketchat:lib';
 import { t } from 'meteor/rocketchat:utils';
+import { API } from 'meteor/rocketchat:api';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({
@@ -95,7 +96,7 @@ function showException(error, defaultErrorString) {
 }
 
 function getImportFileData(importer, template) {
-	RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
+	API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
 		if (!data) {
 			console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
 			toastr.error(t('Importer_not_setup'));
@@ -148,7 +149,7 @@ Template.adminImportPrepare.events({
 
 			reader.readAsBinaryString(file);
 			reader.onloadend = () => {
-				RocketChat.API.post('v1/uploadImportFile', {
+				API.post('v1/uploadImportFile', {
 					binaryContent: reader.result,
 					contentType: file.type,
 					fileName: file.name,
@@ -174,7 +175,7 @@ Template.adminImportPrepare.events({
 
 		template.preparing.set(true);
 
-		RocketChat.API.post('v1/downloadPublicImportFile', {
+		API.post('v1/downloadPublicImportFile', {
 			fileUrl,
 			importerKey: importer.key,
 		}).then(() => {

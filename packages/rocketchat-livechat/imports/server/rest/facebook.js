@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
 
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
@@ -17,7 +18,7 @@ import LivechatVisitors from '../../../server/models/LivechatVisitors';
  * @apiParam {String} [text] Facebook message text
  * @apiParam {String} [attachments] Facebook message attachments
  */
-RocketChat.API.v1.addRoute('livechat/facebook', {
+API.v1.addRoute('livechat/facebook', {
 	post() {
 		if (!this.bodyParams.text && !this.bodyParams.attachments) {
 			return {

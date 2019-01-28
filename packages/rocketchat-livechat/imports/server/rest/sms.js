@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 
-RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
+API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
 		const SMSService = RocketChat.SMS.getService(this.urlParams.service);
 
