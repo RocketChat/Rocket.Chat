@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
@@ -12,7 +12,7 @@ const resolver = {
 				t: 'c',
 			};
 
-			return RocketChat.models.Rooms.findOne(query, {
+			return Rooms.findOne(query, {
 				fields: roomPublicFields,
 			});
 		}),

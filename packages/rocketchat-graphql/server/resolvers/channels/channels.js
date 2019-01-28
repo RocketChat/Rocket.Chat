@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
@@ -44,7 +44,7 @@ const resolver = {
 				}
 			}
 
-			return RocketChat.models.Rooms.find(query, options).fetch();
+			return Rooms.find(query, options).fetch();
 		}),
 	},
 };

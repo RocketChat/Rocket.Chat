@@ -1,5 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
 import { pubsub } from '../../subscriptions';
 import { authenticated } from '../../helpers/authenticated';
@@ -15,7 +16,7 @@ function shouldPublish(message, { id, directTo }, username) {
 	if (id) {
 		return message.rid === id;
 	} else if (directTo) {
-		const room = RocketChat.models.Rooms.findOne({
+		const room = Rooms.findOne({
 			usernames: { $all: [directTo, username] },
 			t: 'd',
 		});
@@ -41,7 +42,7 @@ const resolver = {
 	},
 };
 
-RocketChat.callbacks.add('afterSaveMessage', (message) => {
+callbacks.add('afterSaveMessage', (message) => {
 	publishMessage(message);
 }, null, 'chatMessageAddedSubscription');
 

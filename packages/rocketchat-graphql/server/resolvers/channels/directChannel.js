@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
@@ -24,7 +24,7 @@ const resolver = {
 				throw new Error('Use one of those fields: username, channelId');
 			}
 
-			return RocketChat.models.Rooms.findOne(query, {
+			return Rooms.findOne(query, {
 				fields: roomPublicFields,
 			});
 		}),
