@@ -22,8 +22,10 @@ Meteor.methods({
 		}
 
 		if (importer.instance) {
-			importer.instance.updateProgress(ProgressStep.CANCELLED);
-			importer.instance.updateRecord({ valid: false });
+			if (importer.instance.importRecord) {
+				importer.instance.updateProgress(ProgressStep.CANCELLED);
+				importer.instance.updateRecord({ valid: false });
+			}
 			importer.instance = undefined;
 		}
 
