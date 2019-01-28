@@ -1,6 +1,7 @@
 export function shouldNotifyAudio({
 	disableAllMessageNotifications,
 	status,
+	statusConnection,
 	audioNotifications,
 	hasMentionToAll,
 	hasMentionToHere,
@@ -12,7 +13,7 @@ export function shouldNotifyAudio({
 		return false;
 	}
 
-	if (status === 'busy' || audioNotifications === 'nothing') {
+	if (statusConnection === 'offline' || status === 'busy' || audioNotifications === 'nothing') {
 		return false;
 	}
 

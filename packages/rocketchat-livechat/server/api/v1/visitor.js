@@ -1,6 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
+import { findGuest } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/visitor', {
 	post() {
@@ -73,6 +75,33 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token', {
 			return RocketChat.API.v1.failure(e.error);
 		}
 	},
+	delete() {
+		try {
+			check(this.urlParams, {
+				token: String,
+			});
+
+			const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.token);
+			if (!visitor) {
+				throw new Meteor.Error('invalid-token');
+			}
+
+			const { _id } = visitor;
+			const result = RocketChat.Livechat.removeGuest(_id);
+			if (result) {
+				return RocketChat.API.v1.success({
+					visitor: {
+						_id,
+						ts: new Date().toISOString(),
+					},
+				});
+			}
+
+			return RocketChat.API.v1.failure();
+		} catch (e) {
+			return RocketChat.API.v1.failure(e.error);
+		}
+	},
 });
 
 RocketChat.API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
@@ -92,5 +121,29 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true 
 			},
 		}).fetch();
 		return RocketChat.API.v1.success({ rooms });
+	},
+});
+
+RocketChat.API.v1.addRoute('livechat/visitor.status', {
+	post() {
+		try {
+			check(this.bodyParams, {
+				token: String,
+				status: String,
+			});
+
+			const { token, status } = this.bodyParams;
+
+			const guest = findGuest(token);
+			if (!guest) {
+				throw new Meteor.Error('invalid-token');
+			}
+
+			RocketChat.Livechat.notifyGuestStatusChanged(token, status);
+
+			return RocketChat.API.v1.success({ token, status });
+		} catch (e) {
+			return RocketChat.API.v1.failure(e);
+		}
 	},
 });
