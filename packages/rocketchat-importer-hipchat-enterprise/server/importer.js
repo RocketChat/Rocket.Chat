@@ -720,8 +720,8 @@ export class HipChatEnterpriseImporter extends Base {
 				await this._importChannels(startedByUserId);
 
 				await super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				await this._importMessages(startedByUserId);
 				await this._importDirectMessages();
+				await this._importMessages(startedByUserId);
 
 				// super.updateProgress(ProgressStep.FINISHING);
 				await super.updateProgress(ProgressStep.DONE);
@@ -927,10 +927,6 @@ export class HipChatEnterpriseImporter extends Base {
 		for (const item of messageListIds) {
 			await this._importMessageList(startedByUserId, item._id);
 		}
-
-		messageListIds.forEach(async(item) => {
-			await this._importMessageList(startedByUserId, item._id);
-		});
 	}
 
 	_importDirectMessages() {
@@ -971,13 +967,14 @@ export class HipChatEnterpriseImporter extends Base {
 				'count.completed': this.progress.count.completed,
 			});
 
+			let msgCount = 0;
 			const roomUsers = {};
 			const roomObjects = {};
 
 			list.messages.forEach((msg) => {
+				msgCount++;
 				if (isNaN(msg.ts)) {
 					this.logger.warn(`Timestamp on a message in ${ list.name } is invalid`);
-					super.addCountCompleted(1);
 					return;
 				}
 
@@ -988,7 +985,6 @@ export class HipChatEnterpriseImporter extends Base {
 
 				if (!roomUsers[msg.senderId]) {
 					this.logger.warn('Skipping message due to missing sender.');
-					super.addCountCompleted(1);
 					return;
 				}
 
@@ -999,7 +995,6 @@ export class HipChatEnterpriseImporter extends Base {
 
 				if (!roomUsers[msg.receiverId]) {
 					this.logger.warn('Skipping message due to missing receiver.');
-					super.addCountCompleted(1);
 					return;
 				}
 
@@ -1062,8 +1057,15 @@ export class HipChatEnterpriseImporter extends Base {
 					this.addMessageError(e, msg);
 				}
 
-				super.addCountCompleted(1);
+				if (msgCount >= 50) {
+					super.addCountCompleted(msgCount);
+					msgCount = 0;
+				}
 			});
+
+			if (msgCount > 0) {
+				super.addCountCompleted(msgCount);
+			}
 		});
 	}
 
