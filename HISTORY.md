@@ -1,6 +1,25 @@
 
 # 0.74.0 (Under Release Candidate Process)
 
+## 0.74.0-rc.2
+`2019-01-27  ·  1 🚀  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🚀 Improvements
+
+- Inject metrics on callbacks ([#13266](https://github.com/RocketChat/Rocket.Chat/pull/13266))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Change apps engine persistence bridge method to updateByAssociations ([#13239](https://github.com/RocketChat/Rocket.Chat/pull/13239))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 0.74.0-rc.1
 `2019-01-22  ·  1 🚀  ·  2 🐛  ·  3 🔍  ·  6 👩‍💻👨‍💻`
 
