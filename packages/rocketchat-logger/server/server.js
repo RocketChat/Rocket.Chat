@@ -3,6 +3,8 @@ import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
 import { EventEmitter } from 'events';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -344,8 +346,8 @@ const StdOut = new class extends EventEmitter {
 			};
 			this.queue.push(item);
 
-			if (typeof RocketChat !== 'undefined') {
-				const limit = RocketChat.settings.get('Log_View_Limit');
+			if (typeof settings !== 'undefined') {
+				const limit = settings.get('Log_View_Limit');
 				if (limit && this.queue.length > limit) {
 					this.queue.shift();
 				}
@@ -357,7 +359,7 @@ const StdOut = new class extends EventEmitter {
 
 
 Meteor.publish('stdout', function() {
-	if (!this.userId || RocketChat.authz.hasPermission(this.userId, 'view-logs') !== true) {
+	if (!this.userId || hasPermission(this.userId, 'view-logs') !== true) {
 		return this.ready();
 	}
 
