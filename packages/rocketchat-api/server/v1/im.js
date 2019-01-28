@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { getRoomByNameOrIdWithOptionToJoin } from 'meteor/rocketchat:lib';
 import { Subscriptions, Uploads, Users, Messages, Rooms } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
@@ -11,7 +11,7 @@ function findDirectMessageRoom(params, user) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
 	}
 
-	const room = RocketChat.getRoomByNameOrIdWithOptionToJoin({
+	const room = getRoomByNameOrIdWithOptionToJoin({
 		currentUserId: user._id,
 		nameOrId: params.username || params.roomId,
 		type: 'd',

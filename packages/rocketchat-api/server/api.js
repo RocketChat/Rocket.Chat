@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { Restivus } from 'meteor/nimble:restivus';
 import { Logger } from 'meteor/rocketchat:logger';
 import { settings } from 'meteor/rocketchat:settings';
@@ -447,8 +446,6 @@ API = {
 	getUserAuth,
 	ApiClass: APIClass,
 };
-
-RocketChat.API = API;
 
 const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {

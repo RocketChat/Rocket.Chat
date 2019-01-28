@@ -109,4 +109,3 @@ export const API = {
 		},
 	},
 };
-RocketChat.API = API;
