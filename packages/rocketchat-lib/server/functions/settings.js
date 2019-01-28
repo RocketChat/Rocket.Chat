@@ -50,6 +50,8 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 			value = true;
 		} else if (value.toLowerCase() === 'false') {
 			value = false;
+		} else if (options.type === 'int') {
+			value = parseInt(value);
 		}
 		options.processEnvValue = value;
 		options.valueSource = 'processEnvValue';
@@ -83,6 +85,8 @@ RocketChat.settings.add = function(_id, value, options = {}) {
 			value = true;
 		} else if (value.toLowerCase() === 'false') {
 			value = false;
+		} else if (options.type === 'int') {
+			value = parseInt(value);
 		}
 		options.value = value;
 		options.processEnvValue = value;

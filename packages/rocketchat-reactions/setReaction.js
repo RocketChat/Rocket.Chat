@@ -61,9 +61,15 @@ Meteor.methods({
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
+				if (RocketChat.isTheLastMessage(room, message)) {
+					RocketChat.models.Rooms.unsetReactionsInLastMessage(room._id);
+				}
 				RocketChat.models.Messages.unsetReactions(messageId);
 				RocketChat.callbacks.run('unsetReaction', messageId, reaction);
 			} else {
+				if (RocketChat.isTheLastMessage(room, message)) {
+					RocketChat.models.Rooms.setReactionsInLastMessage(room._id, message);
+				}
 				RocketChat.models.Messages.setReactions(messageId, message.reactions);
 				RocketChat.callbacks.run('setReaction', messageId, reaction);
 			}
@@ -77,7 +83,9 @@ Meteor.methods({
 				};
 			}
 			message.reactions[reaction].usernames.push(user.username);
-
+			if (RocketChat.isTheLastMessage(room, message)) {
+				RocketChat.models.Rooms.setReactionsInLastMessage(room._id, message);
+			}
 			RocketChat.models.Messages.setReactions(messageId, message.reactions);
 			RocketChat.callbacks.run('setReaction', messageId, reaction);
 		}

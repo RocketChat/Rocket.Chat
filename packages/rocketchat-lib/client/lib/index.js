@@ -9,7 +9,7 @@
 import { RocketChatTabBar } from './RocketChatTabBar';
 import { RocketChatAnnouncement } from './RocketChatAnnouncement';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../lib/RoomTypeConfig';
-import { hide, leave, erase } from './ChannelActions';
+import { hide, hideOldSubscriptions, leave, erase } from './ChannelActions';
 import { call } from './callMethod';
 import { LoginPresence } from './LoginPresence';
 import * as DateFormat from './formatDate';
@@ -18,6 +18,7 @@ export {
 	call,
 	erase,
 	hide,
+	hideOldSubscriptions,
 	leave,
 	RocketChatTabBar,
 	RoomSettingsEnum,

@@ -32,15 +32,15 @@
 				</label>
 			</li>
 			{{#if favorite}}
-				<li class="rc-popover__item {{bold 'sidebarShowFavorites'}}">
-					<label class="rc-popover__label">
-						<input type="checkbox" name="sidebarShowFavorites" class="hidden" checked="{{checked 'sidebarShowFavorites'}}"/>
-						<span class="rc-popover__icon">
-							{{> icon block="rc-popover__icon-element" icon='star' }}
-						</span>
-						<span class="rc-popover__item-text">{{_"Group_favorites"}}</span>
-					</label>
-				</li>
+			<li class="rc-popover__item {{bold 'sidebarShowFavorites'}}">
+				<label class="rc-popover__label">
+					<input type="checkbox" name="sidebarShowFavorites" class="hidden" checked="{{checked 'sidebarShowFavorites'}}"/>
+					<span class="rc-popover__icon">
+						{{> icon block="rc-popover__icon-element" icon='star' }}
+					</span>
+					<span class="rc-popover__item-text">{{_"Group_favorites"}}</span>
+				</label>
+			</li>
 			{{/if}}
 			<li class="rc-popover__item {{bold 'sidebarShowUnread'}}">
 				<label class="rc-popover__label">
@@ -49,6 +49,17 @@
 						{{> icon block="rc-popover__icon-element" icon='eye-off' }}
 					</span>
 					<span class="rc-popover__item-text">{{_"Unread_on_top"}}</span>
+				</label>
+			</li>
+		</ul>
+		<span class="rc-popover__divider"></span>
+		<ul class="rc-popover__list">
+			<li class="rc-popover__item js-hide-old-subscriptions">
+				<label class="rc-popover__label">
+					<span class="rc-popover__icon">
+						{{> icon block="rc-popover__icon-element" icon='eye-off' }}
+					</span>
+					<span class="rc-popover__item-text">{{_ "Hide_old_subscriptions"}}</span>
 				</label>
 			</li>
 		</ul>
