@@ -986,7 +986,6 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	// $(this.find('.messages-box .wrapper')).perfectScrollbar();
 	const rid = Session.get('openedRoom');
 	if (!chatMessages[rid]) {
 		chatMessages[rid] = new ChatMessages;
