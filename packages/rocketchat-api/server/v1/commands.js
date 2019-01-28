@@ -1,45 +1,47 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { Rooms } from 'meteor/rocketchat:models';
+import { API } from '../api';
 
-RocketChat.API.v1.addRoute('commands.get', { authRequired: true }, {
+API.v1.addRoute('commands.get', { authRequired: true }, {
 	get() {
 		const params = this.queryParams;
 
 		if (typeof params.command !== 'string') {
-			return RocketChat.API.v1.failure('The query param "command" must be provided.');
+			return API.v1.failure('The query param "command" must be provided.');
 		}
 
-		const cmd = RocketChat.slashCommands.commands[params.command.toLowerCase()];
+		const cmd = slashCommands.commands[params.command.toLowerCase()];
 
 		if (!cmd) {
-			return RocketChat.API.v1.failure(`There is no command in the system by the name of: ${ params.command }`);
+			return API.v1.failure(`There is no command in the system by the name of: ${ params.command }`);
 		}
 
-		return RocketChat.API.v1.success({ command: cmd });
+		return API.v1.success({ command: cmd });
 	},
 });
 
-RocketChat.API.v1.addRoute('commands.list', { authRequired: true }, {
+API.v1.addRoute('commands.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		let commands = Object.values(RocketChat.slashCommands.commands);
+		let commands = Object.values(slashCommands.commands);
 
 		if (query && query.command) {
 			commands = commands.filter((command) => command.command === query.command);
 		}
 
 		const totalCount = commands.length;
-		commands = RocketChat.models.Rooms.processQueryOptionsOnResult(commands, {
+		commands = Rooms.processQueryOptionsOnResult(commands, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
 		});
 
-		return RocketChat.API.v1.success({
+		return API.v1.success({
 			commands,
 			offset,
 			count: commands.length,
@@ -49,26 +51,26 @@ RocketChat.API.v1.addRoute('commands.list', { authRequired: true }, {
 });
 
 // Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value' }
-RocketChat.API.v1.addRoute('commands.run', { authRequired: true }, {
+API.v1.addRoute('commands.run', { authRequired: true }, {
 	post() {
 		const body = this.bodyParams;
 		const user = this.getLoggedInUser();
 
 		if (typeof body.command !== 'string') {
-			return RocketChat.API.v1.failure('You must provide a command to run.');
+			return API.v1.failure('You must provide a command to run.');
 		}
 
 		if (body.params && typeof body.params !== 'string') {
-			return RocketChat.API.v1.failure('The parameters for the command must be a single string.');
+			return API.v1.failure('The parameters for the command must be a single string.');
 		}
 
 		if (typeof body.roomId !== 'string') {
-			return RocketChat.API.v1.failure('The room\'s id where to execute this command must be provided and be a string.');
+			return API.v1.failure('The room\'s id where to execute this command must be provided and be a string.');
 		}
 
 		const cmd = body.command.toLowerCase();
-		if (!RocketChat.slashCommands.commands[body.command.toLowerCase()]) {
-			return RocketChat.API.v1.failure('The command provided does not exist (or is disabled).');
+		if (!slashCommands.commands[body.command.toLowerCase()]) {
+			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
 		// This will throw an error if they can't or the room is invalid
@@ -78,38 +80,38 @@ RocketChat.API.v1.addRoute('commands.run', { authRequired: true }, {
 
 		let result;
 		Meteor.runAsUser(user._id, () => {
-			result = RocketChat.slashCommands.run(cmd, params, {
+			result = slashCommands.run(cmd, params, {
 				_id: Random.id(),
 				rid: body.roomId,
 				msg: `/${ cmd } ${ params }`,
 			});
 		});
 
-		return RocketChat.API.v1.success({ result });
+		return API.v1.success({ result });
 	},
 });
 
-RocketChat.API.v1.addRoute('commands.preview', { authRequired: true }, {
+API.v1.addRoute('commands.preview', { authRequired: true }, {
 	// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
 	get() {
 		const query = this.queryParams;
 		const user = this.getLoggedInUser();
 
 		if (typeof query.command !== 'string') {
-			return RocketChat.API.v1.failure('You must provide a command to get the previews from.');
+			return API.v1.failure('You must provide a command to get the previews from.');
 		}
 
 		if (query.params && typeof query.params !== 'string') {
-			return RocketChat.API.v1.failure('The parameters for the command must be a single string.');
+			return API.v1.failure('The parameters for the command must be a single string.');
 		}
 
 		if (typeof query.roomId !== 'string') {
-			return RocketChat.API.v1.failure('The room\'s id where the previews are being displayed must be provided and be a string.');
+			return API.v1.failure('The room\'s id where the previews are being displayed must be provided and be a string.');
 		}
 
 		const cmd = query.command.toLowerCase();
-		if (!RocketChat.slashCommands.commands[cmd]) {
-			return RocketChat.API.v1.failure('The command provided does not exist (or is disabled).');
+		if (!slashCommands.commands[cmd]) {
+			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
 		// This will throw an error if they can't or the room is invalid
@@ -122,7 +124,7 @@ RocketChat.API.v1.addRoute('commands.preview', { authRequired: true }, {
 			preview = Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid: query.roomId } });
 		});
 
-		return RocketChat.API.v1.success({ preview });
+		return API.v1.success({ preview });
 	},
 	// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif } }
 	post() {
@@ -130,28 +132,28 @@ RocketChat.API.v1.addRoute('commands.preview', { authRequired: true }, {
 		const user = this.getLoggedInUser();
 
 		if (typeof body.command !== 'string') {
-			return RocketChat.API.v1.failure('You must provide a command to run the preview item on.');
+			return API.v1.failure('You must provide a command to run the preview item on.');
 		}
 
 		if (body.params && typeof body.params !== 'string') {
-			return RocketChat.API.v1.failure('The parameters for the command must be a single string.');
+			return API.v1.failure('The parameters for the command must be a single string.');
 		}
 
 		if (typeof body.roomId !== 'string') {
-			return RocketChat.API.v1.failure('The room\'s id where the preview is being executed in must be provided and be a string.');
+			return API.v1.failure('The room\'s id where the preview is being executed in must be provided and be a string.');
 		}
 
 		if (typeof body.previewItem === 'undefined') {
-			return RocketChat.API.v1.failure('The preview item being executed must be provided.');
+			return API.v1.failure('The preview item being executed must be provided.');
 		}
 
 		if (!body.previewItem.id || !body.previewItem.type || typeof body.previewItem.value === 'undefined') {
-			return RocketChat.API.v1.failure('The preview item being executed is in the wrong format.');
+			return API.v1.failure('The preview item being executed is in the wrong format.');
 		}
 
 		const cmd = body.command.toLowerCase();
-		if (!RocketChat.slashCommands.commands[cmd]) {
-			return RocketChat.API.v1.failure('The command provided does not exist (or is disabled).');
+		if (!slashCommands.commands[cmd]) {
+			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
 		// This will throw an error if they can't or the room is invalid
@@ -163,6 +165,6 @@ RocketChat.API.v1.addRoute('commands.preview', { authRequired: true }, {
 			Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid: body.roomId } }, body.previewItem);
 		});
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });

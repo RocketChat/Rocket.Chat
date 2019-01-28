@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:models',
 		'rocketchat:settings',
+		'rocketchat:assets',
 		'rocketchat:utils',
 		'rocketchat:metrics',
 		'rocketchat:authorization',
