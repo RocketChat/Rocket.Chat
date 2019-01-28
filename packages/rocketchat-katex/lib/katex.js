@@ -5,7 +5,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Blaze } from 'meteor/blaze';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -24,7 +25,7 @@ class Boundary {
 
 }
 
-class Katex {
+class KatexClass {
 	constructor() {
 		this.delimiters_map = [
 			{
@@ -226,27 +227,27 @@ class Katex {
 	}
 
 	katex_enabled() {
-		return RocketChat.settings.get('Katex_Enabled');
+		return settings.get('Katex_Enabled');
 	}
 
 	dollar_syntax_enabled() {
-		return RocketChat.settings.get('Katex_Dollar_Syntax');
+		return settings.get('Katex_Dollar_Syntax');
 	}
 
 	parenthesis_syntax_enabled() {
-		return RocketChat.settings.get('Katex_Parenthesis_Syntax');
+		return settings.get('Katex_Parenthesis_Syntax');
 	}
 
 }
 
-RocketChat.katex = new Katex;
+export const Katex = new KatexClass;
 
-const cb = RocketChat.katex.render_message.bind(RocketChat.katex);
+const cb = Katex.render_message.bind(Katex);
 
-RocketChat.callbacks.add('renderMessage', cb, RocketChat.callbacks.priority.HIGH - 1, 'katex');
+callbacks.add('renderMessage', cb, callbacks.priority.HIGH - 1, 'katex');
 
 if (Meteor.isClient) {
 	Blaze.registerHelper('RocketChatKatex', function(text) {
-		return RocketChat.katex.render_message(text);
+		return Katex.render_message(text);
 	});
 }

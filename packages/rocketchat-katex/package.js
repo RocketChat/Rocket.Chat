@@ -9,7 +9,8 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
 	]);
 	api.addFiles('client/style.css', 'client');
 	const katexPath = 'node_modules/katex/dist/';
