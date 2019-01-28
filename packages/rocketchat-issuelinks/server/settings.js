@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.add('IssueLinks_Enabled', false, {
+settings.add('IssueLinks_Enabled', false, {
 	type: 'boolean',
 	i18nLabel: 'Enabled',
 	i18nDescription: 'IssueLinks_Incompatible',
@@ -9,7 +9,7 @@ RocketChat.settings.add('IssueLinks_Enabled', false, {
 	public: true,
 });
 
-RocketChat.settings.add('IssueLinks_Template', '', {
+settings.add('IssueLinks_Template', '', {
 	type: 'string',
 	i18nLabel: 'IssueLinks_LinkTemplate',
 	i18nDescription: 'IssueLinks_LinkTemplate_Description',
