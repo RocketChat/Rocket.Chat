@@ -104,7 +104,7 @@ Template.videoFlexTab.onRendered(function() {
 						// Lets make sure its loaded before we try to show it.
 						} else if (typeof JitsiMeetExternalAPI !== 'undefined') {
 
-						// Keep it from showing duplicates when re-evaluated on variable change.
+							// Keep it from showing duplicates when re-evaluated on variable change.
 							if (!$('[id^=jitsiConference]').length) {
 								this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl);
 
