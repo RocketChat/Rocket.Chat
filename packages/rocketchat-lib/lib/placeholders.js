@@ -16,6 +16,14 @@ RocketChat.placeholders.replace = function(str, data) {
 		str = str.replace(/\[Invite_Link\]/g, invite_link);
 	}
 
+	if (str.includes('[Username]')) {
+		str = str.replace(/\[Username\]/g, Meteor.user().username);
+	}
+
+	if (str.includes('[Avatar_Link]')) {
+		str = str.replace(/\[Avatar_Link\]/g, `${ RocketChat.settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`);
+	}
+
 	if (data) {
 		str = str.replace(/\[name\]/g, data.name || '');
 		str = str.replace(/\[fname\]/g, s.strLeft(data.name, ' ') || '');

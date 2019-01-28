@@ -36,6 +36,8 @@ Meteor.methods({
 					data: {
 						email,
 						Invite_Link:Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
+						Username:Meteor.user().username,
+						Avatar_Link:`${ RocketChat.settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
 					},
 				});
 			} catch ({ message }) {
