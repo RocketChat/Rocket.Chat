@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions } from 'meteor/rocketchat:lib';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/hideChannel.graphqls';
