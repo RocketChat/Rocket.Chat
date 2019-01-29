@@ -21,3 +21,7 @@ Package.on_use(function(api) {
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
+
+Npm.depends({
+	'xml-encryption': '0.11.2',
+});
