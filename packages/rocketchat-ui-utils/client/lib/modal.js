@@ -104,6 +104,8 @@ Template.rc_modal.helpers({
 		switch (this.type) {
 			case 'success':
 				return 'checkmark-circled';
+			case 'error':
+				return 'circle-cross';
 			default:
 				return `modal-${ this.type }`;
 		}
