@@ -89,6 +89,7 @@ export const sendNoWrap = ({ to, from, subject, html, headers }) => {
 		return;
 	}
 	Meteor.defer(() => Email.send({ to, from, subject, html, headers }));
+	return true;
 };
 
 export const send = ({ to, from, subject, html, data, headers }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data), headers });

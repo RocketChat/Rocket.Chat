@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:integrations',
 		'rocketchat:file-upload',
+		'rocketchat:mailer',
 	]);
 
 	api.mainModule('server/index.js', 'server');
