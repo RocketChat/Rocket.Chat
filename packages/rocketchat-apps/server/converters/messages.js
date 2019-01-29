@@ -50,6 +50,7 @@ export class AppMessagesConverter {
 			groupable: msgObj.groupable,
 			attachments,
 			reactions: msgObj.reactions,
+			parseUrls: msgObj.parseUrls,
 		};
 	}
 
@@ -110,6 +111,7 @@ export class AppMessagesConverter {
 			groupable: message.groupable,
 			attachments,
 			reactions: message.reactions,
+			parseUrls: message.parseUrls,
 		};
 	}
 
