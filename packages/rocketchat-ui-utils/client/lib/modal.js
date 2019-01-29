@@ -106,6 +106,8 @@ Template.rc_modal.helpers({
 				return 'checkmark-circled';
 			case 'error':
 				return 'circle-cross';
+			case 'info':
+				return 'info-circled';
 			default:
 				return `modal-${ this.type }`;
 		}
