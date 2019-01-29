@@ -38,7 +38,7 @@ Meteor.startup(function() {
 			i18nDescription: 'FEDERATION_Hub_URL_Description',
 		});
 
-		this.add('FEDERATION_Discovery_Method', false, {
+		this.add('FEDERATION_Discovery_Method', 'dns', {
 			type: 'select',
 			values: [{
 				key: 'dns',
