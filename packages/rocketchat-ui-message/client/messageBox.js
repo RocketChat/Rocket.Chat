@@ -127,7 +127,7 @@ const markdownButtons = [
 	},
 	{
 		label: 'multi_line',
-		icon: 'multi-line',
+		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
 		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled',
 	},
