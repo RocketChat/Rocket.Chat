@@ -77,7 +77,7 @@ const toolbarButtons = (user) => [{
 },
 {
 	name: t('Directory'),
-	icon: 'globe',
+	icon: 'discover',
 	action: () => {
 		menu.close();
 		FlowRouter.go('directory');
