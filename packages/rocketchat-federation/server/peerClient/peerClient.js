@@ -236,7 +236,7 @@ class PeerClient {
 	// Callback handlers
 	//
 	// #################
-	afterCreateDirectRoom(room, { from: owner }) {
+	afterCreateDirectRoom(room, [{ from: owner }]) {
 		this.log('afterCreateDirectRoom');
 
 		const { peer: { domain: localPeerDomain } } = this;
@@ -258,7 +258,7 @@ class PeerClient {
 		RocketChat.models.FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
 	}
 
-	afterCreateRoom({ _id: ownerId }, room) {
+	afterCreateRoom({ _id: ownerId }, [room]) {
 		this.log('afterCreateRoom');
 
 		const { peer: { domain: localPeerDomain } } = this;
@@ -282,7 +282,7 @@ class PeerClient {
 		RocketChat.models.FederationEvents.roomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
 	}
 
-	afterAddedToRoom({ user: userWhoJoined, inviter: userWhoInvited }, room) {
+	afterAddedToRoom({ user: userWhoJoined, inviter: userWhoInvited }, [room]) {
 		this.log('afterAddedToRoom');
 
 		// Check if this should be skipped
@@ -325,7 +325,7 @@ class PeerClient {
 		}
 	}
 
-	beforeLeaveRoom(userWhoLeft, room) {
+	beforeLeaveRoom(userWhoLeft, [room]) {
 		this.log('beforeLeaveRoom');
 
 		// Check if this should be skipped
@@ -350,7 +350,7 @@ class PeerClient {
 		federatedRoom.refreshFederation();
 	}
 
-	beforeRemoveFromRoom({ removedUser, userWhoRemoved }, room) {
+	beforeRemoveFromRoom({ removedUser, userWhoRemoved }, [room]) {
 		this.log('beforeRemoveFromRoom');
 
 		// Check if this should be skipped
@@ -376,7 +376,7 @@ class PeerClient {
 		federatedRoom.refreshFederation();
 	}
 
-	afterSaveMessage(message, room, userId) {
+	afterSaveMessage(message, [room]) {
 		this.log('afterSaveMessage');
 
 		// Check if this should be skipped
@@ -393,7 +393,7 @@ class PeerClient {
 
 		// If editedAt exists, it means it is an update
 		if (message.editedAt) {
-			const user = RocketChat.models.Users.findOneById(userId);
+			const user = RocketChat.models.Users.findOneById(message.editedBy._id);
 
 			const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, user.federation._id);
 
@@ -423,7 +423,7 @@ class PeerClient {
 		RocketChat.models.FederationEvents.messageDeleted(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
 	}
 
-	afterReadMessages(roomId, userId) {
+	afterReadMessages(roomId, [userId]) {
 		this.log('afterReadMessages');
 
 		if (!RocketChat.settings.get('Message_Read_Receipt_Enabled')) { this.log('Skipping: read receipts are not enabled'); return; }
@@ -444,7 +444,7 @@ class PeerClient {
 		RocketChat.models.FederationEvents.messagesRead(federatedRoom, federatedUser, { skipPeers: [localPeerDomain] });
 	}
 
-	afterSetReaction(message, { user, reaction, shouldReact }) {
+	afterSetReaction(message, [{ user, reaction, shouldReact }]) {
 		this.log('afterSetReaction');
 
 		const room = RocketChat.models.Rooms.findOneById(message.rid);
@@ -463,7 +463,7 @@ class PeerClient {
 		RocketChat.models.FederationEvents.messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
 	}
 
-	afterUnsetReaction(message, { user, reaction, shouldReact }) {
+	afterUnsetReaction(message, [{ user, reaction, shouldReact }]) {
 		this.log('afterUnsetReaction');
 
 		const room = RocketChat.models.Rooms.findOneById(message.rid);
@@ -482,7 +482,7 @@ class PeerClient {
 		RocketChat.models.FederationEvents.messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
 	}
 
-	afterMuteUser({ mutedUser, fromUser }, room) {
+	afterMuteUser({ mutedUser, fromUser }, [room]) {
 		this.log('afterMuteUser');
 
 		const { peer: { domain: localPeerDomain } } = this;
@@ -499,7 +499,7 @@ class PeerClient {
 		RocketChat.models.FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipPeers: [localPeerDomain] });
 	}
 
-	afterUnmuteUser({ unmutedUser, fromUser }, room) {
+	afterUnmuteUser({ unmutedUser, fromUser }, [room]) {
 		this.log('afterUnmuteUser');
 
 		const { peer: { domain: localPeerDomain } } = this;

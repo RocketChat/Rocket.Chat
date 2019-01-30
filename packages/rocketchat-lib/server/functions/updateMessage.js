@@ -53,6 +53,6 @@ RocketChat.updateMessage = function(message, user, originalMessage) {
 	}
 
 	Meteor.defer(function() {
-		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room, user._id);
+		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room);
 	});
 };
