@@ -19,7 +19,7 @@ const header = `<html><body><style>
 	.grid {
 		display: grid;
 		grid-auto-flow: dense;
-		max-width: 400px;
+		max-width: 380px;
 		margin: 0 auto;
 		border: 5px solid #ccc;
 		grid-template-columns: repeat(auto-fill, 20px);
@@ -39,7 +39,7 @@ const header = `<html><body><style>
 </style><div class="grid">`;
 
 const start = async() => {
-	const html = fs.createWriteStream('icon.html', { flags: 'w' });
+	const html = fs.createWriteStream('icons.html', { flags: 'w' });
 	html.write(header);
 	try {
 		await new Promise((resolve) => {
@@ -73,6 +73,7 @@ const start = async() => {
 
 try {
 	start();
+
 } catch (error) {
 	console.error(error);
 }

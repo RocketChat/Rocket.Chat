@@ -1,9 +1,9 @@
 const fs = require('fs');
 
 const { parseString, Builder } = require('xml2js');
-const jp = require('@f5io/jsonpath').default;
+// const jp = require('@f5io/jsonpath').default;
 
-const path = '$..path';
+// const path = '$..path';
 
 const builder = new Builder({
 	headless: true,
