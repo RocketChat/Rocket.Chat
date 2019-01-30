@@ -30,9 +30,8 @@ this.VideoRecorder = new class {
 		if (this.stream == null) {
 			return;
 		}
-		this.mediaRecorder = new MediaRecorder(this.stream);
-		this.mediaRecorder.stream = this.stream;
-		this.mediaRecorder.mimeType = 'video/webm';
+		this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: 'video/webm' });
+
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {
