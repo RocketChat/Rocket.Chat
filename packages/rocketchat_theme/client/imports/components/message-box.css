@@ -145,7 +145,7 @@
 
 			display: none;
 
-			color: red;
+			color: #2db730;
 
 			&.active {
 				display: flex;

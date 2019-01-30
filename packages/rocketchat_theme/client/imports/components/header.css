@@ -192,9 +192,13 @@
 		&.empty {
 			color: var(--header-toggle-favorite-color);
 
-			& .rc-header__icon {
+			& > .rc-header__icon {
 				fill: none;
 			}
+		}
+
+		& > .rc-header__icon {
+			font-size: 1.5rem;
 		}
 
 		&:hover {
@@ -203,6 +207,7 @@
 	}
 
 	&__icon {
+		font-size: 1rem;
 		fill: currentColor;
 		stroke: currentColor;
 	}
@@ -223,12 +228,12 @@
 		display: flex;
 		flex-direction: column;
 
-		margin: 0 8px;
+		margin: 0 6px;
 
 		cursor: pointer;
 		transition: all 0.3s;
 
-		font-size: 18px;
+		font-size: 20px;
 		align-items: center;
 
 		&.active,

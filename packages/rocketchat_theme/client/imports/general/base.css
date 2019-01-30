@@ -110,8 +110,6 @@ button {
 	& .tab-button-icon {
 		color: var(--rc-color-primary-dark);
 
-		font-size: 1.125rem;
-
 		fill: var(--rc-color-primary-dark);
 
 		&--star {
@@ -136,7 +134,6 @@ button {
 }
 
 .rc-icon {
-
 	overflow: hidden;
 
 	width: 1.25em;
@@ -145,7 +142,9 @@ button {
 	vertical-align: -0.15em;
 	fill: currentColor;
 
-	fill: currentColor;
+	&--default-size {
+		font-size: 20px;
+	}
 }
 
 .ps-scrollbar-y-rail {
