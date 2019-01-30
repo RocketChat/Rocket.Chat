@@ -31,7 +31,6 @@ class FederatedUser extends FederatedResource {
 		user._updatedAt = new Date(user._updatedAt);
 
 		// Delete sensitive data as well
-		delete user.emails;
 		delete user.roles;
 		delete user.services;
 
@@ -45,7 +44,6 @@ class FederatedUser extends FederatedResource {
 
 		// Set user property
 		this.user = user;
-		// }
 	}
 
 	getFederationId() {

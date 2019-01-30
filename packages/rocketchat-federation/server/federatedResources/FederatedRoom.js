@@ -215,8 +215,6 @@ class FederatedRoom extends FederatedResource {
 				});
 			}
 
-			console.log(ownerUsername, members);
-
 			// Create the room
 			const { rid } = RocketChat.createRoom(type, name, ownerUsername, members, false, extraData, createRoomOptions);
 

@@ -81,24 +81,26 @@ function setupFederation() {
 		Meteor.federationPeerHTTP.updateConfig(config);
 		Meteor.federationPeerClient.updateConfig(config);
 		Meteor.federationPeerServer.updateConfig(config);
+
+		// This means we need to register again
+		if (Meteor.federationUsingHub !== (_discoveryMethod === 'hub')) {
+			Meteor.federationUsingHub = _discoveryMethod === 'hub';
+
+			Meteor.federationPeerClient.register();
+		}
 	} else {
 		// Add global information
 		Meteor.federationEnabled = true;
+		Meteor.federationUsingHub = _discoveryMethod === 'hub';
 		Meteor.federationLocalIdentifier = config.peer.domain;
 		Meteor.federationPeerDNS = new PeerDNS(config);
 		Meteor.federationPeerHTTP = new PeerHTTP(config);
 		Meteor.federationPeerClient = new PeerClient(config);
 		Meteor.federationPeerServer = new PeerServer(config);
 
-		// Register if using the hub
-		if (!Meteor.federationPeerClient.register()) {
-
-			// RocketChat.settings.set('FEDERATION_Enabled', false);
-
-			return;
-		}
-
 		Meteor.federationPeerServer.start();
+
+		Meteor.federationPeerClient.register();
 	}
 }
 

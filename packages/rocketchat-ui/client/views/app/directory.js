@@ -253,7 +253,7 @@ Template.directory.onRendered(function() {
 						remoteOnly: true,
 						name: user.name,
 						username: user.username,
-						email: user.username,
+						email: (user.emails && user.emails[0] && user.emails[0].address) || user.username,
 						createdAt: timeAgo(user.createdAt, t),
 						domain: user.federation.peer,
 					}];

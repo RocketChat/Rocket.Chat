@@ -186,7 +186,7 @@ class PeerClient {
 	findUser(options) {
 		const { peer: { domain: localPeerDomain } } = this;
 
-		const { domain, username } = options;
+		const { domain, username, email } = options;
 
 		let peer = null;
 
@@ -198,14 +198,14 @@ class PeerClient {
 		}
 
 		try {
-			const { data: { federatedUser: { user } } } = Meteor.federationPeerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username }) }`);
+			const { data: { federatedUser: { user } } } = Meteor.federationPeerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, email }) }`);
 
 			const federatedUser = new FederatedUser(localPeerDomain, user);
 
 			return federatedUser;
 		} catch (err) {
-			this.log(`Could not find user:${ username }@${ domain } at ${ peer.domain }`);
-			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ username }@${ domain } at ${ peer.domain }`);
+			this.log(`Could not find user:${ email || username }@${ domain } at ${ peer.domain }`);
+			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ email || username }@${ domain } at ${ peer.domain }`);
 		}
 	}
 
@@ -246,6 +246,9 @@ class PeerClient {
 
 		const federatedRoom = new FederatedRoom(localPeerDomain, room, { owner });
 
+		// Check if this should be skipped
+		if (this.skipCallbackIfNeeded('afterCreateDirectRoom', federatedRoom.getLocalRoom())) { return; }
+
 		// Load federated users
 		federatedRoom.loadUsers();
 
@@ -266,6 +269,9 @@ class PeerClient {
 		const owner = RocketChat.models.Users.findOneById(ownerId);
 
 		const federatedRoom = new FederatedRoom(localPeerDomain, room, { owner });
+
+		// Check if this should be skipped
+		if (this.skipCallbackIfNeeded('afterCreateRoom', federatedRoom.getLocalRoom())) { return; }
 
 		// Load federated users
 		federatedRoom.loadUsers();

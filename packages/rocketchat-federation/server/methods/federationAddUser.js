@@ -4,8 +4,6 @@ import { findFederatedUser } from './federationSearchUser';
 
 Meteor.methods({
 	federationAddUser(emailAddress) {
-		console.log(findFederatedUser);
-
 		// Make sure the federated user still exists
 		const federatedUser = findFederatedUser(emailAddress);
 
