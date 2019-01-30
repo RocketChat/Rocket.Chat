@@ -153,16 +153,22 @@
 
 		width: 20px;
 		height: 20px;
+	}
 
-		&--marketplace-installer {
-			position: absolute;
-			top: 0;
+	&__wrap-actions {
+		& > .rc-icon--loading {
+			display: none;
+		}
 
-			width: 818px;
-			height: 20px;
+		&.loading {
+			& > .rc-icon--loading {
+				display: block;
 
-			&.play {
-				animation: play90 steps(40) 4s forwards;
+				animation: spin 1s linear infinite;
+			}
+
+			& > .installer {
+				display: none;
 			}
 		}
 	}
