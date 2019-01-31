@@ -1605,7 +1605,6 @@
   "Jasmin_sms_gateway_address_desc": "IP or Host of your Jasmin service with specified port. E.g. `http://192.168.1.1:1401` or `https://www.example.com:1401`",
   "Jasmin_sms_gateway_from_number": "From",
   "Jasmin_sms_gateway_from_number_desc": "Originating address/phone number",
-  "Jasmin_sms_gateway_port": "Jasmin SMS Gateway Port",
   "Jasmin_sms_gateway_password": "Password",
   "Jasmin_sms_gateway_username": "Username",
   "Jitsi_Chrome_Extension": "Chrome Extension Id",
