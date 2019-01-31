@@ -215,7 +215,7 @@ class PeerClient {
 	//
 	// #######
 	getUpload(options) {
-		const { domain, localMessage: { file: { _id: fileId } } } = options;
+		const { identifier: domain, localMessage: { file: { _id: fileId } } } = options;
 
 		let peer = null;
 
