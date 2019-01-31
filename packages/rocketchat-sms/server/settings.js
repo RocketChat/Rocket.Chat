@@ -49,14 +49,6 @@ Meteor.startup(function() {
 				i18nLabel: 'Jasmin_sms_gateway_address',
 				i18nDescription: 'Jasmin_sms_gateway_address_desc',
 			});
-			this.add('SMS_Jasmin_gateway_port', 1401, {
-				type: 'int',
-				enableQuery: {
-					_id: 'SMS_Service',
-					value: 'jasmin',
-				},
-				i18nLabel: 'Jasmin_sms_gateway_port',
-			});
 			this.add('SMS_Jasmin_username', '', {
 				type: 'string',
 				enableQuery: {
