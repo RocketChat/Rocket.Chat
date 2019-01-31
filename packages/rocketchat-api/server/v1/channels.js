@@ -967,3 +967,32 @@ RocketChat.API.v1.addRoute('channels.moderators', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('channels.addLeader', { authRequired: true }, {
+        post() {
+                const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+                const user = this.getUserFromParams();
+
+                Meteor.runAsUser(this.userId, () => {
+                        Meteor.call('addRoomLeader', findResult._id, user._id);
+                });
+
+                return RocketChat.API.v1.success();
+        },
+});
+
+RocketChat.API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
+        post() {
+                const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+                const user = this.getUserFromParams();
+
+                Meteor.runAsUser(this.userId, () => {
+                        Meteor.call('removeRoomLeader', findResult._id, user._id);
+                });
+
+                return RocketChat.API.v1.success();
+        },
+});
+
