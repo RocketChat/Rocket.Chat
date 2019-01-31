@@ -47,9 +47,10 @@ Meteor.startup(function() {
 					value: 'jasmin',
 				},
 				i18nLabel: 'Jasmin_sms_gateway_address',
+				i18nDescription: 'Jasmin_sms_gateway_address_desc',
 			});
-			this.add('SMS_Jasmin_gateway_port', '', {
-				type: 'string',
+			this.add('SMS_Jasmin_gateway_port', 1401, {
+				type: 'int',
 				enableQuery: {
 					_id: 'SMS_Service',
 					value: 'jasmin',
@@ -73,12 +74,13 @@ Meteor.startup(function() {
 				i18nLabel: 'Jasmin_sms_gateway_password',
 			});
 			this.add('SMS_Jasmin_from_number', '', {
-				type: 'string',
+				type: 'int',
 				enableQuery: {
 					_id: 'SMS_Service',
 					value: 'jasmin',
 				},
 				i18nLabel: 'Jasmin_sms_gateway_from_number',
+				i18nDescription: 'Jasmin_sms_gateway_from_number_desc',
 			});
 		});
 
