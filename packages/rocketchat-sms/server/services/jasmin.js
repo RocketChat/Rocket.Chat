@@ -71,8 +71,7 @@ class Jasmin {
 		console.log("Jasmin send from", this.from);
 
 		try {
-			const response = HTTP.call('GET', `${ this.address }/send?username=${this.username}
-				&password=${this.password}&to=${toNumber}&from=${this.from}&content=${message}`);
+			const response = HTTP.call('GET', `${ this.address }/send?username=${this.username}&password=${this.password}&to=${toNumber}&from=${this.from}&content=${message}`);
 			if (response.statusCode === 200) {
 				console.log("SMS Jasmin response: " + response.content);
 			} else {
