@@ -5,8 +5,6 @@ class Jasmin {
 	constructor() {
 		this.address = RocketChat.settings.get('SMS_Jasmin_gateway_address');
 		this.username = RocketChat.settings.get('SMS_Jasmin_username');
-		this.username = this.username.replace(/\n/g, '')
-		this.username = this.username.replace(/\t/g, '')
 		this.password = RocketChat.settings.get('SMS_Jasmin_password');
 		this.from = RocketChat.settings.get('SMS_Jasmin_from_number');
 	}
@@ -69,6 +67,8 @@ class Jasmin {
 		console.log("Jasmin send address", this.address);
 		console.log("Jasmin send password", this.password);
 		console.log("Jasmin send from", this.from);
+
+		strippedTo = toNumber.replace(/\D/g,'');
 
 		try {
 			const response = HTTP.call('GET', `${ this.address }/send?username=${this.username}&password=${this.password}&to=${toNumber}&from=${this.from}&content=${message}`);
