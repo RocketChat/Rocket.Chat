@@ -1,7 +1,7 @@
 <template name="sidebarItemIcon">
 	{{#if icon}}
 		<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}} {{#if status}}sidebar-item__icon-status--{{status}}{{/if}}">
-			{{> icon block="sidebar-item__icon rc-icon--default-size" icon=icon}}
+			{{> icon block="sidebar-item__icon" icon=icon}}
 		</div>
 	{{else}}
 		<div class="sidebar-item__user-status {{#if status}}sidebar-item__user-status--{{status}}{{/if}}"></div>

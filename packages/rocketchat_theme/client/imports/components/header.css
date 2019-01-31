@@ -208,8 +208,6 @@
 
 	&__icon {
 		font-size: 1rem;
-		fill: currentColor;
-		stroke: currentColor;
 	}
 
 	&__image {

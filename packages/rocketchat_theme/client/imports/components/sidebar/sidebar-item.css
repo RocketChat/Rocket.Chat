@@ -125,10 +125,10 @@
 
 		display: flex;
 
-		font-size: 1.25rem;
+		font-size: 1rem;
 
 		align-items: center;
-		fill: currentColor;
+		margin: 0 .15em;
 
 		&-status {
 			&--online {

@@ -136,7 +136,7 @@ Meteor.startup(async function() {
 	const { chatMessages } = await import('meteor/rocketchat:ui');
 	MessageAction.addButton({
 		id: 'reply-message',
-		icon: 'message',
+		icon: 'reply',
 		label: 'Reply',
 		context: ['message', 'message-mobile'],
 		action() {
