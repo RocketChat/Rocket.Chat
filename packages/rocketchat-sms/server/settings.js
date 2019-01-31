@@ -13,6 +13,9 @@ Meteor.startup(function() {
 			values: [{
 				key: 'twilio',
 				i18nLabel: 'Twilio',
+			},{
+				key: 'jasmin',
+				i18nLabel: 'Jasmin',
 			}],
 			i18nLabel: 'Service',
 		});
@@ -35,5 +38,49 @@ Meteor.startup(function() {
 				i18nLabel: 'Auth_Token',
 			});
 		});
+
+		this.section('Jasmin', function() {
+			this.add('SMS_Jasmin_gateway_address', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'jasmin',
+				},
+				i18nLabel: 'Jasmin_sms_gateway_address',
+			});
+			this.add('SMS_Jasmin_gateway_port', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'jasmin',
+				},
+				i18nLabel: 'Jasmin_sms_gateway_port',
+			});
+			this.add('SMS_Jasmin_username', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'jasmin',
+				},
+				i18nLabel: 'Jasmin_sms_gateway_username',
+			});
+			this.add('SMS_Jasmin_password', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'jasmin',
+				},
+				i18nLabel: 'Jasmin_sms_gateway_password',
+			});
+			this.add('SMS_Jasmin_from_number', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'jasmin',
+				},
+				i18nLabel: 'Jasmin_sms_gateway_from_number',
+			});
+		});
+
 	});
 });
