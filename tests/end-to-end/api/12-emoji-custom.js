@@ -29,7 +29,7 @@ describe('[EmojiCustom]', function() {
 		});
 	});
 
-	describe('[/emoji-custom.create]', () => {
+	describe.skip('[/emoji-custom.create]', () => {
 		it('should create new custom emoji', (done) => {
 			request.post(api('emoji-custom.create'))
 				.set(credentials)
@@ -77,7 +77,7 @@ describe('[EmojiCustom]', function() {
 		});
 	});
 
-	describe('[/emoji-custom.update]', () => {
+	describe.skip('[/emoji-custom.update]', () => {
 		before((done) => {
 			request.get(api('emoji-custom'))
 				.set(credentials)
@@ -185,7 +185,7 @@ describe('[EmojiCustom]', function() {
 		});
 	});
 
-	describe('[/emoji-custom.delete]', () => {
+	describe.skip('[/emoji-custom.delete]', () => {
 		it('should throw an error when trying delete custom emoji without the required param "emojid"', (done) => {
 			request.post(api('emoji-custom.delete'))
 				.set(credentials)
