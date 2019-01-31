@@ -9,10 +9,12 @@ RocketChat.SMS = {
 	fromNumber: null,
 
 	registerService(name, service) {
+		console.log("SMS registerService: " + name, service);
 		this.services[name] = service;
 	},
 
 	getService(name) {
+		console.log("SMS getService: " + name);
 		if (!this.services[name]) {
 			throw new Meteor.Error('error-sms-service-not-configured');
 		}
