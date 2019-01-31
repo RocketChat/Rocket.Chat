@@ -155,6 +155,11 @@ RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true },
 			count = parseInt(this.queryParams.count);
 		}
 
+		let offset = 0;
+		if (this.queryParams.offset) {
+			offset = parseInt(this.queryParams.offset);
+		}
+
 		const unreads = this.queryParams.unreads || false;
 
 		let result;
@@ -164,6 +169,7 @@ RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true },
 				latest: latestDate,
 				oldest: oldestDate,
 				inclusive,
+				offset,
 				count,
 				unreads,
 			});
