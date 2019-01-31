@@ -153,3 +153,41 @@ RocketChat.API.v1.addRoute('livechat/room.survey', {
 		}
 	},
 });
+
+RocketChat.API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
+	post() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-l-room')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		try {
+			check(this.bodyParams, {
+				rid: String,
+				department: Match.Optional(String),
+				userId: Match.Optional(String),
+			});
+
+			const { rid, department: departmentId, userId } = this.bodyParams;
+
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { fields: { _id: 1 } });
+			if (!subscription && !RocketChat.authz.hasRole(this.userId, 'livechat-manager')) {
+				return RocketChat.API.v1.unauthorized();
+			}
+
+			const room = RocketChat.models.Rooms.findOneById(rid);
+			if (!room) {
+				throw new Meteor.Error('invalid-room');
+			}
+
+			const guest = findGuest(room.v && room.v.token);
+			if (!guest) {
+				throw new Meteor.Error('invalid-guest');
+			}
+
+			return RocketChat.Livechat.transfer(room, guest, { departmentId, userId });
+		} catch (e) {
+			return RocketChat.API.v1.failure(e);
+		}
+	},
+});
+
