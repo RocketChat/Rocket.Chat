@@ -26,6 +26,20 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
+		const query = { _id: roomId };
+
+		const update = {
+			$set: {
+				'lastMessage.pinned': pinned,
+				'lastMessage.pinnedAt': pinnedAt || new Date,
+				'lastMessage.pinnedBy': pinnedBy,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setSentiment(roomId, sentiment) {
 		return this.update({ _id: roomId }, { $set: { sentiment } });
 	}

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { MessageTypes } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'message_pinned',
 		system: true,
 		message: 'Pinned_a_message',

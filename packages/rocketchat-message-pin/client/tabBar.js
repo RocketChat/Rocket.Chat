@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
 	return Tracker.autorun(function() {
-		if (RocketChat.settings.get('Message_AllowPinning')) {
-			RocketChat.TabBar.addButton({
+		if (settings.get('Message_AllowPinning')) {
+			TabBar.addButton({
 				groups: ['channel', 'group', 'direct'],
 				id: 'pinned-messages',
 				i18nTitle: 'Pinned_Messages',
@@ -14,7 +15,7 @@ Meteor.startup(function() {
 				order: 10,
 			});
 		} else {
-			RocketChat.TabBar.removeButton('pinned-messages');
+			TabBar.removeButton('pinned-messages');
 		}
 	});
 });

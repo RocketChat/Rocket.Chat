@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { ChatMessage } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { ChatMessage, Subscriptions } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	pinMessage(message) {
 		if (!Meteor.userId()) {
 			return false;
 		}
-		if (!RocketChat.settings.get('Message_AllowPinning')) {
+		if (!settings.get('Message_AllowPinning')) {
 			return false;
 		}
-		if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+		if (Subscriptions.findOne({ rid: message.rid }) == null) {
 			return false;
 		}
 		return ChatMessage.update({
@@ -25,10 +25,10 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			return false;
 		}
-		if (!RocketChat.settings.get('Message_AllowPinning')) {
+		if (!settings.get('Message_AllowPinning')) {
 			return false;
 		}
-		if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+		if (Subscriptions.findOne({ rid: message.rid }) == null) {
 			return false;
 		}
 		return ChatMessage.update({
