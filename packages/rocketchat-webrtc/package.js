@@ -6,17 +6,15 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('rocketchat:lib');
-	api.use('rocketchat:utils');
-	api.use('ecmascript');
-
-	api.use('templating', 'client');
-	api.mainModule('client/WebRTCClass.js', 'client');
-	api.addFiles('client/adapter.js', 'client');
-	// api.addFiles(');
-	api.addFiles('client/screenShare.js', 'client');
-
-	api.addFiles('server/settings.js', 'server');
-
-	api.export('WebRTC', 'client');
+	api.use([
+		'ecmascript',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:notifications',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'templating',
+	]);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

@@ -3,7 +3,6 @@ import { Base } from './models/_Base';
 import Avatars from './models/Avatars';
 import Uploads from './models/Uploads';
 import UserDataFiles from './models/UserDataFiles';
-import { CachedCollection, CachedCollectionManager } from './models/CachedCollection';
 import { Roles } from './models/Roles';
 import { Subscriptions as subscriptions } from './models/Subscriptions';
 import { Users as users } from './models/Users';
@@ -18,6 +17,7 @@ import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
 import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
+import CustomSounds from './models/CustomSounds';
 import _ from 'underscore';
 
 const Users = _.extend({}, users, Meteor.users);
@@ -31,8 +31,6 @@ export {
 	Avatars,
 	Uploads,
 	UserDataFiles,
-	CachedCollection,
-	CachedCollectionManager,
 	Roles,
 	Subscriptions,
 	Users,
@@ -50,4 +48,5 @@ export {
 	ChatMessage,
 	ChatSubscription,
 	Rooms,
+	CustomSounds,
 };

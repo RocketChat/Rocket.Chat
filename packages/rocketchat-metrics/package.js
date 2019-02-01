@@ -8,8 +8,11 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:settings',
+		'rocketchat:callbacks',
 		'rocketchat:migrations',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:utils',
 		'rocketchat:version',
 	]);
 	api.mainModule('server/index.js', 'server');
