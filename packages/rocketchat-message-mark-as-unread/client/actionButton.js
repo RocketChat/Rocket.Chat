@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { RoomManager, ChatSubscription } from 'meteor/rocketchat:ui';
+import { RoomManager, MessageAction } from 'meteor/rocketchat:ui-utils';
+import { handleError } from 'meteor/rocketchat:utils';
+import { ChatSubscription } from 'meteor/rocketchat:models';
 
 Meteor.startup(() => {
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'mark-message-as-unread',
 		icon: 'flag',
 		label: 'Mark_as_unread',
