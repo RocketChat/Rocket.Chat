@@ -179,7 +179,6 @@ RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true },
 
 RocketChat.API.v1.addRoute(['dm.history.others', 'im.history.others'], { authRequired: true }, {
 	get() {
-		// const findResult = findDirectMessageRoom(this.requestParams(), this.user);
 
 		if (RocketChat.settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.messages.others' });
