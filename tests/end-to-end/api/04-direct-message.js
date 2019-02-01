@@ -157,6 +157,22 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
+	it('/im.history.others', (done) => {
+		request.get(api('im.history.others'))
+			.set(credentials)
+			.query({
+				roomId: directMessage._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages');
+			})
+			.end(done);
+	});
+
 	it('/im.list', (done) => {
 		request.get(api('im.list'))
 			.set(credentials)
