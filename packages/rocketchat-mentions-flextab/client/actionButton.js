@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { RoomHistoryManager } from 'meteor/rocketchat:ui';
+import { MessageAction, RoomHistoryManager } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'jump-to-message',
 		icon: 'jump',
 		label: 'Jump_to_message',

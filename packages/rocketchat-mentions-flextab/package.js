@@ -10,7 +10,8 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'less',
-		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:ui-utils',
 		'templating',
 	]);
 	api.addFiles('client/views/stylesheets/mentionsFlexTab.less', 'client');
