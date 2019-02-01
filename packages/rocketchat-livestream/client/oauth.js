@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 export const close = (popup) => new Promise(function(resolve) {
 	const checkInterval = setInterval(() => {
@@ -11,6 +11,6 @@ export const close = (popup) => new Promise(function(resolve) {
 });
 
 export const auth = async() => {
-	const oauthWindow = window.open(`${ RocketChat.settings.get('Site_Url') }/api/v1/livestream/oauth?userId=${ Meteor.userId() }`, 'youtube-integration-oauth', 'width=400,height=600');
+	const oauthWindow = window.open(`${ settings.get('Site_Url') }/api/v1/livestream/oauth?userId=${ Meteor.userId() }`, 'youtube-integration-oauth', 'width=400,height=600');
 	return await close(oauthWindow);
 };

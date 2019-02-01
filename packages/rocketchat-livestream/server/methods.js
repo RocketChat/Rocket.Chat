@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { Rooms } from 'meteor/rocketchat:models';
 import { createLiveStream, statusLiveStream, statusStreamLiveStream, getBroadcastStatus, setBroadcastStatus } from './functions/livestream';
 
 const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;
@@ -27,8 +28,8 @@ Meteor.methods({
 			id: streamId,
 			access_token,
 			refresh_token,
-			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
+			clientId: settings.get('Broadcasting_client_id'),
+			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
 
 	},
@@ -54,8 +55,8 @@ Meteor.methods({
 			access_token,
 			refresh_token,
 			status,
-			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
+			clientId: settings.get('Broadcasting_client_id'),
+			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
 
 	},
@@ -68,7 +69,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOne({ _id: rid });
+		const room = Rooms.findOne({ _id: rid });
 
 		if (!room) {
 			// TODO: change error
@@ -82,8 +83,8 @@ Meteor.methods({
 			room,
 			access_token,
 			refresh_token,
-			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
+			clientId: settings.get('Broadcasting_client_id'),
+			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
 
 	},
@@ -108,8 +109,8 @@ Meteor.methods({
 			id: broadcastId,
 			access_token,
 			refresh_token,
-			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
+			clientId: settings.get('Broadcasting_client_id'),
+			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
 	},
 	async setBroadcastStatus({ broadcastId, status }) {
@@ -134,8 +135,8 @@ Meteor.methods({
 			access_token,
 			refresh_token,
 			status,
-			clientId: RocketChat.settings.get('Broadcasting_client_id'),
-			clientSecret: RocketChat.settings.get('Broadcasting_client_secret'),
+			clientId: settings.get('Broadcasting_client_id'),
+			clientSecret: settings.get('Broadcasting_client_secret'),
 		});
 
 	},
