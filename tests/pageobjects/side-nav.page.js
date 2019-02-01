@@ -46,6 +46,8 @@ class SideNav extends Page {
 
 	get burgerBtn() { return browser.element('.burger'); }
 
+	get sidebarWrap() { return browser.element('.sidebar-wrap'); }
+
 	// Opens a channel via rooms list
 	openChannel(channelName) {
 		browser.waitForVisible(`.sidebar-item__name=${ channelName }`, 5000);
