@@ -16,35 +16,39 @@ RocketChat.API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => {
 			const fields = {};
 			const busboy = new Busboy({ headers: this.request.headers });
+			const emojiData = [];
+			let emojiMimetype = '';
 
 			Meteor.wrapAsync((callback) => {
 				busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
 					if (fieldname !== 'emoji') {
 						return callback(new Meteor.Error('invalid-field'));
 					}
-					const emojiData = [];
+
 					file.on('data', Meteor.bindEnvironment((data) => emojiData.push(data)));
 
 					file.on('end', Meteor.bindEnvironment(() => {
 						const extension = mimetype.split('/')[1];
+						emojiMimetype = mimetype;
 						fields.extension = extension;
-						fields.newFile = true;
-						fields.aliases = fields.aliases || '';
-						try {
-							Meteor.call('insertOrUpdateEmoji', fields);
-							Meteor.call('uploadEmojiCustom', Buffer.concat(emojiData), mimetype, fields);
-							callback();
-						} catch (error) {
-							return callback(error);
-						}
 					}));
 				}));
 				busboy.on('field', (fieldname, val) => {
 					fields[fieldname] = val;
 				});
+				busboy.on('finish', Meteor.bindEnvironment(() => {
+					fields.newFile = true;
+					fields.aliases = fields.aliases || '';
+					try {
+						Meteor.call('insertOrUpdateEmoji', fields);
+						Meteor.call('uploadEmojiCustom', Buffer.concat(emojiData), emojiMimetype, fields);
+						callback();
+					} catch (error) {
+						return callback(error);
+					}
+				}));
 				this.request.pipe(busboy);
 			})();
-
 		});
 	},
 });
