@@ -386,7 +386,7 @@ RocketChat.API.v1.addRoute('chat.list', { authRequired: true }, {
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		const messages = RocketChat.models.Messages.find(query, {
-			sort: sort ? sort : { coordinates: 1 },
+			sort: sort ? sort : { ts: 1 },
 			skip: offset,
 			limit: count,
 			fields,
