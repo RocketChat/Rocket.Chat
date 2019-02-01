@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { RateLimiter } from 'meteor/rate-limit';
 import { settings } from 'meteor/rocketchat:settings';
+import { metrics } from 'meteor/rocketchat:metrics';
 
 // Get initial set of names already registered for rules
 const names = new Set(Object.values(DDPRateLimiter.printRules())
@@ -90,10 +91,18 @@ const checkNameForStream = (name) => name && !names.has(name) && name.startsWith
 
 const ruleIds = {};
 
-const callback = (message) => (reply, input) => {
+const callback = (message, name) => (reply, input) => {
 	if (reply.allowed === false) {
 		console.warn('DDP RATE LIMIT:', message);
 		console.warn(JSON.stringify({ ...reply, ...input }, null, 2));
+		metrics.ddpRateLimitExceeded.inc({
+			limit_name: name,
+			user_id: input.userId,
+			client_address: input.clientAddress,
+			type: input.type,
+			name: input.name,
+			connection_id: input.connectionId,
+		});
 	// } else {
 	// 	console.log('DDP RATE LIMIT:', message);
 	// 	console.log(JSON.stringify({ ...reply, ...input }, null, 2));
@@ -121,7 +130,7 @@ const reconfigureLimit = Meteor.bindEnvironment((name, rules, factor = 1) => {
 		rules,
 		settings.get(`DDP_Rate_Limit_${ name }_Requests_Allowed`) * factor,
 		settings.get(`DDP_Rate_Limit_${ name }_Interval_Time`) * factor,
-		callback(`limit by ${ messages[name] }`)
+		callback(`limit by ${ messages[name] }`, name)
 	);
 });
 
