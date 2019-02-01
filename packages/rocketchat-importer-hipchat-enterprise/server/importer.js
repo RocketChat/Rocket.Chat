@@ -154,6 +154,7 @@ export class HipChatEnterpriseImporter extends Base {
 				isPrivate: r.Room.privacy === 'private',
 				isArchived: r.Room.is_archived,
 				topic: r.Room.topic,
+				members: r.Room.members,
 			});
 			count++;
 
@@ -433,7 +434,6 @@ export class HipChatEnterpriseImporter extends Base {
 				super.addCountToTotal(this.messagesCount);
 
 				// Check if any of the emails used are already taken
-
 				if (this.emailList.length > 0) {
 					const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: this.emailList } });
 					const conflictingUserEmails = [];
@@ -452,7 +452,7 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 
 				// Ensure we have some users, channels, and messages
-				if (!this.usersCount && this.channelsCount && !this.messagesCount) {
+				if (!this.usersCount && !this.channelsCount && !this.messagesCount) {
 					this.logger.debug(`users: ${ this.usersCount }, channels: ${ this.channelsCount }, messages = ${ this.messagesCount }`);
 					super.updateProgress(ProgressStep.ERROR);
 					reject(new Meteor.Error('error-import-file-is-empty'));
@@ -536,12 +536,10 @@ export class HipChatEnterpriseImporter extends Base {
 		Meteor.runAsUser(existingUserId, () => {
 			RocketChat.models.Users.update({ _id: existingUserId }, { $addToSet: { importIds: userToImport.id } });
 
-			// Meteor.call('setUsername', userToImport.username, { joinDefaultChannelsSilenced: true });
-
 			// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
 			RocketChat.models.Users.setName(existingUserId, userToImport.name);
-			// TODO: Think about using a custom field for the users "title" field
 
+			// TODO: Think about using a custom field for the users "title" field
 			if (userToImport.avatar) {
 				Meteor.call('setAvatarFromService', `data:image/png;base64,${ userToImport.avatar }`);
 			}
@@ -720,8 +718,8 @@ export class HipChatEnterpriseImporter extends Base {
 				await this._importChannels(startedByUserId);
 
 				await super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				await this._importDirectMessages();
 				await this._importMessages(startedByUserId);
+				await this._importDirectMessages();
 
 				// super.updateProgress(ProgressStep.FINISHING);
 				await super.updateProgress(ProgressStep.DONE);
@@ -763,6 +761,36 @@ export class HipChatEnterpriseImporter extends Base {
 		});
 	}
 
+	_createSubscriptions(channelToImport, roomOrRoomId) {
+		if (!channelToImport || !channelToImport.members) {
+			return;
+		}
+
+		let room;
+		if (roomOrRoomId && typeof roomOrRoomId === 'string') {
+			room = RocketChat.models.Rooms.findOneByIdOrName(roomOrRoomId);
+		} else {
+			room = roomOrRoomId;
+		}
+
+		const extra = { open: true };
+		channelToImport.members.forEach((hipchatUserId) => {
+			if (hipchatUserId === channelToImport.creator) {
+				// Creators are subscribed automatically
+				return;
+			}
+
+			const user = this.getRocketUserFromUserId(hipchatUserId);
+			if (!user) {
+				this.logger.warn(`User ${ hipchatUserId } not found on Rocket.Chat database.`);
+				return;
+			}
+
+			this.logger.info(`Creating user's subscription to room ${ room._id }, rocket.chat user is ${ user._id }, hipchat user is ${ hipchatUserId }`);
+			RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, extra);
+		});
+	}
+
 	_importChannel(channelToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
 			const existingRoom = RocketChat.models.Rooms.findOneByName(channelToImport.name);
@@ -771,6 +799,8 @@ export class HipChatEnterpriseImporter extends Base {
 				channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;
 				this._saveRoomIdReference(channelToImport.id, channelToImport.rocketId);
 				RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $addToSet: { importIds: channelToImport.id } });
+
+				this._createSubscriptions(channelToImport, existingRoom || 'general');
 			} else {
 				// Find the rocketchatId of the user who created this channel
 				const creatorId = this._getUserRocketId(channelToImport.creator) || startedByUserId;
@@ -788,6 +818,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 				if (channelToImport.rocketId) {
 					RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $set: { ts: channelToImport.created, topic: channelToImport.topic }, $addToSet: { importIds: channelToImport.id } });
+					this._createSubscriptions(channelToImport, channelToImport.rocketId);
 				}
 			}
 
