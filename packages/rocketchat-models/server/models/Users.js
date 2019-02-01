@@ -39,6 +39,21 @@ export class Users extends Base {
 		});
 	}
 
+	rocketMailUnsubscribe(_id, createdAt) {
+		const query = {
+			_id,
+			createdAt: new Date(parseInt(createdAt)),
+		};
+		const update = {
+			$set: {
+				'mailer.unsubscribed': true,
+			},
+		};
+		const affectedRows = this.update(query, update);
+		console.log('[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt(createdAt)), affectedRows);
+		return affectedRows;
+	}
+
 	fetchKeysByUserId(userId) {
 		const user = this.findOne({ _id: userId }, { fields: { e2e: 1 } });
 
