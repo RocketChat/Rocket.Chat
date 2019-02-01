@@ -375,3 +375,28 @@ RocketChat.API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
 		});
 	},
 });
+
+RocketChat.API.v1.addRoute('chat.list', { authRequired: true }, {
+	get() {
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		const messages = RocketChat.models.Messages.find(query, {
+			sort: sort ? sort : { coordinates: 1 },
+			skip: offset,
+			limit: count,
+			fields,
+		}).fetch();
+
+		return RocketChat.API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total: RocketChat.models.Messages.find(query).count(),
+		});
+	},
+});
