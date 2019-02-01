@@ -5,6 +5,7 @@ import os from 'os';
 import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { Sessions } from 'meteor/rocketchat:models';
 
 const wizardFields = [
 	'Organization_Type',
@@ -129,6 +130,11 @@ RocketChat.statistics.get = function _getStatistics() {
 	} catch (e) {
 		console.error('Error getting MongoDB version');
 	}
+
+	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
+	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
+	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 
 	return statistics;
 };
