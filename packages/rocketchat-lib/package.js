@@ -125,6 +125,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
 	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
+	api.addFiles('server/functions/insertMessage.js', 'server');
 	api.addFiles('server/functions/settings.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
 	api.addFiles('server/functions/setUsername.js', 'server');
