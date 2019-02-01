@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 RocketChat.deleteMessage = function(message, user) {
 	const keepHistory = RocketChat.settings.get('Message_KeepHistory');

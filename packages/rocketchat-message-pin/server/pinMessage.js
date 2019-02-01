@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {
@@ -37,7 +37,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message')) {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
@@ -119,7 +119,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message')) {
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
