@@ -7,7 +7,8 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
 		'tap:i18n',
 	]);
 	api.mainModule('client/index.js', 'client');
