@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { t, roomTypes, handleError } from 'meteor/rocketchat:utils';
 import { TabBar, fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
-import { ChatSubscription, Rooms } from 'meteor/rocketchat:models';
+import { ChatSubscription, ChatRoom, Rooms } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;

@@ -3,6 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import { ChatSubscription } from 'meteor/rocketchat:models';
 
 Template.ThreadList.events({
 	'click .js-create-thread'() {

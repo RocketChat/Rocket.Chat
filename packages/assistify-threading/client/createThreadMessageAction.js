@@ -3,6 +3,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import { ChatMessage } from 'meteor/rocketchat:models';
 
 Meteor.startup(function() {
 	const instance = this;
