@@ -169,9 +169,10 @@ const configConnectionByMethod = _.debounce(() => {
 	}, 4);
 }, 1000);
 
-
-settings.get(/^DDP_Rate_Limit_IP_.+/, configIP);
-settings.get(/^DDP_Rate_Limit_User_[^B].+/, configUser);
-settings.get(/^DDP_Rate_Limit_Connection_[^B].+/, configConnection);
-settings.get(/^DDP_Rate_Limit_User_By_Method_.+/, configUserByMethod);
-settings.get(/^DDP_Rate_Limit_Connection_By_Method_.+/, configConnectionByMethod);
+if (!process.env.TEST_MODE) {
+	settings.get(/^DDP_Rate_Limit_IP_.+/, configIP);
+	settings.get(/^DDP_Rate_Limit_User_[^B].+/, configUser);
+	settings.get(/^DDP_Rate_Limit_Connection_[^B].+/, configConnection);
+	settings.get(/^DDP_Rate_Limit_User_By_Method_.+/, configUserByMethod);
+	settings.get(/^DDP_Rate_Limit_Connection_By_Method_.+/, configConnectionByMethod);
+}
