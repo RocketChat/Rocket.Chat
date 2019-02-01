@@ -1,6 +1,49 @@
 
+# 0.74.1
+`2019-02-01  ·  4 🎉  ·  7 🐛  ·  1 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🎉 New features
+
+- Limit all DDP/Websocket requests (configurable via admin panel) ([#13311](https://github.com/RocketChat/Rocket.Chat/pull/13311))
+- REST endpoint to forward livechat rooms ([#13308](https://github.com/RocketChat/Rocket.Chat/pull/13308))
+- Collect data for Monthly/Daily Active Users for a future dashboard ([#11525](https://github.com/RocketChat/Rocket.Chat/pull/11525))
+- Add parseUrls field to the apps message converter ([#13248](https://github.com/RocketChat/Rocket.Chat/pull/13248))
+
+### 🐛 Bug fixes
+
+- Mobile view and re-enable E2E tests ([#13322](https://github.com/RocketChat/Rocket.Chat/pull/13322))
+- Hipchat Enterprise Importer not generating subscriptions ([#13293](https://github.com/RocketChat/Rocket.Chat/pull/13293))
+- Message updating by Apps ([#13294](https://github.com/RocketChat/Rocket.Chat/pull/13294))
+- REST endpoint for creating custom emojis ([#13306](https://github.com/RocketChat/Rocket.Chat/pull/13306))
+- Preview of image uploads were not working when apps framework is enable ([#13303](https://github.com/RocketChat/Rocket.Chat/pull/13303))
+- HipChat Enterprise importer fails when importing a large amount of messages (millions) ([#13221](https://github.com/RocketChat/Rocket.Chat/pull/13221))
+- Fix bug when user try recreate channel or group with same name and remove room from cache when user leaves room ([#12341](https://github.com/RocketChat/Rocket.Chat/pull/12341))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Fix: Missing export in cloud package ([#13282](https://github.com/RocketChat/Rocket.Chat/pull/13282))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@d-gubert](https://github.com/d-gubert)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 0.74.0
-`2019-01-27  ·  10 🎉  ·  11 🚀  ·  17 🐛  ·  39 🔍  ·  24 👩‍💻👨‍💻`
+`2019-01-28  ·  10 🎉  ·  11 🚀  ·  17 🐛  ·  38 🔍  ·  24 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.4`
@@ -57,8 +100,8 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Release 0.74.0 ([#13270](https://github.com/RocketChat/Rocket.Chat/pull/13270) by [@Xuhao](https://github.com/Xuhao) & [@supra08](https://github.com/supra08))
 - Regression: Fix message pinning ([#13213](https://github.com/RocketChat/Rocket.Chat/pull/13213) by [@TkTech](https://github.com/TkTech))
-- Release 0.73.2 ([#13086](https://github.com/RocketChat/Rocket.Chat/pull/13086))
 - LingoHub based on develop ([#13201](https://github.com/RocketChat/Rocket.Chat/pull/13201))
 - Language: Edit typo "Обновлить" ([#13177](https://github.com/RocketChat/Rocket.Chat/pull/13177) by [@zpavlig](https://github.com/zpavlig))
 - Regression: Fix export AudioRecorder ([#13192](https://github.com/RocketChat/Rocket.Chat/pull/13192))
@@ -91,7 +134,6 @@
 - Move rocketchat settings to specific package ([#13026](https://github.com/RocketChat/Rocket.Chat/pull/13026))
 - Remove incorrect pt-BR translation ([#13074](https://github.com/RocketChat/Rocket.Chat/pull/13074))
 - Merge master into develop & Set version to 0.74.0-develop ([#13050](https://github.com/RocketChat/Rocket.Chat/pull/13050) by [@ohmonster](https://github.com/ohmonster) & [@piotrkochan](https://github.com/piotrkochan))
-- Release 0.73.2 ([#13086](https://github.com/RocketChat/Rocket.Chat/pull/13086))
 - Regression: Fix audio message upload ([#13224](https://github.com/RocketChat/Rocket.Chat/pull/13224))
 - Regression: Fix message pinning ([#13213](https://github.com/RocketChat/Rocket.Chat/pull/13213) by [@TkTech](https://github.com/TkTech))
 - Regression: Fix emoji search ([#13207](https://github.com/RocketChat/Rocket.Chat/pull/13207))
@@ -130,7 +172,7 @@
 - [@tassoevan](https://github.com/tassoevan)
 
 # 0.73.2
-`2019-01-07  ·  1 🎉  ·  3 👩‍💻👨‍💻`
+`2019-01-07  ·  1 🎉  ·  1 🔍  ·  3 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.4`
@@ -141,6 +183,13 @@
 
 - Cloud Integration ([#13013](https://github.com/RocketChat/Rocket.Chat/pull/13013))
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.73.2 ([#13086](https://github.com/RocketChat/Rocket.Chat/pull/13086))
+
+</details>
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
@@ -148,7 +197,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 0.73.1
-`2018-12-28  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+`2018-12-28  ·  1 🐛  ·  3 🔍  ·  2 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.4`
@@ -162,6 +211,7 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
+- Release 0.73.1 ([#13052](https://github.com/RocketChat/Rocket.Chat/pull/13052))
 - Execute tests with versions 3.2, 3.4, 3.6 and 4.0 of MongoDB ([#13049](https://github.com/RocketChat/Rocket.Chat/pull/13049))
 - Regression: Get room's members list not working on MongoDB 3.2 ([#13051](https://github.com/RocketChat/Rocket.Chat/pull/13051))
 
