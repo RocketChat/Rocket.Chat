@@ -272,6 +272,8 @@ Package.onUse(function(api) {
 	api.addFiles('startup/defaultRoomTypes.js');
 	api.addFiles('startup/index.js', 'server');
 
+	api.addFiles('server/startup/rateLimite.js', 'server');
+
 	// EXPORT
 	api.export('RocketChat');
 	api.export('handleError', 'client');
