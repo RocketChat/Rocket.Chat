@@ -175,16 +175,17 @@ Template.message.helpers({
 	},
 	msgSummary() {
 		let msg = Template.currentData();
+		let msgSummary;
 		msg = renderMessageBody(msg);
 		if (msg.length > 100) {
-			msgSummary = msg.split(/\s+/).slice(0,5).join(" ");
+			msgSummary = msg.split(/\s+/).slice(0, 5).join(' ');
 			if (msgSummary.length > 25) {
-				msgSummary = msgSummary.slice(0,10);
+				msgSummary = msgSummary.slice(0, 10);
 			}
-			msgSummary = msgSummary + "... ";
+			msgSummary = msgSummary.concat('... ');
 			return msgSummary;
 		}
-		msg = msg + "... ";
+		msg = msg.concat('... ');
 		return msg;
 	},
 	system(returnClass) {
@@ -402,7 +403,7 @@ Template.message.helpers({
 			}
 			return false;
 		}
-	}
+	},
 });
 
 
