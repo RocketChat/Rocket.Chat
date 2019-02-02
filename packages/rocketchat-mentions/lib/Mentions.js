@@ -9,7 +9,6 @@ export default class {
 		this.pattern = pattern;
 		this.useRealName = useRealName;
 		this.me = me;
-		this.room = undefined;
 	}
 	set me(m) {
 		this._me = m;
