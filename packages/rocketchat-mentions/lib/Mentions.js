@@ -50,13 +50,13 @@ export default class {
 			return `${ prefix }<a class="mention-link ${ username === me ? 'mention-link-me' : '' }" data-username="${ username }" title="${ name ? username : '' }">${ name || `@${ username }` }</a>`;
 		});
 	}
-	replaceChannels(str, message, room1) {
+	replaceChannels(str, message, externalRoom = undefined) {
 		// since apostrophe escaped contains # we need to unescape it
 		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, prefix, name) => {
 			if (!message.temp && !(message.channels && message.channels.find((c) => c.name === name))) {
 				return match;
 			}
-			const room = room1 || RocketChat.models || RocketChat.models.Rooms.findOne({ name });
+			const room = externalRoom || RocketChat.models.Rooms.findOne({ name });
 			return `${ prefix }<a class="mention-link" data-channel="${ room._id }">${ `#${ name }` }</a>`;
 		});
 	}
@@ -66,13 +66,13 @@ export default class {
 	getChannelMentions(str) {
 		return (str.match(this.channelMentionRegex) || []).map((match) => match.trim());
 	}
-	parse(message) {
+	parse(message, me, externalRoom = undefined) {
 		let msg = (message && message.html) || '';
 		if (!msg.trim()) {
 			return message;
 		}
 		msg = this.replaceUsers(msg, message, this.me);
-		msg = this.replaceChannels(msg, message, this.me);
+		msg = this.replaceChannels(msg, message, externalRoom);
 		message.html = msg;
 		return message;
 	}

@@ -290,12 +290,12 @@ describe('replace methods', function() {
 	describe('parse all', () => {
 		it('should render for #general', () => {
 			message.html = '#general';
-			const result = mention.parse(message, 'me');
+			const result = mention.parse(message, 'me', { _id: 'GENERAL', name: 'general' });
 			assert.equal('<a class="mention-link" data-channel="GENERAL">#general</a>', result.html);
 		});
 		it('should render for "#general and @rocket.cat', () => {
 			message.html = '#general and @rocket.cat';
-			const result = mention.parse(message, 'me');
+			const result = mention.parse(message, 'me', { _id: 'GENERAL', name: 'general' });
 			assert.equal('<a class="mention-link" data-channel="GENERAL">#general</a> and <a class="mention-link " data-username="rocket.cat" title="">@rocket.cat</a>', result.html);
 		});
 		it('should render for "', () => {
@@ -316,12 +316,12 @@ describe('replace methods', function() {
 		});
 		it('should render for #general', () => {
 			message.html = '#general';
-			const result = mention.parse(message, 'me');
+			const result = mention.parse(message, 'me', { _id: 'GENERAL', name: 'general' });
 			assert.equal('<a class="mention-link" data-channel="GENERAL">#general</a>', result.html);
 		});
 		it('should render for "#general and @rocket.cat', () => {
 			message.html = '#general and @rocket.cat';
-			const result = mention.parse(message, 'me');
+			const result = mention.parse(message, 'me', { _id: 'GENERAL', name: 'general' });
 			assert.equal('<a class="mention-link" data-channel="GENERAL">#general</a> and <a class="mention-link " data-username="rocket.cat" title="rocket.cat">Rocket.Cat</a>', result.html);
 		});
 		it('should render for "', () => {
