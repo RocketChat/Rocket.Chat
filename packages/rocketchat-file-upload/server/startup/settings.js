@@ -1,4 +1,6 @@
-RocketChat.settings.addGroup('FileUpload', function() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('FileUpload', function() {
 	this.add('FileUpload_Enabled', true, {
 		type: 'boolean',
 		public: true,

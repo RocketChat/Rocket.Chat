@@ -2,6 +2,8 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { SideNav } from 'meteor/rocketchat:ui-utils';
+import { Subscriptions } from 'meteor/rocketchat:models';
 
 Template.listPrivateGroupsFlex.helpers({
 	groups() {
@@ -14,7 +16,7 @@ Template.listPrivateGroupsFlex.helpers({
 		return Template.instance().sort.get() === sort;
 	},
 	hidden() {
-		return !!RocketChat.models.Subscriptions.findOne({ name: this.name, open: false });
+		return !!Subscriptions.findOne({ name: this.name, open: false });
 	},
 });
 
@@ -68,7 +70,7 @@ Template.listPrivateGroupsFlex.onCreated(function() {
 			}
 		}
 
-		this.groups.set(RocketChat.models.Subscriptions.find({
+		this.groups.set(Subscriptions.find({
 			name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
 			t: 'p',
 			archived: { $ne: true },

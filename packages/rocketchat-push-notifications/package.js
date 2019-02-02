@@ -9,7 +9,11 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:utils',
-		'rocketchat:lib',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
+		'rocketchat:custom-sounds',
+		'rocketchat:settings',
+		'rocketchat:ui',
 		'templating',
 	]);
 	api.addFiles('client/stylesheets/pushNotifications.css', 'client');

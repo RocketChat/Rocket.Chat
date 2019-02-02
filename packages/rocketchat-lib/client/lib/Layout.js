@@ -1,14 +1,4 @@
-import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Layout } from 'meteor/rocketchat:ui-utils';
 
-RocketChat.Layout = new (class RocketChatLayout {
-	constructor() {
-		Tracker.autorun(() => {
-			this.layout = FlowRouter.getQueryParam('layout');
-		});
-	}
+RocketChat.Layout = Layout;
 
-	isEmbedded() {
-		return this.layout === 'embedded';
-	}
-});

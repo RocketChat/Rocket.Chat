@@ -68,9 +68,6 @@ Template.loginForm.helpers({
 	confirmPasswordPlaceholder() {
 		return RocketChat.settings.get('Accounts_ConfirmPasswordPlaceholder') || t('Confirm_password');
 	},
-	hasOnePassword() {
-		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
-	},
 	manuallyApproveNewUsers() {
 		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
 	},
@@ -166,19 +163,6 @@ Template.loginForm.events({
 	'click .forgot-password'() {
 		Template.instance().state.set('forgot-password');
 		return RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
-	},
-	'click .one-passsword'() {
-		if (typeof OnePassword === 'undefined' || OnePassword.findLoginForUrl == null) {
-			return;
-		}
-		const succesCallback = function(credentials) {
-			$('input[name=emailOrUsername]').val(credentials.username);
-			return $('input[name=pass]').val(credentials.password);
-		};
-		const errorCallback = function(...args) {
-			return console.log('OnePassword errorCallback', ...args);
-		};
-		return OnePassword.findLoginForUrl(succesCallback, errorCallback, Meteor.absoluteUrl());
 	},
 });
 

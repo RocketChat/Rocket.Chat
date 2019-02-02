@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import * as Models from 'meteor/rocketchat:models';
 import { ChatPermissions } from './lib/ChatPermissions';
 
 function atLeastOne(permissions = [], scope) {
@@ -9,9 +9,9 @@ function atLeastOne(permissions = [], scope) {
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {
-			const role = RocketChat.models.Roles.findOne(roleName);
+			const role = Models.Roles.findOne(roleName);
 			const roleScope = role && role.scope;
-			const model = RocketChat.models[roleScope];
+			const model = Models[roleScope];
 
 			return model && model.isUserInRole && model.isUserInRole(Meteor.userId(), roleName, scope);
 		});
@@ -24,22 +24,22 @@ function all(permissions = [], scope) {
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {
-			const role = RocketChat.models.Roles.findOne(roleName);
+			const role = Models.Roles.findOne(roleName);
 			const roleScope = role && role.scope;
-			const model = RocketChat.models[roleScope];
+			const model = Models[roleScope];
 
 			return model && model.isUserInRole && model.isUserInRole(Meteor.userId(), roleName, scope);
 		});
 	});
 }
 
-function hasPermission(permissions, scope, strategy) {
+function _hasPermission(permissions, scope, strategy) {
 	const userId = Meteor.userId();
 	if (!userId) {
 		return false;
 	}
 
-	if (!RocketChat.authz.cachedCollection.ready.get()) {
+	if (!Models.AuthzCachedCollection.ready.get()) {
 		return false;
 	}
 
@@ -48,15 +48,10 @@ function hasPermission(permissions, scope, strategy) {
 }
 
 Template.registerHelper('hasPermission', function(permission, scope) {
-	return hasPermission(permission, scope, atLeastOne);
+	return _hasPermission(permission, scope, atLeastOne);
 });
 
-RocketChat.authz.hasAllPermission = function(permissions, scope) {
-	return hasPermission(permissions, scope, all);
-};
+export const hasAllPermission = (permissions, scope) => _hasPermission(permissions, scope, all);
+export const hasAtLeastOnePermission = (permissions, scope) => _hasPermission(permissions, scope, atLeastOne);
+export const hasPermission = hasAllPermission;
 
-RocketChat.authz.hasPermission = RocketChat.authz.hasAllPermission;
-
-RocketChat.authz.hasAtLeastOnePermission = function(permissions, scope) {
-	return hasPermission(permissions, scope, atLeastOne);
-};
