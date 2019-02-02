@@ -8,13 +8,6 @@ beforeEach(function functionName() {
 	mention = new Mentions({
 		pattern: '[0-9a-zA-Z-_.]+',
 		me: () => 'me',
-		room: [{
-			_id: 'rocket.cat',
-			name: 'rocket.cat',
-		}, {
-			_id: 'GENERAL',
-			name: 'general',
-		}],
 	});
 });
 describe('Mention', function() {
@@ -271,17 +264,14 @@ describe('replace methods', function() {
 		});
 		const str2 = '#rocket.cat';
 		it(`should render for ${ str2 }`, () => {
-			console.log(mention.room);
 			const result = mention.replaceChannels(str2, message, { _id: 'rocket.cat', name: 'rocket.cat' });
 			assert.equal(result, `<a class="mention-link" data-channel="rocket.cat">${ str2 }</a>`);
 		});
 		it(`should render for "hello ${ str2 }"`, () => {
-			console.log(mention.room);
 			const result = mention.replaceChannels(`hello ${ str2 }`, message, { _id: 'rocket.cat', name: 'rocket.cat' });
 			assert.equal(result, `hello <a class="mention-link" data-channel="rocket.cat">${ str2 }</a>`);
 		});
 		it('should render for unknow/private channel "hello #unknow"', () => {
-			console.log(mention.room);
 			const result = mention.replaceChannels('hello #unknow', message);
 			assert.equal(result, 'hello #unknow');
 		});
