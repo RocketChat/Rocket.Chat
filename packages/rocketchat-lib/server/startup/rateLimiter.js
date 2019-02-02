@@ -20,9 +20,22 @@ DDPRateLimiter.addRule = (matcher, calls, time, callback) => {
 	return addRule.call(DDPRateLimiter, matcher, calls, time, callback);
 };
 
+const { _increment } = DDPRateLimiter;
+DDPRateLimiter._increment = function(input) {
+	const session = Meteor.server.sessions[input.connectionId];
+	input.broadcastAuth = session && session.connectionHandle && session.connectionHandle.broadcastAuth === true;
+
+	return _increment.call(DDPRateLimiter, input);
+};
+
 // Need to override the meteor's code duo to a problem with the callback reply
 // being shared among all matchs
 RateLimiter.prototype.check = function(input) {
+	// ==== BEGIN OVERRIDE ====
+	const session = Meteor.server.sessions[input.connectionId];
+	input.broadcastAuth = session && session.connectionHandle && session.connectionHandle.broadcastAuth === true;
+	// ==== END OVERRIDE ====
+
 	const self = this;
 	const reply = {
 		allowed: true,
@@ -136,29 +149,34 @@ const reconfigureLimit = Meteor.bindEnvironment((name, rules, factor = 1) => {
 
 const configIP = _.debounce(() => {
 	reconfigureLimit('IP', {
+		broadcastAuth: false,
 		clientAddress: (clientAddress) => clientAddress !== '127.0.0.1',
 	});
 }, 1000);
 
 const configUser = _.debounce(() => {
 	reconfigureLimit('User', {
+		broadcastAuth: false,
 		userId: (userId) => userId != null,
 	});
 }, 1000);
 
 const configConnection = _.debounce(() => {
 	reconfigureLimit('Connection', {
+		broadcastAuth: false,
 		connectionId: () => true,
 	});
 }, 1000);
 
 const configUserByMethod = _.debounce(() => {
 	reconfigureLimit('User_By_Method', {
+		broadcastAuth: false,
 		type: () => true,
 		name: checkNameNonStream,
 		userId: (userId) => userId != null,
 	});
 	reconfigureLimit('User_By_Method', {
+		broadcastAuth: false,
 		type: () => true,
 		name: checkNameForStream,
 		userId: (userId) => userId != null,
@@ -167,11 +185,13 @@ const configUserByMethod = _.debounce(() => {
 
 const configConnectionByMethod = _.debounce(() => {
 	reconfigureLimit('Connection_By_Method', {
+		broadcastAuth: false,
 		type: () => true,
 		name: checkNameNonStream,
 		connectionId: () => true,
 	});
 	reconfigureLimit('Connection_By_Method', {
+		broadcastAuth: false,
 		type: () => true,
 		name: checkNameForStream,
 		connectionId: () => true,
