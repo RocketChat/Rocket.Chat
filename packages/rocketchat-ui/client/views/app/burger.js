@@ -1,5 +1,6 @@
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { Layout } from 'meteor/rocketchat:ui-utils';
 
 Template.burger.helpers({
 	unread() {
@@ -11,6 +12,6 @@ Template.burger.helpers({
 		}
 	},
 	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded();
 	},
 });

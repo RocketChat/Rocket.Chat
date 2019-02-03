@@ -74,7 +74,11 @@
 										<div class="rc-apps-details__col">
 											{{#if author.support}}
 												<h3>{{_ "Support"}}</h3>
-												<a href="{{author.support}}" target="_blank">{{author.support}}</a>
+												{{#if isEmail author.support}}
+													<a href="mailto:{{author.support}}">{{author.support}}</a>
+												{{else}}
+													<a href="{{author.support}}" target="_blank">{{author.support}}</a>
+												{{/if}}
 											{{/if}}
 										</div>
 									</div>

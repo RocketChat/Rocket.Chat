@@ -7,7 +7,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { renderEmoji } from 'meteor/rocketchat:emoji';
-import { renderMessageBody } from './renderMessageBody';
+import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
 import { t } from 'meteor/rocketchat:utils';
