@@ -380,6 +380,46 @@ export class HipChatEnterpriseImporter extends Base {
 		return 0;
 	}
 
+	async fixPublicChannelMembers() {
+		await this.collection.model.rawCollection().aggregate([{
+			$match: {
+				import: this.importRecord._id,
+				type: 'channels',
+			},
+		}, {
+			$unwind: '$channels',
+		}, {
+			$match: {
+				'channels.members.0': { $exists: false },
+			},
+		}, {
+			$group: { _id: '$channels.id' },
+		}]).forEach(async(channel) => {
+			const userIds = (await this.collection.model.rawCollection().aggregate([{
+				$match: {
+					$or: [
+						{ roomIdentifier: `rooms/${ channel._id }` },
+						{ roomIdentifier: `users/${ channel._id }` },
+					],
+				},
+			}, {
+				$unwind: '$messages',
+			}, {
+				$match: { 'messages.userId': { $ne: 'rocket.cat' } },
+			}, {
+				$group: { _id: '$messages.userId' },
+			}]).toArray()).map((i) => i._id);
+
+			await this.collection.model.rawCollection().update({
+				'channels.id': channel._id,
+			}, {
+				$set: {
+					'channels.$.members': userIds,
+				},
+			});
+		});
+	}
+
 	prepareUsingLocalFile(fullFilePath) {
 		this.logger.debug('start preparing import operation');
 		this.collection.remove({});
@@ -427,7 +467,9 @@ export class HipChatEnterpriseImporter extends Base {
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 
-			this.extract.on('finish', Meteor.bindEnvironment(() => {
+			this.extract.on('finish', Meteor.bindEnvironment(async() => {
+				await this.fixPublicChannelMembers();
+
 				this.logger.debug('finished parsing files, checking for errors now');
 
 				super.updateRecord({ 'count.messages': this.messagesCount, messagesstatus: null });
