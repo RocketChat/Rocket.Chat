@@ -3,6 +3,18 @@ import { Importers } from 'meteor/rocketchat:importer';
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import http from 'http';
+import fs from 'fs';
+
+function downloadHttpFile(fileUrl, writeStream) {
+	http.get(fileUrl, function(response) {
+		response.pipe(writeStream);
+	});
+}
+
+function copyLocalFile(filePath, writeStream) {
+	const readStream = fs.createReadStream(filePath);
+	readStream.pipe(writeStream);
+}
 
 Meteor.methods({
 	downloadPublicImportFile(fileUrl, importerKey) {
@@ -30,9 +42,15 @@ Meteor.methods({
 		importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE_URL);
 
 		const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
-		http.get(fileUrl, function(response) {
-			response.pipe(writeStream);
-		});
+
+		if (fileUrl.startsWith('http')) {
+			downloadHttpFile(fileUrl, writeStream);
+		} else {
+			if (!fs.existsSync(fileUrl)) {
+				throw new Meteor.Error('error-import-file-missing', fileUrl, { method: 'downloadPublicImportFile' });
+			}
+			copyLocalFile(fileUrl, writeStream);
+		}
 
 		writeStream.on('error', Meteor.bindEnvironment(() => {
 			importer.instance.updateProgress(ProgressStep.ERROR);
