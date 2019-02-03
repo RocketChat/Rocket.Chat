@@ -9,6 +9,8 @@ Meteor.methods({
 			return false;
 		}
 
+		let ref = message.ref;
+
 		// We're now only passed in the `_id` property to lower the amount of data sent to the server
 		message = ChatMessage.findOne({ _id: message._id });
 
@@ -33,6 +35,16 @@ Meteor.methods({
 
 
 		}
+		let parentMessage;
+		let replyIds;
+		if (ref) {
+			parentMessage = ChatMessage.findOne({ _id: ref });
+			replyIds = _.without(parentMessage.customFields.replyIds, message._id);
+		}
+		
+
+		Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
+
 
 		Tracker.nonreactive(function() {
 			ChatMessage.remove({

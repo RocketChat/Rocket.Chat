@@ -30,6 +30,11 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 
 		$(document.body).append($input);
 
+		let isInReplyView = false;
+		if (Template.instance()) {
+			isInReplyView = $(Template.instance().data.activeElement).parents('.contextual-bar').length > 0;
+		}
+
 		$input.one('change', function(e) {
 			const filesToUpload = [...e.target.files].map((file) => {
 				Object.defineProperty(file, 'type', {
@@ -41,7 +46,7 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload);
+			fileUpload(filesToUpload, isInReplyView);
 			$input.remove();
 		});
 

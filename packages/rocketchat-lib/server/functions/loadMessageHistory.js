@@ -17,8 +17,8 @@ RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {
 	});
 });
 
-RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
-	const options = {
+RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls, parentMessageId }) {
+	let options = {
 		sort: {
 			ts: -1,
 		},
@@ -32,7 +32,10 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 	}
 
 	let records;
-	if (end != null) {
+	if (parentMessageId) {
+		options.sort = { ts: 1};
+		records = RocketChat.models.Messages.findReplies(rid, hideMessagesOfType, options, parentMessageId).fetch();
+	} else if (end != null) {
 		records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
 	} else {
 		records = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();

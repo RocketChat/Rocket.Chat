@@ -169,6 +169,23 @@ Template.message.helpers({
 	body() {
 		return Template.instance().body;
 	},
+	hasReplies(){
+		let replyIds;
+		const customFields = Template.instance().data.customFields;
+		if (customFields) { replyIds = customFields.replyIds; }
+		if (replyIds) { return !!replyIds; }
+		return false;
+	},
+	inReplyView(){
+		return Template.instance().parentTemplate(1).view.name === 'Template.RocketReplies';
+	},
+	numberOfReplies(){
+		let replyIds;
+		const customFields = Template.instance().data.customFields;
+		if (customFields) { replyIds = customFields.replyIds; }
+		if (replyIds) { return replyIds.length; }
+		return [];
+	},
 	system(returnClass) {
 		if (RocketChat.MessageTypes.isSystemMessage(this)) {
 			if (returnClass) {
@@ -485,7 +502,7 @@ Template.message.onViewRendered = function(context) {
 			if (currentNode.classList.contains('own') === true) {
 				templateInstance.atBottom = true;
 			}
-			templateInstance.sendToBottomIfNecessary();
+			//templateInstance.sendToBottomIfNecessary();
 		}
 	});
 };

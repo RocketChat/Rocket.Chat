@@ -22,8 +22,12 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null && RocketChat.settings.get('Message_AllowStarring')) {
 				return false;
 			}
+			if (message.customFields.ref) {
+				return false;
+			}
 
-			return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
+			// return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
+			return false;
 		},
 		order: 10,
 		group: 'menu',
@@ -89,6 +93,9 @@ Meteor.startup(function() {
 		},
 		condition(message) {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+				return false;
+			}
+			if (message.customFields.ref) {
 				return false;
 			}
 			return true;

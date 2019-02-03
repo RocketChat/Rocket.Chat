@@ -59,12 +59,14 @@ Meteor.methods({
 			attachment.video_type = file.type;
 			attachment.video_size = file.size;
 		}
-
+		const customFields = file.customFields;
+		delete file.customFields;
 		const user = Meteor.user();
 		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,
 			ts: new Date(),
+			customFields: customFields,
 			msg: '',
 			file: {
 				_id: file._id,

@@ -111,6 +111,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/setEmail.js', 'server');
 	api.addFiles('server/functions/unarchiveRoom.js', 'server');
 	api.addFiles('server/functions/updateMessage.js', 'server');
+	api.addFiles('server/functions/addMessageReply.js', 'server');
 	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
 
@@ -197,6 +198,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
 	api.addFiles('server/methods/updateMessage.js', 'server');
+	api.addFiles('server/methods/addMessageReply.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');

@@ -134,7 +134,7 @@ const getUploadPreview = async(file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-fileUpload = async(files) => {
+fileUpload = async(files, isInReplyView) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');
@@ -224,7 +224,24 @@ fileUpload = async(files) => {
 					return;
 				}
 
+				if (!file.customFields) {
+					file.customFields = {};
+				}
+
+				let parentMessage;
+				if (isInReplyView) {
+					parentMessage = $('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea').data('reply');
+					file.customFields = { ref: parentMessage._id };
+				}
+
+
 				Meteor.call('sendFileMessage', roomId, storage, file, () => {
+					if (isInReplyView) {
+						if (!parentMessage.customFields.replyIds) parentMessage.customFields.replyIds = [];
+						parentMessage.customFields.replyIds.push(file._id);
+						let replyIds = parentMessage.customFields.replyIds;
+						Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
+					}
 					Meteor.setTimeout(() => {
 						const uploads = Session.get('uploading') || [];
 						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));

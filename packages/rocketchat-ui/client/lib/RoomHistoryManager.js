@@ -54,7 +54,6 @@ export const RoomHistoryManager = new class {
 
 		// ScrollListener.setLoader true
 		const lastMessage = ChatMessage.findOne({ rid }, { sort: { ts: 1 } });
-		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 
 		if (lastMessage != null) {
 			({ ts } = lastMessage);

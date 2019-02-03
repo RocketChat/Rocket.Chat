@@ -9,6 +9,8 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 		this.tryEnsureIndex({ rid: 1, ts: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
+		this.tryEnsureIndex({ 'customFields.replyIds': 1 });
+		this.tryEnsureIndex({ 'customFields.ref': 1 });
 		this.tryEnsureIndex({ editedAt: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ rid: 1, t: 1, 'u._id': 1 });
@@ -98,11 +100,30 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base {
 			},
 
 			rid: roomId,
+			'customFields.ref': { $exists: false}
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
 			query.t =
 			{ $nin: types };
+		}
+
+		return this.find(query, options);
+	}
+
+	findReplies(roomId, types, options, parentMessageId) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			rid: roomId,
+			'customFields.ref': parentMessageId
+		};
+
+		if (Match.test(types, [String]) && (types.length > 0)) {
+			query.t =
+				{ $nin: types };
 		}
 
 		return this.find(query, options);

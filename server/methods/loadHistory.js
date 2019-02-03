@@ -48,3 +48,33 @@ Meteor.methods({
 		return RocketChat.loadMessageHistory({ userId: fromId, rid, end, limit, ls });
 	},
 });
+
+
+
+Meteor.methods({
+	loadReplyHistory(rid, parentMessageId) {
+		this.unblock();
+		check(rid, String);
+
+		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'loadReplyHistory',
+			});
+		}
+
+		const fromId = Meteor.userId();
+		const room = Meteor.call('canAccessRoom', rid, fromId);
+
+		if (!room) {
+			return false;
+		}
+
+		const canAnonymous = RocketChat.settings.get('Accounts_AllowAnonymousRead');
+		const canPreview = RocketChat.authz.hasPermission(fromId, 'preview-c-room');
+
+		if (room.t === 'c' && !canAnonymous && !canPreview && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
+			return false;
+		}
+		return RocketChat.loadMessageHistory({ userId: fromId, rid, limit:1000, parentMessageId });
+	},
+});

@@ -148,8 +148,15 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
+			if (message.customFields.ref) {
+				return false;
+			}
+			if (message.customFields.replyIds && message.customFields.replyIds.length) {
+				return false;
+			}
 
-			return true;
+			// return true;
+			return false;
 		},
 		order: 1,
 		group: 'menu',
@@ -309,8 +316,7 @@ Meteor.startup(function() {
 			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-
-			return true;
+			return false;
 		},
 		order: 6,
 		group: 'menu',

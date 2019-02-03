@@ -194,6 +194,7 @@ rocketchat:e2e
 rocketchat:blockstack
 rocketchat:version-check
 rocketchat:search
+rocketchat:replies
 chatpal:search
 rocketchat:lazy-load
 tap:i18n

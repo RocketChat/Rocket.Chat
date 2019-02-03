@@ -208,21 +208,19 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 			$('.message.first-unread').removeClass('first-unread');
 
 			let msg = '';
+			let originalMessage = {};
+			let customFields = {};
 			const reply = $(input).data('reply');
-			const mentionUser = $(input).data('mention-user') || false;
 
 			if (reply !== undefined) {
-				msg = `[ ](${ await RocketChat.MessageAction.getPermaLink(reply._id) }) `;
-				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
-					msg += `@${ reply.u.username } `;
-				}
+				originalMessage = ChatMessage.findOne({_id: reply._id});
+				customFields = { ref: reply._id };
+			} else {
+				$(input)
+					.removeData('reply')
+					.trigger('dataChange');
 			}
 			msg += input.value;
-			$(input)
-				.removeData('reply')
-				.trigger('dataChange');
-
 
 			if (msg.slice(0, 2) === '+:') {
 				const reaction = msg.slice(1).trim();
@@ -236,7 +234,7 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 			}
 
 			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			const msgObject = await RocketChat.promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg });
+			const msgObject = await RocketChat.promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg, customFields });
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
@@ -300,7 +298,17 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 			}
 
 			Meteor.call('sendMessage', msgObject);
+			
+			let replyMessage = msgObject;
+			let parentMessage = originalMessage;
 
+			if (reply !== undefined) {
+				this.addMessageReply(
+					parentMessage,
+					replyMessage
+				);
+			}
+			
 			this.saveTextMessageBox(rid, '');
 
 			return done();
@@ -363,8 +371,11 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 				return;
 			}
 		}
-
-		return Meteor.call('deleteMessage', { _id: message._id }, function(error) {
+		let ref;
+		if (message.customFields && message.customFields.ref) {
+			ref = message.customFields.ref;
+		}
+		return Meteor.call('deleteMessage', { _id: message._id, ref }, function(error) {
 			if (error) {
 				return handleError(error);
 			}
@@ -395,6 +406,13 @@ ChatMessages = class ChatMessages { //eslint-disable-line
 			this.clearEditing();
 			return this.stopTyping(rid);
 		}
+	}
+
+	addMessageReply(parentMessage, replyMessage) {
+		if (!parentMessage.customFields.replyIds) parentMessage.customFields.replyIds = [];
+		parentMessage.customFields.replyIds.push(replyMessage._id);
+		let replyIds = parentMessage.customFields.replyIds;
+		Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: {replyIds} });
 	}
 
 	startTyping(rid, input) {
