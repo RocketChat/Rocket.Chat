@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
-
-let usernameBlackList = ['all', 'here'];
+let defaultUsernameBlackList = ['all', 'here'];
+let usernameBlackList = [];
 
 const toRegExp = (username) => new RegExp(`^${ s.escapeRegExp(username).trim() }$`, 'i');
 
 RocketChat.settings.get('Accounts_BlockedUsernameList', (key, value) => {
-	usernameBlackList = usernameBlackList.concat(value.split(',').map(toRegExp));
+	usernameBlackList = Array.from(defaultBlockedUsernames,value.split(',').map(toRegExp));
 });
 
 const usernameIsBlocked = (username, usernameBlackList) => usernameBlackList.length
