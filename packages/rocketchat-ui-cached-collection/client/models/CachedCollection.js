@@ -339,20 +339,37 @@ export class CachedCollection {
 		this.collection.remove({});
 	}
 
-	async setupListener(eventType, eventName) {
-		const { Notifications } = await import('meteor/rocketchat:notifications');
-		const { RoomManager } = await import('meteor/rocketchat:ui');
-		Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
-			this.log('record received', t, record);
-			callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
-			if (t === 'removed') {
-				this.collection.remove(record._id);
-				RoomManager.close(record.t + record.name);
-			} else {
-				this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
-			}
+	removeRoomFromCacheWhenUserLeaves(roomId, ChatRoom, CachedChatRoom) {
+		ChatRoom.remove(roomId);
+		CachedChatRoom.saveCache();
+	}
 
-			this.saveCache();
+	async setupListener(eventType, eventName) {
+		Meteor.startup(async() => {
+			const { Notifications } = await import('meteor/rocketchat:notifications');
+			const { RoomManager } = await import('meteor/rocketchat:ui');
+			const { ChatRoom } = await import('meteor/rocketchat:models');
+			const { CachedChatRoom } = await import('meteor/rocketchat:models');
+			Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
+				this.log('record received', t, record);
+				callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
+				if (t === 'removed') {
+					let room;
+					if (this.eventName === 'subscriptions-changed') {
+						room = ChatRoom.findOne(record.rid);
+						this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+					} else {
+						room = this.collection.findOne({ _id: record._id });
+					}
+					if (room) {
+						RoomManager.close(room.t + room.name);
+					}
+					this.collection.remove(record._id);
+				} else {
+					this.collection.upsert({ _id: record._id }, _.omit(record, '_id'));
+				}
+				this.saveCache();
+			});
 		});
 	}
 

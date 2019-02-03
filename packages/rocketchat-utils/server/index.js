@@ -9,6 +9,7 @@ import { RoomTypesCommon } from '../lib/RoomTypesCommon';
 import { isDocker } from './functions/isDocker';
 import { getAvatarUrlFromUsername } from '../lib/getAvatarUrlFromUsername';
 import { slashCommands } from '../lib/slashCommand';
+import { getUserNotificationPreference } from '../lib/getUserNotificationPreference';
 
 export {
 	t,
@@ -27,4 +28,5 @@ export {
 	isDocker,
 	getAvatarUrlFromUsername,
 	slashCommands,
+	getUserNotificationPreference,
 };
