@@ -58,9 +58,7 @@ export class IframeLogin {
 			separator = '&';
 		}
 
-		if (window.cordova) {
-			iframeUrl += `${ separator }client=cordova`;
-		} else if (navigator.userAgent.indexOf('Electron') > -1) {
+		if (navigator.userAgent.indexOf('Electron') > -1) {
 			iframeUrl += `${ separator }client=electron`;
 		}
 
