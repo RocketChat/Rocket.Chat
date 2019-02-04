@@ -20,6 +20,7 @@ import IntegrationHistory from './models/IntegrationHistory';
 import CredentialTokens from './models/CredentialTokens';
 import EmojiCustom from './models/EmojiCustom';
 import OAuthApps from './models/OAuthApps';
+import OEmbedCache from './models/OEmbedCache';
 
 export {
 	Base,
@@ -44,4 +45,5 @@ export {
 	CredentialTokens,
 	EmojiCustom,
 	OAuthApps,
+	OEmbedCache,
 };
