@@ -155,8 +155,8 @@ API.v1.addRoute('livechat/room.survey', {
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
+API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
 	post() {
-		RocketChat.API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
+		API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
 	},
 });
