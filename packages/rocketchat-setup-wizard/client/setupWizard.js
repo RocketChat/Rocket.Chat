@@ -5,19 +5,22 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import { Users } from 'meteor/rocketchat:models';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 
 const cannotSetup = () => {
-	const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
+	const showSetupWizard = settings.get('Show_Setup_Wizard');
 	if (!showSetupWizard) {
 		// Setup Wizard state is not defined yet
 		return;
 	}
 
 	const userId = Meteor.userId();
-	const user = userId && RocketChat.models.Users.findOne(userId, { fields: { status: true } });
+	const user = userId && Users.findOne(userId, { fields: { status: true } });
 	if (userId && (!user || !user.status)) {
 		// User and its status are not defined yet
 		return;
@@ -25,7 +28,7 @@ const cannotSetup = () => {
 
 	const isComplete = showSetupWizard === 'completed';
 	const noUserLoggedInAndIsNotPending = !userId && showSetupWizard !== 'pending';
-	const userIsLoggedButIsNotAdmin = userId && !RocketChat.authz.hasRole(userId, 'admin');
+	const userIsLoggedButIsNotAdmin = userId && !hasRole(userId, 'admin');
 
 	return isComplete || noUserLoggedInAndIsNotPending || userIsLoggedButIsNotAdmin;
 };
@@ -41,7 +44,7 @@ const registerAdminUser = (state, callback) => {
 			return handleError(error);
 		}
 
-		RocketChat.callbacks.run('userRegistered');
+		callbacks.run('userRegistered');
 		Meteor.loginWithPassword(registrationData.email, registrationData.pass, (error) => {
 			if (error) {
 				if (error.error === 'error-invalid-email') {
@@ -58,7 +61,7 @@ const registerAdminUser = (state, callback) => {
 					return handleError(error);
 				}
 
-				RocketChat.callbacks.run('usernameSet');
+				callbacks.run('usernameSet');
 				callback && callback();
 			});
 		});
@@ -66,7 +69,7 @@ const registerAdminUser = (state, callback) => {
 };
 
 const persistSettings = (state, callback) => {
-	const settings = Object.entries(state)
+	const setupSettings = Object.entries(state)
 		.filter(([key]) => !/registration-|registerServer|optIn|currentStep|invalidUsername|invalidEmail/.test(key))
 		.map(([_id, value]) => ({ _id, value }))
 		.concat([
@@ -88,7 +91,7 @@ const persistSettings = (state, callback) => {
 			},
 		]);
 
-	RocketChat.settings.batchSet(settings, (error) => {
+	settings.batchSet(setupSettings, (error) => {
 		if (error) {
 			return handleError(error);
 		}
@@ -164,7 +167,7 @@ Template.setupWizard.events({
 		switch (t.state.get('currentStep')) {
 			case 1: {
 				const usernameValue = t.state.get('registration-username');
-				const usernameRegex = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+				const usernameRegex = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 				t.state.set('invalidUsername', !usernameRegex.test(usernameValue));
 
 				const emailValue = t.state.get('registration-email');
@@ -256,7 +259,7 @@ Template.setupWizard.helpers({
 	formLoadStateClass() {
 		switch (Template.instance().state.get('currentStep')) {
 			case 1:
-				return RocketChat.settings.get('Show_Setup_Wizard') === 'pending' && 'setup-wizard-forms__box--loaded';
+				return settings.get('Show_Setup_Wizard') === 'pending' && 'setup-wizard-forms__box--loaded';
 			case 2:
 			case 3:
 				return Template.instance().wizardSettings.get().length > 0 && 'setup-wizard-forms__box--loaded';
