@@ -146,15 +146,6 @@
 		margin: 0 7px;
 	}
 
-	.installer {
-		position: relative;
-
-		overflow: hidden;
-
-		width: 20px;
-		height: 20px;
-	}
-
 	&__wrap-actions {
 		& > .rc-icon--loading {
 			display: none;
@@ -167,7 +158,7 @@
 				animation: spin 1s linear infinite;
 			}
 
-			& > .installer {
+			& > .apps-installer {
 				display: none;
 			}
 		}

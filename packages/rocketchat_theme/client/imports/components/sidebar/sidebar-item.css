@@ -125,11 +125,11 @@
 
 		display: flex;
 
-		margin: 0 0.15em;
-
 		font-size: 1rem;
 
 		align-items: center;
+
+		width: 20px;
 
 		&-status {
 			&--online {
@@ -153,13 +153,6 @@
 		color: var(--rc-color-success);
 
 		font-size: 1rem;
-	}
-
-	&__room-type {
-		display: flex;
-
-		font-size: 0.6rem;
-		fill: currentColor;
 	}
 
 	&__user-thumb {
