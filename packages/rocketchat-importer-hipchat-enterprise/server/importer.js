@@ -366,7 +366,6 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async prepareFile(info, data, fileName) {
-		this.logger.info('preparing file', info.dir);
 		const file = this.parseData(data);
 		if (file === false) {
 			this.logger.error('failed to parse data');
@@ -475,7 +474,9 @@ export class HipChatEnterpriseImporter extends Base {
 		return promise;
 	}
 
-	_finishPreparationProcess(resolve, reject) {
+	async _finishPreparationProcess(resolve, reject) {
+		await this.fixPublicChannelMembers();
+
 		this.logger.info('finished parsing files, checking for errors now');
 		this._previewsMessagesIds = undefined;
 		this.emailList = [];
@@ -530,6 +531,46 @@ export class HipChatEnterpriseImporter extends Base {
 		super.updateProgress(ProgressStep.USER_SELECTION);
 
 		resolve(new Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
+	}
+
+	async fixPublicChannelMembers() {
+		await this.collection.model.rawCollection().aggregate([{
+			$match: {
+				import: this.importRecord._id,
+				type: 'channels',
+			},
+		}, {
+			$unwind: '$channels',
+		}, {
+			$match: {
+				'channels.members.0': { $exists: false },
+			},
+		}, {
+			$group: { _id: '$channels.id' },
+		}]).forEach(async(channel) => {
+			const userIds = (await this.collection.model.rawCollection().aggregate([{
+				$match: {
+					$or: [
+						{ roomIdentifier: `rooms/${ channel._id }` },
+						{ roomIdentifier: `users/${ channel._id }` },
+					],
+				},
+			}, {
+				$unwind: '$messages',
+			}, {
+				$match: { 'messages.userId': { $ne: 'rocket.cat' } },
+			}, {
+				$group: { _id: '$messages.userId' },
+			}]).toArray()).map((i) => i._id);
+
+			await this.collection.model.rawCollection().update({
+				'channels.id': channel._id,
+			}, {
+				$set: {
+					'channels.$.members': userIds,
+				},
+			});
+		});
 	}
 
 	prepareUsingLocalFile(fullFilePath) {
