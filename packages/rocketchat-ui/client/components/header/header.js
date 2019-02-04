@@ -60,8 +60,21 @@ Template.header.helpers({
 
 	roomTopic() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-		return roomData.topic;
+		if (!roomData || !roomData.topic) { return ''; }
+
+		let roomTopic = RocketChat.Markdown.parse(roomData.topic);
+
+		// &#39; to apostrophe (') for emojis such as :')
+		roomTopic = roomTopic.replace(/&#39;/g, '\'');
+
+		Object.keys(RocketChat.emoji.packages).forEach((emojiPackage) => {
+			roomTopic = RocketChat.emoji.packages[emojiPackage].render(roomTopic);
+		});
+
+		// apostrophe (') back to &#39;
+		roomTopic = roomTopic.replace(/\'/g, '&#39;');
+
+		return roomTopic;
 	},
 
 	channelIcon() {
