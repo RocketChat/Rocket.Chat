@@ -10,6 +10,7 @@ import Subscriptions from './models/Subscriptions';
 import Uploads from './models/Uploads';
 import UserDataFiles from './models/UserDataFiles';
 import Users from './models/Users';
+import Sessions from './models/Sessions';
 import Statistics from './models/Statistics';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
@@ -32,6 +33,7 @@ export {
 	Uploads,
 	UserDataFiles,
 	Users,
+	Sessions,
 	Statistics,
 	Permissions,
 	Roles,

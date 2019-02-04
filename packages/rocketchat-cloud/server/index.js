@@ -1,5 +1,6 @@
 import './methods';
-import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessTokens';
+import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
+import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
 
 import { Permissions } from 'meteor/rocketchat:models';
 
@@ -10,4 +11,4 @@ if (Permissions) {
 // Ensure the client/workspace access token is valid
 getWorkspaceAccessToken();
 
-export { getWorkspaceAccessToken };
+export { getWorkspaceAccessToken, getWorkspaceLicense };
