@@ -244,6 +244,7 @@ export class Base {
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
+			case ProgressStep.CANCELLED:
 				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
 				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);

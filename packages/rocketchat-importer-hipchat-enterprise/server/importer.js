@@ -48,7 +48,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async parseData(data) {
-		const dataString = Buffer.concat(data).toString();
+		const dataString = data.toString();
 		let file;
 		try {
 			this.logger.debug('parsing file contents');
@@ -348,7 +348,7 @@ export class HipChatEnterpriseImporter extends Base {
 				messageGroupIndex++;
 				return this.prepareRoomMessagesFile(file, roomIdentifier, id, messageGroupIndex);
 			default:
-				this.logger.warn(`HipChat Enterprise importer isn't configured to handle "${ type }" files.`);
+				this.logger.warn(`HipChat Enterprise importer isn't configured to handle "${ type }" files (${ info.dir }).`);
 				return 0;
 		}
 	}
@@ -380,7 +380,146 @@ export class HipChatEnterpriseImporter extends Base {
 		return 0;
 	}
 
+	async _prepareFolderEntry(fullEntryPath, relativeEntryPath) {
+		const files = fs.readdirSync(fullEntryPath);
+		for (const fileName of files) {
+			try {
+				const fullFilePath = path.join(fullEntryPath, fileName);
+				const fullRelativePath = path.join(relativeEntryPath, fileName);
+
+				this.logger.info(`new entry from import folder: ${ fileName }`);
+
+				if (fs.statSync(fullFilePath).isDirectory()) {
+					await this._prepareFolderEntry(fullFilePath, fullRelativePath);
+					continue;
+				}
+
+				if (!fileName.endsWith('.json')) {
+					continue;
+				}
+
+				let fileData;
+
+				const promise = new Promise((resolve, reject) => {
+					fs.readFile(fullFilePath, (error, data) => {
+						if (error) {
+							this.logger.error(error);
+							return reject(error);
+						}
+
+						fileData = data;
+						return resolve();
+					});
+				});
+
+				await promise.catch((error) => {
+					this.logger.error(error);
+					fileData = null;
+				});
+
+				if (!fileData) {
+					this.logger.info(`Skipping the file: ${ fileName }`);
+					continue;
+				}
+
+				this.logger.info(`Processing the file: ${ fileName }`);
+				const info = this.path.parse(fullRelativePath);
+				await this.prepareFile(info, fileData, fileName);
+
+				this.logger.debug('moving to next import folder entry');
+			} catch (e) {
+				this.logger.debug('failed to prepare file');
+				this.logger.error(e);
+			}
+		}
+	}
+
+	prepareUsingLocalFolder(fullFolderPath) {
+		this.logger.debug('start preparing import operation using local folder');
+		this.collection.remove({});
+		this.emailList = [];
+
+		this._hasAnyImportedMessage = Boolean(RocketChat.models.Messages.findOne({ _id: /hipchatenterprise\-.*/ }));
+
+		this.usersCount = 0;
+		this.channelsCount = 0;
+		this.messagesCount = 0;
+
+		// HipChat duplicates direct messages (one for each user)
+		// This object will keep track of messages that have already been prepared so it doesn't try to do it twice
+		this.preparedMessages = {};
+
+		const promise = new Promise(async(resolve, reject) => {
+			try {
+				await this._prepareFolderEntry(fullFolderPath, '.');
+				this._finishPreparationProcess(resolve, reject);
+			} catch (e) {
+				this.logger.error(e);
+				reject(e);
+			}
+		});
+
+		return promise;
+	}
+
+	_finishPreparationProcess(resolve, reject) {
+		this.logger.debug('finished parsing files, checking for errors now');
+
+		super.updateRecord({ 'count.messages': this.messagesCount, messagesstatus: null });
+		super.addCountToTotal(this.messagesCount);
+
+		// Check if any of the emails used are already taken
+		if (this.emailList.length > 0) {
+			const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: this.emailList } });
+			const conflictingUserEmails = [];
+
+			conflictingUsers.forEach((conflictingUser) => {
+				if (conflictingUser.emails && conflictingUser.emails.length) {
+					conflictingUser.emails.forEach((email) => {
+						conflictingUserEmails.push(email.address);
+					});
+				}
+			});
+
+			if (conflictingUserEmails.length > 0) {
+				this.flagConflictingEmails(conflictingUserEmails);
+			}
+		}
+
+		// Ensure we have some users, channels, and messages
+		if (!this.usersCount && !this.channelsCount && !this.messagesCount) {
+			this.logger.debug(`users: ${ this.usersCount }, channels: ${ this.channelsCount }, messages = ${ this.messagesCount }`);
+			super.updateProgress(ProgressStep.ERROR);
+			reject(new Meteor.Error('error-import-file-is-empty'));
+			return;
+		}
+
+		const tempUsers = this.collection.findOne({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'users',
+		});
+
+		const tempChannels = this.collection.findOne({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'channels',
+		});
+
+		const selectionUsers = tempUsers.users.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
+		const selectionChannels = tempChannels.channels.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
+		const selectionMessages = this.messagesCount;
+
+		super.updateProgress(ProgressStep.USER_SELECTION);
+
+		resolve(new Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
+	}
+
 	prepareUsingLocalFile(fullFilePath) {
+		if (fs.statSync(fullFilePath).isDirectory()) {
+			return this.prepareUsingLocalFolder(fullFilePath);
+		}
+
 		this.logger.debug('start preparing import operation');
 		this.collection.remove({});
 		this.emailList = [];
@@ -428,56 +567,7 @@ export class HipChatEnterpriseImporter extends Base {
 			});
 
 			this.extract.on('finish', Meteor.bindEnvironment(() => {
-				this.logger.debug('finished parsing files, checking for errors now');
-
-				super.updateRecord({ 'count.messages': this.messagesCount, messagesstatus: null });
-				super.addCountToTotal(this.messagesCount);
-
-				// Check if any of the emails used are already taken
-				if (this.emailList.length > 0) {
-					const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: this.emailList } });
-					const conflictingUserEmails = [];
-
-					conflictingUsers.forEach((conflictingUser) => {
-						if (conflictingUser.emails && conflictingUser.emails.length) {
-							conflictingUser.emails.forEach((email) => {
-								conflictingUserEmails.push(email.address);
-							});
-						}
-					});
-
-					if (conflictingUserEmails.length > 0) {
-						this.flagConflictingEmails(conflictingUserEmails);
-					}
-				}
-
-				// Ensure we have some users, channels, and messages
-				if (!this.usersCount && !this.channelsCount && !this.messagesCount) {
-					this.logger.debug(`users: ${ this.usersCount }, channels: ${ this.channelsCount }, messages = ${ this.messagesCount }`);
-					super.updateProgress(ProgressStep.ERROR);
-					reject(new Meteor.Error('error-import-file-is-empty'));
-					return;
-				}
-
-				const tempUsers = this.collection.findOne({
-					import: this.importRecord._id,
-					importer: this.name,
-					type: 'users',
-				});
-
-				const tempChannels = this.collection.findOne({
-					import: this.importRecord._id,
-					importer: this.name,
-					type: 'channels',
-				});
-
-				const selectionUsers = tempUsers.users.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
-				const selectionChannels = tempChannels.channels.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
-				const selectionMessages = this.messagesCount;
-
-				super.updateProgress(ProgressStep.USER_SELECTION);
-
-				resolve(new Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
+				this._finishPreparationProcess(resolve, reject);
 			}));
 
 			const rs = fs.createReadStream(fullFilePath);
