@@ -254,7 +254,7 @@ Template.apps.events({
 		const url = `${ HOST }/v1/apps/${ this.latest.id }/download/${ this.latest.version }`;
 
 		// play animation
-		$(e.currentTarget).parent().addClass('loading');
+		e.currentTarget.parentElement.classList.add('loading');
 
 		RocketChat.API.post('apps/', { url })
 			.then(() => {
