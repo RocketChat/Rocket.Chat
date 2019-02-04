@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Users, OAuthApps } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
 Meteor.methods({
 	addOAuthApp(application) {
-		if (!RocketChat.authz.hasPermission(this.userId, 'manage-oauth-apps')) {
+		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 		}
 		if (!_.isString(application.name) || application.name.trim() === '') {
@@ -20,8 +21,8 @@ Meteor.methods({
 		application.clientId = Random.id();
 		application.clientSecret = Random.secret();
 		application._createdAt = new Date;
-		application._createdBy = RocketChat.models.Users.findOne(this.userId, { fields: { username: 1 } });
-		application._id = RocketChat.models.OAuthApps.insert(application);
+		application._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
+		application._id = OAuthApps.insert(application);
 		return application;
 	},
 });
