@@ -23,7 +23,10 @@ export const _setRealName = function(userId, name) {
 	Users.setName(user._id, name);
 	user.name = name;
 
-	Subscriptions.updateDirectFNameByName(user.username, name);
+	// if user has no username, there is no need to updated any direct messages (there is none)
+	if (user.username && user.username !== '') {
+		Subscriptions.updateDirectFNameByName(user.username, name);
+	}
 
 	if (settings.get('UI_Use_Real_Name') === true) {
 		Notifications.notifyLogged('Users:NameChanged', {
