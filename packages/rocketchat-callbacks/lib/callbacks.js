@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { metrics, StatsTracker } from 'meteor/rocketchat:metrics';
 import _ from 'underscore';
 
 /*
@@ -70,6 +69,9 @@ callbacks.remove = function(hook, id) {
 	callbacks[hook] = getHooks(hook).filter((callback) => callback.id !== id);
 };
 
+callbacks.runItem = function({ callback, result, constant /* , hook */ }) {
+	return callback(result, constant);
+};
 
 /*
 * Successively run all of a hook's callbacks on an item
@@ -85,29 +87,17 @@ callbacks.run = function(hook, item, constant) {
 		return item;
 	}
 
-	let rocketchatHooksEnd;
-	if (Meteor.isServer) {
-		rocketchatHooksEnd = metrics.rocketchatHooks.startTimer({ hook, callbacks_length: callbacks.length });
-	}
-
 	let totalTime = 0;
 	const result = callbackItems.reduce(function(result, callback) {
-		let rocketchatCallbacksEnd;
-		if (Meteor.isServer) {
-			rocketchatCallbacksEnd = metrics.rocketchatCallbacks.startTimer({ hook, callback: callback.id });
-		}
 		const time = callbacks.showTime === true || callbacks.showTotalTime === true ? Date.now() : 0;
 
-		const callbackResult = callback(result, constant);
+		const callbackResult = callbacks.runItem({ hook, callback, result, constant, time });
 
 		if (callbacks.showTime === true || callbacks.showTotalTime === true) {
 			const currentTime = Date.now() - time;
 			totalTime += currentTime;
 			if (callbacks.showTime === true) {
-				if (Meteor.isServer) {
-					rocketchatCallbacksEnd();
-					StatsTracker.timing('callbacks.time', currentTime, [`hook:${ hook }`, `callback:${ callback.id }`]);
-				} else {
+				if (!Meteor.isServer) {
 					let stack = callback.stack && typeof callback.stack.split === 'function' && callback.stack.split('\n');
 					stack = stack && stack[2] && (stack[2].match(/\(.+\)/) || [])[0];
 					console.log(String(currentTime), hook, callback.id, stack);
@@ -117,14 +107,8 @@ callbacks.run = function(hook, item, constant) {
 		return (typeof callbackResult === 'undefined') ? result : callbackResult;
 	}, item);
 
-	if (Meteor.isServer) {
-		rocketchatHooksEnd();
-	}
-
 	if (callbacks.showTotalTime === true) {
-		if (Meteor.isServer) {
-			StatsTracker.timing('callbacks.totalTime', totalTime, [`hook:${ hook }`]);
-		} else {
+		if (!Meteor.isServer) {
 			console.log(`${ hook }:`, totalTime);
 		}
 	}

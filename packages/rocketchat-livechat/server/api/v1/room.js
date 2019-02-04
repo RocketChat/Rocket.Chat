@@ -154,3 +154,9 @@ API.v1.addRoute('livechat/room.survey', {
 		}
 	},
 });
+
+API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
+	post() {
+		API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
+	},
+});

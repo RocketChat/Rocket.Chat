@@ -41,7 +41,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'pin-message')) {
+		if (!hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
@@ -123,7 +123,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'pin-message')) {
+		if (!hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
