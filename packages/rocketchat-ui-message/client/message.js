@@ -62,6 +62,13 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	canvas.style.maxWidth = '-moz-available';
 	canvas.style.display = 'block';
 }
+function updateUsername(id, presentUsername) {
+	if (RocketChat.models.Users.findOne(id)) { // this will be true only when he is in the Client Collection.
+		return RocketChat.models.Users.findOne(id).username;
+	} else {
+		return presentUsername;
+	}
+}
 
 Template.message.helpers({
 	encodeURI(text) {
@@ -287,7 +294,7 @@ Template.message.helpers({
 			const total = reaction.users.length;
 			let usernames = reaction.users
 				.slice(0, 15)
-				.map((user) => (user.id === userId ? t('You').toLowerCase() : `@${ user.username }`))
+				.map((user) => (user.id === userId ? t('You').toLowerCase() : `@${ updateUsername(user.id, user.username) }`))
 				.join(', ');
 			if (total > 15) {
 				usernames = `${ usernames } ${ t('And_more', {
