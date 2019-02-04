@@ -78,6 +78,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Directory'),
 	icon: 'globe',
+	condition: () => RocketChat.settings.get('UI_DisplayDirectory'),
 	action: () => {
 		menu.close();
 		FlowRouter.go('directory');
