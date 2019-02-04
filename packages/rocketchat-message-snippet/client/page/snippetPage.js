@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { Markdown } from 'meteor/rocketchat:markdown';
 import { SnippetedMessages } from '../lib/collections';
 import moment from 'moment';
 
@@ -16,13 +17,13 @@ Template.snippetPage.helpers({
 			return null;
 		}
 		message.html = message.msg;
-		const markdown = RocketChat.Markdown.parse(message);
+		const markdown = Markdown.parse(message);
 		return markdown.tokens[0].text;
 	},
 	date() {
 		const snippet = SnippetedMessages.findOne({ _id: FlowRouter.getParam('snippetId') });
 		if (snippet !== undefined) {
-			return moment(snippet.ts).format(RocketChat.settings.get('Message_DateFormat'));
+			return moment(snippet.ts).format(settings.get('Message_DateFormat'));
 		}
 	},
 	time() {

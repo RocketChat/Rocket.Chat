@@ -26,6 +26,24 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
+		const query =	{ _id: roomId };
+
+		const msg = `\`\`\`${ message.msg }\`\`\``;
+
+		const update = {
+			$set: {
+				'lastMessage.msg': msg,
+				'lastMessage.snippeted': snippeted,
+				'lastMessage.snippetedAt': snippetedAt || new Date,
+				'lastMessage.snippetedBy': snippetedBy,
+				'lastMessage.snippetName': snippetName,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
 		const query = { _id: roomId };
 
