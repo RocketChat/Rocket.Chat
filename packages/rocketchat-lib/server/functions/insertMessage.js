@@ -1,8 +1,4 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Messages } from 'meteor/rocketchat:models';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
@@ -29,7 +25,6 @@ const validateAttachmentsFields = (attachmentField) => {
 	if (typeof attachmentField.value !== 'undefined') {
 		attachmentField.value = String(attachmentField.value);
 	}
-
 };
 
 const validateAttachmentsActions = (attachmentActions) => {
@@ -61,17 +56,9 @@ const validateAttachment = (attachment) => {
 		title: String,
 		title_link: String,
 		title_link_download: Boolean,
-		image_dimensions: Object,
 		image_url: String,
-		image_preview: String,
-		image_type: String,
-		image_size: Number,
 		audio_url: String,
-		audio_type: String,
-		audio_size: Number,
 		video_url: String,
-		video_type: String,
-		video_size: Number,
 		fields: [Match.Any],
 	}));
 
@@ -86,7 +73,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const sendMessage = function(user, message, room, upsert = false) {
+RocketChat.insertMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -108,11 +95,10 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (!message.ts) {
 		message.ts = new Date();
 	}
-	const { _id, username, name } = user;
+	const { _id, username } = user;
 	message.u = {
 		_id,
 		username,
-		name,
 	};
 	message.rid = room._id;
 
@@ -122,26 +108,6 @@ export const sendMessage = function(user, message, room, upsert = false) {
 
 	if (message.ts == null) {
 		message.ts = new Date();
-	}
-
-	if (settings.get('Message_Read_Receipt_Enabled')) {
-		message.unread = true;
-	}
-
-	// For the Rocket.Chat Apps :)
-	if (message && Apps && Apps.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
-		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
-		}
-
-		let result;
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
-
-		if (typeof result === 'object') {
-			message = Object.assign(message, result);
-		}
 	}
 
 	if (message.parseUrls !== false) {
@@ -159,43 +125,25 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		delete message.tokens;
 	}
 
-	message = callbacks.run('beforeSaveMessage', message);
-	if (message) {
-		// Avoid saving sandstormSessionId to the database
-		let sandstormSessionId = null;
-		if (message.sandstormSessionId) {
-			sandstormSessionId = message.sandstormSessionId;
-			delete message.sandstormSessionId;
-		}
-
-		if (message._id && upsert) {
-			const { _id } = message;
-			delete message._id;
-			Messages.upsert({
-				_id,
-				'u._id': message.u._id,
-			}, message);
-			message._id = _id;
-		} else {
-			message._id = Messages.insert(message);
-		}
-
-		if (Apps && Apps.isLoaded()) {
-			// This returns a promise, but it won't mutate anything about the message
-			// so, we don't really care if it is successful or fails
-			Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
-		}
-
-		/*
-		Defer other updates as their return is not interesting to the user
-		*/
-		Meteor.defer(() => {
-			// Execute all callbacks
-			message.sandstormSessionId = sandstormSessionId;
-			return callbacks.run('afterSaveMessage', message, room, user._id);
-		});
-		return message;
+	// Avoid saving sandstormSessionId to the database
+	let sandstormSessionId = null;
+	if (message.sandstormSessionId) {
+		sandstormSessionId = message.sandstormSessionId;
+		delete message.sandstormSessionId;
 	}
-};
 
-RocketChat.sendMessage = sendMessage;
+	if (message._id && upsert) {
+		const { _id } = message;
+		delete message._id;
+		RocketChat.models.Messages.upsert({
+			_id,
+			'u._id': message.u._id,
+		}, message);
+		message._id = _id;
+	} else {
+		message._id = RocketChat.models.Messages.insert(message);
+	}
+
+	message.sandstormSessionId = sandstormSessionId;
+	return message;
+};

@@ -552,7 +552,7 @@ Template.messageBox.events({
 
 			loader.classList.remove('active');
 			mic.classList.add('active');
-			const roomId = Session.get('RoomManager.openedRoom');
+			const roomId = RoomManager.openedRoom;
 			const record = {
 				name: `${ TAPi18n.__('Audio record') }.mp3`,
 				size: blob.size,
