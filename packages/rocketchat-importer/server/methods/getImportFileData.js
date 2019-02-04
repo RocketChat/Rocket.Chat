@@ -35,7 +35,11 @@ Meteor.methods({
 		];
 
 		if (waitingSteps.indexOf(importer.instance.progress.step) >= 0) {
-			return { waiting: true };
+			if (importer.instance.importRecord && importer.instance.importRecord.valid) {
+				return { waiting: true };
+			} else {
+				throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', { method: 'getImportFileData' });
+			}
 		}
 
 		const readySteps = [
@@ -63,6 +67,7 @@ Meteor.methods({
 
 				return data;
 			}).catch((e) => {
+				console.error(e);
 				throw new Meteor.Error(e);
 			});
 
