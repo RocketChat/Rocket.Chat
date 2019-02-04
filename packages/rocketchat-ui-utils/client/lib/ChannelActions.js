@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { t, UiTextContext, roomTypes, handleError } from 'meteor/rocketchat:utils';
 import { modal } from './modal';
-import { ChatSubscription } from 'meteor/rocketchat:models';
 import { call } from './callMethod';
 
 export function hide(type, rid, name) {
@@ -36,20 +34,6 @@ export function hide(type, rid, name) {
 	return false;
 }
 
-const leaveRoom = async(rid) => {
-	if (!Meteor.userId()) {
-		return false;
-	}
-	const tmp = ChatSubscription.findOne({ rid, 'u._id': Meteor.userId() });
-	ChatSubscription.remove({ rid, 'u._id': Meteor.userId() });
-	try {
-		await call('leaveRoom', rid);
-	} catch (error) {
-		ChatSubscription.insert(tmp);
-		throw error;
-	}
-};
-
 export async function leave(type, rid, name) {
 	const { RoomManager } = await import('meteor/rocketchat:ui');
 	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.LEAVE_WARNING);
@@ -69,7 +53,7 @@ export async function leave(type, rid, name) {
 			return;
 		}
 		try {
-			await leaveRoom(rid);
+			await call('leaveRoom', rid);
 			modal.close();
 			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 				FlowRouter.go('home');

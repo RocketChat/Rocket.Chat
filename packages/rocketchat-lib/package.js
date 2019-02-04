@@ -131,6 +131,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
 	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
+	api.addFiles('server/functions/insertMessage.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
 	api.addFiles('server/functions/setUsername.js', 'server');
 	api.addFiles('server/functions/setRealName.js', 'server');
@@ -280,6 +281,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('startup/defaultRoomTypes.js');
 	api.addFiles('startup/index.js', 'server');
+
+	api.addFiles('server/startup/rateLimiter.js', 'server');
 
 	// EXPORT
 	api.export('RocketChat');
