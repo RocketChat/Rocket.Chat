@@ -17,7 +17,8 @@ function findDirectMessageRoom(params, user) {
 		type: 'd',
 	});
 
-	if (!room || room.t !== 'd') {
+	const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
+	if (!canAccess || !room || room.t !== 'd') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any dirct message');
 	}
 
