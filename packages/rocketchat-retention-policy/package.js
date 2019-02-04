@@ -15,7 +15,10 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
+		'littledata:synced-cron',
 		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:settings',
 	]);
 	api.mainModule('server/index.js', 'server');
 });
