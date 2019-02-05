@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -7,7 +8,7 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 	if (!this.userId) {
 		return this.ready();
 	}
-	if (RocketChat.authz.hasPermission(this.userId, 'view-room-administration') !== true) {
+	if (hasPermission(this.userId, 'view-room-administration') !== true) {
 		return this.ready();
 	}
 	if (!_.isArray(types)) {
@@ -39,12 +40,12 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 	filter = s.trim(filter);
 	if (filter && types.length) {
 		// CACHE: can we stop using publications here?
-		return RocketChat.models.Rooms.findByNameContainingAndTypes(filter, types, options);
+		return Rooms.findByNameContainingAndTypes(filter, types, options);
 	} else if (types.length) {
 		// CACHE: can we stop using publications here?
-		return RocketChat.models.Rooms.findByTypes(types, options);
+		return Rooms.findByTypes(types, options);
 	} else {
 		// CACHE: can we stop using publications here?
-		return RocketChat.models.Rooms.findByNameContaining(filter, options);
+		return Rooms.findByNameContaining(filter, options);
 	}
 });

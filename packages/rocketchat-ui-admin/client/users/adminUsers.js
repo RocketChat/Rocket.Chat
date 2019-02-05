@@ -3,8 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { SideNav } from 'meteor/rocketchat:ui';
+import { SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -50,7 +49,7 @@ Template.adminUsers.onCreated(function() {
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar;
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'invite-user',
 		i18nTitle: 'Invite_Users',
@@ -58,7 +57,7 @@ Template.adminUsers.onCreated(function() {
 		template: 'adminInviteUser',
 		order: 1,
 	});
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'add-user',
 		i18nTitle: 'Add_User',
@@ -66,7 +65,7 @@ Template.adminUsers.onCreated(function() {
 		template: 'adminUserEdit',
 		order: 2,
 	});
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'admin-user-info',
 		i18nTitle: 'User_Info',

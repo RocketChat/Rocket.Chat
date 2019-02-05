@@ -5,9 +5,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { SideNav } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
-import { RocketChat, RocketChatTabBar } from 'meteor/rocketchat:lib';
+import { SideNav, RocketChatTabBar, TabBar } from 'meteor/rocketchat:ui-utils';
+import { t, roomTypes } from 'meteor/rocketchat:utils';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { ChannelSettings } from 'meteor/rocketchat:channel-settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -38,10 +39,10 @@ Template.adminRooms.helpers({
 		return rooms && rooms.count();
 	},
 	name() {
-		return RocketChat.roomTypes.roomTypes[this.t].getDisplayName(this);
+		return roomTypes.roomTypes[this.t].getDisplayName(this);
 	},
 	type() {
-		return TAPi18n.__(RocketChat.roomTypes.roomTypes[this.t].label);
+		return TAPi18n.__(roomTypes.roomTypes[this.t].label);
 	},
 	'default'() {
 		if (this.default) {
@@ -65,7 +66,7 @@ Template.adminRooms.onCreated(function() {
 	this.ready = new ReactiveVar(true);
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-rooms'],
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
@@ -73,7 +74,7 @@ Template.adminRooms.onCreated(function() {
 		template: 'adminRoomInfo',
 		order: 1,
 	});
-	RocketChat.ChannelSettings.addOption({
+	ChannelSettings.addOption({
 		group: ['admin-room'],
 		id: 'make-default',
 		template: 'channelSettingsDefault',
@@ -81,7 +82,7 @@ Template.adminRooms.onCreated(function() {
 			return Session.get('adminRoomsSelected');
 		},
 		validation() {
-			return RocketChat.authz.hasAllPermission('view-room-administration');
+			return hasAllPermission('view-room-administration');
 		},
 	});
 	this.autorun(function() {
