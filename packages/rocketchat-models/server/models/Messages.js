@@ -41,6 +41,10 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
 	}
 
+	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
+	}
+
 	unsetReactions(messageId) {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
