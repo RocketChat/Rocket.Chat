@@ -7,7 +7,6 @@ import { RocketChat, handleError } from 'meteor/rocketchat:lib';
 import { ChatRoom, RoomManager, popover } from 'meteor/rocketchat:ui';
 import { t, isRtl } from 'meteor/rocketchat:utils';
 import { WebRTC } from 'meteor/rocketchat:webrtc';
-import _ from 'underscore';
 import { getActions } from './userActions';
 
 Template.membersList.helpers({
@@ -75,10 +74,6 @@ Template.membersList.helpers({
 		});
 
 		const usersTotal = users.length;
-
-		// show online users first.
-		// sortBy is stable, so we can do this
-		users = _.sortBy(users, (u) => u.status === 'offline');
 
 		const { total, loading, usersLimit, loadingMore } = Template.instance();
 
@@ -254,13 +249,13 @@ Template.membersList.events({
 		const { showAllUsers, usersLimit, users, total, loadingMore } = instance;
 
 		loadingMore.set(true);
-		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: 100, skip: usersLimit.get() }, (error, result) => {
+		Meteor.call('getUsersOfRoom', this.rid, showAllUsers.get(), { limit: usersLimit.get() + 100, skip: 0 }, (error, result) => {
 			if (error) {
 				console.error(error);
 				loadingMore.set(false);
 				return;
 			}
-			users.set(users.get().concat(result.records));
+			users.set(result.records);
 			total.set(result.total);
 			loadingMore.set(false);
 		});
@@ -287,6 +282,10 @@ Template.membersList.onCreated(function() {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
 		Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
+			if (error) {
+				console.error(error);
+				return this.loading.set(false);
+			}
 			this.users.set(users.records);
 			this.total.set(users.total);
 			this.loading.set(false);
