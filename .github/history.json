@@ -25573,6 +25573,54 @@
           ]
         }
       ]
+    },
+    "0.74.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13326",
+          "title": "[FIX] Rate Limiter was limiting communication between instances",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13349",
+          "title": "[FIX] Setup wizard calling 'saveSetting' for each field/setting",
+          "userLogin": "ggazzo",
+          "milestone": "0.74.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "13342",
+          "title": "[IMPROVE] Send `uniqueID` to all clients so Jitsi rooms can be created correctly",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13350",
+          "title": "[FIX] Pass token for cloud register",
+          "userLogin": "geekgonecrazy",
+          "milestone": "0.74.2",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        }
+      ]
     }
   }
 }
