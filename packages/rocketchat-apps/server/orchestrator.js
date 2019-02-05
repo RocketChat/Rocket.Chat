@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
@@ -98,9 +99,13 @@ class AppServerOrchestrator {
 	}
 }
 
-RocketChat.settings.add('Apps_Framework_enabled', false, {
-	type: 'boolean',
-	hidden: true,
+RocketChat.settings.addGroup('General', function() {
+	this.section('Apps', function() {
+		this.add('Apps_Framework_enabled', true, {
+			type: 'boolean',
+			hidden: false,
+		});
+	});
 });
 
 RocketChat.settings.get('Apps_Framework_enabled', (key, isEnabled) => {

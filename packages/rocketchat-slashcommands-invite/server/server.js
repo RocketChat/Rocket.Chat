@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /*
 * Invite is a named function that will replace /invite commands
@@ -10,7 +15,7 @@ function Invite(command, params, item) {
 	if (command !== 'invite' || !Match.test(params, String)) {
 		return;
 	}
-	const usernames = params.replace(/@/g, '').split(/[\s,]/).filter((a) => a !== '');
+	const usernames = params.split(/[\s,]/).map((username) => username.replace(/^@/, '')).filter((a) => a !== '');
 	if (usernames.length === 0) {
 		return;
 	}

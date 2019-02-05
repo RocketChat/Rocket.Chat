@@ -2,6 +2,9 @@
 // customLdapOptions should be passed in if you want to override LDAP_DEFAULTS
 // on any particular call (if you have multiple ldap servers you'd like to connect to)
 // You'll likely want to set the dn value here {dn: "..."}
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+
 Meteor.loginWithLDAP = function(...args) {
 	// Pull username and password
 	const username = args.shift();

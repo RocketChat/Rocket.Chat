@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	getImportProgress(key) {

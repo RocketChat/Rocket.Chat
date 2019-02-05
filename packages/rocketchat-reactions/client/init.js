@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.room.events({
 	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
 		event.preventDefault();

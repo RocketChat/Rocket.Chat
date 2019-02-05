@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 
 RocketChat.Migrations.add({

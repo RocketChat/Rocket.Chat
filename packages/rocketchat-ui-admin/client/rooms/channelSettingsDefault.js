@@ -1,5 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
+import { AdminChatRoom } from './adminRooms';
 import toastr from 'toastr';
-/* globals AdminChatRoom */
 
 Template.channelSettingsDefault.helpers({
 	canMakeDefault() {

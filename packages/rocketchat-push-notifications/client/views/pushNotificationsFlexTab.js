@@ -1,4 +1,12 @@
-/* globals ChatSubscription popover */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+import { getUserPreference, handleError, t } from 'meteor/rocketchat:utils';
+import { popover } from 'meteor/rocketchat:ui-utils';
+import { CustomSounds } from 'meteor/rocketchat:custom-sounds';
+import { ChatSubscription } from 'meteor/rocketchat:models';
 
 const notificationLabels = {
 	all: 'All_messages',
@@ -73,23 +81,23 @@ Template.pushNotificationsFlexTab.helpers({
 		}
 	},
 	defaultAudioNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'audioNotifications');
+		let preference = getUserPreference(Meteor.userId(), 'audioNotifications');
 		if (preference === 'default') {
-			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_audioNotifications');
+			preference = settings.get('Accounts_Default_User_Preferences_audioNotifications');
 		}
 		return notificationLabels[preference];
 	},
 	defaultDesktopNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
+		let preference = getUserPreference(Meteor.userId(), 'desktopNotifications');
 		if (preference === 'default') {
-			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
+			preference = settings.get('Accounts_Default_User_Preferences_desktopNotifications');
 		}
 		return notificationLabels[preference];
 	},
 	defaultMobileNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'mobileNotifications');
+		let preference = getUserPreference(Meteor.userId(), 'mobileNotifications');
 		if (preference === 'default') {
-			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications');
+			preference = settings.get('Accounts_Default_User_Preferences_mobileNotifications');
 		}
 		return notificationLabels[preference];
 	},
@@ -190,15 +198,15 @@ Template.pushNotificationsFlexTab.events({
 
 	'click [data-play]'(e) {
 		e.preventDefault();
-		const user = Meteor.user();
+		const user = Meteor.userId();
 
 		let value = Template.instance().form.audioNotificationValue.get();
 		if (value === '0') {
-			value = RocketChat.getUserPreference(user, 'newMessageNotification');
+			value = getUserPreference(user, 'newMessageNotification');
 		}
 
 		if (value && value !== 'none') {
-			const audioVolume = RocketChat.getUserPreference(user, 'notificationsSoundVolume');
+			const audioVolume = getUserPreference(user, 'notificationsSoundVolume');
 			const $audio = $(`audio#${ value }`);
 
 			if ($audio && $audio[0] && $audio[0].play) {
@@ -223,7 +231,7 @@ Template.pushNotificationsFlexTab.events({
 
 		switch (key) {
 			case 'audioNotificationValue':
-				const audioAssets = (RocketChat.CustomSounds && RocketChat.CustomSounds.getList && RocketChat.CustomSounds.getList()) || [];
+				const audioAssets = (CustomSounds && CustomSounds.getList && CustomSounds.getList()) || [];
 				const audioAssetsArray = audioAssets.map((audio) => ({
 					id: `audioNotificationValue${ audio.name }`,
 					name: 'audioNotificationValue',
@@ -340,9 +348,9 @@ Template.pushNotificationsPopover.helpers({
 		return Template.instance().data.options;
 	},
 	defaultDesktopNotification() {
-		let preference = RocketChat.getUserPreference(Meteor.user(), 'desktopNotifications');
+		let preference = getUserPreference(Meteor.userId(), 'desktopNotifications');
 		if (preference === 'default') {
-			preference = RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications');
+			preference = settings.get('Accounts_Default_User_Preferences_desktopNotifications');
 		}
 		return notificationLabels[preference];
 	},

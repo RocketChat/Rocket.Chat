@@ -1,5 +1,12 @@
-/* globals fileUploadHandler */
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SideNav } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import s from 'underscore.string';
 import toastr from 'toastr';
 import mime from 'mime-type/with-db';
@@ -65,7 +72,7 @@ Template.avatarPrompt.events({
 			if (s.trim($('#avatarurl').val())) {
 				Meteor.call('setAvatarFromService', $('#avatarurl').val(), '', this.service, function(err) {
 					if (err) {
-						if (err.details.timeToReset && err.details.timeToReset) {
+						if (err.details && err.details.timeToReset) {
 							toastr.error(t('error-too-many-requests', {
 								seconds: parseInt(err.details.timeToReset / 1000),
 							}));

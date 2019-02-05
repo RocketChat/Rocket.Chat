@@ -1,5 +1,7 @@
-/* globals MentionedMessage */
 import _ from 'underscore';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { MentionedMessage } from '../lib/MentionedMessage';
 
 Template.mentionsFlexTab.helpers({
 	hasMessages() {

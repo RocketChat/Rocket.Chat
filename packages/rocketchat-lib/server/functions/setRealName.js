@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 RocketChat._setRealName = function(userId, name) {
@@ -17,7 +18,10 @@ RocketChat._setRealName = function(userId, name) {
 	RocketChat.models.Users.setName(user._id, name);
 	user.name = name;
 
-	RocketChat.models.Subscriptions.updateDirectFNameByName(user.username, name);
+	// if user has no username, there is no need to updated any direct messages (there is none)
+	if (user.username && user.username !== '') {
+		RocketChat.models.Subscriptions.updateDirectFNameByName(user.username, name);
+	}
 
 	if (RocketChat.settings.get('UI_Use_Real_Name') === true) {
 		RocketChat.Notifications.notifyLogged('Users:NameChanged', {

@@ -1,4 +1,7 @@
-/* global Gravatar */
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { HTTP } from 'meteor/http';
+import { Gravatar } from 'meteor/jparker:gravatar';
 
 function getAvatarSuggestionForUser(user) {
 	check(user, Object);
@@ -51,6 +54,13 @@ function getAvatarSuggestionForUser(user) {
 		avatars.push({
 			service: 'sandstorm',
 			url: user.services.sandstorm.picture,
+		});
+	}
+
+	if (user.services.blockstack && user.services.blockstack.image && RocketChat.settings.get('Blockstack_Enable')) {
+		avatars.push({
+			service: 'blockstack',
+			url: user.services.blockstack.image,
 		});
 	}
 

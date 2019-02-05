@@ -1,4 +1,6 @@
 import visitor from '../../imports/client/visitor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 BlazeLayout.setRoot('body');
 

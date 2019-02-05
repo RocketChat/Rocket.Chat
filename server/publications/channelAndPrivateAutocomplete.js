@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('channelAndPrivateAutocomplete', function(selector) {
 	if (!this.userId) {
 		return this.ready();

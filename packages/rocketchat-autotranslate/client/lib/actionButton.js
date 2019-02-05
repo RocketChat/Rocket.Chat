@@ -1,9 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
 			RocketChat.MessageAction.addButton({
 				id: 'toggle-language',
-				icon: 'icon-language',
+				icon: 'language',
 				label: 'Toggle_original_translated',
 				context: [
 					'message',

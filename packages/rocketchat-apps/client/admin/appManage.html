@@ -74,7 +74,11 @@
 										<div class="rc-apps-details__col">
 											{{#if author.support}}
 												<h3>{{_ "Support"}}</h3>
-												<a href="{{author.support}}" target="_blank">{{author.support}}</a>
+												{{#if isEmail author.support}}
+													<a href="mailto:{{author.support}}">{{author.support}}</a>
+												{{else}}
+													<a href="{{author.support}}" target="_blank">{{author.support}}</a>
+												{{/if}}
 											{{/if}}
 										</div>
 									</div>
@@ -90,6 +94,28 @@
 								{{#if description}}
 									<div class="rc-apps-details__description">
 										<p>{{ description }}</p>
+									</div>
+								{{/if}}
+
+								{{#if apis}}
+									<div class="rc-apps-details__row">
+										<h2> {{_ "Apis"}} </h2>
+									</div>
+									<div class="rc-apps-settings">
+										{{#each apis}}
+											<div class="rc-apps-settings__item">
+												<div class="rc-input">
+													<div class="rc-apps-details__api">
+														{{renderMethods methods}} {{path}}
+													</div>
+													<div class="rc-input__description rc-apps-details__api__description">
+														{{#each methods}}
+															<div class="rc-apps-details__api__description__item">{{#each curl . ..}}{{.}}<br />{{/each}}</div>
+														{{/each}}
+													</div>
+												</div>
+											</div>
+										{{/each}}
 									</div>
 								{{/if}}
 
@@ -245,7 +271,7 @@
 															<div class="rc-input__title">{{_ i18nLabel}}</div>
 															<div class="rc-input__wrapper">
 																{{#if isDisabled.disabled}}
-																{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
+																	{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
 																{{else}}
 																<div class="code-mirror-box" data-editor-id="{{id}}">
 																	<div class="title">
@@ -253,8 +279,8 @@
 																	</div>
 																	{{> CodeMirror name=id options=getEditorOptions code=value }}
 																	<div class="buttons">
-																		<button class="button primary button-fullscreen">Full Screen</button>
-																		<button class="button primary button-restore">Exit Full Screen</button>
+																		<button class="button primary button-fullscreen">{{_ "Full_Screen"}}</button>
+																		<button class="button primary button-restore">{{_ "Exit_Full_Screen"}}</button>
 																	</div>
 																</div>
 																{{/if}}

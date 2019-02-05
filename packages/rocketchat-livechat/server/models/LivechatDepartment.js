@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 /**
@@ -77,6 +78,18 @@ class LivechatDepartment extends RocketChat.models._Base {
 			enabled: true,
 		};
 		return this.find(query);
+	}
+
+	findOneByIdOrName(_idOrName, options) {
+		const query = {
+			$or: [{
+				_id: _idOrName,
+			}, {
+				name: _idOrName,
+			}],
+		};
+
+		return this.findOne(query, options);
 	}
 }
 

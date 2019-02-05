@@ -1,3 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { handleError } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import toastr from 'toastr';
+
 Template.channelSettings__tokenpass.helpers({
 	addDisabled() {
 		const { balance, token } = Template.instance();

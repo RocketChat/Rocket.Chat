@@ -1,52 +1,59 @@
 .rc-datetime__left {
 	display: inline-block;
+
 	width: 52%;
 }
 
 .rc-datetime__right {
 	display: inline-block;
+
 	width: calc(48% - 0.3rem);
 }
 
 .rc-user-info__pruning {
 	position: absolute;
-	left: 50%;
 	top: 50%;
+	left: 50%;
+
 	transform: translate(-50%, calc(-50% - 2rem));
 }
 
 .pruning__header {
 	text-align: center;
+
 	font-weight: 900;
 }
 
 .pruning-wrapper {
 	text-align: center;
+
 	color: var(--rc-color-link-active);
 
 	&.prune__finished {
-		color: #12C212;
+		color: #12c212;
 	}
 
-	& svg {
+	& .rc-icon--loading {
 		width: 16rem;
 		height: 16rem;
 		margin: 1rem 0;
-		animation: pruningSpin 2s linear infinite;
+
+		animation: spin 2s linear infinite;
+	}
+
+	& .rc-icon--check {
+		font-size: 1rem;
 	}
 
 	& .pruning__text {
 		margin-top: -17rem;
-		line-height: 16rem;
+
 		font-size: 3.5em;
+
+		line-height: 16rem;
 	}
 
 	& .pruning__text-sub {
 		margin-top: calc(-8rem + 1.5em);
 	}
-}
-
-@keyframes pruningSpin {
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
 }

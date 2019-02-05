@@ -1,5 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /**
  * Enables HTTP functions on Chatpal Backend

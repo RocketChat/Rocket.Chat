@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 /*
  *
  * Get direct chat room helper
@@ -8,9 +9,6 @@ const getDirectRoom = (source, target) => {
 	const rid = [source._id, target._id].sort().join('');
 
 	RocketChat.models.Rooms.upsert({ _id: rid }, {
-		$set: {
-			usernames: [source.username, target.username],
-		},
 		$setOnInsert: {
 			t: 'd',
 			msgs: 0,

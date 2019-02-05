@@ -2,15 +2,15 @@ import { AccountsServer } from 'meteor/rocketchat:accounts';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-
 import { GrantError } from './error';
 import Providers from './providers';
+import { t } from 'meteor/rocketchat:utils';
 
 const setAvatarFromUrl = (userId, url) => new Promise((resolve, reject) => {
 	Meteor.runAsUser(userId, () => {
 		Meteor.call('setAvatarFromService', url, '', 'url', (err) => {
 			if (err) {
-				if (err.details.timeToReset && err.details.timeToReset) {
+				if (err.details && err.details.timeToReset) {
 					reject((t('error-too-many-requests', {
 						seconds: parseInt(err.details.timeToReset / 1000),
 					})));

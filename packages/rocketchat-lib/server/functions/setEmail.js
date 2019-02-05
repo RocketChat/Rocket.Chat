@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 RocketChat._setEmail = function(userId, email, shouldSendVerificationEmail = true) {

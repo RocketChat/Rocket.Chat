@@ -17,9 +17,5 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 	]);
-
-	api.addFiles([
-		'server/startup/settings.js',
-		'server/cronPruneMessages.js',
-	], 'server');
+	api.mainModule('server/index.js', 'server');
 });

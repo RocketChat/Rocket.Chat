@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+
 RocketChat.Migrations.add({
 	version: 9,
 	up() {

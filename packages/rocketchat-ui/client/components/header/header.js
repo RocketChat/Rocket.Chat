@@ -1,8 +1,14 @@
-/* globals fireGlobalEvent*/
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { t, roomTypes, handleError } from 'meteor/rocketchat:utils';
+import { TabBar, fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
+import { ChatSubscription, Rooms } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
-const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
+const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
 Template.header.helpers({
 	back() {
@@ -11,15 +17,15 @@ Template.header.helpers({
 	avatarBackground() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
-		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData) || RocketChat.roomTypes.getRoomName(roomData.t, roomData);
+		return roomTypes.getSecondaryRoomName(roomData.t, roomData) || roomTypes.getRoomName(roomData.t, roomData);
 	},
 	buttons() {
-		return RocketChat.TabBar.getButtons();
+		return TabBar.getButtons();
 	},
 
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
-		return RocketChat.settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
+		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
 
 	state() {
@@ -35,31 +41,44 @@ Template.header.helpers({
 	},
 
 	isDirect() {
-		return RocketChat.models.Rooms.findOne(this._id).t === 'd';
+		return Rooms.findOne(this._id).t === 'd';
 	},
 
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 
-		return RocketChat.roomTypes.getRoomName(roomData.t, roomData);
+		return roomTypes.getRoomName(roomData.t, roomData);
 	},
 
 	secondaryName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
 
-		return RocketChat.roomTypes.getSecondaryRoomName(roomData.t, roomData);
+		return roomTypes.getSecondaryRoomName(roomData.t, roomData);
 	},
 
 	roomTopic() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-		return roomData.topic;
+		if (!roomData || !roomData.topic) { return ''; }
+
+		let roomTopic = RocketChat.Markdown.parse(roomData.topic);
+
+		// &#39; to apostrophe (') for emojis such as :')
+		roomTopic = roomTopic.replace(/&#39;/g, '\'');
+
+		Object.keys(RocketChat.emoji.packages).forEach((emojiPackage) => {
+			roomTopic = RocketChat.emoji.packages[emojiPackage].render(roomTopic);
+		});
+
+		// apostrophe (') back to &#39;
+		roomTopic = roomTopic.replace(/\'/g, '&#39;');
+
+		return roomTopic;
 	},
 
 	channelIcon() {
-		const roomType = RocketChat.models.Rooms.findOne(this._id).t;
+		const roomType = Rooms.findOne(this._id).t;
 		switch (roomType) {
 			case 'd':
 				return 'at';
@@ -70,7 +89,7 @@ Template.header.helpers({
 			case 'l':
 				return 'livechat';
 			default:
-				return RocketChat.roomTypes.getIcon(roomType);
+				return roomTypes.getIcon(roomType);
 		}
 	},
 
@@ -78,12 +97,17 @@ Template.header.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		return RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		return roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+	},
+
+	encryptedChannel() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return roomData && roomData.encrypted;
 	},
 
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
+		return roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
 	},
 
 	showToggleFavorite() {
@@ -138,5 +162,5 @@ Template.header.events({
 });
 
 Template.header.onCreated(function() {
-	this.currentChannel = (this.data && this.data._id && RocketChat.models.Rooms.findOne(this.data._id)) || undefined;
+	this.currentChannel = (this.data && this.data._id && Rooms.findOne(this.data._id)) || undefined;
 });

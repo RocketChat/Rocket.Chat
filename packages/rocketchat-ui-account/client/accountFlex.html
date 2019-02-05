@@ -18,6 +18,14 @@
 
 				{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
 
+				{{#if encryptionEnabled}}
+					{{> sidebarItem menuItem "Encryption" "key" "account" "encryption" }}
+				{{/if}}
+
+				{{#if webdavIntegrationEnabled}}
+					{{> sidebarItem menuItem "Integrations" "code" "account" "integrations" }}
+				{{/if}}
+
 				{{#if accessTokensEnabled}}
 					{{> sidebarItem menuItem "Personal_Access_Tokens" "key" "account" "tokens" }}
 				{{/if}}

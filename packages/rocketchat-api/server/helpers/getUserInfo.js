@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 const getInfoFromUserObject = (user) => {
 	const {
 		_id,

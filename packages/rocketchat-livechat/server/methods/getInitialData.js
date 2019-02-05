@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 import LivechatVisitors from '../models/LivechatVisitors';
@@ -25,6 +27,7 @@ Meteor.methods({
 			conversationFinishedMessage: null,
 			nameFieldRegistrationForm: null,
 			emailFieldRegistrationForm: null,
+			registrationFormMessage: null,
 		};
 
 		const options = {
@@ -77,11 +80,12 @@ Meteor.methods({
 		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
 		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
+		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 
 		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
 
 		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
-			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions'));
+			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 		});
 
 		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {

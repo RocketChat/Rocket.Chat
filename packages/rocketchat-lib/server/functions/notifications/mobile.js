@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
@@ -44,6 +46,8 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 			sender: message.u,
 			type: room.t,
 			name: room.name,
+			messageType: message.t,
+			messageId: message._id,
 		},
 		roomName: RocketChat.settings.get('Push_show_username_room') && room.t !== 'd' ? `#${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
 		username,
@@ -65,7 +69,7 @@ export function shouldNotifyMobile({
 	statusConnection,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && mobilePushNotifications == null) {
+	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser) {
 		return false;
 	}
 

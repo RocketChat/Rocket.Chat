@@ -1,16 +1,18 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
-let contentHeader;
-RocketChat.settings.get('Email_Header', (key, value) => {
-	contentHeader = RocketChat.placeholders.replace(value || '');
+let advice = '';
+let goToMessage = '';
+Meteor.startup(() => {
+	RocketChat.settings.get('email_style', function() {
+		goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
+	});
+	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
+		advice = value;
+	});
 });
-
-let contentFooter;
-RocketChat.settings.get('Email_Footer', (key, value) => {
-	contentFooter = RocketChat.placeholders.replace(value || '');
-});
-
-const divisorMessage = '<hr style="margin: 20px auto; border: none; border-bottom: 1px solid #dddddd;">';
 
 function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || RocketChat.settings.get('language') || 'en';
@@ -26,6 +28,11 @@ function getEmailContent({ message, user, room }) {
 
 	if (message.msg !== '') {
 		let messageContent = s.escapeHTML(message.msg);
+
+		if (message.t === 'e2e') {
+			messageContent = TAPi18n.__('Encrypted_message', { lng });
+		}
+
 		message = RocketChat.callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
@@ -70,76 +77,50 @@ function getEmailContent({ message, user, room }) {
 	return header;
 }
 
-function getMessageLink(room, sub) {
-	const roomPath = RocketChat.roomTypes.getURL(room.t, sub);
-	const style = [
-		'color: #fff;',
-		'padding: 9px 12px;',
-		'border-radius: 4px;',
-		'background-color: #04436a;',
-		'text-decoration: none;',
-	].join(' ');
-	const message = TAPi18n.__('Offline_Link_Message');
-	return `<p style="text-align:center;margin-bottom:8px;"><a style="${ style }" href="${ roomPath }">${ message }</a>`;
-}
-
 export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
-	let emailSubject;
 	const username = RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name : message.u.username;
+	let subjectKey = 'Offline_Mention_All_Email';
 
 	if (room.t === 'd') {
-		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_DM_Email'), {
-			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room),
-		});
+		subjectKey = 'Offline_DM_Email';
 	} else if (hasMentionToUser) {
-		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_Email'), {
-			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room),
-		});
-	} else {
-		emailSubject = RocketChat.placeholders.replace(RocketChat.settings.get('Offline_Mention_All_Email'), {
-			user: username,
-			room: RocketChat.roomTypes.getRoomName(room.t, room),
-		});
+		subjectKey = 'Offline_Mention_Email';
 	}
+
+	const emailSubject = Mailer.replace(RocketChat.settings.get(subjectKey), {
+		user: username,
+		room: RocketChat.roomTypes.getRoomName(room.t, room),
+	});
 	const content = getEmailContent({
 		message,
 		user,
 		room,
 	});
 
-	const link = getMessageLink(room, subscription);
-
-	if (RocketChat.settings.get('Direct_Reply_Enable')) {
-		contentFooter = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer_Direct_Reply') || '');
-	}
+	const room_path = RocketChat.roomTypes.getURL(room.t, subscription);
 
 	const email = {
 		to: emailAddress,
 		subject: emailSubject,
-		html: contentHeader + content + divisorMessage + link + contentFooter,
+		html: content + goToMessage + (RocketChat.settings.get('Direct_Reply_Enable') ? advice : ''),
+		data: {
+			room_path,
+		},
 	};
 
-	// using user full-name/channel name in from address
-	if (room.t === 'd') {
-		email.from = `${ String(message.u.name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
-	} else {
-		email.from = `${ String(room.name).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
-	}
+	const from = room.t === 'd' ? message.u.name : room.name;	// using user full-name/channel name in from address
+	email.from = `${ String(from).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ RocketChat.settings.get('From_Email') }>`;
 	// If direct reply enabled, email content with headers
 	if (RocketChat.settings.get('Direct_Reply_Enable')) {
-		const replyto = RocketChat.settings.get('Direct_Reply_ReplyTo') ? RocketChat.settings.get('Direct_Reply_ReplyTo') : RocketChat.settings.get('Direct_Reply_Username');
+		const replyto = RocketChat.settings.get('Direct_Reply_ReplyTo') || RocketChat.settings.get('Direct_Reply_Username');
 		email.headers = {
 			// Reply-To header with format "username+messageId@domain"
 			'Reply-To': `${ replyto.split('@')[0].split(RocketChat.settings.get('Direct_Reply_Separator'))[0] }${ RocketChat.settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,
 		};
 	}
 
-	Meteor.defer(() => {
-		RocketChat.metrics.notificationsSent.inc({ notification_type: 'email' });
-		Email.send(email);
-	});
+	RocketChat.metrics.notificationsSent.inc({ notification_type: 'email' });
+	return Mailer.send(email);
 }
 
 export function shouldNotifyEmail({
@@ -164,7 +145,7 @@ export function shouldNotifyEmail({
 
 	// no user or room preference
 	if (emailNotifications == null) {
-		if (disableAllMessageNotifications) {
+		if (disableAllMessageNotifications && !isHighlighted && !hasMentionToUser) {
 			return false;
 		}
 

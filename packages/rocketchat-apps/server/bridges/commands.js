@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { Utilities } from '../../lib/misc/Utilities';
 
@@ -83,7 +84,7 @@ export class AppCommandsBridge {
 	}
 
 	registerCommand(command, appId) {
-		console.log(`The App ${ appId } is registerin the command: "${ command.command }"`);
+		console.log(`The App ${ appId } is registering the command: "${ command.command }"`);
 
 		this._verifyCommand(command);
 

@@ -1,4 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
+import { LivechatTrigger } from '../../collections/LivechatTrigger';
 import toastr from 'toastr';
+
 Template.livechatTriggersForm.helpers({
 	name() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
@@ -11,6 +18,10 @@ Template.livechatTriggersForm.helpers({
 	enabled() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
 		return trigger && trigger.enabled;
+	},
+	runOnce() {
+		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
+		return (trigger && trigger.runOnce) || false;
 	},
 	conditions() {
 		const trigger = LivechatTrigger.findOne(FlowRouter.getParam('_id'));
@@ -43,6 +54,7 @@ Template.livechatTriggersForm.events({
 			name: instance.$('input[name=name]').val(),
 			description: instance.$('input[name=description]').val(),
 			enabled: instance.$('input[name=enabled]:checked').val() === '1',
+			runOnce: instance.$('input[name=runOnce]:checked').val() === '1',
 			conditions: [],
 			actions: [],
 		};

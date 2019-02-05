@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
 		if (value[field] != null) {
@@ -13,15 +16,17 @@ const objectMaybeIncluding = (types) => Match.Where((value) => {
 	return true;
 });
 
-const validateAttachmentsFields = (attachmentFields) => {
-	check(attachmentFields, objectMaybeIncluding({
+const validateAttachmentsFields = (attachmentField) => {
+	check(attachmentField, objectMaybeIncluding({
 		short: Boolean,
+		title: String,
+		value: Match.OneOf(String, Match.Integer, Boolean),
 	}));
 
-	check(attachmentFields, objectMaybeIncluding({
-		title: String,
-		value: String,
-	}));
+	if (typeof attachmentField.value !== 'undefined') {
+		attachmentField.value = String(attachmentField.value);
+	}
+
 };
 
 const validateAttachmentsActions = (attachmentActions) => {
@@ -53,9 +58,17 @@ const validateAttachment = (attachment) => {
 		title: String,
 		title_link: String,
 		title_link_download: Boolean,
+		image_dimensions: Object,
 		image_url: String,
+		image_preview: String,
+		image_type: String,
+		image_size: Number,
 		audio_url: String,
+		audio_type: String,
+		audio_size: Number,
 		video_url: String,
+		video_type: String,
+		video_size: Number,
 		fields: [Match.Any],
 	}));
 
@@ -116,7 +129,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the messaging sending.');
+			throw new Meteor.Error('error-app-prevented-sending', 'A Rocket.Chat App prevented the message sending.');
 		}
 
 		let result;

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 
 	if (!this.userId) {

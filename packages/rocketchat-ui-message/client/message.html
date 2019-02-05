@@ -62,7 +62,11 @@
 			{{#if isSnippet}}
 				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 			{{/if}}
-			{{{body}}}
+			{{#if isDecrypting}}
+				<span>******</span>
+			{{else}}
+				{{{body}}}
+			{{/if}}
 			{{#if hasOembed}}
 				{{#each urls}}
 					{{injectIndex . @index}} {{> oembedBaseWidget}}
