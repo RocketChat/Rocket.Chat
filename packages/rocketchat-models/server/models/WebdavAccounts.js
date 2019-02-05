@@ -1,9 +1,9 @@
 /**
  * Webdav Accounts model
  */
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from './_Base';
 
-class WebdavAccounts extends RocketChat.models._Base {
+export class WebdavAccounts extends Base {
 	constructor() {
 		super('webdav_accounts');
 
@@ -25,4 +25,4 @@ class WebdavAccounts extends RocketChat.models._Base {
 
 }
 
-RocketChat.models.WebdavAccounts = new WebdavAccounts();
+export default new WebdavAccounts();
