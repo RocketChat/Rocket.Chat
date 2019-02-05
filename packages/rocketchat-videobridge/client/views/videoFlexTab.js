@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { modal } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { modal, TabBar } from 'meteor/rocketchat:ui-utils';
 import { t } from 'meteor/rocketchat:utils';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {
-		return RocketChat.settings.get('Jitsi_Open_New_Window');
+		return settings.get('Jitsi_Open_New_Window');
 	},
 });
 
@@ -24,7 +24,7 @@ Template.videoFlexTab.onRendered(function() {
 	const height = 500;
 
 	const configOverwrite = {
-		desktopSharingChromeExtId: RocketChat.settings.get('Jitsi_Chrome_Extension'),
+		desktopSharingChromeExtId: settings.get('Jitsi_Chrome_Extension'),
 	};
 	const interfaceConfigOverwrite = {};
 
@@ -37,7 +37,7 @@ Template.videoFlexTab.onRendered(function() {
 
 		this.tabBar.close();
 
-		RocketChat.TabBar.updateButton('video', { class: '' });
+		TabBar.updateButton('video', { class: '' });
 	};
 
 	modal.open({
@@ -54,13 +54,13 @@ Template.videoFlexTab.onRendered(function() {
 		}
 		this.timeout = null;
 		this.autorun(() => {
-			if (RocketChat.settings.get('Jitsi_Enabled')) {
+			if (settings.get('Jitsi_Enabled')) {
 				if (this.tabBar.getState() === 'opened') {
 					const roomId = Session.get('openedRoom');
 
-					const domain = RocketChat.settings.get('Jitsi_Domain');
-					const jitsiRoom = RocketChat.settings.get('Jitsi_URL_Room_Prefix') + RocketChat.settings.get('uniqueID') + roomId;
-					const noSsl = !RocketChat.settings.get('Jitsi_SSL');
+					const domain = settings.get('Jitsi_Domain');
+					const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + roomId;
+					const noSsl = !settings.get('Jitsi_SSL');
 
 					if (jitsiRoomActive !== null && jitsiRoomActive !== jitsiRoom) {
 						jitsiRoomActive = null;
@@ -75,9 +75,9 @@ Template.videoFlexTab.onRendered(function() {
 					} else {
 						jitsiRoomActive = jitsiRoom;
 
-						RocketChat.TabBar.updateButton('video', { class: 'red' });
+						TabBar.updateButton('video', { class: 'red' });
 
-						if (RocketChat.settings.get('Jitsi_Open_New_Window')) {
+						if (settings.get('Jitsi_Open_New_Window')) {
 							Meteor.call('jitsi:updateTimeout', roomId);
 
 							timeOut = Meteor.setInterval(() => Meteor.call('jitsi:updateTimeout', roomId), 10 * 1000);
@@ -120,7 +120,7 @@ Template.videoFlexTab.onRendered(function() {
 						}
 					}
 				} else {
-					RocketChat.TabBar.updateButton('video', { class: '' });
+					TabBar.updateButton('video', { class: '' });
 
 					// Clean up and stop updating timeout.
 					if (timeOut) {
