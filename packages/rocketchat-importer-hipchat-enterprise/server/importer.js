@@ -1184,7 +1184,7 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 
 				if (!roomUsers[msg.senderId]) {
-					this.logger.error('Skipping message due to missing sender.');
+					this.logger.error(`Skipping message due to missing sender ( ${ msg.senderId } ).`);
 					return;
 				}
 
@@ -1194,7 +1194,7 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 
 				if (!roomUsers[msg.receiverId]) {
-					this.logger.error('Skipping message due to missing receiver.');
+					this.logger.error(`Skipping message due to missing receiver ( ${ msg.receiverId } ).`);
 					return;
 				}
 
