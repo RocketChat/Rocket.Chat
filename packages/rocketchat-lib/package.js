@@ -203,6 +203,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/restartServer.js', 'server');
 	api.addFiles('server/methods/robotMethods.js', 'server');
 	api.addFiles('server/methods/saveSetting.js', 'server');
+	api.addFiles('server/methods/saveSettings.js', 'server');
 	api.addFiles('server/methods/sendInvitationEmail.js', 'server');
 	api.addFiles('server/methods/sendMessage.js', 'server');
 	api.addFiles('server/methods/sendSMTPTestEmail.js', 'server');
@@ -271,6 +272,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('startup/defaultRoomTypes.js');
 	api.addFiles('startup/index.js', 'server');
+
+	api.addFiles('server/startup/rateLimiter.js', 'server');
 
 	// EXPORT
 	api.export('RocketChat');

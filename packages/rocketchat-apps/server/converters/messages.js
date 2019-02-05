@@ -6,7 +6,7 @@ export class AppMessagesConverter {
 	}
 
 	convertById(msgId) {
-		const msg = RocketChat.models.Messages.getOneById(msgId);
+		const msg = RocketChat.models.Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
