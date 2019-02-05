@@ -5,10 +5,12 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { roomTypes as _roomTypes } from 'meteor/rocketchat:utils';
+import { fireGlobalEvent } from './fireGlobalEvent';
 import { promises } from 'meteor/rocketchat:promises';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Notifications } from 'meteor/rocketchat:notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, CachedCollectionManager } from 'meteor/rocketchat:models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from 'meteor/rocketchat:models';
+import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
 import _ from 'underscore';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
@@ -76,7 +78,7 @@ export const RoomManager = new function() {
 
 										callbacks.run('streamMessage', msg);
 
-										return window.fireGlobalEvent('new-message', msg);
+										return fireGlobalEvent('new-message', msg);
 									}
 								})
 							);

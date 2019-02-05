@@ -520,7 +520,7 @@ RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true
 			}));
 
 		return RocketChat.API.v1.success({
-			tokens: getPersonalAccessTokens(),
+			tokens: loginTokens ? getPersonalAccessTokens() : [],
 		});
 	},
 });

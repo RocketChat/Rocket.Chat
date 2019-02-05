@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
+import { Settings } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 
 const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
 	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-	const colors = RocketChat.models.Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1, editor: 1 } }).fetch().filter((color) => color && color.value);
+	const colors = Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1, editor: 1 } }).fetch().filter((color) => color && color.value);
 
 	if (!colors) {
 		return;
@@ -25,7 +27,7 @@ renderDynamicCssList();
 // 	changed: renderDynamicCssList
 // });
 
-RocketChat.models.Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1 } }).observe({
+Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1 } }).observe({
 	changed: renderDynamicCssList,
 });
 
@@ -57,7 +59,7 @@ if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
 	`);
 }
 
-RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
+settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 	const standardFavicons = `
 		<link rel="icon" sizes="16x16" type="image/png" href="assets/favicon_16.png" />
 		<link rel="icon" sizes="32x32" type="image/png" href="assets/favicon_32.png" />`;
@@ -71,13 +73,13 @@ RocketChat.settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 	}
 });
 
-RocketChat.settings.get('theme-color-sidebar-background', (key, value) => {
+settings.get('theme-color-sidebar-background', (key, value) => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key, `<meta name="msapplication-TileColor" content="${ escapedValue }" />` +
 						`<meta name="theme-color" content="${ escapedValue }" />`);
 });
 
-RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
+settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
 	if (value) {
 		Inject.rawModHtml(key, (html) => {
 			const script = `
@@ -94,7 +96,7 @@ RocketChat.settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) 
 	}
 });
 
-RocketChat.settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
+settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key,
 		`<title>${ escapedValue }</title>` +
@@ -102,34 +104,34 @@ RocketChat.settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
 		`<meta name="apple-mobile-web-app-title" content="${ escapedValue }">`);
 });
 
-RocketChat.settings.get('Meta_language', (key, value = '') => {
+settings.get('Meta_language', (key, value = '') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key,
 		`<meta http-equiv="content-language" content="${ escapedValue }">` +
 		`<meta name="language" content="${ escapedValue }">`);
 });
 
-RocketChat.settings.get('Meta_robots', (key, value = '') => {
+settings.get('Meta_robots', (key, value = '') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key, `<meta name="robots" content="${ escapedValue }">`);
 });
 
-RocketChat.settings.get('Meta_msvalidate01', (key, value = '') => {
+settings.get('Meta_msvalidate01', (key, value = '') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key, `<meta name="msvalidate.01" content="${ escapedValue }">`);
 });
 
-RocketChat.settings.get('Meta_google-site-verification', (key, value = '') => {
+settings.get('Meta_google-site-verification', (key, value = '') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key, `<meta name="google-site-verification" content="${ escapedValue }">`);
 });
 
-RocketChat.settings.get('Meta_fb_app_id', (key, value = '') => {
+settings.get('Meta_fb_app_id', (key, value = '') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key, `<meta property="fb:app_id" content="${ escapedValue }">`);
 });
 
-RocketChat.settings.get('Meta_custom', (key, value = '') => {
+settings.get('Meta_custom', (key, value = '') => {
 	Inject.rawHead(key, value);
 });
 

@@ -1,58 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { ReactiveDict } from 'meteor/reactive-dict';
 import { t } from 'meteor/rocketchat:utils';
-
-/*
-* RocketChat.settings holds all packages settings
-* @namespace RocketChat.settings
-*/
-
-RocketChat.settings.cachedCollection = new RocketChat.CachedCollection({
-	name: 'public-settings',
-	eventType: 'onAll',
-	userRelated: false,
-	listenChangesForLoggedUsersOnly: true,
-});
-
-RocketChat.settings.collection = RocketChat.settings.cachedCollection.collection;
-
-RocketChat.settings.cachedCollection.init();
-
-RocketChat.settings.dict = new ReactiveDict('settings');
-
-RocketChat.settings.get = function(_id) {
-	return RocketChat.settings.dict.get(_id);
-};
-
-RocketChat.settings.init = function() {
-	let initialLoad = true;
-	RocketChat.settings.collection.find().observe({
-		added(record) {
-			Meteor.settings[record._id] = record.value;
-			RocketChat.settings.dict.set(record._id, record.value);
-			RocketChat.settings.load(record._id, record.value, initialLoad);
-		},
-		changed(record) {
-			Meteor.settings[record._id] = record.value;
-			RocketChat.settings.dict.set(record._id, record.value);
-			RocketChat.settings.load(record._id, record.value, initialLoad);
-		},
-		removed(record) {
-			delete Meteor.settings[record._id];
-			RocketChat.settings.dict.set(record._id, null);
-			RocketChat.settings.load(record._id, null, initialLoad);
-		},
-	});
-	initialLoad = false;
-};
-
-RocketChat.settings.init();
+import { modal } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
-	if (Meteor.isCordova === true) {
-		return;
-	}
 	Tracker.autorun(function(c) {
 		const siteUrl = RocketChat.settings.get('Site_Url');
 		if (!siteUrl || (Meteor.userId() == null)) {

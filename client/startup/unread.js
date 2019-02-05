@@ -3,7 +3,8 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Favico } from 'meteor/rocketchat:favico';
-import { fireGlobalEvent, readMessage } from 'meteor/rocketchat:ui';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+import { RoomManager, menu, fireGlobalEvent, readMessage } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

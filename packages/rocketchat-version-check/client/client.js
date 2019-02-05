@@ -8,7 +8,12 @@ Meteor.startup(function() {
 		const user = Meteor.user();
 
 		if (user && Object.keys(user.banners || {}).length > 0) {
-			const firstBanner = Object.values(user.banners).sort((a, b) => b.priority - a.priority)[0];
+			const firstBanner = Object.values(user.banners).filter((b) => b.read !== true).sort((a, b) => b.priority - a.priority)[0];
+
+			if (!firstBanner) {
+				return;
+			}
+
 			firstBanner.textArguments = firstBanner.textArguments || [];
 
 			alerts.open({

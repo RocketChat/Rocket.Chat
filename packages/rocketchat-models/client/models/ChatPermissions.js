@@ -1,4 +1,4 @@
-import { CachedCollection } from './CachedCollection';
+import { CachedCollection } from 'meteor/rocketchat:ui-cached-collection';
 
 export const AuthzCachedCollection = new CachedCollection({
 	name: 'permissions',

@@ -1247,6 +1247,19 @@ describe('[Users]', function() {
 	describe('Personal Access Tokens', () => {
 		const tokenName = `${ Date.now() }token`;
 		describe('successful cases', () => {
+			describe('[/users.getPersonalAccessTokens]', () => {
+				it('should return an array when the user does not have personal tokens configured', (done) => {
+					request.get(api('users.getPersonalAccessTokens'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('tokens').and.to.be.an('array');
+						})
+						.end(done);
+				});
+			});
 			it('Grant necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', ['admin']).then(done));
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {

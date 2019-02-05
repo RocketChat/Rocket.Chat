@@ -32,7 +32,11 @@ Package.onUse(function(api) {
 	api.use('rocketchat:notifications');
 	api.use('rocketchat:promises');
 	api.use('rocketchat:ui-utils');
+	api.use('rocketchat:tooltip');
+	api.use('rocketchat:emoji');
+	api.use('rocketchat:ui');
 	api.use('rocketchat:accounts');
+	api.use('rocketchat:ui');
 	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
@@ -93,6 +97,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
+	api.addFiles('lib/emoji.js');
 
 	api.addFiles('server/lib/bugsnag.js', 'server');
 	api.addFiles('server/lib/metrics_import.js', 'server');
@@ -120,6 +125,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/saveCustomFields.js', 'server');
 	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
+	api.addFiles('server/functions/insertMessage.js', 'server');
 	api.addFiles('server/functions/settings.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
 	api.addFiles('server/functions/setUsername.js', 'server');
@@ -235,6 +241,9 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/Layout.js', 'client');
 	api.addFiles('client/lib/handleError.js', 'client');
 	api.addFiles('client/lib/authorization.js', 'client');
+	api.addFiles('client/lib/tooltip.js', 'client');
+	api.addFiles('client/lib/EmojiPicker.js', 'client');
+	api.addFiles('client/lib/ui-buttons.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');
@@ -262,6 +271,8 @@ Package.onUse(function(api) {
 
 	api.addFiles('startup/defaultRoomTypes.js');
 	api.addFiles('startup/index.js', 'server');
+
+	api.addFiles('server/startup/rateLimiter.js', 'server');
 
 	// EXPORT
 	api.export('RocketChat');

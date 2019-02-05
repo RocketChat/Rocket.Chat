@@ -26,6 +26,20 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setE2eKeyId(_id, e2eKeyId, options) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				e2eKeyId,
+			},
+		};
+
+		return this.update(query, update, options);
+	}
+
 	findOneByImportId(_id, options) {
 		const query = { importIds: _id };
 
@@ -806,4 +820,4 @@ export class Rooms extends Base {
 	}
 }
 
-export default new Rooms('rooms', true);
+export default new Rooms('room', true);

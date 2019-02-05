@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:version',
+		'rocketchat:utils',
 		'logging',
 		'check',
 		'mongo',

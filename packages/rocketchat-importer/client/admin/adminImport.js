@@ -19,6 +19,10 @@ Template.adminImport.helpers({
 });
 
 Template.adminImport.events({
+	'click .import-history'() {
+		FlowRouter.go('/admin/import/history');
+	},
+
 	'click .start-import'() {
 		const importer = this;
 

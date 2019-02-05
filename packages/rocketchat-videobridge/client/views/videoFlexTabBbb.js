@@ -5,11 +5,7 @@ import { popout } from 'meteor/rocketchat:ui';
 
 Template.videoFlexTabBbb.helpers({
 	openInNewWindow() {
-		if (Meteor.isCordova) {
-			return true;
-		} else {
-			return RocketChat.settings.get('Jitsi_Open_New_Window');
-		}
+		return RocketChat.settings.get('Jitsi_Open_New_Window');
 	},
 
 	live() {

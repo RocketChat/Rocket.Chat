@@ -136,7 +136,7 @@ Meteor.startup(async function() {
 	const { chatMessages } = await import('meteor/rocketchat:ui');
 	MessageAction.addButton({
 		id: 'reply-message',
-		icon: 'message',
+		icon: 'reply',
 		label: 'Reply',
 		context: ['message', 'message-mobile'],
 		action() {
@@ -251,11 +251,7 @@ Meteor.startup(async function() {
 		async action(event) {
 			const message = this._arguments[1];
 			const permalink = await MessageAction.getPermaLink(message._id);
-			if (Meteor.isCordova) {
-				cordova.plugins.clipboard.copy(permalink);
-			} else {
-				$(event.currentTarget).attr('data-clipboard-text', permalink);
-			}
+			$(event.currentTarget).attr('data-clipboard-text', permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
@@ -277,11 +273,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile'],
 		action(event) {
 			const message = this._arguments[1].msg;
-			if (Meteor.isCordova) {
-				cordova.plugins.clipboard.copy(message);
-			} else {
-				$(event.currentTarget).attr('data-clipboard-text', message);
-			}
+			$(event.currentTarget).attr('data-clipboard-text', message);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {

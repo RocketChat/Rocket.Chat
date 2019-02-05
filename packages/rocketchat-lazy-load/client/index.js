@@ -7,17 +7,7 @@ export const fixCordova = function(url) {
 	if (url && url.indexOf('data:image') === 0) {
 		return url;
 	}
-	if (Meteor.isCordova && (url && url[0] === '/')) {
-		url = Meteor.absoluteUrl().replace(/\/$/, '') + url;
-		const query = `rc_uid=${ Meteor.userId() }&rc_token=${ Meteor._localStorage.getItem(
-			'Meteor.loginToken'
-		) }`;
-		if (url.indexOf('?') === -1) {
-			url = `${ url }?${ query }`;
-		} else {
-			url = `${ url }&${ query }`;
-		}
-	}
+
 	if (Meteor.settings.public.sandstorm || url.match(/^(https?:)?\/\//i)) {
 		return url;
 	} else if (navigator.userAgent.indexOf('Electron') > -1) {

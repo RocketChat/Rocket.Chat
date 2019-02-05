@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:settings',
 		'rocketchat:callbacks',
+		'rocketchat:ui-cached-collection',
 		'konecty:multiple-instances-status',
 	]);
 	api.mainModule('client/index.js', 'client');

@@ -1,4 +1,5 @@
 import { t } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
 
 RocketChat.MessageAction.addButton({
 	id: 'receipt-detail',

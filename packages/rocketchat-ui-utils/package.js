@@ -9,6 +9,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'http',
 		'templating',
 		'kadira:flow-router',
 		'kadira:blaze-layout',
@@ -19,6 +20,8 @@ Package.onUse(function(api) {
 		'rocketchat:streamer',
 		'rocketchat:models',
 		'rocketchat:lazy-load',
+		'rocketchat:emoji',
 	]);
 	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

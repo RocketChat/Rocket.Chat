@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ansispan } from '../ansispan';
 import { stdout } from '../viewLogs';
+import { readMessage } from 'meteor/rocketchat:ui-utils';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 import moment from 'moment';
 
@@ -12,7 +14,7 @@ Template.viewLogs.onCreated(function() {
 
 Template.viewLogs.helpers({
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('view-logs');
+		return hasAllPermission('view-logs');
 	},
 	logs() {
 		return stdout.find({}, {

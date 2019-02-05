@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
+		'rocketchat:utils',
 		'rocketchat:logger',
 		'rocketchat:file-upload',
 	]);

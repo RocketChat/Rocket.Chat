@@ -1,3 +1,1 @@
-import { SideNav as _SideNav } from 'meteor/rocketchat:ui-utils';
-
-SideNav = _SideNav;
+export { SideNav } from 'meteor/rocketchat:ui-utils';

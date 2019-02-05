@@ -14,7 +14,6 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
 		'rocketchat:callbacks',
 		'rocketchat:authorization',
 		'rocketchat:settings',

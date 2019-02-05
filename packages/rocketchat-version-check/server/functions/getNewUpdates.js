@@ -3,7 +3,6 @@ import { HTTP } from 'meteor/http';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
 import { MongoInternals } from 'meteor/mongo';
-// import checkUpdate from '../checkUpdate';
 
 export default () => {
 	try {

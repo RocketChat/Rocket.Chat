@@ -11,7 +11,7 @@ import './views/permissionsRole';
 
 export {
 	hasAllPermission,
-	hasPermission,
 	hasAtLeastOnePermission,
 	hasRole,
+	hasPermission,
 };
