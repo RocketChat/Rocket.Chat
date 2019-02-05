@@ -9,8 +9,9 @@ Meteor.startup(() => {
 	});
 });
 
+/* eslint no-unused-vars: ["error", { "args": "none" }] */
 Meteor.methods({
-	sendInvitationEmail(emails) {
+	sendInvitationEmail(emails, language) {
 		check(emails, [String]);
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

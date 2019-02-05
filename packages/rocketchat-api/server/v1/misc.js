@@ -191,7 +191,7 @@ RocketChat.API.v1.addRoute('invite.email', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Invalid email address');
 		}
 
-		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email]));
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email], this.bodyParams.language));
 		if (result.indexOf(this.bodyParams.email) >= 0) {
 			return RocketChat.API.v1.success();
 		} else {
@@ -210,7 +210,7 @@ RocketChat.API.v1.addRoute('invite.sms', { authRequired: true }, {
 			return RocketChat.API.v1.failure('Invalid number');
 		}
 
-		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', [phone]));
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', [phone], this.bodyParams.language));
 		if (result.indexOf(phone) >= 0) {
 			return RocketChat.API.v1.success();
 		} else {

@@ -3,8 +3,10 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
+const supportedLanguages = ['en'];
+
 Meteor.methods({
-	sendInvitationSMS(phones) {
+	sendInvitationSMS(phones, language) {
 		const twilioService = RocketChat.SMS.getService('twilio');
 		if (!RocketChat.SMS.enabled || !twilioService) {
 			throw new Meteor.Error('error-twilio-not-active', 'Twilio service not active', {
@@ -43,7 +45,11 @@ Meteor.methods({
 		if (RocketChat.settings.get('Invitation_SMS_Customized')) {
 			body = RocketChat.settings.get('Invitation_SMS_Customized_Body');
 		} else {
-			const lng = user.language || RocketChat.settings.get('language') || 'en';
+
+			let lng = user.language || RocketChat.settings.get('language') || 'en';
+			if (language in supportedLanguages) {
+				lng = language;
+			}
 			body = TAPi18n.__('Invitation_SMS_Default_Body', {
 				lng,
 			});
