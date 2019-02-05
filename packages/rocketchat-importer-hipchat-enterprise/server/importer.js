@@ -953,7 +953,7 @@ export class HipChatEnterpriseImporter extends Base {
 				return;
 			}
 
-			if (!RocketChat.models.Subscriptions.find({ rid: room._id, 'u._id': user._id }, { limit: 1 }).count() === 0) {
+			if (RocketChat.models.Subscriptions.find({ rid: room._id, 'u._id': user._id }, { limit: 1 }).count() === 0) {
 				this.logger.info(`Creating user's subscription to room ${ room._id }, rocket.chat user is ${ user._id }, hipchat user is ${ hipchatUserId }`);
 				RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, extra);
 			}
