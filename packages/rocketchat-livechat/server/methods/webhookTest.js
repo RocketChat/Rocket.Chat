@@ -1,5 +1,6 @@
-/* globals HTTP */
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { HTTP } from 'meteor/http';
 
 const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
 	HTTP.post(url, options, function(err, res) {

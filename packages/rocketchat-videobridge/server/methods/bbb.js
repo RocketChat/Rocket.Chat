@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import BigBlueButtonApi from 'meteor/rocketchat:bigbluebutton';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 

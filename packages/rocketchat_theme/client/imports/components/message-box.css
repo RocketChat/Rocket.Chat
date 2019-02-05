@@ -7,7 +7,7 @@
 	font-size: var(--message-box-text-size);
 
 	&--embedded {
-		padding: 12px;
+		padding: 24px 12px 12px;
 	}
 
 	&__toolbar-markdown {
@@ -145,7 +145,7 @@
 
 			display: none;
 
-			color: red;
+			color: #2db730;
 
 			&.active {
 				display: flex;

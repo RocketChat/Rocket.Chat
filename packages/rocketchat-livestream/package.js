@@ -8,10 +8,12 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:ui',
 		'templating',
 	]);
+	api.addFiles('client/styles/liveStreamTab.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 	Npm.depends({

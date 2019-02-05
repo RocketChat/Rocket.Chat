@@ -1,6 +1,6 @@
-/* globals openRoom */
 import { Meteor } from 'meteor/meteor';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../RoomTypeConfig';
+import { ChatRoom } from 'meteor/rocketchat:models';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {

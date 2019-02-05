@@ -1,2 +1,2 @@
-import '../lib/common';
 import './cors';
+import '../lib/common';

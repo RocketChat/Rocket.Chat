@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 
 RocketChat.saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalance) {

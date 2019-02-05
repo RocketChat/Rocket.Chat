@@ -7,7 +7,10 @@ import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { renderEmoji } from 'meteor/rocketchat:emoji';
-import { renderMessageBody } from './renderMessageBody';
+import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -33,7 +36,8 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	const pdfjsLib = await import('pdfjs-dist');
 	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }node_modules/pdfjs-dist/build/pdf.worker.js`;
 
-	const loader = document.getElementById('js-loading-${canvasId}');
+	const loader = document.getElementById(`js-loading-${ canvasId }`);
+
 	if (loader) {
 		loader.style.display = 'block';
 	}
@@ -45,10 +49,10 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	const context = canvas.getContext('2d');
 	canvas.height = viewport.height;
 	canvas.width = viewport.width;
-	page.render({
+	await page.render({
 		canvasContext: context,
 		viewport,
-	});
+	}).promise;
 
 	if (loader) {
 		loader.style.display = 'none';
@@ -89,7 +93,6 @@ Template.message.helpers({
 		if (!this.u || !this.u._id) {
 			return [];
 		}
-		/* globals UserRoles RoomRoles */
 		const userRoles = UserRoles.findOne(this.u._id);
 		const roomRoles = RoomRoles.findOne({
 			'u._id': this.u._id,

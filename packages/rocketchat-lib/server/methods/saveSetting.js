@@ -1,4 +1,3 @@
-/* eslint new-cap: 0 */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 

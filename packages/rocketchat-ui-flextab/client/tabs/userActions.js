@@ -1,11 +1,13 @@
-/* globals RoomRoles, WebRTC*/
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { WebRTC } from 'meteor/rocketchat:webrtc';
+import { modal, ChatRoom, ChatSubscription, RoomRoles } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import toastr from 'toastr';
-
 
 export const getActions = function({ user, directActions, hideAdminControls }) {
 

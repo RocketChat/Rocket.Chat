@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import Webdav from 'webdav';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { createClient } from 'webdav';
 
 Meteor.methods({
 	async getFileFromWebdav(accountId, file) {
@@ -14,10 +15,12 @@ Meteor.methods({
 		if (!account) {
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'addNewWebdavAccount' });
 		}
-		const client = new Webdav(
+		const client = createClient(
 			account.server_url,
-			account.username,
-			account.password
+			{
+				username: account.username,
+				password: account.password,
+			}
 		);
 		try {
 			const fileContent = await client.getFileContents(file.filename);

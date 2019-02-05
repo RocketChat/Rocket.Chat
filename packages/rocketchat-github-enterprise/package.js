@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'rocketchat:custom-oauth',
 		'templating',
 	]);
+	api.addFiles('client/github-enterprise-login-button.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

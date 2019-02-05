@@ -8,9 +8,15 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
+		'rocketchat:custom-sounds',
+		'rocketchat:settings',
+		'rocketchat:ui',
 		'templating',
 	]);
+	api.addFiles('client/stylesheets/pushNotifications.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

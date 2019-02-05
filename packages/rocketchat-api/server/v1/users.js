@@ -130,7 +130,7 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 
 		user = result[0];
 		if (fields.userRooms === 1 && RocketChat.authz.hasPermission(this.userId, 'view-other-user-channels')) {
-			user.rooms = RocketChat.models.Subscriptions.findByUserId(this.userId, {
+			user.rooms = RocketChat.models.Subscriptions.findByUserId(user._id, {
 				fields: {
 					rid: 1,
 					name: 1,
@@ -422,7 +422,6 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});
-
 		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
 		const userData = {
 			_id: userId,
@@ -438,13 +437,23 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, userData));
+		const user = RocketChat.models.Users.findOneById(userId, {
+			fields: {
+				'settings.preferences': 1,
+				language: 1,
+			},
+		});
 
 		return RocketChat.API.v1.success({
-			user: RocketChat.models.Users.findOneById(userId, {
-				fields: {
-					'settings.preferences': 1,
+			user: {
+				_id: user._id,
+				settings: {
+					preferences: {
+						...user.settings.preferences,
+						language: user.language,
+					},
 				},
-			}),
+			},
 		});
 	},
 });
@@ -511,7 +520,7 @@ RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true
 			}));
 
 		return RocketChat.API.v1.success({
-			tokens: getPersonalAccessTokens(),
+			tokens: loginTokens ? getPersonalAccessTokens() : [],
 		});
 	},
 });

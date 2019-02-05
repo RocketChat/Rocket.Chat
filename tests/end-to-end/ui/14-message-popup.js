@@ -1,6 +1,3 @@
-/* eslint-env mocha */
-/* globals Meteor */
-
 import { adminEmail, adminPassword } from '../../data/user.js';
 
 import {

@@ -1,16 +1,18 @@
-/* globals Slingshot, FileUpload */
 import _ from 'underscore';
 import { Random } from 'meteor/random';
+import { Slingshot } from 'meteor/edgee:slingshot';
+import { settings } from 'meteor/rocketchat:settings';
+import { Uploads } from 'meteor/rocketchat:models';
 
 const configureSlingshot = _.debounce(() => {
-	const type = RocketChat.settings.get('FileUpload_Storage_Type');
-	const bucket = RocketChat.settings.get('FileUpload_S3_Bucket');
-	const acl = RocketChat.settings.get('FileUpload_S3_Acl');
-	const accessKey = RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId');
-	const secretKey = RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey');
-	const cdn = RocketChat.settings.get('FileUpload_S3_CDN');
-	const region = RocketChat.settings.get('FileUpload_S3_Region');
-	const bucketUrl = RocketChat.settings.get('FileUpload_S3_BucketURL');
+	const type = settings.get('FileUpload_Storage_Type');
+	const bucket = settings.get('FileUpload_S3_Bucket');
+	const acl = settings.get('FileUpload_S3_Acl');
+	const accessKey = settings.get('FileUpload_S3_AWSAccessKeyId');
+	const secretKey = settings.get('FileUpload_S3_AWSSecretAccessKey');
+	const cdn = settings.get('FileUpload_S3_CDN');
+	const region = settings.get('FileUpload_S3_Region');
+	const bucketUrl = settings.get('FileUpload_S3_BucketURL');
 
 	delete Slingshot._directives['rocketchat-uploads'];
 
@@ -22,7 +24,7 @@ const configureSlingshot = _.debounce(() => {
 			bucket,
 			key(file, metaContext) {
 				const id = Random.id();
-				const path = `${ RocketChat.settings.get('uniqueID') }/uploads/${ metaContext.rid }/${ this.userId }/${ id }`;
+				const path = `${ settings.get('uniqueID') }/uploads/${ metaContext.rid }/${ this.userId }/${ id }`;
 
 				const upload = {
 					_id: id,
@@ -32,7 +34,7 @@ const configureSlingshot = _.debounce(() => {
 					},
 				};
 
-				RocketChat.models.Uploads.insertFileInit(this.userId, 'AmazonS3:Uploads', file, upload);
+				Uploads.insertFileInit(this.userId, 'AmazonS3:Uploads', file, upload);
 
 				return path;
 			},
@@ -64,15 +66,15 @@ const configureSlingshot = _.debounce(() => {
 	}
 }, 500);
 
-RocketChat.settings.get('FileUpload_Storage_Type', configureSlingshot);
-RocketChat.settings.get(/^FileUpload_S3_/, configureSlingshot);
+settings.get('FileUpload_Storage_Type', configureSlingshot);
+settings.get(/^FileUpload_S3_/, configureSlingshot);
 
 
 const createGoogleStorageDirective = _.debounce(() => {
-	const type = RocketChat.settings.get('FileUpload_Storage_Type');
-	const bucket = RocketChat.settings.get('FileUpload_GoogleStorage_Bucket');
-	const accessId = RocketChat.settings.get('FileUpload_GoogleStorage_AccessId');
-	const secret = RocketChat.settings.get('FileUpload_GoogleStorage_Secret');
+	const type = settings.get('FileUpload_Storage_Type');
+	const bucket = settings.get('FileUpload_GoogleStorage_Bucket');
+	const accessId = settings.get('FileUpload_GoogleStorage_AccessId');
+	const secret = settings.get('FileUpload_GoogleStorage_Secret');
 
 	delete Slingshot._directives['rocketchat-uploads-gs'];
 
@@ -87,7 +89,7 @@ const createGoogleStorageDirective = _.debounce(() => {
 			GoogleSecretKey: secret,
 			key(file, metaContext) {
 				const id = Random.id();
-				const path = `${ RocketChat.settings.get('uniqueID') }/uploads/${ metaContext.rid }/${ this.userId }/${ id }`;
+				const path = `${ settings.get('uniqueID') }/uploads/${ metaContext.rid }/${ this.userId }/${ id }`;
 
 				const upload = {
 					_id: id,
@@ -97,7 +99,7 @@ const createGoogleStorageDirective = _.debounce(() => {
 					},
 				};
 
-				RocketChat.models.Uploads.insertFileInit(this.userId, 'GoogleCloudStorage:Uploads', file, upload);
+				Uploads.insertFileInit(this.userId, 'GoogleCloudStorage:Uploads', file, upload);
 
 				return path;
 			},
@@ -111,5 +113,5 @@ const createGoogleStorageDirective = _.debounce(() => {
 	}
 }, 500);
 
-RocketChat.settings.get('FileUpload_Storage_Type', createGoogleStorageDirective);
-RocketChat.settings.get(/^FileUpload_GoogleStorage_/, createGoogleStorageDirective);
+settings.get('FileUpload_Storage_Type', createGoogleStorageDirective);
+settings.get(/^FileUpload_GoogleStorage_/, createGoogleStorageDirective);

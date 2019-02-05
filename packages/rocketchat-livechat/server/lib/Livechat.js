@@ -1,8 +1,10 @@
-/* globals HTTP */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -198,7 +200,9 @@ RocketChat.Livechat = {
 					username,
 				};
 
-				if (this.connection) {
+				const storeHttpHeaderData = RocketChat.settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations');
+
+				if (this.connection && storeHttpHeaderData) {
 					userData.userAgent = this.connection.httpHeaders['user-agent'];
 					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.httpHeaders['x-forwarded-for'] || this.connection.clientAddress;
 					userData.host = this.connection.httpHeaders.host;
@@ -363,7 +367,9 @@ RocketChat.Livechat = {
 			'Livechat_conversation_finished_message',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
-
+			'Livechat_registration_form_message',
+			'Livechat_force_accept_data_processing_consent',
+			'Livechat_data_processing_consent_text',
 		]).forEach((setting) => {
 			settings[setting._id] = setting.value;
 		});
@@ -371,6 +377,8 @@ RocketChat.Livechat = {
 		RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
 			settings[key] = value;
 		});
+
+		settings.Livechat_Show_Connecting = this.showConnecting();
 
 		return settings;
 	},
@@ -437,11 +445,13 @@ RocketChat.Livechat = {
 		let agent;
 
 		if (transferData.userId) {
-			const user = RocketChat.models.Users.findOneById(transferData.userId);
-			agent = {
-				agentId: user._id,
-				username: user.username,
-			};
+			const user = RocketChat.models.Users.findOneOnlineAgentById(transferData.userId);
+			if (!user) {
+				return false;
+			}
+
+			const { _id: agentId, username } = user;
+			agent = Object.assign({}, { agentId, username });
 		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
 			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
 		} else {
@@ -711,6 +721,35 @@ RocketChat.Livechat = {
 		return RocketChat.authz.removeUserFromRoles(user._id, 'livechat-manager');
 	},
 
+	removeGuest(_id) {
+		check(_id, String);
+
+		const guest = LivechatVisitors.findById(_id);
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:removeGuest' });
+		}
+
+		this.cleanGuestHistory(_id);
+		return LivechatVisitors.removeById(_id);
+	},
+
+	cleanGuestHistory(_id) {
+		const guest = LivechatVisitors.findById(_id);
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-guest', 'Invalid guest', { method: 'livechat:cleanGuestHistory' });
+		}
+
+		const { token } = guest;
+
+		RocketChat.models.Rooms.findByVisitorToken(token).forEach((room) => {
+			RocketChat.models.Messages.removeFilesByRoomId(room._id);
+			RocketChat.models.Messages.removeByRoomId(room._id);
+		});
+
+		RocketChat.models.Subscriptions.removeByVisitorToken(token);
+		RocketChat.models.Rooms.removeByVisitorToken(token);
+	},
+
 	saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
 
@@ -826,6 +865,11 @@ RocketChat.Livechat = {
 		return true;
 	},
 
+	notifyGuestStatusChanged(token, status) {
+		RocketChat.models.LivechatInquiry.updateVisitorStatus(token, status);
+		RocketChat.models.Rooms.updateVisitorStatus(token, status);
+	},
+
 	sendOfflineMessage(data = {}) {
 		if (!RocketChat.settings.get('Livechat_display_offline_form')) {
 			return false;
@@ -869,6 +913,15 @@ RocketChat.Livechat = {
 		});
 
 		return true;
+	},
+
+	notifyAgentStatusChanged(userId, status) {
+		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
+			RocketChat.Livechat.stream.emit(room._id, {
+				type: 'agentStatus',
+				status,
+			});
+		});
 	},
 };
 

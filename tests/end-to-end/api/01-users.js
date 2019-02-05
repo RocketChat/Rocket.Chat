@@ -1,12 +1,7 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import crypto from 'crypto';
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
 	apiEmail,
@@ -17,30 +12,7 @@ import {
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
-
-const updatePermission = (permission, roles) => new Promise((resolve) => {
-	request.post(api('permissions.update'))
-		.set(credentials)
-		.send({ permissions: [{ _id: permission, roles }] })
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			expect(res.body).to.have.property('success', true);
-		})
-		.end(resolve);
-});
-
-const updateSetting = (setting, value) => new Promise((resolve) => {
-	request.post(`/api/v1/settings/${ setting }`)
-		.set(credentials)
-		.send({ value })
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.expect((res) => {
-			expect(res.body).to.have.property('success', true);
-		})
-		.end(resolve);
-});
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('[Users]', function() {
 	this.retries(0);
@@ -989,7 +961,7 @@ describe('[Users]', function() {
 			});
 		});
 
-		describe('Testing if the returned token is valid:', (done) => {
+		describe('Testing if the returned token is valid:', () => {
 			it('should return 200', (done) => request.post(api('users.createToken'))
 				.set(credentials)
 				.send({ username: user.username })
@@ -1009,15 +981,39 @@ describe('[Users]', function() {
 
 	describe('[/users.setPreferences]', () => {
 		it('should set some preferences by user when execute successfully', (done) => {
-			preferences.userId = credentials['X-User-Id'];
+			const userPreferences = {
+				userId: credentials['X-User-Id'],
+				data: {
+					...preferences.data,
+				},
+			};
 			request.post(api('users.setPreferences'))
 				.set(credentials)
-				.send(preferences)
+				.send(userPreferences)
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					expect(res.body.user.settings.preferences).to.be.eql(preferences.data);
+					expect(Object.keys(res.body.user.settings.preferences)).to.include.members(Object.keys(userPreferences.data));
 					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should set some preferences and language preference by user when execute successfully', (done) => {
+			const userPreferences = {
+				userId: credentials['X-User-Id'],
+				data: {
+					...preferences.data,
+					language: 'en',
+				},
+			};
+			request.post(api('users.setPreferences'))
+				.set(credentials)
+				.send(userPreferences)
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.user.settings.preferences).to.have.property('language', 'en');
 				})
 				.end(done);
 		});
@@ -1025,12 +1021,16 @@ describe('[Users]', function() {
 
 	describe('[/users.getPreferences]', () => {
 		it('should return all preferences when execute successfully', (done) => {
+			const userPreferences = {
+				...preferences.data,
+				language: 'en',
+			};
 			request.get(api('users.getPreferences'))
 				.set(credentials)
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					expect(res.body.preferences).to.be.eql(preferences.data);
+					expect(res.body.preferences).to.be.eql(userPreferences);
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
@@ -1247,6 +1247,19 @@ describe('[Users]', function() {
 	describe('Personal Access Tokens', () => {
 		const tokenName = `${ Date.now() }token`;
 		describe('successful cases', () => {
+			describe('[/users.getPersonalAccessTokens]', () => {
+				it('should return an array when the user does not have personal tokens configured', (done) => {
+					request.get(api('users.getPersonalAccessTokens'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('tokens').and.to.be.an('array');
+						})
+						.end(done);
+				});
+			});
 			it('Grant necessary permission "create-personal-accss-tokens" to user', (done) => updatePermission('create-personal-access-tokens', ['admin']).then(done));
 			describe('[/users.generatePersonalAccessToken]', () => {
 				it('should return a personal access token to user', (done) => {

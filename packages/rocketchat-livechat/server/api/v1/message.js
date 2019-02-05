@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest, findRoom } from '../lib/livechat';
 
@@ -45,7 +46,7 @@ RocketChat.API.v1.addRoute('livechat/message', {
 
 			const result = RocketChat.Livechat.sendMessage(sendMessage);
 			if (result) {
-				const message = { _id: result._id, msg: result.msg, u: result.u, ts: result.ts };
+				const message = { _id: result._id, rid: result.rid, msg: result.msg, u: result.u, ts: result.ts };
 				return RocketChat.API.v1.success({ message });
 			}
 
@@ -93,7 +94,7 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 			if (result) {
 				const data = RocketChat.models.Messages.findOneById(_id);
 				return RocketChat.API.v1.success({
-					message: { _id: data._id, msg: data.msg, u: data.u, ts: data.ts },
+					message: { _id: data._id, rid: data.rid, msg: data.msg, u: data.u, ts: data.ts },
 				});
 			}
 

@@ -1,9 +1,9 @@
-/* globals SystemLogger */
-
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { RocketChatFile } from 'meteor/rocketchat:file';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import fs from 'fs';
 import path from 'path';
 
@@ -202,11 +202,15 @@ RocketChat.Migrations.add({
 				}).then(() => {
 					const avatarsFiles = new Mongo.Collection('avatars.files');
 					const avatarsChunks = new Mongo.Collection('avatars.chunks');
-					avatarsFiles.rawCollection().drop();
-					avatarsChunks.rawCollection().drop();
+					try {
+						avatarsFiles.rawCollection().drop();
+						avatarsChunks.rawCollection().drop();
+					} catch (error) {
+						console.warn('Migration Error: avatars.files and avatars.chunks collections may not exist!');
+					}
 					RocketChat.models.Settings.remove({ _id: 'Accounts_AvatarStoreType' });
 					RocketChat.models.Settings.remove({ _id: 'Accounts_AvatarStorePath' });
-				});
+				}).catch((error) => console.error(error));
 			}, 1000);
 		});
 	},

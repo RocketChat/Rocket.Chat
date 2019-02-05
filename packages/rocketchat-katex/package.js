@@ -6,14 +6,12 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('templating');
-	api.use('rocketchat:lib');
-
-	api.addFiles('settings.js', 'server');
-	api.addFiles('katex.js');
+	api.use([
+		'ecmascript',
+		'templating',
+		'rocketchat:lib',
+	]);
 	api.addFiles('client/style.css', 'client');
-
 	const katexPath = 'node_modules/katex/dist/';
 	api.addFiles(`${ katexPath }katex.min.css`, 'client');
 
@@ -24,6 +22,7 @@ Package.onUse(function(api) {
 	const fontFiles = _.map(fs.readdirSync(`packages/rocketchat-katex/${ fontsPath }`), function(filename) {
 		return fontsPath + filename;
 	});
-
 	api.addAssets(fontFiles, 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

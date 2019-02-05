@@ -2241,6 +2241,8 @@ rc-old select,
 		& > button.mark-read {
 			float: right;
 
+			line-height: inherit;
+
 			&:hover {
 				cursor: pointer;
 			}
@@ -2253,8 +2255,12 @@ rc-old select,
 		& > button.jump-to {
 			float: left;
 
+			line-height: inherit;
+
 			& .jump-to-small {
 				display: none;
+
+				line-height: inherit;
 			}
 
 			&:hover {
@@ -3085,6 +3091,7 @@ rc-old select,
 
 		margin-right: 5px;
 
+		font-family: inherit;
 		font-size: inherit;
 
 		font-weight: 600;

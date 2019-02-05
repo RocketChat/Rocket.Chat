@@ -5,6 +5,9 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoomManager } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);
@@ -302,7 +305,7 @@ Template.messagePopupConfig.helpers({
 
 				// Get users from Server
 				if (items.length < 5 && filterText !== '') {
-					fetchUsersFromServerDelayed(filterText, items, cb, RocketChat.openedRoom);
+					fetchUsersFromServerDelayed(filterText, items, cb, RoomManager.openedRoom);
 				}
 
 				const all = {
@@ -363,7 +366,7 @@ Template.messagePopupConfig.helpers({
 				}).fetch();
 
 				if (records.length < 5 && filter && filter.trim() !== '') {
-					fetchRoomsFromServerDelayed(filter, records, cb, RocketChat.openedRoom);
+					fetchRoomsFromServerDelayed(filter, records, cb, RoomManager.openedRoom);
 				}
 				return records;
 			},

@@ -1,9 +1,12 @@
-/* globals WebRTC popover isRtl */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { ChatRoom, RoomManager, popover } from 'meteor/rocketchat:ui';
+import { t, isRtl } from 'meteor/rocketchat:utils';
+import { WebRTC } from 'meteor/rocketchat:webrtc';
 import _ from 'underscore';
 import { getActions } from './userActions';
 

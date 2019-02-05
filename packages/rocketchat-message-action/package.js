@@ -11,5 +11,6 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 	]);
+	api.addFiles('client/stylesheets/messageAction.css', 'client');
 	api.mainModule('client/index.js', 'client');
 });

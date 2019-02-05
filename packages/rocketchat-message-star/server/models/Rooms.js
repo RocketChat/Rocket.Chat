@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Rooms.updateLastMessageStar = function(roomId, userId, starred) {
 	let update;
 	const query = { _id: roomId };

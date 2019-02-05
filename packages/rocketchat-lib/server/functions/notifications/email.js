@@ -145,7 +145,7 @@ export function shouldNotifyEmail({
 
 	// no user or room preference
 	if (emailNotifications == null) {
-		if (disableAllMessageNotifications) {
+		if (disableAllMessageNotifications && !isHighlighted && !hasMentionToUser) {
 			return false;
 		}
 

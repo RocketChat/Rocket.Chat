@@ -1,4 +1,5 @@
 import { TAPi18n } from 'meteor/tap:i18n';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, filesOnly = false, fromUsers = [] }) {
 	const gt = inclusive ? '$gte' : '$gt';

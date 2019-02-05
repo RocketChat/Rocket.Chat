@@ -1,6 +1,7 @@
-/* globals getHttpBridge, waitPromise */
-
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { getHttpBridge, waitPromise } from './lib';
+
 RocketChat.Sandstorm.offerUiView = function() {};
 
 if (process.env.SANDSTORM === '1') {

@@ -8,11 +8,13 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'tracker',
 		'reactive-var',
 		'templating',
 	]);
+	api.addFiles('client/stylesheets/otr.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
