@@ -1,7 +1,7 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users, Rooms } from 'meteor/rocketchat:models';
 
 export default function handleJoinedChannel(args) {
-	const user = RocketChat.models.Users.findOne({
+	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
 
@@ -9,11 +9,11 @@ export default function handleJoinedChannel(args) {
 		throw new Error(`Could not find a user with nick ${ args.nick }`);
 	}
 
-	let room = RocketChat.models.Rooms.findOneByName(args.roomName);
+	let room = Rooms.findOneByName(args.roomName);
 
 	if (!room) {
 		const createdRoom = RocketChat.createRoom('c', args.roomName, user.username, []);
-		room = RocketChat.models.Rooms.findOne({ _id: createdRoom.rid });
+		room = Rooms.findOne({ _id: createdRoom.rid });
 
 		this.log(`${ user.username } created room ${ args.roomName }`);
 	} else {

@@ -1,7 +1,7 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users, Rooms } from 'meteor/rocketchat:models';
 
 export default function handleLeftChannel(args) {
-	const user = RocketChat.models.Users.findOne({
+	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
 
@@ -9,7 +9,7 @@ export default function handleLeftChannel(args) {
 		throw new Error(`Could not find a user with nick ${ args.nick }`);
 	}
 
-	const room = RocketChat.models.Rooms.findOneByName(args.roomName);
+	const room = Rooms.findOneByName(args.roomName);
 
 	if (!room) {
 		throw new Error(`Could not find a room with name ${ args.roomName }`);
