@@ -2,7 +2,8 @@
 * Mentions is a named function that will process Mentions
 * @param {Object} message - The message object
 */
-import Mentions from '../Mentions';
+import Mentions from '../lib/Mentions';
+
 export default class MentionsServer extends Mentions {
 	constructor(args) {
 		super(args);
@@ -38,7 +39,7 @@ export default class MentionsServer extends Mentions {
 	get messageMaxAll() {
 		return typeof this._messageMaxAll === 'function' ? this._messageMaxAll() : this._messageMaxAll;
 	}
-	getUsersByMentions({msg, rid, u: sender}) {
+	getUsersByMentions({ msg, rid, u: sender }) {
 		let mentions = this.getUserMentions(msg);
 		const mentionsAll = [];
 		const userMentions = [];
@@ -53,15 +54,15 @@ export default class MentionsServer extends Mentions {
 			}
 			mentionsAll.push({
 				_id: mention,
-				username: mention
+				username: mention,
 			});
 		});
 		mentions = userMentions.length ? this.getUsers(userMentions) : [];
 		return [...mentionsAll, ...mentions];
 	}
-	getChannelbyMentions({msg}) {
+	getChannelbyMentions({ msg }) {
 		const channels = this.getChannelMentions(msg);
-		return this.getChannels(channels.map(c => c.trim().substr(1)));
+		return this.getChannels(channels.map((c) => c.trim().substr(1)));
 	}
 	execute(message) {
 		const mentionsAll = this.getUsersByMentions(message);

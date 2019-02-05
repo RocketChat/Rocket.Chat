@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /*
 * Unmute is a named function that will replace /unmute commands
@@ -21,8 +26,8 @@ RocketChat.slashCommands.add('unmute', function Unmute(command, params, item) {
 			ts: new Date,
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, user.language)
+				sprintf: [username],
+			}, user.language),
 		});
 	}
 
@@ -34,15 +39,15 @@ RocketChat.slashCommands.add('unmute', function Unmute(command, params, item) {
 			ts: new Date,
 			msg: TAPi18n.__('Username_is_not_in_this_room', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, user.language)
+				sprintf: [username],
+			}, user.language),
 		});
 	}
 	Meteor.call('unmuteUserInRoom', {
 		rid: item.rid,
-		username
+		username,
 	});
 }, {
 	description: 'Unmute_someone_in_room',
-	params: '@username'
+	params: '@username',
 });

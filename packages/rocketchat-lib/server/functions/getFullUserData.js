@@ -1,5 +1,5 @@
-/* globals RocketChat */
 import s from 'underscore.string';
+import { Logger } from 'meteor/rocketchat:logger';
 
 const logger = new Logger('getFullUserData');
 
@@ -10,7 +10,7 @@ const defaultFields = {
 	utcOffset: 1,
 	type: 1,
 	active: 1,
-	reason: 1
+	reason: 1,
 };
 
 const fullFields = {
@@ -22,7 +22,7 @@ const fullFields = {
 	services: 1,
 	requirePasswordChange: 1,
 	requirePasswordChangeReason: 1,
-	roles: 1
+	roles: 1,
 };
 
 let publicCustomFields = {};
@@ -38,7 +38,7 @@ RocketChat.settings.get('Accounts_CustomFields', (key, value) => {
 
 	try {
 		const customFieldsOnServer = JSON.parse(value.trim());
-		Object.keys(customFieldsOnServer).forEach(key => {
+		Object.keys(customFieldsOnServer).forEach((key) => {
 			const element = customFieldsOnServer[key];
 			if (element.public) {
 				publicCustomFields[`customFields.${ key }`] = 1;
@@ -68,7 +68,7 @@ RocketChat.getFullUserData = function({ userId, filter, limit: l }) {
 	const options = {
 		fields,
 		limit,
-		sort: { username: 1 }
+		sort: { username: 1 },
 	};
 
 	if (!username) {

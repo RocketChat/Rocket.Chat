@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { modal } from 'meteor/rocketchat:ui';
+import { t, handleError } from 'meteor/rocketchat:utils';
+
 Template.soundInfo.helpers({
 	name() {
 		const sound = Template.instance().sound.get();
@@ -27,9 +33,9 @@ Template.soundInfo.helpers({
 						return instance.loadedName.set(name);
 					}
 				}
-			}
+			},
 		};
-	}
+	},
 });
 
 Template.soundInfo.events({
@@ -38,7 +44,7 @@ Template.soundInfo.events({
 		e.preventDefault();
 		const sound = instance.sound.get();
 		if (sound != null) {
-			const _id = sound._id;
+			const { _id } = sound;
 			modal.open({
 				title: t('Are_you_sure'),
 				text: t('Custom_Sound_Delete_Warning'),
@@ -48,9 +54,9 @@ Template.soundInfo.events({
 				confirmButtonText: t('Yes_delete_it'),
 				cancelButtonText: t('Cancel'),
 				closeOnConfirm: false,
-				html: false
+				html: false,
 			}, function() {
-				Meteor.call('deleteCustomSound', _id, (error/*, result*/) => {
+				Meteor.call('deleteCustomSound', _id, (error/* , result*/) => {
 					if (error) {
 						handleError(error);
 					} else {
@@ -59,7 +65,7 @@ Template.soundInfo.events({
 							text: t('Custom_Sound_Has_Been_Deleted'),
 							type: 'success',
 							timer: 2000,
-							showConfirmButton: false
+							showConfirmButton: false,
 						});
 
 						instance.data.tabBar.showGroup('custom-sounds');
@@ -75,7 +81,7 @@ Template.soundInfo.events({
 		e.preventDefault();
 
 		instance.editingSound.set(instance.sound.get()._id);
-	}
+	},
 });
 
 Template.soundInfo.onCreated(function() {

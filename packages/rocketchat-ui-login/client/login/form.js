@@ -1,4 +1,11 @@
-/*globals OnePassword, device, setLanguage */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -61,12 +68,9 @@ Template.loginForm.helpers({
 	confirmPasswordPlaceholder() {
 		return RocketChat.settings.get('Accounts_ConfirmPasswordPlaceholder') || t('Confirm_password');
 	},
-	hasOnePassword() {
-		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
-	},
 	manuallyApproveNewUsers() {
 		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
-	}
+	},
 });
 
 Template.loginForm.events({
@@ -115,8 +119,7 @@ Template.loginForm.events({
 					RocketChat.callbacks.run('userRegistered');
 					return Meteor.loginWithPassword(s.trim(formData.email), formData.pass, function(error) {
 						if (error && error.error === 'error-invalid-email') {
-							toastr.success(t('We_have_sent_registration_email'));
-							return instance.state.set('login');
+							return instance.state.set('wait-email-activation');
 						} else if (error && error.error === 'error-user-is-not-activated') {
 							return instance.state.set('wait-activation');
 						} else {
@@ -133,21 +136,18 @@ Template.loginForm.events({
 					loginMethod = 'loginWithCrowd';
 				}
 				return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
-					const user = Meteor.user();
 					instance.loading.set(false);
 					if (error != null) {
 						if (error.error === 'no-valid-email') {
 							instance.state.set('email-verification');
+						} else if (error.error === 'error-user-is-not-activated') {
+							toastr.error(t('Wait_activation_warning'));
 						} else {
 							toastr.error(t('User_not_found_or_incorrect_password'));
 						}
 						return;
 					}
 					Session.set('forceLogin', false);
-					if (user && user.language) {
-						localStorage.setItem('userLanguage', user.language);
-						return setLanguage(Meteor.user().language);
-					}
 				});
 			}
 		}
@@ -164,19 +164,6 @@ Template.loginForm.events({
 		Template.instance().state.set('forgot-password');
 		return RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
 	},
-	'click .one-passsword'() {
-		if (typeof OnePassword === 'undefined' || OnePassword.findLoginForUrl == null) {
-			return;
-		}
-		const succesCallback = function(credentials) {
-			$('input[name=emailOrUsername]').val(credentials.username);
-			return $('input[name=pass]').val(credentials.password);
-		};
-		const errorCallback = function() {
-			return console.log('OnePassword errorCallback', arguments);
-		};
-		return OnePassword.findLoginForUrl(succesCallback, errorCallback, Meteor.absoluteUrl());
-	}
 });
 
 Template.loginForm.onCreated(function() {
@@ -195,7 +182,7 @@ Template.loginForm.onCreated(function() {
 			return this.customFields.set(null);
 		}
 	});
-	if (Meteor.settings['public'].sandstorm) {
+	if (Meteor.settings.public.sandstorm) {
 		this.state = new ReactiveVar('sandstorm');
 	} else if (Session.get('loginDefaultState')) {
 		this.state = new ReactiveVar(Session.get('loginDefaultState'));
@@ -237,29 +224,29 @@ Template.loginForm.onCreated(function() {
 		});
 		const state = instance.state.get();
 		if (state !== 'login') {
-			if (!(formObj['email'] && /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email']))) {
-				validationObj['email'] = t('Invalid_email');
+			if (!(formObj.email && /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj.email))) {
+				validationObj.email = t('Invalid_email');
 			}
 		}
 		if (state === 'login') {
-			if (!formObj['emailOrUsername']) {
-				validationObj['emailOrUsername'] = t('Invalid_email');
+			if (!formObj.emailOrUsername) {
+				validationObj.emailOrUsername = t('Invalid_email');
 			}
 		}
 		if (state !== 'forgot-password') {
-			if (!formObj['pass']) {
-				validationObj['pass'] = t('Invalid_pass');
+			if (!formObj.pass) {
+				validationObj.pass = t('Invalid_pass');
 			}
 		}
 		if (state === 'register') {
-			if (RocketChat.settings.get('Accounts_RequireNameForSignUp') && !formObj['name']) {
-				validationObj['name'] = t('Invalid_name');
+			if (RocketChat.settings.get('Accounts_RequireNameForSignUp') && !formObj.name) {
+				validationObj.name = t('Invalid_name');
 			}
-			if (RocketChat.settings.get('Accounts_RequirePasswordConfirmation') && formObj['confirm-pass'] !== formObj['pass']) {
+			if (RocketChat.settings.get('Accounts_RequirePasswordConfirmation') && formObj['confirm-pass'] !== formObj.pass) {
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass');
 			}
-			if (RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && !formObj['reason']) {
-				validationObj['reason'] = t('Invalid_reason');
+			if (RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && !formObj.reason) {
+				validationObj.reason = t('Invalid_reason');
 			}
 			validateCustomFields(formObj, validationObj);
 		}
@@ -280,9 +267,7 @@ Template.loginForm.onCreated(function() {
 		return formObj;
 	};
 	if (FlowRouter.getParam('hash')) {
-		return Meteor.call('checkRegistrationSecretURL', FlowRouter.getParam('hash'), () => {
-			return this.validSecretURL.set(true);
-		});
+		return Meteor.call('checkRegistrationSecretURL', FlowRouter.getParam('hash'), () => this.validSecretURL.set(true));
 	}
 });
 

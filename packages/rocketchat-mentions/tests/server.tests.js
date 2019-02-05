@@ -10,25 +10,24 @@ let mention;
 beforeEach(function() {
 	mention = new MentionsServer({
 		pattern: '[0-9a-zA-Z-_.]+',
-		messageMaxAll: () => 4, //|| RocketChat.settings.get('Message_MaxAll')
-		getUsers: (usernames) => {
-			return [{
+		messageMaxAll: () => 4, // || RocketChat.settings.get('Message_MaxAll')
+		getUsers: (usernames) =>
+			[{
 				_id: 1,
-				username: 'rocket.cat'
+				username: 'rocket.cat',
 			}, {
 				_id: 2,
-				username: 'jon'
-			}].filter(user => usernames.includes(user.username));//Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
-		},
+				username: 'jon',
+			}].filter((user) => usernames.includes(user.username)), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 		getChannels(channels) {
 			return [{
 				_id: 1,
-				name: 'general'
-			}].filter(channel => channels.includes(channel.name));
+				name: 'general',
+			}].filter((channel) => channels.includes(channel.name));
 			// return RocketChat.models.Rooms.find({ name: {$in: _.unique(channels)}, t: 'c'	}, { fields: {_id: 1, name: 1 }}).fetch();
 		},
 		getUser: (userId) => ({ _id: userId, language: 'en' }),
-		getTotalChannelMembers: (/*rid*/) => 2
+		getTotalChannelMembers: (/* rid*/) => 2,
 	});
 });
 
@@ -40,7 +39,7 @@ describe('Mention Server', () => {
 			});
 			it('should return nothing', () => {
 				const message = {
-					msg: '@all'
+					msg: '@all',
 				};
 				const expected = [];
 				const result = mention.getUsersByMentions(message);
@@ -49,48 +48,48 @@ describe('Mention Server', () => {
 		});
 		describe('for one user', () => {
 			beforeEach(() => {
-				mention.getChannel = () => {
-					return {
+				mention.getChannel = () =>
+					({
 						usernames:[{
 							_id: 1,
-							username: 'rocket.cat'
+							username: 'rocket.cat',
 						}, {
 							_id: 2,
-							username: 'jon'
-						}]
-					};
-					//Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
-				};
+							username: 'jon',
+						}],
+					})
+					// Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
+				;
 			});
 			it('should return "all"', () => {
 				const message = {
-					msg: '@all'
+					msg: '@all',
 				};
 				const expected = [{
 					_id: 'all',
-					username: 'all'
+					username: 'all',
 				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
 			});
 			it('should return "here"', () => {
 				const message = {
-					msg: '@here'
+					msg: '@here',
 				};
 				const expected = [{
 					_id: 'here',
-					username: 'here'
+					username: 'here',
 				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
 			});
 			it('should return "rocket.cat"', () => {
 				const message = {
-					msg: '@rocket.cat'
+					msg: '@rocket.cat',
 				};
 				const expected = [{
 					_id: 1,
-					username: 'rocket.cat'
+					username: 'rocket.cat',
 				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
@@ -99,28 +98,28 @@ describe('Mention Server', () => {
 		describe('for two user', () => {
 			it('should return "all and here"', () => {
 				const message = {
-					msg: '@all @here'
+					msg: '@all @here',
 				};
 				const expected = [{
 					_id: 'all',
-					username: 'all'
+					username: 'all',
 				}, {
 					_id: 'here',
-					username: 'here'
+					username: 'here',
 				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
 			});
 			it('should return "here and rocket.cat"', () => {
 				const message = {
-					msg: '@here @rocket.cat'
+					msg: '@here @rocket.cat',
 				};
 				const expected = [{
 					_id: 'here',
-					username: 'here'
+					username: 'here',
 				}, {
 					_id: 1,
-					username: 'rocket.cat'
+					username: 'rocket.cat',
 				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
@@ -128,17 +127,17 @@ describe('Mention Server', () => {
 
 			it('should return "here, rocket.cat, jon"', () => {
 				const message = {
-					msg: '@here @rocket.cat @jon'
+					msg: '@here @rocket.cat @jon',
 				};
 				const expected = [{
 					_id: 'here',
-					username: 'here'
+					username: 'here',
 				}, {
 					_id: 1,
-					username: 'rocket.cat'
+					username: 'rocket.cat',
 				}, {
 					_id: 2,
-					username: 'jon'
+					username: 'jon',
 				}];
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
@@ -148,7 +147,7 @@ describe('Mention Server', () => {
 		describe('for an unknow user', () => {
 			it('should return "nothing"', () => {
 				const message = {
-					msg: '@unknow'
+					msg: '@unknow',
 				};
 				const expected = [];
 				const result = mention.getUsersByMentions(message);
@@ -160,18 +159,18 @@ describe('Mention Server', () => {
 	describe('getChannelbyMentions', () => {
 		it('should return the channel "general"', () => {
 			const message = {
-				msg: '#general'
+				msg: '#general',
 			};
 			const expected = [{
 				_id: 1,
-				name: 'general'
+				name: 'general',
 			}];
 			const result = mention.getChannelbyMentions(message);
 			assert.deepEqual(result, expected);
 		});
 		it('should return nothing"', () => {
 			const message = {
-				msg: '#unknow'
+				msg: '#unknow',
 			};
 			const expected = [];
 			const result = mention.getChannelbyMentions(message);
@@ -181,84 +180,84 @@ describe('Mention Server', () => {
 	describe('execute', () => {
 		it('should return the channel "general"', () => {
 			const message = {
-				msg: '#general'
+				msg: '#general',
 			};
 			const expected = [{
 				_id: 1,
-				name: 'general'
+				name: 'general',
 			}];
 			const result = mention.getChannelbyMentions(message);
 			assert.deepEqual(result, expected);
 		});
 		it('should return nothing"', () => {
 			const message = {
-				msg: '#unknow'
+				msg: '#unknow',
 			};
 			const expected = {
 				msg: '#unknow',
 				mentions: [],
-				channels: []
+				channels: [],
 			};
 			const result = mention.execute(message);
 			assert.deepEqual(result, expected);
 		});
 	});
 
-	describe('getters and setters', ()=> {
-		describe('messageMaxAll', ()=> {
+	describe('getters and setters', () => {
+		describe('messageMaxAll', () => {
 			const mention = new MentionsServer({});
-			describe('constant', ()=> {
+			describe('constant', () => {
 				it('should return the informed value', () => {
 					mention.messageMaxAll = 4;
 					assert.deepEqual(mention.messageMaxAll, 4);
 				});
 			});
-			describe('function', ()=> {
+			describe('function', () => {
 				it('should return the informed value', () => {
 					mention.messageMaxAll = () => 4;
 					assert.deepEqual(mention.messageMaxAll, 4);
 				});
 			});
 		});
-		describe('getUsers', ()=> {
+		describe('getUsers', () => {
 			const mention = new MentionsServer({});
-			describe('constant', ()=> {
+			describe('constant', () => {
 				it('should return the informed value', () => {
 					mention.getUsers = 4;
 					assert.deepEqual(mention.getUsers(), 4);
 				});
 			});
-			describe('function', ()=> {
+			describe('function', () => {
 				it('should return the informed value', () => {
 					mention.getUsers = () => 4;
 					assert.deepEqual(mention.getUsers(), 4);
 				});
 			});
 		});
-		describe('getChannels', ()=> {
+		describe('getChannels', () => {
 			const mention = new MentionsServer({});
-			describe('constant', ()=> {
+			describe('constant', () => {
 				it('should return the informed value', () => {
 					mention.getChannels = 4;
 					assert.deepEqual(mention.getChannels(), 4);
 				});
 			});
-			describe('function', ()=> {
+			describe('function', () => {
 				it('should return the informed value', () => {
 					mention.getChannels = () => 4;
 					assert.deepEqual(mention.getChannels(), 4);
 				});
 			});
 		});
-		describe('getChannel', ()=> {
+		describe('getChannel', () => {
 			const mention = new MentionsServer({});
-			describe('constant', ()=> {
+			describe('constant', () => {
 				it('should return the informed value', () => {
 					mention.getChannel = true;
 					assert.deepEqual(mention.getChannel(), true);
 				});
 			});
-			describe('function', ()=> {
+			describe('function', () => {
 				it('should return the informed value', () => {
 					mention.getChannel = () => true;
 					assert.deepEqual(mention.getChannel(), true);

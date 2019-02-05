@@ -1,4 +1,7 @@
-/* global Gravatar */
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { HTTP } from 'meteor/http';
+import { Gravatar } from 'meteor/jparker:gravatar';
 
 function getAvatarSuggestionForUser(user) {
 	check(user, Object);
@@ -8,49 +11,56 @@ function getAvatarSuggestionForUser(user) {
 	if (user.services.facebook && user.services.facebook.id && RocketChat.settings.get('Accounts_OAuth_Facebook')) {
 		avatars.push({
 			service: 'facebook',
-			url: `https://graph.facebook.com/${ user.services.facebook.id }/picture?type=large`
+			url: `https://graph.facebook.com/${ user.services.facebook.id }/picture?type=large`,
 		});
 	}
 
 	if (user.services.google && user.services.google.picture && user.services.google.picture !== 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg' && RocketChat.settings.get('Accounts_OAuth_Google')) {
 		avatars.push({
 			service: 'google',
-			url: user.services.google.picture
+			url: user.services.google.picture,
 		});
 	}
 
 	if (user.services.github && user.services.github.username && RocketChat.settings.get('Accounts_OAuth_Github')) {
 		avatars.push({
 			service: 'github',
-			url: `https://avatars.githubusercontent.com/${ user.services.github.username }?s=200`
+			url: `https://avatars.githubusercontent.com/${ user.services.github.username }?s=200`,
 		});
 	}
 
 	if (user.services.linkedin && user.services.linkedin.pictureUrl && RocketChat.settings.get('Accounts_OAuth_Linkedin')) {
 		avatars.push({
 			service: 'linkedin',
-			url: user.services.linkedin.pictureUrl
+			url: user.services.linkedin.pictureUrl,
 		});
 	}
 
 	if (user.services.twitter && user.services.twitter.profile_image_url_https && RocketChat.settings.get('Accounts_OAuth_Twitter')) {
 		avatars.push({
 			service: 'twitter',
-			url: user.services.twitter.profile_image_url_https.replace(/_normal|_bigger/, '')
+			url: user.services.twitter.profile_image_url_https.replace(/_normal|_bigger/, ''),
 		});
 	}
 
 	if (user.services.gitlab && user.services.gitlab.avatar_url && RocketChat.settings.get('Accounts_OAuth_Gitlab')) {
 		avatars.push({
 			service: 'gitlab',
-			url: user.services.gitlab.avatar_url
+			url: user.services.gitlab.avatar_url,
 		});
 	}
 
-	if (user.services.sandstorm && user.services.sandstorm.picture && Meteor.settings['public'].sandstorm) {
+	if (user.services.sandstorm && user.services.sandstorm.picture && Meteor.settings.public.sandstorm) {
 		avatars.push({
 			service: 'sandstorm',
-			url: user.services.sandstorm.picture
+			url: user.services.sandstorm.picture,
+		});
+	}
+
+	if (user.services.blockstack && user.services.blockstack.image && RocketChat.settings.get('Blockstack_Enable')) {
+		avatars.push({
+			service: 'blockstack',
+			url: user.services.blockstack.image,
 		});
 	}
 
@@ -60,10 +70,10 @@ function getAvatarSuggestionForUser(user) {
 				avatars.push({
 					service: 'gravatar',
 					url: Gravatar.imageUrl(email.address, {
-						'default': '404',
+						default: '404',
 						size: 200,
-						secure: true
-					})
+						secure: true,
+					}),
 				});
 			}
 
@@ -71,10 +81,10 @@ function getAvatarSuggestionForUser(user) {
 				avatars.push({
 					service: 'gravatar',
 					url: Gravatar.imageUrl(email.address, {
-						'default': '404',
+						default: '404',
 						size: 200,
-						secure: true
-					})
+						secure: true,
+					}),
 				});
 			}
 		}
@@ -85,8 +95,8 @@ function getAvatarSuggestionForUser(user) {
 		try {
 			const result = HTTP.get(avatar.url, {
 				npmRequestOptions: {
-					encoding: 'binary'
-				}
+					encoding: 'binary',
+				},
 			});
 
 			if (result.statusCode === 200) {
@@ -109,7 +119,7 @@ Meteor.methods({
 	getAvatarSuggestion() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'getAvatarSuggestion'
+				method: 'getAvatarSuggestion',
 			});
 		}
 
@@ -118,5 +128,5 @@ Meteor.methods({
 		const user = Meteor.user();
 
 		return getAvatarSuggestionForUser(user);
-	}
+	},
 });

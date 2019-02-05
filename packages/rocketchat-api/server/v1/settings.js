@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 // settings endpoints
@@ -8,7 +12,7 @@ RocketChat.API.v1.addRoute('settings.public', { authRequired: false }, {
 
 		let ourQuery = {
 			hidden: { $ne: true },
-			'public': true
+			public: true,
 		};
 
 		ourQuery = Object.assign({}, query, ourQuery);
@@ -17,16 +21,16 @@ RocketChat.API.v1.addRoute('settings.public', { authRequired: false }, {
 			sort: sort ? sort : { _id: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({ _id: 1, value: 1 }, fields)
+			fields: Object.assign({ _id: 1, value: 1 }, fields),
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			settings,
 			count: settings.length,
 			offset,
-			total: RocketChat.models.Settings.find(ourQuery).count()
+			total: RocketChat.models.Settings.find(ourQuery).count(),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
@@ -46,15 +50,15 @@ RocketChat.API.v1.addRoute('settings.oauth', { authRequired: false }, {
 					buttonLabelText: service.buttonLabelText || '',
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
-					custom: false
+					custom: false,
 				};
 			});
 		};
 
 		return RocketChat.API.v1.success({
-			services: mountOAuthServices()
+			services: mountOAuthServices(),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('settings', { authRequired: true }, {
@@ -63,7 +67,7 @@ RocketChat.API.v1.addRoute('settings', { authRequired: true }, {
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		let ourQuery = {
-			hidden: { $ne: true }
+			hidden: { $ne: true },
 		};
 
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-privileged-setting')) {
@@ -76,16 +80,16 @@ RocketChat.API.v1.addRoute('settings', { authRequired: true }, {
 			sort: sort ? sort : { _id: 1 },
 			skip: offset,
 			limit: count,
-			fields: Object.assign({ _id: 1, value: 1 }, fields)
+			fields: Object.assign({ _id: 1, value: 1 }, fields),
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			settings,
 			count: settings.length,
 			offset,
-			total: RocketChat.models.Settings.find(ourQuery).count()
+			total: RocketChat.models.Settings.find(ourQuery).count(),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('settings/:_id', { authRequired: true }, {
@@ -104,7 +108,7 @@ RocketChat.API.v1.addRoute('settings/:_id', { authRequired: true }, {
 		// allow special handling of particular setting types
 		const setting = RocketChat.models.Settings.findOneNotHiddenById(this.urlParams._id);
 		if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
-			//execute the configured method
+			// execute the configured method
 			Meteor.call(setting.value);
 			return RocketChat.API.v1.success();
 		}
@@ -116,22 +120,22 @@ RocketChat.API.v1.addRoute('settings/:_id', { authRequired: true }, {
 		}
 
 		check(this.bodyParams, {
-			value: Match.Any
+			value: Match.Any,
 		});
 		if (RocketChat.models.Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
 			return RocketChat.API.v1.success();
 		}
 
 		return RocketChat.API.v1.failure();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('service.configurations', { authRequired: false }, {
 	get() {
-		const ServiceConfiguration = Package['service-configuration'].ServiceConfiguration;
+		const { ServiceConfiguration } = Package['service-configuration'];
 
 		return RocketChat.API.v1.success({
-			configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch()
+			configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch(),
 		});
-	}
+	},
 });

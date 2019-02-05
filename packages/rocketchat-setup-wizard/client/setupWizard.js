@@ -1,3 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
+import toastr from 'toastr';
+
 const cannotSetup = () => {
 	const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
 	if (!showSetupWizard) {
@@ -21,17 +32,17 @@ const cannotSetup = () => {
 
 const registerAdminUser = (state, callback) => {
 	const registrationData = Object.entries(state)
-		.filter(([ key ]) => /registration-/.test(key))
-		.map(([ key, value ]) => ([ key.replace('registration-', ''), value ]))
-		.reduce((o, [ key, value ]) => ({ ...o, [key]: value }), {});
+		.filter(([key]) => /registration-/.test(key))
+		.map(([key, value]) => ([key.replace('registration-', ''), value]))
+		.reduce((o, [key, value]) => ({ ...o, [key]: value }), {});
 
-	Meteor.call('registerUser', registrationData, error => {
+	Meteor.call('registerUser', registrationData, (error) => {
 		if (error) {
 			return handleError(error);
 		}
 
 		RocketChat.callbacks.run('userRegistered');
-		Meteor.loginWithPassword(registrationData.email, registrationData.pass, error => {
+		Meteor.loginWithPassword(registrationData.email, registrationData.pass, (error) => {
 			if (error) {
 				if (error.error === 'error-invalid-email') {
 					toastr.success(t('We_have_sent_registration_email'));
@@ -42,7 +53,7 @@ const registerAdminUser = (state, callback) => {
 			}
 
 			Session.set('forceLogin', false);
-			Meteor.call('setUsername', registrationData.username, error => {
+			Meteor.call('setUsername', registrationData.username, (error) => {
 				if (error) {
 					return handleError(error);
 				}
@@ -56,20 +67,28 @@ const registerAdminUser = (state, callback) => {
 
 const persistSettings = (state, callback) => {
 	const settings = Object.entries(state)
-		.filter(([ key ]) => !/registration-|registerServer|optIn|currentStep|invalidUsername|invalidEmail/.test(key))
-		.map(([ _id, value ]) => ({ _id, value }))
+		.filter(([key]) => !/registration-|registerServer|optIn|currentStep|invalidUsername|invalidEmail/.test(key))
+		.map(([_id, value]) => ({ _id, value }))
 		.concat([
 			{
 				_id: 'Statistics_reporting',
-				value: state['registerServer']
+				value: state.registerServer,
+			},
+			{
+				_id: 'Apps_Framework_enabled',
+				value: state.registerServer,
+			},
+			{
+				_id: 'Register_Server',
+				value: state.registerServer,
 			},
 			{
 				_id: 'Allow_Marketing_Emails',
-				value: state['optIn']
-			}
+				value: state.optIn,
+			},
 		]);
 
-	RocketChat.settings.batchSet(settings, error => {
+	RocketChat.settings.batchSet(settings, (error) => {
 		if (error) {
 			return handleError(error);
 		}
@@ -93,10 +112,10 @@ Template.setupWizard.onCreated(function() {
 	}
 
 	const jsonString = localStorage.getItem('wizard');
-	const state = jsonString && JSON.parse(jsonString) || {};
-	Object.entries(state).forEach(entry => this.state.set(...entry));
+	const state = (jsonString && JSON.parse(jsonString)) || {};
+	Object.entries(state).forEach((entry) => this.state.set(...entry));
 
-	this.autorun(c => {
+	this.autorun((c) => {
 		const cantSetup = cannotSetup();
 		if (typeof cantSetup === 'undefined') {
 			return;
@@ -215,7 +234,7 @@ Template.setupWizard.events({
 	'click input[name="optIn"]'({ currentTarget: { checked } }, t) {
 		t.state.set('optIn', checked);
 		return false;
-	}
+	},
 });
 
 Template.setupWizard.helpers({
@@ -269,7 +288,7 @@ Template.setupWizard.helpers({
 		const t = Template.instance();
 
 		return {
-			currentStep: t.state.get('currentStep')
+			currentStep: t.state.get('currentStep'),
 		};
 	},
 	adminInfoArgs() {
@@ -282,7 +301,7 @@ Template.setupWizard.helpers({
 			email: t.state.get('registration-email'),
 			password: t.state.get('registration-pass'),
 			invalidUsername: t.state.get('invalidUsername'),
-			invalidEmail: t.state.get('invalidEmail')
+			invalidEmail: t.state.get('invalidEmail'),
 		};
 	},
 	registerServerArgs() {
@@ -292,7 +311,7 @@ Template.setupWizard.helpers({
 			currentStep: t.state.get('currentStep'),
 			allowStandaloneServer: t.allowStandaloneServer.get(),
 			registerServer: t.allowStandaloneServer.get() ? t.state.get('registerServer') : true,
-			optIn: t.state.get('optIn')
+			optIn: t.state.get('optIn'),
 		};
 	},
 	customStepArgs(step) {
@@ -302,7 +321,7 @@ Template.setupWizard.helpers({
 			currentStep: t.state.get('currentStep'),
 			step,
 			settings: t.wizardSettings.get()
-				.filter(setting => setting.wizard.step === step)
+				.filter((setting) => setting.wizard.step === step)
 				.sort((a, b) => a.wizard.order - b.wizard.order)
 				.map(({ type, _id, i18nLabel, values }) => ({
 					type,
@@ -317,17 +336,17 @@ Template.setupWizard.helpers({
 						type === 'language' &&
 						([{
 							optionLabel: 'Default',
-							optionValue: ''
+							optionValue: '',
 						}].concat(
 							Object.entries(TAPi18n.getLanguages())
-								.map(([ key, { name } ]) => ({ optionLabel: name, optionValue: key }))
+								.map(([key, { name }]) => ({ optionLabel: name, optionValue: key }))
 								.sort((a, b) => a.key - b.key)
 						))
 					),
-					isValueSelected: (value) => value === t.state.get(_id)
-				}))
+					isValueSelected: (value) => value === t.state.get(_id),
+				})),
 		};
-	}
+	},
 });
 
 Template.setupWizardInfo.helpers({
@@ -355,5 +374,5 @@ Template.setupWizardInfo.helpers({
 			case 4:
 				return 'Register_Server';
 		}
-	}
+	},
 });

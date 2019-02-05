@@ -1,4 +1,5 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
 Meteor.methods({
 	loadNextMessages(rid, end, limit = 20) {
@@ -7,7 +8,7 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadNextMessages'
+				method: 'loadNextMessages',
 			});
 		}
 
@@ -19,14 +20,14 @@ Meteor.methods({
 
 		const options = {
 			sort: {
-				ts: 1
+				ts: 1,
 			},
-			limit
+			limit,
 		};
 
 		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
-				editedAt: 0
+				editedAt: 0,
 			};
 		}
 
@@ -37,15 +38,8 @@ Meteor.methods({
 			records = RocketChat.models.Messages.findVisibleByRoomId(rid, options).fetch();
 		}
 
-		const messages = records.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId
-			});
-			return message;
-		});
-
 		return {
-			messages
+			messages: records.map((message) => RocketChat.composeMessageObjectWithUser(message, fromId)),
 		};
-	}
+	},
 });

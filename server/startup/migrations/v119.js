@@ -4,17 +4,17 @@ RocketChat.Migrations.add({
 		if (RocketChat.models && RocketChat.models.Settings) {
 			RocketChat.models.Settings.update({
 				_id: 'Show_Setup_Wizard',
-				value: true
+				value: true,
 			}, {
-				$set: { value: 'pending' }
+				$set: { value: 'pending' },
 			});
 
 			RocketChat.models.Settings.update({
 				_id: 'Show_Setup_Wizard',
-				value: false
+				value: false,
 			}, {
-				$set: { value: 'completed' }
+				$set: { value: 'completed' },
 			});
 		}
-	}
+	},
 });

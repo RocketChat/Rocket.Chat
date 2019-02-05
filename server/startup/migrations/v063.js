@@ -9,8 +9,8 @@ RocketChat.Migrations.add({
 				$set: {
 					value: 'forward',
 					type: 'string',
-					group: 'Livechat'
-				}
+					group: 'Livechat',
+				},
 			});
 		}
 
@@ -19,12 +19,12 @@ RocketChat.Migrations.add({
 				$set: {
 					value: timeout.value,
 					type: 'int',
-					group: 'Livechat'
-				}
+					group: 'Livechat',
+				},
 			});
 		}
 
 		RocketChat.models.Settings.remove({ _id: 'Livechat_forward_open_chats' });
 		RocketChat.models.Settings.remove({ _id: 'Livechat_forward_open_chats_timeout' });
-	}
+	},
 });

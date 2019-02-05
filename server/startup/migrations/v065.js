@@ -52,5 +52,5 @@ RocketChat.Migrations.add({
 			RocketChat.models.Settings.remove({ _id: 'theme-color-smallprint-hover-color' });
 			RocketChat.models.Settings.remove({ _id: 'theme-color-unread-notification-color' });
 		}
-	}
+	},
 });

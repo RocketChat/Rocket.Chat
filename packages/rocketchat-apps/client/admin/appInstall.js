@@ -7,6 +7,9 @@
 // if you're developing it and using a rest api with a particular parameter passed
 // then it will be enabled by default for development reasons. The server prefers a url
 // over the passed in body, so if both are found it will only use the url.
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
 
 Template.appInstall.helpers({
 	appFile() {
@@ -26,7 +29,7 @@ Template.appInstall.helpers({
 		const instance = Template.instance();
 
 		return !!instance.isUpdatingId.get();
-	}
+	},
 });
 
 Template.appInstall.onCreated(function() {
@@ -88,7 +91,7 @@ Template.appInstall.events({
 			return;
 		}
 
-		const files = $('#upload-app')[0].files;
+		const { files } = $('#upload-app')[0];
 		if (!(files instanceof FileList)) {
 			return;
 		}
@@ -129,5 +132,5 @@ Template.appInstall.events({
 		}
 
 		t.isInstalling.set(false);
-	}
+	},
 });

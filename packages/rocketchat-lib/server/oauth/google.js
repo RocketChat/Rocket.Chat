@@ -1,13 +1,15 @@
-/* globals Google */
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
+import { HTTP } from 'meteor/http';
+import { Google } from 'meteor/google-oauth';
 
 function getIdentity(accessToken) {
 	try {
 		return HTTP.get(
 			'https://www.googleapis.com/oauth2/v1/userinfo',
-			{params: {access_token: accessToken}}).data;
+			{ params: { access_token: accessToken } }).data;
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Google. ${ err.message }`), {response: err.response});
+		throw _.extend(new Error(`Failed to fetch identity from Google. ${ err.message }`), { response: err.response });
 	}
 }
 
@@ -15,9 +17,9 @@ function getScopes(accessToken) {
 	try {
 		return HTTP.get(
 			'https://www.googleapis.com/oauth2/v1/tokeninfo',
-			{params: {access_token: accessToken}}).data.scope.split(' ');
+			{ params: { access_token: accessToken } }).data.scope.split(' ');
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch tokeninfo from Google. ${ err.message }`), {response: err.response});
+		throw _.extend(new Error(`Failed to fetch tokeninfo from Google. ${ err.message }`), { response: err.response });
 	}
 }
 
@@ -28,7 +30,7 @@ RocketChat.registerAccessTokenService('google', function(options) {
 		idToken: String,
 		expiresIn: Match.Integer,
 		scope: Match.Maybe(String),
-		identity: Match.Maybe(Object)
+		identity: Match.Maybe(Object),
 	}));
 
 	const identity = options.identity || getIdentity(options.accessToken);
@@ -37,7 +39,7 @@ RocketChat.registerAccessTokenService('google', function(options) {
 		accessToken: options.accessToken,
 		idToken: options.idToken,
 		expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
-		scope: options.scopes || getScopes(options.accessToken)
+		scope: options.scopes || getScopes(options.accessToken),
 	};
 
 	const fields = _.pick(identity, Google.whitelistedFields);
@@ -54,8 +56,8 @@ RocketChat.registerAccessTokenService('google', function(options) {
 		serviceData,
 		options: {
 			profile: {
-				name: identity.name
-			}
-		}
+				name: identity.name,
+			},
+		},
 	};
 });

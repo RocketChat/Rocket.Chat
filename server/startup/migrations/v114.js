@@ -14,5 +14,5 @@ RocketChat.Migrations.add({
 				}
 			}
 		}
-	}
+	},
 });

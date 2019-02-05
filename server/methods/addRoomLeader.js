@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	addRoomLeader(rid, userId) {
 		check(rid, String);
@@ -5,13 +8,13 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomLeader'
+				method: 'addRoomLeader',
 			});
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'set-leader', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'addRoomLeader'
+				method: 'addRoomLeader',
 			});
 		}
 
@@ -19,7 +22,7 @@ Meteor.methods({
 
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomLeader'
+				method: 'addRoomLeader',
 			});
 		}
 
@@ -27,13 +30,13 @@ Meteor.methods({
 
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'addRoomLeader'
+				method: 'addRoomLeader',
 			});
 		}
 
 		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('leader') === true) {
 			throw new Meteor.Error('error-user-already-leader', 'User is already a leader', {
-				method: 'addRoomLeader'
+				method: 'addRoomLeader',
 			});
 		}
 
@@ -44,9 +47,9 @@ Meteor.methods({
 		RocketChat.models.Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
 			},
-			role: 'leader'
+			role: 'leader',
 		});
 
 		if (RocketChat.settings.get('UI_DisplayRoles')) {
@@ -56,12 +59,12 @@ Meteor.methods({
 				u: {
 					_id: user._id,
 					username: user.username,
-					name: user.name
+					name: user.name,
 				},
-				scope: rid
+				scope: rid,
 			});
 		}
 
 		return true;
-	}
+	},
 });

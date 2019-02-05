@@ -14,8 +14,8 @@ RocketChat.Migrations.add({
 			$set: {
 				value: count,
 				type: 'int',
-				group: 'Livechat'
-			}
+				group: 'Livechat',
+			},
 		});
-	}
+	},
 });

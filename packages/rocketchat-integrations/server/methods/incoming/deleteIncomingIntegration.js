@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	deleteIncomingIntegration(integrationId) {
 		let integration;
@@ -5,7 +8,7 @@ Meteor.methods({
 		if (RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
 			integration = RocketChat.models.Integrations.findOne(integrationId);
 		} else if (RocketChat.authz.hasPermission(this.userId, 'manage-own-integrations')) {
-			integration = RocketChat.models.Integrations.findOne(integrationId, { fields : { '_createdBy._id': this.userId }});
+			integration = RocketChat.models.Integrations.findOne(integrationId, { fields : { '_createdBy._id': this.userId } });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'deleteIncomingIntegration' });
 		}
@@ -17,5 +20,5 @@ Meteor.methods({
 		RocketChat.models.Integrations.remove({ _id: integrationId });
 
 		return true;
-	}
+	},
 });

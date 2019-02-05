@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import ModelReadReceipts from '../models/ReadReceipts';
 
@@ -55,15 +56,13 @@ export const ReadReceipt = {
 	storeReadReceipts(messages, roomId, userId) {
 		if (RocketChat.settings.get('Message_Read_Receipt_Store_Users')) {
 			const ts = new Date();
-			const receipts = messages.map(message => {
-				return {
-					_id: Random.id(),
-					roomId,
-					userId,
-					messageId: message._id,
-					ts
-				};
-			});
+			const receipts = messages.map((message) => ({
+				_id: Random.id(),
+				roomId,
+				userId,
+				messageId: message._id,
+				ts,
+			}));
 
 			if (receipts.length === 0) {
 				return;
@@ -78,9 +77,9 @@ export const ReadReceipt = {
 	},
 
 	getReceipts(message) {
-		return ModelReadReceipts.findByMessageId(message._id).map(receipt => ({
+		return ModelReadReceipts.findByMessageId(message._id).map((receipt) => ({
 			...receipt,
-			user: RocketChat.models.Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 }})
+			user: RocketChat.models.Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
 		}));
-	}
+	},
 };

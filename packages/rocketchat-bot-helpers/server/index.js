@@ -1,3 +1,6 @@
+import './settings';
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 /**
@@ -8,8 +11,8 @@ import _ from 'underscore';
 class BotHelpers {
 	constructor() {
 		this.queries = {
-			online: { 'status': { $ne: 'offline' } },
-			users: { 'roles': { $not: { $all: ['bot'] } } }
+			online: { status: { $ne: 'offline' } },
+			users: { roles: { $not: { $all: ['bot'] } } },
 		};
 	}
 
@@ -130,9 +133,7 @@ class BotHelpers {
 			this.requestError();
 			return false;
 		} else {
-			return this._allUsers.fetch().map((user) => {
-				return { 'id': user._id, 'name': user.username };
-			});
+			return this._allUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 		}
 	}
 	get onlineIDs() {
@@ -140,9 +141,7 @@ class BotHelpers {
 			this.requestError();
 			return false;
 		} else {
-			return this._onlineUsers.fetch().map((user) => {
-				return { 'id': user._id, 'name': user.username };
-			});
+			return this._onlineUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 		}
 	}
 }
@@ -163,5 +162,5 @@ Meteor.methods({
 		} else {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
 		}
-	}
+	},
 });

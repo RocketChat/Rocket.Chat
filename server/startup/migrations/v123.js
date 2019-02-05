@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 let pageVisitedCollection;
 let messageCollection;
 let roomCollection;
@@ -14,12 +16,12 @@ async function migrateHistory(total, current) {
 	const tokens = items.filter((item) => item.token && !roomIdByToken[item.token]).map((item) => item.token);
 	const rooms = await roomCollection.find({
 		'v.token': {
-			$in: tokens
-		}
+			$in: tokens,
+		},
 	}, {
 		fields: {
-			'v.token': 1
-		}
+			'v.token': 1,
+		},
 	}).toArray();
 
 	rooms.forEach((room) => {
@@ -34,13 +36,13 @@ async function migrateHistory(total, current) {
 			msg: `${ item.page.title } - ${ item.page.location.href }`,
 			u: {
 				_id : 'rocket.cat',
-				username : 'rocket.cat'
+				username : 'rocket.cat',
 			},
 			groupable : false,
 			navigation : {
 				page: item.page,
-				token: item.token
-			}
+				token: item.token,
+			},
 		};
 		if (!roomIdByToken[item.token] && item.expireAt) {
 			msg.expireAt = item.expireAt;
@@ -92,5 +94,5 @@ RocketChat.Migrations.add({
 
 			console.log('Livechat visitors navigation history migration finished.');
 		}, 1000);
-	}
+	},
 });

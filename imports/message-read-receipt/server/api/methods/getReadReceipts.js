@@ -24,5 +24,5 @@ Meteor.methods({
 		}
 
 		return ReadReceipt.getReceipts(message);
-	}
+	},
 });

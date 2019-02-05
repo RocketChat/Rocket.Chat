@@ -1,4 +1,4 @@
-/* globals OEmbed */
+import { OEmbed } from 'meteor/rocketchat:oembed';
 import _ from 'underscore';
 
 RocketChat.Migrations.add({
@@ -8,8 +8,8 @@ RocketChat.Migrations.add({
 
 		const query = RocketChat.models.Messages.find({
 			'urls.0': {
-				$exists: true
-			}
+				$exists: true,
+			},
 		});
 
 		const count = query.count();
@@ -20,7 +20,7 @@ RocketChat.Migrations.add({
 			message.urls = message.urls.map((url) => {
 				if (_.isString(url)) {
 					return {
-						url
+						url,
 					};
 				}
 				return url;
@@ -30,5 +30,5 @@ RocketChat.Migrations.add({
 		});
 
 		return console.log('End');
-	}
+	},
 });

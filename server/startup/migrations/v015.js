@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+
 RocketChat.Migrations.add({
 	version: 15,
 	up() {
@@ -11,8 +14,8 @@ RocketChat.Migrations.add({
 
 		oldFilesCollection.find({
 			'copies.files.key': {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}).forEach((cfsRecord) => {
 			const nameParts = cfsRecord.original.name && cfsRecord.original.name.split('.');
 			let extension = '';
@@ -36,13 +39,13 @@ RocketChat.Migrations.add({
 				extension,
 				userId: cfsRecord.userId,
 				uploadedAt: cfsRecord.updatedAt,
-				url: Meteor.absoluteUrl() + url
+				url: Meteor.absoluteUrl() + url,
 			};
 
 			newFilesCollection.insert(record);
 
 			const oldGridFsFile = oldGridFSCollection.findOne({
-				_id: new Mongo.Collection.ObjectID(cfsRecord.copies.files.key)
+				_id: new Mongo.Collection.ObjectID(cfsRecord.copies.files.key),
 			});
 
 			newGridFSCollection.insert({
@@ -54,26 +57,26 @@ RocketChat.Migrations.add({
 				uploadDate: oldGridFsFile.uploadDate,
 				aliases: null,
 				metadata: null,
-				md5: oldGridFsFile.md5
+				md5: oldGridFsFile.md5,
 			});
 
 			oldChunkCollection.find({
-				files_id: new Mongo.Collection.ObjectID(cfsRecord.copies.files.key)
+				files_id: new Mongo.Collection.ObjectID(cfsRecord.copies.files.key),
 			}).forEach((oldChunk) => {
 				newChunkCollection.insert({
 					_id: oldChunk._id,
 					files_id: cfsRecord._id,
 					n: oldChunk.n,
-					data: oldChunk.data
+					data: oldChunk.data,
 				});
 			});
 
 			RocketChat.models.Messages.find({
 				$or: [{
-					'urls.url': `https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }`
+					'urls.url': `https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }`,
 				}, {
-					'urls.url': `https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`
-				}]
+					'urls.url': `https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`,
+				}],
 			}).forEach((message) => {
 				for (const urlsItem of message.urls) {
 					if (urlsItem.url === (`https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }`) || urlsItem.url === (`https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`)) {
@@ -86,19 +89,19 @@ RocketChat.Migrations.add({
 					}
 				}
 
-				RocketChat.models.Messages.update({_id: message._id}, {
+				RocketChat.models.Messages.update({ _id: message._id }, {
 					$set: {
 						urls: message.urls,
-						msg: message.msg
-					}
+						msg: message.msg,
+					},
 				});
 			});
 
-			oldFilesCollection.remove({_id: cfsRecord._id});
-			oldGridFSCollection.remove({_id: oldGridFsFile._id});
-			oldChunkCollection.remove({files_id: new Mongo.Collection.ObjectID(cfsRecord.copies.files.key)});
+			oldFilesCollection.remove({ _id: cfsRecord._id });
+			oldGridFSCollection.remove({ _id: oldGridFsFile._id });
+			oldChunkCollection.remove({ files_id: new Mongo.Collection.ObjectID(cfsRecord.copies.files.key) });
 		});
 
 		return console.log('End of file migration');
-	}
+	},
 });

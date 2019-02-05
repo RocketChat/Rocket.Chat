@@ -14,7 +14,7 @@ export function notifyDesktopUser({
 	message,
 	room,
 	duration,
-	notificationMessage
+	notificationMessage,
 }) {
 	const { title, text } = RocketChat.roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
 
@@ -28,26 +28,31 @@ export function notifyDesktopUser({
 			rid: message.rid,
 			sender: message.u,
 			type: room.t,
-			name: room.name
-		}
+			name: room.name,
+			message: {
+				msg: message.msg,
+				t: message.t,
+			},
+		},
 	});
 }
 
 export function shouldNotifyDesktop({
 	disableAllMessageNotifications,
 	status,
+	statusConnection,
 	desktopNotifications,
 	hasMentionToAll,
 	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
-	roomType
+	roomType,
 }) {
-	if (disableAllMessageNotifications && desktopNotifications == null) {
+	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser) {
 		return false;
 	}
 
-	if (status === 'busy' || desktopNotifications === 'nothing') {
+	if (statusConnection === 'offline' || status === 'busy' || desktopNotifications === 'nothing') {
 		return false;
 	}
 

@@ -1,4 +1,7 @@
-Meteor.publish('snippetedMessages', function(rid, limit=50) {
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
+Meteor.publish('snippetedMessages', function(rid, limit = 50) {
 	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
 	}
@@ -11,11 +14,15 @@ Meteor.publish('snippetedMessages', function(rid, limit=50) {
 		return this.ready();
 	}
 
+	if (!Meteor.call('canAccessRoom', rid, this.userId)) {
+		return this.ready();
+	}
+
 	const cursorHandle = RocketChat.models.Messages.findSnippetedByRoom(
 		rid,
 		{
-			sort: {ts: -1},
-			limit
+			sort: { ts: -1 },
+			limit,
 		}
 	).observeChanges({
 		added(_id, record) {
@@ -26,7 +33,7 @@ Meteor.publish('snippetedMessages', function(rid, limit=50) {
 		},
 		removed(_id) {
 			publication.removed('rocketchat_snippeted_message', _id);
-		}
+		},
 	});
 	this.ready();
 

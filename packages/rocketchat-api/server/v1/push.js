@@ -1,4 +1,7 @@
-/* globals Push */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Push } from 'meteor/rocketchat:push';
 
 RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 	post() {
@@ -29,7 +32,7 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 			id,
 			token: { [type]: value },
 			appName,
-			userId: this.userId
+			userId: this.userId,
 		}));
 
 		return RocketChat.API.v1.success({ result });
@@ -43,11 +46,11 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 
 		const affectedRecords = Push.appCollection.remove({
 			$or: [{
-				'token.apn': token
+				'token.apn': token,
 			}, {
-				'token.gcm': token
+				'token.gcm': token,
 			}],
-			userId: this.userId
+			userId: this.userId,
 		});
 
 		if (affectedRecords === 0) {
@@ -55,5 +58,5 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });

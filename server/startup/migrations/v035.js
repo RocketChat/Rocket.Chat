@@ -3,20 +3,20 @@ RocketChat.Migrations.add({
 	up() {
 		return RocketChat.models.Messages.update({
 			'file._id': {
-				$exists: true
+				$exists: true,
 			},
 			'attachments.title_link': {
-				$exists: true
+				$exists: true,
 			},
 			'attachments.title_link_download': {
-				$exists: false
-			}
+				$exists: false,
+			},
 		}, {
 			$set: {
-				'attachments.$.title_link_download': true
-			}
+				'attachments.$.title_link_download': true,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
-	}
+	},
 });

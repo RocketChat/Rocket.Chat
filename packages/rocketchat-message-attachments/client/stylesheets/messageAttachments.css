@@ -65,13 +65,12 @@ html.rtl .attachment {
 	}
 
 	& .attachment-title {
+
+		color: #13679a;
+
 		font-size: 1.02rem;
 		font-weight: 500;
 		line-height: 1.5rem;
-
-		& > a {
-			font-weight: 500;
-		}
 	}
 
 	& .attachment-text {
@@ -88,11 +87,20 @@ html.rtl .attachment {
 
 	& .attachment-fields {
 		display: flex;
+
 		margin-top: 4px;
+		flex-wrap: wrap;
 
 		& .attachment-field {
+			flex: 1 0 100%;
+
+			padding-top: 5px;
+			padding-bottom: 5px;
+
 			&.attachment-field-short {
 				display: inline-block;
+
+				flex: 1 1;
 
 				margin-right: 12px;
 			}
@@ -129,10 +137,24 @@ html.rtl .attachment {
 	}
 
 	& .attachment-download-icon {
-		margin-left: 5px;
-		padding: 2px 5px;
+		padding: 0 5px;
+	}
 
-		border-width: 1px;
-		border-radius: 5px;
+	& .attachment-canvas {
+		display: none;
+	}
+
+	& .attachment-pdf-loading {
+		display: none;
+
+		font-size: 1.5rem;
+
+		svg {
+			animation: spin 1s linear infinite;
+		}
+	}
+
+	& .actions-container {
+		margin-top: 6px;
 	}
 }

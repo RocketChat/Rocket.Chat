@@ -1,409 +1,472 @@
 <!-- This page allows for settings to be changed but not all of them are implemented yet -->
 <template name="appManage">
 	{{#with app}}
-
-		{{# header sectionName='Manage_the_App' fixedHeight=true hideHelp=true}}
-		<div class="rc-header__block rc-header__block-action">
-			<div class="rc-switch rc-switch--blue">
-				<label class="rc-switch__label">
-					<input type="checkbox" class="rc-switch__input js-input-check" id="enabled" name="enabledToggle" checked="{{isEnabled}}">
-					<span class="rc-switch__button">
-						<span class="rc-switch__button-inside"></span>
-					</span>
-					<span class="rc-switch__text">
-						{{_ "Activate"}}
-					</span>
-				</label>
-			</div>
-
-		</div>
-		{{/header}}
-		<section class="page-settings flex-tab-main-content">
-			{{#requiresPermission 'manage-apps'}}
-				{{#if isReady}}
-					<div class="rc-apps-details">
-						<div class="rc-apps-container">
-							<div class="rc-apps-details__photo" style="background-image:url({{iconFileContent}})"></div>
-							<div class="rc-apps-details__content">
-								<div class="rc-apps-details__row">
-									<div class="rc-apps-details__name">{{name}}</div>
-									<div class="rc-apps-details__version">v{{version}}</div>
-								</div>
-								<div class="rc-apps-details__row">{{description}}</div>
-								<div class="rc-apps-details__row">
-									{{#if author.name}}
-									<div class="rc-apps-details__item">
-										{{> icon icon='user'}}
-										{{author.name}}
+		<section class="page-container page-home page-static page-settings rc-apps-marketplace">
+			{{# header sectionName='App_Details' fixedHeight=true hideHelp=true fullpage=true}}
+				<div class="rc-header__block rc-header__block-action">
+					<button class="rc-button rc-button--nude js-cancel">{{> icon icon="cross"}}</button>
+				</div>
+			{{/header}}
+			<div class="content">
+				{{#requiresPermission 'manage-apps'}}
+					{{#if hasError}}
+						<div class="apps-error error-color">
+							<i class="icon-attention"></i>
+							<p>{{theError}}</p>
+						</div>
+					{{else if isReady}}
+						<div class="rc-apps-details">
+							<div class="rc-apps-container rc-apps-container__header">
+								{{#if iconFileData}}
+								<div class="rc-apps-details__photo" style="background-image:url(data:image/png;base64,{{iconFileData}})"></div>
+								{{else}}
+									<div class="rc-apps-details__photo" style="background-image:url({{iconFileContent}})"></div>
+								{{/if}}
+								<div class="rc-apps-details__content">
+									<div class="rc-apps-details__row">
+										<h1>{{name}}</h1>
 									</div>
+									{{#if author.name}}
+										<div class="rc-apps-details__version">
+											<strong class="rc-apps-details__author">by {{author.name}}</strong> | Version {{version}}
+										</div>
 									{{/if}}
-									{{#if author.homepage}}
-									<a href="{{author.homepage}}" target="_blank" class="rc-apps-details__item">
-										{{> icon icon='permalink'}}
-										{{_ "App_author_homepage"}}
-									</a>
-									{{/if}}
-									{{#if author.support}}
-									<a href="{{author.support}}" target="_blank" class="rc-apps-details__item">
-										{{> icon icon='at'}}
-										{{_ "App_support_url"}}
-									</a>
-									{{/if}}
+									<div class="rc-apps-details__row">
+										{{#if isInstalled}}
+											{{#if newVersion}}
+												<button class="rc-button rc-button--primary js-install">{{> icon icon="circled-arrow-down"}} {{_ "Update_to_version" version=newVersion }}</button>
+											{{/if}}
+											<button class="rc-button rc-button--nude js-uninstall">{{> icon icon="trash"}} {{_ "Delete" }}</button>
+											{{#if isEnabled}}
+												<button class="rc-button rc-button--nude js-deactivate">{{> icon icon="ban"}} {{_ "Deactivate" }}</button>
+											{{else}}
+												<button class="rc-button rc-button--nude js-activate">{{> icon icon="check"}} {{_ "Activate" }}</button>
+											{{/if}}
+											<button class="rc-button rc-button--nude js-view-logs">{{> icon icon="list-alt"}} {{_ "View_Logs" }}</button>
+										{{else}}
+											<button class="rc-button rc-button--primary js-install">{{> icon icon="circled-arrow-down"}} {{_ "Install"}}</button>
+										{{/if}}
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="rc-apps-container rc-apps-settings">
-					{{#each settings}}
-						<div class="rc-apps-settings__item">
-							{{#if $eq type 'string'}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-input__wrapper">
-											{{#if multiline}}
-												<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
-											{{else}}
-												<input class="rc-input__element" type="text" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+						<div class="rc-apps-container">
+							<div class="rc-apps-details__content">
+								{{#if categories}}
+									<div class="rc-apps-details__row rc-apps-details__block">
+										<h2> {{_ "Categories"}} </h2>
+										<div class="rc-apps-details__row">
+											{{#each category in categories}}
+												<span class="rc-apps-category">{{ category }}</span>
+											{{/each}}
+										</div>
+									</div>
+								{{/if}}
+								<div class="rc-apps-details__row rc-apps-details__block">
+									<h2> {{_ "Contact"}} </h2>
+									<div class="rc-apps-details__row">
+										<div class="rc-apps-details__col">
+										{{#if author.homepage}}
+												<h3>{{_ "Author_Site"}}</h3>
+												<a href="{{author.homepage}}" target="_blank">{{author.homepage}}</a>
+										{{/if}}
+										</div>
+										<div class="rc-apps-details__col">
+											{{#if author.support}}
+												<h3>{{_ "Support"}}</h3>
+												{{#if isEmail author.support}}
+													<a href="mailto:{{author.support}}">{{author.support}}</a>
+												{{else}}
+													<a href="{{author.support}}" target="_blank">{{author.support}}</a>
+												{{/if}}
 											{{/if}}
 										</div>
-									</label>
-									{{#if i18nDescription}}
-										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{#if i18nAlert}}
-										<div class="rc-input__error">
-											<div class="rc-input__error-icon">
-												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-										</div>
-									{{/if}}
+									</div>
 								</div>
-							{{else if $eq type 'boolean'}}
-								<div class="rc-switch rc-switch--blue">
-								<label class="rc-switch__label" tabindex="-1" for="{{id}}">
-									<input type="checkbox" class="rc-switch__input" name="{{id}}" id="{{id}}" checked="{{$eq value true}}">
-									<span class="rc-switch__button">
-										<span class="rc-switch__button-inside"></span>
-									</span>
-									<span class="rc-switch__text">
-										{{_ i18nLabel}}
-									</span>
-								</label>
-								<span class="rc-switch__description">{{{parseDescription i18nDescription}}}</span>
-								{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								<div class="rc-apps-details__row">
+									<h2> {{_ "Details"}} </h2>
+								</div>
+								{{#if summary}}
+									<div>
+										{{ summary }}
+									</div>
+								{{/if}}
+								{{#if description}}
+									<div class="rc-apps-details__description">
+										<p>{{ description }}</p>
+									</div>
+								{{/if}}
+
+								{{#if apis}}
+									<div class="rc-apps-details__row">
+										<h2> {{_ "Apis"}} </h2>
+									</div>
+									<div class="rc-apps-settings">
+										{{#each apis}}
+											<div class="rc-apps-settings__item">
+												<div class="rc-input">
+													<div class="rc-apps-details__api">
+														{{renderMethods methods}} {{path}}
+													</div>
+													<div class="rc-input__description rc-apps-details__api__description">
+														{{#each methods}}
+															<div class="rc-apps-details__api__description__item">{{#each curl . ..}}{{.}}<br />{{/each}}</div>
+														{{/each}}
+													</div>
+												</div>
+											</div>
+										{{/each}}
+									</div>
+								{{/if}}
+
+								{{#if settings}}
+									<div class="rc-apps-details__row">
+										<h2> {{_ "Settings"}} </h2>
+									</div>
+									<div class="rc-apps-settings">
+										{{#each settings}}
+											<div class="rc-apps-settings__item">
+												{{#if $eq type 'string'}}
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-input__wrapper">
+																{{#if multiline}}
+																	<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+																{{else}}
+																	<input class="rc-input__element" type="text" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+																{{/if}}
+															</div>
+														</label>
+														{{#if i18nDescription}}
+															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{#if i18nAlert}}
+															<div class="rc-input__error">
+																<div class="rc-input__error-icon">
+																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+																</div>
+																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															</div>
+														{{/if}}
+													</div>
+												{{else if $eq type 'boolean'}}
+													<div class="rc-switch rc-switch--blue">
+													<label class="rc-switch__label" tabindex="-1" for="{{id}}">
+														<input type="checkbox" class="rc-switch__input" name="{{id}}" id="{{id}}" checked="{{$eq value true}}">
+														<span class="rc-switch__button">
+															<span class="rc-switch__button-inside"></span>
+														</span>
+														<span class="rc-switch__text">
+															{{_ i18nLabel}}
+														</span>
+													</label>
+													<span class="rc-switch__description">{{{parseDescription i18nDescription}}}</span>
+													{{# if i18nAlert}}
+														<div class="rc-input__error">
+															<div class="rc-input__error-icon">
+																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+															</div>
+															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+														</div>
+													{{/if}}
+												</div>
+												{{else if $eq type 'int'}}
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-input__wrapper">
+																{{#if multiline}}
+																<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+																{{else}}
+																<input class="rc-input__element" type="number" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+																{{/if}}
+															</div>
+														</label>
+														{{# if i18nDescription}}
+															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{# if i18nAlert}}
+															<div class="rc-input__error">
+																<div class="rc-input__error-icon">
+																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+																</div>
+																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															</div>
+														{{/if}}
+													</div>
+												{{else if $eq type 'password'}}
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-input__wrapper">
+																{{#if multiline}}
+																<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+																{{else}}
+																<input class="rc-input__element" type="password" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+																{{/if}}
+															</div>
+														</label>
+														{{# if i18nDescription}}
+															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{# if i18nAlert}}
+															<div class="rc-input__error">
+																<div class="rc-input__error-icon">
+																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+																</div>
+																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															</div>
+														{{/if}}
+													</div>
+												{{else if $eq type 'relativeUrl'}}
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-input__wrapper">
+																{{#if $eq type 'relativeUrl'}}
+																	<input class="rc-input__element" type="text" name="{{id}}" value="{{relativeUrl value}}" placeholder="{{_ i18nPlaceholder}}" {{isReadonly}}/>
+																{{/if}}
+															</div>
+														</label>
+														{{# if i18nDescription}}
+															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{# if i18nAlert}}
+															<div class="rc-input__error">
+																<div class="rc-input__error-icon">
+																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+																</div>
+																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															</div>
+														{{/if}}
+													</div>
+												{{else if $eq type 'font'}}
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-input__wrapper">
+																{{#if multiline}}
+																<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+																{{else}}
+																<input class="rc-input__element" type="text" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+																{{/if}}
+															</div>
+														</label>
+														{{# if i18nDescription}}
+															<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{# if i18nAlert}}
+															<div class="rc-input__error">
+																<div class="rc-input__error-icon">
+																	{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+																</div>
+																<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+															</div>
+														{{/if}}
+													</div>
+												{{else if $eq type 'code'}}
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-input__wrapper">
+																{{#if isDisabled.disabled}}
+																	{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
+																{{else}}
+																<div class="code-mirror-box" data-editor-id="{{id}}">
+																	<div class="title">
+																		{{label}}
+																	</div>
+																	{{> CodeMirror name=id options=getEditorOptions code=value }}
+																	<div class="buttons">
+																		<button class="button primary button-fullscreen">{{_ "Full_Screen"}}</button>
+																		<button class="button primary button-restore">{{_ "Exit_Full_Screen"}}</button>
+																	</div>
+																</div>
+																{{/if}}
+															</div>
+														</label>
+														{{# if i18nDescription}}
+														<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{# if i18nAlert}}
+														<div class="rc-input__error">
+															<div class="rc-input__error-icon">
+																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+															</div>
+															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+														</div>
+														{{/if}}
+													</div>
+
+												{{else if $eq type 'select'}}
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-select">
+																<select class="rc-select__element" name="{{id}}">
+																	{{#each values}}
+																	<option class="rc-select__option" value="{{key}}" selected="{{selectedOption ../id key}}">{{_ i18nLabel}}</option>
+																	{{/each}}
+																</select>
+																{{> icon block="rc-select__arrow" icon="arrow-down" }}
+															</div>
+														</label>
+														{{# if i18nDescription}}
+														<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{# if i18nAlert}}
+														<div class="rc-input__error">
+															<div class="rc-input__error-icon">
+																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+															</div>
+															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+														</div>
+														{{/if}}
+													</div>
+
+												{{else if $eq type 'color'}}
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-input__wrapper">
+																{{#if multiline}}
+																<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
+																{{else}}
+																<input class="rc-input__element" type="color" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
+																{{/if}}
+															</div>
+														</label>
+														{{# if i18nDescription}}
+														<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{# if i18nAlert}}
+														<div class="rc-input__error">
+															<div class="rc-input__error-icon">
+																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+															</div>
+															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+														</div>
+														{{/if}}
+													</div>
+													<!-- <div class="horizontal">
+														{{#if $eq editor 'color'}}
+														<div class="flex-grow-1">
+															<input class="input-monitor colorpicker-input" type="text" name="{{id}}" value="{{value}}" autocomplete="off"/>
+															<span class="colorpicker-swatch border-component-color" style="background-color: {{value}}"></span>
+														</div>
+														{{/if}}
+														{{#if $eq editor 'expression'}}
+														<div class="flex-grow-1">
+															<input class="input-monitor" type="" name="{{id}}" value="{{value}}"/>
+														</div>
+														{{/if}}
+														<div class="color-editor">
+															<div class="select-arrow">
+																<i class="icon-down-open secondary-font-color"></i>
+															</div>
+															<select name="color-editor">
+																{{#each allowedTypes}}
+																<option value="{{.}}" selected="{{$eq ../editor .}}">{{_ .}}</option>
+																{{/each}}
+															</select>
+														</div>
+													</div>
+													<div class="settings-description">Variable name: {{getColorVariable id}}</div> -->
+												{{ else if $eq type 'language'}}
+
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ i18nLabel}}</div>
+															<div class="rc-select">
+																<select class="rc-select__element" name="{{id}}">
+																	{{#each languages}}
+																		<option class="rc-select__option" value="{{key}}" selected="{{selectedOption key}}">{{_ name}}</option>
+																	{{/each}}
+																</select>
+																{{> icon block="rc-select__arrow" icon="arrow-down" }}
+															</div>
+														</label>
+														{{# if i18nDescription}}
+														<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
+														{{/if}}
+														{{# if i18nAlert}}
+														<div class="rc-input__error">
+															<div class="rc-input__error-icon">
+																{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+															</div>
+															<div class="rc-input__error-message">{{{parseDescription i18nAlert}}}</div>
+														</div>
+														{{/if}}
+													</div>
+												{{else}}
+												<div class="input-line double-col">
+													<label class="setting-label">{{_ i18nLabel}}</label>
+													<div class="setting-field">
+														{{#if $eq type 'action'}}
+															{{#if hasChanges section}}
+															<span style="line-height: 40px" class="secondary-font-color">{{_ "Save_to_enable_this_action"}}</span>
+															{{else}}
+															<button type="button" class="button primary action" data-setting="{{id}}" data-action="{{value}}">{{_ actionText}}</button>
+															{{/if}}
+														{{/if}}
+
+														{{#if $eq type 'asset'}}
+															{{#if value.url}}
+															<div class="settings-file-preview">
+																<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
+																<div class="action">
+																	<button type="button" class="button danger delete-asset"><i class="icon-trash secondary-font-color"></i>{{_ 'Delete'}}</button>
+																</div>
+															</div>
+															{{else}}
+															<div class="settings-file-preview">
+																<div class="preview no-file background-transparent-light secondary-font-color"><i class="icon-upload secondary-font-color"></i></div>
+																<div class="action">
+																	<div class="button primary">{{_ 'Select_file'}}
+																		<input type="file" accept="{{assetAccept fileConstraints}}" />
+																	</div>
+																</div>
+															</div>
+															{{/if}}
+														{{/if}}
+
+														{{#if $eq type 'roomPick'}}
+															<div>
+																{{> inputAutocomplete settings=autocompleteRoom id=id name=id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
+																<ul class="selected-rooms">
+																	{{#each selectedRooms}}
+																	<li class="remove-room" data-setting={{../id}}>{{name}} <i class="icon-cancel secondary-font-color"></i></li>
+																	{{/each}}
+																</ul>
+															</div>
+														{{/if}}
+
+														{{#if i18nDescription}}
+															<div class="settings-description">{{{parseDescription i18nDescription}}}</div>
+															{{/if}}
+															{{#if i18nAlert}}
+															<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{parseDescription i18nAlert}}}</div>
+														{{/if}}
+													</div>
+												</div>
+												{{/if}}
+
+											</div>
+										{{/each}}
+										<div class="rc-button-group">
+											<button class="rc-button rc-button--outline js-cancel-editing" disabled='{{disabled}}'>{{_ "Cancel" }}</button>
+											<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save" }}</button>
 										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
 									</div>
 								{{/if}}
 							</div>
-							{{else if $eq type 'int'}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-input__wrapper">
-											{{#if multiline}}
-											<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
-											{{else}}
-											<input class="rc-input__element" type="number" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
-											{{/if}}
-										</div>
-									</label>
-									{{# if i18nDescription}}
-										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{# if i18nAlert}}
-										<div class="rc-input__error">
-											<div class="rc-input__error-icon">
-												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-										</div>
-									{{/if}}
-								</div>
-							{{else if $eq type 'password'}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-input__wrapper">
-											{{#if multiline}}
-											<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
-											{{else}}
-											<input class="rc-input__element" type="password" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
-											{{/if}}
-										</div>
-									</label>
-									{{# if i18nDescription}}
-										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{# if i18nAlert}}
-										<div class="rc-input__error">
-											<div class="rc-input__error-icon">
-												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-										</div>
-									{{/if}}
-								</div>
-							{{else if $eq type 'relativeUrl'}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-input__wrapper">
-											{{#if $eq type 'relativeUrl'}}
-												<input class="rc-input__element" type="text" name="{{id}}" value="{{relativeUrl value}}" placeholder="{{_ i18nPlaceholder}}" {{isReadonly}}/>
-											{{/if}}
-										</div>
-									</label>
-									{{# if i18nDescription}}
-										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{# if i18nAlert}}
-										<div class="rc-input__error">
-											<div class="rc-input__error-icon">
-												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-										</div>
-									{{/if}}
-								</div>
-							{{else if $eq type 'font'}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-input__wrapper">
-											{{#if multiline}}
-											<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
-											{{else}}
-											<input class="rc-input__element" type="text" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
-											{{/if}}
-										</div>
-									</label>
-									{{# if i18nDescription}}
-										<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{# if i18nAlert}}
-										<div class="rc-input__error">
-											<div class="rc-input__error-icon">
-												{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-											</div>
-											<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-										</div>
-									{{/if}}
-								</div>
-							{{else if $eq type 'code'}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-input__wrapper">
-											{{#if isDisabled.disabled}}
-											{{> CodeMirror name=id options=(getEditorOptions true) code=(i18nDefaultValue) }}
-											{{else}}
-											<div class="code-mirror-box" data-editor-id="{{id}}">
-												<div class="title">
-													{{label}}
-												</div>
-												{{> CodeMirror name=id options=getEditorOptions code=value }}
-												<div class="buttons">
-													<button class="button primary button-fullscreen">Full Screen</button>
-													<button class="button primary button-restore">Exit Full Screen</button>
-												</div>
-											</div>
-											{{/if}}
-										</div>
-									</label>
-									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
-									{{/if}}
-								</div>
-
-							{{else if $eq type 'select'}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-select">
-											<select class="rc-select__element" name="{{id}}">
-												{{#each values}}
-												<option class="rc-select__option" value="{{key}}" selected="{{selectedOption ../id key}}">{{_ i18nLabel}}</option>
-												{{/each}}
-											</select>
-											{{> icon block="rc-select__arrow" icon="arrow-down" }}
-										</div>
-									</label>
-									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
-									{{/if}}
-								</div>
-
-							{{else if $eq type 'color'}}
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-input__wrapper">
-											{{#if multiline}}
-											<textarea class="rc-input__element" name="{{id}}" rows="4" style="height: auto">{{value}}</textarea>
-											{{else}}
-											<input class="rc-input__element" type="color" name="{{id}}" value="{{value}}" placeholder="{{_ i18nPlaceholder}}" />
-											{{/if}}
-										</div>
-									</label>
-									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
-									{{/if}}
-								</div>
-								<!-- <div class="horizontal">
-									{{#if $eq editor 'color'}}
-									<div class="flex-grow-1">
-										<input class="input-monitor colorpicker-input" type="text" name="{{id}}" value="{{value}}" autocomplete="off"/>
-										<span class="colorpicker-swatch border-component-color" style="background-color: {{value}}"></span>
-									</div>
-									{{/if}}
-									{{#if $eq editor 'expression'}}
-									<div class="flex-grow-1">
-										<input class="input-monitor" type="" name="{{id}}" value="{{value}}"/>
-									</div>
-									{{/if}}
-									<div class="color-editor">
-										<div class="select-arrow">
-											<i class="icon-down-open secondary-font-color"></i>
-										</div>
-										<select name="color-editor">
-											{{#each allowedTypes}}
-											<option value="{{.}}" selected="{{$eq ../editor .}}">{{_ .}}</option>
-											{{/each}}
-										</select>
-									</div>
-								</div>
-								<div class="settings-description">Variable name: {{getColorVariable id}}</div> -->
-							{{ else if $eq type 'language'}}
-
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ i18nLabel}}</div>
-										<div class="rc-select">
-											<select class="rc-select__element" name="{{id}}">
-												{{#each languages}}
-													<option class="rc-select__option" value="{{key}}" selected="{{selectedOption key}}">{{_ name}}</option>
-												{{/each}}
-											</select>
-											{{> icon block="rc-select__arrow" icon="arrow-down" }}
-										</div>
-									</label>
-									{{# if i18nDescription}}
-									<div class="rc-input__description">{{{parseDescription i18nDescription}}}</div>
-									{{/if}}
-									{{# if i18nAlert}}
-									<div class="rc-input__error">
-										<div class="rc-input__error-icon">
-											{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-										</div>
-										<div class="rc-input__error-message">{{_ "i18nAlert"}}</div>
-									</div>
-									{{/if}}
-								</div>
-							{{else}}
-							<div class="input-line double-col">
-								<label class="setting-label">{{_ i18nLabel}}</label>
-								<div class="setting-field">
-									{{#if $eq type 'action'}}
-										{{#if hasChanges section}}
-										<span style="line-height: 40px" class="secondary-font-color">{{_ "Save_to_enable_this_action"}}</span>
-										{{else}}
-										<button type="button" class="button primary action" data-setting="{{id}}" data-action="{{value}}">{{_ actionText}}</button>
-										{{/if}}
-									{{/if}}
-
-									{{#if $eq type 'asset'}}
-										{{#if value.url}}
-										<div class="settings-file-preview">
-											<div class="preview" style="background-image:url({{value.url}}?_dc={{random}});"></div>
-											<div class="action">
-												<button type="button" class="button danger delete-asset"><i class="icon-trash secondary-font-color"></i>{{_ 'Delete'}}</button>
-											</div>
-										</div>
-										{{else}}
-										<div class="settings-file-preview">
-											<div class="preview no-file background-transparent-light secondary-font-color"><i class="icon-upload secondary-font-color"></i></div>
-											<div class="action">
-												<div class="button primary">{{_ 'Select_file'}}
-													<input type="file" accept="{{assetAccept fileConstraints}}" />
-												</div>
-											</div>
-										</div>
-										{{/if}}
-									{{/if}}
-
-									{{#if $eq type 'roomPick'}}
-										<div>
-											{{> inputAutocomplete settings=autocompleteRoom id=id name=id class="search autocomplete" autocomplete="off" disabled=isDisabled.disabled}}
-											<ul class="selected-rooms">
-												{{#each selectedRooms}}
-												<li class="remove-room" data-setting={{../id}}>{{name}} <i class="icon-cancel secondary-font-color"></i></li>
-												{{/each}}
-											</ul>
-										</div>
-									{{/if}}
-
-									{{#if i18nDescription}}
-										<div class="settings-description">{{{parseDescription i18nDescription}}}</div>
-										{{/if}}
-										{{#if i18nAlert}}
-										<div class="settings-alert pending-color pending-background pending-border"><i class="icon-attention secondary-font-color"></i>{{{_ i18nAlert}}}</div>
-									{{/if}}
-								</div>
-							</div>
-							{{/if}}
-
 						</div>
-
-					{{/each}}
-					</div>
-					<div class="rc-apps-container">
-						<div class="rc-button-group">
-							<button class="rc-button rc-button--secondary js-cancel">{{_ "Cancel" }}</button>
-							<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save" }}</button>
-							<button class="rc-button rc-button--cancel js-uninstall">{{_ "Uninstall" }}</button>
-							<button class="rc-button rc-button--secondary js-update">{{_ "Update" }}</button>
-							<button class="rc-button rc-button--secondary js-view-logs">{{_ "View_Logs" }}</button>
-						</div>
-					</div>
-				{{else if hasError}}
-					<div class="apps-error error-color">
-						<i class="icon-attention"></i>
-						<p>Sadly, an error has occured while loading this page.</p>
-					</div>
-				{{else}}
-					{{> loading}}
-				{{/if}}
-			{{/requiresPermission}}
+					{{else}}
+						{{> loading}}
+					{{/if}}
+				{{/requiresPermission}}
+			</div>
 		</section>
 	{{/with}}
 </template>

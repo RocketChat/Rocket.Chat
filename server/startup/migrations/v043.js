@@ -4,5 +4,5 @@ RocketChat.Migrations.add({
 		if (RocketChat && RocketChat.models && RocketChat.models.Permissions) {
 			RocketChat.models.Permissions.update({ _id: 'pin-message' }, { $addToSet: { roles: 'admin' } });
 		}
-	}
+	},
 });

@@ -1,48 +1,45 @@
 <template name="accountSecurity">
-	<section class="preferences-page">
-			{{> header sectionName="Security"}}
-	<div class="preferences-page__content">
-		<form id="security" autocomplete="off" class="container">
+	<section class="preferences-page preferences-page--new page-settings">
+		{{> header sectionName="Security" fullpage=true}}
+		<div class="preferences-page__content">
+			<form id="security" autocomplete="off" class="container">
 				{{# if isAllowed}}
-					<fieldset>
-						<div class="section">
-							<h1>{{_ "Two-factor_authentication"}}</h1>
-							<div class="section-content border-component-color">
-								{{#if isEnabled}}
-									<button class="button danger disable-2fa">{{_ "Disable_two-factor_authentication"}}</button>
-								{{else}}
-									{{#unless isRegistering}}
-										<p>{{_ "Two-factor_authentication_is_currently_disabled"}}</p>
+				<div class="section">
+					<h1>{{_ "Two-factor_authentication"}}</h1>
+					<div class="section-content border-component-color">
+						{{#if isEnabled}}
+						<button class="rc-button rc-button--cancel disable-2fa">{{_ "Disable_two-factor_authentication"}}</button>
+						{{else}}
+						{{#unless isRegistering}}
+						<p>{{_ "Two-factor_authentication_is_currently_disabled"}}</p>
 
-										<button class="button primary enable-2fa">{{_ "Enable_two-factor_authentication"}}</button>
-									{{else}}
-										<p>{{_ "Scan_QR_code"}}</p>
-										<p>{{_ "Scan_QR_code_alternative_s" code=imageSecret}}</p>
+						<button class="rc-button rc-button--primary enable-2fa">{{_ "Enable_two-factor_authentication"}}</button>
+						{{else}}
+						<p>{{_ "Scan_QR_code"}}</p>
+						<p>{{_ "Scan_QR_code_alternative_s" code=imageSecret}}</p>
 
-										<img src="{{imageData}}">
+						<img src="{{imageData}}">
 
-										<form class="inline">
-											<input type="text" class="rc-input__element" id="testCode" placeholder="{{_ "Enter_authentication_code"}}">
-											<button class="button primary verify-code">{{_ "Verify"}}</button>
-										</form>
-									{{/unless}}
-								{{/if}}
+						<form>
+							<div class="input-line double-col">
+								<input type="text" class="rc-input__element" id="testCode" placeholder="{{_ "Enter_authentication_code"}}">
+								<button class="rc-button rc-button--primary setting-action verify-code">{{_ "Verify"}}</button>
 							</div>
-						</div>
-					</fieldset>
+						</form>
+						{{/unless}}
+						{{/if}}
+					</div>
+				</div>
 
-
-					{{#if isEnabled}}
-						<fieldset>
-							<div class="section">
-								<h1>{{_ "Backup_codes"}}</h1>
-								<div class="section-content border-component-color">
-									<p>{{codesRemaining}}</p>
-									<button class="button regenerate-codes">{{_ "Regenerate_codes"}}</button>
-								</div>
-							</div>
-						</fieldset>
-					{{/if}}
+				{{#if isEnabled}}
+				<div class="section">
+					<h1>{{_ "Backup_codes"}}</h1>
+					<div class="section-content border-component-color">
+						<p>{{codesRemaining}}</p>
+						<button class="rc-button rc-button--secondary regenerate-codes">{{_ "Regenerate_codes"}}</button>
+					</div>
+				</div>
+				{{/if}}
 				{{/if}}
 			</form>
 		</div>

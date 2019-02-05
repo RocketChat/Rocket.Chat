@@ -1,21 +1,23 @@
+import { Meteor } from 'meteor/meteor';
+
 class PasswordPolicy {
 	constructor({
 		enabled = false,
 		minLength = -1,
 		maxLength = -1,
 		forbidRepeatingCharacters = false,
-		forbidRepeatingCharactersCount = 3, //the regex is this number minus one
+		forbidRepeatingCharactersCount = 3, // the regex is this number minus one
 		mustContainAtLeastOneLowercase = false, // /[A-Z]{3,}/ could do this instead of at least one
 		mustContainAtLeastOneUppercase = false,
 		mustContainAtLeastOneNumber = false,
 		mustContainAtLeastOneSpecialCharacter = false,
-		throwError = true
+		throwError = true,
 	} = {}) {
 		this.regex = {
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
 			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
 			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
-			mustContainAtLeastOneSpecialCharacter: new RegExp('[^A-Za-z0-9 ]')
+			mustContainAtLeastOneSpecialCharacter: new RegExp('[^A-Za-z0-9 ]'),
 		};
 
 		this.enabled = enabled;

@@ -1,7 +1,11 @@
 <template name="messageAttachment">
 	<div class="attachment">
 		<!-- <div>fallback: {{fallback}}</div> -->
-		{{pretext}}
+		{{#if markdownInPretext}}
+			{{{parsedPretext}}}
+		{{else}}
+			{{pretext}}
+		{{/if}}
 		<div class="attachment-block">
 			<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
 			{{#if author_name}}
@@ -48,7 +52,7 @@
 					{{#if title_link}}
 						<a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
 						{{#if title_link_download}}
-							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
+							<a class="attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
 						{{/if}}
 					{{else}}
 						{{title}}
@@ -126,24 +130,22 @@
 				{{/unless}}
 			{{/if}}
 
+			{{#if isPDF}}
+				{{#unless collapsed}}
+					<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+						{{> icon block="rc-input__icon-svg" icon="loading"}}
+					</div>
+					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
+				{{/unless}}
+			{{/if}}
 			{{#if fields}}
 				{{#unless collapsed}}
 					<div class="attachment-fields">
 						{{#each fields}}
-							{{#unless short}}
-								<div class="attachment-field">
-									<div class="attachment-field-title">{{title}}</div>
-									{{{RocketChatMarkdown value}}}
-								</div>
-							{{/unless}}
-						{{/each}}
-						{{#each fields}}
-							{{#if short}}
-								<div class="attachment-field attachment-field-short">
-									<div class="attachment-field-title">{{title}}</div>
-									{{{RocketChatMarkdown value}}}
-								</div>
-							{{/if}}
+							<div class="attachment-field{{# if short }} attachment-field-short{{/if}}">
+								<div class="attachment-field-title">{{title}}</div>
+								{{{RocketChatMarkdown value}}}
+							</div>
 						{{/each}}
 					</div>
 				{{/unless}}
@@ -154,6 +156,16 @@
 					<div class="attachment-description">{{description}}</div>
 				{{/if}}
 			{{/unless}}
+
+			{{#if actions}}
+				{{#unless collapsed}}
+					<div class="actions-container">
+						{{#each actions}}
+							{{> messageAction}}
+						{{/each}}
+					</div>
+				{{/unless}}
+			{{/if}}
 
 			{{#each attachments}}
 				{{injectIndex . ../index @index}} {{> messageAttachment}}

@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+
 Template.otrFlexTab.helpers({
 	otrAvailable() {
 		return RocketChat.OTR && RocketChat.OTR.isEnabled();
@@ -24,7 +29,7 @@ Template.otrFlexTab.helpers({
 	establishing() {
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		return otr && otr.establishing.get();
-	}
+	},
 });
 
 Template.otrFlexTab.events({
@@ -37,7 +42,7 @@ Template.otrFlexTab.events({
 				modal.open({
 					title: t('Timeout'),
 					type: 'error',
-					timer: 2000
+					timer: 2000,
 				});
 				otr.establishing.set(false);
 			}, 10000);
@@ -53,19 +58,19 @@ Template.otrFlexTab.events({
 				modal.open({
 					title: t('Timeout'),
 					type: 'error',
-					timer: 2000
+					timer: 2000,
 				});
 				otr.establishing.set(false);
 			}, 10000);
 		}
 	},
-	'click button.end'(e/*, t*/) {
+	'click button.end'(e/* , t*/) {
 		e.preventDefault();
 		const otr = RocketChat.OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
 			otr.end();
 		}
-	}
+	},
 });
 
 Template.otrFlexTab.onCreated(function() {

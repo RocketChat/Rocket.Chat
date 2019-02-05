@@ -1,5 +1,10 @@
+import { Mongo } from 'meteor/mongo';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
-import moment from 'moment';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { DateFormat } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
+import { popover } from 'meteor/rocketchat:ui';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 const roomFiles = new Mongo.Collection('room_files');
@@ -31,7 +36,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	fileTypeClass() {
-		const [ , type ] = this.type && /^(.+?)\//.exec(this.type) || [];
+		const [, type] = (this.type && /^(.+?)\//.exec(this.type)) || [];
 		if (type) {
 			return `room-files-${ type }`;
 		}
@@ -42,15 +47,17 @@ Template.uploadedFilesList.helpers({
 			return fixCordova(this.url);
 		}
 	},
-
+	format(timestamp) {
+		return DateFormat.formatDateAndTime(timestamp);
+	},
 	fileTypeIcon() {
-		const [ , extension ] = this.name.match(/.*?\.(.*)$/);
+		const [, extension] = this.name.match(/.*?\.(.*)$/);
 
 		if (this.type.match(/application\/pdf/)) {
 			return {
 				id: 'file-pdf',
 				type: 'pdf',
-				extension
+				extension,
 			};
 		}
 
@@ -58,7 +65,7 @@ Template.uploadedFilesList.helpers({
 			return {
 				id: 'file-document',
 				type: 'document',
-				extension
+				extension,
 			};
 		}
 
@@ -67,7 +74,7 @@ Template.uploadedFilesList.helpers({
 			return {
 				id: 'file-sheets',
 				type: 'sheets',
-				extension
+				extension,
 			};
 		}
 
@@ -75,19 +82,19 @@ Template.uploadedFilesList.helpers({
 			return {
 				id: 'file-sheets',
 				type: 'ppt',
-				extension
+				extension,
 			};
 		}
 
 		return {
-			id: 'file-generic',
+			id: 'clip',
 			type: 'generic',
-			extension
+			extension,
 		};
 	},
 
 	formatTimestamp(timestamp) {
-		return moment(timestamp).format(RocketChat.settings.get('Message_TimeAndDateFormat') || 'LLL');
+		return DateFormat.formatDateAndTime(timestamp);
 	},
 
 	hasMore() {
@@ -96,10 +103,14 @@ Template.uploadedFilesList.helpers({
 
 	hasFiles() {
 		return roomFiles.find({ rid: this.rid }).count() > 0;
-	}
+	},
 });
 
 Template.uploadedFilesList.events({
+	'submit .search-form'(e) {
+		e.preventDefault();
+	},
+
 	'input .uploaded-files-list__search-input'(e, t) {
 		t.searchText.set(e.target.value.trim());
 		t.hasMore.set(true);
@@ -109,5 +120,41 @@ Template.uploadedFilesList.events({
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
 			return t.limit.set(t.limit.get() + 50);
 		}
-	}, 200)
+	}, 200),
+
+	'click .js-action'(e) {
+		e.currentTarget.parentElement.classList.add('active');
+
+		const config = {
+			columns: [
+				{
+					groups: [
+						{
+							items: [
+								{
+									icon: 'download',
+									name: t('Download'),
+									action: () => {
+										const a = document.createElement('a');
+										a.href = this.file.url;
+										a.download = this.file.name;
+										document.body.appendChild(a);
+										a.click();
+										window.URL.revokeObjectURL(this.file.url);
+										a.remove();
+									},
+								},
+							],
+						},
+					],
+				},
+			],
+			currentTarget: e.currentTarget,
+			onDestroyed:() => {
+				e.currentTarget.parentElement.classList.remove('active');
+			},
+		};
+
+		popover.open(config);
+	},
 });

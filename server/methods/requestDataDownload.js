@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import path from 'path';
 
@@ -9,7 +10,7 @@ if (RocketChat.settings.get('UserData_FileSystemPath') != null) {
 }
 
 Meteor.methods({
-	requestDataDownload({fullExport = false}) {
+	requestDataDownload({ fullExport = false }) {
 		const currentUserData = Meteor.user();
 		const userId = currentUserData._id;
 
@@ -22,7 +23,7 @@ Meteor.methods({
 			if (lastOperation.createdAt > yesterday) {
 				return {
 					requested: false,
-					exportOperation: lastOperation
+					exportOperation: lastOperation,
 				};
 			}
 		}
@@ -54,14 +55,14 @@ Meteor.methods({
 			assetsPath: assetsFolder,
 			fileList: [],
 			generatedFile: null,
-			fullExport
+			fullExport,
 		};
 
 		RocketChat.models.ExportOperations.create(exportOperation);
 
 		return {
 			requested: true,
-			exportOperation
+			exportOperation,
 		};
-	}
+	},
 });

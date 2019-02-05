@@ -1,23 +1,24 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import moment from 'moment';
 
 class LivechatOfficeHour extends RocketChat.models._Base {
 	constructor() {
 		super('livechat_office_hour');
 
-		this.tryEnsureIndex({ 'day': 1 }); // the day of the week monday - sunday
-		this.tryEnsureIndex({ 'start': 1 }); // the opening hours of the office
-		this.tryEnsureIndex({ 'finish': 1 }); // the closing hours of the office
-		this.tryEnsureIndex({ 'open': 1 }); // whether or not the offices are open on this day
+		this.tryEnsureIndex({ day: 1 }); // the day of the week monday - sunday
+		this.tryEnsureIndex({ start: 1 }); // the opening hours of the office
+		this.tryEnsureIndex({ finish: 1 }); // the closing hours of the office
+		this.tryEnsureIndex({ open: 1 }); // whether or not the offices are open on this day
 
 		// if there is nothing in the collection, add defaults
 		if (this.find().count() === 0) {
-			this.insert({'day' : 'Monday', 'start' : '08:00', 'finish' : '20:00', 'code' : 1, 'open' : true });
-			this.insert({'day' : 'Tuesday', 'start' : '08:00', 'finish' : '20:00', 'code' : 2, 'open' : true });
-			this.insert({'day' : 'Wednesday', 'start' : '08:00', 'finish' : '20:00', 'code' : 3, 'open' : true });
-			this.insert({'day' : 'Thursday', 'start' : '08:00', 'finish' : '20:00', 'code' : 4, 'open' : true });
-			this.insert({'day' : 'Friday', 'start' : '08:00', 'finish' : '20:00', 'code' : 5, 'open' : true });
-			this.insert({'day' : 'Saturday', 'start' : '08:00', 'finish' : '20:00', 'code' : 6, 'open' : false });
-			this.insert({'day' : 'Sunday', 'start' : '08:00', 'finish' : '20:00', 'code' : 0, 'open' : false });
+			this.insert({ day : 'Monday', start : '08:00', finish : '20:00', code : 1, open : true });
+			this.insert({ day : 'Tuesday', start : '08:00', finish : '20:00', code : 2, open : true });
+			this.insert({ day : 'Wednesday', start : '08:00', finish : '20:00', code : 3, open : true });
+			this.insert({ day : 'Thursday', start : '08:00', finish : '20:00', code : 4, open : true });
+			this.insert({ day : 'Friday', start : '08:00', finish : '20:00', code : 5, open : true });
+			this.insert({ day : 'Saturday', start : '08:00', finish : '20:00', code : 6, open : false });
+			this.insert({ day : 'Sunday', start : '08:00', finish : '20:00', code : 0, open : false });
 		}
 	}
 
@@ -26,13 +27,13 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 	 */
 	updateHours(day, newStart, newFinish, newOpen) {
 		this.update({
-			day
+			day,
 		}, {
 			$set: {
 				start: newStart,
 				finish: newFinish,
-				open: newOpen
-			}
+				open: newOpen,
+			},
 		});
 	}
 
@@ -46,7 +47,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 		// get todays office hours from db
-		const todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
+		const todaysOfficeHours = this.findOne({ day: currentTime.format('dddd') });
 		if (!todaysOfficeHours) {
 			return false;
 		}
@@ -76,7 +77,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 		// get todays office hours from db
-		const todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
+		const todaysOfficeHours = this.findOne({ day: currentTime.format('dddd') });
 		if (!todaysOfficeHours) {
 			return false;
 		}
@@ -96,7 +97,7 @@ class LivechatOfficeHour extends RocketChat.models._Base {
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 
 		// get todays office hours from db
-		const todaysOfficeHours = this.findOne({day: currentTime.format('dddd')});
+		const todaysOfficeHours = this.findOne({ day: currentTime.format('dddd') });
 		if (!todaysOfficeHours) {
 			return false;
 		}

@@ -181,6 +181,24 @@
 			{{/if}}
 		{{/with}}
 
+		{{#with settings.encrypted}}
+			{{#if canView}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="encrypted" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+				</div>
+			{{/if}}
+		{{/with}}
+
 		{{#with settings.broadcast}}
 			{{#if canView}}
 			<div class="rc-user-info__row">
@@ -226,7 +244,7 @@
 					</div>
 				{{/with}}
 			</div>
-			 {{# if retentionEnabled settings.retentionEnabled.value.get }}
+			 {{# if settings.retentionEnabled.value.get }}
 				{{#with settings.retentionOverrideGlobal}}
 					<div class="rc-user-info__row">
 						<div class="rc-switch rc-switch--blue">

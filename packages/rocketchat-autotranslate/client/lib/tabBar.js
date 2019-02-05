@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
@@ -7,7 +11,7 @@ Meteor.startup(function() {
 				i18nTitle: 'Auto_Translate',
 				icon: 'language',
 				template: 'autoTranslateFlexTab',
-				order: 20
+				order: 20,
 			});
 		} else {
 			RocketChat.TabBar.removeButton('autotranslate');

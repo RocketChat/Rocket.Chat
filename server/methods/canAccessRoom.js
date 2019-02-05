@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 Meteor.methods({
 	canAccessRoom(rid, userId, extraData) {
 		check(rid, String);
@@ -8,20 +11,20 @@ Meteor.methods({
 		if (userId) {
 			user = RocketChat.models.Users.findOneById(userId, {
 				fields: {
-					username: 1
-				}
+					username: 1,
+				},
 			});
 
 			if (!user || !user.username) {
 				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'canAccessRoom'
+					method: 'canAccessRoom',
 				});
 			}
 		}
 
 		if (!rid) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'canAccessRoom'
+				method: 'canAccessRoom',
 			});
 		}
 
@@ -36,15 +39,15 @@ Meteor.methods({
 
 			if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
 				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'canAccessRoom'
+					method: 'canAccessRoom',
 				});
 			}
 
 			return false;
 		} else {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'canAccessRoom'
+				method: 'canAccessRoom',
 			});
 		}
-	}
+	},
 });

@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 /**
 	This API returns all permissions that exists
 	on the server, with respective roles.
@@ -13,17 +17,50 @@ RocketChat.API.v1.addRoute('permissions', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
+// DEPRECATED
+// TODO: Remove this after three versions have been released. That means at 0.85 this should be gone.
 RocketChat.API.v1.addRoute('permissions.list', { authRequired: true }, {
 	get() {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
-		return RocketChat.API.v1.success({
-			permissions: result
-		});
-	}
+		return RocketChat.API.v1.success(this.deprecationWarning({
+			endpoint: 'permissions.list',
+			versionWillBeRemove: '0.85',
+			response: {
+				permissions: result,
+			},
+		}));
+	},
+});
+
+RocketChat.API.v1.addRoute('permissions.listAll', { authRequired: true }, {
+	get() {
+		const { updatedSince } = this.queryParams;
+
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+		}
+
+		let result;
+		Meteor.runAsUser(this.userId, () => result = Meteor.call('permissions/get', updatedSinceDate));
+
+		if (Array.isArray(result)) {
+			result = {
+				update: result,
+				remove: [],
+			};
+		}
+
+		return RocketChat.API.v1.success(result);
+	},
 });
 
 RocketChat.API.v1.addRoute('permissions.update', { authRequired: true }, {
@@ -36,9 +73,9 @@ RocketChat.API.v1.addRoute('permissions.update', { authRequired: true }, {
 			permissions: [
 				Match.ObjectIncluding({
 					_id: String,
-					roles: [String]
-				})
-			]
+					roles: [String],
+				}),
+			],
 		});
 
 		let permissionNotFound = false;
@@ -74,7 +111,7 @@ RocketChat.API.v1.addRoute('permissions.update', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
 
 		return RocketChat.API.v1.success({
-			permissions: result
+			permissions: result,
 		});
-	}
+	},
 });

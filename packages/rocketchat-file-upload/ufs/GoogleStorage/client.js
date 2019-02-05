@@ -1,4 +1,4 @@
-import {UploadFS} from 'meteor/jalik:ufs';
+import { UploadFS } from 'meteor/jalik:ufs';
 
 export class GoogleStorageStore extends UploadFS.Store {}
 

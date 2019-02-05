@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	leaveRoom(rid) {
 
@@ -30,5 +33,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.removeUserFromRoom(rid, user);
-	}
+	},
 });

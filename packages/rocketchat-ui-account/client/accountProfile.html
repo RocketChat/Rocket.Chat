@@ -11,8 +11,8 @@
 	</div>
 </template>
 <template name="accountProfile">
-	<section class="preferences-page">
-		{{#header sectionName="Profile" buttons=true}}
+	<section class="preferences-page preferences-page--new">
+		{{#header sectionName="Profile" buttons=true fullpage=true}}
 			<div class="rc-header__section-button">
 				<button class="rc-button rc-button--primary" name="send" type="submit" data-button="create" form="profile" {{canSave 'disabled'}}>{{_ "Save_changes"}}</button>
 			</div>
@@ -118,7 +118,7 @@
 										<input name="email" type="text" class="rc-input__element" placeholder="{{_ "Email_Placeholder" }}" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
 										{{#unless emailVerified}}
 											<div class="rc-input__icon rc-input__icon--right">
-												{{> icon block="rc-input__icon-svg" icon="cross-circled"}}
+												{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
 											</div>
 										{{else}}
 											<div class="rc-input__icon rc-input__icon--right">

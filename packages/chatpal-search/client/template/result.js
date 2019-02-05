@@ -1,4 +1,9 @@
-import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
@@ -27,7 +32,7 @@ Template.ChatpalSearchResultTemplate.events = {
 		t.data.payload.rows = t.data.settings.PageSize;
 		t.resultType.set(t.data.parentPayload.resultType);
 		t.data.search();
-	}
+	},
 };
 
 Template.ChatpalSearchResultTemplate.helpers({
@@ -74,10 +79,10 @@ Template.ChatpalSearchResultTemplate.helpers({
 		if (result) {
 			return {
 				currentPage: 1 + result.message.start / pageSize,
-				numOfPages: Math.ceil(result.message.numFound / pageSize)
+				numOfPages: Math.ceil(result.message.numFound / pageSize),
 			};
 		}
-	}
+	},
 });
 
 Template.ChatpalSearchSingleMessage.helpers({
@@ -90,7 +95,7 @@ Template.ChatpalSearchSingleMessage.helpers({
 	},
 
 	roomLink() {
-		const subscription = RocketChat.models.Subscriptions.findOne({rid: this.rid});
+		const subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid });
 		return RocketChat.roomTypes.getRouteLink(subscription.t, subscription);
 	},
 
@@ -100,11 +105,11 @@ Template.ChatpalSearchSingleMessage.helpers({
 	},
 
 	time() {
-		return moment(this.created).format(RocketChat.settings.get('Message_TimeFormat'));
+		return DateFormat.formatTime(this.created);
 	},
 	date() {
-		return moment(this.created).format(RocketChat.settings.get('Message_DateFormat'));
-	}
+		return DateFormat.formatDate(this.created);
+	},
 });
 
 Template.ChatpalSearchSingleRoom.helpers({
@@ -116,13 +121,13 @@ Template.ChatpalSearchSingleRoom.helpers({
 		return RocketChat.roomTypes.getIcon(room && room.t);
 	},
 	roomLink() {
-		const subscription = RocketChat.models.Subscriptions.findOne({rid: this._id});
+		const subscription = RocketChat.models.Subscriptions.findOne({ rid: this._id });
 		return RocketChat.roomTypes.getRouteLink(subscription.t, subscription);
-	}
+	},
 });
 
 Template.ChatpalSearchSingleUser.helpers({
 	cleanUsername() {
 		return this.user_username.replace(/<\/?em>/ig, '');
-	}
+	},
 });

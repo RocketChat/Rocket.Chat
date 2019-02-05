@@ -1,4 +1,7 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	eraseRoom(rid) {
@@ -6,7 +9,7 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'eraseRoom'
+				method: 'eraseRoom',
 			});
 		}
 
@@ -14,7 +17,7 @@ Meteor.methods({
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'eraseRoom'
+				method: 'eraseRoom',
 			});
 		}
 
@@ -25,9 +28,9 @@ Meteor.methods({
 			}
 		}
 
-		if (!RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(room)) {
+		if (!RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(hasPermission, room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'eraseRoom'
+				method: 'eraseRoom',
 			});
 		}
 
@@ -41,5 +44,5 @@ Meteor.methods({
 		}
 
 		return result;
-	}
+	},
 });

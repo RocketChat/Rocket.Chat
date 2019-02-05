@@ -10,16 +10,16 @@ RocketChat.Migrations.add({
 			if (!startWithHTML) {
 				RocketChat.models.Settings.update(
 					{ _id: 'Email_Header' },
-					{ $set: { value: `<html>${ emailHeader.value }`} }
+					{ $set: { value: `<html>${ emailHeader.value }` } }
 				);
 			}
 
 			if (!endsWithHTML) {
 				RocketChat.models.Settings.update(
 					{ _id: 'Email_Footer' },
-					{ $set: { value: `${ emailFooter.value }</html>`} }
+					{ $set: { value: `${ emailFooter.value }</html>` } }
 				);
 			}
 		}
-	}
+	},
 });

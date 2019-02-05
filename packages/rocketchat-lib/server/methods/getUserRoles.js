@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -9,12 +10,12 @@ Meteor.methods({
 
 		const options = {
 			sort: {
-				'username': 1
+				username: 1,
 			},
 			fields: {
 				username: 1,
-				roles: 1
-			}
+				roles: 1,
+			},
 		};
 
 		const roles = RocketChat.models.Roles.find({ scope: 'Users', description: { $exists: 1, $ne: '' } }).fetch();
@@ -27,5 +28,5 @@ Meteor.methods({
 			user.roles = _.intersection(user.roles, roleIds);
 		}
 		return users;
-	}
+	},
 });

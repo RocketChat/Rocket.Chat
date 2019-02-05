@@ -1,6 +1,10 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { RocketChatTabBar, SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { CustomSounds } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
-
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 Template.adminSounds.helpers({
 	isReady() {
@@ -30,9 +34,9 @@ Template.adminSounds.helpers({
 	flexData() {
 		return {
 			tabBar: Template.instance().tabBar,
-			data: Template.instance().tabBarData.get()
+			data: Template.instance().tabBarData.get(),
 		};
-	}
+	},
 });
 
 Template.adminSounds.onCreated(function() {
@@ -45,26 +49,26 @@ Template.adminSounds.onCreated(function() {
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['custom-sounds', 'custom-sounds-selected'],
 		id: 'add-sound',
 		i18nTitle: 'Custom_Sound_Add',
 		icon: 'plus',
 		template: 'adminSoundEdit',
-		openClick(/*e, t*/) {
+		openClick(/* e, t*/) {
 			instance.tabBarData.set();
 			return true;
 		},
-		order: 1
+		order: 1,
 	});
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['custom-sounds-selected'],
 		id: 'admin-sound-info',
 		i18nTitle: 'Custom_Sound_Info',
 		icon: 'customize',
 		template: 'adminSoundInfo',
-		order: 2
+		order: 2,
 	});
 
 	this.autorun(function() {
@@ -85,7 +89,7 @@ Template.adminSounds.onCreated(function() {
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.CustomSounds.find(query, { limit, sort: { name: 1 }}).fetch();
+		return CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
 });
 
@@ -98,7 +102,7 @@ Template.adminSounds.onRendered(() =>
 
 Template.adminSounds.events({
 	'keydown #sound-filter'(e) {
-		//stop enter key
+		// stop enter key
 		if (e.which === 13) {
 			e.stopPropagation();
 			e.preventDefault();
@@ -113,7 +117,7 @@ Template.adminSounds.events({
 
 	'click .sound-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(RocketChat.models.CustomSounds.findOne({_id: this._id}));
+		instance.tabBarData.set(CustomSounds.findOne({ _id: this._id }));
 		instance.tabBar.showGroup('custom-sounds-selected');
 		instance.tabBar.open('admin-sound-info');
 	},
@@ -131,5 +135,5 @@ Template.adminSounds.events({
 		if ($audio && $audio[0] && $audio[0].play) {
 			$audio[0].play();
 		}
-	}
+	},
 });

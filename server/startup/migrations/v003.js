@@ -8,16 +8,16 @@ RocketChat.Migrations.add({
 
 		RocketChat.models.Subscriptions.find({
 			uid: {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}, {
-			nonreactive: true
+			nonreactive: true,
 		}).forEach((sub) => {
 			const update = {};
 			const user = RocketChat.models.Users.findOneById(sub.uid, {
 				fields: {
-					username: 1
-				}
+					username: 1,
+				},
 			});
 
 			if (user) {
@@ -43,23 +43,23 @@ RocketChat.Migrations.add({
 
 		RocketChat.models.Rooms.find({
 			'uids.0': {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}, {
-			nonreactive: true
+			nonreactive: true,
 		}).forEach(function(room) {
 			const update = {};
 			const users = RocketChat.models.Users.find({
 				_id: {
-					$in: room.uids
+					$in: room.uids,
 				},
 				username: {
-					$exists: true
-				}
+					$exists: true,
+				},
 			}, {
 				fields: {
-					username: 1
-				}
+					username: 1,
+				},
 			});
 
 			const usernames = users.map(function(user) {
@@ -79,8 +79,8 @@ RocketChat.Migrations.add({
 
 			const user = RocketChat.models.Users.findOneById(room.uid, {
 				fields: {
-					username: 1
-				}
+					username: 1,
+				},
 			});
 
 			if (user) {
@@ -107,23 +107,23 @@ RocketChat.Migrations.add({
 				RocketChat.models.Rooms.removeById(oldId);
 
 				RocketChat.models.Subscriptions.update({
-					rid: oldId
+					rid: oldId,
 				}, {
 					$set: {
-						rid: room._id
-					}
+						rid: room._id,
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 
 				return RocketChat.models.Messages.update({
-					rid: oldId
+					rid: oldId,
 				}, {
 					$set: {
-						rid: room._id
-					}
+						rid: room._id,
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 			} else {
 				return RocketChat.models.Rooms.update(room._id, update);
@@ -134,16 +134,16 @@ RocketChat.Migrations.add({
 
 		RocketChat.models.Messages.find({
 			uid: {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}, {
-			nonreactive: true
+			nonreactive: true,
 		}).forEach((message) => {
 			const update = {};
 			const user = RocketChat.models.Users.findOneById(message.uid, {
 				fields: {
-					username: 1
-				}
+					username: 1,
+				},
 			});
 
 			if (user) {
@@ -166,5 +166,5 @@ RocketChat.Migrations.add({
 		});
 
 		return console.log('End');
-	}
+	},
 });

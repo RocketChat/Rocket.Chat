@@ -1,3 +1,6 @@
+import { TAPi18n } from 'meteor/tap:i18n';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
 RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, filesOnly = false, fromUsers = [] }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
@@ -13,7 +16,7 @@ RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new 
 		ts,
 		fromUsers,
 		{ fields: { 'file._id': 1, pinned: 1 }, limit }
-	).forEach(document => {
+	).forEach((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;
 		if (filesOnly) {
@@ -24,19 +27,15 @@ RocketChat.cleanRoomHistory = function({ rid, latest = new Date(), oldest = new 
 		return fileCount;
 	}
 
-	let count = 0;
-	if (limit) {
-		count = RocketChat.models.Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ts, limit, fromUsers);
-	} else {
-		count = RocketChat.models.Messages.removeByIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers);
-	}
+	const count = limit ? RocketChat.models.Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ts, limit, fromUsers) : RocketChat.models.Messages.removeByIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers);
 
 	if (count) {
+		RocketChat.models.Rooms.resetLastMessageById(rid);
 		RocketChat.Notifications.notifyRoom(rid, 'deleteMessageBulk', {
 			rid,
 			excludePinned,
 			ts,
-			users: fromUsers
+			users: fromUsers,
 		});
 	}
 	return count;

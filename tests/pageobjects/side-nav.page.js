@@ -46,6 +46,8 @@ class SideNav extends Page {
 
 	get burgerBtn() { return browser.element('.burger'); }
 
+	get sidebarWrap() { return browser.element('.sidebar-wrap'); }
+
 	// Opens a channel via rooms list
 	openChannel(channelName) {
 		browser.waitForVisible(`.sidebar-item__name=${ channelName }`, 5000);
@@ -105,12 +107,12 @@ class SideNav extends Page {
 		return browser.element(`.sidebar-item__name=${ channelName }`);
 	}
 
-	createChannel(channelName, isPrivate, /*isReadOnly*/) {
+	createChannel(channelName, isPrivate, /* isReadOnly*/) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelName.waitForVisible(10000);
 
-		//workaround for incomplete setvalue bug
+		// workaround for incomplete setvalue bug
 		this.channelName.setValue(channelName);
 
 		browser.waitUntil(function() {

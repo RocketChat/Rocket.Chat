@@ -1,8 +1,13 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.loginFooter.onCreated(function() {
 	this.suggestedLanguage = new ReactiveVar();
 
-	this.suggestAnotherLanguageFor = language => {
-		const loadAndSetSuggestedLanguage = language => TAPi18n._loadLanguage(language)
+	this.suggestAnotherLanguageFor = (language) => {
+		const loadAndSetSuggestedLanguage = (language) => TAPi18n._loadLanguage(language)
 			.then(() => this.suggestedLanguage.set(language));
 
 		const serverLanguage = RocketChat.settings.get('Language');
@@ -24,7 +29,7 @@ Template.loginFooter.helpers({
 	languageVersion() {
 		const lng = Template.instance().suggestedLanguage.get();
 		return lng && TAPi18n.__('Language_Version', { lng });
-	}
+	},
 });
 
 Template.loginFooter.events({
@@ -33,5 +38,5 @@ Template.loginFooter.events({
 		window.setLanguage(language);
 		t.suggestAnotherLanguageFor(language);
 		return false;
-	}
+	},
 });

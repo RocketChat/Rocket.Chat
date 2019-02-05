@@ -3,8 +3,8 @@ RocketChat.Migrations.add({
 	up() {
 		RocketChat.models.OAuthApps.update({ _id: 'zapier' }, {
 			$set: {
-				redirectUri: 'https://zapier.com/dashboard/auth/oauth/return/RocketChatDevAPI/'
-			}
+				redirectUri: 'https://zapier.com/dashboard/auth/oauth/return/RocketChatDevAPI/',
+			},
 		});
-	}
+	},
 });

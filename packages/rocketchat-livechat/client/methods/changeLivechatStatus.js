@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'livechat:changeLivechatStatus'() {
 		if (!Meteor.userId()) {
@@ -8,6 +10,6 @@ Meteor.methods({
 
 		const newStatus = user.statusLivechat === 'available' ? 'not-available' : 'available';
 
-		Meteor.users.update(user._id, { $set: { statusLivechat: newStatus }});
-	}
+		Meteor.users.update(user._id, { $set: { statusLivechat: newStatus } });
+	},
 });

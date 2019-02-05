@@ -1,11 +1,13 @@
-/* globals openRoom */
-import {RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext} from '../RoomTypeConfig';
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
+import { ChatRoom } from 'meteor/rocketchat:models';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'direct',
-			path: '/direct/:username'
+			path: '/direct/:username',
 		});
 	}
 
@@ -14,7 +16,7 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	}
 
 	link(sub) {
-		return {username: sub.name};
+		return { username: sub.name };
 	}
 }
 
@@ -24,14 +26,18 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			identifier: 'd',
 			order: 50,
 			label: 'Direct_Messages',
-			route: new DirectMessageRoomRoute()
+			route: new DirectMessageRoomRoute(),
 		});
 	}
 
 	findRoom(identifier) {
+		if (!RocketChat.authz.hasPermission('view-d-room')) {
+			return null;
+		}
+
 		const query = {
 			t: 'd',
-			name: identifier
+			name: identifier,
 		};
 
 		const subscription = RocketChat.models.Subscriptions.findOne(query);
@@ -41,7 +47,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		const subscription = RocketChat.models.Subscriptions.findOne({rid: roomData._id}, {fields: {name: 1, fname: 1}});
+		const subscription = RocketChat.models.Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } });
 		if (!subscription) {
 			return '';
 		}
@@ -55,7 +61,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	secondaryRoomName(roomData) {
 		if (RocketChat.settings.get('UI_Use_Real_Name')) {
-			const subscription = RocketChat.models.Subscriptions.findOne({rid: roomData._id}, {fields: {name: 1}});
+			const subscription = RocketChat.models.Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
 			return subscription && subscription.name;
 		}
 	}
@@ -66,7 +72,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getUserStatus(roomId) {
-		const subscription = RocketChat.models.Subscriptions.findOne({rid: roomId});
+		const subscription = RocketChat.models.Subscriptions.findOne({ rid: roomId });
 		if (subscription == null) {
 			return;
 		}
@@ -88,6 +94,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE:
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
+			case RoomSettingsEnum.E2E:
+				return RocketChat.settings.get('E2E_Enable') === true;
 			default:
 				return true;
 		}

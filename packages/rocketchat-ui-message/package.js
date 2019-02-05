@@ -7,7 +7,7 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -16,33 +16,17 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'tracker',
+		'rocketchat:utils',
+		'rocketchat:ui',
+		'rocketchat:ui-utils',
+		'rocketchat:emoji',
 		'rocketchat:lib',
+		'rocketchat:ui',
 		'rocketchat:ui-account',
-		'rocketchat:ui-vrecord'
+		'rocketchat:ui-vrecord',
+		'rocketchat:ui-sidenav',
+		'rocketchat:file-upload',
 	]);
-
-	api.addFiles('client/message.html', 'client');
-	api.addFiles('client/messageBox.html', 'client');
-	api.addFiles('client/messageDropdown.html', 'client');
-	api.addFiles('client/popup/messagePopup.html', 'client');
-	api.addFiles('client/popup/messagePopupChannel.html', 'client');
-	api.addFiles('client/popup/messagePopupConfig.html', 'client');
-	api.addFiles('client/popup/messagePopupEmoji.html', 'client');
-	api.addFiles('client/popup/messagePopupSlashCommand.html', 'client');
-	api.addFiles('client/popup/messagePopupSlashCommandPreview.html', 'client');
-	api.addFiles('client/popup/messagePopupSlashCommandPreview.js', 'client');
-	api.addFiles('client/popup/messagePopupUser.html', 'client');
-
-	api.addFiles('client/message.js', 'client');
-	api.addFiles('client/messageBox.js', 'client');
-	api.addFiles('client/popup/messagePopup.js', 'client');
-	api.addFiles('client/popup/messagePopupChannel.js', 'client');
-	api.addFiles('client/popup/messagePopupConfig.js', 'client');
-	api.addFiles('client/popup/messagePopupEmoji.js', 'client');
-
-	api.addFiles('client/renderMessageBody.js', 'client');
-
-	api.addFiles('startup/messageBoxActions.js', 'client');
-
-	api.export('renderMessageBody');
+	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
+	api.mainModule('client/index.js', 'client');
 });

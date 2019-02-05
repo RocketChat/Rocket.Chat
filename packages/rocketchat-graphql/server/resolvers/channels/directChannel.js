@@ -9,7 +9,7 @@ const resolver = {
 		directChannel: authenticated((root, { username, channelId }, { user }) => {
 			const query = {
 				t: 'd',
-				usernames: user.username
+				usernames: user.username,
 			};
 
 			if (typeof username !== 'undefined') {
@@ -17,7 +17,7 @@ const resolver = {
 					throw new Error('You cannot specify your username');
 				}
 
-				query.usernames = { $all: [ user.username, username ] };
+				query.usernames = { $all: [user.username, username] };
 			} else if (typeof channelId !== 'undefined') {
 				query.id = channelId;
 			} else {
@@ -25,13 +25,13 @@ const resolver = {
 			}
 
 			return RocketChat.models.Rooms.findOne(query, {
-				fields: roomPublicFields
+				fields: roomPublicFields,
 			});
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

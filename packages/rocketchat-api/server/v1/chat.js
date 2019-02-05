@@ -1,11 +1,14 @@
-/* global processWebhookMessage */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Match, check } from 'meteor/check';
+import { processWebhookMessage } from 'meteor/rocketchat:integrations';
 
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			msgId: String,
 			roomId: String,
-			asUser: Match.Maybe(Boolean)
+			asUser: Match.Maybe(Boolean),
 		}));
 
 		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.msgId, { fields: { u: 1, rid: 1 } });
@@ -18,7 +21,7 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The room id provided does not match where the message is from.');
 		}
 
-		if (this.bodyParams.asUser && msg.u._id !== this.userId && !RocketChat.authz.hasPermission(Meteor.userId(), 'force-delete-message', msg.rid)) {
+		if (this.bodyParams.asUser && msg.u._id !== this.userId && !RocketChat.authz.hasPermission(this.userId, 'force-delete-message', msg.rid)) {
 			return RocketChat.API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 		}
 
@@ -29,9 +32,9 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 		return RocketChat.API.v1.success({
 			_id: msg._id,
 			ts: Date.now(),
-			message: msg
+			message: msg,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
@@ -58,9 +61,12 @@ RocketChat.API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			result
+			result: {
+				updated: result.updated.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
+				deleted: result.deleted.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
+			},
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.getMessage', { authRequired: true }, {
@@ -79,9 +85,9 @@ RocketChat.API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success({
-			message: msg
+			message: RocketChat.composeMessageObjectWithUser(msg, this.userId),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
@@ -100,9 +106,9 @@ RocketChat.API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => pinnedMessage = Meteor.call('pinMessage', msg));
 
 		return RocketChat.API.v1.success({
-			message: pinnedMessage
+			message: RocketChat.composeMessageObjectWithUser(pinnedMessage, this.userId),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
@@ -116,9 +122,9 @@ RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 		return RocketChat.API.v1.success({
 			ts: Date.now(),
 			channel: messageReturn.channel,
-			message: messageReturn.message
+			message: RocketChat.composeMessageObjectWithUser(messageReturn.message, this.userId),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
@@ -138,9 +144,9 @@ RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, count).message.docs);
 
 		return RocketChat.API.v1.success({
-			messages: result
+			messages: result.map((message) => RocketChat.composeMessageObjectWithUser(message, this.userId)),
 		});
-	}
+	},
 });
 
 // The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
@@ -156,9 +162,9 @@ RocketChat.API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => message = Meteor.call('sendMessage', this.bodyParams.message));
 
 		return RocketChat.API.v1.success({
-			message
+			message: RocketChat.composeMessageObjectWithUser(message, this.userId),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.starMessage', { authRequired: true }, {
@@ -176,11 +182,11 @@ RocketChat.API.v1.addRoute('chat.starMessage', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('starMessage', {
 			_id: msg._id,
 			rid: msg.rid,
-			starred: true
+			starred: true,
 		}));
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.unPinMessage', { authRequired: true }, {
@@ -198,7 +204,7 @@ RocketChat.API.v1.addRoute('chat.unPinMessage', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('unpinMessage', msg));
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.unStarMessage', { authRequired: true }, {
@@ -216,11 +222,11 @@ RocketChat.API.v1.addRoute('chat.unStarMessage', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('starMessage', {
 			_id: msg._id,
 			rid: msg.rid,
-			starred: false
+			starred: false,
 		}));
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
@@ -228,12 +234,12 @@ RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
 		check(this.bodyParams, Match.ObjectIncluding({
 			roomId: String,
 			msgId: String,
-			text: String //Using text to be consistant with chat.postMessage
+			text: String, // Using text to be consistant with chat.postMessage
 		}));
 
 		const msg = RocketChat.models.Messages.findOneById(this.bodyParams.msgId);
 
-		//Ensure the message exists
+		// Ensure the message exists
 		if (!msg) {
 			return RocketChat.API.v1.failure(`No message found with the id of "${ this.bodyParams.msgId }".`);
 		}
@@ -242,15 +248,15 @@ RocketChat.API.v1.addRoute('chat.update', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The room id provided does not match where the message is from.');
 		}
 
-		//Permission checks are already done in the updateMessage method, so no need to duplicate them
+		// Permission checks are already done in the updateMessage method, so no need to duplicate them
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
 		});
 
 		return RocketChat.API.v1.success({
-			message: RocketChat.models.Messages.findOneById(msg._id)
+			message: RocketChat.composeMessageObjectWithUser(RocketChat.models.Messages.findOneById(msg._id), this.userId),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.react', { authRequired: true }, {
@@ -274,7 +280,7 @@ RocketChat.API.v1.addRoute('chat.react', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('setReaction', emoji, msg._id, this.bodyParams.shouldReact));
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.getMessageReadReceipts', { authRequired: true }, {
@@ -282,21 +288,21 @@ RocketChat.API.v1.addRoute('chat.getMessageReadReceipts', { authRequired: true }
 		const { messageId } = this.queryParams;
 		if (!messageId) {
 			return RocketChat.API.v1.failure({
-				error: 'The required \'messageId\' param is missing.'
+				error: 'The required \'messageId\' param is missing.',
 			});
 		}
 
 		try {
 			const messageReadReceipts = Meteor.runAsUser(this.userId, () => Meteor.call('getReadReceipts', { messageId }));
 			return RocketChat.API.v1.success({
-				receipts: messageReadReceipts
+				receipts: messageReadReceipts,
 			});
 		} catch (error) {
 			return RocketChat.API.v1.failure({
-				error: error.message
+				error: error.message,
 			});
 		}
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.reportMessage', { authRequired: true }, {
@@ -313,7 +319,7 @@ RocketChat.API.v1.addRoute('chat.reportMessage', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('reportMessage', messageId, description));
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
@@ -334,5 +340,38 @@ RocketChat.API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore }));
 
 		return RocketChat.API.v1.success();
-	}
+	},
+});
+
+RocketChat.API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
+	get() {
+		const { roomId, since } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('The required "roomId" query param is missing.');
+		}
+
+		if (!since) {
+			throw new Meteor.Error('The required "since" query param is missing.');
+		} else if (isNaN(Date.parse(since))) {
+			throw new Meteor.Error('The "since" query parameter must be a valid date.');
+		}
+		const cursor = RocketChat.models.Messages.trashFindDeletedAfter(new Date(since), { rid: roomId }, {
+			skip: offset,
+			limit: count,
+			fields: { _id: 1 },
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return RocketChat.API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
+	},
 });

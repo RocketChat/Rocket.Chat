@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
@@ -12,14 +14,14 @@ Meteor.startup(() => {
 });
 
 async function getBadgeCount(userId) {
-	const [ result ] = await SubscriptionRaw.aggregate([
+	const [result] = await SubscriptionRaw.aggregate([
 		{ $match: { 'u._id': userId } },
 		{
 			$group: {
 				_id: 'total',
-				total: { $sum: '$unread' }
-			}
-		}
+				total: { $sum: '$unread' },
+			},
+		},
 	]).toArray();
 
 	const { total } = result;
@@ -43,16 +45,18 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 			rid: message.rid,
 			sender: message.u,
 			type: room.t,
-			name: room.name
+			name: room.name,
+			messageType: message.t,
+			messageId: message._id,
 		},
 		roomName: RocketChat.settings.get('Push_show_username_room') && room.t !== 'd' ? `#${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
 		username,
 		message: RocketChat.settings.get('Push_show_message') ? notificationMessage : ' ',
 		badge: await getBadgeCount(userId),
 		usersTo: {
-			userId
+			userId,
 		},
-		category: canSendMessageToRoom(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY
+		category: canSendMessageToRoom(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	});
 }
 
@@ -63,9 +67,9 @@ export function shouldNotifyMobile({
 	isHighlighted,
 	hasMentionToUser,
 	statusConnection,
-	roomType
+	roomType,
 }) {
-	if (disableAllMessageNotifications && mobilePushNotifications == null) {
+	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser) {
 		return false;
 	}
 

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import { ReadReceipt } from '../../imports/message-read-receipt/server/lib/ReadReceipt';
 
 Meteor.methods({
@@ -8,7 +10,7 @@ Meteor.methods({
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'readMessages'
+				method: 'readMessages',
 			});
 		}
 
@@ -20,5 +22,5 @@ Meteor.methods({
 		Meteor.defer(() => {
 			ReadReceipt.markMessagesAsRead(rid, userId, userSubscription.ls);
 		});
-	}
+	},
 });

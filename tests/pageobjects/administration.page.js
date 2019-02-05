@@ -45,7 +45,7 @@ class Administration extends Page {
 	get rolesAddBtn() { return browser.element('button.add'); }
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
 
-	//permissions grids checkboxes
+	// permissions grids checkboxes
 
 	get rolesUserCreateC() { return browser.element('[name="perm[user][create-c]"]'); }
 	get rolesUserCreateP() { return browser.element('[name="perm[user][create-p]"]'); }
@@ -62,16 +62,16 @@ class Administration extends Page {
 
 	get emojiFilter() { return browser.element('#emoji-filter'); }
 
-	//settings
+	// settings
 	get buttonSave() { return browser.element('button.save'); }
 
-	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(3) .button.expand'); }
-	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(4) .button.expand'); }
-	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(5) .button.expand'); }
-	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(6) .button.expand'); }
-	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(7) .button.expand'); }
-	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(8) .button.expand'); }
-	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(9) .button.expand'); }
+	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(4) .expand'); }
+	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(5) .expand'); }
+	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(6) .expand'); }
+	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(7) .expand'); }
+	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(8) .expand'); }
+	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(9) .expand'); }
+	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(10) .expand'); }
 
 	get generalSiteUrl() { return browser.element('[name="Site_Url"]'); }
 	get generalSiteUrlReset() { return browser.element('.reset-setting[data-setting="Site_Url"]'); }
@@ -122,9 +122,9 @@ class Administration extends Page {
 	get generalUTF8NamesSlugFalse() { return browser.element('label:nth-of-type(2) [name="UTF8_Names_Slugify"]'); }
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
 
-	//accounts
-	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .button.expand'); }
-	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .button.collapse'); }
+	// accounts
+	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .expand'); }
+	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .collapse'); }
 
 	get accountsEnableAutoAwayTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 	get accountsEnableAutoAwayFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }

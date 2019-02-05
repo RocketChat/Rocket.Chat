@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Logger } from 'meteor/rocketchat:logger';
+
 let logger;
 
 if (Meteor.isServer) {

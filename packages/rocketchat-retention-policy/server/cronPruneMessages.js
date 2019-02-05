@@ -1,4 +1,6 @@
-/* globals SyncedCron */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 let types = [];
 
@@ -9,7 +11,7 @@ let lastPrune = oldest;
 const maxTimes = {
 	c: 0,
 	p: 0,
-	d: 0
+	d: 0,
 };
 const toDays = 1000 * 60 * 60 * 24;
 const gracePeriod = 5000;
@@ -19,16 +21,19 @@ function job() {
 	const excludePinned = RocketChat.settings.get('RetentionPolicy_ExcludePinned');
 
 	// get all rooms with default values
-	types.forEach(type => {
+	types.forEach((type) => {
 		const maxAge = maxTimes[type] || 0;
 		const latest = new Date(now.getTime() - maxAge * toDays);
 
 		RocketChat.models.Rooms.find({
 			t: type,
-			_updatedAt: { $gte: lastPrune },
-			$or: [{'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
-			'retention.overrideGlobal': { $ne: true }
-		}).forEach(({ _id: rid }) => {
+			_updatedAt: { $gte: latest },
+			$or: [
+				{ 'retention.enabled': { $eq: true } },
+				{ 'retention.enabled': { $exists: false } },
+			],
+			'retention.overrideGlobal': { $ne: true },
+		}, { fields : { _id: 1 } }).forEach(({ _id: rid }) => {
 			RocketChat.cleanRoomHistory({ rid, latest, oldest, filesOnly, excludePinned });
 		});
 	});
@@ -37,8 +42,8 @@ function job() {
 		'retention.enabled': { $eq: true },
 		'retention.overrideGlobal': { $eq: true },
 		'retention.maxAge': { $gte: 0 },
-		_updatedAt: { $gte: lastPrune }
-	}).forEach(room => {
+		_updatedAt: { $gte: lastPrune },
+	}).forEach((room) => {
 		const { maxAge = 30, filesOnly, excludePinned } = room.retention;
 		const latest = new Date(now.getTime() - maxAge * toDays);
 		RocketChat.cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned });
@@ -62,13 +67,13 @@ function getSchedule(precision) {
 const pruneCronName = 'Prune old messages by retention policy';
 
 function deployCron(precision) {
-	const schedule = parser => parser.cron(getSchedule(precision), true);
+	const schedule = (parser) => parser.cron(getSchedule(precision), true);
 
 	SyncedCron.remove(pruneCronName);
 	SyncedCron.add({
 		name: pruneCronName,
 		schedule,
-		job
+		job,
 	});
 }
 
@@ -109,13 +114,13 @@ Meteor.startup(function() {
 					'RetentionPolicy_AppliesToDMs',
 					'RetentionPolicy_MaxAge_Channels',
 					'RetentionPolicy_MaxAge_Groups',
-					'RetentionPolicy_MaxAge_DMs'
-				]
-			}
+					'RetentionPolicy_MaxAge_DMs',
+				],
+			},
 		}).observe({
 			changed() {
 				reloadPolicy();
-			}
+			},
 		});
 
 		reloadPolicy();

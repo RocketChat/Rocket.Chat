@@ -1,13 +1,13 @@
 class ModelReadReceipts extends RocketChat.models._Base {
-	constructor() {
-		super(...arguments);
+	constructor(...args) {
+		super(...args);
 
 		this.tryEnsureIndex({
 			roomId: 1,
 			userId: 1,
-			messageId: 1
+			messageId: 1,
 		}, {
-			unique: 1
+			unique: 1,
 		});
 	}
 

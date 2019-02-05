@@ -9,17 +9,17 @@ const resolver = {
 		channelByName: authenticated((root, { name }) => {
 			const query = {
 				name,
-				t: 'c'
+				t: 'c',
 			};
 
 			return RocketChat.models.Rooms.findOne(query, {
-				fields: roomPublicFields
+				fields: roomPublicFields,
 			});
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

@@ -1,6 +1,8 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 export default function handleJoinedChannel(args) {
 	const user = RocketChat.models.Users.findOne({
-		'profile.irc.nick': args.nick
+		'profile.irc.nick': args.nick,
 	});
 
 	if (!user) {
@@ -10,7 +12,7 @@ export default function handleJoinedChannel(args) {
 	let room = RocketChat.models.Rooms.findOneByName(args.roomName);
 
 	if (!room) {
-		const createdRoom = RocketChat.createRoom('c', args.roomName, user.username, [ /* usernames of the participants here */]);
+		const createdRoom = RocketChat.createRoom('c', args.roomName, user.username, []);
 		room = RocketChat.models.Rooms.findOne({ _id: createdRoom.rid });
 
 		this.log(`${ user.username } created room ${ args.roomName }`);

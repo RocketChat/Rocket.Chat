@@ -1,7 +1,13 @@
-/* globals AutoComplete */
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { ChatRoom, modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { RocketChat, call } from 'meteor/rocketchat:lib';
 import moment from 'moment';
-
-import { call } from 'meteor/rocketchat:lib';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -24,7 +30,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 		limit,
 		excludePinned,
 		filesOnly,
-		fromUsers
+		fromUsers,
 	});
 };
 
@@ -38,7 +44,7 @@ const getTimeZoneOffset = function() {
 
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
 Template.cleanHistory.helpers({
@@ -77,7 +83,7 @@ Template.cleanHistory.helpers({
 				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
 					return `<strong>${ part }</strong>`;
 				}) }`;
-			}
+			},
 		};
 	},
 	autocompleteSettings() {
@@ -92,16 +98,16 @@ Template.cleanHistory.helpers({
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
 					filter: {
-						exceptions: Template.instance().selectedUsers.get()
+						exceptions: Template.instance().selectedUsers.get(),
 					},
 					selector(match) {
 						return {
-							term: match
+							term: match,
 						};
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 		};
 	},
 	selectedUsers() {
@@ -110,11 +116,11 @@ Template.cleanHistory.helpers({
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
-		return typeof param === 'function' ? param.apply(instance.ac): param;
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
 		return Template.instance().ac.filteredList();
-	}
+	},
 });
 
 Template.cleanHistory.onCreated(function() {
@@ -141,7 +147,7 @@ Template.cleanHistory.onCreated(function() {
 		{
 			selector:{
 				item: '.rc-popup-list__item',
-				container: '.rc-popup-list__list'
+				container: '.rc-popup-list__list',
 			},
 
 			limit: 10,
@@ -156,9 +162,9 @@ Template.cleanHistory.onCreated(function() {
 					selector(match) {
 						return { term: match };
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 
 		});
 	this.ac.tmplInst = this;
@@ -166,14 +172,15 @@ Template.cleanHistory.onCreated(function() {
 
 Template.cleanHistory.onRendered(function() {
 	const users = this.selectedUsers;
+	const selUsers = this.cleanHistorySelectedUsers;
 
 	this.ac.element = this.firstNode.parentElement.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	this.ac.$element.on('autocompleteselect', function(e, { item }) {
 		const usersArr = users.get();
 		usersArr.push(item);
 		users.set(usersArr);
-		Session.set('cleanHistorySelectedUsers', usersArr);
+		selUsers.set(usersArr);
 	});
 
 	Tracker.autorun(() => {
@@ -199,42 +206,42 @@ Template.cleanHistory.onRendered(function() {
 		const exceptPinned = metaCleanHistoryExcludePinned ? ` ${ t('except_pinned', {}) }` : '';
 		const ifFrom = metaSelectedUsers.length ? ` ${ t('if_they_are_from', {
 			postProcess: 'sprintf',
-			sprintf: [metaSelectedUsers.map(element => element.username).join(', ')]
+			sprintf: [metaSelectedUsers.map((element) => element.username).join(', ')],
 		}) }` : '';
 		const filesOrMessages = t(metaCleanHistoryFilesOnly ? 'files' : 'messages', {});
 
 		if (metaFromDate && metaToDate) {
 			this.warningBox.set(t('Prune_Warning_between', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')]
+				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
 			}) + exceptPinned + ifFrom);
 		} else if (metaFromDate) {
 			this.warningBox.set(t('Prune_Warning_after', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')]
+				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')],
 			}) + exceptPinned + ifFrom);
 		} else if (metaToDate) {
 			this.warningBox.set(t('Prune_Warning_before', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')]
+				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')],
 			}) + exceptPinned + ifFrom);
 		} else {
 			this.warningBox.set(t('Prune_Warning_all', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName()]
+				sprintf: [filesOrMessages, getRoomName()],
 			}) + exceptPinned + ifFrom);
 		}
 
 		if (fromDate > toDate) {
 			return this.validate.set(t('Newer_than_may_not_exceed_Older_than', {
 				postProcess: 'sprintf',
-				sprintf: []
+				sprintf: [],
 			}));
 		}
 		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
 			return this.validate.set(t('error-invalid-date', {
 				postProcess: 'sprintf',
-				sprintf: []
+				sprintf: [],
 			}));
 		}
 		this.validate.set('');
@@ -274,7 +281,7 @@ Template.cleanHistory.events({
 			confirmButtonText: t('Yes_prune_them'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: true,
-			html: false
+			html: false,
 		}, async function() {
 			instance.cleanHistoryBusy.set(true);
 			const metaFromDate = instance.cleanHistoryFromDate.get();
@@ -298,7 +305,7 @@ Template.cleanHistory.events({
 			}
 
 			const roomId = Session.get('openedRoom');
-			const users = metaSelectedUsers.map(element => element.username);
+			const users = metaSelectedUsers.map((element) => element.username);
 			const limit = 2000;
 			let count = 0;
 			let result;
@@ -311,10 +318,10 @@ Template.cleanHistory.events({
 			instance.cleanHistoryFinished.set(true);
 		});
 	},
-	'click .rc-input--usernames .rc-tags__tag'({target}, t) {
-		const {username} = Blaze.getData(target);
-		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
-		Session.set('cleanHistorySelectedUsers', t.selectedUsers.get());
+	'click .rc-input--usernames .rc-tags__tag'({ target }, t) {
+		const { username } = Blaze.getData(target);
+		t.selectedUsers.set(t.selectedUsers.get().filter((user) => user.username !== username));
+		t.cleanHistorySelectedUsers.set(t.selectedUsers.get());
 	},
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -322,7 +329,7 @@ Template.cleanHistory.events({
 	'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterNames(input.value);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
@@ -334,7 +341,7 @@ Template.cleanHistory.events({
 			const users = t.selectedUsers;
 			const usersArr = users.get();
 			usersArr.pop();
-			Session.set('cleanHistorySelectedUsers', usersArr);
+			t.cleanHistorySelectedUsers.set(usersArr);
 			return users.set(usersArr);
 		}
 
@@ -348,5 +355,5 @@ Template.cleanHistory.events({
 	},
 	'blur [name="users"]'(e, t) {
 		t.ac.onBlur(e);
-	}
+	},
 });

@@ -1,21 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 import './lazyloadImage';
+
 export const fixCordova = function(url) {
 	if (url && url.indexOf('data:image') === 0) {
 		return url;
 	}
-	if (Meteor.isCordova && (url && url[0] === '/')) {
-		url = Meteor.absoluteUrl().replace(/\/$/, '') + url;
-		const query = `rc_uid=${ Meteor.userId() }&rc_token=${ Meteor._localStorage.getItem(
-			'Meteor.loginToken'
-		) }`;
-		if (url.indexOf('?') === -1) {
-			url = `${ url }?${ query }`;
-		} else {
-			url = `${ url }&${ query }`;
-		}
-	}
-	if (Meteor.settings['public'].sandstorm || url.match(/^(https?:)?\/\//i)) {
+
+	if (Meteor.settings.public.sandstorm || url.match(/^(https?:)?\/\//i)) {
 		return url;
 	} else if (navigator.userAgent.indexOf('Electron') > -1) {
 		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
@@ -55,11 +48,12 @@ const isVisible = (el, instance) => {
 window.addEventListener('resize', window.lazyloadtick);
 
 export const lazyloadtick = _.debounce(() => {
-	[...document.querySelectorAll('.lazy-img[data-src]')].forEach(el =>
+	const lazyImg = document.querySelectorAll('.lazy-img[data-src]');
+	Array.from(lazyImg).forEach((el) =>
 		isVisible(el, Blaze.getView(el)._templateInstance)
 	);
 }, 300);
 
 window.lazyloadtick = lazyloadtick;
 
-export const addImage = instance => isVisible(instance.firstNode, instance);
+export const addImage = (instance) => isVisible(instance.firstNode, instance);

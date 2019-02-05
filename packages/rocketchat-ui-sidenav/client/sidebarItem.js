@@ -1,16 +1,28 @@
-/* globals menu popover renderMessageBody */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { t, getUserPreference, roomTypes } from 'meteor/rocketchat:utils';
 import moment from 'moment';
+import { popover, renderMessageBody } from 'meteor/rocketchat:ui-utils';
+import { Users, ChatSubscription } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { menu } from 'meteor/rocketchat:ui-utils';
 
 Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();
-		return args.some(arg => arg);
+		return args.some((arg) => arg);
+	},
+	streaming() {
+		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},
 	isRoom() {
 		return this.rid || this._id;
 	},
 	isExtendedViewMode() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
+		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
 	},
 	lastMessage() {
 		return this.lastMessage && Template.instance().renderedMessage;
@@ -23,7 +35,7 @@ Template.sidebarItem.helpers({
 	},
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
-	}
+	},
 });
 
 function timeAgo(time) {
@@ -31,8 +43,8 @@ function timeAgo(time) {
 	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
 	return (
-		now.getDate() === time.getDate() && moment(time).format('LT') ||
-		yesterday.getDate() === time.getDate() && t('yesterday') ||
+		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
+		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
 		moment(time).format('L')
 	);
 }
@@ -49,7 +61,7 @@ function setLastMessageTs(instance, ts) {
 }
 
 Template.sidebarItem.onCreated(function() {
-	this.user = RocketChat.models.Users.findOne(Meteor.userId(), {fields: {username: 1}});
+	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
 	this.lastMessageTs = new ReactiveVar();
 	this.timeAgoInterval;
@@ -59,7 +71,7 @@ Template.sidebarItem.onCreated(function() {
 	this.autorun(() => {
 		const currentData = Template.currentData();
 
-		if (!currentData.lastMessage || RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
+		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
 			return clearInterval(this.timeAgoInterval);
 		}
 
@@ -67,17 +79,21 @@ Template.sidebarItem.onCreated(function() {
 			return this.renderedMessage = currentData.lastMessage.msg;
 		}
 
-		const otherUser = RocketChat.settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
+		setLastMessageTs(this, currentData.lastMessage.ts);
+
+		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
+			return this.renderedMessage = '******';
+		}
+
+		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
 		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
 		const sender = this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
 		if (currentData.t === 'd' && Meteor.userId() !== currentData.lastMessage.u._id) {
 			this.renderedMessage = currentData.lastMessage.msg === '' ? t('Sent_an_attachment') : renderedMessage;
 		} else {
-			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', {user: sender}) : `${ sender }: ${ renderedMessage }`;
+			this.renderedMessage = currentData.lastMessage.msg === '' ? t('user_sent_an_attachment', { user: sender }) : `${ sender }: ${ renderedMessage }`;
 		}
-
-		setLastMessageTs(this, currentData.lastMessage.ts);
 	});
 });
 
@@ -104,13 +120,13 @@ Template.sidebarItem.events({
 
 			if (!roomData) { return false; }
 
-			if (roomData.t === 'c' && !RocketChat.authz.hasAtLeastOnePermission('leave-c')) { return false; }
-			if (roomData.t === 'p' && !RocketChat.authz.hasAtLeastOnePermission('leave-p')) { return false; }
+			if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
+			if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
 
 			return !(((roomData.cl != null) && !roomData.cl) || (['d', 'l'].includes(roomData.t)));
 		};
 
-		const canFavorite = RocketChat.settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
+		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
 		const isFavorite = () => {
 			const sub = ChatSubscription.findOne({ rid: this.rid }, { fields: { f: 1 } });
 			if (((sub != null ? sub.f : undefined) != null) && sub.f) {
@@ -123,7 +139,7 @@ Template.sidebarItem.events({
 			icon: 'eye-off',
 			name: t('Hide_room'),
 			type: 'sidebar-item',
-			id: 'hide'
+			id: 'hide',
 		}];
 
 		if (this.alert) {
@@ -131,14 +147,14 @@ Template.sidebarItem.events({
 				icon: 'flag',
 				name: t('Mark_as_read'),
 				type: 'sidebar-item',
-				id: 'read'
+				id: 'read',
 			});
 		} else {
 			items.push({
 				icon: 'flag',
 				name: t('Mark_as_unread'),
 				type: 'sidebar-item',
-				id: 'unread'
+				id: 'unread',
 			});
 		}
 
@@ -148,7 +164,7 @@ Template.sidebarItem.events({
 				name: t(isFavorite() ? 'Unfavorite' : 'Favorite'),
 				modifier: isFavorite() ? 'star-filled' : 'star',
 				type: 'sidebar-item',
-				id: 'favorite'
+				id: 'favorite',
 			});
 		}
 
@@ -158,7 +174,7 @@ Template.sidebarItem.events({
 				name: t('Leave_room'),
 				type: 'sidebar-item',
 				id: 'leave',
-				modifier: 'error'
+				modifier: 'error',
 			});
 		}
 
@@ -168,22 +184,22 @@ Template.sidebarItem.events({
 				{
 					groups: [
 						{
-							items
-						}
-					]
-				}
+							items,
+						},
+					],
+				},
 			],
 			data: {
 				template: this.t,
 				rid: this.rid,
-				name: this.name
+				name: this.name,
 			},
 			currentTarget: e.currentTarget,
-			offsetHorizontal: -e.currentTarget.clientWidth
+			offsetHorizontal: -e.currentTarget.clientWidth,
 		};
 
 		popover.open(config);
-	}
+	},
 });
 
 Template.sidebarItemIcon.helpers({
@@ -196,9 +212,9 @@ Template.sidebarItemIcon.helpers({
 		}
 
 		if (this.t === 'l') {
-			return RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+			return roomTypes.getUserStatus('l', this.rid) || 'offline';
 		}
 
 		return false;
-	}
+	},
 });

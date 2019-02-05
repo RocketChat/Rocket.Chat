@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	getUserMentionsByChannel({ roomId, options }) {
 		check(roomId, String);
@@ -15,5 +19,5 @@ Meteor.methods({
 		const user = RocketChat.models.Users.findOneById(Meteor.userId());
 
 		return RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
-	}
+	},
 });

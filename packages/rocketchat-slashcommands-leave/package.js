@@ -2,14 +2,13 @@ Package.describe({
 	name: 'rocketchat:slashcommands-leave',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will translate /leave commands',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib'
+		'rocketchat:lib',
 	]);
-
-	api.addFiles('leave.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });

@@ -3,7 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const extend = require('util')._extend;
-const exec = require('child_process').exec;
+const { exec } = require('child_process');
 const processes = [];
 
 const baseDir = path.resolve(__dirname, '..');
@@ -12,8 +12,8 @@ const srcDir = path.resolve(baseDir);
 const appOptions = {
 	env: {
 		PORT: 3000,
-		ROOT_URL: 'http://localhost:3000'
-	}
+		ROOT_URL: 'http://localhost:3000',
+	},
 };
 
 function startProcess(opts, callback) {
@@ -38,7 +38,7 @@ function startProcess(opts, callback) {
 	}
 
 	if (opts.logFile) {
-		const logStream = fs.createWriteStream(opts.logFile, {flags: 'a'});
+		const logStream = fs.createWriteStream(opts.logFile, { flags: 'a' });
 		proc.stdout.pipe(logStream);
 		proc.stderr.pipe(logStream);
 	}
@@ -60,8 +60,8 @@ function startApp(callback) {
 		waitForMessage: appOptions.waitForMessage,
 		options: {
 			cwd: srcDir,
-			env: extend(appOptions.env, process.env)
-		}
+			env: extend(appOptions.env, process.env),
+		},
 	}, callback);
 }
 
@@ -73,9 +73,9 @@ function startChimp() {
 			env: Object.assign({}, process.env, {
 				NODE_PATH: `${ process.env.NODE_PATH +
 					path.delimiter + srcDir +
-					path.delimiter + srcDir }/node_modules`
-			})
-		}
+					path.delimiter + srcDir }/node_modules`,
+			}),
+		},
 	});
 }
 

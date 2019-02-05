@@ -1,5 +1,11 @@
-/* globals slugify, SyncedCron */
-
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { slugify } from 'meteor/yasaricli:slugify';
 import _ from 'underscore';
 import LDAP from './ldap';
 
@@ -56,13 +62,11 @@ export function getLdapUserUniqueID(ldapUser) {
 	Unique_Identifier_Field = Unique_Identifier_Field.concat(User_Search_Field);
 
 	if (Unique_Identifier_Field.length > 0) {
-		Unique_Identifier_Field = Unique_Identifier_Field.find((field) => {
-			return !_.isEmpty(ldapUser._raw[field]);
-		});
+		Unique_Identifier_Field = Unique_Identifier_Field.find((field) => !_.isEmpty(ldapUser._raw[field]));
 		if (Unique_Identifier_Field) {
 			Unique_Identifier_Field = {
 				attribute: Unique_Identifier_Field,
-				value: ldapUser._raw[Unique_Identifier_Field].toString('hex')
+				value: ldapUser._raw[Unique_Identifier_Field].toString('hex'),
 			};
 		}
 		return Unique_Identifier_Field;
@@ -131,11 +135,11 @@ export function getDataToSyncUserData(ldapUser, user) {
 						// TODO: Find a better solution.
 						const dKeys = userField.split('.');
 						const lastKey = _.last(dKeys);
-						_.reduce(dKeys, (obj, currKey) =>
+						_.reduce(dKeys, (obj, currKey) => (
 							(currKey === lastKey)
 								? obj[currKey] = tmpLdapField
 								: obj[currKey] = obj[currKey] || {}
-							, userData);
+						), userData);
 						logger.debug(`user.${ userField } changed to: ${ tmpLdapField }`);
 					}
 			}
@@ -167,7 +171,7 @@ export function getDataToSyncUserData(ldapUser, user) {
 
 export function syncUserData(user, ldapUser) {
 	logger.info('Syncing user data');
-	logger.debug('user', {'email': user.email, '_id': user._id});
+	logger.debug('user', { email: user.email, _id: user._id });
 	logger.debug('ldapUser', ldapUser.object);
 
 	const userData = getDataToSyncUserData(ldapUser, user);
@@ -178,7 +182,7 @@ export function syncUserData(user, ldapUser) {
 			delete userData.name;
 		}
 		Meteor.users.update(user._id, { $set: userData });
-		user = Meteor.users.findOne({_id: user._id});
+		user = Meteor.users.findOne({ _id: user._id });
 	}
 
 	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
@@ -200,14 +204,14 @@ export function syncUserData(user, ldapUser) {
 
 			const file = {
 				userId: user._id,
-				type: 'image/jpeg'
+				type: 'image/jpeg',
 			};
 
 			Meteor.runAsUser(user._id, () => {
 				fileStore.insert(file, rs, () => {
 					Meteor.setTimeout(function() {
 						RocketChat.models.Users.setAvatarOrigin(user._id, 'ldap');
-						RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
+						RocketChat.Notifications.notifyLogged('updateAvatar', { username: user.username });
 					}, 500);
 				});
 			});
@@ -258,7 +262,7 @@ export function addLdapUser(ldapUser, username, password) {
 	syncUserData(userObject, ldapUser);
 
 	return {
-		userId: userObject._id
+		userId: userObject._id,
 	};
 }
 
@@ -274,7 +278,7 @@ export function importNewUsers(ldap) {
 	}
 
 	let count = 0;
-	ldap.searchUsersSync('*', Meteor.bindEnvironment((error, ldapUsers, {next, end} = {}) => {
+	ldap.searchUsersSync('*', Meteor.bindEnvironment((error, ldapUsers, { next, end } = {}) => {
 		if (error) {
 			throw error;
 		}
@@ -285,7 +289,7 @@ export function importNewUsers(ldap) {
 			const uniqueId = getLdapUserUniqueID(ldapUser);
 			// Look to see if user already exists
 			const userQuery = {
-				'services.ldap.id': uniqueId.value
+				'services.ldap.id': uniqueId.value,
 			};
 
 			logger.debug('userQuery', userQuery);
@@ -300,7 +304,7 @@ export function importNewUsers(ldap) {
 
 			if (!user && username && RocketChat.settings.get('LDAP_Merge_Existing_Users') === true) {
 				const userQuery = {
-					username
+					username,
 				};
 
 				logger.debug('userQuery merge', userQuery);
@@ -389,7 +393,7 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 			schedule: (parser) => parser.text(RocketChat.settings.get('LDAP_Background_Sync_Interval')),
 			job() {
 				sync();
-			}
+			},
 		});
 		SyncedCron.start();
 	}

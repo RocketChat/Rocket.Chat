@@ -1,5 +1,6 @@
-/* globals MongoInternals, SystemLogger */
-
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
+import { SystemLogger } from 'meteor/rocketchat:logger';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
@@ -23,7 +24,7 @@ Meteor.startup(function() {
 			`           Platform: ${ process.platform }`,
 			`       Process Port: ${ process.env.PORT }`,
 			`           Site URL: ${ RocketChat.settings.get('Site_Url') }`,
-			`   ReplicaSet OpLog: ${ oplogState }`
+			`   ReplicaSet OpLog: ${ oplogState }`,
 		];
 
 		if (RocketChat.Info.commit && RocketChat.Info.commit.hash) {

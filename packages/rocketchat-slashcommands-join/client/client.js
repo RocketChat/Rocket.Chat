@@ -1,6 +1,8 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.slashCommands.add('join', undefined, {
 	description: 'Join_the_given_channel',
-	params: '#channel'
+	params: '#channel',
 }, function(err, result, params) {
 	if (err.error === 'error-user-already-in-room') {
 		params.cmd = 'open';

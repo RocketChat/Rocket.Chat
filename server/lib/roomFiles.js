@@ -1,6 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+
 export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
 	if (!pub.userId) {
 		return pub.ready();
+	}
+
+	if (!Meteor.call('canAccessRoom', rid, pub.userId)) {
+		return this.ready();
 	}
 
 	const cursorFileListHandle = RocketChat.models.Uploads.findNotHiddenFilesOfRoom(rid, searchText, limit).observeChanges({
@@ -16,7 +22,7 @@ export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
 		},
 		removed(_id) {
 			return pub.removed('room_files', _id);
-		}
+		},
 	});
 
 	pub.ready();

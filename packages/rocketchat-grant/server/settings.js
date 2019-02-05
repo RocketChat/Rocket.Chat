@@ -1,4 +1,4 @@
-import { check } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 
 import { Storage } from './storage';
 
@@ -7,7 +7,7 @@ class Apps extends Storage {
 		check(name, String);
 		check(body, {
 			redirectUrl: String,
-			errorUrl: String
+			errorUrl: String,
 		});
 
 		this._add(name, body);
@@ -25,14 +25,14 @@ class Settings extends Storage {
 			enabled: Match.Optional(Boolean),
 			provider: String,
 			key: String,
-			secret: String
+			secret: String,
 		});
 
 		this._add(settings.provider, {
 			enabled: settings.enabled === true,
 			provider: settings.provider,
 			key: settings.key,
-			secret: settings.secret
+			secret: settings.secret,
 		});
 	}
 }

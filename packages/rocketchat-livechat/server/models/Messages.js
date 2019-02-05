@@ -1,27 +1,29 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Messages.keepHistoryForToken = function(token) {
 	return this.update({
 		'navigation.token': token,
 		expireAt: {
-			$exists: true
-		}
+			$exists: true,
+		},
 	}, {
 		$unset: {
-			expireAt: 1
-		}
+			expireAt: 1,
+		},
 	}, {
-		multi: true
+		multi: true,
 	});
 };
 
 RocketChat.models.Messages.setRoomIdByToken = function(token, rid) {
 	return this.update({
 		'navigation.token': token,
-		rid: null
+		rid: null,
 	}, {
 		$set: {
-			rid
-		}
+			rid,
+		},
 	}, {
-		multi: true
+		multi: true,
 	});
 };

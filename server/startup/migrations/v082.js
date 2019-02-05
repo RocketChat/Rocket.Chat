@@ -5,5 +5,5 @@ RocketChat.Migrations.add({
 		if (admins.length === 1 && admins[0]._id === 'rocket.cat') {
 			RocketChat.authz.removeUserFromRoles('rocket.cat', 'admin');
 		}
-	}
+	},
 });

@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { AccountBox } from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import s from 'underscore.string';
 
 const commands = {
@@ -17,7 +24,7 @@ const commands = {
 		const customOAuthCallback = (response) => {
 			event.source.postMessage({
 				event: 'custom-oauth-callback',
-				response
+				response,
 			}, event.origin);
 		};
 
@@ -27,20 +34,20 @@ const commands = {
 		}
 
 		if (typeof data.service === 'string' && window.ServiceConfiguration) {
-			const customOauth = ServiceConfiguration.configurations.findOne({service: data.service});
+			const customOauth = ServiceConfiguration.configurations.findOne({ service: data.service });
 
 			if (customOauth) {
 				const customLoginWith = Meteor[`loginWith${ s.capitalize(customOauth.service, true) }`];
 				const customRedirectUri = data.redirectUrl || siteUrl;
-				customLoginWith.call(Meteor, {'redirectUrl': customRedirectUri}, customOAuthCallback);
+				customLoginWith.call(Meteor, { redirectUrl: customRedirectUri }, customOAuthCallback);
 			}
 		}
 	},
 
-	'login-with-token'(data) {
+	'login-with-token'(data, ...args) {
 		if (typeof data.token === 'string') {
 			Meteor.loginWithToken(data.token, function() {
-				console.log('Iframe command [login-with-token]: result', arguments);
+				console.log('Iframe command [login-with-token]: result', [data, ...args]);
 			});
 		}
 	},
@@ -48,7 +55,7 @@ const commands = {
 	'logout'() {
 		const user = Meteor.user();
 		Meteor.logout(() => {
-			RocketChat.callbacks.run('afterLogoutCleanUp', user);
+			callbacks.run('afterLogoutCleanUp', user);
 			Meteor.call('logoutCleanUp', user);
 			return FlowRouter.go('home');
 		});
@@ -64,11 +71,11 @@ const commands = {
 		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
 		delete toolbar.buttons[id];
 		Session.set('toolbarButtons', toolbar);
-	}
+	},
 };
 
 window.addEventListener('message', (e) => {
-	if (RocketChat.settings.get('Iframe_Integration_receive_enable') !== true) {
+	if (settings.get('Iframe_Integration_receive_enable') !== true) {
 		return;
 	}
 
@@ -76,7 +83,7 @@ window.addEventListener('message', (e) => {
 		return;
 	}
 
-	const origins = RocketChat.settings.get('Iframe_Integration_receive_origin');
+	const origins = settings.get('Iframe_Integration_receive_origin');
 
 	if (origins !== '*' && origins.split(',').indexOf(e.origin) === -1) {
 		return console.error('Origin not allowed', e.origin);

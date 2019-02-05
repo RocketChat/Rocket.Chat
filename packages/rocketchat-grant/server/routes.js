@@ -35,7 +35,7 @@ export const routes = {
 		if (paths && paths[2] === 'callback') {
 			return {
 				provider: paths[0],
-				app: paths[1]
+				app: paths[1],
 			};
 		}
 	},
@@ -44,5 +44,5 @@ export const routes = {
 		const paths = getPaths(req);
 
 		return paths && paths[0] === 'providers';
-	}
+	},
 };

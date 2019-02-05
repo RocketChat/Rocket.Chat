@@ -1,4 +1,9 @@
-/*globals OAuth*/
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { OAuth } from 'meteor/oauth';
 import s from 'underscore.string';
 
 // Request custom OAuth credentials for the user
@@ -69,7 +74,7 @@ export class CustomOAuth {
 			options = {};
 		}
 
-		const config = ServiceConfiguration.configurations.findOne({service: this.name});
+		const config = ServiceConfiguration.configurations.findOne({ service: this.name });
 		if (!config) {
 			if (credentialRequestCompleteCallback) {
 				credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError());
@@ -97,8 +102,8 @@ export class CustomOAuth {
 			credentialToken,
 			popupOptions: {
 				width: 900,
-				height: 450
-			}
+				height: 450,
+			},
 		});
 	}
 }

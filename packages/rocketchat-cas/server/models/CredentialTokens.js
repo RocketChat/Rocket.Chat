@@ -1,8 +1,10 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.CredentialTokens = new class extends RocketChat.models._Base {
 	constructor() {
 		super('credential_tokens');
 
-		this.tryEnsureIndex({ 'expireAt': 1 }, { sparse: 1, expireAfterSeconds: 0 });
+		this.tryEnsureIndex({ expireAt: 1 }, { sparse: 1, expireAfterSeconds: 0 });
 	}
 
 	create(_id, userInfo) {
@@ -10,7 +12,7 @@ RocketChat.models.CredentialTokens = new class extends RocketChat.models._Base {
 		const token = {
 			_id,
 			userInfo,
-			expireAt: new Date(Date.now() + validForMilliseconds)
+			expireAt: new Date(Date.now() + validForMilliseconds),
 		};
 
 		this.insert(token);
@@ -20,7 +22,7 @@ RocketChat.models.CredentialTokens = new class extends RocketChat.models._Base {
 	findOneById(_id) {
 		const query = {
 			_id,
-			expireAt: { $gt: new Date() }
+			expireAt: { $gt: new Date() },
 		};
 
 		return this.findOne(query);

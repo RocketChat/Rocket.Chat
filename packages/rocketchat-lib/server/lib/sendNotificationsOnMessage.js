@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
@@ -6,7 +7,7 @@ import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/m
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
-const sendNotification = ({
+const sendNotification = async({
 	subscription,
 	sender,
 	hasMentionToAll,
@@ -15,21 +16,11 @@ const sendNotification = ({
 	notificationMessage,
 	room,
 	mentionIds,
-	disableAllMessageNotifications
+	disableAllMessageNotifications,
 }) => {
 
 	// don't notify the sender
 	if (subscription.u._id === sender._id) {
-		return;
-	}
-
-	// notifications disabled
-	if (subscription.disableNotifications) {
-		return;
-	}
-
-	// dont send notification to users who ignored the sender
-	if (Array.isArray(subscription.ignored) && subscription.ignored.includes(sender._id)) {
 		return;
 	}
 
@@ -40,9 +31,11 @@ const sendNotification = ({
 		return;
 	}
 
-	const receiver = RocketChat.models.Users.findOneById(subscription.u._id);
+	const [receiver] = subscription.receiver;
 
-	if (!receiver || !receiver.active) {
+	const roomType = room.t;
+	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
+	if (roomType === 'd' && !RocketChat.authz.hasPermission(subscription.u._id, 'view-d-room')) {
 		return;
 	}
 
@@ -50,13 +43,11 @@ const sendNotification = ({
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
-	const roomType = room.t;
-
 	const {
 		audioNotifications,
 		desktopNotifications,
 		mobilePushNotifications,
-		emailNotifications
+		emailNotifications,
 	} = subscription;
 
 	let notificationSent = false;
@@ -65,12 +56,13 @@ const sendNotification = ({
 	if (shouldNotifyAudio({
 		disableAllMessageNotifications,
 		status: receiver.status,
+		statusConnection: receiver.statusConnection,
 		audioNotifications,
 		hasMentionToAll,
 		hasMentionToHere,
 		isHighlighted,
 		hasMentionToUser,
-		roomType
+		roomType,
 	})) {
 		notifyAudioUser(subscription.u._id, message, room);
 	}
@@ -79,12 +71,13 @@ const sendNotification = ({
 	if (shouldNotifyDesktop({
 		disableAllMessageNotifications,
 		status: receiver.status,
+		statusConnection: receiver.statusConnection,
 		desktopNotifications,
 		hasMentionToAll,
 		hasMentionToHere,
 		isHighlighted,
 		hasMentionToUser,
-		roomType
+		roomType,
 	})) {
 		notificationSent = true;
 		notifyDesktopUser({
@@ -93,7 +86,7 @@ const sendNotification = ({
 			user: sender,
 			message,
 			room,
-			duration: subscription.desktopNotificationDuration
+			duration: subscription.desktopNotificationDuration,
 		});
 	}
 
@@ -104,7 +97,7 @@ const sendNotification = ({
 		isHighlighted,
 		hasMentionToUser,
 		statusConnection: receiver.statusConnection,
-		roomType
+		roomType,
 	})) {
 		notificationSent = true;
 
@@ -115,7 +108,7 @@ const sendNotification = ({
 			userId: subscription.u._id,
 			senderUsername: sender.username,
 			senderName: sender.name,
-			receiverUsername: receiver.username
+			receiverUsername: receiver.username,
 		});
 	}
 
@@ -126,7 +119,7 @@ const sendNotification = ({
 		isHighlighted,
 		hasMentionToUser,
 		hasMentionToAll,
-		roomType
+		roomType,
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
@@ -134,6 +127,7 @@ const sendNotification = ({
 
 				return true;
 			}
+			return false;
 		});
 	}
 
@@ -142,7 +136,42 @@ const sendNotification = ({
 	}
 };
 
-function sendAllNotifications(message, room) {
+const project = {
+	$project: {
+		audioNotifications: 1,
+		desktopNotificationDuration: 1,
+		desktopNotifications: 1,
+		emailNotifications: 1,
+		mobilePushNotifications: 1,
+		muteGroupMentions: 1,
+		name: 1,
+		userHighlights: 1,
+		'u._id': 1,
+		'receiver.active': 1,
+		'receiver.emails': 1,
+		'receiver.language': 1,
+		'receiver.status': 1,
+		'receiver.statusConnection': 1,
+		'receiver.username': 1,
+	},
+};
+
+const filter = {
+	$match: {
+		'receiver.active': true,
+	},
+};
+
+const lookup = {
+	$lookup: {
+		from: 'users',
+		localField: 'u._id',
+		foreignField: '_id',
+		as: 'receiver',
+	},
+};
+
+async function sendAllNotifications(message, room) {
 
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -162,7 +191,7 @@ function sendAllNotifications(message, room) {
 		return message;
 	}
 
-	const mentionIds = (message.mentions || []).map(({_id}) => _id);
+	const mentionIds = (message.mentions || []).map(({ _id }) => _id);
 	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here');
 	const hasMentionToAll = mentionIds.includes('all');
 	const hasMentionToHere = mentionIds.includes('here');
@@ -179,12 +208,14 @@ function sendAllNotifications(message, room) {
 
 	const query = {
 		rid: room._id,
+		ignored: { $ne: sender._id },
+		disableNotifications: { $ne: true },
 		$or: [{
-			'userHighlights.0': { $exists: 1 }
-		}]
+			'userHighlights.0': { $exists: 1 },
+		}],
 	};
 
-	['audio', 'desktop', 'mobile', 'email'].map((kind) => {
+	['audio', 'desktop', 'mobile', 'email'].forEach((kind) => {
 		const notificationField = `${ kind === 'mobile' ? 'mobilePush' : kind }Notifications`;
 
 		const filter = { [notificationField]: 'all' };
@@ -198,11 +229,11 @@ function sendAllNotifications(message, room) {
 		if (mentionIdsWithoutGroups.length > 0) {
 			query.$or.push({
 				[notificationField]: 'mentions',
-				'u._id': { $in: mentionIdsWithoutGroups }
+				'u._id': { $in: mentionIdsWithoutGroups },
 			});
 		} else if (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) {
 			query.$or.push({
-				[notificationField]: 'mentions'
+				[notificationField]: 'mentions',
 			});
 		}
 
@@ -210,19 +241,26 @@ function sendAllNotifications(message, room) {
 		const serverPreference = RocketChat.settings.get(`Accounts_Default_User_Preferences_${ serverField }`);
 		if ((room.t === 'd' && serverPreference !== 'nothing') || (!disableAllMessageNotifications && (serverPreference === 'all' || hasMentionToAll || hasMentionToHere))) {
 			query.$or.push({
-				[notificationField]: { $exists: false }
+				[notificationField]: { $exists: false },
 			});
 		} else if (serverPreference === 'mentions' && mentionIdsWithoutGroups.length) {
 			query.$or.push({
 				[notificationField]: { $exists: false },
-				'u._id': { $in: mentionIdsWithoutGroups }
+				'u._id': { $in: mentionIdsWithoutGroups },
 			});
 		}
 	});
 
 	// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
-	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(query);
+
+	const subscriptions = await RocketChat.models.Subscriptions.model.rawCollection().aggregate([
+		{ $match: query },
+		lookup,
+		filter,
+		project,
+	]).toArray();
+
 	subscriptions.forEach((subscription) => sendNotification({
 		subscription,
 		sender,
@@ -232,31 +270,49 @@ function sendAllNotifications(message, room) {
 		notificationMessage,
 		room,
 		mentionIds,
-		disableAllMessageNotifications
+		disableAllMessageNotifications,
 	}));
 
 	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
 	if (room.t === 'c') {
-		const mentions = message.mentions.filter(({ _id }) => _id !== 'here' && _id !== 'all').map(({ _id }) => _id);
-		Promise.all(RocketChat.models.Subscriptions.findByRoomIdAndUserIds(room._id, mentions)
-			.fetch()
-			.map(async subscription => {
-				await callJoinRoom(subscription.u, room._id);
-				return subscription;
-			})).then(subscriptions => subscriptions.forEach(subscription =>
-			sendNotification({
-				subscription,
-				sender,
-				hasMentionToAll,
-				hasMentionToHere,
-				message,
-				notificationMessage,
-				room,
-				mentionIds
-			})));
+		// get subscriptions from users already in room (to not send them a notification)
+		const mentions = [...mentionIdsWithoutGroups];
+		RocketChat.models.Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, { fields: { 'u._id': 1 } }).forEach((subscription) => {
+			const index = mentions.indexOf(subscription.u._id);
+			if (index !== -1) {
+				mentions.splice(index, 1);
+			}
+		});
+
+		Promise.all(mentions
+			.map(async(userId) => {
+				await callJoinRoom(userId, room._id);
+
+				return userId;
+			})
+		).then((users) => {
+			users.forEach((userId) => {
+				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+
+				sendNotification({
+					subscription,
+					sender,
+					hasMentionToAll,
+					hasMentionToHere,
+					message,
+					notificationMessage,
+					room,
+					mentionIds,
+				});
+			});
+		}).catch((error) => {
+			throw new Meteor.Error(error);
+		});
 	}
 
 	return message;
 }
 
-RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
+RocketChat.callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
+
+export { sendNotification, sendAllNotifications };

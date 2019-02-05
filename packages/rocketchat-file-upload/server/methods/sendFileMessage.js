@@ -1,7 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { Uploads } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { FileUpload } from '../lib/FileUpload';
 import _ from 'underscore';
 
 Meteor.methods({
-	async 'sendFileMessage'(roomId, store, file, msgData = {}) {
+	async sendFileMessage(roomId, store, file, msgData = {}) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
@@ -17,10 +23,10 @@ Meteor.methods({
 			emoji: Match.Optional(String),
 			alias: Match.Optional(String),
 			groupable: Match.Optional(Boolean),
-			msg: Match.Optional(String)
+			msg: Match.Optional(String),
 		});
 
-		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
+		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
 		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(file.name) }`;
 
@@ -29,7 +35,7 @@ Meteor.methods({
 			type: 'file',
 			description: file.description,
 			title_link: fileUrl,
-			title_link_download: true
+			title_link_download: true,
 		};
 
 		if (/^image\/.+/.test(file.type)) {
@@ -39,7 +45,14 @@ Meteor.methods({
 			if (file.identify && file.identify.size) {
 				attachment.image_dimensions = file.identify.size;
 			}
-			attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			try {
+				attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			} catch (e) {
+				delete attachment.image_url;
+				delete attachment.image_type;
+				delete attachment.image_size;
+				delete attachment.image_dimensions;
+			}
 		} else if (/^audio\/.+/.test(file.type)) {
 			attachment.audio_url = fileUrl;
 			attachment.audio_type = file.type;
@@ -59,16 +72,16 @@ Meteor.methods({
 			file: {
 				_id: file._id,
 				name: file.name,
-				type: file.type
+				type: file.type,
 			},
 			groupable: false,
-			attachments: [attachment]
+			attachments: [attachment],
 		}, msgData);
 
 		msg = Meteor.call('sendMessage', msg);
 
-		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
+		Meteor.defer(() => callbacks.run('afterFileUpload', { user, room, message: msg }));
 
 		return msg;
-	}
+	},
 });

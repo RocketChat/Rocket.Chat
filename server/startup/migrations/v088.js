@@ -9,5 +9,5 @@ RocketChat.Migrations.add({
 				}
 			}
 		}
-	}
+	},
 });

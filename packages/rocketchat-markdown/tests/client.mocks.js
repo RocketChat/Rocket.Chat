@@ -7,8 +7,12 @@ mock('meteor/meteor', {
 	Meteor: {
 		absoluteUrl() {
 			return 'http://localhost:3000/';
-		}
-	}
+		},
+	},
+});
+
+mock('meteor/blaze', {
+	Blaze: {},
 });
 
 mock('meteor/rocketchat:lib', {
@@ -18,6 +22,8 @@ mock('meteor/rocketchat:lib', {
 				switch (setting) {
 					case 'Markdown_SupportSchemesForLink':
 						return 'http,https';
+					case 'Markdown_Parser':
+						return 'original';
 					case 'Markdown_Headers':
 					// case 'Markdown_Marked_GFM':
 					// case 'Markdown_Marked_Tables':
@@ -29,17 +35,25 @@ mock('meteor/rocketchat:lib', {
 					default:
 						throw new Error(`Missing setting mock ${ setting }`);
 				}
-			}
-		}
-	}
+			},
+		},
+		callbacks: {
+			add() {
+
+			},
+			priority: {
+				HIGH: 1,
+			},
+		},
+	},
 });
 
 mock('meteor/random', {
 	Random: {
 		id() {
 			return Math.random();
-		}
-	}
+		},
+	},
 });
 
 global.s = s;

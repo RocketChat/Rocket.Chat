@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	'livechat:getNextAgent'({ token, department }) {
 		check(token, String);
@@ -21,5 +25,5 @@ Meteor.methods({
 		}
 
 		return RocketChat.models.Users.getAgentInfo(agent.agentId);
-	}
+	},
 });
