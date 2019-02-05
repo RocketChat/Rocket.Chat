@@ -2866,10 +2866,10 @@ rc-old select,
 		& .start__purge-warning {
 			margin-top: -33px;
 			margin-bottom: 0.5rem;
-			padding: 0.5rem;
+			padding: 1rem;
 
 			border-width: 1px 0 0;
-			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, transparent 100%);
+			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, rgba(255, 255, 255, 0) 100%);
 		}
 	}
 
