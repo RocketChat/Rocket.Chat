@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t } from 'meteor/rocketchat:ui';
-import { handleError } from 'meteor/rocketchat:lib';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import s from 'underscore.string';
 

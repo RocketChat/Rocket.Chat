@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {
@@ -35,6 +35,10 @@ Meteor.methods({
 				method: 'pinMessage',
 				action: 'Message_pinning',
 			});
+		}
+
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
@@ -113,6 +117,10 @@ Meteor.methods({
 				method: 'unpinMessage',
 				action: 'Message_pinning',
 			});
+		}
+
+		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });

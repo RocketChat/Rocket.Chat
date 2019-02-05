@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 const msgNavType = 'livechat_navigation_history';
 
 const crmEnabled = () => {

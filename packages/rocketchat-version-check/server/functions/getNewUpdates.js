@@ -1,8 +1,8 @@
 import os from 'os';
 import { HTTP } from 'meteor/http';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
 import { MongoInternals } from 'meteor/mongo';
-// import checkUpdate from '../checkUpdate';
 
 export default () => {
 	try {
@@ -24,8 +24,15 @@ export default () => {
 			deployPlatform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
+		const headers = {};
+		const token = getWorkspaceAccessToken();
+		if (token) {
+			headers.Authorization = `Bearer ${ token }`;
+		}
+
 		const result = HTTP.get('https://releases.rocket.chat/updates/check', {
 			params: data,
+			headers,
 		});
 
 		return result.data;

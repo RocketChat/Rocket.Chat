@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, modal } from 'meteor/rocketchat:ui';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import toastr from 'toastr';
 

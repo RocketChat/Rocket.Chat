@@ -4,7 +4,9 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t, modal } from 'meteor/rocketchat:ui';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { call } from 'meteor/rocketchat:ui-utils';
 import { AdminChatRoom } from './adminRooms';
 import toastr from 'toastr';
 
@@ -41,6 +43,10 @@ Template.adminRoomInfo.helpers({
 	roomName() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { name: 1 } });
 		return room && room.name;
+	},
+	roomOwner() {
+		const roomOwner = Template.instance().roomOwner.get();
+		return roomOwner && (roomOwner.name || roomOwner.username);
 	},
 	roomTopic() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { topic: 1 } });
@@ -133,6 +139,7 @@ Template.adminRoomInfo.events({
 
 Template.adminRoomInfo.onCreated(function() {
 	this.editing = new ReactiveVar;
+	this.roomOwner = new ReactiveVar;
 	this.validateRoomType = () => {
 		const type = this.$('input[name=roomType]:checked').val();
 		if (type !== 'c' && type !== 'p') {
@@ -259,4 +266,13 @@ Template.adminRoomInfo.onCreated(function() {
 		}
 		this.editing.set();
 	};
+
+	this.autorun(async() => {
+		this.roomOwner.set(null);
+		for (const { roles, u } of await call('getRoomRoles', Session.get('adminRoomsSelected').rid)) {
+			if (roles.includes('owner')) {
+				this.roomOwner.set(u);
+			}
+		}
+	});
 });

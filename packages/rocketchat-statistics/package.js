@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'rocketchat:lib',
+		'rocketchat:models',
 		'konecty:multiple-instances-status',
 	]);
 	api.mainModule('client/index.js', 'client');

@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'tracker',
 		'reactive-var',

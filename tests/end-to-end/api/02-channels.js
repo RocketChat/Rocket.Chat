@@ -1,22 +1,12 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
-	apiEmail,
-	apiUsername,
-	targetUser,
-	log,
 	apiPublicChannelName,
 	channel,
 } from '../../data/api-data.js';
-import { adminEmail, password, adminUsername } from '../../data/user.js';
-import supertest from 'supertest';
+import { adminUsername } from '../../data/user.js';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {

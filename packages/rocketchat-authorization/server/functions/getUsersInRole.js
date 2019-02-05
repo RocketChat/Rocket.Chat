@@ -1,5 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Roles } from 'meteor/rocketchat:models';
 
-RocketChat.authz.getUsersInRole = function(roleName, scope, options) {
-	return RocketChat.models.Roles.findUsersInRole(roleName, scope, options);
-};
+export const getUsersInRole = (roleName, scope, options) => Roles.findUsersInRole(roleName, scope, options);
+

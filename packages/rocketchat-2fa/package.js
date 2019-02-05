@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 		'sha',
 		'random',
 		'rocketchat:ui',
+		'rocketchat:utils',
 	]);
 
 	api.mainModule('client/index.js', 'client');

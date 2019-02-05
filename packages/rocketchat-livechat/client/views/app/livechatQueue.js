@@ -1,7 +1,10 @@
-/* globals LivechatQueueUser */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatDepartment } from '../../collections/LivechatDepartment';
+import { LivechatQueueUser } from '../../collections/LivechatQueueUser';
+import { AgentUsers } from '../../collections/AgentUsers';
 
 Template.livechatQueue.helpers({
 	departments() {

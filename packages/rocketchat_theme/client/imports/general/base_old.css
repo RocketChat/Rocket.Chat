@@ -3091,6 +3091,7 @@ rc-old select,
 
 		margin-right: 5px;
 
+		font-family: inherit;
 		font-size: inherit;
 
 		font-weight: 600;

@@ -1,1 +1,3 @@
-import './migrations';
+import { Migrations } from './migrations';
+
+export { Migrations };

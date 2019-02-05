@@ -1,16 +1,17 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import * as Models from 'meteor/rocketchat:models';
+import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({
 	'authorization:deleteRole'(roleName) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'access-permissions')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:deleteRole',
 				action: 'Accessing_permissions',
 			});
 		}
 
-		const role = RocketChat.models.Roles.findOne(roleName);
+		const role = Models.Roles.findOne(roleName);
 		if (!role) {
 			throw new Meteor.Error('error-invalid-role', 'Invalid role', {
 				method: 'authorization:deleteRole',
@@ -24,7 +25,7 @@ Meteor.methods({
 		}
 
 		const roleScope = role.scope || 'Users';
-		const model = RocketChat.models[roleScope];
+		const model = Models[roleScope];
 		const existingUsers = model && model.findUsersInRoles && model.findUsersInRoles(roleName);
 
 		if (existingUsers && existingUsers.count() > 0) {
@@ -33,6 +34,6 @@ Meteor.methods({
 			});
 		}
 
-		return RocketChat.models.Roles.remove(role.name);
+		return Models.Roles.remove(role.name);
 	},
 });

@@ -1,14 +1,15 @@
-/* globals KonchatNotification */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+import { KonchatNotification } from '../../lib/notification';
 
 Template.secretURL.helpers({
 	registrationAllowed() {
 		const { hashIsValid } = Template.instance();
-		return RocketChat.settings.get('Accounts_RegistrationForm') === 'Secret URL' && hashIsValid && hashIsValid.get();
+		return settings.get('Accounts_RegistrationForm') === 'Secret URL' && hashIsValid && hashIsValid.get();
 	},
 	ready() {
 		const instance = Template.instance();

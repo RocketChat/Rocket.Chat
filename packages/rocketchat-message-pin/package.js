@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'rocketchat:lib',
+		'rocketchat:utils',
 		'templating',
 	]);
 	api.addFiles('client/views/stylesheets/messagepin.css', 'client');

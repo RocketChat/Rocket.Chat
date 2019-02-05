@@ -1,7 +1,3 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import loginPage from '../../pageobjects/login.page';
 import supertest from 'supertest';
 const request = supertest('http://localhost:3000');
@@ -14,20 +10,11 @@ import admin from '../../pageobjects/administration.page';
 
 // test data imports
 import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
-import { targetUser, imgURL } from '../../data/interactions.js';
 
 import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../data/user.js';
 
 function api(path) {
 	return prefix + path;
-}
-
-function log(res) {
-	console.log(res.req.path);
-	console.log({
-		body: res.body,
-		headers: res.headers,
-	});
 }
 
 const credentials = {
@@ -38,10 +25,6 @@ const credentials = {
 const login = {
 	user: adminUsername,
 	password: adminPassword,
-};
-
-const settingValue = {
-	value : undefined,
 };
 
 describe('[Api Settings Change]', () => {

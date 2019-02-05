@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import LivechatVisitors from '../../models/LivechatVisitors';
 
@@ -21,12 +22,14 @@ export function findGuest(token) {
 			name: 1,
 			username: 1,
 			token: 1,
+			visitorEmails: 1,
 		},
 	});
 }
 
 export function findRoom(token, rid) {
 	const fields = {
+		t: 1,
 		departmentId: 1,
 		servedBy: 1,
 		open: 1,
@@ -94,6 +97,8 @@ export function settings() {
 			language: initSettings.Language,
 			transcript: initSettings.Livechat_enable_transcript,
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
+			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
+			showConnecting: initSettings.Livechat_Show_Connecting,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
@@ -112,6 +117,7 @@ export function settings() {
 			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
 			transcriptMessage: initSettings.Livechat_transcript_message,
 			registrationFormMessage: initSettings.Livechat_registration_form_message,
+			dataProcessingConsentText: initSettings.Livechat_data_processing_consent_text,
 		},
 		survey: {
 			items: ['satisfaction', 'agentKnowledge', 'agentResposiveness', 'agentFriendliness'],

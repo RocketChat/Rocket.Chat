@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'mongo',
 		'check',
 		'ecmascript',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:accounts',
 		'rocketchat:ui',

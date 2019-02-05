@@ -7,9 +7,10 @@ import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { renderEmoji } from 'meteor/rocketchat:emoji';
-import { renderMessageBody } from './renderMessageBody';
+import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:ui';
+import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -92,7 +93,6 @@ Template.message.helpers({
 		if (!this.u || !this.u._id) {
 			return [];
 		}
-		/* globals UserRoles RoomRoles */
 		const userRoles = UserRoles.findOne(this.u._id);
 		const roomRoles = RoomRoles.findOne({
 			'u._id': this.u._id,

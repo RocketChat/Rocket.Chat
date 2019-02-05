@@ -4,7 +4,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { t, ChatRoom, modal } from 'meteor/rocketchat:ui';
+import { ChatRoom, modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import { RocketChat, call } from 'meteor/rocketchat:lib';
 import moment from 'moment';
 

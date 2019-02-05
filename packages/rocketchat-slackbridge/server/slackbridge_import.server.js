@@ -1,4 +1,3 @@
-/* globals msgStream */
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';

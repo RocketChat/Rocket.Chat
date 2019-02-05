@@ -1,3 +1,5 @@
+import { settings } from 'meteor/rocketchat:settings';
+
 (function(window){
 
   var WORKER_PATH = 'mp3-realtime-worker.js';
@@ -6,7 +8,7 @@
     var config = cfg || {};
     var bufferLen = config.bufferLen || 4096;
     var numChannels = config.numChannels || 1;
-    var bitRate = RocketChat.settings.get('Message_Audio_bitRate');
+    var bitRate = settings.get('Message_Audio_bitRate');
     this.context = source.context;
     this.node = (this.context.createScriptProcessor ||
                  this.context.createJavaScriptNode).call(this.context,
@@ -77,16 +79,6 @@
     source.connect(this.node);
     this.node.connect(this.context.destination);    //this should not be necessary
   };
-
-  Recorder.forceDownload = function(blob, filename){
-    var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    var link = window.document.createElement('a');
-    link.href = url;
-    link.download = filename || 'audio-message.mp3';
-    var click = document.createEvent("Event");
-    click.initEvent("click", true, true);
-    link.dispatchEvent(click);
-  }
 
   window.Recorder = Recorder;
 

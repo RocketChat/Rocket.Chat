@@ -1,0 +1,30 @@
+{
+	"extends": ["@rocket.chat/eslint-config"],
+	"parser": "babel-eslint",
+	"globals": {
+		"AgentUsers"                  : false,
+		"CachedChatSubscription"      : false,
+		"ChatMessage"                 : false,
+		"ChatMessages"                : false,
+		"chatMessages"                : false,
+		"ChatRoom"                    : false,
+		"ChatSubscription"            : false,
+		"Department"                  : false,
+		"getAvatarUrlFromUsername"    : false,
+		"getNextAgent"                : false,
+		"LivechatCustomField"         : false,
+		"LivechatDepartment"          : false,
+		"LivechatDepartmentAgents"    : false,
+		"livechatManagerRoutes"       : true,
+		"LivechatMonitoring"          : false,
+		"LivechatPageVisited"         : false,
+		"LivechatTrigger"             : false,
+		"parentCall"                  : false,
+		"RoomHistoryManager"          : false,
+		"RoomManager"                 : false,
+		"t"                           : false,
+		"Trigger"                     : false,
+		"Triggers"                    : false,
+		"visitor"                     : false
+	}
+}

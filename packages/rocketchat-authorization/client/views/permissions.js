@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Roles } from 'meteor/rocketchat:models';
 import { ChatPermissions } from '../lib/ChatPermissions';
+import { hasAllPermission } from '../hasPermission';
 
 Template.permissions.helpers({
 	role() {
@@ -35,7 +36,7 @@ Template.permissions.helpers({
 	},
 
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('access-permissions');
+		return hasAllPermission('access-permissions');
 	},
 });
 
@@ -61,7 +62,7 @@ Template.permissions.onCreated(function() {
 	};
 
 	Tracker.autorun(() => {
-		this.roles.set(RocketChat.models.Roles.find().fetch());
+		this.roles.set(Roles.find().fetch());
 	});
 
 	Tracker.autorun(() => {

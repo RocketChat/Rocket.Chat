@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({

@@ -2,8 +2,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { Log } from 'meteor/logging';
+import { Info } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -45,7 +45,7 @@ const DefaultMigration = {
 	},
 };
 
-const Migrations = this.Migrations = {
+export const Migrations = {
 	_list: [DefaultMigration],
 	options: {
 		// false disables logging
@@ -203,14 +203,14 @@ Migrations.migrateTo = function(command) {
 			'Please make sure you are running the latest version and try again.',
 			'If the problem persists, please contact support.',
 			'',
-			`This Rocket.Chat version: ${ RocketChat.Info.version }`,
+			`This Rocket.Chat version: ${ Info.version }`,
 			`Database locked at version: ${ control.version }`,
 			`Database target version: ${ version === 'latest' ? _.last(this._list).version : version }`,
 			'',
-			`Commit: ${ RocketChat.Info.commit.hash }`,
-			`Date: ${ RocketChat.Info.commit.date }`,
-			`Branch: ${ RocketChat.Info.commit.branch }`,
-			`Tag: ${ RocketChat.Info.commit.tag }`,
+			`Commit: ${ Info.commit.hash }`,
+			`Date: ${ Info.commit.date }`,
+			`Branch: ${ Info.commit.branch }`,
+			`Tag: ${ Info.commit.tag }`,
 		]));
 		process.exit(1);
 	}
@@ -285,14 +285,14 @@ Migrations._migrateTo = function(version, rerun) {
 				'Please make sure you are running the latest version and try again.',
 				'If the problem persists, please contact support.',
 				'',
-				`This Rocket.Chat version: ${ RocketChat.Info.version }`,
+				`This Rocket.Chat version: ${ Info.version }`,
 				`Database locked at version: ${ control.version }`,
 				`Database target version: ${ version }`,
 				'',
-				`Commit: ${ RocketChat.Info.commit.hash }`,
-				`Date: ${ RocketChat.Info.commit.date }`,
-				`Branch: ${ RocketChat.Info.commit.branch }`,
-				`Tag: ${ RocketChat.Info.commit.tag }`,
+				`Commit: ${ Info.commit.hash }`,
+				`Date: ${ Info.commit.date }`,
+				`Branch: ${ Info.commit.branch }`,
+				`Tag: ${ Info.commit.tag }`,
 			]));
 			process.exit(1);
 		}
@@ -302,7 +302,7 @@ Migrations._migrateTo = function(version, rerun) {
 	function lock() {
 		const date = new Date();
 		const dateMinusInterval = moment(date).subtract(self.options.lockExpiration, 'minutes').toDate();
-		const build = RocketChat.Info ? RocketChat.Info.build.date : date;
+		const build = Info ? Info.build.date : date;
 
 		// This is atomic. The selector ensures only one caller at a time will see
 		// the unlocked control, and locking occurs in the same update's modifier.
@@ -411,5 +411,3 @@ Migrations._reset = function() {
 	}];
 	this._collection.remove({});
 };
-
-RocketChat.Migrations = Migrations;

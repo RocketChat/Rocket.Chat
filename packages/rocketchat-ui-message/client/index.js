@@ -15,9 +15,4 @@ import './popup/messagePopup';
 import './popup/messagePopupChannel';
 import './popup/messagePopupConfig';
 import './popup/messagePopupEmoji';
-import { renderMessageBody } from './renderMessageBody';
 import './startup/messageBoxActions';
-
-export {
-	renderMessageBody,
-};

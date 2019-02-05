@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Email } from 'meteor/email';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
@@ -33,8 +34,8 @@ export const replace = function replace(str, data = {}) {
 };
 
 export const replaceEscaped = (str, data = {}) => replace(str, {
-	Site_Name: s.escapeHTML(RocketChat.settings.get('Site_Name')),
-	Site_Url: s.escapeHTML(RocketChat.settings.get('Site_Url')),
+	Site_Name: s.escapeHTML(settings.get('Site_Name')),
+	Site_Url: s.escapeHTML(settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
 		ret[key] = s.escapeHTML(value);
 		return ret;

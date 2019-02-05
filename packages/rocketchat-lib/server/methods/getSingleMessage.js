@@ -11,11 +11,13 @@ Meteor.methods({
 
 		const msg = RocketChat.models.Messages.findOneById(msgId);
 
-		if (!msg && !msg.rid) {
+		if (!msg || !msg.rid) {
 			return undefined;
 		}
 
-		Meteor.call('canAccessRoom', msg.rid, Meteor.userId());
+		if (!Meteor.call('canAccessRoom', msg.rid, Meteor.userId())) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
+		}
 
 		return msg;
 	},

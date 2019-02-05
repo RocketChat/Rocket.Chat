@@ -10,10 +10,11 @@ RocketChat.saveStreamingOptions = function(rid, options) {
 	}
 
 	check(options, {
+		id: Match.Optional(String),
 		type: Match.Optional(String),
 		url: Match.Optional(String),
 		thumbnail: Match.Optional(String),
-		isAudioOnly: Match.Optional(String),
+		isAudioOnly: Match.Optional(Boolean),
 		message: Match.Optional(String),
 	});
 

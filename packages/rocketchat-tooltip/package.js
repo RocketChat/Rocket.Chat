@@ -10,9 +10,6 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
-		'rocketchat:theme',
-		'rocketchat:ui-master',
 	]);
 	api.addFiles('client/tooltip.css', 'client');
 	api.mainModule('client/index.js', 'client');

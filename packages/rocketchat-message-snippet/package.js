@@ -1,4 +1,3 @@
-/* globals Package */
 Package.describe({
 	name: 'rocketchat:message-snippet',
 	version: '0.0.1',
@@ -10,6 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:file',
 		'rocketchat:markdown',

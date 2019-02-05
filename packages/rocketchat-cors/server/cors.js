@@ -62,7 +62,7 @@ WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 }));
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {
-	if (/^\/(api|_timesync|sockjs|tap-i18n|__cordova)(\/|$)/.test(req.url)) {
+	if (/^\/(api|_timesync|sockjs|tap-i18n)(\/|$)/.test(req.url)) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 	}
 

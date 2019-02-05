@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 		'service-configuration',
 		'templating',
 		'littledata:synced-cron',
+		'rocketchat:utils',
 		'rocketchat:lib',
 		'rocketchat:authorization',
 		'rocketchat:custom-oauth',

@@ -1,6 +1,4 @@
-/* globals ansispan:true */
-
-ansispan = function(str) {
+export const ansispan = function(str) {
 	str = str.replace(/>/g, '&gt;');
 	str = str.replace(/</g, '&lt;');
 
