@@ -103,49 +103,57 @@ Meteor.methods({
 				method: 'getInviteLink',
 			});
 		}
-		if (!RocketChat.settings.get('Contacts_Dynamic_Link_APIKey')) {
-			throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_APIKey not configured', {
-				method: 'getInviteLink',
-			});
-		}
 
-		if (!RocketChat.settings.get('Contacts_Dynamic_Link_DomainURIPrefix')) {
-			throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_DomainURIPrefix not configured', {
-				method: 'getInviteLink',
-			});
-		}
-
-		if (!RocketChat.settings.get('Contacts_Dynamic_Link_AndroidPackageName')) {
-			throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_AndroidPackageName not configured', {
-				method: 'getInviteLink',
-			});
-		}
-
-		const server = RocketChat.settings.get('Site_Url');
-
-		this.unblock();
+		let link = '';
 		try {
-			const result = HTTP.call('POST', `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${ RocketChat.settings.get('Contacts_Dynamic_Link_APIKey') }`, {
-				data: {
-					dynamicLinkInfo:{
-						domainUriPrefix: RocketChat.settings.get('Contacts_Dynamic_Link_DomainURIPrefix'),
-						link: `${ server }direct/${ user.username }`,
-						androidInfo:{
-							androidPackageName:RocketChat.settings.get('Contacts_Dynamic_Link_AndroidPackageName'),
-						},
-						socialMetaTagInfo: {
-							socialTitle: user.username,
-							socialDescription: `Chat with ${ user.username } on ${ server }`,
-							socialImageLink: `${ server.slice(0, -1) }${ getAvatarUrlFromUsername(user.username) }`,
+			if (!RocketChat.settings.get('Contacts_Dynamic_Link_APIKey')) {
+				throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_APIKey not configured', {
+					method: 'getInviteLink',
+				});
+			}
+
+			if (!RocketChat.settings.get('Contacts_Dynamic_Link_DomainURIPrefix')) {
+				throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_DomainURIPrefix not configured', {
+					method: 'getInviteLink',
+				});
+			}
+
+			if (!RocketChat.settings.get('Contacts_Dynamic_Link_AndroidPackageName')) {
+				throw new Meteor.Error('error-invalid-config', 'Contacts_Dynamic_Link_AndroidPackageName not configured', {
+					method: 'getInviteLink',
+				});
+			}
+
+			const server = RocketChat.settings.get('Site_Url');
+
+			this.unblock();
+			try {
+				const result = HTTP.call('POST', `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${ RocketChat.settings.get('Contacts_Dynamic_Link_APIKey') }`, {
+					data: {
+						dynamicLinkInfo:{
+							domainUriPrefix: RocketChat.settings.get('Contacts_Dynamic_Link_DomainURIPrefix'),
+							link: `${ server }direct/${ user.username }`,
+							androidInfo:{
+								androidPackageName:RocketChat.settings.get('Contacts_Dynamic_Link_AndroidPackageName'),
+							},
+							socialMetaTagInfo: {
+								socialTitle: user.username,
+								socialDescription: `Chat with ${ user.username } on ${ server }`,
+								socialImageLink: `${ server.slice(0, -1) }${ getAvatarUrlFromUsername(user.username) }`,
+							},
 						},
 					},
-				},
-			});
-			return result.data.shortLink;
+				});
+				link = result.data.shortLink;
+			} catch (e) {
+				throw new Meteor.Error('dynamic-link-request-failed', 'API request to generate dynamic link failed', {
+					method: 'getInviteLink',
+				});
+			}
 		} catch (e) {
-			throw new Meteor.Error('dynamic-link-request-failed', 'API request to generate dynamic link failed', {
-				method: 'getInviteLink',
-			});
+			link = RocketChat.settings.get('Site_Url');
+		} finally {
+			return link;
 		}
 	},
 });
