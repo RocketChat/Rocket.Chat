@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { toolbarSearch } from 'meteor/rocketchat:ui-sidenav';
 import _ from 'underscore';
 
@@ -123,12 +124,12 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 
 		const matches = inputValueAtCursor.match(template.selectorRegex);
 		const cmd = matches[1].replace('/', '').trim().toLowerCase();
-		const command = RocketChat.slashCommands.commands[cmd];
+		const command = slashCommands.commands[cmd];
 
 		// Ensure the command they're typing actually exists
 		// And it provides a command preview
 		// And if it provides a permission to check, they have permission to run the command
-		if (!command || !command.providesPreview || (command.permission && !RocketChat.authz.hasAtLeastOnePermission(command.permission, Session.get('openedRoom')))) {
+		if (!command || !command.providesPreview || (command.permission && !hasAtLeastOnePermission(command.permission, Session.get('openedRoom')))) {
 			template.open.set(false);
 			return;
 		}

@@ -4,10 +4,16 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { Markdown } from 'meteor/rocketchat:markdown';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { EmojiPicker } from 'meteor/rocketchat:emoji';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
-import { ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages, MsgTyping } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
+import { KonchatNotification, fileUpload, AudioRecorder, chatMessages, MsgTyping, ChatMessages } from 'meteor/rocketchat:ui';
+import { RoomHistoryManager, RoomManager, popover, messageBox, Layout } from 'meteor/rocketchat:ui-utils';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+import { t, roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 import { Katex } from 'meteor/rocketchat:katex';
 import toastr from 'toastr';
 import moment from 'moment';
@@ -92,45 +98,45 @@ const markdownButtons = [
 		icon: 'bold',
 		pattern: '*{{text}}*',
 		command: 'b',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'original',
+		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
 	},
 	{
 		label: 'bold',
 		icon: 'bold',
 		pattern: '**{{text}}**',
 		command: 'b',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'marked',
+		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
 		command: 'i',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled',
+		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'original',
+		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
 	},
 	{
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~~{{text}}~~',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') === 'marked',
+		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'inline_code',
 		icon: 'code',
 		pattern: '`{{text}}`',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled',
+		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'multi_line',
 		icon: 'multi-line',
 		pattern: '```\n{{text}}\n``` ',
-		condition: () => RocketChat.Markdown && RocketChat.settings.get('Markdown_Parser') !== 'disabled',
+		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: katexSyntax,
@@ -141,7 +147,7 @@ const markdownButtons = [
 
 const methods = {
 	actions() {
-		const groups = RocketChat.messageBox.actions.get();
+		const groups = messageBox.actions.get();
 		return Object.keys(groups).reduce((ret, el) => ret.concat(groups[el]), []);
 	},
 };
@@ -171,23 +177,23 @@ Template.messageBox.helpers({
 		}
 	},
 	showFormattingTips() {
-		return RocketChat.settings.get('Message_ShowFormattingTips');
+		return settings.get('Message_ShowFormattingTips');
 	},
 	canJoin() {
-		return Meteor.userId() && RocketChat.roomTypes.verifyShowJoinLink(this._id);
+		return Meteor.userId() && roomTypes.verifyShowJoinLink(this._id);
 	},
 	joinCodeRequired() {
 		const code = Session.get(`roomData${ this._id }`);
 		return code && code.joinCodeRequired;
 	},
 	subscribed() {
-		return RocketChat.roomTypes.verifyCanSendMessage(this._id);
+		return roomTypes.verifyCanSendMessage(this._id);
 	},
 	allowedToSend() {
-		if (RocketChat.roomTypes.readOnly(this._id, Meteor.user())) {
+		if (roomTypes.readOnly(this._id, Meteor.user())) {
 			return false;
 		}
-		if (RocketChat.roomTypes.archived(this._id)) {
+		if (roomTypes.archived(this._id)) {
 			return false;
 		}
 		const roomData = Session.get(`roomData${ this._id }`);
@@ -257,27 +263,27 @@ Template.messageBox.helpers({
 		};
 	},
 	groupAttachHidden() {
-		if (RocketChat.settings.get('Message_Attachments_GroupAttach')) {
+		if (settings.get('Message_Attachments_GroupAttach')) {
 			return 'hidden';
 		}
 	},
 	notSubscribedTpl() {
-		return RocketChat.roomTypes.getNotSubscribedTpl(this._id);
+		return roomTypes.getNotSubscribedTpl(this._id);
 	},
 	anonymousRead() {
-		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true;
+		return (Meteor.userId() == null) && settings.get('Accounts_AllowAnonymousRead') === true;
 	},
 	anonymousWrite() {
-		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true && RocketChat.settings.get('Accounts_AllowAnonymousWrite') === true;
+		return (Meteor.userId() == null) && settings.get('Accounts_AllowAnonymousRead') === true && settings.get('Accounts_AllowAnonymousWrite') === true;
 	},
 	disableSendIcon() {
 		return !Template.instance().sendIcon.get() ? 'disabled' : '';
 	},
 	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded();
 	},
 	isEmojiEnable() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'useEmojis');
+		return getUserPreference(Meteor.userId(), 'useEmojis');
 	},
 	dataReply() {
 		return Template.instance().dataReply.get();
@@ -285,10 +291,10 @@ Template.messageBox.helpers({
 	isAudioMessageAllowed() {
 		return (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
 			navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
-			RocketChat.settings.get('FileUpload_Enabled') &&
-			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
-			(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
-			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
+			settings.get('FileUpload_Enabled') &&
+			settings.get('Message_AudioRecorderEnabled') &&
+			(!settings.get('FileUpload_MediaTypeWhiteList') ||
+			settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
 });
 
@@ -354,7 +360,7 @@ Template.messageBox.events({
 			if (err != null) {
 				toastr.error(t(err.reason));
 			}
-			if (RocketChat.authz.hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this._id).loaded === 0) {
+			if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this._id).loaded === 0) {
 				RoomManager.getOpenedRoomByRid(this._id).streamActive = false;
 				RoomManager.getOpenedRoomByRid(this._id).ready = false;
 				RoomHistoryManager.getRoom(this._id).loaded = null;
@@ -419,7 +425,7 @@ Template.messageBox.events({
 				e.preventDefault();
 				return {
 					file: item.getAsFile(),
-					name: `Clipboard - ${ moment().format(RocketChat.settings.get('Message_TimeAndDateFormat')) }`,
+					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
 				};
 			});
 		if (files.length) {
@@ -461,7 +467,7 @@ Template.messageBox.events({
 		applyMd.apply(this, [e, t]);
 	},
 	'click .rc-message-box__action-menu'(e) {
-		const groups = RocketChat.messageBox.actions.get();
+		const groups = messageBox.actions.get();
 		const config = {
 			popoverClass: 'message-box',
 			columns: [
@@ -651,14 +657,14 @@ Template.messageBox.events({
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
+		if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
 			return false;
 		}
 
-		if (RocketChat.EmojiPicker.isOpened()) {
-			RocketChat.EmojiPicker.close();
+		if (EmojiPicker.isOpened()) {
+			EmojiPicker.close();
 		} else {
-			RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
+			EmojiPicker.open(event.currentTarget, (emoji) => {
 				const { input } = chatMessages[RoomManager.openedRoom];
 
 				const emojiValue = `:${ emoji }:`;
@@ -696,22 +702,24 @@ Template.messageBox.onRendered(function() {
 });
 
 Template.messageBox.onCreated(function() {
-	RocketChat.EmojiPicker.init();
+	EmojiPicker.init();
 	this.dataReply = new ReactiveVar(''); // if user is replying to a mssg, this will contain data of the mssg being replied to
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIcon = new ReactiveVar(false);
-	RocketChat.messageBox.emit('created', this);
+	messageBox.emit('created', this);
 });
 
+export let geolocation;
+
 Meteor.startup(function() {
-	RocketChat.Geolocation = new ReactiveVar(false);
+	geolocation = new ReactiveVar(false);
 	Tracker.autorun(function() {
-		const MapView_GMapsAPIKey = RocketChat.settings.get('MapView_GMapsAPIKey');
-		if (RocketChat.settings.get('MapView_Enabled') === true && MapView_GMapsAPIKey && MapView_GMapsAPIKey.length && navigator.geolocation && navigator.geolocation.getCurrentPosition) {
-			const success = (position) => RocketChat.Geolocation.set(position);
+		const MapView_GMapsAPIKey = settings.get('MapView_GMapsAPIKey');
+		if (settings.get('MapView_Enabled') === true && MapView_GMapsAPIKey && MapView_GMapsAPIKey.length && navigator.geolocation && navigator.geolocation.getCurrentPosition) {
+			const success = (position) => geolocation.set(position);
 			const error = (error) => {
 				console.log('Error getting your geolocation', error);
-				return RocketChat.Geolocation.set(false);
+				return geolocation.set(false);
 			};
 			const options = {
 				enableHighAccuracy: true,
@@ -720,10 +728,10 @@ Meteor.startup(function() {
 			};
 			return navigator.geolocation.watchPosition(success, error, options);
 		} else {
-			return RocketChat.Geolocation.set(false);
+			return geolocation.set(false);
 		}
 	});
-	RocketChat.callbacks.add('enter-room', function() {
+	callbacks.add('enter-room', function() {
 		setTimeout(() => {
 			if (chatMessages[RoomManager.openedRoom].input) {
 				chatMessages[RoomManager.openedRoom].input.focus();
