@@ -685,19 +685,19 @@ export class HipChatEnterpriseImporter extends Base {
 		this._saveUserIdReference(userToImport.id, existingUserId);
 
 		Meteor.runAsUser(existingUserId, () => {
-			RocketChat.models.Users.update({ _id: existingUserId }, { $push: { importIds: userToImport.id } });
-
-			// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
-			RocketChat.models.Users.setName(existingUserId, userToImport.name);
+			RocketChat.models.Users.update({ _id: existingUserId }, {
+				$push: {
+					importIds: userToImport.id,
+				},
+				$set: {
+					active: userToImport.isDeleted !== true,
+					name: userToImport.name,
+				},
+			});
 
 			// TODO: Think about using a custom field for the users "title" field
 			if (userToImport.avatar) {
 				Meteor.call('setAvatarFromService', `data:image/png;base64,${ userToImport.avatar }`);
-			}
-
-			// Deleted users are 'inactive' users in Rocket.Chat
-			if (userToImport.deleted) {
-				Meteor.call('setUserActiveStatus', existingUserId, false);
 			}
 		});
 	}
@@ -725,16 +725,29 @@ export class HipChatEnterpriseImporter extends Base {
 					this.addUserError(userToImport.id, e);
 				}
 			} else {
-				const user = { email: userToImport.email, password: Random.id(), username: userToImport.username };
+				const user = {
+					email: userToImport.email,
+					password: Random.id(),
+					username: userToImport.username,
+					name: userToImport.name,
+					active: userToImport.isDeleted !== true,
+				};
 				if (!user.email) {
 					delete user.email;
 				}
 				if (!user.username) {
 					delete user.username;
 				}
+				if (!user.name) {
+					delete user.name;
+				}
 
 				try {
 					const userId = Accounts.createUser(user);
+
+					userToImport.rocketId = userId;
+					this._saveUserIdReference(userToImport.id, userId);
+
 					this._updateImportedUser(userToImport, userId);
 				} catch (e) {
 					this.logger.error(e);
