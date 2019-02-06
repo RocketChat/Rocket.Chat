@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings as rcSettings } from 'meteor/rocketchat:settings';
 import { Messages, Rooms } from 'meteor/rocketchat:models';
 import { API } from 'meteor/rocketchat:api';
 import { findGuest, findRoom, getRoom, settings } from '../lib/livechat';
@@ -56,7 +56,7 @@ API.v1.addRoute('livechat/room.close', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			const language = settings.get('language') || 'en';
+			const language = rcSettings.get('language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
 			if (!Livechat.closeRoom({ visitor, room, comment })) {
