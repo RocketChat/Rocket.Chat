@@ -1,19 +1,20 @@
 import { check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
 
-RocketChat.API.v1.addRoute('livechat/department', { authRequired: true }, {
+API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
-		return RocketChat.API.v1.success({
+		return API.v1.success({
 			departments: RocketChat.models.LivechatDepartment.find().fetch(),
 		});
 	},
 	post() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		try {
@@ -25,23 +26,23 @@ RocketChat.API.v1.addRoute('livechat/department', { authRequired: true }, {
 			const department = RocketChat.Livechat.saveDepartment(null, this.bodyParams.department, this.bodyParams.agents);
 
 			if (department) {
-				return RocketChat.API.v1.success({
+				return API.v1.success({
 					department,
 					agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
 				});
 			}
 
-			RocketChat.API.v1.failure();
+			API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
+API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		try {
@@ -49,17 +50,17 @@ RocketChat.API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 				_id: String,
 			});
 
-			return RocketChat.API.v1.success({
+			return API.v1.success({
 				department: RocketChat.models.LivechatDepartment.findOneById(this.urlParams._id),
 				agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 	put() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		try {
@@ -73,20 +74,20 @@ RocketChat.API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			});
 
 			if (RocketChat.Livechat.saveDepartment(this.urlParams._id, this.bodyParams.department, this.bodyParams.agents)) {
-				return RocketChat.API.v1.success({
+				return API.v1.success({
 					department: RocketChat.models.LivechatDepartment.findOneById(this.urlParams._id),
 					agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
 				});
 			}
 
-			return RocketChat.API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 	delete() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		try {
@@ -95,12 +96,12 @@ RocketChat.API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			});
 
 			if (RocketChat.Livechat.removeDepartment(this.urlParams._id)) {
-				return RocketChat.API.v1.success();
+				return API.v1.success();
 			}
 
-			return RocketChat.API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 });

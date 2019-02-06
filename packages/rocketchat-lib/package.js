@@ -237,7 +237,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
 	api.addFiles('client/UserDeleted.js', 'client');
-	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatAnnouncement.js', 'client');

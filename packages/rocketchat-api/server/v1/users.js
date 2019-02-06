@@ -5,6 +5,14 @@ import { Users, Subscriptions } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { settings } from 'meteor/rocketchat:settings';
 import { getURL } from 'meteor/rocketchat:utils';
+import {
+	validateCustomFields,
+	saveUser,
+	saveCustomFieldsWithoutValidation,
+	checkUsernameAvailability,
+	setUserAvatar,
+	saveCustomFields,
+} from 'meteor/rocketchat:lib';
 import { API } from '../api';
 import _ from 'underscore';
 import Busboy from 'busboy';
@@ -31,13 +39,13 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 		}
 
 		if (this.bodyParams.customFields) {
-			RocketChat.validateCustomFields(this.bodyParams.customFields);
+			validateCustomFields(this.bodyParams.customFields);
 		}
 
-		const newUserId = RocketChat.saveUser(this.userId, this.bodyParams);
+		const newUserId = saveUser(this.userId, this.bodyParams);
 
 		if (this.bodyParams.customFields) {
-			RocketChat.saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
+			saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
 		}
 
 
@@ -191,7 +199,7 @@ API.v1.addRoute('users.register', { authRequired: false }, {
 			username: String,
 		}));
 
-		if (!RocketChat.checkUsernameAvailability(this.bodyParams.username)) {
+		if (!checkUsernameAvailability(this.bodyParams.username)) {
 			return API.v1.failure('Username is already in use');
 		}
 
@@ -246,7 +254,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 
 		Meteor.runAsUser(user._id, () => {
 			if (this.bodyParams.avatarUrl) {
-				RocketChat.setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+				setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
 			} else {
 				const busboy = new Busboy({ headers: this.request.headers });
 				const fields = {};
@@ -281,7 +289,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
 								}
 							}
-							RocketChat.setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
+							setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
 							callback();
 						}));
 					}));
@@ -318,10 +326,10 @@ API.v1.addRoute('users.update', { authRequired: true }, {
 
 		const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
 
-		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, userData));
+		Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
 
 		if (this.bodyParams.data.customFields) {
-			RocketChat.saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
+			saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
 		}
 
 		if (typeof this.bodyParams.data.active !== 'undefined') {
@@ -440,7 +448,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			userData.language = language;
 		}
 
-		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, userData));
+		Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
 		const user = Users.findOneById(userId, {
 			fields: {
 				'settings.preferences': 1,

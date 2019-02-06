@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest, findRoom } from '../lib/livechat';
 
-RocketChat.API.v1.addRoute('livechat/message', {
+API.v1.addRoute('livechat/message', {
 	post() {
 		try {
 			check(this.bodyParams, {
@@ -47,17 +48,17 @@ RocketChat.API.v1.addRoute('livechat/message', {
 			const result = RocketChat.Livechat.sendMessage(sendMessage);
 			if (result) {
 				const message = { _id: result._id, rid: result.rid, msg: result.msg, u: result.u, ts: result.ts };
-				return RocketChat.API.v1.success({ message });
+				return API.v1.success({ message });
 			}
 
-			return RocketChat.API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/message/:_id', {
+API.v1.addRoute('livechat/message/:_id', {
 	put() {
 		try {
 			check(this.urlParams, {
@@ -93,14 +94,14 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 			const result = RocketChat.Livechat.updateMessage({ guest, message });
 			if (result) {
 				const data = RocketChat.models.Messages.findOneById(_id);
-				return RocketChat.API.v1.success({
+				return API.v1.success({
 					message: { _id: data._id, rid: data.rid, msg: data.msg, u: data.u, ts: data.ts },
 				});
 			}
 
-			return RocketChat.API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 	delete() {
@@ -134,7 +135,7 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 
 			const result = RocketChat.Livechat.deleteMessage({ guest, message });
 			if (result) {
-				return RocketChat.API.v1.success({
+				return API.v1.success({
 					message: {
 						_id,
 						ts: new Date().toISOString(),
@@ -142,14 +143,14 @@ RocketChat.API.v1.addRoute('livechat/message/:_id', {
 				});
 			}
 
-			return RocketChat.API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/messages.history/:rid', {
+API.v1.addRoute('livechat/messages.history/:rid', {
 	get() {
 		try {
 			check(this.urlParams, {
@@ -189,33 +190,33 @@ RocketChat.API.v1.addRoute('livechat/messages.history/:rid', {
 			}
 
 			const messages = RocketChat.loadMessageHistory({ userId: guest._id, rid, end, limit, ls });
-			return RocketChat.API.v1.success(messages);
+			return API.v1.success(messages);
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
+API.v1.addRoute('livechat/messages', { authRequired: true }, {
 	post() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		if (!this.bodyParams.visitor) {
-			return RocketChat.API.v1.failure('Body param "visitor" is required');
+			return API.v1.failure('Body param "visitor" is required');
 		}
 		if (!this.bodyParams.visitor.token) {
-			return RocketChat.API.v1.failure('Body param "visitor.token" is required');
+			return API.v1.failure('Body param "visitor.token" is required');
 		}
 		if (!this.bodyParams.messages) {
-			return RocketChat.API.v1.failure('Body param "messages" is required');
+			return API.v1.failure('Body param "messages" is required');
 		}
 		if (!(this.bodyParams.messages instanceof Array)) {
-			return RocketChat.API.v1.failure('Body param "messages" is not an array');
+			return API.v1.failure('Body param "messages" is not an array');
 		}
 		if (this.bodyParams.messages.length === 0) {
-			return RocketChat.API.v1.failure('Body param "messages" is empty');
+			return API.v1.failure('Body param "messages" is empty');
 		}
 
 		const visitorToken = this.bodyParams.visitor.token;
@@ -253,7 +254,7 @@ RocketChat.API.v1.addRoute('livechat/messages', { authRequired: true }, {
 			};
 		});
 
-		return RocketChat.API.v1.success({
+		return API.v1.success({
 			messages: sentMessages,
 		});
 	},

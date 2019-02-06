@@ -7,6 +7,7 @@ import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { API } from 'meteor/rocketchat:api';
 
 Template.adminImportHistory.helpers({
 	isAdmin() {
@@ -183,7 +184,7 @@ Template.adminImportHistory.onCreated(function() {
 	this.preparing = new ReactiveVar(true);
 	this.history = new ReactiveVar([]);
 
-	RocketChat.API.get('v1/getLatestImportOperations').then((data) => {
+	API.get('v1/getLatestImportOperations').then((data) => {
 		instance.history.set(data);
 		instance.preparing.set(false);
 	}).catch((error) => {
