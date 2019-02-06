@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { hasPermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
