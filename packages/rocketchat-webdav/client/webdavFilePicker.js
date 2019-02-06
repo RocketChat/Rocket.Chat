@@ -25,7 +25,7 @@ Template.webdavFilePicker.destroyed = function() {
 Template.webdavFilePicker.helpers({
 	iconType() {
 		// add icon for different types
-		let icon = 'file-generic';
+		let icon = 'clip';
 		let type = '';
 
 		let extension = this.basename.split('.').pop();
