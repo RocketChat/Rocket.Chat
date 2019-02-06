@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 import LivechatVisitors from '../models/LivechatVisitors';
 import _ from 'underscore';
 
@@ -11,7 +11,7 @@ Meteor.methods({
 		check(formData, [Match.ObjectIncluding({ name: String, value: String })]);
 
 		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
-		const room = RocketChat.models.Rooms.findOneById(visitorRoom);
+		const room = Rooms.findOneById(visitorRoom);
 
 		if (visitor !== undefined && room !== undefined && room.v !== undefined && room.v.token === visitor.token) {
 			const updateData = {};
@@ -23,7 +23,7 @@ Meteor.methods({
 				}
 			}
 			if (!_.isEmpty(updateData)) {
-				return RocketChat.models.Rooms.updateSurveyFeedbackById(room._id, updateData);
+				return Rooms.updateSurveyFeedbackById(room._id, updateData);
 			}
 		}
 	},
