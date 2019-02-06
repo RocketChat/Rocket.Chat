@@ -538,3 +538,24 @@ RocketChat.API.v1.addRoute('users.removePersonalAccessToken', { authRequired: tr
 		return RocketChat.API.v1.success();
 	},
 });
+
+RocketChat.API.v1.addRoute('users.getServiceAccessToken', { authRequired: true }, {
+	post() {
+		const { serviceName } = this.bodyParams;
+		if (!serviceName) {
+			return RocketChat.API.v1.failure('The \'serviceName\' param is required');
+		}
+		const user = RocketChat.models.Users.findOneById(this.userId);
+		if (!('services' in user) || !(serviceName in user.services)) {
+			return RocketChat.API.v1.failure('serviceName\' not found in user');
+		}
+		const token = user.services[serviceName].accessToken;
+		if (!token) {
+			return RocketChat.API.v1.failure('Token corresponding to \'serviceName\' not found in user');
+		}
+
+		return RocketChat.API.v1.success({
+			accessToken : token,
+		});
+	},
+});
