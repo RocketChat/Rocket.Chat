@@ -23,6 +23,13 @@ import OAuthApps from './models/OAuthApps';
 import OEmbedCache from './models/OEmbedCache';
 import SmarshHistory from './models/SmarshHistory';
 import WebdavAccounts from './models/WebdavAccounts';
+import LivechatCustomField from './models/LivechatCustomField';
+import LivechatDepartment from './models/LivechatDepartment';
+import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
+import LivechatOfficeHour from './models/LivechatOfficeHour';
+import LivechatPageVisited from './models/LivechatPageVisited';
+import LivechatTrigger from './models/LivechatTrigger';
+import LivechatVisitors from './models/LivechatVisitors';
 
 export {
 	Base,
@@ -50,4 +57,11 @@ export {
 	OEmbedCache,
 	SmarshHistory,
 	WebdavAccounts,
+	LivechatCustomField,
+	LivechatDepartment,
+	LivechatDepartmentAgents,
+	LivechatOfficeHour,
+	LivechatPageVisited,
+	LivechatTrigger,
+	LivechatVisitors,
 };
