@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:closeRoom'(roomId, comment) {
@@ -15,7 +16,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
 		}
 
-		return RocketChat.Livechat.closeRoom({
+		return Livechat.closeRoom({
 			user,
 			room: RocketChat.models.Rooms.findOneById(roomId),
 			comment,

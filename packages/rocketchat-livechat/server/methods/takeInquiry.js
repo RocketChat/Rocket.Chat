@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:takeInquiry'(inquiryId) {
@@ -63,7 +64,7 @@ Meteor.methods({
 		// and inquiry being taken, message would not be switched off.
 		RocketChat.models.Messages.createCommandWithRoomIdAndUser('connected', room._id, user);
 
-		RocketChat.Livechat.stream.emit(room._id, {
+		Livechat.stream.emit(room._id, {
 			type: 'agentData',
 			data: RocketChat.models.Users.getAgentInfo(agent.agentId),
 		});

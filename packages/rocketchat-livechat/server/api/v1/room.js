@@ -5,6 +5,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
 import { findGuest, findRoom, getRoom, settings } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -57,7 +58,7 @@ API.v1.addRoute('livechat/room.close', {
 			const language = RocketChat.settings.get('language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
-			if (!RocketChat.Livechat.closeRoom({ visitor, room, comment })) {
+			if (!Livechat.closeRoom({ visitor, room, comment })) {
 				return API.v1.failure();
 			}
 
@@ -92,7 +93,7 @@ API.v1.addRoute('livechat/room.transfer', {
 			// update visited page history to not expire
 			RocketChat.models.Messages.keepHistoryForToken(token);
 
-			if (!RocketChat.Livechat.transfer(room, guest, { roomId: rid, departmentId: department })) {
+			if (!Livechat.transfer(room, guest, { roomId: rid, departmentId: department })) {
 				return API.v1.failure();
 			}
 

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../models/LivechatVisitors';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:transfer'(transferData) {
@@ -27,6 +28,6 @@ Meteor.methods({
 
 		const guest = LivechatVisitors.findOneById(room.v && room.v._id);
 
-		return RocketChat.Livechat.transfer(room, guest, transferData);
+		return Livechat.transfer(room, guest, transferData);
 	},
 });

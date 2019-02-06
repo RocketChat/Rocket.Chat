@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:saveInfo'(guestData, roomData) {
@@ -31,7 +32,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}
 
-		const ret = RocketChat.Livechat.saveGuest(guestData) && RocketChat.Livechat.saveRoomInfo(roomData, guestData);
+		const ret = Livechat.saveGuest(guestData) && Livechat.saveRoomInfo(roomData, guestData);
 
 		Meteor.defer(() => {
 			RocketChat.callbacks.run('livechat.saveInfo', RocketChat.models.Rooms.findOneById(roomData._id));

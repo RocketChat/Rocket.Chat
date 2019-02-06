@@ -17,7 +17,7 @@ import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import LivechatVisitors from '../models/LivechatVisitors';
 import { Analytics } from './Analytics';
 
-RocketChat.Livechat = {
+export const Livechat = {
 	Analytics,
 	historyMonitorType: 'url',
 
@@ -414,7 +414,7 @@ RocketChat.Livechat = {
 	},
 
 	savePageHistory(token, roomId, pageInfo) {
-		if (pageInfo.change === RocketChat.Livechat.historyMonitorType) {
+		if (pageInfo.change === Livechat.historyMonitorType) {
 
 			const user = RocketChat.models.Users.findOneById('rocket.cat');
 
@@ -455,9 +455,9 @@ RocketChat.Livechat = {
 			const { _id: agentId, username } = user;
 			agent = Object.assign({}, { agentId, username });
 		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
-			agent = RocketChat.Livechat.getNextAgent(transferData.departmentId);
+			agent = Livechat.getNextAgent(transferData.departmentId);
 		} else {
-			return RocketChat.Livechat.returnRoomAsInquiry(room._id, transferData.departmentId);
+			return Livechat.returnRoomAsInquiry(room._id, transferData.departmentId);
 		}
 
 		const { servedBy } = room;
@@ -502,7 +502,7 @@ RocketChat.Livechat = {
 			this.setDepartmentForGuest(guestData);
 			const data = RocketChat.models.Users.getAgentInfo(agent.agentId);
 
-			RocketChat.Livechat.stream.emit(room._id, {
+			Livechat.stream.emit(room._id, {
 				type: 'agentData',
 				data,
 			});
@@ -531,10 +531,10 @@ RocketChat.Livechat = {
 		const agentIds = [];
 		// get the agents of the department
 		if (departmentId) {
-			let agents = RocketChat.Livechat.getOnlineAgents(departmentId);
+			let agents = Livechat.getOnlineAgents(departmentId);
 
 			if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
-				agents = RocketChat.Livechat.getAgents(departmentId);
+				agents = Livechat.getAgents(departmentId);
 			}
 
 			if (agents.count() === 0) {
@@ -571,7 +571,7 @@ RocketChat.Livechat = {
 		if (openInq) {
 			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: room.servedBy._id, username: room.servedBy.username });
 
-			RocketChat.Livechat.stream.emit(rid, {
+			Livechat.stream.emit(rid, {
 				type: 'agentData',
 				data: null,
 			});
@@ -590,13 +590,13 @@ RocketChat.Livechat = {
 			};
 			return HTTP.post(RocketChat.settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			RocketChat.Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
+			Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
 			// try 10 times after 10 seconds each
 			if (trying < 10) {
-				RocketChat.Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
+				Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
 				trying++;
 				setTimeout(Meteor.bindEnvironment(() => {
-					RocketChat.Livechat.sendRequest(postData, callback, trying);
+					Livechat.sendRequest(postData, callback, trying);
 				}), 10000);
 			}
 		}
@@ -919,7 +919,7 @@ RocketChat.Livechat = {
 
 	notifyAgentStatusChanged(userId, status) {
 		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
-			RocketChat.Livechat.stream.emit(room._id, {
+			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -927,9 +927,9 @@ RocketChat.Livechat = {
 	},
 };
 
-RocketChat.Livechat.stream = new Meteor.Streamer('livechat-room');
+Livechat.stream = new Meteor.Streamer('livechat-room');
 
-RocketChat.Livechat.stream.allowRead((roomId, extraData) => {
+Livechat.stream.allowRead((roomId, extraData) => {
 	const room = RocketChat.models.Rooms.findOneById(roomId);
 
 	if (!room) {
@@ -944,5 +944,5 @@ RocketChat.Livechat.stream.allowRead((roomId, extraData) => {
 });
 
 RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
-	RocketChat.Livechat.historyMonitorType = value;
+	Livechat.historyMonitorType = value;
 });

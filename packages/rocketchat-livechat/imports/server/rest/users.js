@@ -1,6 +1,7 @@
 import { check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
+import { Livechat } from '../../../server/lib/Livechat';
 import _ from 'underscore';
 
 API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
@@ -46,12 +47,12 @@ API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 			});
 
 			if (this.urlParams.type === 'agent') {
-				const user = RocketChat.Livechat.addAgent(this.bodyParams.username);
+				const user = Livechat.addAgent(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
-				const user = RocketChat.Livechat.addManager(this.bodyParams.username);
+				const user = Livechat.addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
@@ -125,11 +126,11 @@ API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
 			}
 
 			if (this.urlParams.type === 'agent') {
-				if (RocketChat.Livechat.removeAgent(user.username)) {
+				if (Livechat.removeAgent(user.username)) {
 					return API.v1.success();
 				}
 			} else if (this.urlParams.type === 'manager') {
-				if (RocketChat.Livechat.removeManager(user.username)) {
+				if (Livechat.removeManager(user.username)) {
 					return API.v1.success();
 				}
 			} else {

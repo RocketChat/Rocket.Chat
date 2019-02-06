@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:getNextAgent'({ token, department }) {
@@ -13,13 +14,13 @@ Meteor.methods({
 		}
 
 		if (!department) {
-			const requireDeparment = RocketChat.Livechat.getRequiredDepartment();
+			const requireDeparment = Livechat.getRequiredDepartment();
 			if (requireDeparment) {
 				department = requireDeparment._id;
 			}
 		}
 
-		const agent = RocketChat.Livechat.getNextAgent(department);
+		const agent = Livechat.getNextAgent(department);
 		if (!agent) {
 			return;
 		}

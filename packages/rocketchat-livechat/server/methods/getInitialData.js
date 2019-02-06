@@ -3,6 +3,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import { LivechatDepartment, LivechatTrigger } from '../models';
 import LivechatVisitors from '../models/LivechatVisitors';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:getInitialData'(visitorToken, departmentId) {
@@ -60,7 +61,7 @@ Meteor.methods({
 			info.visitor = visitor;
 		}
 
-		const initSettings = RocketChat.Livechat.getInitSettings();
+		const initSettings = Livechat.getInitSettings();
 
 		info.title = initSettings.Livechat_title;
 		info.color = initSettings.Livechat_title_color;
