@@ -16,6 +16,8 @@ const subscriptionPort = RocketChat.settings.get('Graphql_Subscription_Port') ||
 // the Meteor GraphQL server is an Express server
 const graphQLServer = express();
 
+graphQLServer.disable('x-powered-by');
+
 if (RocketChat.settings.get('Graphql_CORS')) {
 	graphQLServer.use(cors());
 }
