@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 
 Template.integrationsNew.helpers({
 	hasPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
 	},
 });
