@@ -9,7 +9,8 @@ import {
 	SelectionUser,
 	Imports,
 } from 'meteor/rocketchat:importer';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Messages, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { insertMessage } from 'meteor/rocketchat:lib';
 import { Readable } from 'stream';
 import path from 'path';
 import s from 'underscore.string';
@@ -252,7 +253,7 @@ export class HipChatEnterpriseImporter extends Base {
 			return false;
 		}
 
-		return Boolean(RocketChat.models.Messages.findOne({ _id: messageId }, { fields: { _id: 1 }, limit: 1 }));
+		return Boolean(Messages.findOne({ _id: messageId }, { fields: { _id: 1 }, limit: 1 }));
 	}
 
 	async prepareRoomMessagesFile(file, roomIdentifier, id, index) {
@@ -385,7 +386,7 @@ export class HipChatEnterpriseImporter extends Base {
 		this.collection.remove({});
 		this.emailList = [];
 
-		this._hasAnyImportedMessage = Boolean(RocketChat.models.Messages.findOne({ _id: /hipchatenterprise\-.*/ }));
+		this._hasAnyImportedMessage = Boolean(Messages.findOne({ _id: /hipchatenterprise\-.*/ }));
 
 		this.usersCount = 0;
 		this.channelsCount = 0;
@@ -435,7 +436,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 				// Check if any of the emails used are already taken
 				if (this.emailList.length > 0) {
-					const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: this.emailList } });
+					const conflictingUsers = Users.find({ 'emails.address': { $in: this.emailList } });
 					const conflictingUserEmails = [];
 
 					conflictingUsers.forEach((conflictingUser) => {
@@ -534,10 +535,10 @@ export class HipChatEnterpriseImporter extends Base {
 		this._saveUserIdReference(userToImport.id, existingUserId);
 
 		Meteor.runAsUser(existingUserId, () => {
-			RocketChat.models.Users.update({ _id: existingUserId }, { $addToSet: { importIds: userToImport.id } });
+			Users.update({ _id: existingUserId }, { $addToSet: { importIds: userToImport.id } });
 
 			// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
-			RocketChat.models.Users.setName(existingUserId, userToImport.name);
+			Users.setName(existingUserId, userToImport.name);
 
 			// TODO: Think about using a custom field for the users "title" field
 			if (userToImport.avatar) {
@@ -553,10 +554,10 @@ export class HipChatEnterpriseImporter extends Base {
 
 	_importUser(userToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			let existingUser = RocketChat.models.Users.findOneByUsername(userToImport.username);
+			let existingUser = Users.findOneByUsername(userToImport.username);
 			if (!existingUser) {
 				// If there's no user with that username, but there's an imported user with the same original ID and no username, use that
-				existingUser = RocketChat.models.Users.findOne({
+				existingUser = Users.findOne({
 					importIds: userToImport.id,
 					username: { $exists: false },
 				});
@@ -768,7 +769,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 		let room;
 		if (roomOrRoomId && typeof roomOrRoomId === 'string') {
-			room = RocketChat.models.Rooms.findOneByIdOrName(roomOrRoomId);
+			room = Rooms.findOneByIdOrName(roomOrRoomId);
 		} else {
 			room = roomOrRoomId;
 		}
@@ -787,18 +788,18 @@ export class HipChatEnterpriseImporter extends Base {
 			}
 
 			this.logger.info(`Creating user's subscription to room ${ room._id }, rocket.chat user is ${ user._id }, hipchat user is ${ hipchatUserId }`);
-			RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, extra);
+			Subscriptions.createWithRoomAndUser(room, user, extra);
 		});
 	}
 
 	_importChannel(channelToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			const existingRoom = RocketChat.models.Rooms.findOneByName(channelToImport.name);
+			const existingRoom = Rooms.findOneByName(channelToImport.name);
 			// If the room exists or the name of it is 'general', then we don't need to create it again
 			if (existingRoom || channelToImport.name.toUpperCase() === 'GENERAL') {
 				channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;
 				this._saveRoomIdReference(channelToImport.id, channelToImport.rocketId);
-				RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $addToSet: { importIds: channelToImport.id } });
+				Rooms.update({ _id: channelToImport.rocketId }, { $addToSet: { importIds: channelToImport.id } });
 
 				this._createSubscriptions(channelToImport, existingRoom || 'general');
 			} else {
@@ -817,7 +818,7 @@ export class HipChatEnterpriseImporter extends Base {
 				});
 
 				if (channelToImport.rocketId) {
-					RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $set: { ts: channelToImport.created, topic: channelToImport.topic }, $addToSet: { importIds: channelToImport.id } });
+					Rooms.update({ _id: channelToImport.rocketId }, { $set: { ts: channelToImport.created, topic: channelToImport.topic }, $addToSet: { importIds: channelToImport.id } });
 					this._createSubscriptions(channelToImport, channelToImport.rocketId);
 				}
 			}
@@ -877,7 +878,7 @@ export class HipChatEnterpriseImporter extends Base {
 				switch (msg.type) {
 					case 'user':
 						if (!msg.skip) {
-							RocketChat.insertMessage(creator, {
+							insertMessage(creator, {
 								_id: msg.id,
 								ts: msg.ts,
 								msg: msg.text,
@@ -891,7 +892,7 @@ export class HipChatEnterpriseImporter extends Base {
 						}
 						break;
 					case 'topic':
-						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
+						Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
 						break;
 				}
 			}
@@ -920,7 +921,7 @@ export class HipChatEnterpriseImporter extends Base {
 			return;
 		}
 
-		const room = await RocketChat.models.Rooms.findOneById(rid, { fields: { usernames: 1, t: 1, name: 1 } });
+		const room = await Rooms.findOneById(rid, { fields: { usernames: 1, t: 1, name: 1 } });
 		await super.updateRecord({
 			messagesstatus: `${ roomIdentifier }.${ list.messages.length }`,
 			'count.completed': this.progress.count.completed,
@@ -1034,7 +1035,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 				const roomId = [receiver._id, sender._id].sort().join('');
 				if (!(roomId in roomObjects)) {
-					roomObjects[roomId] = RocketChat.models.Rooms.findOneById(roomId);
+					roomObjects[roomId] = Rooms.findOneById(roomId);
 				}
 
 				let room = roomObjects[roomId];
@@ -1043,7 +1044,7 @@ export class HipChatEnterpriseImporter extends Base {
 					Meteor.runAsUser(sender._id, () => {
 						const roomInfo = Meteor.call('createDirectMessage', receiver.username);
 
-						room = RocketChat.models.Rooms.findOneById(roomInfo.rid);
+						room = Rooms.findOneById(roomInfo.rid);
 						roomObjects[roomId] = room;
 					});
 				}
@@ -1071,7 +1072,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 						if (!msg.skip) {
 							this.logger.debug('Inserting DM message');
-							RocketChat.insertMessage(sender, {
+							insertMessage(sender, {
 								_id: msg.id,
 								ts: msg.ts,
 								msg: msg.text,
@@ -1125,7 +1126,7 @@ export class HipChatEnterpriseImporter extends Base {
 			return this._userDataCache[userId];
 		}
 
-		this._userDataCache[userId] = RocketChat.models.Users.findOneById(userId, { fields: { username: 1 } });
+		this._userDataCache[userId] = Users.findOneById(userId, { fields: { username: 1 } });
 		return this._userDataCache[userId];
 	}
 

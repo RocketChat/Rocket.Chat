@@ -25,3 +25,4 @@ export { updateMessage } from './updateMessage';
 export { validateCustomFields } from './validateCustomFields';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
 export { processWebhookMessage } from './processWebhookMessage';
+export { insertMessage } from './insertMessage';
