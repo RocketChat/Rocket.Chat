@@ -20,25 +20,49 @@
 					<div class="results">
 						{{{_ "Showing_results" customsounds.length}}}
 					</div>
-					<div class="list">
-						<table>
-							<thead>
-								<tr>
-									<th width="100%">{{_ "Name"}}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{{#each customsounds}}
-								<tr class="sound-info row-link">
-									<td>{{name}}&nbsp;<i class="icon-play-circled"></i></td>
-								</tr>
-								{{/each}}
-							</tbody>
-						</table>
-						{{#if hasMore}}
-							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
-						{{/if}}
-					</div>
+					{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+						<thead>
+							<tr>
+								<th width="95%">
+									<div class="table-fake-th">{{_ "Name"}}</div>
+								</th>
+								<th width="5%">
+									<div class="table-fake-th">{{_ "Action"}}</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each customsounds}}
+							<tr>
+								<td width="100%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{name}}
+											</span>
+										</div>
+									</div>
+								</td>
+								<td width="5%">
+									<div class="rc-table-wrapper">
+										{{>icon _id=_id icon="play" block="icon-play-circled"}}
+									</div>
+								</td>
+							</tr>
+							{{else}}
+								{{# with searchText}}
+									<tr class="table-no-click">
+										<td>{{_ "No_results_found_for"}} {{.}}</td>
+									</tr>
+								{{/with}}
+							{{/each}}
+							{{#unless isReady}}
+							<tr class="table-no-click">
+								<td class="table-loading-td">{{> loading}}</td>
+							</tr>
+							{{/unless}}
+						</tbody>
+					{{/table}}
 				{{/requiresPermission}}
 			</div>
 		</section>

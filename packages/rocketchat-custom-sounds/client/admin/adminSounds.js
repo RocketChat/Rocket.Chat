@@ -37,6 +37,26 @@ Template.adminSounds.helpers({
 			data: Template.instance().tabBarData.get(),
 		};
 	},
+
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
+				return instance.limit.set(instance.limit.get() + 50);
+			}
+		};
+	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function(item) {
+			instance.tabBarData.set(CustomSounds.findOne({ _id: item._id }));
+			instance.tabBar.showGroup('custom-sounds-selected');
+			instance.tabBar.open('admin-sound-info');
+		};
+	},
 });
 
 Template.adminSounds.onCreated(function() {
@@ -120,12 +140,6 @@ Template.adminSounds.events({
 		instance.tabBarData.set(CustomSounds.findOne({ _id: this._id }));
 		instance.tabBar.showGroup('custom-sounds-selected');
 		instance.tabBar.open('admin-sound-info');
-	},
-
-	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
 	},
 
 	'click .icon-play-circled'(e) {
