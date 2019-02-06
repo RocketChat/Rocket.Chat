@@ -25,33 +25,48 @@
 					<div class="results">
 						{{{_ "Showing_results" roomCount}}}
 					</div>
-					<div class="list">
-						<table class="secondary-background-color">
-							<thead>
-								<tr class="admin-table-row">
-									<th class="content-background-color border-component-color" width="30%">{{_ "Name"}}</th>
-									<th class="content-background-color border-component-color" width="20%">{{_ "Type"}}</th>
-									<th class="content-background-color border-component-color" width="20%">{{_ "Users"}}</th>
-									<th class="content-background-color border-component-color" width="10%">{{_ "Msgs"}}</th>
-									<th class="content-background-color border-component-color" width="20%">{{_ "Default"}}</th>
+						{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+						<thead>
+							<tr>
+								<th width="30%"><div class="table-fake-th">{{_ "Name"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Type"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Users"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Msgs"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Default"}}</div></th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each rooms}}
+								<tr>
+									<td width="30%"><div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{>icon icon="hashtag" block="rc-directory-icon"}} {{name}}
+											</span>
+										</div>
+									</div></td>
+									<td width="20%"><div class="rc-table-wrapper">{{type}}</div></td>
+									<td width="20%"><div class="rc-table-wrapper">{{usersCount}}</div></td>
+									<td width="10%"><div class="rc-table-wrapper">{{msgs}}</div></td>
+									<td width="20%"><div class="rc-table-wrapper">{{default}}</div></td>
 								</tr>
-							</thead>
-							<tbody>
-								{{#each rooms}}
-								<tr class="room-info row-link">
-									<td class="border-component-color">{{name}}</td>
-									<td class="border-component-color">{{type}}</td>
-									<td class="border-component-color">{{usernames.length}}</td>
-									<td class="border-component-color">{{msgs}}</td>
-									<td class="border-component-color">{{default}}</td>
+							 {{else}} {{# with searchText}}
+							<tr class="table-no-click">
+								<td>{{_ "No_results_found_for"}} {{.}}</td>
+							</tr>
+							{{/with}}
+							{{/each}}
+							{{#unless isLoading}}
+								<tr class="table-no-click">
+									<td class="table-loading-td" colspan="{{#if showLastMessage}}5{{else}}4{{/if}}">{{> loading}}</td>
 								</tr>
-								{{/each}}
-							</tbody>
-						</table>
-						{{#if hasMore}}
+							{{/unless}}
+						</tbody>
+						{{/table}}
+						<!-- {{#if hasMore}}
 							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
-						{{/if}}
-					</div>
+						{{/if}} -->
 				{{/unless}}
 			</div>
 		</section>
