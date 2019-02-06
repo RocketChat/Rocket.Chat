@@ -17,3 +17,4 @@ export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from '../lib/getURL';
 export { getValidRoomName } from '../lib/getValidRoomName';
 export { placeholders } from '../lib/placeholders';
+export { templateVarHandler } from '../lib/templateVarHandler';

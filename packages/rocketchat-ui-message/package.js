@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 		'rocketchat:ui',
 		'rocketchat:ui-utils',
 		'rocketchat:emoji',
+		'rocketchat:katex',
 		'rocketchat:lib',
 		'rocketchat:ui',
 		'rocketchat:ui-account',
