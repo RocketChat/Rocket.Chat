@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatTrigger } from '../models';
 
 Meteor.publish('livechat:triggers', function(_id) {
 	if (!this.userId) {
@@ -11,8 +12,8 @@ Meteor.publish('livechat:triggers', function(_id) {
 	}
 
 	if (_id !== undefined) {
-		return RocketChat.models.LivechatTrigger.findById(_id);
+		return LivechatTrigger.findById(_id);
 	} else {
-		return RocketChat.models.LivechatTrigger.find();
+		return LivechatTrigger.find();
 	}
 });

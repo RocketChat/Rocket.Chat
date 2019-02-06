@@ -3,6 +3,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import { sendNotification } from 'meteor/rocketchat:lib';
+import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
@@ -151,7 +152,7 @@ RocketChat.QueueMethods = {
 			room.departmentId = guest.department;
 		}
 
-		RocketChat.models.LivechatInquiry.insert(inquiry);
+		LivechatInquiry.insert(inquiry);
 		RocketChat.models.Rooms.insert(room);
 
 		// Alert the agents of the queued request

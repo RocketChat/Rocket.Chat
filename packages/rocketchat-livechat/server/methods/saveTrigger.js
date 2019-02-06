@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatTrigger } from '../models';
 
 Meteor.methods({
 	'livechat:saveTrigger'(trigger) {
@@ -19,9 +20,9 @@ Meteor.methods({
 		});
 
 		if (trigger._id) {
-			return RocketChat.models.LivechatTrigger.updateById(trigger._id, trigger);
+			return LivechatTrigger.updateById(trigger._id, trigger);
 		} else {
-			return RocketChat.models.LivechatTrigger.insert(trigger);
+			return LivechatTrigger.insert(trigger);
 		}
 	},
 });
