@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Messages } from 'meteor/rocketchat:models';
+import { settings as rcSettings } from 'meteor/rocketchat:settings';
 import { API } from 'meteor/rocketchat:api';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 
@@ -30,15 +31,15 @@ API.v1.addRoute('livechat/video.call/:token', {
 				throw new Meteor.Error('invalid-livechat-config');
 			}
 
-			RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {
+			Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {
 				actionLinks: config.theme.actionLinks,
 			});
 
 			const videoCall = {
 				rid,
-				domain: RocketChat.settings.get('Jitsi_Domain'),
+				domain: rcSettings.get('Jitsi_Domain'),
 				provider: 'jitsi',
-				room: RocketChat.settings.get('Jitsi_URL_Room_Prefix') + RocketChat.settings.get('uniqueID') + rid,
+				room: rcSettings.get('Jitsi_URL_Room_Prefix') + rcSettings.get('uniqueID') + rid,
 				timeout: new Date(Date.now() + 3600 * 1000),
 			};
 

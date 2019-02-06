@@ -3,8 +3,12 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { HTTP } from 'meteor/http';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Users, Rooms, Messages, Subscriptions, Settings } from 'meteor/rocketchat:models';
 import { Logger } from 'meteor/rocketchat:logger';
+import { sendMessage, deleteMessage, updateMessage } from 'meteor/rocketchat:lib';
+import { addUserRoles, removeUserFromRoles } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -13,7 +17,7 @@ import UAParser from 'ua-parser-js';
 import * as Mailer from 'meteor/rocketchat:mailer';
 import { LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField } from '../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
-
+import { QueueMethods } from './QueueMethods';
 import LivechatVisitors from '../models/LivechatVisitors';
 import { Analytics } from './Analytics';
 
@@ -28,20 +32,20 @@ export const Livechat = {
 	}),
 
 	getNextAgent(department) {
-		if (RocketChat.settings.get('Livechat_Routing_Method') === 'External') {
+		if (settings.get('Livechat_Routing_Method') === 'External') {
 			for (let i = 0; i < 10; i++) {
 				try {
 					const queryString = department ? `?departmentId=${ department }` : '';
-					const result = HTTP.call('GET', `${ RocketChat.settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
+					const result = HTTP.call('GET', `${ settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
 						headers: {
 							'User-Agent': 'RocketChat Server',
 							Accept: 'application/json',
-							'X-RocketChat-Secret-Token': RocketChat.settings.get('Livechat_External_Queue_Token'),
+							'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
 						},
 					});
 
 					if (result && result.data && result.data.username) {
-						const agent = RocketChat.models.Users.findOneOnlineAgentByUsername(result.data.username);
+						const agent = Users.findOneOnlineAgentByUsername(result.data.username);
 
 						if (agent) {
 							return {
@@ -59,19 +63,19 @@ export const Livechat = {
 		} else if (department) {
 			return LivechatDepartmentAgents.getNextAgentForDepartment(department);
 		}
-		return RocketChat.models.Users.getNextAgent();
+		return Users.getNextAgent();
 	},
 	getAgents(department) {
 		if (department) {
 			return LivechatDepartmentAgents.findByDepartmentId(department);
 		}
-		return RocketChat.models.Users.findAgents();
+		return Users.findAgents();
 	},
 	getOnlineAgents(department) {
 		if (department) {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
-		return RocketChat.models.Users.findOnlineAgents();
+		return Users.findOnlineAgents();
 	},
 	getRequiredDepartment(onlineRequired = true) {
 		const departments = LivechatDepartment.findEnabledWithAgents();
@@ -88,7 +92,7 @@ export const Livechat = {
 		});
 	},
 	getRoom(guest, message, roomInfo, agent) {
-		let room = RocketChat.models.Rooms.findOneById(message.rid);
+		let room = Rooms.findOneById(message.rid);
 		let newRoom = false;
 
 		if (room && !room.open) {
@@ -107,8 +111,8 @@ export const Livechat = {
 			}
 
 			// delegate room creation to QueueMethods
-			const routingMethod = RocketChat.settings.get('Livechat_Routing_Method');
-			room = RocketChat.QueueMethods[routingMethod](guest, message, roomInfo, agent);
+			const routingMethod = settings.get('Livechat_Routing_Method');
+			room = QueueMethods[routingMethod](guest, message, roomInfo, agent);
 
 			newRoom = true;
 		}
@@ -118,7 +122,7 @@ export const Livechat = {
 		}
 
 		if (newRoom) {
-			RocketChat.models.Messages.setRoomIdByToken(guest.token, room._id);
+			Messages.setRoomIdByToken(guest.token, room._id);
 		}
 
 		return { room, newRoom };
@@ -131,25 +135,25 @@ export const Livechat = {
 		}
 
 		// return messages;
-		return _.extend(RocketChat.sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
+		return _.extend(sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
 
 	updateMessage({ guest, message }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
-		const originalMessage = RocketChat.models.Messages.findOneById(message._id);
+		const originalMessage = Messages.findOneById(message._id);
 		if (!originalMessage || !originalMessage._id) {
 			return;
 		}
 
-		const editAllowed = RocketChat.settings.get('Message_AllowEditing');
+		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
 
 		if (!editAllowed || !editOwn) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'livechatUpdateMessage' });
 		}
 
-		RocketChat.updateMessage(message, guest);
+		updateMessage(message, guest);
 
 		return true;
 	},
@@ -157,19 +161,19 @@ export const Livechat = {
 	deleteMessage({ guest, message }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
-		const msg = RocketChat.models.Messages.findOneById(message._id);
+		const msg = Messages.findOneById(message._id);
 		if (!msg || !msg._id) {
 			return;
 		}
 
-		const deleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
+		const deleteAllowed = settings.get('Message_AllowDeleting');
 		const editOwn = msg.u && msg.u._id === guest._id;
 
 		if (!deleteAllowed || !editOwn) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message deleting not allowed', { method: 'livechatDeleteMessage' });
 		}
 
-		RocketChat.deleteMessage(message, guest);
+		deleteMessage(message, guest);
 
 		return true;
 	},
@@ -202,7 +206,7 @@ export const Livechat = {
 					username,
 				};
 
-				const storeHttpHeaderData = RocketChat.settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations');
+				const storeHttpHeaderData = settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations');
 
 				if (this.connection && storeHttpHeaderData) {
 					userData.userAgent = this.connection.httpHeaders['user-agent'];
@@ -271,7 +275,7 @@ export const Livechat = {
 		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('livechat.saveGuest', updateData);
+			callbacks.run('livechat.saveGuest', updateData);
 		});
 
 		return ret;
@@ -303,7 +307,7 @@ export const Livechat = {
 			};
 		}
 
-		RocketChat.models.Rooms.closeByRoomId(room._id, closeData);
+		Rooms.closeByRoomId(room._id, closeData);
 		LivechatInquiry.closeByRoomId(room._id, closeData);
 
 		const message = {
@@ -312,15 +316,15 @@ export const Livechat = {
 			groupable: false,
 		};
 
-		RocketChat.sendMessage(user, message, room);
+		sendMessage(user, message, room);
 
 		if (room.servedBy) {
-			RocketChat.models.Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
+			Subscriptions.hideByRoomIdAndUserId(room._id, room.servedBy._id);
 		}
-		RocketChat.models.Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
+		Messages.createCommandWithRoomIdAndUser('promptTranscript', room._id, closeData.closedBy);
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('livechat.closeRoom', room);
+			callbacks.run('livechat.closeRoom', room);
 		});
 
 		return true;
@@ -338,16 +342,16 @@ export const Livechat = {
 		}
 
 		if (customField.scope === 'room') {
-			return RocketChat.models.Rooms.updateLivechatDataByToken(token, key, value, overwrite);
+			return Rooms.updateLivechatDataByToken(token, key, value, overwrite);
 		} else {
 			return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 		}
 	},
 
 	getInitSettings() {
-		const settings = {};
+		const rcSettings = {};
 
-		RocketChat.models.Settings.findNotHiddenPublic([
+		Settings.findNotHiddenPublic([
 			'Livechat_title',
 			'Livechat_title_color',
 			'Livechat_enabled',
@@ -373,41 +377,41 @@ export const Livechat = {
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 		]).forEach((setting) => {
-			settings[setting._id] = setting.value;
+			rcSettings[setting._id] = setting.value;
 		});
 
-		RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
-			settings[key] = value;
+		settings.get('Livechat_history_monitor_type', (key, value) => {
+			rcSettings[key] = value;
 		});
 
-		settings.Livechat_Show_Connecting = this.showConnecting();
+		rcSettings.Livechat_Show_Connecting = this.showConnecting();
 
-		return settings;
+		return rcSettings;
 	},
 
 	saveRoomInfo(roomData, guestData) {
-		if ((roomData.topic != null || roomData.tags != null) && !RocketChat.models.Rooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
+		if ((roomData.topic != null || roomData.tags != null) && !Rooms.setTopicAndTagsById(roomData._id, roomData.topic, roomData.tags)) {
 			return false;
 		}
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('livechat.saveRoom', roomData);
+			callbacks.run('livechat.saveRoom', roomData);
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return RocketChat.models.Rooms.setFnameById(roomData._id, guestData.name) && RocketChat.models.Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
 	closeOpenChats(userId, comment) {
-		const user = RocketChat.models.Users.findOneById(userId);
-		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
+		const user = Users.findOneById(userId);
+		Rooms.findOpenByAgent(userId).forEach((room) => {
 			this.closeRoom({ user, room, comment });
 		});
 	},
 
 	forwardOpenChats(userId) {
-		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
+		Rooms.findOpenByAgent(userId).forEach((room) => {
 			const guest = LivechatVisitors.findOneById(room.v._id);
 			this.transfer(room, guest, { departmentId: guest.department });
 		});
@@ -416,7 +420,7 @@ export const Livechat = {
 	savePageHistory(token, roomId, pageInfo) {
 		if (pageInfo.change === Livechat.historyMonitorType) {
 
-			const user = RocketChat.models.Users.findOneById('rocket.cat');
+			const user = Users.findOneById('rocket.cat');
 
 			const pageTitle = pageInfo.title;
 			const pageUrl = pageInfo.location.href;
@@ -433,11 +437,11 @@ export const Livechat = {
 				extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
 			}
 
-			if (!RocketChat.settings.get('Livechat_Visitor_navigation_as_a_message')) {
+			if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
 				extraData._hidden = true;
 			}
 
-			return RocketChat.models.Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
+			return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
 		}
 
 		return;
@@ -447,14 +451,14 @@ export const Livechat = {
 		let agent;
 
 		if (transferData.userId) {
-			const user = RocketChat.models.Users.findOneOnlineAgentById(transferData.userId);
+			const user = Users.findOneOnlineAgentById(transferData.userId);
 			if (!user) {
 				return false;
 			}
 
 			const { _id: agentId, username } = user;
 			agent = Object.assign({}, { agentId, username });
-		} else if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
+		} else if (settings.get('Livechat_Routing_Method') !== 'Guest_Pool') {
 			agent = Livechat.getNextAgent(transferData.departmentId);
 		} else {
 			return Livechat.returnRoomAsInquiry(room._id, transferData.departmentId);
@@ -463,10 +467,10 @@ export const Livechat = {
 		const { servedBy } = room;
 
 		if (agent && agent.agentId !== servedBy._id) {
-			RocketChat.models.Rooms.changeAgentByRoomId(room._id, agent);
+			Rooms.changeAgentByRoomId(room._id, agent);
 
 			if (transferData.departmentId) {
-				RocketChat.models.Rooms.changeDepartmentIdByRoomId(room._id, transferData.departmentId);
+				Rooms.changeDepartmentIdByRoomId(room._id, transferData.departmentId);
 			}
 
 			const subscriptionData = {
@@ -486,13 +490,13 @@ export const Livechat = {
 				mobilePushNotifications: 'all',
 				emailNotifications: 'all',
 			};
-			RocketChat.models.Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
+			Subscriptions.removeByRoomIdAndUserId(room._id, servedBy._id);
 
-			RocketChat.models.Subscriptions.insert(subscriptionData);
-			RocketChat.models.Rooms.incUsersCountById(room._id);
+			Subscriptions.insert(subscriptionData);
+			Rooms.incUsersCountById(room._id);
 
-			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
-			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });
+			Messages.createUserLeaveWithRoomIdAndUser(room._id, { _id: servedBy._id, username: servedBy.username });
+			Messages.createUserJoinWithRoomIdAndUser(room._id, { _id: agent.agentId, username: agent.username });
 
 			const guestData = {
 				token: guest.token,
@@ -500,7 +504,7 @@ export const Livechat = {
 			};
 
 			this.setDepartmentForGuest(guestData);
-			const data = RocketChat.models.Users.getAgentInfo(agent.agentId);
+			const data = Users.getAgentInfo(agent.agentId);
 
 			Livechat.stream.emit(room._id, {
 				type: 'agentData',
@@ -514,7 +518,7 @@ export const Livechat = {
 	},
 
 	returnRoomAsInquiry(rid, departmentId) {
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:returnRoomAsInquiry' });
 		}
@@ -523,7 +527,7 @@ export const Livechat = {
 			return false;
 		}
 
-		const user = RocketChat.models.Users.findOne(room.servedBy._id);
+		const user = Users.findOne(room.servedBy._id);
 		if (!user || !user._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:returnRoomAsInquiry' });
 		}
@@ -533,7 +537,7 @@ export const Livechat = {
 		if (departmentId) {
 			let agents = Livechat.getOnlineAgents(departmentId);
 
-			if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
+			if (agents.count() === 0 && settings.get('Livechat_guest_pool_with_no_agents')) {
 				agents = Livechat.getAgents(departmentId);
 			}
 
@@ -545,14 +549,14 @@ export const Livechat = {
 				agentIds.push(agent.agentId);
 			});
 
-			RocketChat.models.Rooms.changeDepartmentIdByRoomId(room._id, departmentId);
+			Rooms.changeDepartmentIdByRoomId(room._id, departmentId);
 		}
 
 		// delete agent and room subscription
-		RocketChat.models.Subscriptions.removeByRoomId(rid);
+		Subscriptions.removeByRoomId(rid);
 
 		// remove agent from room
-		RocketChat.models.Rooms.removeAgentByRoomId(rid);
+		Rooms.removeAgentByRoomId(rid);
 
 		// find inquiry corresponding to room
 		const inquiry = LivechatInquiry.findOne({ rid });
@@ -569,7 +573,7 @@ export const Livechat = {
 		}
 
 		if (openInq) {
-			RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: room.servedBy._id, username: room.servedBy.username });
+			Messages.createUserLeaveWithRoomIdAndUser(rid, { _id: room.servedBy._id, username: room.servedBy.username });
 
 			Livechat.stream.emit(rid, {
 				type: 'agentData',
@@ -584,11 +588,11 @@ export const Livechat = {
 		try {
 			const options = {
 				headers: {
-					'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token'),
+					'X-RocketChat-Livechat-Token': settings.get('Livechat_secret_token'),
 				},
 				data: postData,
 			};
-			return HTTP.post(RocketChat.settings.get('Livechat_webhookUrl'), options);
+			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
 			Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
 			// try 10 times after 10 seconds each
@@ -604,7 +608,7 @@ export const Livechat = {
 
 	getLivechatRoomGuestInfo(room) {
 		const visitor = LivechatVisitors.findOneById(room.v._id);
-		const agent = RocketChat.models.Users.findOneById(room.servedBy && room.servedBy._id);
+		const agent = Users.findOneById(room.servedBy && room.servedBy._id);
 
 		const ua = new UAParser();
 		ua.setUA(visitor.userAgent);
@@ -662,15 +666,15 @@ export const Livechat = {
 	addAgent(username) {
 		check(username, String);
 
-		const user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addAgent' });
 		}
 
-		if (RocketChat.authz.addUserRoles(user._id, 'livechat-agent')) {
-			RocketChat.models.Users.setOperator(user._id, true);
-			RocketChat.models.Users.setLivechatStatus(user._id, 'available');
+		if (addUserRoles(user._id, 'livechat-agent')) {
+			Users.setOperator(user._id, true);
+			Users.setLivechatStatus(user._id, 'available');
 			return user;
 		}
 
@@ -680,13 +684,13 @@ export const Livechat = {
 	addManager(username) {
 		check(username, String);
 
-		const user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addManager' });
 		}
 
-		if (RocketChat.authz.addUserRoles(user._id, 'livechat-manager')) {
+		if (addUserRoles(user._id, 'livechat-manager')) {
 			return user;
 		}
 
@@ -696,15 +700,15 @@ export const Livechat = {
 	removeAgent(username) {
 		check(username, String);
 
-		const user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1 } });
+		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeAgent' });
 		}
 
-		if (RocketChat.authz.removeUserFromRoles(user._id, 'livechat-agent')) {
-			RocketChat.models.Users.setOperator(user._id, false);
-			RocketChat.models.Users.setLivechatStatus(user._id, 'not-available');
+		if (removeUserFromRoles(user._id, 'livechat-agent')) {
+			Users.setOperator(user._id, false);
+			Users.setLivechatStatus(user._id, 'not-available');
 			return true;
 		}
 
@@ -714,13 +718,13 @@ export const Livechat = {
 	removeManager(username) {
 		check(username, String);
 
-		const user = RocketChat.models.Users.findOneByUsername(username, { fields: { _id: 1 } });
+		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:removeManager' });
 		}
 
-		return RocketChat.authz.removeUserFromRoles(user._id, 'livechat-manager');
+		return removeUserFromRoles(user._id, 'livechat-manager');
 	},
 
 	removeGuest(_id) {
@@ -743,13 +747,13 @@ export const Livechat = {
 
 		const { token } = guest;
 
-		RocketChat.models.Rooms.findByVisitorToken(token).forEach((room) => {
-			RocketChat.models.Messages.removeFilesByRoomId(room._id);
-			RocketChat.models.Messages.removeByRoomId(room._id);
+		Rooms.findByVisitorToken(token).forEach((room) => {
+			Messages.removeFilesByRoomId(room._id);
+			Messages.removeByRoomId(room._id);
 		});
 
-		RocketChat.models.Subscriptions.removeByVisitorToken(token);
-		RocketChat.models.Rooms.removeByVisitorToken(token);
+		Subscriptions.removeByVisitorToken(token);
+		Rooms.removeByVisitorToken(token);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -792,8 +796,8 @@ export const Livechat = {
 	},
 
 	showConnecting() {
-		if (RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool') {
-			return RocketChat.settings.get('Livechat_open_inquiery_show_connecting');
+		if (settings.get('Livechat_Routing_Method') === 'Guest_Pool') {
+			return settings.get('Livechat_open_inquiery_show_connecting');
 		} else {
 			return false;
 		}
@@ -813,17 +817,17 @@ export const Livechat = {
 		check(rid, String);
 		check(email, String);
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid);
 
 		const visitor = LivechatVisitors.getVisitorByToken(token);
-		const userLanguage = (visitor && visitor.language) || RocketChat.settings.get('language') || 'en';
+		const userLanguage = (visitor && visitor.language) || settings.get('language') || 'en';
 
 		// allow to only user to send transcripts from their own chats
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
-		const messages = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { ts: 1 } });
+		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { ts: 1 } });
 
 		let html = '<div> <hr>';
 		messages.forEach((message) => {
@@ -848,12 +852,12 @@ export const Livechat = {
 
 		html = `${ html }</div>`;
 
-		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
+		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 
 		if (fromEmail) {
 			fromEmail = fromEmail[0];
 		} else {
-			fromEmail = RocketChat.settings.get('From_Email');
+			fromEmail = settings.get('From_Email');
 		}
 
 		const subject = TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
@@ -861,7 +865,7 @@ export const Livechat = {
 		this.sendEmail(fromEmail, email, fromEmail, subject, html);
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('livechat.sendTranscript', messages, email);
+			callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
 		return true;
@@ -869,11 +873,11 @@ export const Livechat = {
 
 	notifyGuestStatusChanged(token, status) {
 		LivechatInquiry.updateVisitorStatus(token, status);
-		RocketChat.models.Rooms.updateVisitorStatus(token, status);
+		Rooms.updateVisitorStatus(token, status);
 	},
 
 	sendOfflineMessage(data = {}) {
-		if (!RocketChat.settings.get('Livechat_display_offline_form')) {
+		if (!settings.get('Livechat_display_offline_form')) {
 			return false;
 		}
 
@@ -885,15 +889,15 @@ export const Livechat = {
 			<p><strong>Visitor email:</strong> ${ data.email }</p>
 			<p><strong>Message:</strong><br>${ message }</p>`;
 
-		let fromEmail = RocketChat.settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
+		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 
 		if (fromEmail) {
 			fromEmail = fromEmail[0];
 		} else {
-			fromEmail = RocketChat.settings.get('From_Email');
+			fromEmail = settings.get('From_Email');
 		}
 
-		if (RocketChat.settings.get('Livechat_validate_offline_email')) {
+		if (settings.get('Livechat_validate_offline_email')) {
 			const emailDomain = data.email.substr(data.email.lastIndexOf('@') + 1);
 
 			try {
@@ -903,7 +907,7 @@ export const Livechat = {
 			}
 		}
 
-		const to = RocketChat.settings.get('Livechat_offline_email');
+		const to = settings.get('Livechat_offline_email');
 		const from = `${ data.name } - ${ data.email } <${ fromEmail }>`;
 		const replyTo = `${ data.name } <${ data.email }>`;
 		const subject = `Livechat offline message from ${ data.name }: ${ (`${ data.message }`).substring(0, 20) }`;
@@ -911,14 +915,14 @@ export const Livechat = {
 		this.sendEmail(from, to, replyTo, subject, html);
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('livechat.offlineMessage', data);
+			callbacks.run('livechat.offlineMessage', data);
 		});
 
 		return true;
 	},
 
 	notifyAgentStatusChanged(userId, status) {
-		RocketChat.models.Rooms.findOpenByAgent(userId).forEach((room) => {
+		Rooms.findOpenByAgent(userId).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',
 				status,
@@ -930,7 +934,7 @@ export const Livechat = {
 Livechat.stream = new Meteor.Streamer('livechat-room');
 
 Livechat.stream.allowRead((roomId, extraData) => {
-	const room = RocketChat.models.Rooms.findOneById(roomId);
+	const room = Rooms.findOneById(roomId);
 
 	if (!room) {
 		console.warn(`Invalid eventName: "${ roomId }"`);
@@ -943,6 +947,6 @@ Livechat.stream.allowRead((roomId, extraData) => {
 	return false;
 });
 
-RocketChat.settings.get('Livechat_history_monitor_type', (key, value) => {
+settings.get('Livechat_history_monitor_type', (key, value) => {
 	Livechat.historyMonitorType = value;
 });
