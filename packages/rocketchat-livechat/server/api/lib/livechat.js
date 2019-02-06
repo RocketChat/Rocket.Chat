@@ -1,9 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users, Rooms } from 'meteor/rocketchat:models';
-import { LivechatDepartment, LivechatTrigger } from '../../models';
+import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from 'meteor/rocketchat:models';
 import _ from 'underscore';
-import LivechatVisitors from '../../models/LivechatVisitors';
 import { Livechat } from '../../lib/Livechat';
 
 export function online() {

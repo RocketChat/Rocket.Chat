@@ -1,9 +1,8 @@
 import crypto from 'crypto';
 import { Random } from 'meteor/random';
 import { API } from 'meteor/rocketchat:api';
-import { Rooms, Users } from 'meteor/rocketchat:models';
+import { Rooms, Users, LivechatVisitors } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { Livechat } from '../../../server/lib/Livechat';
 
 /**

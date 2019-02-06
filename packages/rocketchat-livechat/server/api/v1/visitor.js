@@ -1,11 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Rooms } from 'meteor/rocketchat:models';
+import { Rooms, LivechatVisitors, LivechatCustomField } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { API } from 'meteor/rocketchat:api';
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest } from '../lib/livechat';
-import { LivechatCustomField } from '../../models';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/visitor', {

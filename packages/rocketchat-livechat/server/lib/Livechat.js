@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { HTTP } from 'meteor/http';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Users, Rooms, Messages, Subscriptions, Settings } from 'meteor/rocketchat:models';
+import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from 'meteor/rocketchat:models';
 import { Logger } from 'meteor/rocketchat:logger';
 import { sendMessage, deleteMessage, updateMessage } from 'meteor/rocketchat:lib';
 import { addUserRoles, removeUserFromRoles } from 'meteor/rocketchat:authorization';
@@ -15,10 +15,8 @@ import moment from 'moment';
 import dns from 'dns';
 import UAParser from 'ua-parser-js';
 import * as Mailer from 'meteor/rocketchat:mailer';
-import { LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField } from '../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { QueueMethods } from './QueueMethods';
-import LivechatVisitors from '../models/LivechatVisitors';
 import { Analytics } from './Analytics';
 
 export const Livechat = {
