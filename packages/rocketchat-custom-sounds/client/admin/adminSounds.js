@@ -7,6 +7,10 @@ import { CustomSounds } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 Template.adminSounds.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		if (Template.instance().ready != null) {
 			return Template.instance().ready.get();
@@ -128,20 +132,11 @@ Template.adminSounds.events({
 			e.preventDefault();
 		}
 	},
-
 	'keyup #sound-filter'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	},
-
-	'click .sound-info'(e, instance) {
-		e.preventDefault();
-		instance.tabBarData.set(CustomSounds.findOne({ _id: this._id }));
-		instance.tabBar.showGroup('custom-sounds-selected');
-		instance.tabBar.open('admin-sound-info');
-	},
-
 	'click .icon-play-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
