@@ -1,6 +1,7 @@
 import { RocketChatImportFileInstance } from '../startup/store';
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import path from 'path';
 
@@ -12,7 +13,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getImportFileData' });
 		}
 
-		if (!RocketChat.authz.hasRole(userId, 'admin')) {
+		if (!hasRole(userId, 'admin')) {
 			throw new Meteor.Error('not_authorized', 'User not authorized', { method: 'getImportFileData' });
 		}
 

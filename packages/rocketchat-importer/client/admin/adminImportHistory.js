@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -11,7 +11,7 @@ import { API } from 'meteor/rocketchat:api';
 
 Template.adminImportHistory.helpers({
 	isAdmin() {
-		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+		return hasRole(Meteor.userId(), 'admin');
 	},
 	importers() {
 		return Importers.getAll();

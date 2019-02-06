@@ -6,9 +6,10 @@ import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { ImporterWebsocket } from './ImporterWebsocket';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Settings } from 'meteor/rocketchat:models';
 import { Logger } from 'meteor/rocketchat:logger';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { sendMessage } from 'meteor/rocketchat:lib';
 import http from 'http';
 import fs from 'fs';
 import https from 'https';
@@ -230,24 +231,24 @@ export class Base {
 
 		switch (step) {
 			case ProgressStep.IMPORTING_STARTED:
-				this.oldSettings.Accounts_AllowedDomainsList = RocketChat.models.Settings.findOneById('Accounts_AllowedDomainsList').value;
-				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', '');
+				this.oldSettings.Accounts_AllowedDomainsList = Settings.findOneById('Accounts_AllowedDomainsList').value;
+				Settings.updateValueById('Accounts_AllowedDomainsList', '');
 
-				this.oldSettings.Accounts_AllowUsernameChange = RocketChat.models.Settings.findOneById('Accounts_AllowUsernameChange').value;
-				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', true);
+				this.oldSettings.Accounts_AllowUsernameChange = Settings.findOneById('Accounts_AllowUsernameChange').value;
+				Settings.updateValueById('Accounts_AllowUsernameChange', true);
 
-				this.oldSettings.FileUpload_MaxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').value;
-				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', -1);
+				this.oldSettings.FileUpload_MaxFileSize = Settings.findOneById('FileUpload_MaxFileSize').value;
+				Settings.updateValueById('FileUpload_MaxFileSize', -1);
 
-				this.oldSettings.FileUpload_MediaTypeWhiteList = RocketChat.models.Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
-				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
+				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
+				Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
-				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
-				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
-				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
-				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+				Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
+				Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
+				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
+				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
 				break;
 		}
 
@@ -421,7 +422,7 @@ export class Base {
 							msg._id = details.message_id;
 						}
 
-						return RocketChat.sendMessage(user, msg, room, true);
+						return sendMessage(user, msg, room, true);
 					}
 				});
 			}));
