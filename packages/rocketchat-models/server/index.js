@@ -30,6 +30,7 @@ import LivechatOfficeHour from './models/LivechatOfficeHour';
 import LivechatPageVisited from './models/LivechatPageVisited';
 import LivechatTrigger from './models/LivechatTrigger';
 import LivechatVisitors from './models/LivechatVisitors';
+import ReadReceipts from './models/ReadReceipts';
 
 export {
 	Base,
@@ -64,4 +65,5 @@ export {
 	LivechatPageVisited,
 	LivechatTrigger,
 	LivechatVisitors,
+	ReadReceipts,
 };
