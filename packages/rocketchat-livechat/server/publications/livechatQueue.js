@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import { LivechatDepartmentAgents } from '../models';
 
 Meteor.publish('livechat:queue', function() {
@@ -7,7 +7,7 @@ Meteor.publish('livechat:queue', function() {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:queue' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-l-room')) {
+	if (!hasPermission(this.userId, 'view-l-room')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:queue' }));
 	}
 

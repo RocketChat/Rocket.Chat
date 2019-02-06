@@ -29,4 +29,3 @@ class LivechatTriggerClass extends Base {
 	}
 }
 export const LivechatTrigger = new LivechatTriggerClass();
-RocketChat.models.LivechatTrigger = LivechatTrigger;
