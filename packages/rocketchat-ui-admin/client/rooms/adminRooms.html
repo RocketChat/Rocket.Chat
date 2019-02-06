@@ -1,7 +1,7 @@
 <template name="adminRooms">
 	<div class="main-content-flex">
 		<section class="page-container page-list flex-tab-main-content">
-				{{> header sectionName="Rooms" fixedHeight="true" fullpage="true"}}
+			{{> header sectionName="Rooms" fixedHeight="true" fullpage="true"}}
 			<div class="content">
 				{{#unless hasPermission 'view-room-administration'}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
@@ -25,7 +25,7 @@
 					<div class="results">
 						{{{_ "Showing_results" roomCount}}}
 					</div>
-						{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+					{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
 						<thead>
 							<tr>
 								<th width="30%"><div class="table-fake-th">{{_ "Name"}}</div></th>
@@ -57,13 +57,13 @@
 							</tr>
 							{{/with}}
 							{{/each}}
-							{{#unless isLoading}}
+							{{#unless isReady}}
 								<tr class="table-no-click">
 									<td class="table-loading-td" colspan="{{#if showLastMessage}}5{{else}}4{{/if}}">{{> loading}}</td>
 								</tr>
 							{{/unless}}
 						</tbody>
-						{{/table}}
+					{{/table}}
 						<!-- {{#if hasMore}}
 							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
 						{{/if}} -->
