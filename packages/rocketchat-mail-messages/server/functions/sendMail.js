@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { placeholders } from 'meteor/rocketchat:utils';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
@@ -23,7 +23,7 @@ export const sendMail = function(from, subject, body, dryrun, query) {
 			'emails.address': from,
 		}).forEach((user) => {
 			const email = `${ user.name } <${ user.emails[0].address }>`;
-			const html = RocketChat.placeholders.replace(body, {
+			const html = placeholders.replace(body, {
 				unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
 					_id: user._id,
 					createdAt: user.createdAt.getTime(),
@@ -45,7 +45,7 @@ export const sendMail = function(from, subject, body, dryrun, query) {
 	return Meteor.users.find(userQuery).forEach(function(user) {
 		const email = `${ user.name } <${ user.emails[0].address }>`;
 
-		const html = RocketChat.placeholders.replace(body, {
+		const html = placeholders.replace(body, {
 			unsubscribe: Meteor.absoluteUrl(FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
 				_id: user._id,
 				createdAt: user.createdAt.getTime(),
