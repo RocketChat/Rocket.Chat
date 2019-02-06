@@ -52,11 +52,6 @@
 		list-style: none;
 	}
 }
-
-.zapier-btn {
-	margin-right: 5px;
-}
-
 .integrate-other-ways {
 	& p {
 		font-size: 1rem;

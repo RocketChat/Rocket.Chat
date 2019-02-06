@@ -326,4 +326,6 @@
 	--alerts-background: #1d73f5;
 	--alerts-color: var(--color-white);
 	--alerts-font-size: var(--text-default-size);
+
+	--content-page-padding: 2.5rem;
 }

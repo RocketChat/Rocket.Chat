@@ -1,19 +1,26 @@
 .rc-header.rc-header--fullpage {
-	padding: 1.25rem 1rem 0.75rem;
+	padding: 0;
 
 	& .rc-header__wrap {
 
-		padding: 0.75rem 0;
+		padding: 0;
 
 		box-shadow: none;
+
+		height: 60px
 	}
 
 	& .rc-header__block {
 		font-size: 1.375rem;
+		padding: 0 0.5rem;
+		margin: 0 -0.25rem;
 	}
 
 	& .rc-button {
-		margin: -10px 0;
+		height: 36px;
+		min-height: 36px;
+
+		margin: 0 0.25rem;
 	}
 }
 
@@ -31,7 +38,7 @@
 
 		padding: var(--header-padding);
 
-		white-space: nowrap;
+		white-space: nowrap;;
 
 		background-color: var(--header-background-color);
 		box-shadow: 0 1px 2px 0 rgba(31, 35, 41, 0.08);
@@ -41,10 +48,6 @@
 		align-items: center;
 
 		justify-content: space-between;
-	}
-
-	&--height-fixed {
-		height: 78px;
 	}
 
 	&__block {
