@@ -349,10 +349,6 @@ Template.room.helpers({
 		return roomIcon;
 	},
 
-	tokenAccessChannel() {
-		return Template.instance().hasTokenpass.get();
-	},
-
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
