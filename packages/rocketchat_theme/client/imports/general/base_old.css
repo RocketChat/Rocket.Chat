@@ -192,25 +192,28 @@
 	top: 0;
 	left: 0;
 
-	overflow-y: hidden;
+	display: flex;
 
-	padding: 1.25rem 2rem;
+	overflow-y: hidden;
+	flex-direction: column;
 
 	width: 100%;
 	height: 100%;
 
-	display: flex;
-	flex-direction: column;
+	padding: 1.25rem 2rem;
 
 	& .content {
+		display: flex;
 		overflow-y: auto;
+		flex-direction: column;
+		flex: 1 1 auto;
+
 		margin: 0 -2rem;
-		padding: 0 2rem;
+		padding: 2rem 2rem 0;
+
 		line-height: 1.3em;
 		-webkit-overflow-scrolling: touch;
-		flex: 1 1 auto;
-		display: flex;
-		flex-direction: column;
+
 		& fieldset {
 			margin-bottom: 1em;
 		}
@@ -1774,9 +1777,11 @@ rc-old select,
 
 		&:not(:only-child) {
 			border-bottom: 2px solid #dddddd;
+
 			&.section-collapsed .section-content {
 				display: none;
 			}
+
 			.section-title-right {
 				visibility: visible;
 			}
@@ -1801,7 +1806,8 @@ rc-old select,
 
 		& .section-title-right {
 			visibility: hidden;
-			$ > .rc-button {
+
+			& > .rc-button {
 				font-size: 1.25rem;
 			}
 		}
@@ -3494,6 +3500,18 @@ body:not(.is-cordova) {
 	display: flex;
 	flex: 0 0 40px;
 
+	transform: box-shadow 0.3s;
+
+	box-shadow: -1px 0 0 1px #cccccc26;
+
+	&.opened {
+		box-shadow: -1px 0 5px 2px #cccccc26;
+
+		& > .flex-tab-bar {
+			box-shadow: -1px 0 5px 2px #cccccc26;
+		}
+	}
+
 	& .flex-tab {
 		position: relative;
 
@@ -3720,6 +3738,10 @@ body:not(.is-cordova) {
 		z-index: 1;
 
 		min-width: 40px;
+
+		transition: box-shadow 0.3s;
+
+		box-shadow: -1px 0 0 1px #cccccc26;
 
 		& .tab-button {
 			position: relative;
@@ -3987,7 +4009,7 @@ body:not(.is-cordova) {
 	}
 
 	& .contact-code {
-		margin: -5px 0 10px 0;
+		margin: -5px 0 10px;
 
 		font-size: 12px;
 	}
