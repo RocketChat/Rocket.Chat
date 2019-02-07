@@ -429,12 +429,12 @@ workflows:
               only: develop
             tags:
               only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-6: *test-mongo
+      - test-with-oplog-mongo-3-6: *test-mongo-no-pr
       - test-with-oplog-mongo-4-0: *test-mongo
-      - test-without-oplog-mongo-3-2: *test-mongo
-      - test-without-oplog-mongo-3-4: *test-mongo
-      - test-without-oplog-mongo-3-6: *test-mongo
-      - test-without-oplog-mongo-4-0: *test-mongo
+      - test-without-oplog-mongo-3-2: *test-mongo-no-pr
+      - test-without-oplog-mongo-3-4: *test-mongo-no-pr
+      - test-without-oplog-mongo-3-6: *test-mongo-no-pr
+      - test-without-oplog-mongo-4-0: *test-mongo-no-pr
       - deploy:
           requires:
             - test-with-oplog-mongo-3-2
