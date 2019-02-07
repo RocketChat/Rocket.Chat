@@ -48,7 +48,7 @@ Template.cloud.onCreated(function() {
 	const params = queryString.parse(location.search);
 
 	if (params.token) {
-		instance.connectWorkspace();
+		instance.connectWorkspace(params.token);
 	} else {
 		instance.loadRegStatus();
 	}
