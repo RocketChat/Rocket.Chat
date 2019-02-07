@@ -9,7 +9,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const sms = SMSService.parse(this.bodyParams);
 
-		console.log('sms-incoming called: '', this);
+		console.log('sms-incoming called: ', this);
 
 		let visitor = LivechatVisitors.findOneVisitorByPhone(sms.from);
 

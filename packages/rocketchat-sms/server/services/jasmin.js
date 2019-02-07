@@ -68,7 +68,7 @@ class Jasmin {
 		console.log('Jasmin send password', this.password);
 		console.log('Jasmin send from', this.from);
 
-		let strippedTo = toNumber.replace(/\D/g, '');
+		const strippedTo = toNumber.replace(/\D/g, '');
 
 		try {
 			const response = HTTP.call('GET', `${ this.address }/send?username=${ this.username }&password=${ this.password }&to=${ strippedTo }&from=${ this.from }&content=${ message }`);
