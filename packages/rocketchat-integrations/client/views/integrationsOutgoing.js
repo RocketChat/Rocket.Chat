@@ -1,5 +1,13 @@
-/* global ChatIntegrations */
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { ChatIntegrations } from '../collections';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
 

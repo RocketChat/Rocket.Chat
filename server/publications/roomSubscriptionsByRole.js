@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('roomSubscriptionsByRole', function(rid, role) {
 	if (!this.userId) {
 		return this.ready();

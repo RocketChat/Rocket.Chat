@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';

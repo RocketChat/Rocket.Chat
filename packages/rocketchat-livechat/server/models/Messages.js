@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Messages.keepHistoryForToken = function(token) {
 	return this.update({
 		'navigation.token': token,

@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Email } from 'meteor/email';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
+import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
 let contentHeader;
@@ -18,6 +23,7 @@ export const replace = function replace(str, data = {}) {
 	const options = {
 		Site_Name: Settings.get('Site_Name'),
 		Site_URL: Settings.get('Site_Url'),
+		Site_URL_Slash: Settings.get('Site_Url').replace(/\/?$/, '/'),
 		...(data.name && {
 			fname: s.strLeft(data.name, ' '),
 			lname: s.strRightBack(data.name, ' '),
@@ -28,8 +34,8 @@ export const replace = function replace(str, data = {}) {
 };
 
 export const replaceEscaped = (str, data = {}) => replace(str, {
-	Site_Name: s.escapeHTML(RocketChat.settings.get('Site_Name')),
-	Site_Url: s.escapeHTML(RocketChat.settings.get('Site_Url')),
+	Site_Name: s.escapeHTML(settings.get('Site_Name')),
+	Site_Url: s.escapeHTML(settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
 		ret[key] = s.escapeHTML(value);
 		return ret;
@@ -49,18 +55,15 @@ export const getTemplate = (template, fn, escape = true) => {
 };
 export const getTemplateWrapped = (template, fn) => {
 	let html = '';
-	Settings.get('Email_Header', function() {
-		return html && fn(wrap(html));
-	});
-	Settings.get('Email_Footer', function() {
-		return html && fn(wrap(html));
-	});
+	const wrapInlineCSS = _.debounce(() => fn(wrap(inlinecss(html))), 100);
 
+	Settings.get('Email_Header', () => html && wrapInlineCSS());
+	Settings.get('Email_Footer', () => html && wrapInlineCSS());
+	Settings.get('email_style', () => html && wrapInlineCSS());
 	Settings.get(template, (key, value) => {
 		html = value || '';
-		return html && fn(wrap(html));
+		return html && wrapInlineCSS();
 	});
-	Settings.get('email_style', () => html && fn(wrap(html)));
 };
 export const setSettings = (s) => {
 	Settings = s;
@@ -82,16 +85,14 @@ export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-
 
 export const checkAddressFormat = (from) => rfcMailPatternWithName.test(from);
 
-export const sendNoWrap = ({ to, from, subject, html }) => {
+export const sendNoWrap = ({ to, from, subject, html, headers }) => {
 	if (!checkAddressFormat(to)) {
 		return;
 	}
-	Meteor.defer(() => Email.send({ to, from, subject, html }));
+	Meteor.defer(() => Email.send({ to, from, subject, html, headers }));
 };
 
-
-
-export const send = ({ to, from, subject, html, data }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data) });
+export const send = ({ to, from, subject, html, data, headers }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data), headers });
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {

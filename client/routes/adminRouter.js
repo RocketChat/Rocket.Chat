@@ -1,3 +1,6 @@
+import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+
 FlowRouter.route('/admin/users', {
 	name: 'admin-users',
 	action() {
@@ -23,6 +26,13 @@ FlowRouter.route('/admin/import', {
 	name: 'admin-import',
 	action() {
 		BlazeLayout.render('main', { center: 'adminImport' });
+	},
+});
+
+FlowRouter.route('/admin/import/history', {
+	name: 'admin-import-history',
+	action() {
+		BlazeLayout.render('main', { center: 'adminImportHistory' });
 	},
 });
 

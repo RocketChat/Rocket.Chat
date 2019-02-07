@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.OAuthApps = new class extends RocketChat.models._Base {
 	constructor() {
 		super('oauth_apps');

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 Meteor.methods({
 	muteUserInRoom(data) {
 		check(data, Match.ObjectIncluding({

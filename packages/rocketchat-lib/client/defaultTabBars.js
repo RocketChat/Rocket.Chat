@@ -1,3 +1,5 @@
+import { Session } from 'meteor/session';
+
 RocketChat.TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
 	id: 'rocket-search',

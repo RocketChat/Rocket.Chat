@@ -1,9 +1,20 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { SideNav } from 'meteor/rocketchat:ui';
 import _ from 'underscore';
 import s from 'underscore.string';
 
 import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 Template.adminUsers.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		const instance = Template.instance();
 		return instance.ready && instance.ready.get();
@@ -33,6 +44,26 @@ Template.adminUsers.helpers({
 			data: Template.instance().tabBarData.get(),
 		};
 	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
+				return instance.limit.set(instance.limit.get() + 50);
+			}
+		};
+	},
+	// onTableItemClick() {
+	// 	const instance = Template.instance();
+	// 	return function(item) {
+	// 		Session.set('adminRoomsSelected', {
+	// 			rid: item._id,
+	// 		});
+	// 		instance.tabBar.open('admin-room');
+	// 	};
+	// },
 });
 
 Template.adminUsers.onCreated(function() {

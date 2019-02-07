@@ -1,8 +1,7 @@
-/* eslint-env mocha */
-/* globals expect */
-
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
+import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { updatePermission } from '../../data/permissions.helper';
 
 describe('[Rooms]', function() {
 	this.retries(0);
@@ -39,11 +38,7 @@ describe('[Rooms]', function() {
 	describe('/rooms.saveNotification:', () => {
 		let testChannel;
 		it('create an channel', (done) => {
-			request.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: `channel.test.${ Date.now() }`,
-				})
+			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` })
 				.end((err, res) => {
 					testChannel = res.body.channel;
 					done();
@@ -77,11 +72,7 @@ describe('[Rooms]', function() {
 		let testChannel;
 		const testChannelName = `channel.test.${ Date.now() }`;
 		it('create an channel', (done) => {
-			request.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: testChannelName,
-				})
+			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
 					testChannel = res.body.channel;
 					done();
@@ -197,41 +188,25 @@ describe('[Rooms]', function() {
 			user = undefined;
 		});
 		it('create a public channel', (done) => {
-			request.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: `testeChannel${ +new Date() }`,
-				})
+			createRoom({ type: 'c', name: `testeChannel${ +new Date() }` })
 				.end((err, res) => {
 					publicChannel = res.body.channel;
 					done();
 				});
 		});
 		it('create a private channel', (done) => {
-			request.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: `testPrivateChannel${ +new Date() }`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
+			createRoom({ type: 'p', name: `testPrivateChannel${ +new Date() }` })
+				.end((err, res) => {
 					privateChannel = res.body.group;
-				})
-				.end(done);
+					done();
+				});
 		});
 		it('create a direct message', (done) => {
-			request.post(api('im.create'))
-				.set(credentials)
-				.send({
-					username: 'rocket.cat',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
+			createRoom({ type: 'd', username: 'rocket.cat' })
+				.end((err, res) => {
 					directMessageChannel = res.body.room;
-				})
-				.end(done);
+					done();
+				});
 		});
 		it('should return success when send a valid public channel', (done) => {
 			request.post(api('rooms.cleanHistory'))
@@ -293,6 +268,285 @@ describe('[Rooms]', function() {
 					expect(res.body).to.have.property('errorType', 'error-not-allowed');
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/rooms.info]', () => {
+		let testChannel;
+		let testGroup;
+		let testDM;
+		const expectedKeys = ['_id', 'name', 'fname', 't', 'msgs', 'usersCount', 'u', 'customFields', 'ts', 'ro', 'sysMes', 'default', '_updatedAt'];
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
+		const testGroupName = `group.test.${ Date.now() }-${ Math.random() }`;
+		after((done) => {
+			closeRoom({ type: 'd', roomId: testDM._id })
+				.then(done);
+		});
+		it('create an channel', (done) => {
+			createRoom({ type: 'c', name: testChannelName })
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('create a group', (done) => {
+			createRoom(({ type: 'p', name: testGroupName }))
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+		it('create a Direct message room with rocket.cat', (done) => {
+			createRoom(({ type: 'd', username: 'rocket.cat' }))
+				.end((err, res) => {
+					testDM = res.body.room;
+					done();
+				});
+		});
+		it('should return the info about the created channel correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created channel correctly searching by roomName', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomName: testChannel.name,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created group correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created group correctly searching by roomName', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomName: testGroup.name,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.all.keys(expectedKeys);
+				})
+				.end(done);
+		});
+		it('should return the info about the created DM correctly searching by roomId', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testDM._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+				})
+				.end(done);
+		});
+		it('should return name and _id of public channel when it has the "fields" query parameter limiting by name', (done) => {
+			request.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					fields: JSON.stringify({ name: 1 }),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.property('name').and.to.be.equal(testChannelName);
+					expect(res.body.room).to.have.all.keys(['_id', 'name']);
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/rooms.leave]', () => {
+		let testChannel;
+		let testGroup;
+		let testDM;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
+		const testGroupName = `group.test.${ Date.now() }-${ Math.random() }`;
+		after((done) => {
+			closeRoom({ type: 'd', roomId: testDM._id })
+				.then(done);
+		});
+		it('create an channel', (done) => {
+			createRoom({ type: 'c', name: testChannelName })
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('create a group', (done) => {
+			createRoom(({ type: 'p', name: testGroupName }))
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+		it('create a Direct message room with rocket.cat', (done) => {
+			createRoom(({ type: 'd', username: 'rocket.cat' }))
+				.end((err, res) => {
+					testDM = res.body.room;
+					done();
+				});
+		});
+		it('should return an Error when trying leave a DM room', (done) => {
+			request.post(api('rooms.leave'))
+				.set(credentials)
+				.send({
+					roomId: testDM._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				})
+				.end(done);
+		});
+		it('should return an Error when trying to leave a public channel and you are the last owner', (done) => {
+			request.post(api('rooms.leave'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-you-are-last-owner');
+				})
+				.end(done);
+		});
+		it('should return an Error when trying to leave a private group and you are the last owner', (done) => {
+			request.post(api('rooms.leave'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-you-are-last-owner');
+				})
+				.end(done);
+		});
+		it('should return an Error when trying to leave a public channel and not have the necessary permission(leave-c)', (done) => {
+			updatePermission('leave-c', []).then(() => {
+				request.post(api('rooms.leave'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					})
+					.end(done);
+			});
+		});
+		it('should return an Error when trying to leave a private group and not have the necessary permission(leave-p)', (done) => {
+			updatePermission('leave-p', []).then(() => {
+				request.post(api('rooms.leave'))
+					.set(credentials)
+					.send({
+						roomId: testGroup._id,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					})
+					.end(done);
+			});
+		});
+		it('should leave the public channel when the room has at least another owner and the user has the necessary permission(leave-c)', (done) => {
+			updatePermission('leave-c', ['admin']).then(() => {
+				request.post(api('channels.addAll'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+					})
+					.end(() => {
+						request.post(api('channels.addOwner'))
+							.set(credentials)
+							.send({
+								roomId: testChannel._id,
+								userId: 'rocket.cat',
+							})
+							.end(() => {
+								request.post(api('rooms.leave'))
+									.set(credentials)
+									.send({
+										roomId: testChannel._id,
+									})
+									.expect(200)
+									.expect((res) => {
+										expect(res.body).to.have.property('success', true);
+									})
+									.end(done);
+							});
+					});
+			});
+		});
+		it('should leave the private group when the room has at least another owner and the user has the necessary permission(leave-p)', (done) => {
+			updatePermission('leave-p', ['admin']).then(() => {
+				request.post(api('groups.addAll'))
+					.set(credentials)
+					.send({
+						roomId: testGroup._id,
+					})
+					.end(() => {
+						request.post(api('groups.addOwner'))
+							.set(credentials)
+							.send({
+								roomId: testGroup._id,
+								userId: 'rocket.cat',
+							})
+							.end(() => {
+								request.post(api('rooms.leave'))
+									.set(credentials)
+									.send({
+										roomId: testGroup._id,
+									})
+									.expect(200)
+									.expect((res) => {
+										expect(res.body).to.have.property('success', true);
+									})
+									.end(done);
+							});
+					});
+			});
 		});
 	});
 });

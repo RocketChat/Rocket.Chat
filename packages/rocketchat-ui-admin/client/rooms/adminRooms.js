@@ -1,12 +1,23 @@
-/* globals AdminChatRoom, RocketChat */
+import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { SideNav } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { RocketChat, RocketChatTabBar } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
-
-this.AdminChatRoom = new Mongo.Collection('rocketchat_room');
+export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		const instance = Template.instance();
 		return instance.ready && instance.ready.get();
@@ -48,6 +59,27 @@ Template.adminRooms.helpers({
 			tabBar: Template.instance().tabBar,
 		};
 	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
+				return instance.limit.set(instance.limit.get() + 50);
+			}
+		};
+	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function(item) {
+			Session.set('adminRoomsSelected', {
+				rid: item._id,
+			});
+			instance.tabBar.open('admin-room');
+		};
+	},
+
 });
 
 Template.adminRooms.onCreated(function() {
@@ -133,18 +165,6 @@ Template.adminRooms.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	},
-	'click .room-info'(e, instance) {
-		e.preventDefault();
-		Session.set('adminRoomsSelected', {
-			rid: this._id,
-		});
-		instance.tabBar.open('admin-room');
-	},
-	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
 	},
 	'change [name=room-type]'(e, t) {
 		t.types.set(t.getSearchTypes());

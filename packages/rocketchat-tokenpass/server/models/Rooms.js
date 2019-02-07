@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Rooms.findByTokenpass = function(tokens) {
 	const query = {
 		'tokenpass.tokens.token': {

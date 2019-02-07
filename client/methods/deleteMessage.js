@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { ChatMessage } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 import moment from 'moment';
 

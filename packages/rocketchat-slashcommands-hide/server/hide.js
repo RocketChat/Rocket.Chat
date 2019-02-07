@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /*
 * Hide is a named function that will replace /hide commands

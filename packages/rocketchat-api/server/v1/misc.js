@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	get() {

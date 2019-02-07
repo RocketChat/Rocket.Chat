@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.publish('snippetedMessages', function(rid, limit = 50) {
 	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
@@ -8,6 +11,10 @@ Meteor.publish('snippetedMessages', function(rid, limit = 50) {
 	const user = RocketChat.models.Users.findOneById(this.userId);
 
 	if (typeof user === 'undefined' || user === null) {
+		return this.ready();
+	}
+
+	if (!Meteor.call('canAccessRoom', rid, this.userId)) {
 		return this.ready();
 	}
 

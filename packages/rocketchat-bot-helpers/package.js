@@ -6,13 +6,10 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('rocketchat:lib');
-	api.use('accounts-base');
-	// api.mainModule('server/index.js', 'server'); // when 1.3
-	// api.mainModule('client/index.js', 'client'); // when 1.3
-	api.addFiles([
-		'server/index.js',
-		'server/settings.js',
-	], ['server']);
+	api.use([
+		'ecmascript',
+		'rocketchat:lib',
+		'accounts-base',
+	]);
+	api.mainModule('server/index.js', 'server');
 });

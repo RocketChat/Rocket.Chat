@@ -10,6 +10,7 @@ import { AppListenerBridge } from './listeners';
 import { AppMessageBridge } from './messages';
 import { AppPersistenceBridge } from './persistence';
 import { AppRoomBridge } from './rooms';
+import { AppInternalBridge } from './internal';
 import { AppSettingBridge } from './settings';
 import { AppUserBridge } from './users';
 
@@ -27,6 +28,7 @@ export class RealAppBridges extends AppBridges {
 		this._msgBridge = new AppMessageBridge(orch);
 		this._persistBridge = new AppPersistenceBridge(orch);
 		this._roomBridge = new AppRoomBridge(orch);
+		this._internalBridge = new AppInternalBridge(orch);
 		this._setsBridge = new AppSettingBridge(orch);
 		this._userBridge = new AppUserBridge(orch);
 	}
@@ -69,6 +71,10 @@ export class RealAppBridges extends AppBridges {
 
 	getRoomBridge() {
 		return this._roomBridge;
+	}
+
+	getInternalBridge() {
+		return this._internalBridge;
 	}
 
 	getServerSettingBridge() {

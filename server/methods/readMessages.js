@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import { ReadReceipt } from '../../imports/message-read-receipt/server/lib/ReadReceipt';
 
 Meteor.methods({

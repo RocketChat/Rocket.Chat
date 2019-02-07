@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import blockstack from 'blockstack';
 
 const blockstackLogin = (authResponse, userData = {}) => {
 	Accounts.callLoginMethod({
@@ -19,6 +18,8 @@ const blockstackLogin = (authResponse, userData = {}) => {
 FlowRouter.route('/_blockstack/validate', {
 	name: 'blockstackValidate',
 	async action(params, queryParams) {
+		const blockstack = await import('blockstack/dist/blockstack');
+
 		if (Meteor.userId()) {
 			console.log('Blockstack Auth requested when already logged in. Reloading.');
 			return FlowRouter.go('home');

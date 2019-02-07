@@ -1,4 +1,7 @@
-/* globals Mailer */
+import { Meteor } from 'meteor/meteor';
+import { Mailer } from '../lib/Mailer';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {
 		const userId = Meteor.userId();

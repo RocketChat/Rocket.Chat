@@ -1,21 +1,25 @@
-/* globals FileUpload:true */
-/* exported FileUpload */
-
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Rooms, Settings } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
+import { canAccessRoom } from 'meteor/rocketchat:authorization';
 import filesize from 'filesize';
 
 let maxFileSize = 0;
 
-FileUpload = {
+export const FileUpload = {
 	validateFileUpload(file) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
 		// livechat users can upload files but they don't have an userId
 		const user = file.userId ? Meteor.user() : null;
-		const room = RocketChat.models.Rooms.findOneById(file.rid);
-		const directMessageAllow = RocketChat.settings.get('FileUpload_Enabled_Direct');
-		const fileUploadAllowed = RocketChat.settings.get('FileUpload_Enabled');
-		if (RocketChat.authz.canAccessRoom(room, user, file) !== true) {
+		const room = Rooms.findOneById(file.rid);
+		const directMessageAllow = settings.get('FileUpload_Enabled_Direct');
+		const fileUploadAllowed = settings.get('FileUpload_Enabled');
+		if (canAccessRoom(room, user, file) !== true) {
 			return false;
 		}
 		const language = user ? user.language : 'en';
@@ -37,7 +41,7 @@ FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!RocketChat.fileUploadIsValidContentType(file.type)) {
+		if (!fileUploadIsValidContentType(file.type)) {
 			const reason = TAPi18n.__('File_type_is_not_accepted', language);
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
@@ -46,10 +50,10 @@ FileUpload = {
 	},
 };
 
-RocketChat.settings.get('FileUpload_MaxFileSize', function(key, value) {
+settings.get('FileUpload_MaxFileSize', function(key, value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
-		maxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
 	}
 });

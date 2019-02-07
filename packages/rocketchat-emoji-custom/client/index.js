@@ -1,0 +1,15 @@
+import './models/EmojiCustom';
+import './lib/emojiCustom';
+import './notifications/deleteEmojiCustom';
+import './notifications/updateEmojiCustom';
+import './admin/startup';
+import './admin/adminEmoji.html';
+import './admin/adminEmoji';
+import './admin/adminEmojiEdit.html';
+import './admin/adminEmojiInfo.html';
+import './admin/emojiEdit.html';
+import './admin/emojiEdit';
+import './admin/emojiInfo.html';
+import './admin/emojiInfo';
+import './admin/emojiPreview.html';
+import './admin/route';

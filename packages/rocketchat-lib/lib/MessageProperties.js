@@ -1,17 +1,7 @@
-import GraphemeSplitter from 'grapheme-splitter';
+import { messageProperties } from 'meteor/rocketchat:ui-utils';
 
-const splitter = new GraphemeSplitter();
-
-export const messageProperties = {
-
-	length: ((message) => splitter.countGraphemes(message)),
-
-	messageWithoutEmojiShortnames: ((message) => message.replace(/:\w+:/gm, (match) => {
-		if (RocketChat.emoji.list[match] !== undefined) {
-			return ' ';
-		}
-		return match;
-	})),
+export {
+	messageProperties,
 };
 
 // check for tests

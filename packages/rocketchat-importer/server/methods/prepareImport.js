@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import { Importers } from 'meteor/rocketchat:importer';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	prepareImport(key, dataURI, contentType, fileName) {

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(function() {
 	RocketChat.settings.add('Message_AllowPinning', true, {
 		type: 'boolean',

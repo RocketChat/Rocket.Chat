@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18next } from 'meteor/tap:i18n';
+import { isEmail } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -16,7 +23,7 @@ function getApps(instance) {
 		fetch(`${ HOST }/v1/apps/${ id }?version=${ RocketChat.Info.marketplaceApiVersion }`).then((data) => data.json()),
 		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
 	]).then(([remoteApps, [localApp]]) => {
-		remoteApps = remoteApps.filter((app) => semver.satisfies(RocketChat.Info.marketplaceApiVersion, app.requiredApiVersion)).sort((a, b) => {
+		remoteApps = remoteApps.sort((a, b) => {
 			if (semver.gt(a.version, b.version)) {
 				return -1;
 			}
@@ -121,6 +128,7 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
+	isEmail,
 	_(key, ...args) {
 		const options = (args.pop()).hash;
 		if (!_.isEmpty(args)) {

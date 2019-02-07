@@ -1,15 +1,14 @@
-/* globals alerts, modal */
-
-import './stylesheets/e2e';
-
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
-
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { RocketChat, call } from 'meteor/rocketchat:lib';
+import { Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { promises } from 'meteor/rocketchat:promises';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { Layout, call, modal, alerts } from 'meteor/rocketchat:ui-utils';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
@@ -27,7 +26,12 @@ import {
 	deriveKey,
 } from './helper';
 
+import './events.js';
+import './accountEncryption.html';
+import './accountEncryption.js';
+
 let failedToDecodeKey = false;
+let showingE2EAlert = false;
 
 class E2E {
 	constructor() {
@@ -58,16 +62,20 @@ class E2E {
 			return;
 		}
 
-		const room = RocketChat.models.Rooms.findOne({
+		const room = Rooms.findOne({
 			_id: roomId,
 		});
+
+		if (!room) {
+			return;
+		}
 
 		if (room.encrypted !== true) {
 			return;
 		}
 
 		if (!this.instancesByRoomId[roomId]) {
-			const subscription = RocketChat.models.Subscriptions.findOne({
+			const subscription = Subscriptions.findOne({
 				rid: roomId,
 			});
 
@@ -109,7 +117,7 @@ class E2E {
 			} catch (error) {
 				this.started = false;
 				failedToDecodeKey = true;
-				alerts.open({
+				this.openAlert({
 					title: TAPi18n.__('Wasn\'t possible to decode your encryption key to be imported.'),
 					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
 					modifiers: ['large', 'danger'],
@@ -117,7 +125,7 @@ class E2E {
 					icon: 'key',
 					action: () => {
 						this.startClient();
-						alerts.close();
+						this.closeAlert();
 					},
 				});
 				return;
@@ -145,13 +153,13 @@ class E2E {
 				sprintf: [randomPassword],
 			});
 
-			alerts.open({
+			this.openAlert({
 				title: TAPi18n.__('Save_your_encryption_password'),
 				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
-				action() {
+				action: () => {
 					modal.open({
 						title: TAPi18n.__('Save_your_encryption_password'),
 						html: true,
@@ -165,7 +173,7 @@ class E2E {
 							return;
 						}
 						localStorage.removeItem('e2e.randomPassword');
-						alerts.close();
+						this.closeAlert();
 					});
 				},
 			});
@@ -179,8 +187,29 @@ class E2E {
 		this.decryptPendingSubscriptions();
 	}
 
+	async stopClient() {
+		console.log('E2E -> Stop Client');
+		// This flag is used to avoid closing unrelated alerts.
+		if (showingE2EAlert) {
+			alerts.close();
+		}
+
+		localStorage.removeItem('public_key');
+		localStorage.removeItem('private_key');
+		this.instancesByRoomId = {};
+		this.privateKey = null;
+		this.enabled.set(false);
+		this._ready.set(false);
+		this.started = false;
+
+		this.readyPromise = new Deferred();
+		this.readyPromise.then(() => {
+			this._ready.set(true);
+		});
+	}
+
 	setupListeners() {
-		RocketChat.Notifications.onUser('e2ekeyRequest', async(roomId, keyId) => {
+		Notifications.onUser('e2ekeyRequest', async(roomId, keyId) => {
 			const e2eRoom = await this.getInstanceByRoomId(roomId);
 			if (!e2eRoom) {
 				return;
@@ -189,19 +218,19 @@ class E2E {
 			e2eRoom.provideKeyToUser(keyId);
 		});
 
-		RocketChat.models.Subscriptions.after.update((userId, doc) => {
+		Subscriptions.after.update((userId, doc) => {
 			this.decryptSubscription(doc);
 		});
 
-		RocketChat.models.Subscriptions.after.insert((userId, doc) => {
+		Subscriptions.after.insert((userId, doc) => {
 			this.decryptSubscription(doc);
 		});
 
-		RocketChat.models.Messages.after.update((userId, doc) => {
+		Messages.after.update((userId, doc) => {
 			this.decryptMessage(doc);
 		});
 
-		RocketChat.models.Messages.after.insert((userId, doc) => {
+		Messages.after.insert((userId, doc) => {
 			this.decryptMessage(doc);
 		});
 	}
@@ -220,6 +249,7 @@ class E2E {
 	async loadKeysFromDB() {
 		try {
 			const { public_key, private_key } = await call('e2e.fetchMyKeys');
+
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 		} catch (error) {
@@ -264,6 +294,12 @@ class E2E {
 		} catch (error) {
 			return console.error('E2E -> Error exporting private key: ', error);
 		}
+
+		this.requestSubscriptionKeys();
+	}
+
+	async requestSubscriptionKeys() {
+		call('e2e.requestSubscriptionKeys');
 	}
 
 	createRandomPassword() {
@@ -314,7 +350,7 @@ class E2E {
 				modal.open({
 					title: TAPi18n.__('Enter_E2E_password_to_decode_your_key'),
 					type: 'input',
-					inputType: 'text',
+					inputType: 'password',
 					html: true,
 					text: `<div>${ TAPi18n.__('E2E_password_request_text') }</div>`,
 					showConfirmButton: true,
@@ -323,7 +359,7 @@ class E2E {
 					cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
 				}, (password) => {
 					if (password) {
-						alerts.close();
+						this.closeAlert();
 						resolve(password);
 					}
 				}, () => {
@@ -333,7 +369,7 @@ class E2E {
 			};
 
 			showAlert = () => {
-				alerts.open({
+				this.openAlert({
 					title: TAPi18n.__('Enter_your_E2E_password'),
 					html: TAPi18n.__('Click_here_to_enter_your_encryption_password'),
 					modifiers: ['large'],
@@ -388,7 +424,7 @@ class E2E {
 			return;
 		}
 
-		RocketChat.models.Messages.direct.update({ _id: message._id }, {
+		Messages.direct.update({ _id: message._id }, {
 			$set: {
 				msg: data.text,
 				e2e: 'done',
@@ -401,7 +437,7 @@ class E2E {
 			return;
 		}
 
-		return await RocketChat.models.Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
+		return await Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
 			await this.decryptMessage(item);
 		});
 	}
@@ -426,7 +462,7 @@ class E2E {
 			return;
 		}
 
-		RocketChat.models.Subscriptions.direct.update({
+		Subscriptions.direct.update({
 			_id: subscription._id,
 		}, {
 			$set: {
@@ -437,12 +473,22 @@ class E2E {
 	}
 
 	async decryptPendingSubscriptions() {
-		RocketChat.models.Subscriptions.find({
+		Subscriptions.find({
 			'lastMessage.t': 'e2e',
 			'lastMessage.e2e': {
 				$ne: 'done',
 			},
 		}).forEach(this.decryptSubscription.bind(this));
+	}
+
+	openAlert(config) {
+		showingE2EAlert = true;
+		alerts.open(config);
+	}
+
+	closeAlert() {
+		showingE2EAlert = false;
+		alerts.close();
 	}
 }
 
@@ -451,9 +497,9 @@ export const e2e = new E2E();
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			const adminEmbedded = RocketChat.Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
+			const adminEmbedded = Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
 
-			if (!adminEmbedded && RocketChat.settings.get('E2E_Enable') && window.crypto) {
+			if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
 				e2e.startClient();
 				e2e.enabled.set(true);
 			} else {
@@ -463,7 +509,7 @@ Meteor.startup(function() {
 	});
 
 	// Encrypt messages before sending
-	RocketChat.promises.add('onClientBeforeSendMessage', async function(message) {
+	promises.add('onClientBeforeSendMessage', async function(message) {
 		if (!message.rid) {
 			return Promise.resolve(message);
 		}
@@ -482,5 +528,5 @@ Meteor.startup(function() {
 				message.e2e = 'pending';
 				return message;
 			});
-	}, RocketChat.promises.priority.HIGH);
+	}, promises.priority.HIGH);
 });

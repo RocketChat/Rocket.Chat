@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.Tokenpass = {
 	validateAccess(tokenpass, balances) {
 		const compFunc = tokenpass.require === 'any' ? 'some' : 'every';

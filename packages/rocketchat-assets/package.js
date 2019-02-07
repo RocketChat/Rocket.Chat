@@ -14,5 +14,5 @@ Package.onUse(function(api) {
 		'webapp-hashing',
 	]);
 
-	api.addFiles('server/assets.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });

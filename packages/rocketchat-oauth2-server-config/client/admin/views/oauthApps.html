@@ -1,0 +1,38 @@
+<template name="oauthApps">
+	<section class="permissions-manager page-container page-home page-static page-list">
+		{{# header sectionName=pageTitle}}
+			<div class="rc-header__section-button">
+				<a href="{{pathFor "admin-oauth-app"}}" class="rc-button rc-button--primary new-role">{{_ "New_Application"}}</a>
+			</div>
+		{{/header}}
+		<div class="content">
+		{{#if hasPermission}}
+			<div class="rocket-form">
+				<div class="section">
+					<div class="admin-integrations-new-panel">
+						{{#each applications}}
+							<a href="{{pathFor "admin-oauth-app" id=_id}}">
+								<div class="admin-integrations-new-item">
+									<div class="admin-integrations-new-item-body">
+										<div class="admin-integrations-new-item-title">
+											{{name}}
+										</div>
+										<div class="admin-integrations-new-item-description">
+											{{{_ "Created_at_s_by_s" (dateFormated _createdAt) _createdBy.username}}}
+										</div>
+									</div>
+									<i class="icon-angle-right"></i>
+								</div>
+							</a>
+						{{else}}
+							<h1>{{_ "There_are_no_applications"}}</h1>
+						{{/each}}
+					</div>
+				</div>
+			</div>
+		{{else}}
+			{{_ "Not_authorized"}}
+		{{/if}}
+		</div>
+	</section>
+</template>

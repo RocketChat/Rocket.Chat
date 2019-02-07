@@ -6,19 +6,17 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('rocketchat:logger');
-	api.use('rocketchat:lib');
-	api.use('yasaricli:slugify');
-	api.use('ecmascript');
-	api.use('underscore');
-	api.use('sha');
-
-	api.use('templating', 'client');
-
-	api.use('accounts-base', 'server');
-	api.use('accounts-password', 'server');
-
-	api.addFiles('client/loginHelper.js', 'client');
-
+	api.use([
+		'ecmascript',
+		'underscore',
+		'sha',
+		'rocketchat:logger',
+		'rocketchat:lib',
+		'yasaricli:slugify',
+		'templating',
+		'accounts-base',
+		'accounts-password',
+	]);
+	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

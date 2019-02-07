@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.API.default.addRoute('info', { authRequired: false }, {
 	get() {
 		const user = this.getLoggedInUser();
