@@ -100,6 +100,10 @@ Template.headerRoom.helpers({
 		return roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 	},
 
+	tokenAccessChannel() {
+		return Template.instance().hasTokenpass.get();
+	},
+
 	encryptedChannel() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return roomData && roomData.encrypted;

@@ -5,13 +5,16 @@
 			<div class="rc-header__block rc-header--burger">
 				{{> burger}}
 			</div>
+
 			<div class="rc-header__block rc-header__favorite">
 				<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
 			</div>
+
 			<!-- TODO: fix it style and helper -->
 			{{#if tokenAccessChannel}}
 				<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
 			{{/if}}
+
 			{{#if encryptedChannel}}
 				<i class="icon-key" aria-label="{{_ "Encrypted_Channel_Label"}}"></i>
 			{{/if}}
