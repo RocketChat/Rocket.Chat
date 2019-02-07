@@ -128,7 +128,8 @@ RocketChat.emoji.packages.emojiCustom = {
 	list: [],
 
 	render(html) {
-		const regShortNames = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ RocketChat.emoji.packages.emojiCustom.list.join('|') })`, 'gi');
+		const emojisMatchGroup = RocketChat.emoji.packages.emojiCustom.list.map(RegExp.escape).join('|');
+		const regShortNames = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ emojisMatchGroup })`, 'gi');
 
 		// replace regular shortnames first
 		html = html.replace(regShortNames, function(shortname) {
