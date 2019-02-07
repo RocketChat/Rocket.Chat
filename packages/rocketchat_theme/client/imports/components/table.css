@@ -68,6 +68,8 @@
 		overflow: hidden;
 
 		align-items: stretch;
+
+		flex: 1 1 auto;
 	}
 
 	&-subtitle {
