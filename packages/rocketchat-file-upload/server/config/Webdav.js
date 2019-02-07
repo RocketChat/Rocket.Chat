@@ -1,7 +1,6 @@
-/* globals FileUpload */
-
 import _ from 'underscore';
-import { FileUploadClass } from '../lib/FileUpload';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+import { settings } from 'meteor/rocketchat:settings';
 import '../../ufs/Webdav/server.js';
 
 const get = function(file, req, res) {
@@ -34,10 +33,10 @@ const WebdavUserDataFiles = new FileUploadClass({
 });
 
 const configure = _.debounce(function() {
-	const uploadFolderPath = RocketChat.settings.get('FileUpload_Webdav_Upload_Folder_Path');
-	const server = RocketChat.settings.get('FileUpload_Webdav_Server_URL');
-	const username = RocketChat.settings.get('FileUpload_Webdav_Username');
-	const password = RocketChat.settings.get('FileUpload_Webdav_Password');
+	const uploadFolderPath = settings.get('FileUpload_Webdav_Upload_Folder_Path');
+	const server = settings.get('FileUpload_Webdav_Server_URL');
+	const username = settings.get('FileUpload_Webdav_Username');
+	const password = settings.get('FileUpload_Webdav_Password');
 
 	if (!server || !username || !password) {
 		return;
@@ -59,4 +58,4 @@ const configure = _.debounce(function() {
 	WebdavUserDataFiles.store = FileUpload.configureUploadsStore('Webdav', WebdavUserDataFiles.name, config);
 }, 500);
 
-RocketChat.settings.get(/^FileUpload_Webdav_/, configure);
+settings.get(/^FileUpload_Webdav_/, configure);

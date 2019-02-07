@@ -1,20 +1,13 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
 	directMessage,
-	log,
 	apiUsername,
 	apiEmail,
 } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
+import { password } from '../../data/user.js';
 import { adminUsername } from '../../data/user';
 
 describe('[Direct Messages]', function() {
@@ -128,7 +121,7 @@ describe('[Direct Messages]', function() {
 				})
 				.end(done);
 		});
-		it('should return all DM messages where the last message of array should have the "star" object with USERS star ONLY', (done) => {
+		it('should return all DM messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
 			request.get(api('im.messages'))
 				.set(credentials)
 				.query({
@@ -141,8 +134,8 @@ describe('[Direct Messages]', function() {
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === dmMessage._id)[0];
-					expect(lastMessage).to.have.property('starred').and.to.be.an('object');
-					expect(lastMessage.starred._id).to.be.equal(adminUsername);
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
 				})
 				.end(done);
 		});

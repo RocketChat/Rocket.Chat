@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+
 Template.appWhatIsIt.onCreated(function() {
 	this.isLoading = new ReactiveVar(false);
 	this.hasError = new ReactiveVar(false);

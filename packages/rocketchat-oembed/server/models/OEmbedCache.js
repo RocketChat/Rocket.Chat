@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base {
 	constructor() {

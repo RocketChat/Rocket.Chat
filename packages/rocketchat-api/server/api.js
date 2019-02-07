@@ -1,6 +1,19 @@
-/* global Restivus, DDP, DDPCommon */
+import { Meteor } from 'meteor/meteor';
+import { DDPCommon } from 'meteor/ddp-common';
+import { DDP } from 'meteor/ddp';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Restivus } from 'meteor/nimble:restivus';
+import { Logger } from 'meteor/rocketchat:logger';
+import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
+
 const logger = new Logger('API', {});
+const rateLimiterDictionary = {};
+const defaultRateLimiterOptions = {
+	numRequestsAllowed: RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+	intervalTimeInMS: RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+};
 
 class API extends Restivus {
 	constructor(properties) {
@@ -110,6 +123,35 @@ class API extends Restivus {
 		};
 	}
 
+	addRateLimiterRuleForRoutes({ routes, rateLimiterOptions, endpoints, apiVersion }) {
+		if (!rateLimiterOptions.numRequestsAllowed) {
+			throw new Meteor.Error('You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint');
+		}
+		if (!rateLimiterOptions.intervalTimeInMS) {
+			throw new Meteor.Error('You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint');
+		}
+		const nameRoute = (route) => {
+			const routeActions = Object.keys(endpoints);
+			return routeActions.map((endpoint) => `/api/${ apiVersion }/${ route }${ endpoint }`);
+		};
+		const addRateLimitRuleToEveryRoute = (routes) => {
+			routes.forEach((route) => {
+				rateLimiterDictionary[route] = {
+					rateLimiter: new RateLimiter(),
+					options: rateLimiterOptions,
+				};
+				const rateLimitRule = {
+					IPAddr: (input) => input,
+					route,
+				};
+				rateLimiterDictionary[route].rateLimiter.addRule(rateLimitRule, rateLimiterOptions.numRequestsAllowed, rateLimiterOptions.intervalTimeInMS);
+			});
+		};
+		routes
+			.map(nameRoute)
+			.map(addRateLimitRuleToEveryRoute);
+	}
+
 	addRoute(routes, options, endpoints) {
 		// Note: required if the developer didn't provide options
 		if (typeof endpoints === 'undefined') {
@@ -121,16 +163,22 @@ class API extends Restivus {
 		if (!_.isArray(routes)) {
 			routes = [routes];
 		}
-
 		const { version } = this._config;
-
+		const shouldAddRateLimitToRoute = ((typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && version && !process.env.TEST_MODE && defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
+		if (shouldAddRateLimitToRoute) {
+			this.addRateLimiterRuleForRoutes({
+				routes,
+				rateLimiterOptions: options.rateLimiterOptions || defaultRateLimiterOptions,
+				endpoints,
+				apiVersion: version,
+			});
+		}
 		routes.forEach((route) => {
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			Object.keys(endpoints).forEach((method) => {
 				if (typeof endpoints[method] === 'function') {
 					endpoints[method] = { action: endpoints[method] };
 				}
-
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
 				endpoints[method].action = function _internalRouteActionHandler() {
@@ -142,14 +190,35 @@ class API extends Restivus {
 					});
 
 					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
+					const requestIp = this.request.headers['x-forwarded-for'] || this.request.connection.remoteAddress || this.request.socket.remoteAddress || this.request.connection.socket.remoteAddress;
+					const objectForRateLimitMatch = {
+						IPAddr: requestIp,
+						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
+					};
 					let result;
 					try {
+						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route)
+							&& (!this.userId || !RocketChat.authz.hasPermission(this.userId, 'api-bypass-rate-limit'))
+							&& ((process.env.NODE_ENV === 'development' && RocketChat.settings.get('API_Enable_Rate_Limiter_Dev') === true) || process.env.NODE_ENV !== 'development');
+						if (shouldVerifyRateLimit) {
+							rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
+							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+							const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
+							this.response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
+							this.response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
+							this.response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
+							if (!attemptResult.allowed) {
+								throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ timeToResetAttempsInSeconds } seconds before trying this endpoint again.`, {
+									timeToReset: attemptResult.timeToReset,
+									seconds: timeToResetAttempsInSeconds,
+								});
+							}
+						}
 						result = originalAction.apply(this);
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 						result = RocketChat.API.v1.failure(e.message, e.error);
 					}
-
 					result = result || RocketChat.API.v1.success();
 
 					rocketchatRestApiEnd({
@@ -379,7 +448,8 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 		if (RocketChat.settings.get('API_Enable_CORS') === true) {
 			this.response.writeHead(200, {
 				'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token',
+				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
+				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
 			});
 		} else {
 			this.response.writeHead(405);
@@ -416,6 +486,16 @@ const createApi = function _createApi(enableCors) {
 
 // register the API to be re-created once the CORS-setting changes.
 RocketChat.settings.get('API_Enable_CORS', (key, value) => {
+	createApi(value);
+});
+
+RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
+	defaultRateLimiterOptions.intervalTimeInMS = value;
+	createApi(value);
+});
+
+RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
+	defaultRateLimiterOptions.numRequestsAllowed = value;
 	createApi(value);
 });
 

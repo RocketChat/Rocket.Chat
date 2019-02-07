@@ -1,3 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
+import { AgentUsers } from '../../collections/AgentUsers';
+import { LivechatDepartment } from '../../collections/LivechatDepartment';
+import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';
 import _ from 'underscore';
 import toastr from 'toastr';
 

@@ -1,24 +1,47 @@
-/* globals renderEmoji renderMessageBody */
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
+import { renderEmoji } from 'meteor/rocketchat:emoji';
+import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
+	const isSafari = /constructor/i.test(window.HTMLElement) ||
+		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
+			(typeof window.safari !== 'undefined' && window.safari.pushNotification));
 
-	if (navigator.userAgent.toLowerCase().indexOf('safari/') > -1) {
+	if (isSafari) {
 		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
 		if (version <= 12) {
 			return;
 		}
 	}
 
-	if (!pdfLink || /\.pdf$/i.test(pdfLink)) { return; }
+	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
+		return;
+	}
+
 	const canvas = document.getElementById(canvasId);
-	if (!canvas) { return; }
+	if (!canvas) {
+		return;
+	}
+
 	const pdfjsLib = await import('pdfjs-dist');
 	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }node_modules/pdfjs-dist/build/pdf.worker.js`;
-	const loader = document.getElementById('js-loading-${canvasId}');
-	if (loader) { loader.style.display = 'block'; }
+
+	const loader = document.getElementById(`js-loading-${ canvasId }`);
+
+	if (loader) {
+		loader.style.display = 'block';
+	}
+
 	const pdf = await pdfjsLib.getDocument(pdfLink);
 	const page = await pdf.getPage(1);
 	const scale = 0.5;
@@ -26,11 +49,15 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	const context = canvas.getContext('2d');
 	canvas.height = viewport.height;
 	canvas.width = viewport.width;
-	page.render({
+	await page.render({
 		canvasContext: context,
 		viewport,
-	});
-	if (loader) { loader.style.display = 'none'; }
+	}).promise;
+
+	if (loader) {
+		loader.style.display = 'none';
+	}
+
 	canvas.style.maxWidth = '-webkit-fill-available';
 	canvas.style.maxWidth = '-moz-available';
 	canvas.style.display = 'block';
@@ -66,7 +93,6 @@ Template.message.helpers({
 		if (!this.u || !this.u._id) {
 			return [];
 		}
-		/* globals UserRoles RoomRoles */
 		const userRoles = UserRoles.findOne(this.u._id);
 		const roomRoles = RoomRoles.findOne({
 			'u._id': this.u._id,

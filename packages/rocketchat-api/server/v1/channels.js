@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property

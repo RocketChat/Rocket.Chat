@@ -1,22 +1,12 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
-	apiEmail,
-	apiUsername,
-	targetUser,
-	log,
 	apiPublicChannelName,
 	channel,
 } from '../../data/api-data.js';
-import { adminEmail, password, adminUsername } from '../../data/user.js';
-import supertest from 'supertest';
+import { adminUsername } from '../../data/user.js';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -145,7 +135,7 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('should return channel structure with "lastMessage" object including pin, reaction and star infos', (done) => {
+		it('should return channel structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
 			request.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -162,11 +152,11 @@ describe('[Channels]', function() {
 					expect(channel.lastMessage).to.have.property('pinned').and.to.be.a('boolean');
 					expect(channel.lastMessage).to.have.property('pinnedAt').and.to.be.a('string');
 					expect(channel.lastMessage).to.have.property('pinnedBy').and.to.be.an('object');
-					expect(channel.lastMessage).to.have.property('starred').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('starred').and.to.be.an('array');
 				})
 				.end(done);
 		});
-		it('should return all channels messages where the last message of array should have the "star" object with USERS star ONLY', (done) => {
+		it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
 			request.get(api('channels.messages'))
 				.set(credentials)
 				.query({
@@ -179,8 +169,8 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const { messages } = res.body;
 					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
-					expect(lastMessage).to.have.property('starred').and.to.be.an('object');
-					expect(lastMessage.starred._id).to.be.equal(adminUsername);
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
 				})
 				.end(done);
 		});

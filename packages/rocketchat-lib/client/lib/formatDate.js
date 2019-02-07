@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 export const formatTime = (time) => {
 	switch (RocketChat.getUserPreference(Meteor.userId(), 'clockMode', false)) {

@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Users.setTokenpassTcaBalances = function(_id, tcaBalances) {
 	const update = {
 		$set: {

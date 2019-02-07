@@ -1,4 +1,7 @@
-/* global processWebhookMessage */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Match, check } from 'meteor/check';
+import { processWebhookMessage } from 'meteor/rocketchat:integrations';
 
 RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -18,7 +21,7 @@ RocketChat.API.v1.addRoute('chat.delete', { authRequired: true }, {
 			return RocketChat.API.v1.failure('The room id provided does not match where the message is from.');
 		}
 
-		if (this.bodyParams.asUser && msg.u._id !== this.userId && !RocketChat.authz.hasPermission(Meteor.userId(), 'force-delete-message', msg.rid)) {
+		if (this.bodyParams.asUser && msg.u._id !== this.userId && !RocketChat.authz.hasPermission(this.userId, 'force-delete-message', msg.rid)) {
 			return RocketChat.API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 		}
 
@@ -337,5 +340,38 @@ RocketChat.API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore }));
 
 		return RocketChat.API.v1.success();
+	},
+});
+
+RocketChat.API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
+	get() {
+		const { roomId, since } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('The required "roomId" query param is missing.');
+		}
+
+		if (!since) {
+			throw new Meteor.Error('The required "since" query param is missing.');
+		} else if (isNaN(Date.parse(since))) {
+			throw new Meteor.Error('The "since" query parameter must be a valid date.');
+		}
+		const cursor = RocketChat.models.Messages.trashFindDeletedAfter(new Date(since), { rid: roomId }, {
+			skip: offset,
+			limit: count,
+			fields: { _id: 1 },
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return RocketChat.API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 });

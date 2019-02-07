@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
@@ -113,7 +117,8 @@ RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 	get() {
 		const { username } = this.getUserFromParams();
-
+		const { fields } = this.parseJsonQuery();
+		let user = {};
 		let result;
 		Meteor.runAsUser(this.userId, () => {
 			result = Meteor.call('getFullUserData', { username, limit: 1 });
@@ -123,8 +128,24 @@ RocketChat.API.v1.addRoute('users.info', { authRequired: true }, {
 			return RocketChat.API.v1.failure(`Failed to get the user data for the userId of "${ username }".`);
 		}
 
+		user = result[0];
+		if (fields.userRooms === 1 && RocketChat.authz.hasPermission(this.userId, 'view-other-user-channels')) {
+			user.rooms = RocketChat.models.Subscriptions.findByUserId(user._id, {
+				fields: {
+					rid: 1,
+					name: 1,
+					t: 1,
+					roles: 1,
+				},
+				sort: {
+					t: 1,
+					name: 1,
+				},
+			}).fetch();
+		}
+
 		return RocketChat.API.v1.success({
-			user: result[0],
+			user,
 		});
 	},
 });
@@ -251,7 +272,8 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 								if (!user) {
 									return callback(new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users'));
 								}
-								if (!RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+								const isAnotherUser = this.userId !== user._id;
+								if (isAnotherUser && !RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
 									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
 								}
 							}
@@ -400,7 +422,6 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});
-
 		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
 		const userData = {
 			_id: userId,
@@ -416,13 +437,23 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, userData));
+		const user = RocketChat.models.Users.findOneById(userId, {
+			fields: {
+				'settings.preferences': 1,
+				language: 1,
+			},
+		});
 
 		return RocketChat.API.v1.success({
-			user: RocketChat.models.Users.findOneById(userId, {
-				fields: {
-					'settings.preferences': 1,
+			user: {
+				_id: user._id,
+				settings: {
+					preferences: {
+						...user.settings.preferences,
+						language: user.language,
+					},
 				},
-			}),
+			},
 		});
 	},
 });
@@ -476,8 +507,8 @@ RocketChat.API.v1.addRoute('users.regeneratePersonalAccessToken', { authRequired
 
 RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true }, {
 	get() {
-		if (!RocketChat.settings.get('API_Enable_Personal_Access_Tokens')) {
-			throw new Meteor.Error('error-personal-access-tokens-are-current-disabled', 'Personal Access Tokens are currently disabled');
+		if (!RocketChat.authz.hasPermission(this.userId, 'create-personal-access-tokens')) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized');
 		}
 		const loginTokens = RocketChat.models.Users.getLoginTokensByUserId(this.userId).fetch()[0];
 		const getPersonalAccessTokens = () => loginTokens.services.resume.loginTokens
@@ -489,7 +520,7 @@ RocketChat.API.v1.addRoute('users.getPersonalAccessTokens', { authRequired: true
 			}));
 
 		return RocketChat.API.v1.success({
-			tokens: getPersonalAccessTokens(),
+			tokens: loginTokens ? getPersonalAccessTokens() : [],
 		});
 	},
 });

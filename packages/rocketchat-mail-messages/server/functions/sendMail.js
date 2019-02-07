@@ -1,8 +1,11 @@
-/* globals */
+import { Meteor } from 'meteor/meteor';
+import { EJSON } from 'meteor/ejson';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
-Mailer.sendMail = function(from, subject, body, dryrun, query) {
+export const sendMail = function(from, subject, body, dryrun, query) {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 	if (body.indexOf('[unsubscribe]') === -1) {
 		throw new Meteor.Error('error-missing-unsubscribe-link', 'You must provide the [unsubscribe] link.', {

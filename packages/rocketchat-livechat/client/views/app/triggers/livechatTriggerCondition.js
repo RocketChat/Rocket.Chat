@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.livechatTriggerCondition.helpers({
 	hiddenValue(current) {
 		if (this.name === undefined && Template.instance().firstCondition) {

@@ -38,11 +38,11 @@
 
 					{{#if isDirect}}
 					<span class="rc-header__status">
-						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
-						<div class="rc-header__visual-status">{{userStatus}}</div>
+						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
+						<div class="rc-header__visual-status">{{_ userStatus}}</div>
 					</span>
 					{{else}}
-					{{#if roomTopic}}<span class="rc-header__topic">{{{RocketChatMarkdown roomTopic}}}</span>{{/if}}
+					{{#if roomTopic}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}
 					{{/if}}
 				</div>
 

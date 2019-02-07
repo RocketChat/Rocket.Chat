@@ -10,16 +10,8 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:logger',
 		'rocketchat:ui',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'client/actionButton.js',
-	], 'client');
-
-	api.addFiles([
-		'server/logger.js',
-		'server/unreadMessages.js',
-	], 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

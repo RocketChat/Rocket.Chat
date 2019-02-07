@@ -1,3 +1,5 @@
+import { Random } from 'meteor/random';
+
 RocketChat.Migrations.add({
 	version: 4,
 	up() {

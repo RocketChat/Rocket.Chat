@@ -6,17 +6,15 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.0');
-	api.use('ecmascript');
-	api.use('service-configuration');
-	api.use('rocketchat:lib@0.0.1');
-	api.use('rocketchat:custom-oauth');
-
-	// api.use('templating', 'client');
-
-	api.addFiles('common.js');
-	api.addFiles('login-button.css', 'client');
-	api.addFiles('startup.js', 'server');
-
-	api.use('templating', 'client');
+	api.use([
+		'ecmascript',
+		'service-configuration',
+		'rocketchat:lib@0.0.1',
+		'rocketchat:custom-oauth',
+		'templating',
+	]);
+	api.addFiles('client/login-button.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
 

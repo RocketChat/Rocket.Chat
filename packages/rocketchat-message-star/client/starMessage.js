@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatMessage } from 'meteor/rocketchat:ui';
+
 Meteor.methods({
 	starMessage(message) {
 		if (!Meteor.userId()) {

@@ -5,19 +5,14 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
-	// Server libs
-	api.use('rocketchat:logger', 'server');
-
-	api.use('kadira:flow-router', 'client');
-
-	api.use('rocketchat:lib');
-	api.use('accounts-base');
-	api.use('ecmascript');
-
-	// Server files
-	api.addFiles('server/login_token_server.js', 'server');
-
-	// Client files
-	api.addFiles('client/login_token_client.js', 'client');
+	api.use([
+		'ecmascript',
+		'accounts-base',
+		'kadira:flow-router',
+		'kadira:blaze-layout',
+		'rocketchat:lib',
+		'rocketchat:logger',
+	]);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });
