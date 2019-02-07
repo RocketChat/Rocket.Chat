@@ -23,7 +23,7 @@
 	word-wrap: break-word;
 
 	border-width: 1px;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 
 	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 	font-size: 13px;
@@ -34,10 +34,9 @@
 	&.inline {
 		display: inline;
 
-		margin: 0 0.1em;
-		padding: 0 0.5em;
+		padding: 0.05rem 0.2rem;
 
-		line-height: 16px;
+		line-height: 1rem;
 	}
 }
 
@@ -164,7 +163,7 @@
 	margin-bottom: 20px;
 
 	border-width: 1px;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 }
 
 .rc-old .full-page .hidden {
@@ -204,6 +203,8 @@
 		width: 100%;
 		height: calc(100% - 60px);
 		padding: 25px 40px;
+
+		line-height: 1.3em;
 		-webkit-overflow-scrolling: touch;
 
 		& fieldset {
@@ -357,7 +358,6 @@
 
 	&.double-col {
 		& > label {
-			float: left;
 
 			width: 30%;
 			margin-bottom: 0;
@@ -369,16 +369,17 @@
 		}
 
 		& > div {
-			float: left;
 
-			width: 67%;
+			width: 60%;
+			min-height: 2.5rem;
 
 			& label {
 				display: inline-block;
 
 				margin-right: 4px;
+				padding: 10px 20px 10px 0;
 
-				line-height: 35px;
+				line-height: 15px;
 
 				&:nth-last-child(1) {
 					margin-right: 0;
@@ -393,15 +394,6 @@
 }
 
 /* input & form styles */
-
-.rc-old input,
-.rc-old button,
-.rc-old select,
-.rc-old textarea {
-	font-family: inherit;
-	font-size: inherit;
-	line-height: inherit;
-}
 
 .rc-old input:focus {
 	outline: none;
@@ -552,7 +544,7 @@ rc-old select,
 	text-transform: uppercase;
 
 	border-width: 0;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 
 	font-size: 14px;
 	font-weight: 500;
@@ -834,7 +826,7 @@ rc-old select,
 
 				content: " ";
 
-				border-radius: 4px;
+				border-radius: var(--border-radius);
 			}
 
 			& .avatar-initials {
@@ -1137,7 +1129,7 @@ rc-old select,
 			padding: 0 8px 0 30px;
 
 			border-width: 1px;
-			border-radius: 4px;
+			border-radius: var(--border-radius);
 			box-shadow: 0 0 0;
 			appearance: none;
 		}
@@ -1747,7 +1739,7 @@ rc-old select,
 	margin: 40px auto;
 	padding: 20px;
 
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 	box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
 
 	& .cms-page-close {
@@ -1777,8 +1769,6 @@ rc-old select,
 
 .rc-old .page-settings {
 	& .content {
-		padding: 20px 0;
-
 		& h2 {
 			margin-bottom: 2rem;
 		}
@@ -1798,12 +1788,9 @@ rc-old select,
 	}
 
 	& .section {
-		margin: 20px;
-		padding: 20px;
+		padding: 20px 0;
 
-		border: 1px solid #dddddd;
-		border-radius: 4px;
-		background-color: var(--color-white);
+		border-bottom: 2px solid #dddddd;
 
 		&.section-collapsed .section-content {
 			display: none;
@@ -1813,32 +1800,40 @@ rc-old select,
 	& .section-title {
 		display: flex;
 
-		font-size: 24px;
-		font-weight: 600;
-		line-height: 40px;
+		cursor: pointer;
 
 		& .section-title-text {
+			user-select: none;
+
+			font-size: 1rem;
+			font-weight: 500;
+
+			line-height: 3rem;
+
 			flex-grow: 1;
 		}
 
-		& .section-title-right {
-			line-height: 0;
+		& .section-title-right > .rc-button {
+			font-size: 1.25rem;
 		}
 	}
 
 	& .section-content {
-		padding: 20px 0 0 !important;
+		padding: 20px 0 !important;
 
 		border: none !important;
 		border-radius: 0 !important;
+
+		p {
+			margin-bottom: 0.75rem;
+		}
 
 		& .input-line {
 			display: flex;
 
 			margin-bottom: 0;
-			padding: 20px 0;
+			padding: 10px 0;
 
-			border-bottom: 1px solid #eeeeee;
 			align-items: flex-start;
 
 			&:last-child {
@@ -1861,31 +1856,38 @@ rc-old select,
 		}
 
 		& .reset-setting {
-			margin-left: 20px;
+			margin-left: 0.75rem;
+			padding: 0.75rem;
 		}
 
 		& .setting-label {
-			width: 25%;
+			min-width: 30%;
 
-			text-align: left;
-
-			font-size: 16px;
 			font-weight: 500;
-			line-height: 20px;
+			line-height: 16px;
+		}
+
+		.setting-action {
+			margin: 0 4px;
 		}
 
 		& .settings-description {
-			padding: 5px;
 
-			line-height: 20px;
+			padding-top: 2px;
+
+			line-height: 1.2rem;
 		}
 
 		& .settings-alert {
-			padding: 5px;
 
-			border-width: 1px;
+			margin-top: 0.75rem;
+			padding: 1rem;
+
+			border-width: 2px;
 
 			font-weight: bold;
+
+			line-height: 1.2rem;
 		}
 
 		& .color-editor {
@@ -1935,18 +1937,21 @@ rc-old select,
 			overflow: hidden;
 
 			width: 100px;
-			height: 50px;
+			height: 40px;
 
-			border-radius: 4px;
+			margin-right: 0.75rem;
+
+			border-width: var(--input-border-width);
+			border-color: var(--input-border-color);
+			border-radius: var(--input-border-radius);
+
 			background-repeat: no-repeat;
 			background-position: center center;
 			background-size: contain;
-			box-shadow: 0 0 1px rgba(0, 0, 0, 0.5) inset;
 
 			&.no-file {
 				display: flex;
 
-				font-size: 24px;
 				align-items: center;
 				justify-content: center;
 			}
@@ -1988,7 +1993,7 @@ rc-old select,
 			padding: 20px;
 
 			border-width: 1px;
-			border-radius: 4px;
+			border-radius: var(--border-radius);
 
 			& .section-helper {
 				padding: 20px 20px 40px;
@@ -2158,7 +2163,7 @@ rc-old select,
 	transform: translateY(-10px);
 
 	opacity: 0;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 	box-shadow:
 		0 1px 1px 0 rgba(0, 0, 0, 0.2),
 		0 2px 10px 0 rgba(0, 0, 0, 0.16);
@@ -2238,6 +2243,8 @@ rc-old select,
 		& > button.mark-read {
 			float: right;
 
+			line-height: inherit;
+
 			&:hover {
 				cursor: pointer;
 			}
@@ -2250,8 +2257,12 @@ rc-old select,
 		& > button.jump-to {
 			float: left;
 
+			line-height: inherit;
+
 			& .jump-to-small {
 				display: none;
+
+				line-height: inherit;
 			}
 
 			&:hover {
@@ -2919,7 +2930,7 @@ rc-old select,
 	}
 
 	& .editing .body {
-		border-radius: 4px;
+		border-radius: var(--border-radius);
 	}
 
 	&.selectable .message {
@@ -3041,7 +3052,7 @@ rc-old select,
 		transition: transform 0.15s ease-in-out, opacity 0.15s ease-in-out;
 		animation: dropdown-in 0.15s ease-in-out;
 
-		border-radius: 4px;
+		border-radius: var(--border-radius);
 		box-shadow:
 			0 1px 1px 0 rgba(0, 0, 0, 0.2),
 			0 2px 10px 0 rgba(0, 0, 0, 0.16);
@@ -3081,6 +3092,9 @@ rc-old select,
 		display: inline-block;
 
 		margin-right: 5px;
+
+		font-family: inherit;
+		font-size: inherit;
 
 		font-weight: 600;
 	}
@@ -3132,7 +3146,7 @@ rc-old select,
 
 			border-width: 1px;
 
-			border-radius: 4px;
+			border-radius: var(--border-radius);
 			background: #ffffff;
 		}
 	}
@@ -3612,7 +3626,7 @@ body:not(.is-cordova) {
 				padding: 20px;
 
 				border: 1px solid #dddddd;
-				border-radius: 4px;
+				border-radius: var(--border-radius);
 				background-color: #ffffff;
 			}
 
@@ -3878,7 +3892,7 @@ body:not(.is-cordova) {
 				content: " ";
 				vertical-align: middle;
 
-				border-radius: 4px;
+				border-radius: var(--border-radius);
 			}
 		}
 
@@ -4366,7 +4380,7 @@ body:not(.is-cordova) {
 		text-align: left;
 
 		opacity: 0;
-		border-radius: 4px;
+		border-radius: var(--border-radius);
 		box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.15);
 
 		& header {
@@ -4827,7 +4841,7 @@ body:not(.is-cordova) {
 
 	padding: 0 4px 2px;
 
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 
 	font-weight: bold;
 }
@@ -4835,7 +4849,7 @@ body:not(.is-cordova) {
 .rc-old .highlight-text {
 	padding: 2px;
 
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 }
 
 .rc-old .avatar-suggestions {
@@ -4854,7 +4868,7 @@ body:not(.is-cordova) {
 	text-align: left;
 
 	border-width: 1px;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 	align-items: center;
 	flex-flow: row nowrap;
 
@@ -5203,14 +5217,14 @@ body:not(.is-cordova) {
 
 .rc-old .colorpicker-swatch {
 	position: absolute;
-	top: 2px;
-	left: 2px;
+	top: 4px;
+	left: 4px;
 
 	display: block;
 	overflow: hidden;
 
-	width: 41px;
-	height: 41px;
+	width: 32px;
+	height: 32px;
 
 	border-radius: 2px;
 }
@@ -5378,24 +5392,32 @@ body:not(.is-cordova) {
 	}
 
 	& .buttons {
-		margin-top: 10px;
+		margin: 10px 0;
+	}
 
-		text-align: right;
+	& .CodeMirror {
+		border-width: var(--input-border-width);
+		border-color: var(--input-border-color);
+		border-radius: var(--input-border-radius);
 	}
 
 	&.code-mirror-box-fullscreen {
 		position: fixed;
 		z-index: 100;
-		top: 61px;
-		right: 40px;
+		top: 0;
+		right: 0;
 		bottom: 0;
-		left: 260px;
+		left: 0;
 
 		display: flex;
+
 		flex-direction: column;
 
 		width: auto;
 		height: auto;
+
+		padding: 40px;
+
 		align-items: stretch;
 
 		& .buttons {
@@ -5405,10 +5427,8 @@ body:not(.is-cordova) {
 		& .title {
 			display: initial;
 
-			padding-left: 10px;
-
 			font-size: 16px;
-			line-height: 30px;
+			line-height: 50px;
 		}
 
 		& .button-fullscreen {
@@ -5728,7 +5748,7 @@ body:not(.is-cordova) {
 
 	color: #555555;
 	border: 1px solid #eaeaea;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 
 	font-family: arial;
 	font-size: 14px;

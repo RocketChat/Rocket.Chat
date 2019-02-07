@@ -7,7 +7,7 @@
 	font-size: var(--message-box-text-size);
 
 	&--embedded {
-		padding: 12px;
+		padding: 24px 12px 12px;
 	}
 
 	&__toolbar-markdown {
@@ -114,6 +114,7 @@
 		border: 0;
 		background-color: transparent;
 
+		font-family: inherit;
 		font-size: var(--message-box-text-size);
 
 		&::placeholder {
@@ -144,7 +145,7 @@
 
 			display: none;
 
-			color: red;
+			color: #2db730;
 
 			&.active {
 				display: flex;
@@ -167,6 +168,8 @@
 			display: none;
 
 			cursor: pointer;
+
+			animation: spin 1s linear infinite;
 
 			&.active {
 				display: flex;

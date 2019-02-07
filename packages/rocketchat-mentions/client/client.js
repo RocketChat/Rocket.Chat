@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import Mentions from '../Mentions';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import Mentions from '../lib/Mentions';
+
 const MentionsClient = new Mentions({
 	pattern() {
 		return RocketChat.settings.get('UTF8_Names_Validation');

@@ -1,5 +1,6 @@
-/* global Babel */
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
 const validChannelChars = ['@', '#'];

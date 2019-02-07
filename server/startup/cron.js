@@ -1,6 +1,8 @@
-/* global SyncedCron */
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { Logger } from 'meteor/rocketchat:logger';
+import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 const logger = new Logger('SyncedCron');
 
@@ -18,8 +20,16 @@ function generateStatistics() {
 
 	if (RocketChat.settings.get('Statistics_reporting')) {
 		try {
+			const headers = {};
+			const token = getWorkspaceAccessToken();
+
+			if (token) {
+				headers.Authorization = `Bearer ${ token }`;
+			}
+
 			HTTP.post('https://collector.rocket.chat/', {
 				data: statistics,
+				headers,
 			});
 		} catch (error) {
 			/* error*/

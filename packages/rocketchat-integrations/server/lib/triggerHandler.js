@@ -1,7 +1,9 @@
-/* global logger, processWebhookMessage */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { logger } from '../logger';
+import { processWebhookMessage } from '../processWebhookMessage';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';

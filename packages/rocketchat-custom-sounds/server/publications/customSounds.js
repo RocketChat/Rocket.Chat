@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { CustomSounds } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 Meteor.publish('customSounds', function(filter, limit) {
@@ -21,8 +22,8 @@ Meteor.publish('customSounds', function(filter, limit) {
 
 	if (filter) {
 		const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-		return RocketChat.models.CustomSounds.findByName(filterReg, options);
+		return CustomSounds.findByName(filterReg, options);
 	}
 
-	return RocketChat.models.CustomSounds.find({}, options);
+	return CustomSounds.find({}, options);
 });

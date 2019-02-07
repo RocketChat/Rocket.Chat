@@ -12,7 +12,7 @@ Template.register.helpers({
 		return Template.instance().error.get();
 	},
 	welcomeMessage() {
-		return '';
+		return Livechat.registrationFormMessage;
 	},
 	showDepartments() {
 		return Department.find({ showOnRegistration: true }).count() > 1;

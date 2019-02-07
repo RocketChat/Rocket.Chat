@@ -35,6 +35,7 @@ Meteor.methods({
 			fields: {
 				t: 1,
 				name: 1,
+				joinCodeRequired: 1,
 				lastMessage: 1,
 			},
 			sort: {

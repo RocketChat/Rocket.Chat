@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 /*
  *
  * Get direct chat room helper

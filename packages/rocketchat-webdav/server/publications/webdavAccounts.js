@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.publish('webdavAccounts', function() {
 	if (!this.userId) {

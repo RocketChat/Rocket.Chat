@@ -6,8 +6,11 @@ import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { ImporterWebsocket } from './ImporterWebsocket';
-
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import http from 'http';
+import fs from 'fs';
 import https from 'https';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
@@ -27,9 +30,9 @@ export class Base {
 	 * @static
 	 */
 	static getBSONSize(item) {
-		const { BSON } = require('bson');
-		const bson = new BSON();
-		return bson.calculateObjectSize(item);
+		const { calculateObjectSize } = require('bson');
+
+		return calculateObjectSize(item);
 	}
 
 	/**
@@ -96,8 +99,18 @@ export class Base {
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
-		const importId = Imports.insert({ type: this.info.name, ts: Date.now(), status: this.progress.step, valid: true, user: Meteor.user()._id });
-		this.importRecord = Imports.findOne(importId);
+		const userId = Meteor.userId();
+		const importRecord = Imports.findPendingImport(this.info.key);
+
+		if (importRecord) {
+			this.logger.debug('Found existing import operation');
+			this.importRecord = importRecord;
+			this.progress.step = this.importRecord.status;
+		} else {
+			this.logger.debug('Starting new import operation');
+			const importId = Imports.insert({ type: this.info.name, importerKey: this.info.key, ts: Date.now(), status: this.progress.step, valid: true, user: userId });
+			this.importRecord = Imports.findOne(importId);
+		}
 
 		this.users = {};
 		this.channels = {};
@@ -105,6 +118,37 @@ export class Base {
 		this.oldSettings = {};
 
 		this.logger.debug(`Constructed a new ${ info.name } Importer.`);
+	}
+
+	/**
+	 * Registers the file name and content type on the import operation
+	 *
+	 * @param {string} fileName The name of the uploaded file.
+	 * @param {string} contentType The sent file type.
+	 * @returns {Progress} The progress record of the import.
+	 */
+	startFileUpload(fileName, contentType) {
+		this.updateProgress(ProgressStep.UPLOADING);
+		return this.updateRecord({ file: fileName, contentType });
+	}
+
+	/**
+	 * Takes the uploaded file and extracts the users, channels, and messages from it.
+	 *
+	 * @param {string} fullFilePath the full path of the uploaded file
+	 * @returns {Progress} The progress record of the import.
+	 */
+	prepareUsingLocalFile(fullFilePath) {
+		const file = fs.readFileSync(fullFilePath);
+		const buffer = Buffer.isBuffer(file) ? file : new Buffer(file);
+
+		const { contentType } = this.importRecord;
+		const fileName = this.importRecord.file;
+
+		const data = buffer.toString('base64');
+		const dataURI = `data:${ contentType };base64,${ data }`;
+
+		return this.prepare(dataURI, contentType, fileName, true);
 	}
 
 	/**
@@ -117,6 +161,7 @@ export class Base {
 	 * @returns {Progress} The progress record of the import.
 	 */
 	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
+		this.collection.remove({});
 		if (!skipTypeCheck) {
 			const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);
@@ -243,8 +288,55 @@ export class Base {
 		}
 
 		ImporterWebsocket.progressUpdated(this.progress);
+		this.logger.log(`${ this.progress.count.completed } messages imported`);
 
 		return this.progress;
+	}
+
+	/**
+	 * Registers error information on a specific user from the import record
+	 *
+	 * @param {int} the user id
+	 * @param {object} an exception object
+	 */
+	addUserError(userId, error) {
+		Imports.model.update({
+			_id: this.importRecord._id,
+			'fileData.users.user_id': userId,
+		}, {
+			$set: {
+				'fileData.users.$.error': error,
+				hasErrors: true,
+			},
+		});
+	}
+
+	addMessageError(error, msg) {
+		Imports.model.update({
+			_id: this.importRecord._id,
+		}, {
+			$push: {
+				errors: {
+					error,
+					msg,
+				},
+			},
+			$set: {
+				hasErrors: true,
+			},
+		});
+	}
+
+	flagConflictingEmails(emailList) {
+		Imports.model.update({
+			_id: this.importRecord._id,
+			'fileData.users.email': { $in: emailList },
+		}, {
+			$set: {
+				'fileData.users.$.is_email_taken': true,
+				'fileData.users.$.do_import': false,
+			},
+		});
 	}
 
 	/**

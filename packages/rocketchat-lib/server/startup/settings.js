@@ -4,7 +4,6 @@ import './email';
 // Insert server unique id if it doesn't exist
 RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
-	hidden: true,
 });
 
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
@@ -106,6 +105,12 @@ RocketChat.settings.addGroup('Accounts', function() {
 		public: true,
 	});
 	this.section('Registration', function() {
+		this.add('Accounts_Send_Email_When_Activating', true, {
+			type: 'boolean',
+		});
+		this.add('Accounts_Send_Email_When_Deactivating', true, {
+			type: 'boolean',
+		});
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
@@ -2533,6 +2538,164 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 		this.add('Allow_Marketing_Emails', true, {
 			type: 'boolean',
 		});
+		this.add('Register_Server', true, {
+			type: 'boolean',
+		});
+		this.add('Organization_Email', '', {
+			type: 'string',
+		});
+	});
+
+	this.section('Cloud_Info', function() {
+		this.add('Cloud_Url', 'https://cloud.rocket.chat', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Id', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Name', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Id', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Secret', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
+			type: 'int',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Registration_Client_Uri', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_License', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Access_Token', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+			type: 'date',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Registration_State', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Account_Associated', false, {
+			type: 'boolean',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+	});
+});
+
+RocketChat.settings.addGroup('Rate Limiter', function() {
+	this.section('DDP Rate Limiter', function() {
+		this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_IP_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
+
+		this.add('DDP_Rate_Limit_User_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_User_Requests_Allowed', 1200, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_User_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true } });
+
+		this.add('DDP_Rate_Limit_Connection_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_Connection_Requests_Allowed', 600, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_Connection_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_Enabled', value: true } });
+
+		this.add('DDP_Rate_Limit_User_By_Method_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_User_By_Method_Requests_Allowed', 20, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_By_Method_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_User_By_Method_Interval_Time', 10000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_By_Method_Enabled', value: true } });
+
+		this.add('DDP_Rate_Limit_Connection_By_Method_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_Connection_By_Method_Requests_Allowed', 10, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_Connection_By_Method_Interval_Time', 10000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true } });
+	});
+
+	this.section('API Rate Limiter', function() {
+		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean' });
+		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int' });
+		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int' });
 	});
 });
 

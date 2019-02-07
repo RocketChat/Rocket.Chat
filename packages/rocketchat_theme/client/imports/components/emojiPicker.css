@@ -99,17 +99,11 @@
 	& .rc-input__icon {
 		left: 0.5rem;
 	}
-
-	& .rc-input__element {
-		padding: 0.5rem 1rem 0.5rem 2rem;
-	}
 }
 
 .emoji-top {
 	display: flex;
 
-	margin: 0 -0.3rem;
-	padding: 5px;
 	align-items: center;
 
 	& .rc-input {

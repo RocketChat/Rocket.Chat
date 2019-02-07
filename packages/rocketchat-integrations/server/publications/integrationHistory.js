@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.publish('integrationHistory', function _integrationHistoryPublication(integrationId, limit = 25) {
 	if (!this.userId) {

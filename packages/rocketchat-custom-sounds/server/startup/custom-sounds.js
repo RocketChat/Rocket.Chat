@@ -1,13 +1,16 @@
-/* globals RocketChatFileCustomSoundsInstance */
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
+
+export let RocketChatFileCustomSoundsInstance;
 
 Meteor.startup(function() {
 	let storeType = 'GridFS';
 
-	if (RocketChat.settings.get('CustomSounds_Storage_Type')) {
-		storeType = RocketChat.settings.get('CustomSounds_Storage_Type');
+	if (settings.get('CustomSounds_Storage_Type')) {
+		storeType = settings.get('CustomSounds_Storage_Type');
 	}
 
 	const RocketChatStore = RocketChatFile[storeType];
@@ -19,18 +22,16 @@ Meteor.startup(function() {
 	console.log(`Using ${ storeType } for custom sounds storage`.green);
 
 	let path = '~/uploads';
-	if (RocketChat.settings.get('CustomSounds_FileSystemPath') != null) {
-		if (RocketChat.settings.get('CustomSounds_FileSystemPath').trim() !== '') {
-			path = RocketChat.settings.get('CustomSounds_FileSystemPath');
+	if (settings.get('CustomSounds_FileSystemPath') != null) {
+		if (settings.get('CustomSounds_FileSystemPath').trim() !== '') {
+			path = settings.get('CustomSounds_FileSystemPath');
 		}
 	}
 
-	this.RocketChatFileCustomSoundsInstance = new RocketChatStore({
+	RocketChatFileCustomSoundsInstance = new RocketChatStore({
 		name: 'custom_sounds',
 		absolutePath: path,
 	});
-
-	self = this;
 
 	return WebApp.connectHandlers.use('/custom-sounds/', Meteor.bindEnvironment(function(req, res/* , next*/) {
 		const params =

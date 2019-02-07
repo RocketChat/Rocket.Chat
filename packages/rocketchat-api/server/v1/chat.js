@@ -342,3 +342,36 @@ RocketChat.API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
 		return RocketChat.API.v1.success();
 	},
 });
+
+RocketChat.API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
+	get() {
+		const { roomId, since } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('The required "roomId" query param is missing.');
+		}
+
+		if (!since) {
+			throw new Meteor.Error('The required "since" query param is missing.');
+		} else if (isNaN(Date.parse(since))) {
+			throw new Meteor.Error('The "since" query parameter must be a valid date.');
+		}
+		const cursor = RocketChat.models.Messages.trashFindDeletedAfter(new Date(since), { rid: roomId }, {
+			skip: offset,
+			limit: count,
+			fields: { _id: 1 },
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return RocketChat.API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
+	},
+});

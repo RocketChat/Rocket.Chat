@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Messages.deleteOldOTRMessages = function(roomId, ts) {
 	const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
 	return this.remove(query);

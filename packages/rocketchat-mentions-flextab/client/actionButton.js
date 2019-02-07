@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoomHistoryManager } from 'meteor/rocketchat:ui';
 
 Meteor.startup(function() {
 	RocketChat.MessageAction.addButton({

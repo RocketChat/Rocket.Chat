@@ -1,3 +1,3 @@
 import { Mongo } from 'meteor/mongo';
 
-this.AgentUsers = new Mongo.Collection('agentUsers');
+export const AgentUsers = new Mongo.Collection('agentUsers');

@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 	]);
+	api.addFiles('client/style.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

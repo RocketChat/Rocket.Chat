@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(function() {
 	RocketChat.models.Permissions.upsert('post-readonly', { $setOnInsert: { roles: ['admin', 'owner', 'moderator'] } });

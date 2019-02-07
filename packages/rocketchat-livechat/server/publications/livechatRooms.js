@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (!this.userId) {

@@ -7,7 +7,7 @@ import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/m
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
-const sendNotification = ({
+const sendNotification = async({
 	subscription,
 	sender,
 	hasMentionToAll,
@@ -24,16 +24,6 @@ const sendNotification = ({
 		return;
 	}
 
-	// notifications disabled
-	if (subscription.disableNotifications) {
-		return;
-	}
-
-	// dont send notification to users who ignored the sender
-	if (Array.isArray(subscription.ignored) && subscription.ignored.includes(sender._id)) {
-		return;
-	}
-
 	const hasMentionToUser = mentionIds.includes(subscription.u._id);
 
 	// mute group notifications (@here and @all) if not directly mentioned as well
@@ -41,11 +31,7 @@ const sendNotification = ({
 		return;
 	}
 
-	const receiver = RocketChat.models.Users.findOneById(subscription.u._id);
-
-	if (!receiver || !receiver.active) {
-		return;
-	}
+	const [receiver] = subscription.receiver;
 
 	const roomType = room.t;
 	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
@@ -56,7 +42,6 @@ const sendNotification = ({
 	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
-
 
 	const {
 		audioNotifications,
@@ -71,6 +56,7 @@ const sendNotification = ({
 	if (shouldNotifyAudio({
 		disableAllMessageNotifications,
 		status: receiver.status,
+		statusConnection: receiver.statusConnection,
 		audioNotifications,
 		hasMentionToAll,
 		hasMentionToHere,
@@ -85,6 +71,7 @@ const sendNotification = ({
 	if (shouldNotifyDesktop({
 		disableAllMessageNotifications,
 		status: receiver.status,
+		statusConnection: receiver.statusConnection,
 		desktopNotifications,
 		hasMentionToAll,
 		hasMentionToHere,
@@ -149,7 +136,42 @@ const sendNotification = ({
 	}
 };
 
-function sendAllNotifications(message, room) {
+const project = {
+	$project: {
+		audioNotifications: 1,
+		desktopNotificationDuration: 1,
+		desktopNotifications: 1,
+		emailNotifications: 1,
+		mobilePushNotifications: 1,
+		muteGroupMentions: 1,
+		name: 1,
+		userHighlights: 1,
+		'u._id': 1,
+		'receiver.active': 1,
+		'receiver.emails': 1,
+		'receiver.language': 1,
+		'receiver.status': 1,
+		'receiver.statusConnection': 1,
+		'receiver.username': 1,
+	},
+};
+
+const filter = {
+	$match: {
+		'receiver.active': true,
+	},
+};
+
+const lookup = {
+	$lookup: {
+		from: 'users',
+		localField: 'u._id',
+		foreignField: '_id',
+		as: 'receiver',
+	},
+};
+
+async function sendAllNotifications(message, room) {
 
 	// skips this callback if the message was edited
 	if (message.editedAt) {
@@ -186,6 +208,8 @@ function sendAllNotifications(message, room) {
 
 	const query = {
 		rid: room._id,
+		ignored: { $ne: sender._id },
+		disableNotifications: { $ne: true },
 		$or: [{
 			'userHighlights.0': { $exists: 1 },
 		}],
@@ -229,7 +253,14 @@ function sendAllNotifications(message, room) {
 
 	// the find bellow is crucial. all subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
-	const subscriptions = RocketChat.models.Subscriptions.findNotificationPreferencesByRoom(query);
+
+	const subscriptions = await RocketChat.models.Subscriptions.model.rawCollection().aggregate([
+		{ $match: query },
+		lookup,
+		filter,
+		project,
+	]).toArray();
+
 	subscriptions.forEach((subscription) => sendNotification({
 		subscription,
 		sender,
@@ -282,6 +313,6 @@ function sendAllNotifications(message, room) {
 	return message;
 }
 
-RocketChat.callbacks.add('afterSaveMessage', sendAllNotifications, RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
+RocketChat.callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), RocketChat.callbacks.priority.LOW, 'sendNotificationsOnMessage');
 
-export { sendNotification };
+export { sendNotification, sendAllNotifications };

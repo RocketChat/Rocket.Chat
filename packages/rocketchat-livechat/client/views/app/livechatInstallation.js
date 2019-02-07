@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 
 Template.livechatInstallation.helpers({

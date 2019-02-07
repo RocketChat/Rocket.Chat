@@ -1,7 +1,9 @@
-/* globals Blaze, Template */
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { emoji } from '../../lib/rocketchat';
 import _ from 'underscore';
 
-RocketChat.EmojiPicker = {
+export const EmojiPicker = {
 	width: 365,
 	height: 290,
 	initiated: false,
@@ -102,17 +104,17 @@ RocketChat.EmojiPicker = {
 		this.close();
 		this.addRecent(emoji);
 	},
-	addRecent(emoji) {
-		const pos = this.recent.indexOf(emoji);
+	addRecent(_emoji) {
+		const pos = this.recent.indexOf(_emoji);
 
 		if (pos !== -1) {
 			this.recent.splice(pos, 1);
 		}
 
-		this.recent.unshift(emoji);
+		this.recent.unshift(_emoji);
 
 		window.localStorage.setItem('emoji.recent', this.recent);
-		RocketChat.emoji.packages.base.emojisByCategory.recent = this.recent;
+		emoji.packages.base.emojisByCategory.recent = this.recent;
 		this.updateRecent();
 	},
 	updateRecent() {
@@ -125,16 +127,16 @@ RocketChat.EmojiPicker = {
 	},
 	refreshDynamicEmojiLists() {
 		const dynamicEmojiLists = [
-			RocketChat.emoji.packages.base.emojisByCategory.recent,
-			RocketChat.emoji.packages.emojiCustom.emojisByCategory.rocket,
+			emoji.packages.base.emojisByCategory.recent,
+			emoji.packages.emojiCustom.emojisByCategory.rocket,
 		];
 
 		dynamicEmojiLists.forEach((category) => {
 			if (category) {
 				for (let i = 0; i < category.length; i++) {
-					const emoji = category[i];
-					if (!RocketChat.emoji.list[`:${ emoji }:`]) {
-						category = _.without(category, emoji);
+					const _emoji = category[i];
+					if (!emoji.list[`:${ _emoji }:`]) {
+						category = _.without(category, _emoji);
 					}
 				}
 			}

@@ -1,7 +1,11 @@
-/* globals slugify, SyncedCron */
-
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { slugify } from 'meteor/yasaricli:slugify';
 import _ from 'underscore';
 import LDAP from './ldap';
 

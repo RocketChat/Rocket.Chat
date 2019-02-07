@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
+import { ChatMessage } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 Meteor.methods({

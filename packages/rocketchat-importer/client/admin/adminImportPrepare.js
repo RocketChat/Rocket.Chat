@@ -3,6 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Importers } from 'meteor/rocketchat:importer';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({
@@ -29,7 +32,103 @@ Template.adminImportPrepare.helpers({
 	message_count() {
 		return Template.instance().message_count.get();
 	},
+	fileSizeLimitMessage() {
+		const maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize');
+		let message;
+
+		if (maxFileSize > 0) {
+			const sizeInKb = maxFileSize / 1024;
+			const sizeInMb = sizeInKb / 1024;
+
+			let fileSizeMessage;
+			if (sizeInMb > 0) {
+				fileSizeMessage = TAPi18n.__('FileSize_MB', { fileSize: sizeInMb.toFixed(2) });
+			} else if (sizeInKb > 0) {
+				fileSizeMessage = TAPi18n.__('FileSize_KB', { fileSize: sizeInKb.toFixed(2) });
+			} else {
+				fileSizeMessage = TAPi18n.__('FileSize_Bytes', { fileSize: maxFileSize.toFixed(0) });
+			}
+
+			message = TAPi18n.__('Importer_Upload_FileSize_Message', { maxFileSize: fileSizeMessage });
+		} else {
+			message = TAPi18n.__('Importer_Upload_Unlimited_FileSize');
+		}
+
+		return message;
+	},
 });
+
+function showToastrForErrorType(errorType, defaultErrorString) {
+	let errorCode;
+
+	if (typeof errorType === 'string') {
+		errorCode = errorType;
+	} else if (typeof errorType === 'object') {
+		if (errorType.error && typeof errorType.error === 'string') {
+			errorCode = errorType.error;
+		}
+	}
+
+	if (errorCode) {
+		const errorTranslation = t(errorCode);
+		if (errorTranslation !== errorCode) {
+			toastr.error(errorTranslation);
+			return;
+		}
+	}
+
+	toastr.error(t(defaultErrorString || 'Failed_To_upload_Import_File'));
+}
+
+function showException(error, defaultErrorString) {
+	console.error(error);
+	if (error && error.xhr && error.xhr.responseJSON) {
+		console.log(error.xhr.responseJSON);
+
+		if (error.xhr.responseJSON.errorType) {
+			showToastrForErrorType(error.xhr.responseJSON.errorType, defaultErrorString);
+			return;
+		}
+	}
+
+	toastr.error(t(defaultErrorString || 'Failed_To_upload_Import_File'));
+}
+
+function getImportFileData(importer, template) {
+	RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
+		if (!data) {
+			console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
+			toastr.error(t('Importer_not_setup'));
+			template.preparing.set(false);
+			return;
+		}
+
+		if (data.waiting) {
+			setTimeout(() => {
+				getImportFileData(importer, template);
+			}, 1000);
+			return;
+		}
+
+		if (data.step) {
+			console.warn('Invalid file, contains `data.step`.', data);
+			toastr.error(t('Invalid_Export_File', importer.key));
+			template.preparing.set(false);
+			return;
+		}
+
+		template.users.set(data.users);
+		template.channels.set(data.channels);
+		template.message_count.set(data.message_count);
+		template.loaded.set(true);
+		template.preparing.set(false);
+	}).catch((error) => {
+		if (error) {
+			showException(error, 'Failed_To_Load_Import_Data');
+			template.preparing.set(false);
+		}
+	});
+}
 
 Template.adminImportPrepare.events({
 	'change .import-file-input'(event, template) {
@@ -46,38 +145,48 @@ Template.adminImportPrepare.events({
 			template.preparing.set(true);
 
 			const reader = new FileReader();
-			reader.readAsDataURL(file);
+
+			reader.readAsBinaryString(file);
 			reader.onloadend = () => {
-				Meteor.call('prepareImport', importer.key, reader.result, file.type, file.name, function(error, data) {
+				RocketChat.API.post('v1/uploadImportFile', {
+					binaryContent: reader.result,
+					contentType: file.type,
+					fileName: file.name,
+					importerKey: importer.key,
+				}).then(() => {
+					getImportFileData(importer, template);
+				}).catch((error) => {
 					if (error) {
-						toastr.error(t('Invalid_Import_File_Type'));
+						showException(error);
 						template.preparing.set(false);
-						return;
 					}
-
-					if (!data) {
-						console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
-						toastr.error(t('Importer_not_setup'));
-						template.preparing.set(false);
-						return;
-					}
-
-					if (data.step) {
-						console.warn('Invalid file, contains `data.step`.', data);
-						toastr.error(t('Invalid_Export_File', importer.key));
-						template.preparing.set(false);
-						return;
-					}
-
-					template.users.set(data.users);
-					template.channels.set(data.channels);
-					template.message_count.set(data.message_count);
-					template.loaded.set(true);
-					template.preparing.set(false);
 				});
 			};
 		});
 	},
+
+
+	'click .download-public-url'(event, template) {
+		const importer = this;
+		if (!importer || !importer.key) { return; }
+
+		const fileUrl = $('.import-file-url').val();
+
+		template.preparing.set(true);
+
+		RocketChat.API.post('v1/downloadPublicImportFile', {
+			fileUrl,
+			importerKey: importer.key,
+		}).then(() => {
+			getImportFileData(importer, template);
+		}).catch((error) => {
+			if (error) {
+				showException(error);
+				template.preparing.set(false);
+			}
+		});
+	},
+
 
 	'click .button.start'(event, template) {
 		const btn = this;
@@ -115,16 +224,19 @@ Template.adminImportPrepare.events({
 	},
 
 	'click .button.uncheck-deleted-users'(event, template) {
-		Array.from(template.users.get()).filter((user) => user.is_deleted).map((user) =>
-			$(`[name=${ user.user_id }]`).attr('checked', false));
+		Array.from(template.users.get()).filter((user) => user.is_deleted).map((user) => {
+			const box = $(`[name=${ user.user_id }]`);
+			return box && box.length && box[0].checked && box.click();
+		});
 	},
 
 	'click .button.uncheck-archived-channels'(event, template) {
-		Array.from(template.channels.get()).filter((channel) => channel.is_archived).map((channel) =>
-			$(`[name=${ channel.channel_id }]`).attr('checked', false));
+		Array.from(template.channels.get()).filter((channel) => channel.is_archived).map((channel) => {
+			const box = $(`[name=${ channel.channel_id }]`);
+			return box && box.length && box[0].checked && box.click();
+		});
 	},
 });
-
 
 Template.adminImportPrepare.onCreated(function() {
 	const instance = this;

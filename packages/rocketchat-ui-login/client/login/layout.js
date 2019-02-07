@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Template.loginLayout.onRendered(function() {
 	$('#initial-page-loading').remove();

@@ -151,10 +151,8 @@ RocketChat.API.v1.addRoute('groups.counters', { authRequired: true }, {
 		const lm = room.lm ? room.lm : room._updatedAt;
 
 		if (typeof subscription !== 'undefined' && subscription.open) {
-			if (subscription.ls) {
-				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
-				unreadsFrom = subscription.ls;
-			}
+			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, (subscription.ls || subscription.ts), lm);
+			unreadsFrom = subscription.ls || subscription.ts;
 			userMentions = subscription.userMentions;
 			joined = true;
 		}

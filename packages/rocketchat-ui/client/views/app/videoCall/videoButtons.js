@@ -1,6 +1,6 @@
-/* globals WebRTC */
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { WebRTC } from 'meteor/rocketchat:webrtc';
 
 Template.videoButtons.helpers({
 	videoAvaliable() {

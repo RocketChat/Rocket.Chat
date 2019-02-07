@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
@@ -21,6 +22,7 @@ Meteor.methods({
 			'Livechat_registration_form',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
+			'Livechat_registration_form_message',
 		];
 
 		const valid = settings.every((setting) => validSettings.indexOf(setting._id) !== -1);

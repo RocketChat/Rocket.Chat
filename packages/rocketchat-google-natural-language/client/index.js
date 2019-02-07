@@ -1,4 +1,6 @@
 import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:ui';
 
 Template.room.helpers({
 	sentimentSmile() {

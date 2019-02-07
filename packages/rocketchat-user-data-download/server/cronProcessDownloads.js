@@ -1,7 +1,8 @@
-/* globals SyncedCron */
-
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
@@ -41,7 +42,7 @@ const loadUserSubscriptions = function(exportOperation) {
 	cursor.forEach((subscription) => {
 		const roomId = subscription.rid;
 		const roomData = RocketChat.models.Rooms.findOneById(roomId);
-		let roomName = roomData.name ? roomData.name : roomId;
+		let roomName = (roomData && roomData.name) ? roomData.name : roomId;
 		let userId = null;
 
 		if (subscription.t === 'd') {

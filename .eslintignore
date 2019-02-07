@@ -10,7 +10,6 @@ packages/rocketchat-livechat/.app/.meteor
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js
 packages/rocketchat_theme/client/minicolors/jquery.minicolors.js
-packages/rocketchat_theme/client/minicolors/jquery.minicolors.js
 packages/rocketchat_theme/client/vendor/
 packages/rocketchat-ui/client/lib/customEventPolyfill.js
 packages/rocketchat-ui/client/lib/Modernizr.js

@@ -10,21 +10,9 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'tracker',
 		'rocketchat:lib',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'hubot.js',
-		'settings.js',
-	], ['server']);
-
-	api.export('Hubot', ['server']);
-	api.export('HubotScripts', ['server']);
-	api.export('InternalHubot', ['server']);
-	api.export('InternalHubotReceiver', ['server']);
-	api.export('RocketChatAdapter', ['server']);
-
+	api.mainModule('server/index.js', 'server');
 });
 
 // It needs to be here cuz they are coffee files and need to be compiled

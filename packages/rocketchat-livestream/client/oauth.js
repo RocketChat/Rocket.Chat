@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 export const close = (popup) => new Promise(function(resolve) {
 	const checkInterval = setInterval(() => {

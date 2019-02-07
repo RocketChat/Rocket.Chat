@@ -10,10 +10,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'check',
 		'rocketchat:lib',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles('client/client.js', 'client');
-	api.addFiles('server/server.js', 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

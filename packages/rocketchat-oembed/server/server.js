@@ -1,5 +1,7 @@
-/* globals HTTPInternals, changeCase */
 import { Meteor } from 'meteor/meteor';
+import { HTTPInternals } from 'meteor/http';
+import { changeCase } from 'meteor/konecty:change-case';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import URL from 'url';
 import querystring from 'querystring';
@@ -294,3 +296,5 @@ RocketChat.settings.get('API_Embed', function(key, value) {
 		return RocketChat.callbacks.remove('afterSaveMessage', 'API_Embed');
 	}
 });
+
+export { OEmbed };

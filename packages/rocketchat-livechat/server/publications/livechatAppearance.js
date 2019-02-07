@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.publish('livechat:appearance', function() {
 	if (!this.userId) {
@@ -26,6 +27,7 @@ Meteor.publish('livechat:appearance', function() {
 				'Livechat_registration_form',
 				'Livechat_name_field_registration_form',
 				'Livechat_email_field_registration_form',
+				'Livechat_registration_form_message',
 			],
 		},
 	};
