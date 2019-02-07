@@ -14,20 +14,20 @@ class Jasmin {
 		console.log("Jasmin parse: ", data);
 
 		const returnData = {
-			from: data.From,
-			to: data.To,
-			body: data.Body,
+			from: data.from,
+			to: data.to,
+			body: data.content,
 
-			extra: {
-				toCountry: data.ToCountry,
-				toState: data.ToState,
-				toCity: data.ToCity,
-				toZip: data.ToZip,
-				fromCountry: data.FromCountry,
-				fromState: data.FromState,
-				fromCity: data.FromCity,
-				fromZip: data.FromZip,
-			},
+			// extra: {
+			// 	toCountry: data.ToCountry,
+			// 	toState: data.ToState,
+			// 	toCity: data.ToCity,
+			// 	toZip: data.ToZip,
+			// 	fromCountry: data.FromCountry,
+			// 	fromState: data.FromState,
+			// 	fromCity: data.FromCity,
+			// 	fromZip: data.FromZip,
+			// },
 		};
 
 		if (data.NumMedia) {
