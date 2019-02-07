@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, handleError } from 'meteor/rocketchat:utils';
@@ -165,6 +166,16 @@ Template.headerRoom.events({
 	},
 });
 
-Template.header.onCreated(function() {
+Template.headerRoom.onCreated(function() {
 	this.currentChannel = (this.data && this.data._id && Rooms.findOne(this.data._id)) || undefined;
+
+	this.hasTokenpass = new ReactiveVar(false);
+
+	if (settings.get('API_Tokenpass_URL') !== '') {
+		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
+			if (!error) {
+				this.hasTokenpass.set(!!(result && result.tokens && result.tokens.length > 0));
+			}
+		});
+	}
 });
