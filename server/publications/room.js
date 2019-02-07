@@ -82,16 +82,7 @@ Meteor.methods({
 
 		const roomFind = RocketChat.roomTypes.getRoomFind(type);
 
-		let room;
-
-		if (roomFind) {
-			room = roomFind.call(this, name);
-		} else {
-			const rooms = RocketChat.models.Rooms.findByTypeAndName(type, name).fetch();
-			if (rooms && rooms.length > 0) {
-				room = rooms[0];
-			}
-		}
+		const room = roomFind ? roomFind.call(this, name) : RocketChat.models.Rooms.findByTypeAndName(type, name);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
