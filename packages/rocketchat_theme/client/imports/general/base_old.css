@@ -2222,11 +2222,13 @@ rc-old select,
 			}
 		}
 
-		& button {
+		& .upload-progress-close {
 			position: relative;
 			z-index: 3;
 
 			float: right;
+
+			height: 100%;
 
 			text-transform: uppercase;
 
