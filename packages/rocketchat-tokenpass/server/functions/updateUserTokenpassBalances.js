@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 RocketChat.updateUserTokenpassBalances = function(user) {

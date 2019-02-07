@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.setupWizardFinal.onCreated(function() {
 	const isSetupWizardDone = localStorage.getItem('wizardFinal');
 	if (isSetupWizardDone === null) {

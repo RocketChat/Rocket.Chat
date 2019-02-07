@@ -1,6 +1,11 @@
-/* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
-/* exported fileUpload */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 import s from 'underscore.string';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { Handlebars } from 'meteor/ui';
+import { t, fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -30,7 +35,7 @@ const showUploadPreview = (file, callback) => {
 
 const getAudioUploadPreview = (file, preview) => `\
 <div class='upload-preview'>
-	<audio  style="width: 100%;" controls="controls">
+	<audio style="width: 100%;" controls="controls">
 		<source src="${ preview }" type="audio/wav">
 		Your browser does not support the audio element.
 	</audio>
@@ -46,7 +51,7 @@ const getAudioUploadPreview = (file, preview) => `\
 
 const getVideoUploadPreview = (file, preview) => `\
 <div class='upload-preview'>
-	<video  style="width: 100%;" controls="controls">
+	<video style="width: 100%;" controls="controls">
 		<source src="${ preview }" type="video/webm">
 		Your browser does not support the video element.
 	</video>
@@ -108,7 +113,7 @@ const getGenericUploadPreview = (file) => `\
 </div>
 </div>`;
 
-const getUploadPreview = (file, preview) => {
+const getUploadPreview = async(file, preview) => {
 	if (file.type === 'audio') {
 		return getAudioUploadPreview(file, preview);
 	}
@@ -117,14 +122,21 @@ const getUploadPreview = (file, preview) => {
 		return getVideoUploadPreview(file, preview);
 	}
 
-	if (file.type === 'image') {
+	const isImageFormatSupported = () => new Promise((resolve) => {
+		const element = document.createElement('img');
+		element.onload = () => resolve(true);
+		element.onerror = () => resolve(false);
+		element.src = preview;
+	});
+
+	if (file.type === 'image' && await isImageFormatSupported()) {
 		return getImageUploadPreview(file, preview);
 	}
 
 	return getGenericUploadPreview(file, preview);
 };
 
-fileUpload = (files) => {
+export const fileUpload = async(files) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');
@@ -136,7 +148,7 @@ fileUpload = (files) => {
 			return;
 		}
 
-		if (!RocketChat.fileUploadIsValidContentType(file.file.type)) {
+		if (!fileUploadIsValidContentType(file.file.type)) {
 			modal.open({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,
@@ -155,9 +167,9 @@ fileUpload = (files) => {
 			return;
 		}
 
-		showUploadPreview(file, (file, preview) => modal.open({
+		showUploadPreview(file, async(file, preview) => modal.open({
 			title: t('Upload_file_question'),
-			text: getUploadPreview(file, preview),
+			text: await getUploadPreview(file, preview),
 			showCancelButton: true,
 			closeOnConfirm: false,
 			closeOnCancel: false,

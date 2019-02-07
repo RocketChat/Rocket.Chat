@@ -1,3 +1,5 @@
+import { ServiceConfiguration } from 'meteor/service-configuration';
+
 RocketChat.Migrations.add({
 	version: 71.1,
 	up() {

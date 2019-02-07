@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import logger from './logger';
+
 Meteor.methods({
 	unreadMessages(firstUnreadMessage, room) {
 		const userId = Meteor.userId();

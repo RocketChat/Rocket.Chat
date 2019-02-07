@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
 		const roles = RocketChat.models.Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();

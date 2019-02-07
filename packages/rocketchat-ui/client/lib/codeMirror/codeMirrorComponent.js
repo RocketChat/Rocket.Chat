@@ -1,6 +1,8 @@
-/* global CodeMirrors */
-CodeMirrors = {};
+const CodeMirrors = {};
 
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
 import 'codemirror/lib/codemirror.css';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 

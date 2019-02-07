@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import IMAP from 'imap';
 import POP3 from 'poplib';
 import { simpleParser } from 'mailparser';

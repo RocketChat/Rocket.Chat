@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Users.rocketMailUnsubscribe = function(_id, createdAt) {
 	const query = {
 		_id,

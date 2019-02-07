@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import OmniChannel from '../lib/OmniChannel';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {

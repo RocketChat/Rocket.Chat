@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import Queue from 'queue-fifo';
 import * as servers from '../servers';
 import * as peerCommandHandlers from './peerHandlers';

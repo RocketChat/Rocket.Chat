@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18next } from 'meteor/tap:i18n';
+import { isEmail } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -121,6 +128,7 @@ Template.apps.onDestroyed(function() {
 });
 
 Template.appManage.helpers({
+	isEmail,
 	_(key, ...args) {
 		const options = (args.pop()).hash;
 		if (!_.isEmpty(args)) {

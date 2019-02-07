@@ -8,9 +8,16 @@ Package.describe({
 // Note: Piwik respects Google Chrome's No Track: http://piwik.org/docs/privacy/#step-4-respect-donottrack-preference
 
 Package.onUse(function(api) {
-	api.use(['ecmascript', 'rocketchat:lib']);
-	api.use(['templating', 'kadira:flow-router'], 'client');
+	api.use([
+		'ecmascript',
+		'rocketchat:lib',
+		'tracker',
+	]);
+	api.use([
+		'templating',
+		'kadira:flow-router',
+	], 'client');
 
-	api.addFiles(['client/loadScript.js', 'client/trackEvents.js'], 'client');
-	api.addFiles(['server/settings.js'], 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

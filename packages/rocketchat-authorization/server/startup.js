@@ -1,4 +1,6 @@
 /* eslint no-multi-spaces: 0 */
+import { Meteor } from 'meteor/meteor';
+import { Roles, Permissions } from 'meteor/rocketchat:models';
 
 Meteor.startup(function() {
 	// Note:
@@ -11,6 +13,7 @@ Meteor.startup(function() {
 		{ _id: 'add-user-to-joined-room',       roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'add-user-to-any-c-room',        roles : ['admin'] },
 		{ _id: 'add-user-to-any-p-room',        roles : [] },
+		{ _id: 'api-bypass-rate-limit',         roles : ['admin', 'bot'] },
 		{ _id: 'archive-room',                  roles : ['admin', 'owner'] },
 		{ _id: 'assign-admin-role',             roles : ['admin'] },
 		{ _id: 'ban-user',                      roles : ['admin', 'owner', 'moderator'] },
@@ -19,6 +22,7 @@ Meteor.startup(function() {
 		{ _id: 'create-c',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-d',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-p',                      roles : ['admin', 'user', 'bot'] },
+		{ _id: 'create-personal-access-tokens', roles : ['admin', 'user'] },
 		{ _id: 'create-user',                   roles : ['admin'] },
 		{ _id: 'clean-channel-history',         roles : ['admin'] },
 		{ _id: 'delete-c',                      roles : ['admin', 'owner'] },
@@ -46,6 +50,7 @@ Meteor.startup(function() {
 		{ _id: 'mention-here',                  roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mute-user',                     roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'remove-user',                   roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'reset-other-user-e2e-key',      roles : ['admin'] },
 		{ _id: 'run-import',                    roles : ['admin'] },
 		{ _id: 'run-migration',                 roles : ['admin'] },
 		{ _id: 'set-moderator',                 roles : ['admin', 'owner'] },
@@ -74,8 +79,8 @@ Meteor.startup(function() {
 	];
 
 	for (const permission of permissions) {
-		if (!RocketChat.models.Permissions.findOneById(permission._id)) {
-			RocketChat.models.Permissions.upsert(permission._id, { $set: permission });
+		if (!Permissions.findOneById(permission._id)) {
+			Permissions.upsert(permission._id, { $set: permission });
 		}
 	}
 
@@ -91,6 +96,6 @@ Meteor.startup(function() {
 	];
 
 	for (const role of defaultRoles) {
-		RocketChat.models.Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true } });
+		Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true, mandatory2fa: false } });
 	}
 });

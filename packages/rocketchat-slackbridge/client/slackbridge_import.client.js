@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.settings.onload('SlackBridge_Enabled', (key, value) => {
 	if (value) {
 		RocketChat.slashCommands.add('slackbridge-import', null, {

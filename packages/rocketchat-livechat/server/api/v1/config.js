@@ -1,4 +1,6 @@
-import { findRoom, findGuest, settings, online } from '../lib/livechat';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { findGuest, settings, online, findOpenRoom } from '../lib/livechat';
+import { Match, check } from 'meteor/check';
 
 RocketChat.API.v1.addRoute('livechat/config', {
 	get() {
@@ -18,9 +20,11 @@ RocketChat.API.v1.addRoute('livechat/config', {
 			let room;
 			let agent;
 
-			if (this.queryParams.token) {
-				guest = findGuest(this.queryParams.token);
-				room = findRoom(this.queryParams.token);
+			const { token } = this.queryParams;
+
+			if (token) {
+				guest = findGuest(token);
+				room = findOpenRoom(token);
 				agent = room && room.servedBy && RocketChat.models.Users.getAgentInfo(room.servedBy._id);
 			}
 

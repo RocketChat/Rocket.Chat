@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
 	APP_REMOVED: 'app/removed',

@@ -1,5 +1,9 @@
-/* global */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import toastr from 'toastr';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Template.selectWebdavAccount.helpers({
 	webdavAccounts() {

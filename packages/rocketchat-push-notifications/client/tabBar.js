@@ -1,5 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
+
 Meteor.startup(function() {
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['channel', 'group', 'direct'],
 		id: 'push-notifications',
 		i18nTitle: 'Notifications_Preferences',

@@ -21,6 +21,11 @@
 						<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
 						<option value="Subscriptions" selected="{{$eq scope 'Subscriptions'}}">{{_ "Rooms"}}</option>
 					</select>
+
+					<br/>
+					<label for="mandatory2fa">{{_ "Users must use Two Factor Authentication"}} :</label>
+					<input type="checkbox" name="mandatory2fa" checked="{{mandatory2fa}}"> 
+
 					<div class="form-buttons">
 						{{#if editable}}
 							<button name="delete" class="button danger delete-role">{{_ "Delete"}}</button>

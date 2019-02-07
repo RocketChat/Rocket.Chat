@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.externalSearch.helpers({
 	messages() {
 		return RocketChat.models.LivechatExternalMessage.findByRoomId(this.rid, { ts: 1 });

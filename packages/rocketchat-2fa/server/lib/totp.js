@@ -1,3 +1,6 @@
+import { SHA256 } from 'meteor/sha';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import speakeasy from 'speakeasy';
 
 RocketChat.TOTP = {

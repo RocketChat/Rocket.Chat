@@ -1,5 +1,7 @@
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
+import { HTTP } from 'meteor/http';
 const crypto = Npm.require('crypto');
 const whitelisted = [
 	'id',

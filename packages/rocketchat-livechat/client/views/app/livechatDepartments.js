@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { modal } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
+import { LivechatDepartment } from '../../collections/LivechatDepartment';
+
 Template.livechatDepartments.helpers({
 	departments() {
 		return LivechatDepartment.find();

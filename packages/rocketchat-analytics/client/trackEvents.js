@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { Tracker } from 'meteor/tracker';
+
 function trackEvent(category, action, label) {
 	if (window._paq) {
 		window._paq.push(['trackEvent', category, action, label]);
@@ -83,7 +89,7 @@ if (!window._paq || window.ga) {
 	(() => {
 		let oldUserId = null;
 
-		Meteor.autorun(() => {
+		Tracker.autorun(() => {
 			const newUserId = Meteor.userId();
 			if (oldUserId === null && newUserId) {
 				if (window._paq && RocketChat.settings.get('Analytics_features_users')) {

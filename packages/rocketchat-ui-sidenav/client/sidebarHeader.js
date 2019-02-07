@@ -1,7 +1,17 @@
-/* globals popover menu */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { popover } from 'meteor/rocketchat:ui-utils';
+import { t, getUserPreference, handleError } from 'meteor/rocketchat:utils';
+import { AccountBox, menu, SideNav } from 'meteor/rocketchat:ui-utils';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
-	RocketChat.callbacks.run('userStatusManuallySet', status);
+	callbacks.run('userStatusManuallySet', status);
 	popover.close();
 };
 
@@ -12,11 +22,11 @@ const viewModeIcon = {
 };
 
 const extendedViewOption = (user) => {
-	if (RocketChat.settings.get('Store_Last_Message')) {
+	if (settings.get('Store_Last_Message')) {
 		return {
 			icon: viewModeIcon.extended,
 			name: t('Extended'),
-			modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
+			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
 			action: () => {
 				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
 					if (error) {
@@ -30,19 +40,44 @@ const extendedViewOption = (user) => {
 	return;
 };
 
+const showToolbar = new ReactiveVar(false);
+
+const selectorSearch = '.toolbar__search .rc-input__element';
+export const toolbarSearch = {
+	shortcut: false,
+	clear() {
+		const $inputMessage = $('.js-input-message');
+
+		if (0 === $inputMessage.length) {
+			return;
+		}
+
+		$inputMessage.focus();
+		$(selectorSearch).val('');
+	},
+	show(fromShortcut) {
+		menu.open();
+		showToolbar.set(true);
+		this.shortcut = fromShortcut;
+	},
+	close() {
+		showToolbar.set(false);
+		if (this.shortcut) {
+			menu.close();
+		}
+	},
+};
 
 const toolbarButtons = (user) => [{
 	name: t('Search'),
 	icon: 'magnifier',
 	action: () => {
-		const toolbarEl = $('.toolbar');
-		toolbarEl.css('display', 'block');
-		toolbarEl.find('.rc-input__element').focus();
+		toolbarSearch.show(false);
 	},
 },
 {
 	name: t('Directory'),
-	icon: 'globe',
+	icon: 'discover',
 	action: () => {
 		menu.close();
 		FlowRouter.go('directory');
@@ -50,9 +85,9 @@ const toolbarButtons = (user) => [{
 },
 {
 	name: t('View_mode'),
-	icon: () => viewModeIcon[RocketChat.getUserPreference(user, 'sidebarViewMode') || 'condensed'],
+	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'condensed'],
 	action: (e) => {
-		const hideAvatarSetting = RocketChat.getUserPreference(user, 'sidebarHideAvatar');
+		const hideAvatarSetting = getUserPreference(user, 'sidebarHideAvatar');
 		const config = {
 			columns: [
 				{
@@ -63,7 +98,7 @@ const toolbarButtons = (user) => [{
 								{
 									icon: viewModeIcon.medium,
 									name: t('Medium'),
-									modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
+									modifier: getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
 									action: () => {
 										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
 											if (error) {
@@ -75,7 +110,7 @@ const toolbarButtons = (user) => [{
 								{
 									icon: viewModeIcon.condensed,
 									name: t('Condensed'),
-									modifier: RocketChat.getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
+									modifier: getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
 									action: () => {
 										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
 											if (error) {
@@ -130,7 +165,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Create_A_New_Channel'),
 	icon: 'edit-rounded',
-	condition: () => RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p']),
+	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
 	action: () => {
 		menu.close();
 		FlowRouter.go('create-channel');
@@ -139,10 +174,10 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Options'),
 	icon: 'menu',
-	condition: () => AccountBox.getItems().length || RocketChat.authz.hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration']),
+	condition: () => AccountBox.getItems().length || hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration']),
 	action: (e) => {
 		let adminOption;
-		if (RocketChat.authz.hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration'])) {
+		if (hasAtLeastOnePermission(['manage-emoji', 'manage-integrations', 'manage-oauth-apps', 'manage-own-integrations', 'manage-sounds', 'view-logs', 'view-privileged-setting', 'view-room-administration', 'view-statistics', 'view-user-administration'])) {
 			adminOption = {
 				icon: 'customize',
 				name: t('Administration'),
@@ -206,7 +241,7 @@ Template.sidebarHeader.helpers({
 	myUserInfo() {
 		const id = Meteor.userId();
 
-		if (id == null && RocketChat.settings.get('Accounts_AllowAnonymousRead')) {
+		if (id == null && settings.get('Accounts_AllowAnonymousRead')) {
 			return {
 				username: 'anonymous',
 				status: 'online',
@@ -219,6 +254,9 @@ Template.sidebarHeader.helpers({
 	toolbarButtons() {
 		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());
 	},
+	showToolbar() {
+		return showToolbar.get();
+	},
 });
 
 Template.sidebarHeader.events({
@@ -229,7 +267,7 @@ Template.sidebarHeader.events({
 		return this.action && this.action.apply(this, [e]);
 	},
 	'click .sidebar__header .avatar'(e) {
-		if (!(Meteor.userId() == null && RocketChat.settings.get('Accounts_AllowAnonymousRead'))) {
+		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
 			const config = {
 				popoverClass: 'sidebar-header',
@@ -286,7 +324,7 @@ Template.sidebarHeader.events({
 										id: 'logout',
 										action: () => {
 											Meteor.logout(() => {
-												RocketChat.callbacks.run('afterLogoutCleanUp', user);
+												callbacks.run('afterLogoutCleanUp', user);
 												Meteor.call('logoutCleanUp', user);
 												FlowRouter.go('home');
 												popover.close();

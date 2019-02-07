@@ -1,3 +1,4 @@
+import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
 
 RocketChat.Message = {

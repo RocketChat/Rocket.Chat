@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
 class GoogleVision {
 	constructor() {
 		this.storage = require('@google-cloud/storage');

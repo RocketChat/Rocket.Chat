@@ -44,7 +44,7 @@ RocketChat.API = {
 		return new Promise(function _rlRestApiGet(resolve, reject) {
 			jQuery.ajax({
 				method,
-				url: `${ window.location.origin }/api/${ endpoint }${ query }`,
+				url: `${ document.baseURI }api/${ endpoint }${ query }`,
 				headers: {
 					'Content-Type': 'application/json',
 					'X-User-Id': localStorage['Meteor.userId'],
@@ -72,7 +72,7 @@ RocketChat.API = {
 
 		return new Promise(function _jqueryFormDataPromise(resolve, reject) {
 			jQuery.ajax({
-				url: `${ window.location.origin }/api/${ endpoint }${ query }`,
+				url: `${ document.baseURI }api/${ endpoint }${ query }`,
 				headers: {
 					'X-User-Id': localStorage['Meteor.userId'],
 					'X-Auth-Token': localStorage['Meteor.loginToken'],

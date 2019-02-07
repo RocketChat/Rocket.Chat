@@ -1,7 +1,7 @@
-/* globals logger */
-
+import { RocketChat } from 'meteor/rocketchat:lib';
 import SlackAdapter from './SlackAdapter.js';
 import RocketAdapter from './RocketAdapter.js';
+import { logger } from './logger';
 
 /**
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.

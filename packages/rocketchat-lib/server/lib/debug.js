@@ -1,5 +1,8 @@
-/* global InstanceStatus */
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import _ from 'underscore';
+import { Logger } from 'meteor/rocketchat:logger';
 
 const logger = new Logger('Meteor', {
 	methods: {
@@ -47,14 +50,24 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function(...originalArgs) {
 		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
 		const end = RocketChat.metrics.meteorMethods.startTimer({
-			method: name,
+			method: name === 'stream' ? `${ name }:${ originalArgs[0] }` : name,
 			has_connection: this.connection != null,
 			has_user: this.userId != null,
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
 		logger.method(name, '-> userId:', Meteor.userId(), ', arguments: ', args);
 
-		this.unblock();
+		// Temporary solution for a hotfix while we investigate the underlying issue.
+		const methodBlackList = [
+			'resetPassword',
+			'verifyEmail',
+			'resetPasswordWithTOTP',
+		];
+
+		if (methodBlackList.indexOf(name) < 0) {
+			this.unblock();
+		}
+
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;

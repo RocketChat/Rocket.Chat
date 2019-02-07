@@ -1,4 +1,7 @@
-/* globals InstanceStatus, UserPresence, UserPresenceMonitor */
+import { Meteor } from 'meteor/meteor';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { UserPresence } from 'meteor/konecty:user-presence';
+import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
 
 Meteor.startup(function() {
 	const instance = {
