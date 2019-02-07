@@ -99,11 +99,11 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const sms = SMSService.parse(this.bodyParams);
 
-		console.log("sms-incoming called: ", this);
+		console.log("sms-incoming called: ", sms);
 
-		return 'ACK/Jasmin';
-		//
-		// let visitor = LivechatVisitors.findOneVisitorByPhone(sms.from);
+
+		let visitor = LivechatVisitors.findOneVisitorByPhone(sms.from);
+				return 'ACK/Jasmin';
 		//
 		// const sendMessage = {
 		// 	message: {
