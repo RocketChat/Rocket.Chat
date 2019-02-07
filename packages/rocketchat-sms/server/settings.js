@@ -13,7 +13,7 @@ Meteor.startup(function() {
 			values: [{
 				key: 'twilio',
 				i18nLabel: 'Twilio',
-			},{
+			}, {
 				key: 'jasmin',
 				i18nLabel: 'Jasmin',
 			}],

@@ -11,7 +11,7 @@ class Jasmin {
 	parse(data) {
 		let numMedia = 0;
 
-		console.log("Jasmin parse: ", data);
+		console.log('Jasmin parse: ', data);
 
 		const returnData = {
 			from: data.from,
@@ -60,30 +60,30 @@ class Jasmin {
 	}
 	send(fromNumber, toNumber, message) {
 
-		console.log("Jasmin send fromNumber", fromNumber);
-		console.log("Jasmin send toNumber", toNumber);
-		console.log("Jasmin send message", message);
-		console.log("Jasmin send username", this.username);
-		console.log("Jasmin send address", this.address);
-		console.log("Jasmin send password", this.password);
-		console.log("Jasmin send from", this.from);
+		console.log('Jasmin send fromNumber', fromNumber);
+		console.log('Jasmin send toNumber', toNumber);
+		console.log('Jasmin send message', message);
+		console.log('Jasmin send username', this.username);
+		console.log('Jasmin send address', this.address);
+		console.log('Jasmin send password', this.password);
+		console.log('Jasmin send from', this.from);
 
-		strippedTo = toNumber.replace(/\D/g,'');
+		let strippedTo = toNumber.replace(/\D/g, '');
 
 		try {
-			const response = HTTP.call('GET', `${ this.address }/send?username=${this.username}&password=${this.password}&to=${strippedTo}&from=${this.from}&content=${message}`);
+			const response = HTTP.call('GET', `${ this.address }/send?username=${ this.username }&password=${ this.password }&to=${ strippedTo }&from=${ this.from }&content=${ message }`);
 			if (response.statusCode === 200) {
-				console.log("SMS Jasmin response: " + response.content);
+				console.log('SMS Jasmin response: ', response.content);
 			} else {
-				console.log("SMS Jasmin response: " + response.statusCode);
+				console.log('SMS Jasmin response: ', response.statusCode);
 			}
 		} catch (e) {
-			console.error("Error while sending SMS with Jasmin", e);
+			console.error('Error while sending SMS with Jasmin', e);
 		}
 
 	}
 	response(/* message */) {
-		console.log("Jasmin response called");
+		console.log('Jasmin response called');
 		return {
 			headers: {
 				'Content-Type': 'text/xml',
@@ -92,7 +92,7 @@ class Jasmin {
 		};
 	}
 	error(error) {
-		console.error("Jasmin error called", error);
+		console.error('Jasmin error called', error);
 		let message = '';
 		if (error.reason) {
 			message = `<Message>${ error.reason }</Message>`;

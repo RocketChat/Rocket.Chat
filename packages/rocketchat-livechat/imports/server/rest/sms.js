@@ -9,7 +9,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const sms = SMSService.parse(this.bodyParams);
 
-		console.log("sms-incoming called: ", this);
+		console.log('sms-incoming called: '', this);
 
 		let visitor = LivechatVisitors.findOneVisitorByPhone(sms.from);
 
@@ -99,12 +99,12 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const sms = SMSService.parse(this.queryParams);
 
-		// console.log("sms-incoming called: ", this);
-		console.log("sms: ", sms);
+		// console.log('sms-incoming called: ', this);
+		console.log('sms: ', sms);
 
 
 		let visitor = LivechatVisitors.findOneVisitorByPhone(sms.from);
-		console.log("visitor: ", visitor);
+		console.log('visitor: ', visitor);
 
 		const sendMessage = {
 			message: {
@@ -182,7 +182,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 				}
 			});
 
-			console.log("message", message);
+			console.log('message', message);
 			return message;
 		} catch (e) {
 			return SMSService.error.call(this, e);
