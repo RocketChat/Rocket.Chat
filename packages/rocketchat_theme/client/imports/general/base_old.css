@@ -2224,7 +2224,7 @@ rc-old select,
 			}
 		}
 
-		& button {
+		& .upload-progress-close {
 			position: relative;
 			z-index: 3;
 
