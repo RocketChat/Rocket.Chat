@@ -6,5 +6,5 @@ RocketChat.Migrations.add({
 			RocketChat.models.Users.update({ 'profile.guest': true }, { $set: { type: 'visitor' } }, { multi: true });
 			RocketChat.models.Users.update({ type: { $exists: false } }, { $set: { type: 'user' } }, { multi: true });
 		}
-	}
+	},
 });

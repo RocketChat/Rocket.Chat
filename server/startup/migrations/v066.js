@@ -9,5 +9,5 @@ RocketChat.Migrations.add({
 				RocketChat.models.Settings.upsert({ _id: 'theme-color-component-color' }, { $set: { value: replace1.value } });
 			}
 		}
-	}
+	},
 });

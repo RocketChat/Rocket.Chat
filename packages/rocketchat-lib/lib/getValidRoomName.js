@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
@@ -23,8 +24,8 @@ RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
 	}
 	if (!nameValidation.test(slugifiedName)) {
 		throw new Meteor.Error('error-invalid-room-name', `${ slugifiedName } is not a valid room name.`, {
-			'function': 'RocketChat.getValidRoomName',
-			channel_name: slugifiedName
+			function: 'RocketChat.getValidRoomName',
+			channel_name: slugifiedName,
 		});
 	}
 

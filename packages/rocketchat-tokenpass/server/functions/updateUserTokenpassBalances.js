@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 RocketChat.updateUserTokenpassBalances = function(user) {
@@ -5,7 +6,7 @@ RocketChat.updateUserTokenpassBalances = function(user) {
 		const tcaPublicBalances = RocketChat.getPublicTokenpassBalances(user.services.tokenpass.accessToken);
 		const tcaProtectedBalances = RocketChat.getProtectedTokenpassBalances(user.services.tokenpass.accessToken);
 
-		const balances = _.uniq(_.union(tcaPublicBalances, tcaProtectedBalances), false, item => item.asset);
+		const balances = _.uniq(_.union(tcaPublicBalances, tcaProtectedBalances), false, (item) => item.asset);
 
 		RocketChat.models.Users.setTokenpassTcaBalances(user._id, balances);
 

@@ -1,6 +1,8 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 export default function handleNickChanged(args) {
 	const user = RocketChat.models.Users.findOne({
-		'profile.irc.nick': args.nick
+		'profile.irc.nick': args.nick,
 	});
 
 	if (!user) {
@@ -13,7 +15,7 @@ export default function handleNickChanged(args) {
 	RocketChat.models.Users.update({ _id: user._id }, {
 		$set: {
 			name: args.newNick,
-			'profile.irc.nick': args.newNick
-		}
+			'profile.irc.nick': args.newNick,
+		},
 	});
 }

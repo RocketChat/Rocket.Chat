@@ -7,27 +7,27 @@ RocketChat.Migrations.add({
 			$or: [
 				{
 					script: {
-						$exists: false
+						$exists: false,
 					},
 					processIncomingRequestScript: {
-						$exists: true
-					}
+						$exists: true,
+					},
 				}, {
 					script: {
-						$exists: false
+						$exists: false,
 					},
 					prepareOutgoingRequestScript: {
-						$exists: true
-					}
+						$exists: true,
+					},
 				}, {
 					script: {
-						$exists: false
+						$exists: false,
 					},
 					processOutgoingResponseScript: {
-						$exists: true
-					}
-				}
-			]
+						$exists: true,
+					},
+				},
+			],
 		}).fetch();
 
 		integrations.forEach(function(integration) {
@@ -44,8 +44,8 @@ RocketChat.Migrations.add({
 
 			return RocketChat.models.Integrations.update(integration._id, {
 				$set: {
-					script: scriptAlert + script.replace(/^/gm, '// ')
-				}
+					script: scriptAlert + script.replace(/^/gm, '// '),
+				},
 			});
 		});
 
@@ -53,26 +53,26 @@ RocketChat.Migrations.add({
 			$unset: {
 				processIncomingRequestScript: 1,
 				prepareOutgoingRequestScript: 1,
-				processOutgoingResponseScript: 1
-			}
+				processOutgoingResponseScript: 1,
+			},
 		};
 
 		RocketChat.models.Integrations.update({}, update, {
-			multi: true
+			multi: true,
 		});
 
 		update = {
 			$set: {
-				enabled: true
-			}
+				enabled: true,
+			},
 		};
 
 		RocketChat.models.Integrations.update({
 			enabled: {
-				$exists: false
-			}
+				$exists: false,
+			},
 		}, update, {
-			multi: true
+			multi: true,
 		});
-	}
+	},
 });

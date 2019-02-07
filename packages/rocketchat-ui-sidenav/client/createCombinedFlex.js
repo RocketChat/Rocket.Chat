@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { SideNav } from 'meteor/rocketchat:ui-utils';
+import { handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 Template.createCombinedFlex.helpers({
@@ -31,22 +39,22 @@ Template.createCombinedFlex.helpers({
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
 					filter: {
-						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
+						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get()),
 					},
 					selector(match) {
 						return { term: match };
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 		};
 	},
 	privateSwitchDisabled() {
-		return RocketChat.authz.hasAllPermission(['create-c', 'create-p']) ? '' : 'disabled';
+		return hasAllPermission(['create-c', 'create-p']) ? '' : 'disabled';
 	},
 	privateSwitchChecked() {
-		return RocketChat.authz.hasAllPermission('create-c') ? '' : 'checked';
-	}
+		return hasAllPermission('create-c') ? '' : 'checked';
+	},
 });
 
 Template.createCombinedFlex.events({
@@ -63,7 +71,7 @@ Template.createCombinedFlex.events({
 		const self = this;
 
 		let users = Template.instance().selectedUsers.get();
-		users = _.reject(Template.instance().selectedUsers.get(), _id => _id === self.valueOf());
+		users = _.reject(Template.instance().selectedUsers.get(), (_id) => _id === self.valueOf());
 
 		Template.instance().selectedUsers.set(users);
 
@@ -124,7 +132,7 @@ Template.createCombinedFlex.events({
 				SideNav.closeFlex(() => instance.clearForm());
 
 				if (!privateGroup) {
-					RocketChat.callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
+					callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 				}
 
 				return FlowRouter.go(successRoute, { name: result.name }, FlowRouter.current().queryParams);
@@ -132,7 +140,7 @@ Template.createCombinedFlex.events({
 		} else {
 			return instance.error.set({ fields: err });
 		}
-	}
+	},
 });
 
 Template.createCombinedFlex.onCreated(function() {

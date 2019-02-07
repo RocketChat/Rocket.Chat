@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	addRoomOwner(rid, userId) {
 		check(rid, String);
@@ -5,13 +8,13 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'set-owner', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
@@ -19,7 +22,7 @@ Meteor.methods({
 
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
@@ -27,13 +30,13 @@ Meteor.methods({
 
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
 		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('owner') === true) {
 			throw new Meteor.Error('error-user-already-owner', 'User is already an owner', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
@@ -44,9 +47,9 @@ Meteor.methods({
 		RocketChat.models.Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
 			},
-			role: 'owner'
+			role: 'owner',
 		});
 
 		if (RocketChat.settings.get('UI_DisplayRoles')) {
@@ -56,12 +59,12 @@ Meteor.methods({
 				u: {
 					_id: user._id,
 					username: user.username,
-					name: user.name
+					name: user.name,
 				},
-				scope: rid
+				scope: rid,
 			});
 		}
 
 		return true;
-	}
+	},
 });

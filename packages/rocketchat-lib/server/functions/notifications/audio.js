@@ -1,18 +1,19 @@
 export function shouldNotifyAudio({
 	disableAllMessageNotifications,
 	status,
+	statusConnection,
 	audioNotifications,
 	hasMentionToAll,
 	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
-	roomType
+	roomType,
 }) {
 	if (disableAllMessageNotifications && audioNotifications == null) {
 		return false;
 	}
 
-	if (status === 'busy' || audioNotifications === 'nothing') {
+	if (statusConnection === 'offline' || status === 'busy' || audioNotifications === 'nothing') {
 		return false;
 	}
 
@@ -31,7 +32,7 @@ export function notifyAudioUser(userId, message, room) {
 			rid: message.rid,
 			sender: message.u,
 			type: room.t,
-			name: room.name
-		}
+			name: room.name,
+		},
 	});
 }

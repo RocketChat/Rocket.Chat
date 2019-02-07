@@ -1,15 +1,18 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+
 Meteor.methods({
 	addUsersToRoom(data = {}) {
 		// Validate user and room
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addUsersToRoom'
+				method: 'addUsersToRoom',
 			});
 		}
 
 		if (!Match.test(data.rid, String)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'addUsersToRoom'
+				method: 'addUsersToRoom',
 			});
 		}
 
@@ -22,7 +25,7 @@ Meteor.methods({
 		// Can't add to direct room ever
 		if (room.t === 'd') {
 			throw new Meteor.Error('error-cant-invite-for-direct-room', 'Can\'t invite user to direct rooms', {
-				method: 'addUsersToRoom'
+				method: 'addUsersToRoom',
 			});
 		}
 
@@ -39,14 +42,14 @@ Meteor.methods({
 		// Adding wasn't allowed
 		if (!canAddUser) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'addUsersToRoom'
+				method: 'addUsersToRoom',
 			});
 		}
 
 		// Missing the users to be added
 		if (!Array.isArray(data.users)) {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
-				method: 'addUsersToRoom'
+				method: 'addUsersToRoom',
 			});
 		}
 
@@ -56,12 +59,12 @@ Meteor.methods({
 			const newUser = RocketChat.models.Users.findOneByUsername(username);
 			if (!newUser) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
-					method: 'addUsersToRoom'
+					method: 'addUsersToRoom',
 				});
 			}
 			RocketChat.addUserToRoom(data.rid, newUser, user);
 		});
 
 		return true;
-	}
+	},
 });

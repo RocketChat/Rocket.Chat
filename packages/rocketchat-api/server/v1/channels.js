@@ -1,7 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
-//Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
-function findChannelByIdOrName({ params, checkedArchived = true }) {
+// Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
+function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -22,6 +24,9 @@ function findChannelByIdOrName({ params, checkedArchived = true }) {
 	if (checkedArchived && room.archived) {
 		throw new Meteor.Error('error-room-archived', `The channel, ${ room.name }, is archived`);
 	}
+	if (userId && room.lastMessage) {
+		room.lastMessage = RocketChat.composeMessageObjectWithUser(room.lastMessage, userId);
+	}
 
 	return room;
 }
@@ -35,9 +40,9 @@ RocketChat.API.v1.addRoute('channels.addAll', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.addModerator', { authRequired: true }, {
@@ -51,7 +56,7 @@ RocketChat.API.v1.addRoute('channels.addModerator', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.addOwner', { authRequired: true }, {
@@ -65,7 +70,7 @@ RocketChat.API.v1.addRoute('channels.addOwner', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
@@ -77,42 +82,7 @@ RocketChat.API.v1.addRoute('channels.archive', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
-});
-
-/**
- DEPRECATED
- // TODO: Remove this after three versions have been released. That means at 0.67 this should be gone.
- **/
-RocketChat.API.v1.addRoute('channels.cleanHistory', { authRequired: true }, {
-	post() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams() });
-
-		if (!this.bodyParams.latest) {
-			return RocketChat.API.v1.failure('Body parameter "latest" is required.');
-		}
-
-		if (!this.bodyParams.oldest) {
-			return RocketChat.API.v1.failure('Body parameter "oldest" is required.');
-		}
-
-		const latest = new Date(this.bodyParams.latest);
-		const oldest = new Date(this.bodyParams.oldest);
-
-		let inclusive = false;
-		if (typeof this.bodyParams.inclusive !== 'undefined') {
-			inclusive = this.bodyParams.inclusive;
-		}
-
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('cleanChannelHistory', { roomId: findResult._id, latest, oldest, inclusive });
-		});
-
-		return RocketChat.API.v1.success(this.deprecationWarning({
-			endpoint: 'channels.cleanHistory',
-			versionWillBeRemove: 'v0.67'
-		}));
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
@@ -134,13 +104,13 @@ RocketChat.API.v1.addRoute('channels.close', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 	get() {
 		const access = RocketChat.authz.hasPermission(this.userId, 'view-room-administration');
-		const userId = this.requestParams().userId;
+		const { userId } = this.requestParams();
 		let user = this.userId;
 		let unreads = null;
 		let userMentions = null;
@@ -158,16 +128,14 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 		}
 		const room = findChannelByIdOrName({
 			params: this.requestParams(),
-			returnUsernames: true
+			returnUsernames: true,
 		});
 		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user);
 		const lm = room.lm ? room.lm : room._updatedAt;
 
 		if (typeof subscription !== 'undefined' && subscription.open) {
-			if (subscription.ls) {
-				unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
-				unreadsFrom = subscription.ls;
-			}
+			unreads = RocketChat.models.Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+			unreadsFrom = subscription.ls || subscription.ts;
 			userMentions = subscription.userMentions;
 			joined = true;
 		}
@@ -185,9 +153,9 @@ RocketChat.API.v1.addRoute('channels.counters', { authRequired: true }, {
 			unreadsFrom,
 			msgs,
 			latest,
-			userMentions
+			userMentions,
 		});
-	}
+	},
 });
 
 // Channel -> create
@@ -211,47 +179,39 @@ function createChannelValidator(params) {
 }
 
 function createChannel(userId, params) {
-	let readOnly = false;
-	if (typeof params.readOnly !== 'undefined') {
-		readOnly = params.readOnly;
-	}
-
-	let id;
-	Meteor.runAsUser(userId, () => {
-		id = Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields);
-	});
+	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
+	const id = Meteor.runAsUser(userId, () => Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields));
 
 	return {
-		channel: RocketChat.models.Rooms.findOneById(id.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+		channel: findChannelByIdOrName({ params: { roomId: id.rid }, userId: this.userId }),
 	};
 }
 
 RocketChat.API.channels = {};
 RocketChat.API.channels.create = {
 	validate: createChannelValidator,
-	execute: createChannel
+	execute: createChannel,
 };
 
 RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 	post() {
-		const userId = this.userId;
-		const bodyParams = this.bodyParams;
+		const { userId, bodyParams } = this;
 
 		let error;
 
 		try {
 			RocketChat.API.channels.create.validate({
 				user: {
-					value: userId
+					value: userId,
 				},
 				name: {
 					value: bodyParams.name,
-					key: 'name'
+					key: 'name',
 				},
 				members: {
 					value: bodyParams.members,
-					key: 'members'
-				}
+					key: 'members',
+				},
 			});
 		} catch (e) {
 			if (e.message === 'unauthorized') {
@@ -266,7 +226,7 @@ RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success(RocketChat.API.channels.create.execute(userId, bodyParams));
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
@@ -277,10 +237,8 @@ RocketChat.API.v1.addRoute('channels.delete', { authRequired: true }, {
 			Meteor.call('eraseRoom', findResult._id);
 		});
 
-		return RocketChat.API.v1.success({
-			channel: findResult
-		});
-	}
+		return RocketChat.API.v1.success();
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
@@ -306,7 +264,7 @@ RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields,
 		}).fetch();
 
 		return RocketChat.API.v1.success({
@@ -314,9 +272,9 @@ RocketChat.API.v1.addRoute('channels.files', { authRequired: true }, {
 			count:
 			files.length,
 			offset,
-			total: RocketChat.models.Uploads.find(ourQuery).count()
+			total: RocketChat.models.Uploads.find(ourQuery).count(),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
@@ -333,12 +291,12 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 		}
 
 		let ourQuery = {
-			channel: `#${ findResult.name }`
+			channel: `#${ findResult.name }`,
 		};
 
 		if (includeAllPublicChannels) {
 			ourQuery.channel = {
-				$in: [ourQuery.channel, 'all_public_channels']
+				$in: [ourQuery.channel, 'all_public_channels'],
 			};
 		}
 
@@ -351,16 +309,16 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 			sort: sort ? sort : { _createdAt: 1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields,
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			integrations,
 			count: integrations.length,
 			offset,
-			total: RocketChat.models.Integrations.find(ourQuery).count()
+			total: RocketChat.models.Integrations.find(ourQuery).count(),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
@@ -377,20 +335,14 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 			oldestDate = new Date(this.queryParams.oldest);
 		}
 
-		let inclusive = false;
-		if (this.queryParams.inclusive) {
-			inclusive = this.queryParams.inclusive;
-		}
+		const inclusive = this.queryParams.inclusive || false;
 
 		let count = 20;
 		if (this.queryParams.count) {
 			count = parseInt(this.queryParams.count);
 		}
 
-		let unreads = false;
-		if (this.queryParams.unreads) {
-			unreads = this.queryParams.unreads;
-		}
+		const unreads = this.queryParams.unreads || false;
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
@@ -400,7 +352,7 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 				oldest: oldestDate,
 				inclusive,
 				count,
-				unreads
+				unreads,
 			});
 		});
 
@@ -409,17 +361,19 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 		}
 
 		return RocketChat.API.v1.success(result);
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.info', { authRequired: true }, {
 	get() {
-		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
-
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({
+				params: this.requestParams(),
+				checkedArchived: false,
+				userId: this.userId,
+			}),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
@@ -433,9 +387,9 @@ RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.join', { authRequired: true }, {
@@ -447,9 +401,9 @@ RocketChat.API.v1.addRoute('channels.join', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
@@ -463,9 +417,9 @@ RocketChat.API.v1.addRoute('channels.kick', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
@@ -477,14 +431,14 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 	get: {
-		//This is defined as such only to provide an example of how the routes can be defined :X
+		// This is defined as such only to provide an example of how the routes can be defined :X
 		action() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
@@ -496,7 +450,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 				if (!RocketChat.authz.hasPermission(this.userId, 'view-joined-room')) {
 					return RocketChat.API.v1.unauthorized();
 				}
-				const roomIds = RocketChat.models.Subscriptions.findByUserIdAndType(this.userId, 'c', { fields: { rid: 1 } }).fetch().map(s => s.rid);
+				const roomIds = RocketChat.models.Subscriptions.findByUserIdAndType(this.userId, 'c', { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				ourQuery._id = { $in: roomIds };
 			}
 
@@ -504,7 +458,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 				sort: sort ? sort : { name: 1 },
 				skip: offset,
 				limit: count,
-				fields
+				fields,
 			});
 
 			const total = cursor.count();
@@ -512,13 +466,13 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 			const rooms = cursor.fetch();
 
 			return RocketChat.API.v1.success({
-				channels: rooms,
+				channels: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 				count: rooms.length,
 				offset,
-				total
+				total,
 			});
-		}
-	}
+		},
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
@@ -531,26 +485,26 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields,
 		});
 
 		const totalCount = cursor.count();
 		const rooms = cursor.fetch();
 
 		return RocketChat.API.v1.success({
-			channels: rooms,
+			channels: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 			offset,
 			count: rooms.length,
-			total: totalCount
+			total: totalCount,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({
 			params: this.requestParams(),
-			checkedArchived: false
+			checkedArchived: false,
 		});
 
 		if (findResult.broadcast && !RocketChat.authz.hasPermission(this.userId, 'view-broadcast-member-list')) {
@@ -564,39 +518,39 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 			fields: { 'u._id': 1 },
 			sort: { 'u.username': sort.username != null ? sort.username : 1 },
 			skip: offset,
-			limit: count
+			limit: count,
 		});
 
 		const total = subscriptions.count();
 
-		const members = subscriptions.fetch().map(s => s.u && s.u._id);
+		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
 
 		const users = RocketChat.models.Users.find({ _id: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, utcOffset: 1 },
-			sort: { username:  sort.username != null ? sort.username : 1 }
+			sort: { username: sort.username != null ? sort.username : 1 },
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			members: users,
 			count: users.length,
 			offset,
-			total
+			total,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({
 			params: this.requestParams(),
-			checkedArchived: false
+			checkedArchived: false,
 		});
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
-		//Special check for the permissions
+		// Special check for the permissions
 		if (RocketChat.authz.hasPermission(this.userId, 'view-joined-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { fields: { _id: 1 } })) {
 			return RocketChat.API.v1.unauthorized();
 		}
@@ -608,19 +562,19 @@ RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 			sort: sort ? sort : { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields,
 		});
 
 		const total = cursor.count();
 		const messages = cursor.fetch();
 
 		return RocketChat.API.v1.success({
-			messages,
+			messages: messages.map((record) => RocketChat.composeMessageObjectWithUser(record, this.userId)),
 			count: messages.length,
 			offset,
-			total
+			total,
 		});
-	}
+	},
 });
 // TODO: CACHE: I dont like this method( functionality and how we implemented ) its very expensive
 // TODO check if this code is better or not
@@ -663,24 +617,24 @@ RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
 		}
 
 		const online = RocketChat.models.Users.findUsersNotOffline({
-			fields: { username: 1 }
+			fields: { username: 1 },
 		}).fetch();
 
 		const onlineInRoom = [];
-		online.forEach(user => {
-			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(root._id, user._id, { fields: { _id: 1 } });
+		online.forEach((user) => {
+			const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
 			if (subscription) {
 				onlineInRoom.push({
 					_id: user._id,
-					username: user.username
+					username: user.username,
 				});
 			}
 		});
 
 		return RocketChat.API.v1.success({
-			online: onlineInRoom
+			online: onlineInRoom,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.open', { authRequired: true }, {
@@ -702,7 +656,7 @@ RocketChat.API.v1.addRoute('channels.open', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.removeModerator', { authRequired: true }, {
@@ -716,7 +670,7 @@ RocketChat.API.v1.addRoute('channels.removeModerator', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.removeOwner', { authRequired: true }, {
@@ -730,7 +684,7 @@ RocketChat.API.v1.addRoute('channels.removeOwner', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
@@ -750,9 +704,9 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: { roomId: this.bodyParams.roomId }, userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setCustomFields', { authRequired: true }, {
@@ -768,9 +722,9 @@ RocketChat.API.v1.addRoute('channels.setCustomFields', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setDefault', { authRequired: true }, {
@@ -790,9 +744,9 @@ RocketChat.API.v1.addRoute('channels.setDefault', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setDescription', { authRequired: true }, {
@@ -812,9 +766,9 @@ RocketChat.API.v1.addRoute('channels.setDescription', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			description: this.bodyParams.description
+			description: this.bodyParams.description,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
@@ -830,9 +784,9 @@ RocketChat.API.v1.addRoute('channels.setJoinCode', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
@@ -852,9 +806,9 @@ RocketChat.API.v1.addRoute('channels.setPurpose', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			purpose: this.bodyParams.purpose
+			purpose: this.bodyParams.purpose,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
@@ -874,9 +828,9 @@ RocketChat.API.v1.addRoute('channels.setReadOnly', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
@@ -896,9 +850,9 @@ RocketChat.API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			topic: this.bodyParams.topic
+			topic: this.bodyParams.topic,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
@@ -914,9 +868,9 @@ RocketChat.API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			announcement: this.bodyParams.announcement
+			announcement: this.bodyParams.announcement,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
@@ -936,9 +890,9 @@ RocketChat.API.v1.addRoute('channels.setType', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			channel: RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude })
+			channel: this.composeRoomWithLastMessage(RocketChat.models.Rooms.findOneById(findResult._id, { fields: RocketChat.API.v1.defaultFieldsToExclude }), this.userId),
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
@@ -954,7 +908,7 @@ RocketChat.API.v1.addRoute('channels.unarchive', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success();
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequired: true }, {
@@ -972,22 +926,22 @@ RocketChat.API.v1.addRoute('channels.getAllUserMentionsByChannel', { authRequire
 			options: {
 				sort: sort ? sort : { ts: 1 },
 				skip: offset,
-				limit: count
-			}
+				limit: count,
+			},
 		}));
 
 		const allMentions = Meteor.runAsUser(this.userId, () => Meteor.call('getUserMentionsByChannel', {
 			roomId,
-			options: {}
+			options: {},
 		}));
 
 		return RocketChat.API.v1.success({
 			mentions,
 			count: mentions.length,
 			offset,
-			total: allMentions.length
+			total: allMentions.length,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('channels.roles', { authRequired: true }, {
@@ -997,7 +951,19 @@ RocketChat.API.v1.addRoute('channels.roles', { authRequired: true }, {
 		const roles = Meteor.runAsUser(this.userId, () => Meteor.call('getRoomRoles', findResult._id));
 
 		return RocketChat.API.v1.success({
-			roles
+			roles,
 		});
-	}
+	},
+});
+
+RocketChat.API.v1.addRoute('channels.moderators', { authRequired: true }, {
+	get() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		const moderators = RocketChat.models.Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], { fields: { u: 1 } }).fetch().map((sub) => sub.u);
+
+		return RocketChat.API.v1.success({
+			moderators,
+		});
+	},
 });

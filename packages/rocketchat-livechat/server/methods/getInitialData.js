@@ -1,9 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
-	'livechat:getInitialData'(visitorToken) {
+	'livechat:getInitialData'(visitorToken, departmentId) {
 		const info = {
 			enabled: null,
 			title: null,
@@ -21,12 +23,14 @@ Meteor.methods({
 			offlineUnavailableMessage: null,
 			displayOfflineForm: null,
 			videoCall: null,
+			fileUpload: null,
 			conversationFinishedMessage: null,
 			nameFieldRegistrationForm: null,
-			emailFieldRegistrationForm: null
+			emailFieldRegistrationForm: null,
+			registrationFormMessage: null,
 		};
 
-		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
+		const options = {
 			fields: {
 				name: 1,
 				t: 1,
@@ -34,10 +38,11 @@ Meteor.methods({
 				u: 1,
 				usernames: 1,
 				v: 1,
-				servedBy: 1
-			}
-		}).fetch();
-
+				servedBy: 1,
+				departmentId: 1,
+			},
+		};
+		const room = (departmentId) ? RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}
@@ -46,8 +51,9 @@ Meteor.methods({
 			fields: {
 				name: 1,
 				username: 1,
-				visitorEmails: 1
-			}
+				visitorEmails: 1,
+				department: 1,
+			},
 		});
 
 		if (room) {
@@ -68,16 +74,18 @@ Meteor.methods({
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
 		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
+		info.fileUpload = initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
 		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
 		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
+		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 
 		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
 
 		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
-			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions'));
+			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 		});
 
 		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {
@@ -86,7 +94,6 @@ Meteor.methods({
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
 		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
-
 		return info;
-	}
+	},
 });

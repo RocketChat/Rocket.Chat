@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
 RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 	let encoding;
 	let image;
@@ -8,7 +13,7 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 		let result = null;
 
 		try {
-			result = HTTP.get(dataURI, { npmRequestOptions: {encoding: 'binary'} });
+			result = HTTP.get(dataURI, { npmRequestOptions: { encoding: 'binary', rejectUnauthorized: false } });
 		} catch (error) {
 			if (!error.response || error.response.statusCode !== 404) {
 				console.log(`Error while handling the setting of the avatar from a url (${ dataURI }) for ${ user.username }:`, error);
@@ -46,13 +51,13 @@ RocketChat.setUserAvatar = function(user, dataURI, contentType, service) {
 	const file = {
 		userId: user._id,
 		type: contentType,
-		size: buffer.length
+		size: buffer.length,
 	};
 
 	fileStore.insert(file, buffer, () => {
 		Meteor.setTimeout(function() {
 			RocketChat.models.Users.setAvatarOrigin(user._id, service);
-			RocketChat.Notifications.notifyLogged('updateAvatar', {username: user.username});
+			RocketChat.Notifications.notifyLogged('updateAvatar', { username: user.username });
 		}, 500);
 	});
 };

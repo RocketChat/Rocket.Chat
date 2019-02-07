@@ -1,6 +1,67 @@
-/* globals renderEmoji renderMessageBody */
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import moment from 'moment';
+import { DateFormat } from 'meteor/rocketchat:lib';
+import { renderEmoji } from 'meteor/rocketchat:emoji';
+import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+
+async function renderPdfToCanvas(canvasId, pdfLink) {
+	const isSafari = /constructor/i.test(window.HTMLElement) ||
+		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
+			(typeof window.safari !== 'undefined' && window.safari.pushNotification));
+
+	if (isSafari) {
+		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];
+		if (version <= 12) {
+			return;
+		}
+	}
+
+	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
+		return;
+	}
+
+	const canvas = document.getElementById(canvasId);
+	if (!canvas) {
+		return;
+	}
+
+	const pdfjsLib = await import('pdfjs-dist');
+	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }node_modules/pdfjs-dist/build/pdf.worker.js`;
+
+	const loader = document.getElementById(`js-loading-${ canvasId }`);
+
+	if (loader) {
+		loader.style.display = 'block';
+	}
+
+	const pdf = await pdfjsLib.getDocument(pdfLink);
+	const page = await pdf.getPage(1);
+	const scale = 0.5;
+	const viewport = page.getViewport(scale);
+	const context = canvas.getContext('2d');
+	canvas.height = viewport.height;
+	canvas.width = viewport.width;
+	await page.render({
+		canvasContext: context,
+		viewport,
+	}).promise;
+
+	if (loader) {
+		loader.style.display = 'none';
+	}
+
+	canvas.style.maxWidth = '-webkit-fill-available';
+	canvas.style.maxWidth = '-moz-available';
+	canvas.style.display = 'block';
+}
 
 Template.message.helpers({
 	encodeURI(text) {
@@ -8,7 +69,7 @@ Template.message.helpers({
 	},
 	broadcast() {
 		const instance = Template.instance();
-		return !this.private && this.t && this.u._id !== Meteor.userId() && instance.room && instance.room.broadcast;
+		return !this.private && !this.t && this.u._id !== Meteor.userId() && instance.room && instance.room.broadcast;
 	},
 	isIgnored() {
 		return this.ignored;
@@ -16,39 +77,40 @@ Template.message.helpers({
 	ignoredClass() {
 		return this.ignored ? 'message--ignored' : '';
 	},
+	isDecrypting() {
+		return this.e2e === 'pending';
+	},
 	isBot() {
 		if (this.bot != null) {
 			return 'bot';
 		}
 	},
 	roleTags() {
-		const user = Meteor.user();
-		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(user, 'hideRoles')) {
+		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(Meteor.userId(), 'hideRoles')) {
 			return [];
 		}
 
 		if (!this.u || !this.u._id) {
 			return [];
 		}
-		/* globals UserRoles RoomRoles */
 		const userRoles = UserRoles.findOne(this.u._id);
 		const roomRoles = RoomRoles.findOne({
 			'u._id': this.u._id,
-			rid: this.rid
+			rid: this.rid,
 		});
 		const roles = [...(userRoles && userRoles.roles) || [], ...(roomRoles && roomRoles.roles) || []];
 		return RocketChat.models.Roles.find({
 			_id: {
-				$in: roles
+				$in: roles,
 			},
 			description: {
 				$exists: 1,
-				$ne: ''
-			}
+				$ne: '',
+			},
 		}, {
 			fields: {
-				description: 1
-			}
+				description: 1,
+			},
 		});
 	},
 	isGroupable() {
@@ -82,7 +144,7 @@ Template.message.helpers({
 		return (RocketChat.settings.get('UI_Use_Real_Name') && this.u.name) || this.u.username;
 	},
 	showUsername() {
-		return this.alias || RocketChat.settings.get('UI_Use_Real_Name') && this.u && this.u.name;
+		return this.alias || (RocketChat.settings.get('UI_Use_Real_Name') && this.u && this.u.name);
 	},
 	own() {
 		if (this.u && this.u._id === Meteor.userId()) {
@@ -98,10 +160,10 @@ Template.message.helpers({
 		}
 	},
 	time() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
+		return DateFormat.formatTime(this.ts);
 	},
 	date() {
-		return moment(this.ts).format(RocketChat.settings.get('Message_DateFormat'));
+		return DateFormat.formatDate(this.ts);
 	},
 	isTemp() {
 		if (this.temp === true) {
@@ -123,15 +185,15 @@ Template.message.helpers({
 		if (RocketChat.settings.get('AutoTranslate_Enabled') && this.u && this.u._id !== Meteor.userId() && !RocketChat.MessageTypes.isSystemMessage(this)) {
 			const subscription = RocketChat.models.Subscriptions.findOne({
 				rid: this.rid,
-				'u._id': Meteor.userId()
+				'u._id': Meteor.userId(),
 			}, {
 				fields: {
 					autoTranslate: 1,
-					autoTranslateLanguage: 1
-				}
+					autoTranslateLanguage: 1,
+				},
 			});
 			const language = RocketChat.AutoTranslate.getLanguage(this.rid);
-			return this.autoTranslateFetching || subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language];
+			return this.autoTranslateFetching || (subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language]);
 		}
 	},
 	edited() {
@@ -139,7 +201,7 @@ Template.message.helpers({
 	},
 	editTime() {
 		if (Template.instance().wasEdited) {
-			return moment(this.editedAt).format(`${ RocketChat.settings.get('Message_DateFormat') } ${ RocketChat.settings.get('Message_TimeFormat') }`);
+			return DateFormat.formatDateAndTime(this.editedAt);
 		}
 	},
 	editedBy() {
@@ -212,20 +274,23 @@ Template.message.helpers({
 		}
 
 		// check if oembed is disabled for message's sender
-		if ((RocketChat.settings.get('API_EmbedDisabledFor')||'').split(',').map(username => username.trim()).includes(this.u && this.u.username)) {
+		if ((RocketChat.settings.get('API_EmbedDisabledFor') || '').split(',').map((username) => username.trim()).includes(this.u && this.u.username)) {
 			return false;
 		}
 		return true;
 	},
 	reactions() {
 		const userUsername = Meteor.user() && Meteor.user().username;
-		return Object.keys(this.reactions||{}).map(emoji => {
+		return Object.keys(this.reactions || {}).map((emoji) => {
 			const reaction = this.reactions[emoji];
 			const total = reaction.usernames.length;
-			let usernames = reaction.usernames.slice(0, 15).map(username => username === userUsername ? t('You').toLowerCase() : `@${ username }`).join(', ');
+			let usernames = reaction.usernames
+				.slice(0, 15)
+				.map((username) => (username === userUsername ? t('You').toLowerCase() : `@${ username }`))
+				.join(', ');
 			if (total > 15) {
 				usernames = `${ usernames } ${ t('And_more', {
-					length: total - 15
+					length: total - 15,
 				}).toLowerCase() }`;
 			} else {
 				usernames = usernames.replace(/,([^,]+)$/, ` ${ t('and') }$1`);
@@ -238,14 +303,14 @@ Template.message.helpers({
 				count: reaction.usernames.length,
 				usernames,
 				reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-				userReacted: reaction.usernames.indexOf(userUsername) > -1
+				userReacted: reaction.usernames.indexOf(userUsername) > -1,
 			};
 		});
 	},
 	markUserReaction(reaction) {
 		if (reaction.userReacted) {
 			return {
-				'class': 'selected'
+				class: 'selected',
 			};
 		}
 	},
@@ -258,7 +323,7 @@ Template.message.helpers({
 		// remove 'method_id' and 'params' properties
 		return _.map(this.actionLinks, function(actionLink, key) {
 			return _.extend({
-				id: key
+				id: key,
 			}, _.omit(actionLink, 'method_id', 'params'));
 		});
 	},
@@ -272,14 +337,14 @@ Template.message.helpers({
 	},
 	hideCog() {
 		const subscription = RocketChat.models.Subscriptions.findOne({
-			rid: this.rid
+			rid: this.rid,
 		});
 		if (subscription == null) {
 			return 'hidden';
 		}
 	},
 	channelName() {
-		const subscription = RocketChat.models.Subscriptions.findOne({rid: this.rid});
+		const subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid });
 		return subscription && subscription.name;
 	},
 	roomIcon() {
@@ -311,7 +376,7 @@ Template.message.helpers({
 	},
 	isSnippet() {
 		return this.actionContext === 'snippeted';
-	}
+	},
 });
 
 
@@ -321,16 +386,16 @@ Template.message.onCreated(function() {
 	this.wasEdited = (msg.editedAt != null) && !RocketChat.MessageTypes.isSystemMessage(msg);
 
 	this.room = RocketChat.models.Rooms.findOne({
-		_id: msg.rid
+		_id: msg.rid,
 	}, {
 		fields: {
-			broadcast: 1
-		}
+			broadcast: 1,
+		},
 	});
 
 	return this.body = (() => {
 		const isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
-		const messageType = RocketChat.MessageTypes.getType(msg)||{};
+		const messageType = RocketChat.MessageTypes.getType(msg) || {};
 		if (messageType.render) {
 			msg = messageType.render(msg);
 		} else if (messageType.template) {
@@ -357,7 +422,10 @@ Template.message.onCreated(function() {
 });
 
 Template.message.onViewRendered = function(context) {
-	return this._domrange.onAttached(function(domRange) {
+	return this._domrange.onAttached((domRange) => {
+		if (context.file && context.file.type === 'application/pdf') {
+			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
+		}
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
 		const getPreviousSentMessage = (currentNode) => {

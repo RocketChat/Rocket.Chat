@@ -3,45 +3,45 @@ function registerUser(parameters) {
 
 	this.write({
 		prefix: this.config.server.name,
-		command: 'NICK', parameters: [ nick, 1, username, 'irc.rocket.chat', 1, '+i' ],
-		trailer: name
+		command: 'NICK', parameters: [nick, 1, username, 'irc.rocket.chat', 1, '+i'],
+		trailer: name,
 	});
 }
 
 function joinChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } }
+		user: { profile: { irc: { nick } } },
 	} = parameters;
 
 	this.write({
 		prefix: this.config.server.name,
-		command: 'NJOIN', parameters: [ `#${ roomName }` ],
-		trailer: nick
+		command: 'NJOIN', parameters: [`#${ roomName }`],
+		trailer: nick,
 	});
 }
 
 function joinedChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } }
+		user: { profile: { irc: { nick } } },
 	} = parameters;
 
 	this.write({
 		prefix: nick,
-		command: 'JOIN', parameters: [ `#${ roomName }` ]
+		command: 'JOIN', parameters: [`#${ roomName }`],
 	});
 }
 
 function leftChannel(parameters) {
 	const {
 		room: { name: roomName },
-		user: { profile: { irc: { nick } } }
+		user: { profile: { irc: { nick } } },
 	} = parameters;
 
 	this.write({
 		prefix: nick,
-		command: 'PART', parameters: [ `#${ roomName }` ]
+		command: 'PART', parameters: [`#${ roomName }`],
 	});
 }
 
@@ -49,24 +49,24 @@ function sentMessage(parameters) {
 	const {
 		user: { profile: { irc: { nick } } },
 		to,
-		message
+		message,
 	} = parameters;
 
 	this.write({
 		prefix: nick,
-		command: 'PRIVMSG', parameters: [ to ],
-		trailer: message
+		command: 'PRIVMSG', parameters: [to],
+		trailer: message,
 	});
 }
 
 function disconnected(parameters) {
 	const {
-		user: { profile: { irc: { nick } } }
+		user: { profile: { irc: { nick } } },
 	} = parameters;
 
 	this.write({
 		prefix: nick,
-		command: 'QUIT'
+		command: 'QUIT',
 	});
 }
 

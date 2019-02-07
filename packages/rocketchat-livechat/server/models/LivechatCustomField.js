@@ -1,3 +1,4 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 /**
@@ -19,7 +20,7 @@ class LivechatCustomField extends RocketChat.models._Base {
 		const record = {
 			label,
 			scope,
-			visibility
+			visibility,
 		};
 
 		_.extend(record, extraData);

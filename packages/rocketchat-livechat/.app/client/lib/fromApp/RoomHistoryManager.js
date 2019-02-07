@@ -1,5 +1,8 @@
 /* globals readMessage UserRoles RoomRoles*/
 
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
 import visitor from '../../../imports/client/visitor';
 import _ from 'underscore';
 
@@ -16,7 +19,7 @@ export const RoomHistoryManager = new class {
 				isLoading: new ReactiveVar(false),
 				unreadNotLoaded: new ReactiveVar(0),
 				firstUnread: new ReactiveVar,
-				loaded: undefined
+				loaded: undefined,
 			};
 		}
 
@@ -32,9 +35,9 @@ export const RoomHistoryManager = new class {
 
 		room.isLoading.set(true);
 
-		//$('.messages-box .wrapper').data('previous-height', $('.messages-box .wrapper').get(0)?.scrollHeight - $('.messages-box .wrapper').get(0)?.scrollTop)
+		// $('.messages-box .wrapper').data('previous-height', $('.messages-box .wrapper').get(0)?.scrollHeight - $('.messages-box .wrapper').get(0)?.scrollTop)
 		// ScrollListener.setLoader true
-		const lastMessage = ChatMessage.findOne({rid}, { fields: { ts: 1 }, sort: { ts: 1 }});
+		const lastMessage = ChatMessage.findOne({ rid }, { fields: { ts: 1 }, sort: { ts: 1 } });
 		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 
 		let ts;
@@ -52,7 +55,7 @@ export const RoomHistoryManager = new class {
 			if (result && result.messages) {
 				result.messages.forEach((item) => {
 					if (item.t !== 'command') {
-						ChatMessage.upsert({_id: item._id}, item);
+						ChatMessage.upsert({ _id: item._id }, item);
 					}
 				});
 				room.isLoading.set(false);
@@ -76,16 +79,16 @@ export const RoomHistoryManager = new class {
 
 		room.isLoading.set(true);
 
-		const lastMessage = ChatMessage.findOne({rid}, {sort: {ts: -1}});
+		const lastMessage = ChatMessage.findOne({ rid }, { sort: { ts: -1 } });
 
 		let typeName = undefined;
 
-		const subscription = ChatSubscription.findOne({rid});
+		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription != null) {
 			// const { ls } = subscription;
 			typeName = subscription.t + subscription.name;
 		} else {
-			const curRoomDoc = ChatRoom.findOne({_id: rid});
+			const curRoomDoc = ChatRoom.findOne({ _id: rid });
 			typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 		}
 
@@ -96,11 +99,11 @@ export const RoomHistoryManager = new class {
 				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
 					if (item.t !== 'command') {
 						const roles = [
-							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
-							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-						].map(e => e.roles);
+							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 } })) || {},
+							(item.u && item.u._id && RoomRoles.findOne({ rid: item.rid, 'u._id': item.u._id })) || {},
+						].map((e) => e.roles);
 						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({_id: item._id}, item);
+						ChatMessage.upsert({ _id: item._id }, item);
 					}
 				}
 
@@ -128,9 +131,9 @@ export const RoomHistoryManager = new class {
 		if (ChatMessage.findOne(message._id)) {
 			const wrapper = $('.messages-box .wrapper');
 			const msgElement = $(`#${ message._id }`, wrapper);
-			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height()/2);
+			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
 			wrapper.animate({
-				scrollTop: pos
+				scrollTop: pos,
 			}, 500);
 			msgElement.addClass('highlight');
 
@@ -147,12 +150,12 @@ export const RoomHistoryManager = new class {
 
 			let typeName = undefined;
 
-			const subscription = ChatSubscription.findOne({rid: message.rid});
+			const subscription = ChatSubscription.findOne({ rid: message.rid });
 			if (subscription) {
 				// const { ls } = subscription;
 				typeName = subscription.t + subscription.name;
 			} else {
-				const curRoomDoc = ChatRoom.findOne({_id: message.rid});
+				const curRoomDoc = ChatRoom.findOne({ _id: message.rid });
 				typeName = (curRoomDoc != null ? curRoomDoc.t : undefined) + (curRoomDoc != null ? curRoomDoc.name : undefined);
 			}
 
@@ -160,11 +163,11 @@ export const RoomHistoryManager = new class {
 				for (const item of Array.from((result != null ? result.messages : undefined) || [])) {
 					if (item.t !== 'command') {
 						const roles = [
-							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 }})) || {},
-							(item.u && item.u._id && RoomRoles.findOne({rid: item.rid, 'u._id': item.u._id})) || {}
-						].map(e => e.roles);
+							(item.u && item.u._id && UserRoles.findOne(item.u._id, { fields: { roles: 1 } })) || {},
+							(item.u && item.u._id && RoomRoles.findOne({ rid: item.rid, 'u._id': item.u._id })) || {},
+						].map((e) => e.roles);
 						item.roles = _.union.apply(_.union, roles);
-						ChatMessage.upsert({_id: item._id}, item);
+						ChatMessage.upsert({ _id: item._id }, item);
 					}
 				}
 
@@ -173,9 +176,9 @@ export const RoomHistoryManager = new class {
 					RoomManager.updateMentionsMarksOfRoom(typeName);
 					const wrapper = $('.messages-box .wrapper');
 					const msgElement = $(`#${ message._id }`, wrapper);
-					const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height()/2);
+					const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
 					wrapper.animate({
-						scrollTop: pos
+						scrollTop: pos,
 					}, 500);
 
 					msgElement.addClass('highlight');

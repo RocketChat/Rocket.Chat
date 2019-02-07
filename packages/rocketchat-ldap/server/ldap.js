@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Logger } from 'meteor/rocketchat:logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 
@@ -6,8 +9,8 @@ const logger = new Logger('LDAP', {
 		connection: 'Connection',
 		bind: 'Bind',
 		search: 'Search',
-		auth: 'Auth'
-	}
+		auth: 'Auth',
+	},
 });
 
 export default class LDAP {
@@ -42,7 +45,7 @@ export default class LDAP {
 			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
 			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
 			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name'),
-			find_user_after_login: RocketChat.settings.get('LDAP_Find_User_After_Login')
+			find_user_after_login: RocketChat.settings.get('LDAP_Find_User_After_Login'),
 		};
 	}
 
@@ -70,7 +73,7 @@ export default class LDAP {
 			timeout: this.options.timeout,
 			connectTimeout: this.options.connect_timeout,
 			idleTimeout: this.options.idle_timeout,
-			reconnect: this.options.Reconnect
+			reconnect: this.options.Reconnect,
 		};
 
 		if (this.options.Internal_Log_Level !== 'disabled') {
@@ -78,12 +81,12 @@ export default class LDAP {
 				name: 'ldapjs',
 				component: 'client',
 				stream: process.stderr,
-				level: this.options.Internal_Log_Level
+				level: this.options.Internal_Log_Level,
 			});
 		}
 
 		const tlsOptions = {
-			rejectUnauthorized: this.options.reject_unauthorized
+			rejectUnauthorized: this.options.reject_unauthorized,
 		};
 
 		if (this.options.ca_cert && this.options.ca_cert !== '') {
@@ -189,7 +192,7 @@ export default class LDAP {
 			}
 		}
 
-		const usernameFilter = this.options.User_Search_Field.split(',').map(item => `(${ item }=${ username })`);
+		const usernameFilter = this.options.User_Search_Field.split(',').map((item) => `(${ item }=${ username })`);
 
 		if (usernameFilter.length === 0) {
 			logger.error('LDAP_LDAP_User_Search_Field not defined');
@@ -222,13 +225,13 @@ export default class LDAP {
 		const searchOptions = {
 			filter: this.getUserFilter(username),
 			scope: this.options.User_Search_Scope || 'sub',
-			sizeLimit: this.options.Search_Size_Limit
+			sizeLimit: this.options.Search_Size_Limit,
 		};
 
 		if (this.options.Search_Page_Size > 0) {
 			searchOptions.paged = {
 				pageSize: this.options.Search_Page_Size,
-				pagePause: !!page
+				pagePause: !!page,
 			};
 		}
 
@@ -253,23 +256,23 @@ export default class LDAP {
 		if (attribute) {
 			filter = new this.ldapjs.filters.EqualityFilter({
 				attribute,
-				value: new Buffer(id, 'hex')
+				value: new Buffer(id, 'hex'),
 			});
 		} else {
 			const filters = [];
 			Unique_Identifier_Field.forEach((item) => {
 				filters.push(new this.ldapjs.filters.EqualityFilter({
 					attribute: item,
-					value: new Buffer(id, 'hex')
+					value: new Buffer(id, 'hex'),
 				}));
 			});
 
-			filter = new this.ldapjs.filters.OrFilter({filters});
+			filter = new this.ldapjs.filters.OrFilter({ filters });
 		}
 
 		const searchOptions = {
 			filter,
-			scope: 'sub'
+			scope: 'sub',
 		};
 
 		logger.search.info('Searching by id', id);
@@ -294,7 +297,7 @@ export default class LDAP {
 
 		const searchOptions = {
 			filter: this.getUserFilter(username),
-			scope: this.options.User_Search_Scope || 'sub'
+			scope: this.options.User_Search_Scope || 'sub',
 		};
 
 		logger.search.info('Searching user', username);
@@ -314,7 +317,7 @@ export default class LDAP {
 		return result[0];
 	}
 
-	isUserInGroup(username) {
+	isUserInGroup(username, userdn) {
 		if (!this.options.group_filter_enabled) {
 			return true;
 		}
@@ -335,8 +338,8 @@ export default class LDAP {
 		filter.push(')');
 
 		const searchOptions = {
-			filter: filter.join('').replace(/#{username}/g, username),
-			scope: 'sub'
+			filter: filter.join('').replace(/#{username}/g, username).replace(/#{userdn}/g, userdn),
+			scope: 'sub',
 		};
 
 		logger.search.debug('Group filter LDAP:', searchOptions.filter);
@@ -351,7 +354,7 @@ export default class LDAP {
 
 	extractLdapEntryData(entry) {
 		const values = {
-			_raw: entry.raw
+			_raw: entry.raw,
 		};
 
 		Object.keys(values._raw).forEach((key) => {
@@ -372,15 +375,15 @@ export default class LDAP {
 	searchAllPaged(BaseDN, options, page) {
 		this.bindIfNecessary();
 
-		const processPage = ({entries, title, end, next}) => {
+		const processPage = ({ entries, title, end, next }) => {
 			logger.search.info(title);
 			// Force LDAP idle to wait the record processing
 			this.client._updateIdle(true);
-			page(null, entries, {end, next: () => {
+			page(null, entries, { end, next: () => {
 				// Reset idle timer
 				this.client._updateIdle();
 				next && next();
-			}});
+			} });
 		};
 
 		this.client.search(BaseDN, options, (error, res) => {
@@ -407,7 +410,7 @@ export default class LDAP {
 					processPage({
 						entries,
 						title: 'Internal Page',
-						end: false
+						end: false,
 					});
 					entries = [];
 				}
@@ -419,7 +422,7 @@ export default class LDAP {
 					processPage({
 						entries,
 						title: 'Final Page',
-						end: true
+						end: true,
 					});
 				} else if (entries.length) {
 					logger.search.info('Page');
@@ -427,7 +430,7 @@ export default class LDAP {
 						entries,
 						title: 'Page',
 						end: false,
-						next
+						next,
 					});
 					entries = [];
 				}
@@ -438,7 +441,7 @@ export default class LDAP {
 					processPage({
 						entries,
 						title: 'Final Page',
-						end: true
+						end: true,
 					});
 					entries = [];
 				}
@@ -482,7 +485,7 @@ export default class LDAP {
 			this.bindSync(dn, password);
 			if (this.options.find_user_after_login) {
 				const searchOptions = {
-					scope: this.options.User_Search_Scope || 'sub'
+					scope: this.options.User_Search_Scope || 'sub',
 				};
 				const result = this.searchAllSync(dn, searchOptions);
 				if (result.length === 0) {

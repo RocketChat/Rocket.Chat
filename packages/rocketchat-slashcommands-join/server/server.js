@@ -3,7 +3,11 @@
 * Join is a named function that will replace /join commands
 * @param {Object} message - The message object
 */
-
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 RocketChat.slashCommands.add('join', function Join(command, params, item) {
 
@@ -24,19 +28,19 @@ RocketChat.slashCommands.add('join', function Join(command, params, item) {
 			ts: new Date,
 			msg: TAPi18n.__('Channel_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [channel]
-			}, user.language)
+				sprintf: [channel],
+			}, user.language),
 		});
 	}
 
 	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
 	if (subscription) {
 		throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {
-			method: 'slashCommands'
+			method: 'slashCommands',
 		});
 	}
 	Meteor.call('joinRoom', room._id);
 }, {
 	description: 'Join_the_given_channel',
-	params: '#channel'
+	params: '#channel',
 });

@@ -7,16 +7,16 @@ RocketChat.Migrations.add({
 		 */
 		RocketChat.models.Settings.update({
 			i18nLabel: {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}, {
 			$unset: {
-				i18nLabel: 1
-			}
+				i18nLabel: 1,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 
 		return console.log('Removed i18nLabel from Settings. New labels will be added on next restart! Please restart your server.');
-	}
+	},
 });

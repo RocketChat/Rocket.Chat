@@ -10,5 +10,5 @@ RocketChat.Migrations.add({
 
 			RocketChat.settings.add('Livechat_guest_count', (parseInt(lastNumber) + 1), { type: 'int', group: 'Livechat' });
 		}
-	}
+	},
 });

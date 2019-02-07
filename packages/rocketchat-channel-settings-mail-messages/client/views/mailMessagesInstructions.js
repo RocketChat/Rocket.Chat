@@ -1,34 +1,19 @@
-/* global AutoComplete Deps */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { t, isEmail } from 'meteor/rocketchat:utils';
+import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 import resetSelection from '../resetSelection';
 
-/*
-	* Code from https://github.com/dleitee/valid.js
-	* Checks for email
-	* @params email
-	* @return boolean
-	*/
-const isEmail = email => {
-	const sQtext = '[^\\x0d\\x22\\x5c]';
-	const sDtext = '[^\\x0d\\x5b-\\x5d]';
-	const sAtom = '[^\\x00-\\x20\\x22\\x28\\x29\\x2c\\x2e\\x3a-\\x3c\\x3e\\x40\\x5b-\\x5d]+';
-	const sQuotedPair = '\\x5c[\\x00-\\x7f]';
-	const sDomainLiteral = `\\x5b(${ sDtext }|${ sQuotedPair })*\\x5d`;
-	const sQuotedString = `\\x22(${ sQtext }|${ sQuotedPair })*\\x22`;
-	const sDomainRef = sAtom;
-	const sSubDomain = `(${ sDomainRef }|${ sDomainLiteral })`;
-	const sWord = `(${ sAtom }|${ sQuotedString })`;
-	const sDomain = `${ sSubDomain }(\\x2e${ sSubDomain })*`;
-	const sLocalPart = `${ sWord }(\\x2e${ sWord })*`;
-	const sAddrSpec = `${ sLocalPart }\\x40${ sDomain }`;
-	const sValidEmail = `^${ sAddrSpec }$`;
-	const reg = new RegExp(sValidEmail);
-	return reg.test(email);
-};
-
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
 Template.mailMessagesInstructions.helpers({
@@ -36,12 +21,12 @@ Template.mailMessagesInstructions.helpers({
 		return Meteor.user().name;
 	},
 	email() {
-		const {emails} = Meteor.user();
+		const { emails } = Meteor.user();
 		return emails && emails[0] && emails[0].address;
 	},
 	roomName() {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
-		return room && room.name;
+		return room && RocketChat.roomTypes.getRoomName(room.t, room);
 	},
 	erroredEmails() {
 		const instance = Template.instance();
@@ -59,16 +44,16 @@ Template.mailMessagesInstructions.helpers({
 					noMatchTemplate: Template.userSearchEmpty,
 					matchAll: true,
 					filter: {
-						exceptions: Template.instance().selectedUsers.get()
+						exceptions: Template.instance().selectedUsers.get(),
 					},
 					selector(match) {
 						return {
-							term: match
+							term: match,
 						};
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 		};
 	},
 	selectedUsers() {
@@ -90,20 +75,20 @@ Template.mailMessagesInstructions.helpers({
 				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
 					return `<strong>${ part }</strong>`;
 				}) }`;
-			}
+			},
 		};
 	},
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
-		return typeof param === 'function' ? param.apply(instance.ac): param;
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
 		return Template.instance().ac.filteredList();
 	},
 	errorMessage() {
 		return Template.instance().errorMessage.get();
-	}
+	},
 });
 
 Template.mailMessagesInstructions.events({
@@ -111,10 +96,8 @@ Template.mailMessagesInstructions.events({
 		t.reset(true);
 	},
 	'click .js-send'(e, instance) {
-		const selectedUsers = instance.selectedUsers;
-		const selectedEmails = instance.selectedEmails;
+		const { selectedUsers, selectedEmails, selectedMessages } = instance;
 		const $emailsInput = instance.$('[name="emails"]');
-		const selectedMessages = instance.selectedMessages;
 		const subject = instance.$('[name="subject"]').val();
 
 		if (!selectedUsers.get().length && !selectedEmails.get().length && $emailsInput.val().trim() === '') {
@@ -125,7 +108,7 @@ Template.mailMessagesInstructions.events({
 		if ($emailsInput.val() !== '') {
 			if (isEmail($emailsInput.val())) {
 				const emailsArr = selectedEmails.get();
-				emailsArr.push({text: $emailsInput.val()});
+				emailsArr.push({ text: $emailsInput.val() });
 				$('[name="emails"]').val('');
 				selectedEmails.set(emailsArr);
 			} else {
@@ -141,11 +124,11 @@ Template.mailMessagesInstructions.events({
 
 		const data = {
 			rid: Session.get('openedRoom'),
-			to_users: selectedUsers.get().map(user => user.username),
-			to_emails: selectedEmails.get().map(email => email.text).toString(),
+			to_users: selectedUsers.get().map((user) => user.username),
+			to_emails: selectedEmails.get().map((email) => email.text).toString(),
 			subject,
 			messages: selectedMessages.get(),
-			language: localStorage.getItem('userLanguage')
+			language: localStorage.getItem('userLanguage'),
 		};
 
 		Meteor.call('mailMessages', data, function(err, result) {
@@ -157,13 +140,13 @@ Template.mailMessagesInstructions.events({
 			instance.reset(true);
 		});
 	},
-	'click .rc-input--usernames .rc-tags__tag'({target}, t) {
-		const {username} = Blaze.getData(target);
-		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	'click .rc-input--usernames .rc-tags__tag'({ target }, t) {
+		const { username } = Blaze.getData(target);
+		t.selectedUsers.set(t.selectedUsers.get().filter((user) => user.username !== username));
 	},
-	'click .rc-input--emails .rc-tags__tag'({target}, t) {
-		const {text} = Blaze.getData(target);
-		t.selectedEmails.set(t.selectedEmails.get().filter(email => email.text !== text));
+	'click .rc-input--emails .rc-tags__tag'({ target }, t) {
+		const { text } = Blaze.getData(target);
+		t.selectedEmails.set(t.selectedEmails.get().filter((email) => email.text !== text));
 	},
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
@@ -171,7 +154,7 @@ Template.mailMessagesInstructions.events({
 	'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterNames(input.value);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
@@ -184,7 +167,7 @@ Template.mailMessagesInstructions.events({
 			e.preventDefault();
 			const emails = t.selectedEmails;
 			const emailsArr = emails.get();
-			emailsArr.push({text: input.value});
+			emailsArr.push({ text: input.value });
 			input.value = '';
 			return emails.set(emailsArr);
 		}
@@ -214,7 +197,7 @@ Template.mailMessagesInstructions.events({
 	},
 	'blur [name="users"]'(e, t) {
 		t.ac.onBlur(e);
-	}
+	},
 });
 
 Template.mailMessagesInstructions.onRendered(function() {
@@ -223,20 +206,20 @@ Template.mailMessagesInstructions.onRendered(function() {
 	this.firstNode.querySelector('[name="users"]').focus();
 	this.ac.element = this.firstNode.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	this.ac.$element.on('autocompleteselect', function(e, { item }) {
 		const usersArr = users.get();
 		usersArr.push(item);
 		users.set(usersArr);
 	});
 
-	const selectedMessages = this.selectedMessages;
+	const { selectedMessages } = this;
 
 	$('.messages-box .message').on('click', function() {
-		const id = this.id;
+		const { id } = this;
 		const messages = selectedMessages.get();
 
 		if ($(this).hasClass('selected')) {
-			selectedMessages.set(messages.filter(message => message !== id));
+			selectedMessages.set(messages.filter((message) => message !== id));
 		} else {
 			selectedMessages.set(messages.concat(id));
 		}
@@ -252,16 +235,16 @@ Template.mailMessagesInstructions.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
 	this.userFilter = new ReactiveVar('');
 
-	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
+	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
+		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
 	});
 
 	this.ac = new AutoComplete(
 		{
 			selector:{
 				item: '.rc-popup-list__item',
-				container: '.rc-popup-list__list'
+				container: '.rc-popup-list__list',
 			},
 
 			limit: 10,
@@ -277,9 +260,9 @@ Template.mailMessagesInstructions.onCreated(function() {
 					selector(match) {
 						return { term: match };
 					},
-					sort: 'username'
-				}
-			]
+					sort: 'username',
+				},
+			],
 
 		});
 	this.ac.tmplInst = this;

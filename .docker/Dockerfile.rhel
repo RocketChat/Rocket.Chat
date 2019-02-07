@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/rhscl/nodejs-8-rhel7
 
-ENV RC_VERSION 0.67.0-develop
+ENV RC_VERSION 0.74.0-develop
 
 MAINTAINER buildmaster@rocket.chat
 
@@ -31,6 +31,10 @@ COPY licenses /licenses
 VOLUME /opt/app-root/src/uploads
 
 WORKDIR /opt/app-root/src/bundle
+
+# Hack needed to force use of bundled library instead of system level outdated library
+# https://github.com/lovell/sharp/issues/892
+ENV LD_PRELOAD=/opt/app-root/src/bundle/programs/server/npm/node_modules/sharp/vendor/lib/libz.so
 
 ENV DEPLOY_METHOD=docker-redhat \
     NODE_ENV=production \

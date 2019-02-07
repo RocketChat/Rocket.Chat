@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Imports } from '../models/Imports';
 import { RawImports } from '../models/RawImports';
 
@@ -10,7 +11,7 @@ Meteor.startup(function() {
 	try {
 		RawImports.model.rawCollection().drop();
 	} catch (e) {
-		console.log('errror', e); //TODO: Remove
+		console.log('errror', e); // TODO: Remove
 		// ignored
 	}
 });

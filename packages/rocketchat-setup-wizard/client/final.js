@@ -1,10 +1,15 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.setupWizardFinal.onCreated(function() {
 	const isSetupWizardDone = localStorage.getItem('wizardFinal');
 	if (isSetupWizardDone === null) {
 		FlowRouter.go('setup-wizard');
 	}
 
-	this.autorun(c => {
+	this.autorun((c) => {
 		const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
 		if (!showSetupWizard) {
 			// Setup Wizard state is not defined yet
@@ -41,11 +46,11 @@ Template.setupWizardFinal.events({
 			localStorage.removeItem('wizardFinal');
 			FlowRouter.go('home');
 		});
-	}
+	},
 });
 
 Template.setupWizardFinal.helpers({
 	siteUrl() {
 		return RocketChat.settings.get('Site_Url');
-	}
+	},
 });

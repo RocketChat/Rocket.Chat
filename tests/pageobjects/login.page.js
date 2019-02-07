@@ -40,7 +40,7 @@ class LoginPage extends Page {
 		this.emailField.waitForVisible(15000);
 	}
 
-	registerNewUser({username, email, password}) {
+	registerNewUser({ username, email, password }) {
 		this.nameField.waitForVisible(5000);
 		this.nameField.setValue(username);
 		this.emailField.setValue(email);
@@ -50,7 +50,7 @@ class LoginPage extends Page {
 		this.submit();
 	}
 
-	registerNewAdmin({adminUsername, adminEmail, adminPassword}) {
+	registerNewAdmin({ adminUsername, adminEmail, adminPassword }) {
 		this.nameField.waitForVisible(5000);
 		this.nameField.setValue(adminUsername);
 		this.emailField.setValue(adminEmail);
@@ -60,7 +60,7 @@ class LoginPage extends Page {
 		this.submit();
 	}
 
-	login({email, password}) {
+	login({ email, password }) {
 		this.emailOrUsernameField.waitForVisible(5000);
 		this.emailOrUsernameField.setValue(email);
 		this.passwordField.setValue(password);
@@ -68,8 +68,8 @@ class LoginPage extends Page {
 		this.submit();
 	}
 
-	loginSucceded({email, password}) {
-		this.login({email, password});
+	loginSucceded({ email, password }) {
+		this.login({ email, password });
 
 		mainContent.mainContent.waitForVisible(5000);
 	}

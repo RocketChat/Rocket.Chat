@@ -1,13 +1,11 @@
-/* eslint-env mocha */
-
-import {getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
 describe('Incoming Integrations', function() {
 	this.retries(0);
 
 	let integration;
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	before((done) => {
 		request.post(api('integrations.create'))
@@ -19,7 +17,7 @@ describe('Incoming Integrations', function() {
 				alias: 'test',
 				username: 'rocket.cat',
 				scriptEnabled: false,
-				channel: '#general'
+				channel: '#general',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -34,7 +32,7 @@ describe('Incoming Integrations', function() {
 			.set(credentials)
 			.send({
 				type: 'webhook-incoming',
-				integrationId: integration._id
+				integrationId: integration._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -44,7 +42,7 @@ describe('Incoming Integrations', function() {
 	it('should execute the incoming integration', (done) => {
 		request.post(`/hooks/${ integration._id }/${ integration.token }`)
 			.send({
-				text: 'Example message'
+				text: 'Example message',
 			})
 			.expect(200)
 			.end(done);

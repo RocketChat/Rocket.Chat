@@ -114,7 +114,7 @@ RocketChat.Migrations.add({
 		RocketChat.models.Settings.remove({ _id: 'LDAP_Custom_Domain_Search' });
 		RocketChat.models.Settings.remove({ _id: 'LDAP_Domain_Search_Object_Class' });
 		RocketChat.models.Settings.remove({ _id: 'LDAP_Domain_Search_Object_Category' });
-		RocketChat.models.Settings.remove({ _id: 'LDAP_Sync_Users' }); //Button
+		RocketChat.models.Settings.remove({ _id: 'LDAP_Sync_Users' }); // Button
 
 		const LDAP_Sync_User_Data = RocketChat.models.Settings.findOne({ _id: 'LDAP_Sync_User_Data' });
 		if (LDAP_Sync_User_Data && LDAP_Sync_User_Data.value) {
@@ -132,5 +132,5 @@ RocketChat.Migrations.add({
 			);
 		}
 		RocketChat.models.Settings.remove({ _id: 'LDAP_Import_Users' });
-	}
+	},
 });

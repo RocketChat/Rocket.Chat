@@ -6,12 +6,12 @@ RocketChat.Migrations.add({
 		if (GoogleSiteVerification_id && GoogleSiteVerification_id.value) {
 			RocketChat.models.Settings.update({ _id: 'Meta_google-site-verification' }, {
 				$set: {
-					value: GoogleSiteVerification_id.value
-				}
+					value: GoogleSiteVerification_id.value,
+				},
 			});
 		}
 
 		RocketChat.models.Settings.remove({ _id: 'GoogleSiteVerification_id' });
-	}
+	},
 });
 

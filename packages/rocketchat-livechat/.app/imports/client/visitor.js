@@ -1,4 +1,9 @@
-/* globals Commands, Livechat */
+/* globals Commands, Livechat, UserPresence */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Session } from 'meteor/session';
+
 const msgStream = new Meteor.Streamer('room-messages');
 
 export default {
@@ -56,7 +61,7 @@ export default {
 	},
 
 	setToken(token) {
-		if (!token || token == this.token.get()) {
+		if (!token || token === this.token.get()) {
 			return;
 		}
 
@@ -87,7 +92,7 @@ export default {
 
 		const data = {
 			token: this.getToken(),
-			name
+			name,
 		};
 
 		Meteor.call('livechat:registerGuest', data);
@@ -102,7 +107,7 @@ export default {
 
 		const data = {
 			token: this.getToken(),
-			email
+			email,
 		};
 
 		Meteor.call('livechat:registerGuest', data);
@@ -131,10 +136,12 @@ export default {
 			return;
 		}
 
+		msgStream.unsubscribe(this.roomSubscribed);
+
 		this.roomSubscribed = roomId;
 
 		const msgTypesNotDisplayed = ['livechat_video_call', 'livechat_navigation_history', 'au'];
-		msgStream.on(roomId, { token: this.getToken() }, (msg) => {
+		msgStream.on(roomId, { visitorToken: this.getToken() }, (msg) => {
 			if (msg.t === 'command') {
 				Commands[msg.msg] && Commands[msg.msg]();
 			} else if (!msgTypesNotDisplayed.includes(msg.t)) {
@@ -166,5 +173,5 @@ export default {
 			UserPresence.awayTime = 300000; // 5 minutes
 			UserPresence.start(token);
 		});
-	}
+	},
 };

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -42,7 +44,7 @@ Meteor.methods({
 			}
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
-					usernames: []
+					usernames: [],
 				};
 			}
 			message.reactions[reaction].usernames.push(user.username);
@@ -52,5 +54,5 @@ Meteor.methods({
 		}
 
 		return;
-	}
+	},
 });

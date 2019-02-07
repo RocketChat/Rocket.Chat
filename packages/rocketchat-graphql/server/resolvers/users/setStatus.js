@@ -8,16 +8,16 @@ const resolver = {
 		setStatus: authenticated((root, { status }, { user }) => {
 			RocketChat.models.Users.update(user._id, {
 				$set: {
-					status: status.toLowerCase()
-				}
+					status: status.toLowerCase(),
+				},
 			});
 
 			return RocketChat.models.Users.findOne(user._id);
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

@@ -1,4 +1,7 @@
-/* globals HTTP */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { HTTP } from 'meteor/http';
+
 const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
 	HTTP.post(url, options, function(err, res) {
 		if (err) {
@@ -23,10 +26,10 @@ Meteor.methods({
 			tags: [
 				'tag1',
 				'tag2',
-				'tag3'
+				'tag3',
 			],
 			customFields: {
-				productId: '123456'
+				productId: '123456',
 			},
 			visitor: {
 				_id: '',
@@ -39,32 +42,32 @@ Meteor.methods({
 				browser: 'Chrome',
 				os: 'Linux',
 				customFields: {
-					customerId: '123456'
-				}
+					customerId: '123456',
+				},
 			},
 			agent: {
 				_id: 'asdf89as6df8',
 				username: 'agent.username',
 				name: 'Agent Name',
-				email: 'agent@email.com'
+				email: 'agent@email.com',
 			},
 			messages: [{
 				username: 'visitor-username',
 				msg: 'message content',
-				ts: new Date()
+				ts: new Date(),
 			}, {
 				username: 'agent.username',
 				agentId: 'asdf89as6df8',
 				msg: 'message content from agent',
-				ts: new Date()
-			}]
+				ts: new Date(),
+			}],
 		};
 
 		const options = {
 			headers: {
-				'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token')
+				'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token'),
 			},
-			data: sampleData
+			data: sampleData,
 		};
 
 		const response = postCatchError(RocketChat.settings.get('Livechat_webhookUrl'), options);
@@ -76,6 +79,6 @@ Meteor.methods({
 		} else {
 			throw new Meteor.Error('error-invalid-webhook-response');
 		}
-	}
+	},
 });
 

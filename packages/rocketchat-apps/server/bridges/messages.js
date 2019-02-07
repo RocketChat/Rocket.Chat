@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+
 export class AppMessageBridge {
 	constructor(orch) {
 		this.orch = orch;
@@ -47,7 +50,7 @@ export class AppMessageBridge {
 			_id: Random.id(),
 			ts: new Date(),
 			u: undefined,
-			editor: undefined
+			editor: undefined,
 		}));
 	}
 
@@ -61,12 +64,12 @@ export class AppMessageBridge {
 				rid: room.id,
 				ts: new Date(),
 				u: undefined,
-				editor: undefined
+				editor: undefined,
 			});
 
 			const users = RocketChat.models.Subscriptions.findByRoomIdWhenUserIdExists(room._id, { fields: { 'u._id': 1 } })
 				.fetch()
-				.map(s => s.u._id);
+				.map((s) => s.u._id);
 			RocketChat.models.Users.findByIds(users, { fields: { _id: 1 } })
 				.fetch()
 				.forEach(({ _id }) =>

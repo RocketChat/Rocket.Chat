@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { SideNav } from 'meteor/rocketchat:ui-utils';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { Subscriptions } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -21,17 +27,17 @@ Template.listCombinedFlex.helpers({
 		return Template.instance().channelType.get() === type;
 	},
 	member() {
-		return !!RocketChat.models.Subscriptions.findOne({ name: this.name, open: true });
+		return !!Subscriptions.findOne({ name: this.name, open: true });
 	},
 	hidden() {
-		return !!RocketChat.models.Subscriptions.findOne({ name: this.name, open: false });
+		return !!Subscriptions.findOne({ name: this.name, open: false });
 	},
 	roomIcon() {
-		return RocketChat.roomTypes.getIcon(this.t);
+		return roomTypes.getIcon(this.t);
 	},
 	url() {
 		return this.t === 'p' ? 'group' : 'channel';
-	}
+	},
 });
 
 Template.listCombinedFlex.events({
@@ -77,7 +83,7 @@ Template.listCombinedFlex.events({
 			instance.$('#sort-subscriptions').hide();
 		}
 		return instance.show.set(show);
-	}
+	},
 });
 
 Template.listCombinedFlex.onCreated(function() {
@@ -108,7 +114,7 @@ Template.listCombinedFlex.onCreated(function() {
 						break;
 				}
 			}
-			let type = {$in: ['c', 'p']};
+			let type = { $in: ['c', 'p'] };
 			if (s.trim(this.channelType.get())) {
 				switch (this.channelType.get()) {
 					case 'public':
@@ -119,9 +125,9 @@ Template.listCombinedFlex.onCreated(function() {
 						break;
 				}
 			}
-			this.channelsList.set(RocketChat.models.Subscriptions.find({
+			this.channelsList.set(Subscriptions.find({
 				name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
-				t: type
+				t: type,
 			}, options).fetch()
 			);
 			if (this.channelsList.get().length < this.limit.get()) {

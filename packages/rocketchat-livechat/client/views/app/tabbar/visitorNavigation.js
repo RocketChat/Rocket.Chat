@@ -1,4 +1,9 @@
+import { Mongo } from 'meteor/mongo';
+import { Template } from 'meteor/templating';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import moment from 'moment';
+
 const visitorNavigationHistory = new Mongo.Collection('visitor_navigation_history');
 
 Template.visitorNavigation.helpers({
@@ -20,7 +25,7 @@ Template.visitorNavigation.helpers({
 
 	accessDateTime() {
 		return moment(this.ts).format('L LTS');
-	}
+	},
 });
 
 Template.visitorNavigation.onCreated(function() {

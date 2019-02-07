@@ -1,0 +1,142 @@
+<template name="cleanHistory">
+	{{#unless busy}}
+	<main class="rc-user-info__scroll">
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Newer_than"}}</div>
+				<div class="rc-input__wrapper rc-datetime__left">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="calendar"}}
+					</div>
+					<input type="date" class="rc-input__element" value="" name="from__date" autocomplete="off" placeholder="YYYY-MM-DD"/>
+				</div>
+				<div class="rc-input__wrapper rc-datetime__right">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="clock"}}
+					</div>
+					<input type="time" class="rc-input__element" value="" name="from__time" autocomplete="off" placeholder="HH:MM"/>
+				</div>
+			</label>
+		</div>
+		<div class="rc-input">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Older_than"}}</div>
+				<div class="rc-input__wrapper rc-datetime__left">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="calendar"}}
+					</div>
+					<input type="date" class="rc-input__element" value="" name="to__date" autocomplete="off" placeholder="YYYY-MM-DD"/>
+				</div>
+				<div class="rc-input__wrapper rc-datetime__right">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="clock"}}
+					</div>
+					<input type="time" class="rc-input__element" value="" name="to__time" autocomplete="off" placeholder="HH:MM"/>
+				</div>
+			</label>
+		</div>
+		<div class="rc-input rc-input--usernames">
+			<label class="rc-input__label">
+				<div class="rc-input__title">{{_ "Only_from_users"}}</div>
+				<div class="rc-input__wrapper">
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon="at"}}
+					</div>
+					<div class="rc-tags">
+						{{#each user in selectedUsers}}
+							{{> tag user}}
+						{{/each}}
+						<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
+					</div>
+				</div>
+				{{#with config}}
+					{{#if autocomplete 'isShowing'}}
+						{{#if autocomplete 'isLoaded'}}
+							{{> popupList data=config items=items}}
+						{{/if}}
+					{{/if}}
+				{{/with}}
+			</label>
+		</div>
+		<label class="rc-checkbox">
+			<input type="checkbox" name="inclusive" class="rc-checkbox__input">
+			{{> icon icon="check" block="rc-checkbox__icon"}}
+			<span class="rc-checkbox__text rc-text__small">{{_ "Inclusive"}}</span>
+		</label>
+		<label class="rc-checkbox">
+			<input type="checkbox" name="excludePinned" class="rc-checkbox__input">
+			{{> icon icon="check" block="rc-checkbox__icon"}}
+			<span class="rc-checkbox__text rc-text__small">{{_ "Exclude_pinned"}}</span>
+		</label>
+		<label class="rc-checkbox">
+			<input type="checkbox" name="filesOnly" class="rc-checkbox__input">
+			{{> icon icon="check" block="rc-checkbox__icon"}}
+			<span class="rc-checkbox__text rc-text__small">{{_ "Files_only"}}</span>
+		</label>
+		{{#unless validate}}
+		<div class="mail-messages__instructions mail-messages__instructions--warning">
+			<div class="mail-messages__instructions-wrapper">
+				{{> icon block="mail-messages__instructions-icon" icon="warning"}}
+				<div class="mail-messages__instructions-text">
+					{{warningBox}}
+				</div>
+			</div>
+		</div>
+		{{else}}
+		<div class="mail-messages__instructions mail-messages__instructions--warning">
+			<div class="mail-messages__instructions-wrapper">
+				{{> icon block="mail-messages__instructions-icon" icon="modal-error"}}
+				<div class="mail-messages__instructions-text">
+						{{validate}}
+				</div>
+			</div>
+		</div>
+		{{/unless}}
+	</main>
+	<div class="rc-user-info__flex rc-user-info__row">
+		<button class="rc-button rc-button--cancel js-prune" title="{{_ 'Prune'}}" disabled="{{#with validate}}{{.}}{{/with}}">{{_ 'Prune'}}</button>
+	</div>
+	{{else}}
+		{{#unless finished}}
+		<main class="rc-user-info__pruning">
+			<p class="pruning__header">
+				{{#unless filesOnly}}
+					{{_ "Pruning_messages"}}
+				{{else}}
+					{{_ "Pruning_files"}}
+				{{/unless}}
+			</p>
+			<div class="pruning-wrapper">
+				{{> icon icon="loading" block="rc-icon"}}
+				<div class="pruning__text">
+					{{prunedCount}}
+				</div>
+				<div class="pruning__text-sub">
+					{{#unless filesOnly}}
+						{{_ "messages_pruned"}}
+					{{else}}
+						{{_ "files_pruned"}}
+					{{/unless}}
+				</div>
+			</div>
+		</main>
+		{{else}}
+		<main class="rc-user-info__pruning">
+			<p class="pruning__header">{{_ "Prune_finished"}}</p>
+			<div class="pruning-wrapper prune__finished">
+				{{> icon icon="check" block="rc-icon"}}
+				<div class="pruning__text">
+					{{prunedCount}}
+				</div>
+				<div class="pruning__text-sub">
+					{{#unless filesOnly}}
+						{{_ "messages_pruned"}}
+					{{else}}
+						{{_ "files_pruned"}}
+					{{/unless}}
+				</div>
+			</div>
+		</main>
+		{{/unless}}
+	{{/unless}}
+</template>

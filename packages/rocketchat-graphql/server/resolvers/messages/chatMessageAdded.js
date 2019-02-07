@@ -17,7 +17,7 @@ function shouldPublish(message, { id, directTo }, username) {
 	} else if (directTo) {
 		const room = RocketChat.models.Rooms.findOne({
 			usernames: { $all: [directTo, username] },
-			t: 'd'
+			t: 'd',
 		});
 
 		return room && room._id === message.rid;
@@ -32,13 +32,13 @@ const resolver = {
 			subscribe: withFilter(() => pubsub.asyncIterator(CHAT_MESSAGE_SUBSCRIPTION_TOPIC), authenticated((payload, args, { user }) => {
 				const channel = {
 					id: args.channelId,
-					directTo: args.directTo
+					directTo: args.directTo,
 				};
 
 				return shouldPublish(payload.chatMessageAdded, channel, user.username);
-			}))
-		}
-	}
+			})),
+		},
+	},
 };
 
 RocketChat.callbacks.add('afterSaveMessage', (message) => {
@@ -47,5 +47,5 @@ RocketChat.callbacks.add('afterSaveMessage', (message) => {
 
 export {
 	schema,
-	resolver
+	resolver,
 };

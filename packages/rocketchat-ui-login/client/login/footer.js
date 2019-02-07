@@ -1,35 +1,42 @@
-/*globals defaultUserLanguage */
-Template.loginFooter.helpers({
-	LanguageVersion() {
-		if (Template.instance().languageVersion.get()) {
-			return TAPi18n.__('Language_Version', {
-				lng: Template.instance().languageVersion.get()
-			});
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
+Template.loginFooter.onCreated(function() {
+	this.suggestedLanguage = new ReactiveVar();
+
+	this.suggestAnotherLanguageFor = (language) => {
+		const loadAndSetSuggestedLanguage = (language) => TAPi18n._loadLanguage(language)
+			.then(() => this.suggestedLanguage.set(language));
+
+		const serverLanguage = RocketChat.settings.get('Language');
+
+		if (serverLanguage !== language) {
+			loadAndSetSuggestedLanguage(serverLanguage || 'en');
+		} else if (!/^en/.test(language)) {
+			loadAndSetSuggestedLanguage('en');
+		} else {
+			this.suggestedLanguage.set(undefined);
 		}
-	}
+	};
+
+	const currentLanguage = localStorage.getItem('userLanguage');
+	this.suggestAnotherLanguageFor(currentLanguage);
+});
+
+Template.loginFooter.helpers({
+	languageVersion() {
+		const lng = Template.instance().suggestedLanguage.get();
+		return lng && TAPi18n.__('Language_Version', { lng });
+	},
 });
 
 Template.loginFooter.events({
-	'click button.switch-language'(e, t) {
-		const userLanguage = t.languageVersion.get();
-		localStorage.setItem('userLanguage', userLanguage);
-		TAPi18n.setLanguage(userLanguage);
-		moment.locale(userLanguage);
-		return t.languageVersion.set(userLanguage !== defaultUserLanguage() ? defaultUserLanguage() : 'en');
-	}
-});
-
-Template.loginFooter.onCreated(function() {
-	const self = this;
-	this.languageVersion = new ReactiveVar;
-	const userLanguage = localStorage.getItem('userLanguage');
-	if (userLanguage !== defaultUserLanguage()) {
-		return TAPi18n._loadLanguage(defaultUserLanguage()).done(function() {
-			return self.languageVersion.set(defaultUserLanguage());
-		});
-	} else if (userLanguage.indexOf('en') !== 0) {
-		return TAPi18n._loadLanguage('en').done(function() {
-			return self.languageVersion.set('en');
-		});
-	}
+	'click button.js-switch-language'(e, t) {
+		const language = t.suggestedLanguage.get();
+		window.setLanguage(language);
+		t.suggestAnotherLanguageFor(language);
+		return false;
+	},
 });

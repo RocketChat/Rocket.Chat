@@ -1,6 +1,11 @@
-/* global InstanceStatus, MongoInternals */
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
+import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { Sessions } from 'meteor/rocketchat:models';
 
 const wizardFields = [
 	'Organization_Type',
@@ -12,7 +17,7 @@ const wizardFields = [
 	'Site_Name',
 	'Language',
 	'Server_Type',
-	'Allow_Marketing_Emails'
+	'Allow_Marketing_Emails',
 ];
 
 RocketChat.statistics.get = function _getStatistics() {
@@ -20,13 +25,21 @@ RocketChat.statistics.get = function _getStatistics() {
 
 	// Setup Wizard
 	statistics.wizard = {};
-	wizardFields.forEach(field => {
+	wizardFields.forEach((field) => {
 		const record = RocketChat.models.Settings.findOne(field);
 		if (record) {
 			const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
 			statistics.wizard[wizardField] = record.value;
 		}
 	});
+
+	const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
+	statistics.wizard.contactName = firstUser && firstUser.name;
+	statistics.wizard.contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
+
+	if (RocketChat.settings.get('Organization_Email')) {
+		statistics.wizard.contactEmail = RocketChat.settings.get('Organization_Email');
+	}
 
 	// Version
 	statistics.uniqueId = RocketChat.settings.get('uniqueID');
@@ -55,12 +68,21 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count();
 	statistics.totalLivechat = RocketChat.models.Rooms.findByType('l').count();
 
+	// livechat visitors
+	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
+
+	// livechat agents
+	statistics.totalLivechatAgents = RocketChat.models.Users.findAgents().count();
+
+	// livechat enabled
+	statistics.livechatEnabled = RocketChat.settings.get('Livechat_enabled');
+
 	// Message statistics
 	statistics.totalMessages = RocketChat.models.Messages.find().count();
-	statistics.totalChannelMessages = _.reduce(RocketChat.models.Rooms.findByType('c', { fields: { 'msgs': 1 }}).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
-	statistics.totalPrivateGroupMessages = _.reduce(RocketChat.models.Rooms.findByType('p', { fields: { 'msgs': 1 }}).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
-	statistics.totalDirectMessages = _.reduce(RocketChat.models.Rooms.findByType('d', { fields: { 'msgs': 1 }}).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
-	statistics.totalLivechatMessages = _.reduce(RocketChat.models.Rooms.findByType('l', { fields: { 'msgs': 1 }}).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalChannelMessages = _.reduce(RocketChat.models.Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalPrivateGroupMessages = _.reduce(RocketChat.models.Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalDirectMessages = _.reduce(RocketChat.models.Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalLivechatMessages = _.reduce(RocketChat.models.Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
 
 	statistics.lastLogin = RocketChat.models.Users.getLastLogin();
 	statistics.lastMessageSentAt = RocketChat.models.Messages.getLastTimestamp();
@@ -75,26 +97,44 @@ RocketChat.statistics.get = function _getStatistics() {
 		loadavg: os.loadavg(),
 		totalmem: os.totalmem(),
 		freemem: os.freemem(),
-		cpus: os.cpus()
+		cpus: os.cpus(),
 	};
 
 	statistics.process = {
 		nodeVersion: process.version,
 		pid: process.pid,
-		uptime: process.uptime()
+		uptime: process.uptime(),
 	};
 
 	statistics.deploy = {
 		method: process.env.DEPLOY_METHOD || 'tar',
-		platform: process.env.DEPLOY_PLATFORM || 'selfinstall'
+		platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 	};
 
-	statistics.migration = RocketChat.Migrations._getControl();
-	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) }}).count();
+	statistics.uploadsTotal = RocketChat.models.Uploads.find().count();
+	const [result] = Promise.await(RocketChat.models.Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
+	statistics.uploadsTotalSize = result ? result.total : 0;
 
-	if (MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
+	statistics.migration = RocketChat.Migrations._getControl();
+	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
+
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
 		statistics.oplogEnabled = true;
 	}
+
+	try {
+		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));
+		statistics.mongoVersion = version;
+	} catch (e) {
+		console.error('Error getting MongoDB version');
+	}
+
+	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
+	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
+	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 
 	return statistics;
 };

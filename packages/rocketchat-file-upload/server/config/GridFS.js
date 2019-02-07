@@ -1,9 +1,9 @@
-/* globals FileUpload, UploadFS */
+import { UploadFS } from 'meteor/jalik:ufs';
 import stream from 'stream';
 import zlib from 'zlib';
 import util from 'util';
-
-import { FileUploadClass } from '../lib/FileUpload';
+import { Logger } from 'meteor/rocketchat:logger';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 
 const logger = new Logger('FileUpload');
 
@@ -55,7 +55,7 @@ const getByteRange = function(header) {
 		if (matches) {
 			return {
 				start: parseInt(matches[1], 10),
-				stop: parseInt(matches[2], 10)
+				stop: parseInt(matches[2], 10),
 			};
 		}
 	}
@@ -68,7 +68,7 @@ const readFromGridFS = function(storeName, fileId, file, req, res) {
 	const rs = store.getReadStream(fileId, file);
 	const ws = new stream.PassThrough();
 
-	[rs, ws].forEach(stream => stream.on('error', function(err) {
+	[rs, ws].forEach((stream) => stream.on('error', function(err) {
 		store.onReadError.call(store, err, fileId, file);
 		res.end();
 	}));
@@ -126,7 +126,7 @@ const copyFromGridFS = function(storeName, fileId, file, out) {
 	const store = UploadFS.getStore(storeName);
 	const rs = store.getReadStream(fileId, file);
 
-	[rs, out].forEach(stream => stream.on('error', function(err) {
+	[rs, out].forEach((stream) => stream.on('error', function(err) {
 		store.onReadError.call(store, err, fileId, file);
 		out.end();
 	}));
@@ -135,18 +135,18 @@ const copyFromGridFS = function(storeName, fileId, file, out) {
 };
 
 FileUpload.configureUploadsStore('GridFS', 'GridFS:Uploads', {
-	collectionName: 'rocketchat_uploads'
+	collectionName: 'rocketchat_uploads',
 });
 
 FileUpload.configureUploadsStore('GridFS', 'GridFS:UserDataFiles', {
-	collectionName: 'rocketchat_userDataFiles'
+	collectionName: 'rocketchat_userDataFiles',
 });
 
 // DEPRECATED: backwards compatibility (remove)
-UploadFS.getStores()['rocketchat_uploads'] = UploadFS.getStores()['GridFS:Uploads'];
+UploadFS.getStores().rocketchat_uploads = UploadFS.getStores()['GridFS:Uploads'];
 
 FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
-	collectionName: 'rocketchat_avatars'
+	collectionName: 'rocketchat_avatars',
 });
 
 
@@ -158,7 +158,7 @@ new FileUploadClass({
 
 		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
-		res.setHeader('Content-Type', file.type);
+		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size);
 
 		return readFromGridFS(file.store, file._id, file, req, res);
@@ -166,7 +166,7 @@ new FileUploadClass({
 
 	copy(file, out) {
 		copyFromGridFS(file.store, file._id, file, out);
-	}
+	},
 });
 
 new FileUploadClass({
@@ -185,7 +185,7 @@ new FileUploadClass({
 
 	copy(file, out) {
 		copyFromGridFS(file.store, file._id, file, out);
-	}
+	},
 });
 
 new FileUploadClass({
@@ -195,5 +195,5 @@ new FileUploadClass({
 		file = FileUpload.addExtensionTo(file);
 
 		return readFromGridFS(file.store, file._id, file, req, res);
-	}
+	},
 });

@@ -1,34 +1,36 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
-	RocketChat.Notifications.onLogged('Users:NameChanged', function({_id, name, username}) {
+	RocketChat.Notifications.onLogged('Users:NameChanged', function({ _id, name, username }) {
 		RocketChat.models.Messages.update({
-			'u._id': _id
+			'u._id': _id,
 		}, {
 			$set: {
-				'u.name': name
-			}
+				'u.name': name,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 
 		RocketChat.models.Messages.update({
 			mentions: {
-				$elemMatch: { _id }
-			}
+				$elemMatch: { _id },
+			},
 		}, {
 			$set: {
-				'mentions.$.name': name
-			}
+				'mentions.$.name': name,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 
 		RocketChat.models.Subscriptions.update({
 			name: username,
-			t: 'd'
+			t: 'd',
 		}, {
 			$set: {
-				fname: name
-			}
+				fname: name,
+			},
 		});
 	});
 });

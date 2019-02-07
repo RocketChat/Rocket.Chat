@@ -4,5 +4,5 @@ RocketChat.Migrations.add({
 		// Set all current users as active
 		RocketChat.models.Users.setAllUsersActive(true);
 		return console.log('Set all users as active');
-	}
+	},
 });

@@ -10,7 +10,9 @@
 			"restart": false,
 			"sourceMaps": true,
 			"sourceMapPathOverrides": {
-				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*"
+				"meteor://💻app/*": "${workspaceFolder}/*",
+				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
+				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 			},
 			"protocol": "inspector"
 		},
@@ -21,7 +23,9 @@
 			"url": "http://localhost:3000",
 			"webRoot": "${workspaceFolder}",
 			"sourceMapPathOverrides": {
-				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*"
+				"meteor://💻app/*": "${workspaceFolder}/*",
+				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
+				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 			}
 		},
 		{
@@ -36,7 +40,9 @@
 			"port": 9229,
 			"timeout": 300000, //Rocket.Chat really takes some time to startup, so play it safe
 			"sourceMapPathOverrides": {
-				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*"
+				"meteor://💻app/*": "${workspaceFolder}/*",
+				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
+				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 			},
 			"protocol": "inspector"
 		},
@@ -52,7 +58,9 @@
 			"port": 9229,
 			"timeout": 300000, //Rocket.Chat really takes some time to startup, so play it safe
 			"sourceMapPathOverrides": {
-				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*"
+				"meteor://💻app/*": "${workspaceFolder}/*",
+				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
+				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 			},
 			"protocol": "inspector"
 		},
@@ -68,7 +76,9 @@
 			"port": 9229,
 			"timeout": 300000, //Rocket.Chat really takes some time to startup, so play it safe
 			"sourceMapPathOverrides": {
-				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*"
+				"meteor://💻app/*": "${workspaceFolder}/*",
+				"meteor://💻app/packages/rocketchat:*": "${workspaceFolder}/packages/rocketchat-*",
+				"meteor://💻app/packages/chatpal:*": "${workspaceFolder}/packages/chatpal-*",
 			},
 			"env": {
 				"TEST_MODE": "true"

@@ -1,10 +1,15 @@
-/* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
-/* exported fileUpload */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 import s from 'underscore.string';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { Handlebars } from 'meteor/ui';
+import { t, fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
-	reader.onload = e => callback(e.target.result, file);
+	reader.onload = (e) => callback(e.target.result, file);
 
 	return reader.readAsDataURL(file);
 };
@@ -22,7 +27,7 @@ const showUploadPreview = (file, callback) => {
 	if ((file.file.type.indexOf('audio') > -1) || (file.file.type.indexOf('video') > -1) || (file.file.type.indexOf('image') > -1)) {
 		file.type = file.file.type.split('/')[0];
 
-		return readAsDataURL(file.file, content => callback(file, content));
+		return readAsDataURL(file.file, (content) => callback(file, content));
 	}
 
 	return callback(file, null);
@@ -30,7 +35,7 @@ const showUploadPreview = (file, callback) => {
 
 const getAudioUploadPreview = (file, preview) => `\
 <div class='upload-preview'>
-	<audio  style="width: 100%;" controls="controls">
+	<audio style="width: 100%;" controls="controls">
 		<source src="${ preview }" type="audio/wav">
 		Your browser does not support the audio element.
 	</audio>
@@ -46,7 +51,7 @@ const getAudioUploadPreview = (file, preview) => `\
 
 const getVideoUploadPreview = (file, preview) => `\
 <div class='upload-preview'>
-	<video  style="width: 100%;" controls="controls">
+	<video style="width: 100%;" controls="controls">
 		<source src="${ preview }" type="video/webm">
 		Your browser does not support the video element.
 	</video>
@@ -87,7 +92,7 @@ const formatBytes = (bytes, decimals) => {
 		'MB',
 		'GB',
 		'TB',
-		'PB'
+		'PB',
 	];
 
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -108,7 +113,7 @@ const getGenericUploadPreview = (file) => `\
 </div>
 </div>`;
 
-const getUploadPreview = (file, preview) => {
+const getUploadPreview = async(file, preview) => {
 	if (file.type === 'audio') {
 		return getAudioUploadPreview(file, preview);
 	}
@@ -117,14 +122,21 @@ const getUploadPreview = (file, preview) => {
 		return getVideoUploadPreview(file, preview);
 	}
 
-	if (file.type === 'image') {
+	const isImageFormatSupported = () => new Promise((resolve) => {
+		const element = document.createElement('img');
+		element.onload = () => resolve(true);
+		element.onerror = () => resolve(false);
+		element.src = preview;
+	});
+
+	if (file.type === 'image' && await isImageFormatSupported()) {
 		return getImageUploadPreview(file, preview);
 	}
 
 	return getGenericUploadPreview(file, preview);
 };
 
-fileUpload = (files) => {
+export const fileUpload = async(files) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');
@@ -136,12 +148,12 @@ fileUpload = (files) => {
 			return;
 		}
 
-		if (!RocketChat.fileUploadIsValidContentType(file.file.type)) {
+		if (!fileUploadIsValidContentType(file.file.type)) {
 			modal.open({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,
 				type: 'error',
-				timer: 3000
+				timer: 3000,
 			});
 			return;
 		}
@@ -150,93 +162,91 @@ fileUpload = (files) => {
 			modal.open({
 				title: t('FileUpload_File_Empty'),
 				type: 'error',
-				timer: 1000
+				timer: 1000,
 			});
 			return;
 		}
 
-		showUploadPreview(file, (file, preview) => {
-			return modal.open({
-				title: t('Upload_file_question'),
-				text: getUploadPreview(file, preview),
-				showCancelButton: true,
-				closeOnConfirm: false,
-				closeOnCancel: false,
-				confirmButtonText: t('Send'),
-				cancelButtonText: t('Cancel'),
-				html: true,
-				onRendered: () => $('#file-name').focus()
-			}, (isConfirm) => {
-				if (!isConfirm) {
+		showUploadPreview(file, async(file, preview) => modal.open({
+			title: t('Upload_file_question'),
+			text: await getUploadPreview(file, preview),
+			showCancelButton: true,
+			closeOnConfirm: false,
+			closeOnCancel: false,
+			confirmButtonText: t('Send'),
+			cancelButtonText: t('Cancel'),
+			html: true,
+			onRendered: () => $('#file-name').focus(),
+		}, (isConfirm) => {
+			if (!isConfirm) {
+				return;
+			}
+
+			const record = {
+				name: document.getElementById('file-name').value || file.name || file.file.name,
+				size: file.file.size,
+				type: file.file.type,
+				rid: roomId,
+				description: document.getElementById('file-description').value,
+			};
+
+			const upload = fileUploadHandler('Uploads', record, file.file);
+
+			uploadNextFile();
+
+			const uploads = Session.get('uploading') || [];
+			uploads.push({
+				id: upload.id,
+				name: upload.getFileName(),
+				percentage: 0,
+			});
+			Session.set('uploading', uploads);
+
+			upload.onProgress = (progress) => {
+				const uploads = Session.get('uploading') || [];
+				uploads.filter((u) => u.id === upload.id).forEach((u) => {
+					u.percentage = Math.round(progress * 100) || 0;
+				});
+				Session.set('uploading', uploads);
+			};
+
+			upload.start((error, file, storage) => {
+				if (error) {
+					const uploads = Session.get('uploading') || [];
+					uploads.filter((u) => u.id === upload.id).forEach((u) => {
+						u.error = error.message;
+						u.percentage = 0;
+					});
+					Session.set('uploading', uploads);
+
 					return;
 				}
 
-				const record = {
-					name: document.getElementById('file-name').value || file.name || file.file.name,
-					size: file.file.size,
-					type: file.file.type,
-					rid: roomId,
-					description: document.getElementById('file-description').value
-				};
+				if (!file) {
+					return;
+				}
 
-				const upload = fileUploadHandler('Uploads', record, file.file);
-
-				uploadNextFile();
-
-				const uploads = Session.get('uploading') || [];
-				uploads.push({
-					id: upload.id,
-					name: upload.getFileName(),
-					percentage: 0
-				});
-				Session.set('uploading', uploads);
-
-				upload.onProgress = (progress) => {
-					const uploads = Session.get('uploading') || [];
-					uploads.filter(u => u.id === upload.id).forEach(u => {
-						u.percentage = Math.round(progress * 100) || 0;
-					});
-					Session.set('uploading', uploads);
-				};
-
-				upload.start((error, file, storage) => {
-					if (error) {
+				Meteor.call('sendFileMessage', roomId, storage, file, () => {
+					Meteor.setTimeout(() => {
 						const uploads = Session.get('uploading') || [];
-						uploads.filter(u => u.id === upload.id).forEach(u => {
-							u.error = error.message;
-							u.percentage = 0;
-						});
-						Session.set('uploading', uploads);
-
-						return;
-					}
-
-					if (!file) {
-						return;
-					}
-
-					Meteor.call('sendFileMessage', roomId, storage, file, () => {
-						Meteor.setTimeout(() => {
-							const uploads = Session.get('uploading') || [];
-							Session.set('uploading', uploads.filter(u => u.id !== upload.id));
-						}, 2000);
-					});
-				});
-
-				Tracker.autorun((computation) => {
-					const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
-					if (!isCanceling) {
-						return;
-					}
-
-					computation.stop();
-					upload.stop();
-
-					const uploads = Session.get('uploading') || {};
-					Session.set('uploading', uploads.filter(u => u.id !== upload.id));
+						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+					}, 2000);
 				});
 			});
-		});
+
+			Tracker.autorun((computation) => {
+				const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
+				if (!isCanceling) {
+					return;
+				}
+
+				computation.stop();
+				upload.stop();
+
+				const uploads = Session.get('uploading') || {};
+				Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+			});
+		}));
 	};
 
 	uploadNextFile();

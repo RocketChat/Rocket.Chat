@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 
 Meteor.startup(function() {
@@ -8,6 +10,6 @@ Meteor.startup(function() {
 		data(message) {
 			const snippetLink = `<a href="/snippet/${ message.snippetId }/${ encodeURIComponent(message.snippetName) }">${ s.escapeHTML(message.snippetName) }</a>`;
 			return { snippetLink };
-		}
+		},
 	});
 });

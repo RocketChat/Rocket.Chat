@@ -1,4 +1,41 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(function() {
+
+	Tracker.autorun(function() {
+		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
+			return RocketChat.TabBar.removeButton('bbb_video');
+		}
+		const live = RocketChat.models.Rooms.findOne({ _id: Session.get('openedRoom'), 'streamingOptions.type': 'call' }, { fields: { streamingOptions: 1 } });
+
+		const groups = [];
+
+		if (RocketChat.settings.get('bigbluebutton_enable_d')) {
+			groups.push('direct');
+		}
+		if (RocketChat.settings.get('bigbluebutton_enable_p')) {
+			groups.push('group');
+		}
+		if (RocketChat.settings.get('bigbluebutton_enable_c')) {
+			groups.push('channel');
+		}
+
+		RocketChat.TabBar.addButton({
+			groups,
+			id: 'bbb_video',
+			i18nTitle: 'BBB Video Chat',
+			icon: 'video',
+			iconColor: 'red',
+			template: 'videoFlexTabBbb',
+			width: 600,
+			order: live ? -1 : 15,
+			class: () => live && 'live',
+		});
+	});
+
 	Tracker.autorun(function() {
 		if (RocketChat.settings.get('Jitsi_Enabled')) {
 			RocketChat.TabBar.addButton({
@@ -9,7 +46,7 @@ Meteor.startup(function() {
 				iconColor: 'red',
 				template: 'videoFlexTab',
 				width: 600,
-				order: 12
+				order: 12,
 			});
 		} else {
 			RocketChat.TabBar.removeButton('video');
@@ -36,7 +73,7 @@ Meteor.startup(function() {
 			if (Session.get('openedRoom')) {
 				const rid = Session.get('openedRoom');
 
-				const room = RocketChat.models.Rooms.findOne({_id: rid});
+				const room = RocketChat.models.Rooms.findOne({ _id: rid });
 				const currentTime = new Date().getTime();
 				const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 

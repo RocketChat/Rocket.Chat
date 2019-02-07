@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.API.v1.addRoute('statistics', { authRequired: true }, {
 	get() {
 		let refresh = false;
@@ -11,9 +14,9 @@ RocketChat.API.v1.addRoute('statistics', { authRequired: true }, {
 		});
 
 		return RocketChat.API.v1.success({
-			statistics: stats
+			statistics: stats,
 		});
-	}
+	},
 });
 
 RocketChat.API.v1.addRoute('statistics.list', { authRequired: true }, {
@@ -29,14 +32,14 @@ RocketChat.API.v1.addRoute('statistics.list', { authRequired: true }, {
 			sort: sort ? sort : { name: 1 },
 			skip: offset,
 			limit: count,
-			fields
+			fields,
 		}).fetch();
 
 		return RocketChat.API.v1.success({
 			statistics,
 			count: statistics.length,
 			offset,
-			total: RocketChat.models.Statistics.find(query).count()
+			total: RocketChat.models.Statistics.find(query).count(),
 		});
-	}
+	},
 });

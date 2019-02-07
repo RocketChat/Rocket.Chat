@@ -1,14 +1,18 @@
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
 Meteor.methods({
 	resetAvatar() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'resetAvatar'
+				method: 'resetAvatar',
 			});
 		}
 
 		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'resetAvatar'
+				method: 'resetAvatar',
 			});
 		}
 
@@ -16,9 +20,9 @@ Meteor.methods({
 		FileUpload.getStore('Avatars').deleteByName(user.username);
 		RocketChat.models.Users.unsetAvatarOrigin(user._id);
 		RocketChat.Notifications.notifyLogged('updateAvatar', {
-			username: user.username
+			username: user.username,
 		});
-	}
+	},
 });
 
 DDPRateLimiter.addRule({
@@ -26,5 +30,5 @@ DDPRateLimiter.addRule({
 	name: 'resetAvatar',
 	userId() {
 		return true;
-	}
+	},
 }, 1, 60000);

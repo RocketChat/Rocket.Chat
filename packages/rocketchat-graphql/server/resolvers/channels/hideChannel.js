@@ -9,7 +9,7 @@ const resolver = {
 		hideChannel: authenticated((root, args, { user }) => {
 			const channel = RocketChat.models.Rooms.findOne({
 				_id: args.channelId,
-				t: 'c'
+				t: 'c',
 			});
 
 			if (!channel) {
@@ -31,11 +31,11 @@ const resolver = {
 			});
 
 			return true;
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

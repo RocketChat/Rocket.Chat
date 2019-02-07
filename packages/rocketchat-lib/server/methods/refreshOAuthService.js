@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+
 Meteor.methods({
 	refreshOAuthService() {
 		if (!Meteor.userId()) {
@@ -10,6 +13,6 @@ Meteor.methods({
 
 		ServiceConfiguration.configurations.remove({});
 
-		RocketChat.models.Settings.update({_id: /^Accounts_OAuth_.+/}, {$set: {_updatedAt: new Date}}, {multi: true});
-	}
+		RocketChat.models.Settings.update({ _id: /^Accounts_OAuth_.+/ }, { $set: { _updatedAt: new Date } }, { multi: true });
+	},
 });

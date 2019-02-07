@@ -4,16 +4,16 @@ RocketChat.Migrations.add({
 
 		RocketChat.models.Users.update({}, {
 			$rename: {
-				roles: '_roles'
-			}
+				roles: '_roles',
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 
 		RocketChat.models.Users.find({
 			_roles: {
-				$exists: 1
-			}
+				$exists: 1,
+			},
 		}).forEach((user) => {
 			for (const scope of Object.keys(user._roles)) {
 				const roles = user._roles[scope];
@@ -23,10 +23,10 @@ RocketChat.Migrations.add({
 
 		return RocketChat.models.Users.update({}, {
 			$unset: {
-				_roles: 1
-			}
+				_roles: 1,
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
-	}
+	},
 });

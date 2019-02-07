@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	joinRoom(rid, code) {
 		check(rid, String);
@@ -21,15 +24,14 @@ Meteor.methods({
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 			}
 		} else {
-			if ((room.t !== 'c') || (RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room') !== true)) {
+			if (!RocketChat.authz.canAccessRoom(room, Meteor.user())) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 			}
-
 			if ((room.joinCodeRequired === true) && (code !== room.joinCode) && !RocketChat.authz.hasPermission(Meteor.userId(), 'join-without-join-code')) {
 				throw new Meteor.Error('error-code-invalid', 'Invalid Room Password', { method: 'joinRoom' });
 			}
 		}
 
 		return RocketChat.addUserToRoom(rid, user);
-	}
+	},
 });

@@ -1,5 +1,9 @@
-/* globals logger*/
-
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
+import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { logger } from './logger';
 import _ from 'underscore';
 
 export default class RocketAdapter {
@@ -43,7 +47,7 @@ export default class RocketAdapter {
 	onMessageDelete(rocketMessageDeleted) {
 		try {
 			if (! this.slack.getSlackChannel(rocketMessageDeleted.rid)) {
-				//This is on a channel that the rocket bot is not subscribed
+				// This is on a channel that the rocket bot is not subscribed
 				return;
 			}
 			logger.rocket.debug('onRocketMessageDelete', rocketMessageDeleted);
@@ -56,11 +60,14 @@ export default class RocketAdapter {
 
 	onSetReaction(rocketMsgID, reaction) {
 		try {
+			if (!this.slackBridge.isReactionsEnabled) {
+				return;
+			}
 			logger.rocket.debug('onRocketSetReaction');
 
 			if (rocketMsgID && reaction) {
 				if (this.slackBridge.reactionsMap.delete(`set${ rocketMsgID }${ reaction }`)) {
-					//This was a Slack reaction, we don't need to tell Slack about it
+					// This was a Slack reaction, we don't need to tell Slack about it
 					return;
 				}
 				const rocketMsg = RocketChat.models.Messages.findOneById(rocketMsgID);
@@ -79,11 +86,14 @@ export default class RocketAdapter {
 
 	onUnSetReaction(rocketMsgID, reaction) {
 		try {
+			if (!this.slackBridge.isReactionsEnabled) {
+				return;
+			}
 			logger.rocket.debug('onRocketUnSetReaction');
 
 			if (rocketMsgID && reaction) {
 				if (this.slackBridge.reactionsMap.delete(`unset${ rocketMsgID }${ reaction }`)) {
-					//This was a Slack unset reaction, we don't need to tell Slack about it
+					// This was a Slack unset reaction, we don't need to tell Slack about it
 					return;
 				}
 
@@ -104,13 +114,13 @@ export default class RocketAdapter {
 	onMessage(rocketMessage) {
 		try {
 			if (! this.slack.getSlackChannel(rocketMessage.rid)) {
-				//This is on a channel that the rocket bot is not subscribed
+				// This is on a channel that the rocket bot is not subscribed
 				return;
 			}
 			logger.rocket.debug('onRocketMessage', rocketMessage);
 
 			if (rocketMessage.editedAt) {
-				//This is an Edit Event
+				// This is an Edit Event
 				this.processMessageChanged(rocketMessage);
 				return rocketMessage;
 			}
@@ -119,7 +129,11 @@ export default class RocketAdapter {
 				return rocketMessage;
 			}
 
-			//A new message from Rocket.Chat
+			if (rocketMessage.file) {
+				return this.processFileShare(rocketMessage);
+			}
+
+			// A new message from Rocket.Chat
 			this.processSendMessage(rocketMessage);
 		} catch (err) {
 			logger.rocket.error('Unhandled error onMessage', err);
@@ -129,34 +143,78 @@ export default class RocketAdapter {
 	}
 
 	processSendMessage(rocketMessage) {
-		//Since we got this message, SlackBridge_Out_Enabled is true
+		// Since we got this message, SlackBridge_Out_Enabled is true
 
 		if (RocketChat.settings.get('SlackBridge_Out_All') === true) {
 			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 		} else {
-			//They want to limit to certain groups
+			// They want to limit to certain groups
 			const outSlackChannels = _.pluck(RocketChat.settings.get('SlackBridge_Out_Channels'), '_id') || [];
-			//logger.rocket.debug('Out SlackChannels: ', outSlackChannels);
+			// logger.rocket.debug('Out SlackChannels: ', outSlackChannels);
 			if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
 				this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 			}
 		}
 	}
 
+	getMessageAttachment(rocketMessage) {
+		if (!rocketMessage.file) {
+			return;
+		}
+
+		if (!rocketMessage.attachments || !rocketMessage.attachments.length) {
+			return;
+		}
+
+		const fileId = rocketMessage.file._id;
+		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0);
+	}
+
+	getFileDownloadUrl(rocketMessage) {
+		const attachment = this.getMessageAttachment(rocketMessage);
+
+		if (attachment) {
+			return attachment.title_link;
+		}
+	}
+
+	processFileShare(rocketMessage) {
+		if (! RocketChat.settings.get('SlackBridge_FileUpload_Enabled')) {
+			return;
+		}
+
+		if (rocketMessage.file.name) {
+			let file_name = rocketMessage.file.name;
+			let text = rocketMessage.msg;
+
+			const attachment = this.getMessageAttachment(rocketMessage);
+			if (attachment) {
+				file_name = Meteor.absoluteUrl(attachment.title_link);
+				if (!text) {
+					text = attachment.description;
+				}
+			}
+
+			const message = `${ text } ${ file_name }`;
+
+			rocketMessage.msg = message;
+			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
+		}
+	}
+
 	processMessageChanged(rocketMessage) {
 		if (rocketMessage) {
 			if (rocketMessage.updatedBySlack) {
-				//We have already processed this
+				// We have already processed this
 				delete rocketMessage.updatedBySlack;
 				return;
 			}
 
-			//This was a change from Rocket.Chat
+			// This was a change from Rocket.Chat
 			const slackChannel = this.slack.getSlackChannel(rocketMessage.rid);
 			this.slack.postMessageUpdate(slackChannel, rocketMessage);
 		}
 	}
-
 
 	getChannel(slackMessage) {
 		return slackMessage.channel ? this.findChannel(slackMessage.channel) || this.addChannel(slackMessage.channel) : null;
@@ -223,7 +281,7 @@ export default class RocketAdapter {
 				}
 
 				const roomUpdate = {
-					ts: new Date(rocketChannelData.created * 1000)
+					ts: new Date(rocketChannelData.created * 1000),
 				};
 				let lastSetTopic = 0;
 				if (!_.isEmpty(rocketChannelData.topic && rocketChannelData.topic.value)) {
@@ -256,7 +314,7 @@ export default class RocketAdapter {
 		if (slackResults && slackResults.data && slackResults.data.ok === true && slackResults.data.user) {
 			const rocketUserData = slackResults.data.user;
 			const isBot = rocketUserData.is_bot === true;
-			const email = rocketUserData.profile && rocketUserData.profile.email || '';
+			const email = (rocketUserData.profile && rocketUserData.profile.email) || '';
 			let existingRocketUser;
 			if (!isBot) {
 				existingRocketUser = RocketChat.models.Users.findOneByEmailAddress(email) || RocketChat.models.Users.findOneByUsername(rocketUserData.name);
@@ -270,7 +328,7 @@ export default class RocketAdapter {
 			} else {
 				const newUser = {
 					password: Random.id(),
-					username: rocketUserData.name
+					username: rocketUserData.name,
 				};
 
 				if (!isBot && email) {
@@ -284,15 +342,15 @@ export default class RocketAdapter {
 				rocketUserData.rocketId = Accounts.createUser(newUser);
 				const userUpdate = {
 					utcOffset: rocketUserData.tz_offset / 3600, // Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600,
-					roles: isBot ? [ 'bot' ] : [ 'user' ]
+					roles: isBot ? ['bot'] : ['user'],
 				};
 
 				if (rocketUserData.profile && rocketUserData.profile.real_name) {
-					userUpdate['name'] = rocketUserData.profile.real_name;
+					userUpdate.name = rocketUserData.profile.real_name;
 				}
 
 				if (rocketUserData.deleted) {
-					userUpdate['active'] = false;
+					userUpdate.active = false;
 					userUpdate['services.resume.loginTokens'] = [];
 				}
 
@@ -317,7 +375,7 @@ export default class RocketAdapter {
 				}
 			}
 
-			const importIds = [ rocketUserData.id ];
+			const importIds = [rocketUserData.id];
 			if (isBot && rocketUserData.profile && rocketUserData.profile.bot_id) {
 				importIds.push(rocketUserData.profile.bot_id);
 			}
@@ -358,8 +416,8 @@ export default class RocketAdapter {
 					rid: rocketChannel._id,
 					u: {
 						_id: rocketUser._id,
-						username: rocketUser.username
-					}
+						username: rocketUser.username,
+					},
 				};
 
 				this.addAliasToMsg(rocketUser.username, rocketMsgObj);

@@ -1,3 +1,12 @@
+import { SHA256 } from 'meteor/sha';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { modal, SideNav } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -7,7 +16,7 @@ const validateUsername = (username) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
 	return reg.test(username);
 };
-const validateName = (name) => name.length;
+const validateName = (name) => name && name.length;
 const validatePassword = (password, confirmationPassword) => {
 	if (!confirmationPassword) {
 		return true;
@@ -18,19 +27,17 @@ const validatePassword = (password, confirmationPassword) => {
 
 const filterNames = (old) => {
 	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '')].filter(f => reg.test(f)).join('');
+	return [...old.replace(' ', '')].filter((f) => reg.test(f)).join('');
 };
-const filterEmail = (old) => {
-	return old.replace(' ', '');
-};
+const filterEmail = (old) => old.replace(' ', '');
 
 const setAvatar = function(event, template) {
-	const {blob, contentType, service} = this.suggestion;
+	const { blob, contentType, service } = this.suggestion;
 
 	template.avatar.set({
 		service,
 		contentType,
-		blob
+		blob,
 	});
 };
 const loginWith = function(event, template) {
@@ -46,8 +53,8 @@ const loginWith = function(event, template) {
 		template.getSuggestions();
 	});
 };
-const isUserEmailVerified = user => user.emails && user.emails[0] && user.emails[0].verified;
-const getUserEmailAddress = user => user.emails && user.emails[0] && user.emails[0].address;
+const isUserEmailVerified = (user) => user.emails && user.emails[0] && user.emails[0].verified;
+const getUserEmailAddress = (user) => user.emails && user.emails[0] && user.emails[0].address;
 
 Template.accountProfile.helpers({
 	emailInvalid() {
@@ -71,16 +78,16 @@ Template.accountProfile.helpers({
 	},
 	services() {
 		const suggestions = Template.instance().suggestions.get();
-		return ['gravatar', 'facebook', 'google', 'github', 'gitlab', 'linkedIn', 'twitter']
-			.map((service) => {
-				return {
-					name: service,
-					// TODO: improve this fix
-					service: !suggestions.avatars[service.toLowerCase()] ? RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
-					suggestion: suggestions.avatars[service.toLowerCase()]
-				};
-			})
-			.filter(({service, suggestion}) => service || suggestion);
+
+		if (suggestions.avatars) {
+			return Object.keys(suggestions.avatars).map((service) => ({
+				name: service,
+				// TODO: improve this fix
+				service: !suggestions.avatars[service.toLowerCase()] ? RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
+				suggestion: suggestions.avatars[service.toLowerCase()],
+			}))
+				.filter(({ service, suggestion }) => service || suggestion);
+		}
 	},
 	initialsUsername() {
 		const user = Meteor.user();
@@ -106,9 +113,9 @@ Template.accountProfile.helpers({
 		const usernameAvaliable = instance.usernameAvaliable.get();
 		const avatar = instance.avatar.get();
 		const user = Meteor.user();
-		const {customFields = {}} = user;
+		const { customFields = {} } = user;
 		if (instance.view.isRendered) {
-			if (instance.findAll('[data-customfield="true"]').some(el => {
+			if (instance.findAll('[data-customfield="true"]').some((el) => {
 				const key = el.getAttribute('name');
 				const value = customFields[key] || '';
 				return el.value !== value;
@@ -163,7 +170,7 @@ Template.accountProfile.helpers({
 	},
 	customFields() {
 		return Meteor.user().customFields;
-	}
+	},
 });
 
 Template.accountProfile.onCreated(function() {
@@ -218,7 +225,7 @@ Template.accountProfile.onCreated(function() {
 			Meteor.call('setAvatarFromService', ...params, function(err) {
 				if (err && err.details && err.details.timeToReset) {
 					toastr.error(t('error-too-many-requests', {
-						seconds: parseInt(err.details.timeToReset / 1000)
+						seconds: parseInt(err.details.timeToReset / 1000),
 					}));
 				} else {
 					toastr.success(t('Avatar_changed_successfully'));
@@ -301,7 +308,7 @@ Template.accountProfile.onRendered(function() {
 	});
 });
 
-const checkAvailability = _.debounce((username, {usernameAvaliable}) => {
+const checkAvailability = _.debounce((username, { usernameAvaliable }) => {
 	Meteor.call('checkUsernameAvailability', username, function(error, data) {
 		usernameAvaliable.set(data);
 	});
@@ -315,7 +322,7 @@ Template.accountProfile.events({
 		Meteor.call('resetAvatar', function(err) {
 			if (err && err.details && err.details.timeToReset) {
 				toastr.error(t('error-too-many-requests', {
-					seconds: parseInt(err.details.timeToReset / 1000)
+					seconds: parseInt(err.details.timeToReset / 1000),
 				}));
 			} else {
 				toastr.success(t('Avatar_changed_successfully'));
@@ -332,8 +339,8 @@ Template.accountProfile.events({
 			suggestion: {
 				service: 'url',
 				blob: url,
-				contentType: ''
-			}
+				contentType: '',
+			},
 		}, [e, instance, ...args]);
 	},
 	'input .js-avatar-url-input'(e, instance) {
@@ -346,7 +353,7 @@ Template.accountProfile.events({
 	'input [name=email]'(e, instance) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterEmail(input.value);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
@@ -355,7 +362,7 @@ Template.accountProfile.events({
 	'input [name=username]'(e, instance) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterNames(input.value);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
@@ -397,7 +404,7 @@ Template.accountProfile.events({
 			showCancelButton: true,
 			closeOnConfirm: false,
 			confirmButtonText: t('Save'),
-			cancelButtonText: t('Cancel')
+			cancelButtonText: t('Cancel'),
 		}, (typedPassword) => {
 			if (typedPassword) {
 				toastr.remove();
@@ -439,7 +446,7 @@ Template.accountProfile.events({
 				showCancelButton: true,
 				closeOnConfirm: false,
 				confirmButtonText: t('Delete'),
-				cancelButtonText: t('Cancel')
+				cancelButtonText: t('Cancel'),
 			}, (typedPassword) => {
 				if (typedPassword) {
 					toastr.remove();
@@ -465,7 +472,7 @@ Template.accountProfile.events({
 				showCancelButton: true,
 				closeOnConfirm: false,
 				confirmButtonText: t('Delete'),
-				cancelButtonText: t('Cancel')
+				cancelButtonText: t('Cancel'),
 			}, (deleteConfirmation) => {
 				const user = Meteor.user();
 				if (deleteConfirmation === (user && user.username)) {
@@ -503,11 +510,11 @@ Template.accountProfile.events({
 	},
 	'change .js-select-avatar-upload [type=file]'(event, template) {
 		const e = event.originalEvent || event;
-		let files = e.target.files;
+		let { files } = e.target;
 		if (!files || files.length === 0) {
 			files = (e.dataTransfer && e.dataTransfer.files) || [];
 		}
-		Object.keys(files).forEach(key => {
+		Object.keys(files).forEach((key) => {
 			const blob = files[key];
 			if (!/image\/.+/.test(blob.type)) {
 				return;
@@ -518,11 +525,11 @@ Template.accountProfile.events({
 				template.avatar.set({
 					service: 'upload',
 					contentType: blob.type,
-					blob: reader.result
+					blob: reader.result,
 				});
 				RocketChat.callbacks.run('userAvatarSet', 'upload');
 			};
 		});
-	}
+	},
 
 });

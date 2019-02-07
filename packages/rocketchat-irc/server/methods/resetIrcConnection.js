@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
 import Bridge from '../irc-bridge';
 
 Meteor.methods({
@@ -9,7 +12,7 @@ Meteor.methods({
 			if (!ircEnabled) {
 				return {
 					message: 'Connection_Closed',
-					params: []
+					params: [],
 				};
 			}
 		}
@@ -19,7 +22,7 @@ Meteor.methods({
 				Meteor.ircBridge.init();
 				return {
 					message: 'Connection_Reset',
-					params: []
+					params: [],
 				};
 			}
 
@@ -30,12 +33,12 @@ Meteor.methods({
 					host: RocketChat.settings.get('IRC_Host'),
 					port: RocketChat.settings.get('IRC_Port'),
 					name: RocketChat.settings.get('IRC_Name'),
-					description: RocketChat.settings.get('IRC_Description')
+					description: RocketChat.settings.get('IRC_Description'),
 				},
 				passwords: {
 					local: RocketChat.settings.get('IRC_Local_Password'),
-					peer: RocketChat.settings.get('IRC_Peer_Password')
-				}
+					peer: RocketChat.settings.get('IRC_Peer_Password'),
+				},
 			};
 
 			Meteor.ircBridge = new Bridge(config);
@@ -43,10 +46,10 @@ Meteor.methods({
 
 			return {
 				message: 'Connection_Reset',
-				params: []
+				params: [],
 			};
 		}
 
 		throw new Meteor.Error(t('IRC_Federation_Disabled'));
-	}
+	},
 });

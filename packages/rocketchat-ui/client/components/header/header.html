@@ -1,19 +1,24 @@
 <template name="header">
-	<header class="rc-header{{#if fixedHeight}} rc-header--height-fixed{{/if}}" >
+	<header class="rc-header{{#if fixedHeight}} rc-header--height-fixed{{/if}} {{#if fullpage}} rc-header--fullpage{{/if}}" >
 		<div class="rc-header__wrap">
 
 			<div class="rc-header__block rc-header--burger">
 				{{> burger}}
 			</div>
+
 			{{#if showToggleFavorite}}
-			<div class="rc-header__block rc-header__favorite">
-				<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
-			</div>
+				<div class="rc-header__block rc-header__favorite">
+					<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
+				</div>
 			{{/if}}
 			<!-- TODO: fix it style and helper -->
 			{{#if tokenAccessChannel}}
-			<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
+				<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
 			{{/if}}
+			{{#if encryptedChannel}}
+				<i class="icon-key" aria-label="{{_ "Encrypted_Channel_Label"}}"></i>
+			{{/if}}
+
 			{{#if isChannel}}
 			<div class="rc-header__content rc-header__block">
 				{{#if isDirect}}
@@ -31,11 +36,11 @@
 
 					{{#if isDirect}}
 					<span class="rc-header__status">
-						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{userStatus}}"></div>
-						<div class="rc-header__visual-status">{{userStatus}}</div>
+						<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>
+						<div class="rc-header__visual-status">{{_ userStatus}}</div>
 					</span>
 					{{else}}
-					{{#if roomTopic}}<span class="rc-header__topic">{{{RocketChatMarkdown roomTopic}}}</span>{{/if}}
+					{{#if roomTopic}}<span class="rc-header__topic">{{{roomTopic}}}</span>{{/if}}
 					{{/if}}
 				</div>
 

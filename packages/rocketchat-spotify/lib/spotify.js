@@ -2,6 +2,7 @@
  * Spotify a named function that will process Spotify links or syntaxes (ex: spotify:track:1q6IK1l4qpYykOaWaLJkWG)
  * @param {Object} message - The message object
  */
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -37,10 +38,10 @@ class Spotify {
 
 			let match;
 			while ((match = re.exec(part))) {
-				const data = _.filter(match.slice(1), value => value != null);
-				const path = _.map(data, value => _.escape(value)).join('/');
+				const data = _.filter(match.slice(1), (value) => value != null);
+				const path = _.map(data, (value) => _.escape(value)).join('/');
 				const url = `https://open.spotify.com/${ path }`;
-				urls.push({url, 'source': `spotify:${ data.join(':') }`});
+				urls.push({ url, source: `spotify:${ data.join(':') }` });
 				changed = true;
 			}
 

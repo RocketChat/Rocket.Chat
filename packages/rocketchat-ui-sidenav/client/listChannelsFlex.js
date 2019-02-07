@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { SideNav } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -18,11 +24,11 @@ Template.listChannelsFlex.helpers({
 		return Template.instance().show.get() === show;
 	},
 	member() {
-		return !!RocketChat.models.Subscriptions.findOne({ name: this.name, open: true });
+		return !!Subscriptions.findOne({ name: this.name, open: true });
 	},
 	hidden() {
-		return !!RocketChat.models.Subscriptions.findOne({ name: this.name, open: false });
-	}
+		return !!Subscriptions.findOne({ name: this.name, open: false });
+	},
 });
 
 Template.listChannelsFlex.events({
@@ -35,7 +41,7 @@ Template.listChannelsFlex.events({
 	},
 
 	'click footer .create'() {
-		if (RocketChat.authz.hasAtLeastOnePermission('create-c')) {
+		if (hasAtLeastOnePermission('create-c')) {
 			return SideNav.setFlex('createChannelFlex');
 		}
 	},
@@ -70,7 +76,7 @@ Template.listChannelsFlex.events({
 			instance.$('#sort-subscriptions').hide();
 		}
 		return instance.show.set(show);
-	}
+	},
 });
 
 Template.listChannelsFlex.onCreated(function() {
@@ -99,9 +105,9 @@ Template.listChannelsFlex.onCreated(function() {
 						break;
 				}
 			}
-			this.channelsList.set(RocketChat.models.Subscriptions.find({
+			this.channelsList.set(Subscriptions.find({
 				name: new RegExp(s.trim(s.escapeRegExp(this.nameFilter.get())), 'i'),
-				t: 'c'
+				t: 'c',
 			}, options).fetch()
 			);
 			if (this.channelsList.get().length < this.limit.get()) {

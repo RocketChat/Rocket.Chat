@@ -16,17 +16,17 @@ RocketChat.Migrations.add({
 					'view-history',
 					'view-joined-room',
 					'view-p-room',
-					'preview-c-room'
-				]
-			}
+					'preview-c-room',
+				],
+			},
 		};
 
 		const update = {
 			$addToSet: {
-				roles: 'anonymous'
-			}
+				roles: 'anonymous',
+			},
 		};
 
 		RocketChat.models.Permissions.update(query, update, { multi: true });
-	}
+	},
 });

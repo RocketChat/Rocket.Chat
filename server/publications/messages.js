@@ -1,6 +1,7 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
-Meteor.publish('messages', function(rid/*, start*/) {
+Meteor.publish('messages', function(rid/* , start*/) {
 	if (!this.userId) {
 		return this.ready();
 	}
@@ -17,43 +18,37 @@ Meteor.publish('messages', function(rid/*, start*/) {
 
 	const cursor = RocketChat.models.Messages.findVisibleByRoomId(rid, {
 		sort: {
-			ts: -1
+			ts: -1,
 		},
-		limit: 50
+		limit: 50,
 	});
 
 	const cursorHandle = cursor.observeChanges({
 		added(_id, record) {
-			record.starred = _.findWhere(record.starred, {
-				_id: publication.userId
-			});
-			return publication.added('rocketchat_message', _id, record);
+			return publication.added('rocketchat_message', _id, RocketChat.composeMessageObjectWithUser(record, publication.userId));
 		},
 		changed(_id, record) {
-			record.starred = _.findWhere(record.starred, {
-				_id: publication.userId
-			});
-			return publication.changed('rocketchat_message', _id, record);
-		}
+			return publication.changed('rocketchat_message', _id, RocketChat.composeMessageObjectWithUser(record, publication.userId));
+		},
 	});
 
 	const cursorDelete = RocketChat.models.Messages.findInvisibleByRoomId(rid, {
 		fields: {
-			_id: 1
-		}
+			_id: 1,
+		},
 	});
 
 	const cursorDeleteHandle = cursorDelete.observeChanges({
-		added(_id/*, record*/) {
+		added(_id/* , record*/) {
 			return publication.added('rocketchat_message', _id, {
-				_hidden: true
+				_hidden: true,
 			});
 		},
-		changed(_id/*, record*/) {
+		changed(_id/* , record*/) {
 			return publication.added('rocketchat_message', _id, {
-				_hidden: true
+				_hidden: true,
 			});
-		}
+		},
 	});
 
 	this.ready();
@@ -65,37 +60,37 @@ Meteor.publish('messages', function(rid/*, start*/) {
 });
 
 Meteor.methods({
-	'messages/get'(rid, {lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads= false}) {
+	'messages/get'(rid, { lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false }) {
 		check(rid, String);
 
 		const fromId = Meteor.userId();
 
 		if (!fromId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'messages/get'
+				method: 'messages/get',
 			});
 		}
 
 		if (!Meteor.call('canAccessRoom', rid, fromId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'messages/get'
+				method: 'messages/get',
 			});
 		}
 
 		const options = {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		};
 
 		if (lastUpdate instanceof Date) {
 			return {
 				updated: RocketChat.models.Messages.findForUpdates(rid, lastUpdate, options).fetch(),
-				deleted: RocketChat.models.Messages.trashFindDeletedAfter(lastUpdate, {rid}, { ...options, fields: { _id: 1, _deletedAt: 1 }}).fetch()
+				deleted: RocketChat.models.Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
 		return Meteor.call('getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
 
-	}
+	},
 });

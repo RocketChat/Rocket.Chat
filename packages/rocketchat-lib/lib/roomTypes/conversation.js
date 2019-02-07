@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RoomTypeConfig } from '../RoomTypeConfig';
 
 export class ConversationRoomType extends RoomTypeConfig {
@@ -5,7 +6,7 @@ export class ConversationRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'merged',
 			order: 30,
-			label: 'Conversations'
+			label: 'Conversations',
 		});
 	}
 

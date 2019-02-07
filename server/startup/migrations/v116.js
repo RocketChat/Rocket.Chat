@@ -2,36 +2,36 @@ RocketChat.Migrations.add({
 	version: 116,
 	up() {
 		RocketChat.models.Subscriptions.tryDropIndex({
-			unread: 1
+			unread: 1,
 		});
 
 		// set pref origin to all existing preferences
 		RocketChat.models.Subscriptions.update({
-			desktopNotifications: { $exists: true }
+			desktopNotifications: { $exists: true },
 		}, {
 			$set: {
-				desktopPrefOrigin: 'subscription'
-			}
+				desktopPrefOrigin: 'subscription',
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 		RocketChat.models.Subscriptions.update({
-			mobilePushNotifications: { $exists: true }
+			mobilePushNotifications: { $exists: true },
 		}, {
 			$set: {
-				mobilePrefOrigin: 'subscription'
-			}
+				mobilePrefOrigin: 'subscription',
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 		RocketChat.models.Subscriptions.update({
-			emailNotifications: { $exists: true }
+			emailNotifications: { $exists: true },
 		}, {
 			$set: {
-				emailPrefOrigin: 'subscription'
-			}
+				emailPrefOrigin: 'subscription',
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
 
 		// set user preferences on subscriptions
@@ -39,50 +39,50 @@ RocketChat.Migrations.add({
 			$or: [
 				{ 'settings.preferences.desktopNotifications': { $exists: true } },
 				{ 'settings.preferences.mobileNotifications': { $exists: true } },
-				{ 'settings.preferences.emailNotificationMode': { $exists: true } }
-			]
-		}).forEach(user => {
+				{ 'settings.preferences.emailNotificationMode': { $exists: true } },
+			],
+		}).forEach((user) => {
 			if (user.settings.preferences.desktopNotifications && user.settings.preferences.desktopNotifications !== 'default') {
 				RocketChat.models.Subscriptions.update({
 					'u._id': user._id,
-					desktopPrefOrigin: { $exists: false }
+					desktopPrefOrigin: { $exists: false },
 				}, {
 					$set: {
 						desktopNotifications: user.settings.preferences.desktopNotifications,
-						desktopPrefOrigin: 'user'
-					}
+						desktopPrefOrigin: 'user',
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 			}
 
 			if (user.settings.preferences.mobileNotifications && user.settings.preferences.mobileNotifications !== 'default') {
 				RocketChat.models.Subscriptions.update({
 					'u._id': user._id,
-					mobilePrefOrigin: { $exists: false }
+					mobilePrefOrigin: { $exists: false },
 				}, {
 					$set: {
 						mobileNotifications: user.settings.preferences.mobileNotifications,
-						mobilePrefOrigin: 'user'
-					}
+						mobilePrefOrigin: 'user',
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 			}
 
 			if (user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode !== 'default') {
 				RocketChat.models.Subscriptions.update({
 					'u._id': user._id,
-					emailPrefOrigin: { $exists: false }
+					emailPrefOrigin: { $exists: false },
 				}, {
 					$set: {
 						emailNotifications: user.settings.preferences.emailNotificationMode === 'disabled' || user.settings.preferences.emailNotificationMode === 'nothing' ? 'nothing' : 'mentions',
-						emailPrefOrigin: 'user'
-					}
+						emailPrefOrigin: 'user',
+					},
 				}, {
-					multi: true
+					multi: true,
 				});
 			}
 		});
-	}
+	},
 });

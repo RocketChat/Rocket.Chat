@@ -3,7 +3,7 @@ Package.describe({
 	version: '0.0.1',
 	summary: '',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
@@ -13,22 +13,11 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:lib',
 		'sha',
-		'random'
+		'random',
+		'rocketchat:ui',
+		'rocketchat:utils',
 	]);
 
-	api.addFiles('client/accountSecurity.html', 'client');
-	api.addFiles('client/accountSecurity.js', 'client');
-	api.addFiles('client/TOTPPassword.js', 'client');
-
-	api.addFiles('server/lib/totp.js', 'server');
-
-	api.addFiles('server/methods/checkCodesRemaining.js', 'server');
-	api.addFiles('server/methods/disable.js', 'server');
-	api.addFiles('server/methods/enable.js', 'server');
-	api.addFiles('server/methods/regenerateCodes.js', 'server');
-	api.addFiles('server/methods/validateTempToken.js', 'server');
-
-	api.addFiles('server/models/users.js', 'server');
-
-	api.addFiles('server/loginHandler.js', 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

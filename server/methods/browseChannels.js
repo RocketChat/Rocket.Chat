@@ -1,14 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
 		case 'createdAt':
 			return {
-				ts: direction === 'asc' ? 1 : -1
+				ts: direction === 'asc' ? 1 : -1,
 			};
 		default:
 			return {
-				[field]: direction === 'asc' ? 1 : -1
+				[field]: direction === 'asc' ? 1 : -1,
 			};
 	}
 };
@@ -17,14 +19,13 @@ const sortUsers = function(field, direction) {
 	switch (field) {
 		default:
 			return {
-				[field]: direction === 'asc' ? 1 : -1
+				[field]: direction === 'asc' ? 1 : -1,
 			};
 	}
 };
 
-
 Meteor.methods({
-	browseChannels({text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page = 0, limit = 10}) {
+	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
 		if (!['channels', 'users'].includes(type)) {
@@ -35,17 +36,21 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', ...type === 'channels' ? ['usersCount'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
+		if ((!page && page !== 0) && (!offset && offset !== 0)) {
 			return;
 		}
 
-		page = page > -1 ? page : 0;
+		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames'] : [], ...type === 'users' ? ['username'] : []].includes(sortBy)) {
+			return;
+		}
+
+		const skip = Math.max(0, offset || (page > -1 ? limit * page : 0));
 
 		limit = limit > 0 ? limit : 10;
 
 		const options = {
-			skip: limit * page,
-			limit
+			skip,
+			limit,
 		};
 
 		const user = Meteor.user();
@@ -66,10 +71,10 @@ Meteor.methods({
 						lastMessage: 1,
 						ts: 1,
 						archived: 1,
-						usersCount: 1
-					}
+						usersCount: 1,
+					},
 				}).fetch(),
-				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count()
+				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count(),
 			};
 		}
 
@@ -86,18 +91,18 @@ Meteor.methods({
 					username: 1,
 					name: 1,
 					createdAt: 1,
-					emails: 1
-				}
+					emails: 1,
+				},
 			}).fetch(),
-			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count()
+			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count(),
 		};
-	}
+	},
 });
 
 DDPRateLimiter.addRule({
 	type: 'method',
 	name: 'browseChannels',
-	userId(/*userId*/) {
+	userId(/* userId*/) {
 		return true;
-	}
+	},
 }, 100, 100000);

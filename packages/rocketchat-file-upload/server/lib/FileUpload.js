@@ -1,15 +1,19 @@
-/* globals UploadFS */
-
+import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { settings } from 'meteor/rocketchat:settings';
+import * as Models from 'meteor/rocketchat:models';
+import { FileUpload as _FileUpload } from '../../lib/FileUpload';
+import { roomTypes } from 'meteor/rocketchat:utils';
 
 const cookie = new Cookies();
 
-Object.assign(FileUpload, {
+export const FileUpload = Object.assign(_FileUpload, {
 	handlers: {},
 
 	configureUploadsStore(store, name, options) {
@@ -18,18 +22,18 @@ Object.assign(FileUpload, {
 		delete stores[name];
 
 		return new UploadFS.store[store](Object.assign({
-			name
+			name,
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
 	defaultUploads() {
 		return {
-			collection: RocketChat.models.Uploads.model,
+			collection: Models.Uploads.model,
 			filter: new UploadFS.Filter({
-				onCheck: FileUpload.validateFileUpload
+				onCheck: FileUpload.validateFileUpload,
 			}),
 			getPath(file) {
-				return `${ RocketChat.settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
+				return `${ settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			onRead(fileId, file, req, res) {
@@ -40,29 +44,29 @@ Object.assign(FileUpload, {
 
 				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
 				return true;
-			}
+			},
 		};
 	},
 
 	defaultAvatars() {
 		return {
-			collection: RocketChat.models.Avatars.model,
+			collection: Models.Avatars.model,
 			// filter: new UploadFS.Filter({
 			// 	onCheck: FileUpload.validateFileUpload
 			// }),
 			getPath(file) {
-				return `${ RocketChat.settings.get('uniqueID') }/avatars/${ file.userId }`;
+				return `${ settings.get('uniqueID') }/avatars/${ file.userId }`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
-			onFinishUpload: FileUpload.avatarsOnFinishUpload
+			onFinishUpload: FileUpload.avatarsOnFinishUpload,
 		};
 	},
 
 	defaultUserDataFiles() {
 		return {
-			collection: RocketChat.models.UserDataFiles.model,
+			collection: Models.UserDataFiles.model,
 			getPath(file) {
-				return `${ RocketChat.settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
+				return `${ settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			onRead(fileId, file, req, res) {
@@ -73,18 +77,18 @@ Object.assign(FileUpload, {
 
 				res.setHeader('content-disposition', `attachment; filename="${ encodeURIComponent(file.name) }"`);
 				return true;
-			}
+			},
 		};
 	},
 
 	avatarsOnValidate(file) {
-		if (RocketChat.settings.get('Accounts_AvatarResize') !== true) {
+		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
-		const height = RocketChat.settings.get('Accounts_AvatarSize');
+		const height = settings.get('Accounts_AvatarSize');
 		const future = new Future();
 
 		const s = sharp(tempFilePath);
@@ -97,23 +101,31 @@ Object.assign(FileUpload, {
 				metadata = {};
 			}
 
-			s.toFormat(sharp.format.jpeg)
-				.resize(Math.min(height || 0, metadata.width || Infinity), Math.min(height || 0, metadata.height || Infinity))
+			s.flatten({ background: '#FFFFFF' })
+				.jpeg()
+				.resize({
+					width: Math.min(height || 0, metadata.width || Infinity),
+					height: Math.min(height || 0, metadata.height || Infinity),
+					fit: sharp.fit.cover,
+				})
 				.pipe(sharp()
-					.resize(height, height)
-					.background('#FFFFFF')
-					.embed()
+					.resize({
+						height,
+						width: height,
+						fit: sharp.fit.contain,
+						background: '#FFFFFF',
+					})
 				)
 				// Use buffer to get the result in memory then replace the existing file
 				// There is no option to override a file using this library
 				.toBuffer()
-				.then(Meteor.bindEnvironment(outputBuffer => {
-					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment(err => {
+				.then(Meteor.bindEnvironment((outputBuffer) => {
+					fs.writeFile(tempFilePath, outputBuffer, Meteor.bindEnvironment((err) => {
 						if (err != null) {
 							console.error(err);
 						}
-						const size = fs.lstatSync(tempFilePath).size;
-						this.getCollection().direct.update({_id: file._id}, {$set: {size}});
+						const { size } = fs.lstatSync(tempFilePath);
+						this.getCollection().direct.update({ _id: file._id }, { $set: { size } });
 						future.return();
 					}));
 				}));
@@ -123,13 +135,12 @@ Object.assign(FileUpload, {
 	},
 
 	resizeImagePreview(file) {
-		file = RocketChat.models.Uploads.findOneById(file._id);
+		file = Models.Uploads.findOneById(file._id);
 		file = FileUpload.addExtensionTo(file);
 		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
 		const transformer = sharp()
-			.resize(32, 32)
-			.max()
+			.resize({ width: 32, height: 32, fit: 'inside' })
 			.jpeg()
 			.blur();
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
@@ -157,33 +168,38 @@ Object.assign(FileUpload, {
 				format: metadata.format,
 				size: {
 					width: metadata.width,
-					height: metadata.height
-				}
+					height: metadata.height,
+				},
 			};
 
-			if (metadata.orientation == null) {
-				return fut.return();
-			}
-
-			s.rotate()
-				.toFile(`${ tmpFile }.tmp`)
-				.then(Meteor.bindEnvironment(() => {
-					fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
-						fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
-							const size = fs.lstatSync(tmpFile).size;
-							this.getCollection().direct.update({_id: file._id}, {
-								$set: {
-									size,
-									identify
-								}
-							});
-							fut.return();
+			const reorientation = (cb) => {
+				if (!metadata.orientation) {
+					return cb();
+				}
+				s.rotate()
+					.toFile(`${ tmpFile }.tmp`)
+					.then(Meteor.bindEnvironment(() => {
+						fs.unlink(tmpFile, Meteor.bindEnvironment(() => {
+							fs.rename(`${ tmpFile }.tmp`, tmpFile, Meteor.bindEnvironment(() => {
+								cb();
+							}));
 						}));
-					}));
-				})).catch((err) => {
-					console.error(err);
-					fut.return();
+					})).catch((err) => {
+						console.error(err);
+						fut.return();
+					});
+
+				return;
+			};
+
+			reorientation(() => {
+				const { size } = fs.lstatSync(tmpFile);
+				this.getCollection().direct.update({ _id: file._id }, {
+					$set: { size, identify },
 				});
+
+				fut.return();
+			});
 		}));
 
 		return fut.wait();
@@ -191,29 +207,33 @@ Object.assign(FileUpload, {
 
 	avatarsOnFinishUpload(file) {
 		// update file record to match user's username
-		const user = RocketChat.models.Users.findOneById(file.userId);
-		const oldAvatar = RocketChat.models.Avatars.findOneByName(user.username);
+		const user = Models.Users.findOneById(file.userId);
+		const oldAvatar = Models.Avatars.findOneByName(user.username);
 		if (oldAvatar) {
-			RocketChat.models.Avatars.deleteFile(oldAvatar._id);
+			Models.Avatars.deleteFile(oldAvatar._id);
 		}
-		RocketChat.models.Avatars.updateFileNameById(file._id, user.username);
+		Models.Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
 	},
 
 	requestCanAccessFiles({ headers = {}, query = {} }) {
-		if (!RocketChat.settings.get('FileUpload_ProtectFiles')) {
+		if (!settings.get('FileUpload_ProtectFiles')) {
 			return true;
 		}
 
-		let { rc_uid, rc_token } = query;
+		let { rc_uid, rc_token, rc_rid, rc_room_type } = query;
 
 		if (!rc_uid && headers.cookie) {
 			rc_uid = cookie.get('rc_uid', headers.cookie);
 			rc_token = cookie.get('rc_token', headers.cookie);
+			rc_rid = cookie.get('rc_rid', headers.cookie);
+			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
-		const isAuthorizedByCookies = rc_uid && rc_token && RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
-		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && RocketChat.models.Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
-		return isAuthorizedByCookies || isAuthorizedByHeaders;
+
+		const isAuthorizedByCookies = rc_uid && rc_token && Models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Models.Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
+		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
@@ -229,7 +249,7 @@ Object.assign(FileUpload, {
 	},
 
 	getStore(modelName) {
-		const storageType = RocketChat.settings.get('FileUpload_Storage_Type');
+		const storageType = settings.get('FileUpload_Storage_Type');
 		const handlerName = `${ storageType }:${ modelName }`;
 
 		return this.getStoreByName(handlerName);
@@ -263,7 +283,7 @@ Object.assign(FileUpload, {
 		}
 
 		return false;
-	}
+	},
 });
 
 export class FileUploadClass {
@@ -298,7 +318,7 @@ export class FileUploadClass {
 	}
 
 	getModelFromName() {
-		return RocketChat.models[this.name.split(':')[1]];
+		return Models[this.name.split(':')[1]];
 	}
 
 	delete(fileId) {

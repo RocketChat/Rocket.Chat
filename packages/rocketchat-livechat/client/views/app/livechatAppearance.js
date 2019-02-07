@@ -1,5 +1,11 @@
-/*globals jscolor*/
-/*eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
+/* eslint new-cap: ["error", { "newIsCapExceptions": ["jscolor"] }]*/
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { handleError } from 'meteor/rocketchat:lib';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -97,6 +103,9 @@ Template.livechatAppearance.helpers({
 			return 'checked';
 		}
 	},
+	registrationFormMessage() {
+		return Template.instance().registrationFormMessage.get();
+	},
 	sampleColor() {
 		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
 			return Template.instance().colorOffline.get();
@@ -117,66 +126,66 @@ Template.livechatAppearance.helpers({
 				{
 					_id: Random.id(),
 					u: {
-						username: 'guest'
+						username: 'guest',
 					},
 					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'Hello',
-					sequential: null
+					sequential: null,
 				},
 				{
 					_id: Random.id(),
 					u: {
-						username: 'rocketchat-agent'
+						username: 'rocketchat-agent',
 					},
 					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'Hey, what can I help you with?',
-					sequential: null
+					sequential: null,
 				},
 				{
 					_id: Random.id(),
 					u: {
-						username: 'guest'
+						username: 'guest',
 					},
 					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'I\'m looking for informations about your product.',
-					sequential: null
+					sequential: null,
 				},
 				{
 					_id: Random.id(),
 					u: {
-						username: 'rocketchat-agent'
+						username: 'rocketchat-agent',
 					},
 					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'Our product is open source, you can do what you want with it! =D',
-					sequential: null
+					sequential: null,
 				},
 				{
 					_id: Random.id(),
 					u: {
-						username: 'guest'
+						username: 'guest',
 					},
 					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'Yay, thanks. That\'s awesome.',
-					sequential: null
+					sequential: null,
 				},
 				{
 					_id: Random.id(),
 					u: {
-						username: 'rocketchat-agent'
+						username: 'rocketchat-agent',
 					},
 					time: moment(this.ts).format('LT'),
 					date: moment(this.ts).format('LL'),
 					body: 'You\'re welcome.',
-					sequential: null
-				}
-			]
+					sequential: null,
+				},
+			],
 		};
-	}
+	},
 });
 
 Template.livechatAppearance.onCreated(function() {
@@ -199,6 +208,7 @@ Template.livechatAppearance.onCreated(function() {
 	this.registrationFormEnabled = new ReactiveVar(null);
 	this.registrationFormNameFieldEnabled = new ReactiveVar(null);
 	this.registrationFormEmailFieldEnabled = new ReactiveVar(null);
+	this.registrationFormMessage = new ReactiveVar(null);
 
 	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_title');
@@ -245,6 +255,10 @@ Template.livechatAppearance.onCreated(function() {
 		this.conversationFinishedMessage.set(setting && setting.value);
 	});
 	this.autorun(() => {
+		const setting = LivechatAppearance.findOne('Livechat_registration_form_message');
+		this.registrationFormMessage.set(setting && setting.value);
+	});
+	this.autorun(() => {
 		const setting = LivechatAppearance.findOne('Livechat_registration_form');
 		this.registrationFormEnabled.set(setting && setting.value);
 	});
@@ -266,7 +280,7 @@ Template.livechatAppearance.events({
 		instance[e.currentTarget.name].set(e.currentTarget.checked);
 	},
 	'change .preview-settings, keyup .preview-settings'(e, instance) {
-		let value = e.currentTarget.value;
+		let { value } = e.currentTarget;
 		if (e.currentTarget.type === 'radio') {
 			value = value === 'true';
 		}
@@ -313,75 +327,83 @@ Template.livechatAppearance.events({
 
 		const settingRegistrationFormEmailFieldEnabled = LivechatAppearance.findOne('Livechat_email_field_registration_form');
 		instance.registrationFormEmailFieldEnabled.set(settingRegistrationFormEmailFieldEnabled && settingRegistrationFormEmailFieldEnabled.value);
+
+		const settingRegistrationFormMessage = LivechatAppearance.findOne('Livechat_registration_form_message');
+		instance.registrationFormMessage.set(settingRegistrationFormMessage && settingRegistrationFormMessage.value);
+
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();
 		const settings = [
 			{
 				_id: 'Livechat_title',
-				value: s.trim(instance.title.get())
+				value: s.trim(instance.title.get()),
 			},
 			{
 				_id: 'Livechat_title_color',
-				value: instance.color.get()
+				value: instance.color.get(),
 			},
 			{
 				_id: 'Livechat_show_agent_email',
-				value: instance.showAgentEmail.get()
+				value: instance.showAgentEmail.get(),
 			},
 			{
 				_id: 'Livechat_display_offline_form',
-				value: instance.displayOfflineForm.get()
+				value: instance.displayOfflineForm.get(),
 			},
 			{
 				_id: 'Livechat_offline_form_unavailable',
-				value: s.trim(instance.offlineUnavailableMessage.get())
+				value: s.trim(instance.offlineUnavailableMessage.get()),
 			},
 			{
 				_id: 'Livechat_offline_message',
-				value: s.trim(instance.offlineMessage.get())
+				value: s.trim(instance.offlineMessage.get()),
 			},
 			{
 				_id: 'Livechat_offline_success_message',
-				value: s.trim(instance.offlineSuccessMessage.get())
+				value: s.trim(instance.offlineSuccessMessage.get()),
 			},
 			{
 				_id: 'Livechat_offline_title',
-				value: s.trim(instance.titleOffline.get())
+				value: s.trim(instance.titleOffline.get()),
 			},
 			{
 				_id: 'Livechat_offline_title_color',
-				value: instance.colorOffline.get()
+				value: instance.colorOffline.get(),
 			},
 			{
 				_id: 'Livechat_offline_email',
-				value: instance.$('#emailOffline').val()
+				value: instance.$('#emailOffline').val(),
 			},
 			{
 				_id: 'Livechat_conversation_finished_message',
-				value: s.trim(instance.conversationFinishedMessage.get())
+				value: s.trim(instance.conversationFinishedMessage.get()),
 			},
 			{
 				_id: 'Livechat_registration_form',
-				value: instance.registrationFormEnabled.get()
+				value: instance.registrationFormEnabled.get(),
 			},
 			{
 				_id: 'Livechat_name_field_registration_form',
-				value: instance.registrationFormNameFieldEnabled.get()
+				value: instance.registrationFormNameFieldEnabled.get(),
 			},
 			{
 				_id: 'Livechat_email_field_registration_form',
-				value: instance.registrationFormEmailFieldEnabled.get()
-			}
+				value: instance.registrationFormEmailFieldEnabled.get(),
+			},
+			{
+				_id: 'Livechat_registration_form_message',
+				value: s.trim(instance.registrationFormMessage.get()),
+			},
 		];
 
-		Meteor.call('livechat:saveAppearance', settings, (err/*, success*/) => {
+		Meteor.call('livechat:saveAppearance', settings, (err/* , success*/) => {
 			if (err) {
 				return handleError(err);
 			}
 			toastr.success(t('Settings_updated'));
 		});
-	}
+	},
 });
 
 Template.livechatAppearance.onRendered(function() {

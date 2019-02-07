@@ -1,13 +1,15 @@
-/* globals logger:true */
-
-logger = new Logger('CAS', {});
+import { Meteor } from 'meteor/meteor';
+import { Logger } from 'meteor/rocketchat:logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+export const logger = new Logger('CAS', {});
 
 Meteor.startup(function() {
 	RocketChat.settings.addGroup('CAS', function() {
 		this.add('CAS_enabled', false, { type: 'boolean', group: 'CAS', public: true });
 		this.add('CAS_base_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_login_url', '', { type: 'string', group: 'CAS', public: true });
-		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0'}, { key: '2.0', i18nLabel: '2.0'}], group: 'CAS' });
+		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0' }, { key: '2.0', i18nLabel: '2.0' }], group: 'CAS' });
 
 		this.section('Attribute_handling', function() {
 			// Enable/disable sync
@@ -19,17 +21,17 @@ Meteor.startup(function() {
 		this.section('CAS_Login_Layout', function() {
 			this.add('CAS_popup_width', '810', { type: 'string', group: 'CAS', public: true });
 			this.add('CAS_popup_height', '610', { type: 'string', group: 'CAS', public: true });
-			this.add('CAS_button_label_text', 'CAS', { type: 'string', group: 'CAS'});
-			this.add('CAS_button_label_color', '#FFFFFF', { type: 'color', group: 'CAS'});
-			this.add('CAS_button_color', '#13679A', { type: 'color', group: 'CAS'});
-			this.add('CAS_autoclose', true, { type: 'boolean', group: 'CAS'});
+			this.add('CAS_button_label_text', 'CAS', { type: 'string', group: 'CAS' });
+			this.add('CAS_button_label_color', '#FFFFFF', { type: 'color', group: 'CAS' });
+			this.add('CAS_button_color', '#13679A', { type: 'color', group: 'CAS' });
+			this.add('CAS_autoclose', true, { type: 'boolean', group: 'CAS' });
 		});
 	});
 });
 
 let timer;
 
-function updateServices(/*record*/) {
+function updateServices(/* record*/) {
 	if (typeof timer !== 'undefined') {
 		Meteor.clearTimeout(timer);
 	}
@@ -46,16 +48,16 @@ function updateServices(/*record*/) {
 			buttonColor:      RocketChat.settings.get('CAS_button_color'),
 			width:            RocketChat.settings.get('CAS_popup_width'),
 			height:           RocketChat.settings.get('CAS_popup_height'),
-			autoclose:        RocketChat.settings.get('CAS_autoclose')
+			autoclose:        RocketChat.settings.get('CAS_autoclose'),
 		};
 
 		// Either register or deregister the CAS login service based upon its configuration
 		if (data.enabled) {
 			logger.info('Enabling CAS login service');
-			ServiceConfiguration.configurations.upsert({service: 'cas'}, { $set: data });
+			ServiceConfiguration.configurations.upsert({ service: 'cas' }, { $set: data });
 		} else {
 			logger.info('Disabling CAS login service');
-			ServiceConfiguration.configurations.remove({service: 'cas'});
+			ServiceConfiguration.configurations.remove({ service: 'cas' });
 		}
 	}, 2000);
 }

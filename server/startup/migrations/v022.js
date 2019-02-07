@@ -7,5 +7,5 @@ RocketChat.Migrations.add({
 		RocketChat.models.Messages.upgradeEtsToEditAt();
 
 		return console.log('Updated old messages\' ets edited timestamp to new editedAt timestamp.');
-	}
+	},
 });

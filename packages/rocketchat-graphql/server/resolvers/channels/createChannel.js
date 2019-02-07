@@ -9,16 +9,16 @@ const resolver = {
 			try {
 				RocketChat.API.channels.create.validate({
 					user: {
-						value: user._id
+						value: user._id,
 					},
 					name: {
 						value: args.name,
-						key: 'name'
+						key: 'name',
 					},
 					members: {
 						value: args.membersId,
-						key: 'membersId'
-					}
+						key: 'membersId',
+					},
 				});
 			} catch (e) {
 				throw e;
@@ -26,15 +26,15 @@ const resolver = {
 
 			const { channel } = RocketChat.API.channels.create.execute(user._id, {
 				name: args.name,
-				members: args.membersId
+				members: args.membersId,
 			});
 
 			return channel;
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

@@ -7,5 +7,5 @@ RocketChat.Migrations.add({
 			RocketChat.models.Users.update({ 'settings.preferences.newRoomNotification': false }, { $set: { 'settings.preferences.newRoomNotification': 'none' } }, { multi: true });
 			RocketChat.models.Users.update({ 'settings.preferences.newRoomNotification': true }, { $unset: { 'settings.preferences.newRoomNotification': 1 } }, { multi: true });
 		}
-	}
+	},
 });

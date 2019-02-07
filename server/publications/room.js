@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 const fields = {
@@ -19,6 +20,7 @@ const fields = {
 	default: 1,
 	customFields: 1,
 	lastMessage: 1,
+	retention: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,
@@ -36,7 +38,9 @@ const fields = {
 	sentiment: 1,
 	tokenpass: 1,
 	streamingOptions: 1,
-	broadcast: 1
+	broadcast: 1,
+	encrypted: 1,
+	e2eKeyId: 1,
 };
 
 const roomMap = (record) => {
@@ -48,7 +52,7 @@ const roomMap = (record) => {
 
 Meteor.methods({
 	'rooms/get'(updatedAt) {
-		let options = {fields};
+		let options = { fields };
 
 		if (!Meteor.userId()) {
 			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
@@ -60,13 +64,13 @@ Meteor.methods({
 		this.unblock();
 
 		options = {
-			fields
+			fields,
 		};
 
 		if (updatedAt instanceof Date) {
 			return {
 				update: RocketChat.models.Rooms.findBySubscriptionUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch(),
-				remove: RocketChat.models.Rooms.trashFindDeletedAfter(updatedAt, {}, {fields: {_id: 1, _deletedAt: 1}}).fetch()
+				remove: RocketChat.models.Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
@@ -97,10 +101,15 @@ Meteor.methods({
 		}
 
 		return roomMap(room);
-	}
+	},
 });
 
-RocketChat.models.Rooms.on('change', ({clientAction, id, data}) => {
+const getSubscriptions = (id) => {
+	const fields = { 'u._id': 1 };
+	return RocketChat.models.Subscriptions.trashFind({ rid: id }, { fields });
+};
+
+RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
@@ -114,8 +123,11 @@ RocketChat.models.Rooms.on('change', ({clientAction, id, data}) => {
 	}
 
 	if (data) {
-		RocketChat.models.Subscriptions.findByRoomId(id, {fields: {'u._id': 1}}).forEach(({u}) => {
-			RocketChat.Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
-		});
+		if (clientAction === 'removed') {
+			getSubscriptions(clientAction, id).forEach(({ u }) => {
+				RocketChat.Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
+			});
+		}
+		RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
 	}
 });

@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
+
 class OTR {
 	constructor() {
 		this.enabled = new ReactiveVar(false);
@@ -18,7 +24,7 @@ class OTR {
 		}
 
 		const subscription = RocketChat.models.Subscriptions.findOne({
-			rid: roomId
+			rid: roomId,
 		});
 
 		if (!subscription || subscription.t !== 'd') {
@@ -67,7 +73,7 @@ Meteor.startup(function() {
 				const otrRoom = RocketChat.OTR.getInstanceByRoomId(message.rid);
 				return otrRoom.decrypt(message.msg)
 					.then((data) => {
-						const {_id, text, ack} = data;
+						const { _id, text, ack } = data;
 						message._id = _id;
 						message.msg = text;
 

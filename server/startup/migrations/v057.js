@@ -23,5 +23,5 @@ RocketChat.Migrations.add({
 			RocketChat.models.Messages.insert(message);
 			RocketChat.models.Messages.remove({ _id: oldId });
 		});
-	}
+	},
 });

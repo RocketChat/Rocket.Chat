@@ -1,7 +1,9 @@
 .rocket-search {
-	padding: 0 !important;
+
 	display: flex;
 	flex: 1;
+
+	padding: 0 !important;
 }
 
 .defaultProvider {
@@ -30,8 +32,8 @@
 }
 
 .rocket-default-search-results .list .message {
-	padding-left: 70px !important;
 	padding-right: 8px !important;
+	padding-left: 70px !important;
 }
 
 .rocket-search-error {
@@ -44,22 +46,29 @@
 
 #rocket-search-suggestions {
 	position: absolute;
-	top: 58px;
-	left: 24px;
-	padding: 10px 0;
-	background-color: white;
-	right: 24px;
 	z-index: 1000;
-	box-shadow: 0 1px 10px #aaa;
-	border-radius: 0px;
+	top: 58px;
+
+	right: 24px;
+	left: 24px;
+
+	padding: 10px 0;
+
+	border-radius: 0;
+
+	background-color: white;
+
+	box-shadow: 0 1px 10px #aaaaaa;
 }
 
 .rocket-search-suggestion-item {
 	width: 100%;
+
 	cursor: pointer;
 }
 
-.rocket-search-suggestion-item.active, .rocket-search-suggestion-item:hover {
-	background-color: var(--button-primary-background);
+.rocket-search-suggestion-item.active,
+.rocket-search-suggestion-item:hover {
 	color: white;
+	background-color: var(--button-primary-background);
 }

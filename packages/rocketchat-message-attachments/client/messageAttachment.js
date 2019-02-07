@@ -1,22 +1,34 @@
-import moment from 'moment';
+import { Meteor } from 'meteor/meteor';
+import { DateFormat } from 'meteor/rocketchat:lib';
 import { fixCordova } from 'meteor/rocketchat:lazy-load';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
+
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',
-	danger: '#D30230'
+	danger: '#D30230',
 };
 
-/*globals renderMessageBody*/
 Template.messageAttachment.helpers({
 	fixCordova,
 	parsedText() {
 		return renderMessageBody({
-			msg: this.text
+			msg: this.text,
+		});
+	},
+	markdownInPretext() {
+		return this.mrkdwn_in && this.mrkdwn_in.includes('pretext');
+	},
+	parsedPretext() {
+		return renderMessageBody({
+			msg: this.pretext,
 		});
 	},
 	loadImage() {
 		if (this.downloadImages !== true) {
-			const user = RocketChat.models.Users.findOne({_id: Meteor.userId()}, {fields: {'settings.autoImageLoad' : 1}});
+			const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad' : 1 } });
 			if (RocketChat.getUserPreference(user, 'autoImageLoad') === false) {
 				return false;
 			}
@@ -42,18 +54,16 @@ Template.messageAttachment.helpers({
 		if (this.collapsed != null) {
 			return this.collapsed;
 		} else {
-			const user = Meteor.user();
-			return RocketChat.getUserPreference(user, 'collapseMediaByDefault') === true;
+			return RocketChat.getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
 	},
 	time() {
 		const messageDate = new Date(this.ts);
 		const today = new Date();
 		if (messageDate.toDateString() === today.toDateString()) {
-			return moment(this.ts).format(RocketChat.settings.get('Message_TimeFormat'));
-		} else {
-			return moment(this.ts).format(RocketChat.settings.get('Message_TimeAndDateFormat'));
+			return DateFormat.formatTime(this.ts);
 		}
+		return DateFormat.formatDateAndTime(this.ts);
 	},
 	injectIndex(data, previousIndex, index) {
 		data.index = `${ previousIndex }.attachments.${ index }`;
@@ -61,5 +71,12 @@ Template.messageAttachment.helpers({
 
 	isFile() {
 		return this.type === 'file';
-	}
+	},
+	isPDF() {
+		if (this.type === 'file' && this.title_link.endsWith('.pdf') && Template.parentData().file) {
+			this.fileId = Template.parentData().file._id;
+			return true;
+		}
+		return false;
+	},
 });

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 class ErrorHandler {
 	constructor() {
 		this.reporting = false;
@@ -33,12 +36,12 @@ class ErrorHandler {
 
 		const self = this;
 		const originalMeteorDebug = Meteor._debug;
-		Meteor._debug = function(message, stack) {
+		Meteor._debug = function(message, stack, ...args) {
 			if (!self.reporting) {
 				return originalMeteorDebug.call(this, message, stack);
 			}
 			self.trackError(message, stack);
-			return originalMeteorDebug.apply(this, arguments);
+			return originalMeteorDebug.apply(this, [message, stack, ...args]);
 		};
 	}
 

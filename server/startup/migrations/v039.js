@@ -12,5 +12,5 @@ RocketChat.Migrations.add({
 				RocketChat.models.Settings.update({ _id: 'Layout_Sidenav_Footer' }, { $set: { value: footerValue, packageValue: footerValue } });
 			}
 		}
-	}
+	},
 });

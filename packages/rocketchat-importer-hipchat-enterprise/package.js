@@ -2,24 +2,17 @@ Package.describe({
 	name: 'rocketchat:importer-hipchat-enterprise',
 	version: '1.0.0',
 	summary: 'Importer for Hipchat Importer Files',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
-		'rocketchat:importer'
+		'rocketchat:importer',
+		'rocketchat:logger',
 	]);
 
-	api.use('rocketchat:logger', 'server');
-
-	// Importer information to both server and client
-	api.addFiles('info.js');
-
-	// Server files
-	api.addFiles(['server/importer.js', 'server/adder.js'], 'server');
-
-	// Client files
-	api.addFiles('client/adder.js', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

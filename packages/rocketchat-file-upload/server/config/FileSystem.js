@@ -1,8 +1,9 @@
-/* globals FileUpload, UploadFS */
-
+import { Meteor } from 'meteor/meteor';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import fs from 'fs';
-import { FileUploadClass } from '../lib/FileUpload';
+import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
@@ -44,7 +45,7 @@ const FileSystemUploads = new FileUploadClass({
 			out.end();
 			return;
 		}
-	}
+	},
 });
 
 const FileSystemAvatars = new FileUploadClass({
@@ -67,7 +68,7 @@ const FileSystemAvatars = new FileUploadClass({
 			res.end();
 			return;
 		}
-	}
+	},
 });
 
 const FileSystemUserDataFiles = new FileUploadClass({
@@ -93,12 +94,12 @@ const FileSystemUserDataFiles = new FileUploadClass({
 			res.end();
 			return;
 		}
-	}
+	},
 });
 
 const createFileSystemStore = _.debounce(function() {
 	const options = {
-		path: RocketChat.settings.get('FileUpload_FileSystemPath') //'/tmp/uploads/photos',
+		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};
 
 	FileSystemUploads.store = FileUpload.configureUploadsStore('Local', FileSystemUploads.name, options);
@@ -106,7 +107,7 @@ const createFileSystemStore = _.debounce(function() {
 	FileSystemUserDataFiles.store = FileUpload.configureUploadsStore('Local', FileSystemUserDataFiles.name, options);
 
 	// DEPRECATED backwards compatibililty (remove)
-	UploadFS.getStores()['fileSystem'] = UploadFS.getStores()[FileSystemUploads.name];
+	UploadFS.getStores().fileSystem = UploadFS.getStores()[FileSystemUploads.name];
 }, 500);
 
-RocketChat.settings.get('FileUpload_FileSystemPath', createFileSystemStore);
+settings.get('FileUpload_FileSystemPath', createFileSystemStore);

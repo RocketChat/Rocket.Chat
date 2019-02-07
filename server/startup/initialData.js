@@ -1,10 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 import _ from 'underscore';
 
 Meteor.startup(function() {
 	Meteor.defer(() => {
 		if (!RocketChat.models.Rooms.findOneById('GENERAL')) {
 			RocketChat.models.Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
-				'default': true
+				default: true,
 			});
 		}
 
@@ -17,7 +21,7 @@ Meteor.startup(function() {
 				statusDefault: 'online',
 				utcOffset: 0,
 				active: true,
-				type: 'bot'
+				type: 'bot',
 			});
 
 			RocketChat.authz.addUserRoles('rocket.cat', 'bot');
@@ -28,13 +32,11 @@ Meteor.startup(function() {
 
 			const file = {
 				userId: 'rocket.cat',
-				type: 'image/png'
+				type: 'image/png',
 			};
 
 			Meteor.runAsUser('rocket.cat', () => {
-				fileStore.insert(file, rs, () => {
-					return RocketChat.models.Users.setAvatarOrigin('rocket.cat', 'local');
-				});
+				fileStore.insert(file, rs, () => RocketChat.models.Users.setAvatarOrigin('rocket.cat', 'local'));
 			});
 		}
 
@@ -47,7 +49,7 @@ Meteor.startup(function() {
 					status: 'offline',
 					statusDefault: 'online',
 					utcOffset: 0,
-					active: true
+					active: true,
 				};
 
 				if (process.env.ADMIN_NAME) {
@@ -63,7 +65,7 @@ Meteor.startup(function() {
 						if (!RocketChat.models.Users.findOneByEmailAddress(process.env.ADMIN_EMAIL)) {
 							adminUser.emails = [{
 								address: process.env.ADMIN_EMAIL,
-								verified: true
+								verified: true,
 							}];
 
 							console.log((`Email: ${ process.env.ADMIN_EMAIL }`).green);
@@ -128,18 +130,7 @@ Meteor.startup(function() {
 		}
 
 		if (_.isEmpty(RocketChat.authz.getUsersInRole('admin').fetch())) {
-			const oldestUser = RocketChat.models.Users.findOne({
-				_id: {
-					$ne: 'rocket.cat'
-				}
-			}, {
-				fields: {
-					username: 1
-				},
-				sort: {
-					createdAt: 1
-				}
-			});
+			const oldestUser = RocketChat.models.Users.getOldest({ _id: 1, username: 1, name: 1 });
 
 			if (oldestUser) {
 				RocketChat.authz.addUserRoles(oldestUser._id, 'admin');
@@ -166,14 +157,14 @@ Meteor.startup(function() {
 				emails: [
 					{
 						address: 'rocketchat.internal.admin.test@rocket.chat',
-						verified: true
-					}
+						verified: true,
+					},
 				],
 				status: 'offline',
 				statusDefault: 'online',
 				utcOffset: 0,
 				active: true,
-				type: 'user'
+				type: 'user',
 			};
 
 			console.log((`Name: ${ adminUser.name }`).green);

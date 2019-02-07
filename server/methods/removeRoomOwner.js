@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	removeRoomOwner(rid, userId) {
 		check(rid, String);
@@ -5,20 +8,20 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'removeRoomOwner'
+				method: 'removeRoomOwner',
 			});
 		}
 
 		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'set-owner', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'removeRoomOwner'
+				method: 'removeRoomOwner',
 			});
 		}
 
 		const user = RocketChat.models.Users.findOneById(userId);
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'removeRoomOwner'
+				method: 'removeRoomOwner',
 			});
 		}
 
@@ -26,13 +29,13 @@ Meteor.methods({
 
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'removeRoomOwner'
+				method: 'removeRoomOwner',
 			});
 		}
 
 		if (Array.isArray(subscription.roles) === false || subscription.roles.includes('owner') === false) {
 			throw new Meteor.Error('error-user-not-owner', 'User is not an owner', {
-				method: 'removeRoomOwner'
+				method: 'removeRoomOwner',
 			});
 		}
 
@@ -40,7 +43,7 @@ Meteor.methods({
 
 		if (numOwners === 1) {
 			throw new Meteor.Error('error-remove-last-owner', 'This is the last owner. Please set a new owner before removing this one.', {
-				method: 'removeRoomOwner'
+				method: 'removeRoomOwner',
 			});
 		}
 
@@ -51,9 +54,9 @@ Meteor.methods({
 		RocketChat.models.Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(rid, user, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
 			},
-			role: 'owner'
+			role: 'owner',
 		});
 
 		if (RocketChat.settings.get('UI_DisplayRoles')) {
@@ -63,11 +66,11 @@ Meteor.methods({
 				u: {
 					_id: user._id,
 					username: user.username,
-					name: user.name
+					name: user.name,
 				},
-				scope: rid
+				scope: rid,
 			});
 		}
 		return true;
-	}
+	},
 });

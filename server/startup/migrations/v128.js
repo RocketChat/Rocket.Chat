@@ -7,8 +7,8 @@ RocketChat.Migrations.add({
 
 		RocketChat.models.Settings.update({ _id, value: oldValue }, {
 			$set: {
-				value: newValue
-			}
+				value: newValue,
+			},
 		});
-	}
+	},
 });

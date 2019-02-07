@@ -1,5 +1,4 @@
-/* globals Modernizr */
-RocketChat.Login = (function() {
+export const Login = (function() {
 	function onClick(el) {
 		const $el = $(el);
 		if ($el.length) {
@@ -30,7 +29,7 @@ RocketChat.Login = (function() {
 	return { check, onClick, onBlur	};
 }());
 
-RocketChat.Button = (function() {
+export const Button = (function() {
 	let time = undefined;
 	const loading = function(el) {
 		const next = el.attr('data-loading-text');
@@ -44,19 +43,19 @@ RocketChat.Button = (function() {
 	const reset = function(el) {
 		if (time) { clearTimeout(time); }
 		const $el = $(el);
-		const html= $el.attr('data-def-text');
+		const html = $el.attr('data-def-text');
 		if (html) { $el.find('span').html(html); }
 		return $el.removeClass('-progress going done');
 	};
 	return { done, loading, reset };
 }());
 
-RocketChat.animationSupport = function() {
+export const animationSupport = function() {
 	const animeEnd = {
 		WebkitAnimation: 'webkitAnimationEnd',
 		OAnimation: 'oAnimationEnd',
 		msAnimation: 'MSAnimationEnd',
-		animation: 'animationend'
+		animation: 'animationend',
 	};
 
 	const transEndEventNames = {
@@ -64,36 +63,36 @@ RocketChat.animationSupport = function() {
 		MozTransition: 'transitionend',
 		OTransition: 'oTransitionEnd otransitionend',
 		msTransition: 'MSTransitionEnd',
-		transition: 'transitionend'
+		transition: 'transitionend',
 	};
-	const prefixB = transEndEventNames[Modernizr.prefixed('transition')];
-	const prefixA = animeEnd[Modernizr.prefixed('animation')];
-	const support = Modernizr.cssanimations;
+	const prefixB = transEndEventNames[window.Modernizr.prefixed('transition')];
+	const prefixA = animeEnd[window.Modernizr.prefixed('animation')];
+	const support = window.Modernizr.cssanimations;
 	return {
 		support,
 		animation: prefixA,
-		transition: prefixB
+		transition: prefixB,
 	};
 };
 
-RocketChat.animeBack = function(e, callback, type) {
+export const animeBack = function(e, callback, type) {
 	const el = $(e);
 	if (!el.length > 0) {
 		if (callback) { callback(el); }
 		return;
 	}
-	const s = RocketChat.animationSupport();
+	const s = animationSupport();
 	const p = ((type ? s.animation : s.transition));
 	el.one(p, function(e) {
 
-		//el.off(p);
+		// el.off(p);
 		callback(e);
 	});
 
 };
 
-RocketChat.preLoadImgs = function(urls, callback) {
-	const preLoader = $('<div/>').attr({id: 'perverter-preloader'});
+export const preLoadImgs = function(urls, callback) {
+	const preLoader = $('<div/>').attr({ id: 'perverter-preloader' });
 	let ended = undefined;
 	const l_ = function(x) {
 		if (x.width > 0) {
@@ -107,7 +106,7 @@ RocketChat.preLoadImgs = function(urls, callback) {
 			}
 		}
 	};
-	return urls.map(url => {
+	return urls.map((url) => {
 		const im = new Image();
 		im.onload = function() {
 			l_(this);
