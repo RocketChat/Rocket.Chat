@@ -261,7 +261,7 @@ class ModelRooms extends RocketChat.models._Base {
 			t: type
 		};
 
-		return this.find(query, options);
+		return this.findOne(query, options);
 	}
 
 	findByTypeAndNameContaining(type, name, options) {
