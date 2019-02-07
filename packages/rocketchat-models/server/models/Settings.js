@@ -81,8 +81,16 @@ export class Settings extends Base {
 		});
 	}
 
-	findNotHidden(options) {
-		return this.find({ hidden: { $ne: true } }, options);
+	findNotHidden({ updatedAfter, ...options } = {}) {
+		const query = {
+			hidden: { $ne: true },
+		};
+
+		if (updatedAfter) {
+			query._updatedAt = { $gt: updatedAfter };
+		}
+
+		return this.find(query, options);
 	}
 
 	findNotHiddenUpdatedAfter(updatedAt) {
