@@ -1,6 +1,7 @@
+import { Migrations } from 'meteor/rocketchat:migrations';
 import { LivechatDepartment } from 'meteor/rocketchat:models';
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 67,
 	up() {
 		if (LivechatDepartment) {
