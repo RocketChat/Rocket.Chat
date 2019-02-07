@@ -57,6 +57,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:markdown');
 	api.use('rocketchat:channel-settings');
 	api.use('rocketchat:tokenpass');
+	api.use('rocketchat:apps');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
