@@ -27,6 +27,7 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 
@@ -43,6 +44,7 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 
@@ -63,6 +65,7 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 
@@ -76,6 +79,7 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 
@@ -86,6 +90,7 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 		});
