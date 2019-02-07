@@ -2230,6 +2230,8 @@ rc-old select,
 
 			float: right;
 
+			height: 100%;
+
 			text-transform: uppercase;
 
 			font-weight: bold;
