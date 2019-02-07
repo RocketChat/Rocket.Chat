@@ -99,7 +99,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const sms = SMSService.parse(this.queryParams);
 
-		console.log("sms-incoming called: ", this);
+		// console.log("sms-incoming called: ", this);
 		console.log("sms: ", sms);
 
 
