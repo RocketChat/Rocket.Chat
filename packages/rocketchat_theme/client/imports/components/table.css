@@ -67,6 +67,8 @@
 
 		overflow: hidden;
 
+		flex: 1 1 auto;
+
 		align-items: stretch;
 	}
 
