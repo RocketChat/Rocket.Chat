@@ -1,10 +1,10 @@
-export const API = {
+export const APIClient = {
 	delete(endpoint, params) {
-		return API._jqueryCall('DELETE', endpoint, params);
+		return APIClient._jqueryCall('DELETE', endpoint, params);
 	},
 
 	get(endpoint, params) {
-		return API._jqueryCall('GET', endpoint, params);
+		return APIClient._jqueryCall('GET', endpoint, params);
 	},
 
 	post(endpoint, params, body) {
@@ -13,7 +13,7 @@ export const API = {
 			params = {};
 		}
 
-		return API._jqueryCall('POST', endpoint, params, body);
+		return APIClient._jqueryCall('POST', endpoint, params, body);
 	},
 
 	upload(endpoint, params, formData) {
@@ -22,7 +22,7 @@ export const API = {
 			params = {};
 		}
 
-		return API._jqueryFormDataCall(endpoint, params, formData);
+		return APIClient._jqueryFormDataCall(endpoint, params, formData);
 	},
 
 	_generateQueryFromParams(params) {
@@ -39,7 +39,7 @@ export const API = {
 	},
 
 	_jqueryCall(method, endpoint, params, body) {
-		const query = API._generateQueryFromParams(params);
+		const query = APIClient._generateQueryFromParams(params);
 
 		return new Promise(function _rlRestApiGet(resolve, reject) {
 			jQuery.ajax({
@@ -64,7 +64,7 @@ export const API = {
 	},
 
 	_jqueryFormDataCall(endpoint, params, formData) {
-		const query = API._generateQueryFromParams(params);
+		const query = APIClient._generateQueryFromParams(params);
 
 		if (!(formData instanceof FormData)) {
 			throw new Error('The formData parameter MUST be an instance of the FormData class.');
@@ -93,19 +93,19 @@ export const API = {
 
 	v1: {
 		delete(endpoint, params) {
-			return API.delete(`v1/${ endpoint }`, params);
+			return APIClient.delete(`v1/${ endpoint }`, params);
 		},
 
 		get(endpoint, params) {
-			return API.get(`v1/${ endpoint }`, params);
+			return APIClient.get(`v1/${ endpoint }`, params);
 		},
 
 		post(endpoint, params, body) {
-			return API.post(`v1/${ endpoint }`, params, body);
+			return APIClient.post(`v1/${ endpoint }`, params, body);
 		},
 
 		upload(endpoint, params, formData) {
-			return API.upload(`v1/${ endpoint }`, params, formData);
+			return APIClient.upload(`v1/${ endpoint }`, params, formData);
 		},
 	},
 };
