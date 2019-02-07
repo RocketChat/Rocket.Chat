@@ -88,7 +88,7 @@ class Jasmin {
 			headers: {
 				'Content-Type': 'text/xml',
 			},
-			body: '<Response></Response>',
+			body: 'ACK/Jasmin',
 		};
 	}
 	error(error) {
