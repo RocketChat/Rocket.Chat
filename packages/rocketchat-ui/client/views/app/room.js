@@ -229,43 +229,7 @@ Template.room.helpers({
 	},
 
 	messagesHistory() {
-		const hideMessagesOfType = [];
-		settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
-			let types;
-			const type = record._id.replace('Message_HideType_', '');
-			switch (type) {
-				case 'mute_unmute':
-					types = ['user-muted', 'user-unmuted'];
-					break;
-				default:
-					types = [type];
-			}
-			return types.forEach(function(type) {
-				const index = hideMessagesOfType.indexOf(type);
-
-				if ((record.value === true) && (index === -1)) {
-					hideMessagesOfType.push(type);
-				} else if (index > -1) {
-					hideMessagesOfType.splice(index, 1);
-				}
-			});
-		});
-
-		const query =
-			{ rid: this._id };
-
-		if (hideMessagesOfType.length > 0) {
-			query.t =
-				{ $nin: hideMessagesOfType };
-		}
-
-		const options = {
-			sort: {
-				ts: 1,
-			},
-		};
-
-		return ChatMessage.find(query, options);
+		return Template.instance().messages.get();
 	},
 
 	hasMore() {
@@ -965,6 +929,54 @@ Template.room.onCreated(function() {
 	});
 
 	this.sendToBottomIfNecessary = () => {};
+
+	const hideMessagesOfType = [];
+	settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
+		let types;
+		const type = record._id.replace('Message_HideType_', '');
+		switch (type) {
+			case 'mute_unmute':
+				types = ['user-muted', 'user-unmuted'];
+				break;
+			default:
+				types = [type];
+		}
+		return types.forEach(function(type) {
+			const index = hideMessagesOfType.indexOf(type);
+
+			if ((record.value === true) && (index === -1)) {
+				hideMessagesOfType.push(type);
+			} else if (index > -1) {
+				hideMessagesOfType.splice(index, 1);
+			}
+		});
+	});
+
+	const query =
+		{ rid: this.data._id };
+
+	if (hideMessagesOfType.length > 0) {
+		query.t =
+			{ $nin: hideMessagesOfType };
+	}
+
+	const options = {
+		sort: {
+			ts: 1,
+		},
+	};
+
+	this.messages = new ReactiveVar([]);
+
+	const updateMessages = _.debounce(() => {
+		this.messages.set(ChatMessage.find(query, options).fetch());
+	}, 100);
+
+	ChatMessage.find(query).observe({
+		added: updateMessages,
+		updated: updateMessages,
+		removed: updateMessages,
+	});
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
