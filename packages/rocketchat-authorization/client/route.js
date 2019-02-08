@@ -6,9 +6,8 @@ FlowRouter.route('/admin/permissions', {
 	name: 'admin-permissions',
 	action(/* params*/) {
 		return BlazeLayout.render('main', {
-			center: 'pageContainer',
+			center: 'permissions',
 			pageTitle: t('Permissions'),
-			pageTemplate: 'permissions',
 		});
 	},
 });
