@@ -59,7 +59,7 @@
 				{{#unless embeddedVersion}}
 					{{#if showFormattingTips}}
 						<div class="rc-message-box__toolbar-markdown">
-							{{#each mdButtons}}
+							{{#each formattingButtons}}
 								<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}} data-link="{{link}}">
 									{{#if icon}}
 										{{> icon block="rc-message-box__toolbar-markdown-icon" icon=icon }}
@@ -107,6 +107,7 @@
 		{{/if}}
 	</div>
 </template>
+
 <template name="messageBox__audioMessage">
 	<div class="rc-message-box__audio-message">
 		<div class="rc-message-box__icon cross js-audio-message-cross">
@@ -128,6 +129,17 @@
 	</div>
 </template>
 
+<template name="messageBox__actions">
+	<div class="rc-message-box__action-menu" data-desktop>
+		{{#if actions}}
+			<div class="rc-message-box__icon">
+				{{> icon block="rc-input__icon-svg" icon="plus"}}
+			</div>
+		{{/if}}
+	</div>
+</template>
+
+
 <template name="messageBox__actionsSmall">
 	<div class="js-message-actions rc-message-box__action-label" data-small>
 		{{#each actions }}
@@ -137,13 +149,4 @@
 		{{/each}}
 	</div>
 	{{> Template.contentBlock}}
-</template>
-<template name="messageBox__actions">
-	<div class="rc-message-box__action-menu" data-desktop>
-		{{#if actions}}
-			<div class="rc-message-box__icon">
-				{{> icon block="rc-input__icon-svg" icon="plus"}}
-			</div>
-		{{/if}}
-	</div>
 </template>
