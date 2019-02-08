@@ -1,6 +1,7 @@
 import { Push } from 'meteor/rocketchat:push';
 import { settings } from 'meteor/rocketchat:settings';
 import { metrics } from 'meteor/rocketchat:metrics';
+import { RocketChatAssets } from 'meteor/rocketchat:assets';
 
 export class PushNotification {
 	getNotificationId(roomId) {
@@ -39,7 +40,7 @@ export class PushNotification {
 			gcm: {
 				style: 'inbox',
 				summaryText: '%n% new messages',
-				image: RocketChat.Assets.getURL('Assets_favicon_192'),
+				image: RocketChatAssets.getURL('Assets_favicon_192'),
 			},
 		};
 

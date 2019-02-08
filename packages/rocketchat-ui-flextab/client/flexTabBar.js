@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { hasAllPermission } from 'meteor/rocketchat:authorization';
-import { popover } from 'meteor/rocketchat:ui-utils';
+import { popover, TabBar, Layout } from 'meteor/rocketchat:ui-utils';
 import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
@@ -63,7 +63,7 @@ Template.flexTabBar.helpers({
 	},
 	...commonHelpers,
 	buttons() {
-		return RocketChat.TabBar.getButtons().filter((button) =>
+		return TabBar.getButtons().filter((button) =>
 			filterButtons(button, this.anonymous, this.data && this.data.rid)
 		);
 	},
@@ -82,7 +82,7 @@ Template.flexTabBar.helpers({
 	},
 
 	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded();
 	},
 });
 
@@ -170,8 +170,8 @@ Template.RoomsActionTab.events({
 	'click .js-more'(e, t) {
 		$(e.currentTarget).blur();
 		e.preventDefault();
-		const buttons = RocketChat.TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
-		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(RocketChat.TabBar.size)).map((item) => {
+		const buttons = TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
+		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => {
 			item.name = TAPi18n.__(item.i18nTitle);
 			item.action = action;
 			return item;
@@ -183,7 +183,7 @@ Template.RoomsActionTab.events({
 			popoverClass: 'message-box',
 			data: {
 				rid: this._id,
-				buttons: t.small.get() ? buttons : buttons.slice(RocketChat.TabBar.size),
+				buttons: t.small.get() ? buttons : buttons.slice(TabBar.size),
 				tabBar: t.tabBar,
 			},
 			currentTarget: e.currentTarget,
@@ -225,17 +225,17 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return [];
 		}
-		const buttons = RocketChat.TabBar.getButtons()
+		const buttons = TabBar.getButtons()
 			.filter((button) => filterButtons(button, Template.instance().anonymous, Template.instance().data.rid));
-		return buttons.length <= RocketChat.TabBar.size ? buttons : buttons.slice(0, RocketChat.TabBar.size);
+		return buttons.length <= TabBar.size ? buttons : buttons.slice(0, TabBar.size);
 	},
 
 	moreButtons() {
 		if (Template.instance().small.get()) {
 			return true;
 		}
-		const buttons = RocketChat.TabBar.getButtons()
+		const buttons = TabBar.getButtons()
 			.filter((button) => filterButtons(button, Template.instance().anonymous, Template.instance().data.rid));
-		return buttons.length > RocketChat.TabBar.size;
+		return buttons.length > TabBar.size;
 	},
 });
