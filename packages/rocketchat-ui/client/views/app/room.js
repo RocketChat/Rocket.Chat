@@ -972,7 +972,7 @@ Template.room.onCreated(function() {
 		this.messages.set(ChatMessage.find(query, options).fetch());
 	}, 100);
 
-	ChatMessage.find(query).observe({
+	this.messageObserver = ChatMessage.find(query).observe({
 		added: updateMessages,
 		updated: updateMessages,
 		removed: updateMessages,
@@ -980,6 +980,9 @@ Template.room.onCreated(function() {
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
+	if (this.messageObserver) {
+		this.messageObserver.stop();
+	}
 	window.removeEventListener('resize', this.onWindowResize);
 });
 
