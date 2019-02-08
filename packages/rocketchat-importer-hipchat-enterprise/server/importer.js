@@ -276,7 +276,7 @@ export class HipChatEnterpriseImporter extends Base {
 			if (m.UserMessage) {
 				const newId = `hipchatenterprise-${ id }-user-${ m.UserMessage.id }`;
 				const skipMessage = this._checkIfMessageExists(newId);
-				const skipAttachment = (skipMessage && m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
+				const skipAttachment = (skipMessage && (m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true));
 
 				if (!skipMessage || !skipAttachment) {
 					roomMsgs.push({
