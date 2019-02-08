@@ -45,5 +45,3 @@ export const validateEmailDomain = function(email) {
 		}
 	}
 };
-
-RocketChat.validateEmailDomain = validateEmailDomain;

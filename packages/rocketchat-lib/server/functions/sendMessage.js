@@ -199,5 +199,3 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		return message;
 	}
 };
-
-// RocketChat.sendMessage = sendMessage;

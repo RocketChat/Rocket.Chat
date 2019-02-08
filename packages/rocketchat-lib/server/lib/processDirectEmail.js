@@ -121,5 +121,3 @@ export const processDirectEmail = function(email) {
 		console.log('Invalid Email....If not. Please report it.');
 	}
 };
-
-RocketChat.processDirectEmail = processDirectEmail;
