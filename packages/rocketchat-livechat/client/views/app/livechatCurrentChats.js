@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { modal } from 'meteor/rocketchat:ui';
+import { modal } from 'meteor/rocketchat:ui-utils';
 import { t, handleError } from 'meteor/rocketchat:utils';
 import { AgentUsers } from '../../collections/AgentUsers';
 import _ from 'underscore';

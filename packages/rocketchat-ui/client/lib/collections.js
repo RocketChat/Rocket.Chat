@@ -1,31 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { settings } from 'meteor/rocketchat:settings';
-import {
-	ChatMessage,
-	CachedChatRoom,
-	ChatRoom,
-	CachedChatSubscription,
-	ChatSubscription,
-	UserRoles,
-	RoomRoles,
-	UserAndRoom,
-	CachedChannelList,
-	CachedUserList,
-} from 'meteor/rocketchat:models';
-
-export {
-	ChatMessage,
-	CachedChatRoom,
-	ChatRoom,
-	CachedChatSubscription,
-	ChatSubscription,
-	UserRoles,
-	RoomRoles,
-	UserAndRoom,
-	CachedChannelList,
-	CachedUserList,
-};
+import { CachedChatRoom, CachedChatSubscription } from 'meteor/rocketchat:models';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
