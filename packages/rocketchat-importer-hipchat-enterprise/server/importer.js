@@ -696,7 +696,7 @@ export class HipChatEnterpriseImporter extends Base {
 				$set: {
 					active: userToImport.isDeleted !== true,
 					name: userToImport.name,
-					username: userToImport.username
+					username: userToImport.username,
 				},
 			});
 
