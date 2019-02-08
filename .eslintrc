@@ -7,7 +7,6 @@
 		"Assets"                      : false,
 		"chrome"                      : false,
 		"DynamicCss"                  : false,
-		"getAvatarSuggestionForUser"  : false,
 		"JitsiMeetExternalAPI"        : false,
 		"jscolor"                     : false,
 		"msgStream"                   : false,
