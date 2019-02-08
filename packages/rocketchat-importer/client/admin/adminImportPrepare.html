@@ -1,7 +1,7 @@
 <template name="adminImportPrepare">
 	<section class="page-container page-home page-static page-settings">
 		{{#with importer}}
-			{{> header sectionName=name}}
+			{{> header sectionName=name fullpage="true"}}
 			<div class="content">
 				{{#unless isAdmin}}
 					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
