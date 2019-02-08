@@ -184,9 +184,9 @@ RocketChat.API.v1.addRoute(['dm.history.others', 'im.history.others'], { authReq
 		// 	throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.history.others' });
 		// }
 
-		// if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
-		// 	return RocketChat.API.v1.unauthorized();
-		// }
+		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
+			return RocketChat.API.v1.unauthorized();
+		}
 
 		const { roomId } = this.queryParams;
 		if (!roomId || !roomId.trim()) {
