@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { ChatRoom, Subscriptions } from 'meteor/rocketchat:models';
 import { openRoom } from 'meteor/rocketchat:ui-utils';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext  } from 'meteor/rocketchat:utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from 'meteor/rocketchat:utils';
 import { hasPermission, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { settings } from 'meteor/rocketchat:settings';
 

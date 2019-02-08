@@ -1,9 +1,10 @@
+import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 
-export const roomExit = function () {
-	Meteor.startup(async () => {
+export const roomExit = function() {
+	Meteor.startup(async() => {
 		const { currentTracker } = await import('meteor/rocketchat:ui-utils');
 		// 7370 - Close flex-tab when opening a room on mobile UI
 		if (window.matchMedia('(max-width: 500px)').matches) {
