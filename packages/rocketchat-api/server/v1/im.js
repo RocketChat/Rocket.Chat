@@ -194,9 +194,9 @@ RocketChat.API.v1.addRoute(['dm.history.others', 'im.history.others'], { authReq
 		}
 
 		const room = RocketChat.models.Rooms.findOneById(roomId);
-		// if (!room || room.t !== 'd') {
-		// 	throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${ roomId }`);
-		// }
+		if (!room || room.t !== 'd') {
+			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${ roomId }`);
+		}
 
 
 		let latestDate = new Date();
