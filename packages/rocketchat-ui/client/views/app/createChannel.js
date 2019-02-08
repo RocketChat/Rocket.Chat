@@ -209,7 +209,7 @@ Template.createChannel.events({
 	'input [name="messageDelay"]'(e, t) {
 		const input = e.target;
 		const modified = Math.round(input.value);
-		console.log('old', e.target.value, 'new', modified);
+
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type);
 		t.invalidMessageDelay.set(!validateMessageDelay(input.value));

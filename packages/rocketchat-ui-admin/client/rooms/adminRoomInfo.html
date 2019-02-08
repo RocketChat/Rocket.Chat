@@ -78,6 +78,24 @@
 								</div>
 							</li>
 						{{/if}}
+						<li>
+							<label>Message Delay</label>
+							<div>
+								{{#if editing 'messageDelay'}}
+									<label><input type="radio" name="messageDelayType" class="editing" value="Default" checked="{{$eq messageDelayType 'Default'}}" /> Default</label>
+									<label>
+										<input type="radio" name="messageDelayType" value="Custom" checked="{{$eq messageDelayType 'Custom'}}" /> Custom 
+										{{#if isCustomMessageDelay }}
+											<input name="messageDelayMS" type="number" value="{{messageDelayMS}}" />
+										{{/if}}
+									</label>
+									<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span>{{messageDelayType}}{{#if isCustomMessageDelay}}, {{/if}} {{messageDelayMS}}{{#if canEdit}} <i class="icon-pencil" data-edit="messageDelay"></i>{{/if}}</span>
+								{{/if}}
+							</div>
+						</li>
 						{{#each channelSettings}}
 							{{> Template.dynamic template=template data=data}}
 						{{/each}}
