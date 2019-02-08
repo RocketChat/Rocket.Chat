@@ -129,6 +129,10 @@ export class SmartiAdapter {
 			// we at least cannot consider the sync successful
 			Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
 		}
+
+		if (RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Enabled')) {
+			Meteor.defer(() => SmartiAdapter.triggerAnalysis(message.rid));
+		}
 	}
 
 	/**
@@ -238,6 +242,34 @@ export class SmartiAdapter {
 		SystemLogger.debug('Smarti - retieved analysis result =', JSON.stringify(analysisResult, null, 2));
 		SystemLogger.debug(`Smarti - analysis complete -> update cache and notify room [ ${ roomId } ] for conversation [ ${ conversationId } ]`);
 		RocketChat.Notifications.notifyRoom(roomId, 'newConversationResult', analysisResult);
+
+		// update the affected message with the tokens extracted. This will trigger a re-rendering of the message
+		SmartiAdapter.updateTokensInMessages(roomId, analysisResult);
+	}
+
+	static updateTokensInMessages(roomId, analysisResult) {
+		const excludedTypes = new Set(RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types').split(',').map((item) => item.trim()));
+
+		const allTerms = analysisResult.tokens.reduce((terms, token) => { return !excludedTypes.has(token.type) ? terms.add(token.value) : terms; }, new Set()); //eslint-disable-line
+
+		// we'll check whether the tokens found were contained in the last messages. We just pick a bunch (and not only the last one)
+		// in order to handle potential message-sent-overlap while anlyzing
+		const lastMessages = RocketChat.models.Messages.findByRoomId(roomId, { sort: { _updatedAt: -1 }, limit: 5 });
+		lastMessages.forEach((message) => {
+			let termsChanged = false;
+			const includedTerms = message.recognizedTerms ? new Set(message.recognizedTerms) : new Set();
+			allTerms.forEach((term) => {
+				if (message.msg.indexOf(term) > -1) {
+					if (!includedTerms.has(term)) {
+						termsChanged = true;
+						includedTerms.add(term);
+					}
+				}
+			});
+			if (termsChanged) {
+				RocketChat.models.Messages.setRecognizedTermsById(message._id, Array.from(includedTerms));
+			}
+		});
 	}
 
 	/**

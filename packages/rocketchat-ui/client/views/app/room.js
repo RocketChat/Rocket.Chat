@@ -721,6 +721,52 @@ Template.room.events({
 		}
 	},
 
+	'click .recognized-term'(e) {
+		if (!Meteor.userId()) {
+			return;
+		}
+		const term = $(e.currentTarget).get(0).innerText;
+
+		Meteor.setTimeout(() => {
+			if ($('.messages-container-wrapper .contextual-bar').length === 0) { // the tab bar is closed
+				// open the tab
+				$('div:not(.active) .rc-header .rc-room-actions .rc-room-actions__action[data-id="assistify-ai"] > button').click();
+			}
+			// and pin the term. We don't have a callback available for that,
+			// so we'll just try it multiple times. Once the pin was visible, we press it.
+			let processed = false;
+			let counter = 1;
+			const interval = Meteor.setInterval(() => {
+				if (counter >= 100 || processed) {
+					Meteor.clearInterval(interval);
+				} else {
+					const tagsElement = $('.contextual-bar #widgetContainer #tags');
+					if (tagsElement && tagsElement.children('ul').children('li').length > 0) {
+						processed = true;
+
+						const tokenElement = tagsElement.find(`li:contains(${ term }) div.title`);
+						if (!tokenElement.parent().hasClass('pinned')
+							&& !tokenElement.parent().hasClass('user-tag')) {
+							// the token has not been pinned already
+							const tokenPinElement = tokenElement.siblings().first().children().first().get(0);
+							if (tokenPinElement) { // the tag was visible
+								tokenPinElement.click();
+							} else {
+								// the tags were loaded, but there was none matching => create a new one
+								tagsElement.children('ul').children('li.add').get(0).click();
+								const input = tagsElement.children('ul').children('li.add').children('input');
+								input.val(term);
+								input.trigger($.Event('keydown', { which: 13 })); // eslint-disable-line new-cap
+							}
+						}
+					} else {
+						counter++;
+					}
+				}
+			}, 100);
+		}, 50);
+	},
+
 	'click .image-to-download'(event) {
 		ChatMessage.update({ _id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update({ _id: this._arguments[1]._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });

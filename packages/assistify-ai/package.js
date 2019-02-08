@@ -24,6 +24,9 @@ Package.onUse(function(api) {
 	api.use('chatpal:search'); // for the loading animation
 	api.use('meteorhacks:inject-initial'); // for provisioning of svg-icons
 
+	// Extensions to the RocketChat models
+	api.addFiles('models/MessagesExtension.js', 'server');
+
 	// Libraries
 	api.addFiles('server/inject.js', 'server');
 
@@ -48,6 +51,7 @@ Package.onUse(function(api) {
 	// Client business logic
 	api.addFiles('client/tabbar.js', 'client');
 	api.addFiles('client/hooks/openAiTab.js', 'client');
+	api.addFiles('client/messageRenderer.js', 'client');
 
 	// client views
 	addDirectory(api, 'client/views/app/tabbar', 'client');
