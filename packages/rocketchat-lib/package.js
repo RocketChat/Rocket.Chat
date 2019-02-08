@@ -57,7 +57,6 @@ Package.onUse(function(api) {
 		'rocketchat:apps',
 	]);
 	api.imply('tap:i18n');
-	api.addFiles('lib/core.js');
 
 	api.mainModule('server/index.js', 'server');
 	api.mainModule('client/index.js', 'client');

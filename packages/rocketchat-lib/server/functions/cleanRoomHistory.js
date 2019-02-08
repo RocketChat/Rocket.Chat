@@ -42,5 +42,3 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	}
 	return count;
 };
-
-RocketChat.cleanRoomHistory = cleanRoomHistory;
