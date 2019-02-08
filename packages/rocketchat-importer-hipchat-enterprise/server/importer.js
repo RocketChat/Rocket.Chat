@@ -324,6 +324,10 @@ export class HipChatEnterpriseImporter extends Base {
 						skip: skipMessage,
 					});
 				}
+			} else if (m.ArchiveRoomMessage) {
+				this.logger.warn('Archived Room Notification was ignored.');
+			} else if (m.GuestAccessMessage) {
+				this.logger.warn('Guess Access Notification was ignored.');
 			} else {
 				this.logger.error('HipChat Enterprise importer isn\'t configured to handle this message:', m);
 			}
@@ -692,6 +696,7 @@ export class HipChatEnterpriseImporter extends Base {
 				$set: {
 					active: userToImport.isDeleted !== true,
 					name: userToImport.name,
+					username: userToImport.username
 				},
 			});
 
@@ -1063,9 +1068,12 @@ export class HipChatEnterpriseImporter extends Base {
 						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
 						break;
 				}
+			} else {
+				this.logger.error(`Hipchat user not found: ${ msg.userId }`);
+				this.addMessageError(new Meteor.Error('error-message-sender-is-invalid'), `Hipchat user not found: ${ msg.userId }`);
 			}
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			this.addMessageError(e, msg);
 		}
 	}
@@ -1157,7 +1165,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 			const { roomIdentifier } = list;
 			if (!this.getRocketUserFromRoomIdentifier(roomIdentifier)) {
-				this.logger.error(`Skipping ${ list.messages.length } messages due to missing room.`);
+				this.logger.error(`Skipping ${ list.messages.length } messages due to missing room ( ${ roomIdentifier } ).`);
 				return;
 			}
 
