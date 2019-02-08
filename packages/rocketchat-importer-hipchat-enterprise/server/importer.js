@@ -324,6 +324,10 @@ export class HipChatEnterpriseImporter extends Base {
 						skip: skipMessage,
 					});
 				}
+			} else if (m.ArchiveRoomMessage) {
+				this.logger.warn('Archived Room Notification was ignored.');
+			} else if (m.GuestAccessMessage) {
+				this.logger.warn('Guess Access Notification was ignored.');
 			} else {
 				this.logger.error('HipChat Enterprise importer isn\'t configured to handle this message:', m);
 			}
@@ -692,6 +696,7 @@ export class HipChatEnterpriseImporter extends Base {
 				$set: {
 					active: userToImport.isDeleted !== true,
 					name: userToImport.name,
+					username: userToImport.username,
 				},
 			});
 
@@ -941,13 +946,13 @@ export class HipChatEnterpriseImporter extends Base {
 		}
 
 		const extra = { open: true };
-		channelToImport.members.forEach((hipchatUserId) => {
+		channelToImport.members.forEach(async(hipchatUserId) => {
 			if (hipchatUserId === channelToImport.creator) {
 				// Creators are subscribed automatically
 				return;
 			}
 
-			const user = this.getRocketUserFromUserId(hipchatUserId);
+			const user = await this.getRocketUserFromUserId(hipchatUserId);
 			if (!user) {
 				this.logger.error(`User ${ hipchatUserId } not found on Rocket.Chat database.`);
 				return;
@@ -1032,16 +1037,16 @@ export class HipChatEnterpriseImporter extends Base {
 		}
 	}
 
-	_importSingleMessage(msg, roomIdentifier, room) {
+	async _importSingleMessage(msg, roomIdentifier, room) {
 		if (isNaN(msg.ts)) {
 			this.logger.error(`Timestamp on a message in ${ roomIdentifier } is invalid`);
 			return;
 		}
 
 		try {
-			const creator = this.getRocketUserFromUserId(msg.userId);
+			const creator = await this.getRocketUserFromUserId(msg.userId);
 			if (creator) {
-				this._importAttachment(msg, room, creator);
+				await this._importAttachment(msg, room, creator);
 
 				switch (msg.type) {
 					case 'user':
@@ -1063,9 +1068,11 @@ export class HipChatEnterpriseImporter extends Base {
 						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
 						break;
 				}
+			} else {
+				this.addMessageError(new Meteor.Error('error-message-sender-is-invalid'));
 			}
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			this.addMessageError(e, msg);
 		}
 	}
@@ -1142,129 +1149,137 @@ export class HipChatEnterpriseImporter extends Base {
 		// This object will keep track of messages that have already been imported so it doesn't try to insert them twice
 		const importedMessages = {};
 
-		messageListIds.forEach((item) => {
-			this.logger.debug(`New list of user messages: ${ item._id }`);
-			const list = this.collection.findOneById(item._id);
-			if (!list) {
-				this.logger.error('Record of user-messages list not found');
-				return;
-			}
-
-			if (!list.messages) {
-				this.logger.error('No message list found on record.');
-				return;
-			}
-
-			const { roomIdentifier } = list;
-			if (!this.getRocketUserFromRoomIdentifier(roomIdentifier)) {
-				this.logger.error(`Skipping ${ list.messages.length } messages due to missing room.`);
-				return;
-			}
-
-			this.logger.debug(`${ list.messages.length } messages on this list`);
-			super.updateRecord({
-				messagesstatus: `${ list.name }.${ list.messages.length }`,
-				'count.completed': this.progress.count.completed,
-			});
-
-			let msgCount = 0;
-			const roomUsers = {};
-			const roomObjects = {};
-
-			list.messages.forEach((msg) => {
-				msgCount++;
-				if (isNaN(msg.ts)) {
-					this.logger.error(`Timestamp on a message in ${ list.name } is invalid`);
+		messageListIds.forEach(async(item) => {
+			try {
+				this.logger.debug(`New list of user messages: ${ item._id }`);
+				const list = this.collection.findOneById(item._id);
+				if (!list) {
+					this.logger.error('Record of user-messages list not found');
 					return;
 				}
 
-				// make sure the message sender is a valid user inside rocket.chat
-				if (!(msg.senderId in roomUsers)) {
-					roomUsers[msg.senderId] = this.getRocketUserFromUserId(msg.senderId);
-				}
-
-				if (!roomUsers[msg.senderId]) {
-					this.logger.error(`Skipping message due to missing sender ( ${ msg.senderId } ).`);
+				if (!list.messages) {
+					this.logger.error('No message list found on record.');
 					return;
 				}
 
-				// make sure the receiver of the message is a valid rocket.chat user
-				if (!(msg.receiverId in roomUsers)) {
-					roomUsers[msg.receiverId] = this.getRocketUserFromUserId(msg.receiverId);
-				}
-
-				if (!roomUsers[msg.receiverId]) {
-					this.logger.error(`Skipping message due to missing receiver ( ${ msg.receiverId } ).`);
+				const { roomIdentifier } = list;
+				if (!await this.getRocketUserFromRoomIdentifier(roomIdentifier)) {
+					this.logger.error(`Skipping ${ list.messages.length } messages due to missing room.`);
 					return;
 				}
 
-				const sender = roomUsers[msg.senderId];
-				const receiver = roomUsers[msg.receiverId];
+				this.logger.debug(`${ list.messages.length } messages on this list`);
+				super.updateRecord({
+					messagesstatus: `${ list.name }.${ list.messages.length }`,
+					'count.completed': this.progress.count.completed,
+				});
 
-				const roomId = [receiver._id, sender._id].sort().join('');
-				if (!(roomId in roomObjects)) {
-					roomObjects[roomId] = RocketChat.models.Rooms.findOneById(roomId);
-				}
+				let msgCount = 0;
+				const roomUsers = {};
+				const roomObjects = {};
 
-				let room = roomObjects[roomId];
-				if (!room) {
-					this.logger.debug('DM room not found, creating it.');
-					Meteor.runAsUser(sender._id, () => {
-						const roomInfo = Meteor.call('createDirectMessage', receiver.username);
+				list.messages.forEach(async(msg) => {
+					msgCount++;
+					if (isNaN(msg.ts)) {
+						this.logger.error(`Timestamp on a message in ${ list.name } is invalid`);
+						return;
+					}
 
-						room = RocketChat.models.Rooms.findOneById(roomInfo.rid);
-						roomObjects[roomId] = room;
-					});
-				}
+					// make sure the message sender is a valid user inside rocket.chat
+					if (!(msg.senderId in roomUsers)) {
+						roomUsers[msg.senderId] = await this.getRocketUserFromUserId(msg.senderId);
+					}
 
-				try {
-					Meteor.runAsUser(sender._id, () => {
-						if (importedMessages[msg.id] !== undefined) {
-							return;
-						}
-						importedMessages[msg.id] = true;
+					if (!roomUsers[msg.senderId]) {
+						this.logger.error(`Skipping message due to missing sender ( ${ msg.senderId } ).`);
+						return;
+					}
 
-						if (msg.attachment_path) {
-							if (!msg.skipAttachment) {
-								this.logger.debug('Uploading DM file');
-								const details = {
-									message_id: `${ msg.id }-attachment`,
-									name: msg.attachment.name,
-									size: msg.attachment.size,
-									userId: sender._id,
-									rid: room._id,
-								};
-								this.uploadFile(details, msg.attachment.url, sender, room, msg.ts);
+					// make sure the receiver of the message is a valid rocket.chat user
+					if (!(msg.receiverId in roomUsers)) {
+						roomUsers[msg.receiverId] = await this.getRocketUserFromUserId(msg.receiverId);
+					}
+
+					if (!roomUsers[msg.receiverId]) {
+						this.logger.error(`Skipping message due to missing receiver ( ${ msg.receiverId } ).`);
+						return;
+					}
+
+					const sender = roomUsers[msg.senderId];
+					const receiver = roomUsers[msg.receiverId];
+
+					const roomId = [receiver._id, sender._id].sort().join('');
+					if (!(roomId in roomObjects)) {
+						roomObjects[roomId] = RocketChat.models.Rooms.findOneById(roomId);
+					}
+
+					let room = roomObjects[roomId];
+					if (!room) {
+						this.logger.debug('DM room not found, creating it.');
+						Meteor.runAsUser(sender._id, () => {
+							if (!receiver.username) {
+								this.logger.debug(receiver);
+								throw new Meteor.Error('error-user-is-missing-username');
 							}
-						}
+							const roomInfo = Meteor.call('createDirectMessage', receiver.username);
 
-						if (!msg.skip) {
-							this.logger.debug('Inserting DM message');
-							RocketChat.insertMessage(sender, {
-								_id: msg.id,
-								ts: msg.ts,
-								msg: msg.text,
-								rid: room._id,
-								u: {
-									_id: sender._id,
-									username: sender.username,
-								},
-							}, room, false);
-						}
-					});
-				} catch (e) {
-					console.error(e);
-					this.addMessageError(e, msg);
-				}
+							room = RocketChat.models.Rooms.findOneById(roomInfo.rid);
+							roomObjects[roomId] = room;
+						});
+					}
 
-				if (msgCount >= 50) {
+					try {
+						Meteor.runAsUser(sender._id, () => {
+							if (importedMessages[msg.id] !== undefined) {
+								return;
+							}
+							importedMessages[msg.id] = true;
+
+							if (msg.attachment_path) {
+								if (!msg.skipAttachment) {
+									this.logger.debug('Uploading DM file');
+									const details = {
+										message_id: `${ msg.id }-attachment`,
+										name: msg.attachment.name,
+										size: msg.attachment.size,
+										userId: sender._id,
+										rid: room._id,
+									};
+									this.uploadFile(details, msg.attachment.url, sender, room, msg.ts);
+								}
+							}
+
+							if (!msg.skip) {
+								this.logger.debug('Inserting DM message');
+								RocketChat.insertMessage(sender, {
+									_id: msg.id,
+									ts: msg.ts,
+									msg: msg.text,
+									rid: room._id,
+									u: {
+										_id: sender._id,
+										username: sender.username,
+									},
+								}, room, false);
+							}
+						});
+					} catch (e) {
+						console.error(e);
+						this.addMessageError(e, msg);
+					}
+
+					if (msgCount >= 50) {
+						super.addCountCompleted(msgCount);
+						msgCount = 0;
+					}
+				});
+
+				if (msgCount > 0) {
 					super.addCountCompleted(msgCount);
-					msgCount = 0;
 				}
-			});
-
-			if (msgCount > 0) {
-				super.addCountCompleted(msgCount);
+			} catch (e) {
+				this.logger.error(e);
 			}
 		});
 	}
@@ -1289,33 +1304,33 @@ export class HipChatEnterpriseImporter extends Base {
 		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
-	_getBasicUserData(userId) {
+	async _getBasicUserData(userId) {
 		if (this._userDataCache[userId]) {
 			return this._userDataCache[userId];
 		}
 
-		this._userDataCache[userId] = RocketChat.models.Users.findOneById(userId, { fields: { username: 1 } });
+		this._userDataCache[userId] = await RocketChat.models.Users.findOneById(userId, { fields: { username: 1 } });
 		return this._userDataCache[userId];
 	}
 
-	getRocketUserFromUserId(userId) {
+	async getRocketUserFromUserId(userId) {
 		if (userId === 'rocket.cat') {
-			return this._getBasicUserData('rocket.cat');
+			return await this._getBasicUserData('rocket.cat');
 		}
 
 		const rocketId = this._getUserRocketId(userId);
 		if (rocketId) {
-			return this._getBasicUserData(rocketId);
+			return await this._getBasicUserData(rocketId);
 		}
 	}
 
-	getRocketUserFromRoomIdentifier(roomIdentifier) {
+	async getRocketUserFromRoomIdentifier(roomIdentifier) {
 		const userParts = roomIdentifier.split('/');
 		if (!userParts || !userParts.length) {
 			return;
 		}
 
 		const userId = userParts[userParts.length - 1];
-		return this.getRocketUserFromUserId(userId);
+		return await this.getRocketUserFromUserId(userId);
 	}
 }
