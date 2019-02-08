@@ -241,6 +241,9 @@ export class Base {
 
 				this.oldSettings.FileUpload_MediaTypeWhiteList = RocketChat.models.Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
 				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
+
+				this.oldSettings.UI_Allow_room_names_with_special_chars = RocketChat.models.Settings.findOneById('UI_Allow_room_names_with_special_chars').value;
+				RocketChat.models.Settings.updateValueById('UI_Allow_room_names_with_special_chars', true);
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
@@ -249,6 +252,7 @@ export class Base {
 				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
 				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
 				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+				RocketChat.models.Settings.updateValueById('UI_Allow_room_names_with_special_chars', this.oldSettings.UI_Allow_room_names_with_special_chars);
 				break;
 		}
 

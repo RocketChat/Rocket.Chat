@@ -148,7 +148,7 @@ export class HipChatEnterpriseImporter extends Base {
 				id: r.Room.id,
 				creator: r.Room.owner,
 				created: new Date(r.Room.created),
-				name: s.slugify(r.Room.name),
+				name: r.Room.name,
 				isPrivate: r.Room.privacy === 'private',
 				isArchived: r.Room.is_archived,
 				topic: r.Room.topic,
