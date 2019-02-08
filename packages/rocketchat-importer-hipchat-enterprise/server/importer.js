@@ -967,7 +967,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 	_importChannel(channelToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			const existingRoom = RocketChat.models.Rooms.findOneByName(channelToImport.name);
+			const existingRoom = RocketChat.models.Rooms.findOneByName(s.slugify(channelToImport.name));
 			// If the room exists or the name of it is 'general', then we don't need to create it again
 			if (existingRoom || channelToImport.name.toUpperCase() === 'GENERAL') {
 				channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;
@@ -1046,28 +1046,30 @@ export class HipChatEnterpriseImporter extends Base {
 		try {
 			const creator = this.getRocketUserFromUserId(msg.userId);
 			if (creator) {
-				this._importAttachment(msg, room, creator);
+				Meteor.runAsUser(creator._id, () => {
+					this._importAttachment(msg, room, creator);
 
-				switch (msg.type) {
-					case 'user':
-						if (!msg.skip) {
-							RocketChat.insertMessage(creator, {
-								_id: msg.id,
-								ts: msg.ts,
-								msg: msg.text,
-								rid: room._id,
-								alias: msg.alias,
-								u: {
-									_id: creator._id,
-									username: creator.username,
-								},
-							}, room, false);
-						}
-						break;
-					case 'topic':
-						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
-						break;
-				}
+					switch (msg.type) {
+						case 'user':
+							if (!msg.skip) {
+								RocketChat.insertMessage(creator, {
+									_id: msg.id,
+									ts: msg.ts,
+									msg: msg.text,
+									rid: room._id,
+									alias: msg.alias,
+									u: {
+										_id: creator._id,
+										username: creator.username,
+									},
+								}, room, false);
+							}
+							break;
+						case 'topic':
+							RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
+							break;
+					}
+				});
 			} else {
 				this.logger.error(`Hipchat user not found: ${ msg.userId }`);
 				this.addMessageError(new Meteor.Error('error-message-sender-is-invalid'), `Hipchat user not found: ${ msg.userId }`);
