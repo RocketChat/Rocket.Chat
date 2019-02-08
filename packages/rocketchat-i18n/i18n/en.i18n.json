@@ -43,6 +43,8 @@
   "Accounts_AvatarCacheTime_description": "Number of seconds the http protocol is told to cache the avatar images.",
   "Accounts_AvatarResize": "Resize Avatars",
   "Accounts_AvatarSize": "Avatar Size",
+  "Accounts_AvatarExternalProviderUrl": "Avatar External Provider URL",
+  "Accounts_AvatarExternalProviderUrl_Description": "Example: `https://acme.com/api/v1/{username}`",
   "Accounts_BlockedDomainsList": "Blocked Domains List",
   "Accounts_BlockedDomainsList_Description": "Comma-separated list of blocked domains",
   "Accounts_BlockedUsernameList": "Blocked Username List",
