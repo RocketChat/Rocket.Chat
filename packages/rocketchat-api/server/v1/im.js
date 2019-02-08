@@ -189,9 +189,9 @@ RocketChat.API.v1.addRoute(['dm.history.others', 'im.history.others'], { authReq
 		// }
 
 		const { roomId } = this.queryParams;
-		// if (!roomId || !roomId.trim()) {
-		// 	throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
-		// }
+		if (!roomId || !roomId.trim()) {
+			throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
+		}
 
 		const room = RocketChat.models.Rooms.findOneById(roomId);
 		// if (!room || room.t !== 'd') {
