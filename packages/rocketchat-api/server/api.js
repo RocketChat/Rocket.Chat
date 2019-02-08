@@ -6,6 +6,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { Restivus } from 'meteor/nimble:restivus';
 import { Logger } from 'meteor/rocketchat:logger';
 import { RateLimiter } from 'meteor/rate-limit';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 
 const logger = new Logger('API', {});
@@ -118,7 +119,17 @@ class API extends Restivus {
 			statusCode: 403,
 			body: {
 				success: false,
-				error: msg ? msg : 'unauthorized',
+				error: msg ? msg : 'Unauthorized',
+			},
+		};
+	}
+
+	tooManyRequests(msg) {
+		return {
+			statusCode: 429,
+			body: {
+				success: false,
+				error: msg ? msg : 'Too many requests',
 			},
 		};
 	}
@@ -158,6 +169,17 @@ class API extends Restivus {
 			endpoints = options;
 			options = {};
 		}
+
+		let shouldVerifyPermissions;
+
+		if (!_.isArray(options.permissionsRequired)) {
+			logger.warn('Invalid value for permissionsRequired');
+			options.permissionsRequired = undefined;
+			shouldVerifyPermissions = false;
+		} else {
+			shouldVerifyPermissions = !!options.permissionsRequired.length;
+		}
+
 
 		// Allow for more than one route using the same option and endpoints
 		if (!_.isArray(routes)) {
@@ -214,11 +236,25 @@ class API extends Restivus {
 								});
 							}
 						}
+
+						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
+							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
+								permissions: options.permissionsRequired,
+							});
+						}
+
 						result = originalAction.apply(this);
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-						result = RocketChat.API.v1.failure(e.message, e.error);
+
+						const apiMethod = {
+							'error-too-many-requests': 'tooManyRequests',
+							'error-unauthorized': 'unauthorized',
+						}[e.error] || 'failure';
+
+						result = RocketChat.API.v1[apiMethod](e.message, e.error);
 					}
+
 					result = result || RocketChat.API.v1.success();
 
 					rocketchatRestApiEnd({
