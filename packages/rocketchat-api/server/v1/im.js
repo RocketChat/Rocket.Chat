@@ -180,23 +180,23 @@ RocketChat.API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true },
 RocketChat.API.v1.addRoute(['dm.history.others', 'im.history.others'], { authRequired: true }, {
 	get() {
 
-		if (RocketChat.settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
-			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.messages.others' });
-		}
+		// if (RocketChat.settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
+		// 	throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.messages.others' });
+		// }
 
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
-			return RocketChat.API.v1.unauthorized();
-		}
+		// if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
+		// 	return RocketChat.API.v1.unauthorized();
+		// }
 
-		const { roomId } = this.queryParams;
-		if (!roomId || !roomId.trim()) {
-			throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
-		}
+		// const { roomId } = this.queryParams;
+		// if (!roomId || !roomId.trim()) {
+		// 	throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
+		// }
 
-		const room = RocketChat.models.Rooms.findOneById(roomId);
-		if (!room || room.t !== 'd') {
-			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${ roomId }`);
-		}
+		// const room = RocketChat.models.Rooms.findOneById(roomId);
+		// if (!room || room.t !== 'd') {
+		// 	throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${ roomId }`);
+		// }
 
 
 		let latestDate = new Date();
