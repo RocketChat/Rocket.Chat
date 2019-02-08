@@ -181,19 +181,19 @@ RocketChat.API.v1.addRoute(['dm.history.others', 'im.history.others'], { authReq
 	get() {
 
 		// if (RocketChat.settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
-		// 	throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.messages.others' });
+		// 	throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.history.others' });
 		// }
 
 		// if (!RocketChat.authz.hasPermission(this.userId, 'view-room-administration')) {
 		// 	return RocketChat.API.v1.unauthorized();
 		// }
 
-		// const { roomId } = this.queryParams;
+		const { roomId } = this.queryParams;
 		// if (!roomId || !roomId.trim()) {
 		// 	throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
 		// }
 
-		// const room = RocketChat.models.Rooms.findOneById(roomId);
+		const room = RocketChat.models.Rooms.findOneById(roomId);
 		// if (!room || room.t !== 'd') {
 		// 	throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${ roomId }`);
 		// }
