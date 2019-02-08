@@ -9,7 +9,6 @@
 		"DynamicCss"                  : false,
 		"JitsiMeetExternalAPI"        : false,
 		"jscolor"                     : false,
-		"msgStream"                   : false,
 		"Settings"                    : false
 	}
 }

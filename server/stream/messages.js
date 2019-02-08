@@ -1,46 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { DDPCommon } from 'meteor/ddp-common';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { settings } from 'meteor/rocketchat:settings';
 import { Subscriptions, Users, Messages } from 'meteor/rocketchat:models';
+import { msgStream } from 'meteor/rocketchat:lib';
+
 const MY_MESSAGE = '__my_messages__';
-
-const changedPayload = function(collection, id, fields) {
-	return DDPCommon.stringifyDDP({
-		msg: 'changed',
-		collection,
-		id,
-		fields,
-	});
-};
-
-const send = function(self, msg) {
-	if (!self.socket) {
-		return;
-	}
-	self.socket.send(msg);
-};
-
-class MessageStream extends Meteor.Streamer {
-	mymessage = (eventName, args) => {
-		const subscriptions = this.subscriptionsByEventName[eventName];
-		if (!Array.isArray(subscriptions)) {
-			return;
-		}
-		subscriptions.forEach(({ subscription }) => {
-			const options = this.isEmitAllowed(subscription, eventName, args);
-			if (options) {
-				send(subscription._session, changedPayload(this.subscriptionName, 'id', {
-					eventName,
-					args: [args, options],
-				}));
-			}
-		});
-	}
-}
-
-const msgStream = new MessageStream('room-messages');
-this.msgStream = msgStream;
 
 msgStream.allowWrite('none');
 
@@ -102,7 +66,7 @@ Meteor.startup(function() {
 					mention.name = user && user.name;
 				});
 			}
-			this.msgStream.mymessage(MY_MESSAGE, record);
+			msgStream.mymessage(MY_MESSAGE, record);
 			msgStream.emitWithoutBroadcast(record.rid, record);
 		}
 	}
