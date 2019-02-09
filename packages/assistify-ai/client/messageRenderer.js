@@ -15,7 +15,7 @@ const highlightRecognizedTerms = function(message) {
 		console.info('Recognized terms', JSON.stringify(recognizedTerms));
 		if (recognizedTerms) {
 			recognizedTerms.forEach((term) => {
-				const regexpFindTerm = `(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${ s.escapeRegExp(term) })($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`;
+				const regexpFindTerm = `(^|\b|[\s\n\r\t.,،;\'\"\+!?:-])(${ s.escapeRegExp(term) })($|\b|[\s\n\r\t.,،;\'\"\+!?:-])(?![^<]*>|[^<>]*<\\)`;
 				html = html.replace(new RegExp(regexpFindTerm, 'gmi'), '$1<span class="recognized-term"><span class="text">$2</span></span>$3');
 				console.info('HTML after term', term, html);
 			});
