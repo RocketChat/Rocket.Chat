@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import session from 'express-session';
-import sessionStorage from 'connect-mongodb-session';
+import SessionStorage from 'connect-mongodb-session';
 import Grant from 'grant-express';
 import fiber from 'fibers';
 
@@ -12,27 +12,27 @@ import { middleware as redirect } from './redirect';
 import Providers, { middleware as providers } from './providers';
 import Settings from './settings';
 
-let grant,
-    storeAddress = process.env.SESSIONS_URL || 'mongodb://localhost:27017/rocketsession';
+let grant;
+let storeAddress = process.env.SESSIONS_URL || 'mongodb://localhost:27017/rocketsession';
 
 if (storeAddress.indexOf('connectTimeoutMS=') < 0) {
-    if (storeAddress.indexOf('?') < 0) {
-	storeAddress += '?connectTimeoutMS=1200';
-    } else {
-	storeAddress += '&connectTimeoutMS=1200';
-    }
+	if (storeAddress.indexOf('?') < 0) {
+		storeAddress += '?connectTimeoutMS=1200';
+	} else {
+		storeAddress += '&connectTimeoutMS=1200';
+	}
 }
-let store = new sessionStorage({
-	uri: storeAddress,
+const store = new SessionStorage({
+	collection: process.env.SESSION_COLLECTION || 'mySessions',
 	databaseName: process.env.SESSION_DATABASE || 'connect_mongodb_session',
-	collection: process.env.SESSION_COLLECTION || 'mySessions'
-    }, ((e) => {
-	throw new GrantError('Sessions storage initialization failure');
-    }));
+	uri: storeAddress,
+}, ((e) => {
+	throw new GrantError('Sessions storage initialization failure:', e);
+}));
 
 store.on('error', (e) => {
-	throw new GrantError('Sessions storage error caught');
-    });
+	throw new GrantError('Sessions storage error caught:', e);
+});
 
 WebApp.connectHandlers.use(session({
 	secret: 'grant',
