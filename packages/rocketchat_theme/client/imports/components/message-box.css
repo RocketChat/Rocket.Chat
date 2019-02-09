@@ -219,6 +219,26 @@
 
 		line-height: 0.8em;
 	}
+
+	&__join {
+		display: flex;
+
+		margin: 0 -0.25rem;
+		align-items: center;
+		flex-wrap: nowrap;
+	}
+
+	&__join-code {
+		flex: 0 0 10rem;
+
+		margin: 0 0.25rem;
+	}
+
+	&__join-button {
+		flex: 0;
+
+		margin: 0 0.25rem;
+	}
 }
 
 @media (width <= 500px) {

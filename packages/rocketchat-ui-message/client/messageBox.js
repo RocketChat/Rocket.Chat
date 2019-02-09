@@ -7,6 +7,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import { ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages, MsgTyping } from 'meteor/rocketchat:ui';
+import { call } from 'meteor/rocketchat:ui-utils';
 import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import moment from 'moment';
@@ -328,36 +329,6 @@ Template.messageBox.events({
 	'click .js-message-actions .rc-popover__item, click .js-message-actions .js-message-action'(event, instance) {
 		const action = this.action || Template.parentData().action;
 		action.apply(this, [{ rid: Template.parentData()._id, messageBox: instance.find('.rc-message-box'), element: event.currentTarget, event }]);
-	},
-	'click .join'(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		Meteor.call('joinRoom', this._id, Template.instance().$('[name=joinCode]').val(), (err) => {
-			if (err != null) {
-				toastr.error(t(err.reason));
-			}
-			if (RocketChat.authz.hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this._id).loaded === 0) {
-				RoomManager.getOpenedRoomByRid(this._id).streamActive = false;
-				RoomManager.getOpenedRoomByRid(this._id).ready = false;
-				RoomHistoryManager.getRoom(this._id).loaded = null;
-				RoomManager.computation.invalidate();
-			}
-		});
-	},
-
-	'click .register'(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		return Session.set('forceLogin', true);
-	},
-	'click .register-anonymous'(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		return Meteor.call('registerUser', {}, function(error, result) {
-			if (!error) {
-				Meteor.loginWithToken(result.token);
-			}
-		});
 	},
 	'focus .js-input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
@@ -694,6 +665,43 @@ const methods = {
 };
 Template.messageBox__actions.helpers(methods);
 Template.messageBox__actionsSmall.helpers(methods);
+
+Template.messageBox__notSubscribed.events({
+	async 'click .js-join'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		const { rid } = this;
+		const joinCode = Template.instance().$('[name=joinCode]').val();
+
+		try {
+			await call('joinRoom', rid, joinCode);
+			if (RocketChat.authz.hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(rid).loaded === 0) {
+				RoomManager.getOpenedRoomByRid(rid).streamActive = false;
+				RoomManager.getOpenedRoomByRid(rid).ready = false;
+				RoomHistoryManager.getRoom(rid).loaded = null;
+				RoomManager.computation.invalidate();
+			}
+		} catch (error) {
+			toastr.error(t(error.reason));
+		}
+	},
+
+	'click .js-register'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		Session.set('forceLogin', true);
+	},
+
+	async 'click .js-register-anonymous'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		const { token } = await call('registerUser', {});
+		Meteor.loginWithToken(token);
+	},
+});
 
 Meteor.startup(function() {
 	RocketChat.Geolocation = new ReactiveVar(false);

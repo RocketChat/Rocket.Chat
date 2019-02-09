@@ -19,6 +19,7 @@
 					{{/if}}
 				</div>
 			{{/with}}
+
 			{{#if allowedToSend}}
 				{{> messagePopupConfig getPopupConfig}}
 				{{> messagePopupSlashCommandPreview getPopupConfig}}
@@ -83,27 +84,15 @@
 				</div>
 			{{/if}}
 		{{else}}
-			{{#with notSubscribedTpl}}
-				{{> Template.dynamic . }}
-			{{else}}
-				{{#if canJoin}}
-					<div>
-						{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
-						{{#if joinCodeRequired}}
-							<input type="text" name="joinCode" placeholder="{{_ 'Password'}}" style="width: 100px">
-						{{/if}}
-						<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
-					</div>
-				{{/if}}
-				{{#if anonymousRead}}
-					<div>
-						<button class="button register"><span>{{_ "Sign_in_to_start_talking"}}</span></button>
-						{{#if anonymousWrite}}
-							<button class="button register-anonymous"><span>{{_ "Or_talk_as_anonymous"}}</span></button>
-						{{/if}}
-					</div>
-				{{/if}}
-			{{/with}}
+			{{> messageBox__notSubscribed
+				customTemplate=notSubscribedTpl
+				canJoinRoom=canJoin
+				rid=_id
+				roomName=roomName
+				isJoinCodeRequired=joinCodeRequired
+				allowAnonymousRead=anonymousRead
+				allowAnonymousWrite=anonymousWrite
+			}}
 		{{/if}}
 	</div>
 </template>
@@ -114,8 +103,8 @@
 			{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
 		</div>
 		<div class="rc-message-box__timer-box">
-			<p class="rc-message-box__timer-dot">&#8226;&nbsp;</p>
-			<span class="rc-message-box__timer"> 00:00</span>
+			<p class="rc-message-box__timer-dot">&bull;&nbsp;</p>
+			<span class="rc-message-box__timer">00:00</span>
 		</div>
 		<div class="rc-message-box__icon check js-audio-message-check">
 			{{> icon block="rc-input__icon-svg" icon="checkmark-circled"}}
@@ -149,4 +138,32 @@
 		{{/each}}
 	</div>
 	{{> Template.contentBlock}}
+</template>
+
+<template name="messageBox__notSubscribed" args="customTemplate canJoinRoom rid roomName isJoinCodeRequired allowAnonymousRead allowAnonymousWrite">
+	{{#if customTemplate}}
+		{{> Template.dynamic customTemplate }}
+	{{else}}
+		{{#if canJoinRoom}}
+			<div class="rc-message-box__join">
+				{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
+				{{#if isJoinCodeRequired}}
+					<input type="password" name="joinCode" placeholder="{{_ 'Password'}}" class="rc-input__element rc-message-box__join-code">
+				{{/if}}
+
+				<button class="rc-button rc-button--primary rc-button--small rc-message-box__join-button js-join">
+					<i class="icon-login"></i> {{_ "join"}}
+				</button>
+			</div>
+		{{/if}}
+
+		{{#if allowAnonymousRead}}
+			<div class="rc-button-group">
+				<button class="rc-button rc-button--primary rc-button--small js-register"><span>{{_ "Sign_in_to_start_talking"}}</span></button>
+				{{#if allowAnonymousWrite}}
+					<button class="rc-button rc-button--small js-register-anonymous"><span>{{_ "Or_talk_as_anonymous"}}</span></button>
+				{{/if}}
+			</div>
+		{{/if}}
+	{{/if}}
 </template>
