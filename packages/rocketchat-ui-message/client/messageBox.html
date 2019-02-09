@@ -1,24 +1,24 @@
 <template name="messageBox">
-	<div class="rc-message-box rc-new {{#if embeddedVersion}}rc-message-box--embedded{{/if}}">
+	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#if subscribed}}
-			{{#with usersTyping}}
+			{{#if usersTyping}}
 				<div class="rc-message-box__typing">
-					<b class="rc-message-box__typing__user">{{users}}</b>
-					{{#if multi}}
-						{{#if selfTyping}}
+					<span class="rc-message-box__typing-user">{{usersTyping.users}}</span>
+					{{#if usersTyping.multi}}
+						{{#if usersTyping.selfTyping}}
 							{{_ "are_also_typing"}}
 						{{else}}
 							{{_ "are_typing"}}
 						{{/if}}
 					{{else}}
-						{{#if selfTyping}}
+						{{#if usersTyping.selfTyping}}
 							{{_ "is_also_typing" context="male"}}
 						{{else}}
 							{{_ "is_typing" context="male"}}
 						{{/if}}
 					{{/if}}
 				</div>
-			{{/with}}
+			{{/if}}
 
 			{{#if allowedToSend}}
 				{{> messagePopupConfig getPopupConfig}}
@@ -57,7 +57,7 @@
 						</span>
 					{{/messageBox__actionsSmall}}
 				</label>
-				{{#unless embeddedVersion}}
+				{{#unless isEmbedded}}
 					{{#if showFormattingTips}}
 						<div class="rc-message-box__toolbar-markdown">
 							{{#each formattingButtons}}
@@ -84,15 +84,7 @@
 				</div>
 			{{/if}}
 		{{else}}
-			{{> messageBox__notSubscribed
-				customTemplate=notSubscribedTpl
-				canJoinRoom=canJoin
-				rid=_id
-				roomName=roomName
-				isJoinCodeRequired=joinCodeRequired
-				allowAnonymousRead=anonymousRead
-				allowAnonymousWrite=anonymousWrite
-			}}
+			{{> messageBox__notSubscribed rid=_id}}
 		{{/if}}
 	</div>
 </template>
@@ -128,7 +120,6 @@
 	</div>
 </template>
 
-
 <template name="messageBox__actionsSmall">
 	<div class="js-message-actions rc-message-box__action-label" data-small>
 		{{#each actions }}
@@ -140,7 +131,7 @@
 	{{> Template.contentBlock}}
 </template>
 
-<template name="messageBox__notSubscribed" args="customTemplate canJoinRoom rid roomName isJoinCodeRequired allowAnonymousRead allowAnonymousWrite">
+<template name="messageBox__notSubscribed" args="rid">
 	{{#if customTemplate}}
 		{{> Template.dynamic customTemplate }}
 	{{else}}
@@ -151,17 +142,15 @@
 					<input type="password" name="joinCode" placeholder="{{_ 'Password'}}" class="rc-input__element rc-message-box__join-code">
 				{{/if}}
 
-				<button class="rc-button rc-button--primary rc-button--small rc-message-box__join-button js-join">
-					<i class="icon-login"></i> {{_ "join"}}
-				</button>
+				<button class="rc-button rc-button--primary rc-button--small rc-message-box__join-button js-join">{{_ "join"}}</button>
 			</div>
 		{{/if}}
 
-		{{#if allowAnonymousRead}}
+		{{#if isAnonymousReadAllowed}}
 			<div class="rc-button-group">
-				<button class="rc-button rc-button--primary rc-button--small js-register"><span>{{_ "Sign_in_to_start_talking"}}</span></button>
-				{{#if allowAnonymousWrite}}
-					<button class="rc-button rc-button--small js-register-anonymous"><span>{{_ "Or_talk_as_anonymous"}}</span></button>
+				<button class="rc-button rc-button--primary rc-button--small js-register">{{_ "Sign_in_to_start_talking"}}</button>
+				{{#if isAnonymousWriteAllowed}}
+					<button class="rc-button rc-button--small js-register-anonymous">{{_ "Or_talk_as_anonymous"}}</button>
 				{{/if}}
 			</div>
 		{{/if}}

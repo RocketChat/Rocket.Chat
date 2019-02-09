@@ -134,6 +134,37 @@ const formattingButtons = [
 ];
 
 Template.messageBox.helpers({
+	isEmbedded() {
+		return RocketChat.Layout.isEmbedded();
+	},
+	subscribed() {
+		return RocketChat.roomTypes.verifyCanSendMessage(this._id);
+	},
+	usersTyping() {
+		const maxUsernames = 4;
+		const users = MsgTyping.get(this._id);
+		if (users.length === 0) {
+			return;
+		}
+		if (users.length === 1) {
+			return {
+				multi: false,
+				selfTyping: MsgTyping.selfTyping.get(),
+				users: users[0],
+			};
+		}
+		let last = users.pop();
+		if (users.length >= maxUsernames) {
+			last = t('others');
+		}
+		let usernames = users.slice(0, maxUsernames - 1).join(', ');
+		usernames = [usernames, last];
+		return {
+			multi: true,
+			selfTyping: MsgTyping.selfTyping.get(),
+			users: usernames.join(` ${ t('and') } `),
+		};
+	},
 	showFormattingTips() {
 		return RocketChat.settings.get('Message_ShowFormattingTips');
 	},
@@ -188,76 +219,13 @@ Template.messageBox.helpers({
 			},
 		};
 	},
-	usersTyping() {
-		const maxUsernames = 4;
-		const users = MsgTyping.get(this._id);
-		if (users.length === 0) {
-			return;
-		}
-		if (users.length === 1) {
-			return {
-				multi: false,
-				selfTyping: MsgTyping.selfTyping.get(),
-				users: users[0],
-			};
-		}
-		let last = users.pop();
-		if (users.length >= maxUsernames) {
-			last = t('others');
-		}
-		let usernames = users.slice(0, maxUsernames - 1).join(', ');
-		usernames = [usernames, last];
-		return {
-			multi: true,
-			selfTyping: MsgTyping.selfTyping.get(),
-			users: usernames.join(` ${ t('and') } `),
-		};
-	},
 	groupAttachHidden() {
 		if (RocketChat.settings.get('Message_Attachments_GroupAttach')) {
 			return 'hidden';
 		}
 	},
-
-	/** Helpers when not subscribed to the room */
-	notSubscribedTpl() {
-		return RocketChat.roomTypes.getNotSubscribedTpl(this._id);
-	},
-	canJoin() {
-		return Meteor.userId() && RocketChat.roomTypes.verifyShowJoinLink(this._id);
-	},
-	roomName() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) {
-			return '';
-		}
-		if (roomData.t === 'd') {
-			const chat = ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } });
-			return chat && chat.name;
-		} else {
-			return roomData.name;
-		}
-	},
-	joinCodeRequired() {
-		const code = Session.get(`roomData${ this._id }`);
-		return code && code.joinCodeRequired;
-	},
-	subscribed() {
-		return RocketChat.roomTypes.verifyCanSendMessage(this._id);
-	},
-	anonymousRead() {
-		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true;
-	},
-	anonymousWrite() {
-		return (Meteor.userId() == null) && RocketChat.settings.get('Accounts_AllowAnonymousRead') === true && RocketChat.settings.get('Accounts_AllowAnonymousWrite') === true;
-	},
-	/** Helpers when not subscribed to the room */
-
 	disableSendIcon() {
 		return !Template.instance().sendIcon.get() ? 'disabled' : '';
-	},
-	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
 	},
 	isEmojiEnable() {
 		return RocketChat.getUserPreference(Meteor.userId(), 'useEmojis');
@@ -666,20 +634,46 @@ const methods = {
 Template.messageBox__actions.helpers(methods);
 Template.messageBox__actionsSmall.helpers(methods);
 
+Template.messageBox__notSubscribed.helpers({
+	customTemplate() {
+		return RocketChat.roomTypes.getNotSubscribedTpl(this.rid);
+	},
+	canJoinRoom() {
+		return Meteor.userId() && RocketChat.roomTypes.verifyShowJoinLink(this.rid);
+	},
+	roomName() {
+		const room = Session.get(`roomData${ this.rid }`);
+		return RocketChat.roomTypes.getRoomName(room.t, room);
+	},
+	isJoinCodeRequired() {
+		const room = Session.get(`roomData${ this.rid }`);
+		return room && room.joinCodeRequired;
+	},
+	isAnonymousReadAllowed() {
+		return (Meteor.userId() == null) &&
+			RocketChat.settings.get('Accounts_AllowAnonymousRead') === true;
+	},
+	isAnonymousWriteAllowed() {
+		console.log('allowAnonymousWrite');
+		return (Meteor.userId() == null) &&
+			RocketChat.settings.get('Accounts_AllowAnonymousRead') === true &&
+			RocketChat.settings.get('Accounts_AllowAnonymousWrite') === true;
+	},
+});
+
 Template.messageBox__notSubscribed.events({
 	async 'click .js-join'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
-		const { rid } = this;
 		const joinCode = Template.instance().$('[name=joinCode]').val();
 
 		try {
-			await call('joinRoom', rid, joinCode);
-			if (RocketChat.authz.hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(rid).loaded === 0) {
-				RoomManager.getOpenedRoomByRid(rid).streamActive = false;
-				RoomManager.getOpenedRoomByRid(rid).ready = false;
-				RoomHistoryManager.getRoom(rid).loaded = null;
+			await call('joinRoom', this.rid, joinCode);
+			if (RocketChat.authz.hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this.rid).loaded === 0) {
+				RoomManager.getOpenedRoomByRid(this.rid).streamActive = false;
+				RoomManager.getOpenedRoomByRid(this.rid).ready = false;
+				RoomHistoryManager.getRoom(this.rid).loaded = null;
 				RoomManager.computation.invalidate();
 			}
 		} catch (error) {
