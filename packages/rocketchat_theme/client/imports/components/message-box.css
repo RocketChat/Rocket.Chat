@@ -63,8 +63,9 @@
 		font-size: var(--message-box-user-typing-text-size);
 
 		&-user {
-			font-weight: bold;
 			color: var(--message-box-user-typing-user-color);
+
+			font-weight: bold;
 		}
 
 		&::after {

@@ -624,6 +624,7 @@ Template.messageBox.onCreated(function() {
 	RocketChat.messageBox.emit('created', this);
 });
 
+
 const methods = {
 	actions() {
 		const actionGroups = RocketChat.messageBox.actions.get();
@@ -633,6 +634,7 @@ const methods = {
 };
 Template.messageBox__actions.helpers(methods);
 Template.messageBox__actionsSmall.helpers(methods);
+
 
 Template.messageBox__notSubscribed.helpers({
 	customTemplate() {
@@ -696,6 +698,7 @@ Template.messageBox__notSubscribed.events({
 		Meteor.loginWithToken(token);
 	},
 });
+
 
 Meteor.startup(() => {
 	RocketChat.callbacks.add('enter-room', () => {

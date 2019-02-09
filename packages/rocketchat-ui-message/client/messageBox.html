@@ -2,22 +2,7 @@
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#if subscribed}}
 			{{#if usersTyping}}
-				<div class="rc-message-box__typing">
-					<span class="rc-message-box__typing-user">{{usersTyping.users}}</span>
-					{{#if usersTyping.multi}}
-						{{#if usersTyping.selfTyping}}
-							{{_ "are_also_typing"}}
-						{{else}}
-							{{_ "are_typing"}}
-						{{/if}}
-					{{else}}
-						{{#if usersTyping.selfTyping}}
-							{{_ "is_also_typing" context="male"}}
-						{{else}}
-							{{_ "is_typing" context="male"}}
-						{{/if}}
-					{{/if}}
-				</div>
+				{{> messageBox__typing usersTyping}}
 			{{/if}}
 
 			{{#if allowedToSend}}
@@ -85,6 +70,25 @@
 			{{/if}}
 		{{else}}
 			{{> messageBox__notSubscribed rid=_id}}
+		{{/if}}
+	</div>
+</template>
+
+<template name="messageBox__typing" args="users multi selfTyping">
+	<div class="rc-message-box__typing">
+		<span class="rc-message-box__typing-user">{{users}}</span>
+		{{#if multi}}
+			{{#if selfTyping}}
+				{{_ "are_also_typing"}}
+			{{else}}
+				{{_ "are_typing"}}
+			{{/if}}
+		{{else}}
+			{{#if selfTyping}}
+				{{_ "is_also_typing" context="male"}}
+			{{else}}
+				{{_ "is_typing" context="male"}}
+			{{/if}}
 		{{/if}}
 	</div>
 </template>
