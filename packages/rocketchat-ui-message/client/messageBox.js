@@ -703,27 +703,9 @@ Template.messageBox__notSubscribed.events({
 	},
 });
 
-Meteor.startup(function() {
-	RocketChat.Geolocation = new ReactiveVar(false);
-	Tracker.autorun(function() {
-		const MapView_GMapsAPIKey = RocketChat.settings.get('MapView_GMapsAPIKey');
-		if (RocketChat.settings.get('MapView_Enabled') === true && MapView_GMapsAPIKey && MapView_GMapsAPIKey.length && navigator.geolocation && navigator.geolocation.getCurrentPosition) {
-			const success = (position) => RocketChat.Geolocation.set(position);
-			const error = (error) => {
-				console.log('Error getting your geolocation', error);
-				return RocketChat.Geolocation.set(false);
-			};
-			const options = {
-				enableHighAccuracy: true,
-				maximumAge: 0,
-				timeout: 10000,
-			};
-			return navigator.geolocation.watchPosition(success, error, options);
-		} else {
-			return RocketChat.Geolocation.set(false);
-		}
-	});
-	RocketChat.callbacks.add('enter-room', function() {
+Meteor.startup(() => {
+	RocketChat.callbacks.add('enter-room', () => {
+		// TODO: grant audio recording is stopped here
 		setTimeout(() => {
 			if (chatMessages[RoomManager.openedRoom].input) {
 				chatMessages[RoomManager.openedRoom].input.focus();
