@@ -143,6 +143,7 @@
 		"codemirror": "^5.42.0",
 		"coffeescript": "^2.3.2",
 		"connect": "^3.6.6",
+		"connect-mongodb-session": "^2.1.1",
 		"core-js": "^2.5.7",
 		"csv-parse": "^4.0.1",
 		"emailreplyparser": "^0.0.5",
