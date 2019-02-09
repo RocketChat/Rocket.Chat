@@ -248,7 +248,8 @@ export class SmartiAdapter {
 	}
 
 	static updateTokensInMessages(roomId, analysisResult) {
-		const excludedTypes = new Set(RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types').split(',').map((item) => item.trim()));
+		const confExcluded = RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types');
+		const excludedTypes = confExcluded ? new Set(confExcluded.split(',').map((item) => item.trim())) : new Set();
 
 		const allTerms = analysisResult.tokens.reduce((terms, token) => { return !excludedTypes.has(token.type) ? terms.add(token.value) : terms; }, new Set()); //eslint-disable-line
 
