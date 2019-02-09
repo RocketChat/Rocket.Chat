@@ -45,9 +45,8 @@ Meteor.methods({
 		if (RocketChat.settings.get('Invitation_SMS_Customized')) {
 			body = RocketChat.settings.get('Invitation_SMS_Customized_Body');
 		} else {
-
 			let lng = user.language || RocketChat.settings.get('language') || 'en';
-			if (language in supportedLanguages) {
+			if (supportedLanguages.indexOf(language) > -1) {
 				lng = language;
 			}
 			body = TAPi18n.__('Invitation_SMS_Default_Body', {
