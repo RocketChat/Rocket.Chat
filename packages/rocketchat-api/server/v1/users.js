@@ -95,6 +95,25 @@ RocketChat.API.v1.addRoute('users.getAvatar', { authRequired: false }, {
 	},
 });
 
+RocketChat.API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			userId: String,
+			activeStatus: Boolean,
+		});
+
+		if (!RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+			return RocketChat.API.v1.unauthorized();
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
+		});
+		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
+
+	},
+});
+
 RocketChat.API.v1.addRoute('users.getPresence', { authRequired: true }, {
 	get() {
 		if (this.isUserFromParams()) {
