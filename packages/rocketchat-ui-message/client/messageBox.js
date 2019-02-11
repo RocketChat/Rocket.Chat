@@ -254,56 +254,6 @@ Template.messageBox.helpers({
 	},
 });
 
-function firefoxPasteUpload(fn) {
-	const user = navigator.userAgent.match(/Firefox\/(\d+)\.\d/);
-	if (!user || user[1] > 49) {
-		return fn;
-	}
-	return function(event, instance, ...args) {
-		if ((event.originalEvent.ctrlKey || event.originalEvent.metaKey) && (event.keyCode === 86)) {
-			const textarea = instance.find('textarea');
-			const { selectionStart, selectionEnd } = textarea;
-			const contentEditableDiv = instance.find('#msg_contenteditable');
-			contentEditableDiv.focus();
-			Meteor.setTimeout(function() {
-				const pastedImg = contentEditableDiv.querySelector('img');
-				const textareaContent = textarea.value;
-				const startContent = textareaContent.substring(0, selectionStart);
-				const endContent = textareaContent.substring(selectionEnd);
-				const restoreSelection = function(pastedText) {
-					textarea.value = startContent + pastedText + endContent;
-					textarea.selectionStart = selectionStart + pastedText.length;
-					return textarea.selectionEnd = textarea.selectionStart;
-				};
-				if (pastedImg) {
-					contentEditableDiv.innerHTML = '';
-				}
-				textarea.focus;
-				if (!pastedImg || contentEditableDiv.innerHTML.length > 0) {
-					return [].slice.call(contentEditableDiv.querySelectorAll('br')).forEach(function(el) {
-						contentEditableDiv.replaceChild(new Text('\n'), el);
-						return restoreSelection(contentEditableDiv.innerText);
-					});
-				}
-				const imageSrc = pastedImg.getAttribute('src');
-				if (imageSrc.match(/^data:image/)) {
-					return fetch(imageSrc).then(function(img) {
-						return img.blob();
-					}).then(function(blob) {
-						return fileUpload([
-							{
-								file: blob,
-								name: 'Clipboard',
-							},
-						]);
-					});
-				}
-			}, 150);
-		}
-		return fn && fn.apply(this, [event, instance, ...args]);
-	};
-}
-
 Template.messageBox.events({
 	'click .js-message-actions .rc-popover__item, click .js-message-actions .js-message-action'(event, instance) {
 		const action = this.action || Template.parentData().action;
@@ -361,7 +311,7 @@ Template.messageBox.events({
 		}
 	},
 
-	'keydown .js-input-message': firefoxPasteUpload(function(event, t) {
+	'keydown .js-input-message'(event, t) {
 		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
 		if (isMacOS && (event.metaKey || event.ctrlKey)) {
 			const action = formattingButtons.find(
@@ -371,7 +321,7 @@ Template.messageBox.events({
 			}
 		}
 		return chatMessages[this._id].keydown(this._id, event, Template.instance());
-	}),
+	},
 
 	'input .js-input-message'(event, instance) {
 		instance.sendIcon.set(event.target.value !== '');
