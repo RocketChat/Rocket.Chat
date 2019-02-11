@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 		'rocketchat:models',
 		'rocketchat:integrations',
 		'rocketchat:file-upload',
+		'rocketchat:authorization',
 	]);
 
 	api.mainModule('server/index.js', 'server');
