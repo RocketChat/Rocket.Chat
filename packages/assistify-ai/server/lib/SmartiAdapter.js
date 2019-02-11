@@ -248,27 +248,29 @@ export class SmartiAdapter {
 	}
 
 	static updateTokensInMessages(roomId, analysisResult) {
-		const confExcluded = RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Excluded_Types');
-		const excludedTypes = confExcluded ? new Set(confExcluded.split(',').map((item) => item.trim())) : new Set();
 
-		const allTerms = analysisResult.tokens.reduce((terms, token) => { return !excludedTypes.has(token.type) ? terms.add(token.value) : terms; }, new Set()); //eslint-disable-line
+		const allTerms = analysisResult.tokens.reduce((terms, token) => terms.set(token.value,{value: token.value, type: token.type}), new Map()); //eslint-disable-line
 
 		// we'll check whether the tokens found were contained in the last messages. We just pick a bunch (and not only the last one)
 		// in order to handle potential message-sent-overlap while anlyzing
 		const lastMessages = RocketChat.models.Messages.findByRoomId(roomId, { sort: { _updatedAt: -1 }, limit: 5 });
 		lastMessages.forEach((message) => {
 			let termsChanged = false;
-			const includedTerms = message.recognizedTerms ? new Set(message.recognizedTerms) : new Set();
-			allTerms.forEach((term) => {
+			const alreadyRecognizedTokens = new Map();
+			if (message.recognizedTokens) {
+				message.recognizedTokens.forEach((token) => alreadyRecognizedTokens.set(token.value.toLowerCase(), token));
+			}
+
+			allTerms.forEach((token, term) => {
 				if (message.msg.indexOf(term) > -1) {
-					if (!includedTerms.has(term)) {
+					if (!alreadyRecognizedTokens.has(term.toLowerCase())) {
 						termsChanged = true;
-						includedTerms.add(term);
+						alreadyRecognizedTokens.set(token.value, token);
 					}
 				}
 			});
 			if (termsChanged) {
-				RocketChat.models.Messages.setRecognizedTermsById(message._id, Array.from(includedTerms));
+				RocketChat.models.Messages.setRecognizedTokensById(message._id, Array.from(alreadyRecognizedTokens.values()));
 			}
 		});
 	}
