@@ -67,6 +67,8 @@
 
 		overflow: hidden;
 
+		flex: 1 1 auto;
+
 		align-items: stretch;
 
 		flex: 1 1 auto;
@@ -143,6 +145,8 @@
 
 .table-wrapper {
 	position: relative;
+
+	flex: 1 1 auto;
 
 	height: 100%;
 }
