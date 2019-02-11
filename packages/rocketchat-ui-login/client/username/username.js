@@ -41,7 +41,9 @@ Template.username.events({
 			return $(event.currentTarget).parents('.input-text').removeClass('focus');
 		}
 	},
-
+	'reset #login-card'() {
+		Meteor.logout();
+	},
 	'submit #login-card'(event, instance) {
 		event.preventDefault();
 
