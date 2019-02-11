@@ -30,6 +30,7 @@
 			transition: color 0.1s;
 
 			color: var(--message-box-markdown-color);
+			align-items: center;
 			justify-content: center;
 
 			&:hover,

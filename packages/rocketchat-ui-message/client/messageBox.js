@@ -69,7 +69,8 @@ const formattingButtons = [
 		condition: () => RocketChat.Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
-		label: () => {
+		label: 'KaTeX',
+		text: () => {
 			if (!RocketChat.katex.katex_enabled()) {
 				return;
 			}
@@ -85,11 +86,8 @@ const formattingButtons = [
 	},
 ];
 
-function applyFormatting(event, instance) {
-	if (event.currentTarget.dataset.link) {
-		return false;
-	}
 
+function applyFormatting(event, instance) {
 	event.preventDefault();
 	const { input } = instance;
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
@@ -136,6 +134,7 @@ function applyFormatting(event, instance) {
 	input.selectionEnd = input.selectionStart + selectedText.length;
 	$(input).change();
 }
+
 
 Template.messageBox.onCreated(function() {
 	RocketChat.EmojiPicker.init();

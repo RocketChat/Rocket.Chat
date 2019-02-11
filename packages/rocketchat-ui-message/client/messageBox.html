@@ -48,15 +48,15 @@
 					{{#if showFormattingTips}}
 						<div class="rc-message-box__toolbar-formatting">
 							{{#each formattingButtons}}
-								<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" aria-label={{_ label}} data-link="{{link}}">
-									{{#if icon}}
+								{{#if icon}}
+									<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" aria-label={{_ label}}>
 										{{> icon block="rc-message-box__toolbar-formatting-icon" icon=icon }}
-									{{else}}
-										{{#if link}}
-											<a href="{{link}}" target="_blank" class="rc-message-box__toolbar-formatting-link">{{label}}</a>
-										{{/if}}
-									{{/if}}
-								</button>
+									</button>
+								{{else}}
+									<span class="rc-message-box__toolbar-formatting-item rc-tooltip" aria-label={{_ label}}>
+										<a href="{{link}}" target="_blank" rel="noopener noreferrer" class="rc-message-box__toolbar-formatting-link">{{text}}</a>
+									</span>
+								{{/if}}
 							{{/each}}
 						</div>
 					{{/if}}
