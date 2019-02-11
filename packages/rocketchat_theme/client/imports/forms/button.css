@@ -38,6 +38,32 @@
 	align-items: center;
 	justify-content: center;
 
+	position: relative;
+
+	&:active,
+	&:focus:hover {
+		outline: none;
+	}
+
+	&:active {
+		opacity: .9;
+		transform: translateY(2px);
+	}
+
+	&:active::before {
+		top: -2px;
+	}
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		cursor: pointer;
+	}
+
 	&:disabled {
 		cursor: default;
 
@@ -147,6 +173,29 @@
 
 		&__icon {
 			margin: 0 5px;
+		}
+	}
+
+	&__group {
+		display: flex;
+
+		margin: 10px -5px;
+
+		flex-direction: row;
+
+		& > .rc-button {
+			margin: 0 5px;
+		}
+
+		&--stretch {
+			justify-content: stretch;
+			& > .rc-button {
+				flex: 1 1;
+			}
+		}
+
+		&--vertical {
+			flex-direction: column;
 		}
 	}
 }
