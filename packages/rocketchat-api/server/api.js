@@ -119,7 +119,7 @@ class API extends Restivus {
 			statusCode: 403,
 			body: {
 				success: false,
-				error: msg ? msg : 'Unauthorized',
+				error: msg ? msg : 'unauthorized',
 			},
 		};
 	}
