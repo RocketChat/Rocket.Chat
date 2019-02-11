@@ -50,7 +50,7 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function(...originalArgs) {
 		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
 		const end = RocketChat.metrics.meteorMethods.startTimer({
-			method: name,
+			method: name === 'stream' ? `${ name }:${ originalArgs[0] }` : name,
 			has_connection: this.connection != null,
 			has_user: this.userId != null,
 		});
