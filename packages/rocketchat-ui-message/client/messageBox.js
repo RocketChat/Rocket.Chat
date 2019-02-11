@@ -97,10 +97,10 @@ function applyFormatting(event, instance) {
 	const selectedText = input.value.slice(selectionStart, selectionEnd);
 	const finalText = input.value.slice(selectionEnd, input.value.length);
 
-	const [btn] = instance.findAll(`.js-md[aria-label=${ this.label }]`);
+	const [btn] = instance.findAll(`.js-format[aria-label=${ this.label }]`);
 	if (btn) {
 		btn.classList.add('active');
-		setTimeout(function() {
+		setTimeout(() => {
 			btn.classList.remove('active');
 		}, 100);
 	}
@@ -390,16 +390,15 @@ Template.messageBox.events({
 
 		popover.open(config);
 	},
-	'click .js-message-actions .rc-popover__item, click .js-message-actions .js-message-action'(event, instance) {
-		const action = this.action || Template.parentData().action;
-		action.apply(this, [{
+	'click .js-message-actions .js-message-action'(event, instance) {
+		this.action.apply(this, [{
 			rid: Template.parentData()._id,
 			messageBox: instance.find('.rc-message-box'),
 			element: event.currentTarget,
 			event,
 		}]);
 	},
-	'click .js-md'(e, t) {
+	'click .js-format'(e, t) {
 		applyFormatting.apply(this, [e, t]);
 	},
 });

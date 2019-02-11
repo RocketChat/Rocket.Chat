@@ -46,14 +46,14 @@
 
 				{{#unless isEmbedded}}
 					{{#if showFormattingTips}}
-						<div class="rc-message-box__toolbar-markdown">
+						<div class="rc-message-box__toolbar-formatting">
 							{{#each formattingButtons}}
-								<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}} data-link="{{link}}">
+								<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" aria-label={{_ label}} data-link="{{link}}">
 									{{#if icon}}
-										{{> icon block="rc-message-box__toolbar-markdown-icon" icon=icon }}
+										{{> icon block="rc-message-box__toolbar-formatting-icon" icon=icon }}
 									{{else}}
 										{{#if link}}
-											<a href="{{link}}" target="_blank" class="rc-message-box__toolbar-markdown-link">{{label}}</a>
+											<a href="{{link}}" target="_blank" class="rc-message-box__toolbar-formatting-link">{{label}}</a>
 										{{/if}}
 									{{/if}}
 								</button>

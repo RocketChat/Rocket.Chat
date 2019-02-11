@@ -10,7 +10,7 @@
 		padding: 24px 12px 12px;
 	}
 
-	&__toolbar-markdown {
+	&__toolbar-formatting {
 		position: absolute;
 		left: 0;
 
@@ -254,7 +254,7 @@
 			margin-left: 1rem;
 		}
 
-		&__toolbar-markdown {
+		&__toolbar-formatting {
 			display: none;
 		}
 
