@@ -968,14 +968,18 @@ Template.room.onCreated(function() {
 
 	this.messages = new ReactiveVar([]);
 
-	const updateMessages = _.debounce(() => {
+	const updateMessages = () => {
+		this.messages.set(ChatMessage.find(query, options).fetch());
+	};
+
+	const updateMessagesDebounced = _.debounce(() => {
 		this.messages.set(ChatMessage.find(query, options).fetch());
 	}, 100);
 
 	this.messageObserver = ChatMessage.find(query).observe({
-		added: updateMessages,
-		updated: updateMessages,
-		removed: updateMessages,
+		added: process.env.TEST_MODE ? updateMessages : updateMessagesDebounced,
+		updated: process.env.TEST_MODE ? updateMessages : updateMessagesDebounced,
+		removed: process.env.TEST_MODE ? updateMessages : updateMessagesDebounced,
 	});
 }); // Update message to re-render DOM
 
