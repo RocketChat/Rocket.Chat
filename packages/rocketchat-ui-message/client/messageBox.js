@@ -6,6 +6,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { settings } from 'meteor/rocketchat:settings';
 import { ChatSubscription, RoomHistoryManager, RoomManager, KonchatNotification, popover, ChatMessages, fileUpload, AudioRecorder, chatMessages, MsgTyping } from 'meteor/rocketchat:ui';
 import { call } from 'meteor/rocketchat:ui-utils';
 import { t } from 'meteor/rocketchat:utils';
@@ -133,6 +134,29 @@ const formattingButtons = [
 	},
 ];
 
+Template.messageBox.onCreated(function() {
+	RocketChat.EmojiPicker.init();
+	this.replyMessageData = new ReactiveVar();
+	this.isMessageFieldEmpty = new ReactiveVar(true);
+	this.sendIcon = new ReactiveVar(false);
+	RocketChat.messageBox.emit('created', this);
+});
+
+Template.messageBox.onRendered(function() {
+	const $input = this.$('.js-input-message');
+	$input.on('dataChange', () => {
+		const reply = $input.data('reply');
+		this.replyMessageData.set(reply);
+	});
+	chatMessages[RoomManager.openedRoom] = chatMessages[RoomManager.openedRoom] || new ChatMessages;
+	chatMessages[RoomManager.openedRoom].input = $input.autogrow({
+		animate: true,
+		onInitialize: true,
+	}).on('autogrow', () => {
+		this.data && this.data.onResize && this.data.onResize();
+	}).focus()[0];
+});
+
 Template.messageBox.helpers({
 	isEmbedded() {
 		return RocketChat.Layout.isEmbedded();
@@ -165,13 +189,7 @@ Template.messageBox.helpers({
 			users: usernames.join(` ${ t('and') } `),
 		};
 	},
-	showFormattingTips() {
-		return RocketChat.settings.get('Message_ShowFormattingTips');
-	},
-	formattingButtons() {
-		return formattingButtons.filter((button) => !button.condition || button.condition());
-	},
-	allowedToSend() {
+	canSend() {
 		if (RocketChat.roomTypes.readOnly(this._id, Meteor.user())) {
 			return false;
 		}
@@ -195,23 +213,7 @@ Template.messageBox.helpers({
 		}
 		return true;
 	},
-	isBlockedOrBlocker() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (roomData && roomData.t === 'd') {
-			const subscription = ChatSubscription.findOne({
-				rid: this._id,
-			}, {
-				fields: {
-					blocked: 1,
-					blocker: 1,
-				},
-			});
-			if (subscription && (subscription.blocked || subscription.blocker)) {
-				return true;
-			}
-		}
-	},
-	getPopupConfig() {
+	popupConfig() {
 		const template = Template.instance();
 		return {
 			getInput() {
@@ -219,19 +221,17 @@ Template.messageBox.helpers({
 			},
 		};
 	},
-	groupAttachHidden() {
-		if (RocketChat.settings.get('Message_Attachments_GroupAttach')) {
-			return 'hidden';
-		}
+	replyMessageData() {
+		return Template.instance().replyMessageData.get();
 	},
-	disableSendIcon() {
-		return !Template.instance().sendIcon.get() ? 'disabled' : '';
-	},
-	isEmojiEnable() {
+	isEmojiEnabled() {
 		return RocketChat.getUserPreference(Meteor.userId(), 'useEmojis');
 	},
-	dataReply() {
-		return Template.instance().dataReply.get();
+	maxMessageLength() {
+		return settings.get('Message_MaxAllowedSize');
+	},
+	isSendIconDisabled() {
+		return !Template.instance().sendIcon.get();
 	},
 	isAudioMessageAllowed() {
 		return (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
@@ -240,6 +240,17 @@ Template.messageBox.helpers({
 			RocketChat.settings.get('Message_AudioRecorderEnabled') &&
 			(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
 			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
+	},
+	actions() {
+		const actionGroups = RocketChat.messageBox.actions.get();
+		return Object.values(actionGroups)
+			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
+	},
+	showFormattingTips() {
+		return RocketChat.settings.get('Message_ShowFormattingTips');
+	},
+	formattingButtons() {
+		return formattingButtons.filter((button) => !button.condition || button.condition());
 	},
 });
 
@@ -600,40 +611,34 @@ Template.messageBox.events({
 	},
 });
 
-Template.messageBox.onRendered(function() {
-	const input = this.find('.js-input-message'); // mssg box
-	const self = this;
-	$(input).on('dataChange', () => {
-		const reply = $(input).data('reply');
-		self.dataReply.set(reply);
-	});
-	chatMessages[RoomManager.openedRoom] = chatMessages[RoomManager.openedRoom] || new ChatMessages;
-	chatMessages[RoomManager.openedRoom].input = this.$('.js-input-message').autogrow({
-		animate: true,
-		onInitialize: true,
-	}).on('autogrow', () => {
-		this.data && this.data.onResize && this.data.onResize();
-	}).focus()[0];
-});
 
-Template.messageBox.onCreated(function() {
-	RocketChat.EmojiPicker.init();
-	this.dataReply = new ReactiveVar(''); // if user is replying to a mssg, this will contain data of the mssg being replied to
-	this.isMessageFieldEmpty = new ReactiveVar(true);
-	this.sendIcon = new ReactiveVar(false);
-	RocketChat.messageBox.emit('created', this);
-});
-
-
-const methods = {
+Template.messageBox__actions.helpers({
 	actions() {
 		const actionGroups = RocketChat.messageBox.actions.get();
 		return Object.values(actionGroups)
 			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
-};
-Template.messageBox__actions.helpers(methods);
-Template.messageBox__actionsSmall.helpers(methods);
+});
+
+
+Template.messageBox__cannotSend.helpers({
+	isBlockedOrBlocker() {
+		const roomData = Session.get(`roomData${ this.rid }`);
+		if (roomData && roomData.t === 'd') {
+			const subscription = ChatSubscription.findOne({
+				rid: this.rid,
+			}, {
+				fields: {
+					blocked: 1,
+					blocker: 1,
+				},
+			});
+			if (subscription && (subscription.blocked || subscription.blocker)) {
+				return true;
+			}
+		}
+	},
+});
 
 
 Template.messageBox__notSubscribed.helpers({
