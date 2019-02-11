@@ -6,7 +6,20 @@ import _ from 'underscore';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 
-export const upsertMessage = ({ msg, subscription }) => {
+function insertBulk(collection, documents) {
+	if (collection) {
+		const { queries } = collection;
+		collection.queries = [];
+		documents.forEach((item, index) => {
+			if (index === documents.length - 1) {
+				collection.queries = queries;
+			}
+			collection.upsert({ _id: item._id }, item);
+		});
+	}
+}
+
+export const upsertMessage = ({ msg, subscription }, insert) => {
 	const userId = msg.u && msg.u._id;
 
 	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
@@ -20,8 +33,10 @@ export const upsertMessage = ({ msg, subscription }) => {
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
 	}
-
-	return ChatMessage.upsert({ _id: msg._id }, msg);
+	if (insert) {
+		ChatMessage.upsert({ _id: msg._id }, msg);
+	}
+	return msg;
 };
 
 export const RoomHistoryManager = new class {
@@ -91,7 +106,8 @@ export const RoomHistoryManager = new class {
 				previousHeight = wrapper.scrollHeight;
 			}
 
-			messages.forEach((msg) => msg.t !== 'command' && upsertMessage({ msg, subscription }));
+			insertBulk(ChatMessage, messages.filter((msg) => msg.t !== 'command').map((msg) => upsertMessage({ msg, subscription })));
+			// messages.forEach((msg) => msg.t !== 'command' && upsertMessage({ msg, subscription }));
 
 			if (wrapper) {
 				const heightDiff = wrapper.scrollHeight - previousHeight;

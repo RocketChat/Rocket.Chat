@@ -67,7 +67,7 @@ export const RoomManager = new function() {
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
 											const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid });
-											upsertMessage({ msg, subscription });
+											upsertMessage({ msg, subscription }, true);
 											msg.room = {
 												type,
 												name,
