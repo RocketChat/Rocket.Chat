@@ -1,16 +1,14 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#if subscribed}}
-			{{#if usersTyping}}
-				{{> messageBox__typing usersTyping}}
-			{{/if}}
+			{{> messageBoxTyping rid=_id}}
 
 			{{#if canSend}}
 				{{> messagePopupConfig popupConfig}}
 				{{> messagePopupSlashCommandPreview popupConfig}}
 
 				{{#if replyMessageData}}
-					{{> messageBox__replyPreview input=input replyMessageData=replyMessageData}}
+					{{> messageBoxReplyPreview input=input replyMessageData=replyMessageData}}
 				{{/if}}
 
 				<label class="rc-message-box__container">
@@ -24,7 +22,7 @@
 						</span>
 					{{else}}
 						{{#if isAudioMessageAllowed}}
-							{{> messageBox__audioMessage}}
+							{{> messageBoxAudioMessage}}
 						{{/if}}
 						<span class="rc-message-box__action-menu" data-desktop>
 							{{#if actions}}
@@ -64,97 +62,16 @@
 					{{/if}}
 				{{/unless}}
 			{{else}}
-				{{> messageBox__cannotSend rid=_id}}
+				<div class="rc-message-box__cannot-send">
+					{{#if isBlockedOrBlocker}}
+						{{_ "room_is_blocked"}}
+					{{else}}
+						{{_ "room_is_read_only"}}
+					{{/if}}
+				</div>
 			{{/if}}
 		{{else}}
-			{{> messageBox__notSubscribed rid=_id}}
+			{{> messageBoxNotSubscribed rid=_id}}
 		{{/if}}
 	</div>
-</template>
-
-<template name="messageBox__typing" args="users multi selfTyping">
-	<div class="rc-message-box__typing">
-		<span class="rc-message-box__typing-user">{{users}}</span>
-		{{#if multi}}
-			{{#if selfTyping}}
-				{{_ "are_also_typing"}}
-			{{else}}
-				{{_ "are_typing"}}
-			{{/if}}
-		{{else}}
-			{{#if selfTyping}}
-				{{_ "is_also_typing" context="male"}}
-			{{else}}
-				{{_ "is_typing" context="male"}}
-			{{/if}}
-		{{/if}}
-	</div>
-</template>
-
-<template name="messageBox__replyPreview" args="replyMessageData input">
-	<div class="reply-preview message-popup">
-		<div class="message">
-			{{> messageAttachment text=replyMessageData.msg author_name=replyMessageData.u.username}}
-		</div>
-		<div class="rc-message-box__icon cancel-reply">
-			{{> icon block="rc-input__icon-svg" icon="cross"}}
-		</div>
-	</div>
-</template>
-
-<template name="messageBox__audioMessage">
-	<div class="rc-message-box__audio-message">
-		<div class="rc-message-box__icon cross js-audio-message-cross">
-			{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
-		</div>
-		<div class="rc-message-box__timer-box">
-			<p class="rc-message-box__timer-dot">&bull;&nbsp;</p>
-			<span class="rc-message-box__timer">00:00</span>
-		</div>
-		<div class="rc-message-box__icon check js-audio-message-check">
-			{{> icon block="rc-input__icon-svg" icon="checkmark-circled"}}
-		</div>
-		<div class="rc-message-box__icon mic active js-audio-message-record">
-			{{> icon block="rc-input__icon-svg" icon="mic"}}
-		</div>
-		<div class="rc-message-box__icon loading js-audio-message-loading">
-			{{> icon block="rc-input__icon-svg" icon="loading"}}
-		</div>
-	</div>
-</template>
-
-<template name="messageBox__cannotSend" args="rid">
-	<div class="rc-message-box__cannot-send">
-		{{#if isBlockedOrBlocker}}
-			{{_ "room_is_blocked"}}
-		{{else}}
-			{{_ "room_is_read_only"}}
-		{{/if}}
-	</div>
-</template>
-
-<template name="messageBox__notSubscribed" args="rid">
-	{{#if customTemplate}}
-		{{> Template.dynamic customTemplate }}
-	{{else}}
-		{{#if canJoinRoom}}
-			<div class="rc-message-box__join">
-				{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
-				{{#if isJoinCodeRequired}}
-					<input type="password" name="joinCode" placeholder="{{_ 'Password'}}" class="rc-input__element rc-message-box__join-code">
-				{{/if}}
-
-				<button class="rc-button rc-button--primary rc-button--small rc-message-box__join-button js-join">{{_ "join"}}</button>
-			</div>
-		{{/if}}
-
-		{{#if isAnonymousReadAllowed}}
-			<div class="rc-button-group">
-				<button class="rc-button rc-button--primary rc-button--small js-register">{{_ "Sign_in_to_start_talking"}}</button>
-				{{#if isAnonymousWriteAllowed}}
-					<button class="rc-button rc-button--small js-register-anonymous">{{_ "Or_talk_as_anonymous"}}</button>
-				{{/if}}
-			</div>
-		{{/if}}
-	{{/if}}
 </template>
