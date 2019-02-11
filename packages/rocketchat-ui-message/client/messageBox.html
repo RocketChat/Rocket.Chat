@@ -15,7 +15,7 @@
 					<span class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnabled}}emoji-picker-icon--disabled{{/unless}}">
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
 					</span>
-					<textarea name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
+					<textarea name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
 					{{#unless isSendIconDisabled}}
 						<span class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
 							{{> icon block="rc-input__icon-svg" icon="send"}}

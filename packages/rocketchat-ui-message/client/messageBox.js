@@ -312,8 +312,6 @@ Template.messageBox.events({
 			return;
 		}
 
-		event.preventDefault();
-
 		const files = [...event.originalEvent.clipboardData.items]
 			.filter((item) => (item.kind === 'file' && item.type.indexOf('image/') !== -1))
 			.map((item) => ({
@@ -323,6 +321,7 @@ Template.messageBox.events({
 			.filter(({ file }) => file !== null);
 
 		if (files.length) {
+			event.preventDefault();
 			fileUpload(files);
 			return;
 		}
