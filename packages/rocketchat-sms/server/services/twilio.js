@@ -57,7 +57,7 @@ class Twilio {
 	send(fromNumber, toNumber, message) {
 		const client = twilio(this.accountSid, this.authToken);
 
-		client.messages.create({
+		return client.messages.create({
 			to: toNumber,
 			from: fromNumber,
 			body: message,
