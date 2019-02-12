@@ -141,8 +141,8 @@ const readMessage = new class {
 				$lt: subscription.ls,
 			},
 		}
-			// 'u._id':
-			// 	$ne: Meteor.userId()
+		// 'u._id':
+		// 	$ne: Meteor.userId()
 			, {
 			sort: {
 				ts: -1,

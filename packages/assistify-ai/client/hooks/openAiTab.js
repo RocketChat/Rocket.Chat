@@ -8,7 +8,7 @@ RocketChat.callbacks.add('enter-room', function(subscription) {
 	}
 
 	if (subscription && subscription.t === 'l') { // no subscription: if a user joins a room without being subscribed to it
-		if ($('.rc-header .messages-container-wrapper .contextual-bar').length === 0) { // the tab bar is closed
+		if ($('.messages-container-wrapper .contextual-bar').length === 0) { // the tab bar is closed
 			Meteor.setTimeout(() => $('div:not(.active) .rc-header .rc-room-actions .rc-room-actions__action[data-id="assistify-ai"] > button').click(), 1000);
 		}
 	}

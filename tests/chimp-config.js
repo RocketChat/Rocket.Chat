@@ -18,7 +18,7 @@ module.exports = {
 // 	offline: false,
 // 	showXolvioMessages: true,
 
-// 	// - - - - CUCUMBER - - - -
+	// 	// - - - - CUCUMBER - - - -
 	path: 'tests/end-to-end',
 	// 	format: 'pretty',
 	// 	tags: '~@ignore',
@@ -136,12 +136,12 @@ module.exports = {
 
 	// 	// - - - - METEOR  - - - -
 	ddp: 'http://localhost:3000',
-// 	serverExecuteTimeout: 10000,
+	// 	serverExecuteTimeout: 10000,
 
-// 	// - - - - PHANTOM  - - - -
-// 	phantom_w: 1280,
-// 	phantom_h: 1024,
-// 	phantom_ignoreSSLErrors: false,
+	// 	// - - - - PHANTOM  - - - -
+	// 	phantom_w: 1280,
+	// 	phantom_h: 1024,
+	// 	phantom_ignoreSSLErrors: false,
 
 // 	// - - - - DEBUGGING  - - - -
 // 	log: 'info',

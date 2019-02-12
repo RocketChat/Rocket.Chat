@@ -23,8 +23,11 @@ Template.AssistifySmarti.onCreated(function() {
 	Hook into an event issued by the backend to allow requesting an analysis
 	*/
 	RocketChat.Notifications.onRoom(instance.data.rid, 'assistify-smarti-dirty', () => {
+
 		if (this.reactOnSmartiDirty.get()) {
-			Meteor.call('analyze', instance.data.rid);
+			if (!RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Enabled')) { // Inline highlighting will anyway trigger the analysis - we don't need it twice
+				Meteor.call('analyze', instance.data.rid);
+			}
 		}
 	});
 });

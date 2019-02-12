@@ -1,5 +1,11 @@
 # Assistify 0.9.6
 
+- Inline message keywords highlighting for smarti access
+- Additional permissions for Livechat users
+- Assistify users will have access to auto-translation feature by default 
+
+# Assistify 0.9.6
+
 - Assistify.Chat is now based on the Rocket.Chat 0.71.1
 
 # Assistify 0.9.5

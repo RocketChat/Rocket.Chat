@@ -129,6 +129,10 @@ export class SmartiAdapter {
 			// we at least cannot consider the sync successful
 			Meteor.defer(() => SmartiAdapter._markRoomAsUnsynced(message.rid));
 		}
+
+		if (RocketChat.settings.get('Assistify_AI_Smarti_Inline_Highlighting_Enabled')) {
+			Meteor.defer(() => SmartiAdapter.triggerAnalysis(message.rid));
+		}
 	}
 
 	/**
@@ -238,6 +242,37 @@ export class SmartiAdapter {
 		SystemLogger.debug('Smarti - retieved analysis result =', JSON.stringify(analysisResult, null, 2));
 		SystemLogger.debug(`Smarti - analysis complete -> update cache and notify room [ ${ roomId } ] for conversation [ ${ conversationId } ]`);
 		RocketChat.Notifications.notifyRoom(roomId, 'newConversationResult', analysisResult);
+
+		// update the affected message with the tokens extracted. This will trigger a re-rendering of the message
+		SmartiAdapter.updateTokensInMessages(roomId, analysisResult);
+	}
+
+	static updateTokensInMessages(roomId, analysisResult) {
+
+		const allTerms = analysisResult.tokens.reduce((terms, token) => terms.set(token.value,{value: token.value, type: token.type}), new Map()); //eslint-disable-line
+
+		// we'll check whether the tokens found were contained in the last messages. We just pick a bunch (and not only the last one)
+		// in order to handle potential message-sent-overlap while anlyzing
+		const lastMessages = RocketChat.models.Messages.findByRoomId(roomId, { sort: { _updatedAt: -1 }, limit: 5 });
+		lastMessages.forEach((message) => {
+			let termsChanged = false;
+			const alreadyRecognizedTokens = new Map();
+			if (message.recognizedTokens) {
+				message.recognizedTokens.forEach((token) => alreadyRecognizedTokens.set(token.value.toLowerCase(), token));
+			}
+
+			allTerms.forEach((token, term) => {
+				if (message.msg.indexOf(term) > -1) {
+					if (!alreadyRecognizedTokens.has(term.toLowerCase())) {
+						termsChanged = true;
+						alreadyRecognizedTokens.set(token.value, token);
+					}
+				}
+			});
+			if (termsChanged) {
+				RocketChat.models.Messages.setRecognizedTokensById(message._id, Array.from(alreadyRecognizedTokens.values()));
+			}
+		});
 	}
 
 	/**
