@@ -4,7 +4,6 @@ import './email';
 // Insert server unique id if it doesn't exist
 RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
-	hidden: true,
 });
 
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
@@ -469,6 +468,12 @@ RocketChat.settings.addGroup('Accounts', function() {
 				value: true,
 			},
 		});
+
+		this.add('Accounts_AvatarExternalProviderUrl', '', {
+			type: 'string',
+			public: true,
+		});
+
 		this.add('Accounts_AvatarCacheTime', 3600, {
 			type: 'int',
 			i18nDescription: 'Accounts_AvatarCacheTime_description',
