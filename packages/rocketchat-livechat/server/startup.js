@@ -21,7 +21,7 @@ Meteor.startup(() => {
 			return user;
 		}
 		throw new Meteor.Error(TAPi18n.__('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
-			lng: user.language || RocketChat.settings.get('language') || 'en',
+			lng: user.language || RocketChat.settings.get('Language') || 'en',
 		}));
 	}, RocketChat.callbacks.priority.LOW, 'cant-leave-room');
 });
