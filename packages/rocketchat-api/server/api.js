@@ -134,6 +134,21 @@ class API extends Restivus {
 		};
 	}
 
+	reloadRoutesToRefreshRateLimiter() {
+		const { version } = this._config;
+		this._routes.forEach((route) => {
+			const shouldAddRateLimitToRoute = ((typeof route.options.rateLimiterOptions === 'object' || route.options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS));
+			if (shouldAddRateLimitToRoute) {
+				this.addRateLimiterRuleForRoutes({
+					routes: [route.path],
+					rateLimiterOptions: route.options.rateLimiterOptions || defaultRateLimiterOptions,
+					endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
+					apiVersion: version,
+				});
+			}
+		});
+	}
+
 	addRateLimiterRuleForRoutes({ routes, rateLimiterOptions, endpoints, apiVersion }) {
 		if (!rateLimiterOptions.numRequestsAllowed) {
 			throw new Meteor.Error('You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint');
@@ -142,7 +157,7 @@ class API extends Restivus {
 			throw new Meteor.Error('You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint');
 		}
 		const nameRoute = (route) => {
-			const routeActions = Object.keys(endpoints);
+			const routeActions = Array.isArray(endpoints) ? endpoints : Object.keys(endpoints);
 			return routeActions.map((endpoint) => `/api/${ apiVersion }/${ route }${ endpoint }`);
 		};
 		const addRateLimitRuleToEveryRoute = (routes) => {
@@ -186,7 +201,7 @@ class API extends Restivus {
 			routes = [routes];
 		}
 		const { version } = this._config;
-		const shouldAddRateLimitToRoute = ((typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && version && !process.env.TEST_MODE && defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS);
+		const shouldAddRateLimitToRoute = ((typeof options.rateLimiterOptions === 'object' || options.rateLimiterOptions === undefined) && Boolean(version) && !process.env.TEST_MODE && Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS));
 		if (shouldAddRateLimitToRoute) {
 			this.addRateLimiterRuleForRoutes({
 				routes,
@@ -527,12 +542,12 @@ RocketChat.settings.get('API_Enable_CORS', (key, value) => {
 
 RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
 	defaultRateLimiterOptions.intervalTimeInMS = value;
-	createApi(value);
+	RocketChat.API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
 RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
-	createApi(value);
+	RocketChat.API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
 // also create the API immediately
