@@ -4,7 +4,7 @@
 
 	height: 100vh;
 
-	padding: 0 1.5rem;
+	padding: 1.25rem 2rem;
 
 	&-fields {
 		display: flex;
@@ -47,7 +47,6 @@
 	flex: 1 1 100%;
 
 	height: 100vh;
-	padding: 0 1rem;
 
 	& .js-sort {
 		cursor: pointer;
