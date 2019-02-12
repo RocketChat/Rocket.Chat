@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { katex } from 'meteor/rocketchat:katex';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { settings } from 'meteor/rocketchat:settings';
 import {
@@ -71,18 +72,18 @@ const formattingButtons = [
 	{
 		label: 'KaTeX',
 		text: () => {
-			if (!RocketChat.katex.katex_enabled()) {
+			if (!katex.isEnabled()) {
 				return;
 			}
-			if (RocketChat.katex.dollar_syntax_enabled()) {
+			if (katex.isDollarSyntaxEnabled()) {
 				return '$$KaTeX$$';
 			}
-			if (RocketChat.katex.parenthesis_syntax_enabled()) {
+			if (katex.isParenthesisSyntaxEnabled()) {
 				return '\\[KaTeX\\]';
 			}
 		},
 		link: 'https://khan.github.io/KaTeX/function-support.html',
-		condition: () => RocketChat.katex.katex_enabled(),
+		condition: () => katex.isEnabled(),
 	},
 ];
 
