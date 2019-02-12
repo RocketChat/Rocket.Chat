@@ -46,6 +46,8 @@
 	&__element {
 		width: 100%;
 		padding: 0 1rem;
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
 
 		color: var(--input-text-color);
 
@@ -56,7 +58,7 @@
 
 		font-size: var(--input-font-size);
 
-		line-height: 2.25rem;
+		line-height: 1.6rem;
 
 		&--small {
 			line-height: 1.75rem;

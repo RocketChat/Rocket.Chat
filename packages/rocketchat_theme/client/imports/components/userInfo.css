@@ -132,6 +132,7 @@
 	&__row {
 		flex-direction: row;
 
+		min-height: fit-content;
 		padding: 15px 0;
 
 		& > .rc-switch {
