@@ -39,6 +39,9 @@ function directorySearch(config, cb) {
 }
 
 Template.directory.helpers({
+	federationEnabled() {
+		return RocketChat.settings.get('FEDERATION_Enabled');
+	},
 	searchText() {
 		return Template.instance().searchText.get();
 	},

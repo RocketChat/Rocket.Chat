@@ -200,6 +200,11 @@ Meteor.methods({
 			}
 		});
 
+		Meteor.defer(function() {
+			const room = RocketChat.models.Rooms.findOneById(rid);
+			RocketChat.callbacks.run('afterSaveRoomSettings', room);
+		});
+
 		return {
 			result: true,
 			rid: room._id,

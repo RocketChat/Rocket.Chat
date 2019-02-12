@@ -6,17 +6,19 @@
 			
 			<div class="rc-directory-fields">
 			{{#if $eq searchType 'users'}}
-					<div class="rc-input rc-input--size-one rc-input--small rc-directory-search">
-						<label class="rc-input__label--inline-block">
-							<div class="rc-select rc-input--small rc-directory-dropdown">
-								<select class="rc-select__element js-setting-data js-workspace" name="search-type">
-									<option class="rc-select__option" value="local" selected="true">Local Workspace</option>
-									<option class="rc-select__option" value="all">Every Workspace</option>
-								</select>
-								{{> icon block="rc-select__arrow" icon="arrow-down" }}
-							</div>
-						</label>
-					</div>
+					{{#if federationEnabled}}
+						<div class="rc-input rc-input--size-one rc-input--small rc-directory-search">
+							<label class="rc-input__label--inline-block">
+								<div class="rc-select rc-input--small rc-directory-dropdown">
+									<select class="rc-select__element js-setting-data js-workspace" name="search-type">
+										<option class="rc-select__option" value="local" selected="true">Local Workspace</option>
+										<option class="rc-select__option" value="all">Every Workspace</option>
+									</select>
+									{{> icon block="rc-select__arrow" icon="arrow-down" }}
+								</div>
+							</label>
+						</div>
+					{{/if}}
 					
 					<div class="rc-input rc-input--size-six rc-input--small rc-directory-search">
 						<label class="rc-input__label--inline-block">

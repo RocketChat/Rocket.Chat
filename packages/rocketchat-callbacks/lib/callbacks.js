@@ -77,11 +77,11 @@ callbacks.runItem = function({ callback, result, constant /* , hook */ }) {
 * Successively run all of a hook's callbacks on an item
 * @param {String} hook - The name of the hook
 * @param {Object} item - The post, comment, modifier, etc. on which to run the callbacks
-* @param {Object} [constant] - An optional number of constants that will be passed along to each callback
+* @param {Object} [constant] - An optional constant that will be passed along to each callback
 * @returns {Object} Returns the item after it's been through all the callbacks for this hook
 */
 
-callbacks.run = function(hook, item, ...constant) {
+callbacks.run = function(hook, item, constant) {
 	const callbackItems = callbacks[hook];
 	if (!callbackItems || !callbackItems.length) {
 		return item;
@@ -122,14 +122,14 @@ callbacks.run = function(hook, item, ...constant) {
 * Successively run all of a hook's callbacks on an item, in async mode (only works on server)
 * @param {String} hook - The name of the hook
 * @param {Object} item - The post, comment, modifier, etc. on which to run the callbacks
-* @param {Object} [constant] - An optional number of constants that will be passed along to each callback
+* @param {Object} [constant] - An optional constant that will be passed along to each callback
 */
 
-callbacks.runAsync = function(hook, item, ...constant) {
+callbacks.runAsync = function(hook, item, constant) {
 	const callbackItems = callbacks[hook];
 	if (Meteor.isServer && callbackItems && callbackItems.length) {
 		Meteor.defer(function() {
-			callbackItems.forEach((callback) => callback(item, ...constant));
+			callbackItems.forEach((callback) => callback(item, constant));
 		});
 	}
 	return item;
