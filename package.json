@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.74.0-develop",
+	"version": "1.0.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -91,10 +91,12 @@
 	"devDependencies": {
 		"@octokit/rest": "^16.1.0",
 		"@rocket.chat/eslint-config": "^0.1.2",
+		"acorn": "^6.0.7",
 		"autoprefixer": "^9.4.1",
 		"babel-eslint": "^10.0.1",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
+		"chai": "^3.5.0",
 		"chimp": "^0.51.1",
 		"eslint": "^5.9.0",
 		"husky": "^1.2.0",
@@ -113,7 +115,8 @@
 		"simple-git": "^1.107.0",
 		"stylelint": "^9.9.0",
 		"stylelint-order": "^2.0.0",
-		"supertest": "^3.3.0"
+		"supertest": "^3.3.0",
+		"webpack": "^4.29.3"
 	},
 	"dependencies": {
 		"@babel/runtime": "^7.2.0",
@@ -198,6 +201,7 @@
 		"webdav": "^2.0.0",
 		"wolfy87-eventemitter": "^5.2.5",
 		"xml-crypto": "^1.0.2",
+		"xml-encryption": "0.11.2",
 		"xml2js": "0.4.19",
 		"xmlbuilder": "^10.1.1",
 		"xmldom": "^0.1.27",

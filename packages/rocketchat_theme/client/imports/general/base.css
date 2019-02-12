@@ -110,7 +110,7 @@ button {
 	& .tab-button-icon {
 		color: var(--rc-color-primary-dark);
 
-		fill: var(--rc-color-primary-dark);
+		font-size: 20px;
 
 		&--star {
 			width: 17px;
