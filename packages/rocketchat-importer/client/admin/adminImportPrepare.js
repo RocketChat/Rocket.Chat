@@ -192,11 +192,11 @@ Template.adminImportPrepare.events({
 		const btn = this;
 		$(btn).prop('disabled', true);
 		for (const user of Array.from(template.users.get())) {
-			user.do_import = $(`[name=${ user.user_id }]`).is(':checked');
+			user.do_import = $(`[name='${ user.user_id }']`).is(':checked');
 		}
 
 		for (const channel of Array.from(template.channels.get())) {
-			channel.do_import = $(`[name=${ channel.channel_id }]`).is(':checked');
+			channel.do_import = $(`[name='${ channel.channel_id }']`).is(':checked');
 		}
 
 		Meteor.call('startImport', FlowRouter.getParam('importer'), { users: template.users.get(), channels: template.channels.get() }, function(error) {
