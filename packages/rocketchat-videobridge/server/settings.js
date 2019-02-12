@@ -130,6 +130,36 @@ Meteor.startup(function() {
 				i18nLabel: 'Jitsi_Chrome_Extension',
 				public: true,
 			});
+
+			this.add('Jitsi_Enabled_TokenAuth', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'Jitsi_Enabled',
+					value: true,
+				},
+				i18nLabel: 'Jitsi_Enabled_TokenAuth',
+				public: true,
+			});
+
+			this.add('Jitsi_Application_ID', '', {
+				type: 'string',
+				enableQuery: [
+					{ _id: 'Jitsi_Enabled', value: true },
+					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
+				],
+				i18nLabel: 'Jitsi_Application_ID',
+				public: true,
+			});
+
+			this.add('Jitsi_Application_Secret', '', {
+				type: 'string',
+				enableQuery: [
+					{ _id: 'Jitsi_Enabled', value: true },
+					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
+				],
+				i18nLabel: 'Jitsi_Application_Secret',
+				public: true,
+			});
 		});
 	});
 });
