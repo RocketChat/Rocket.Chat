@@ -11,10 +11,11 @@ Object.assign(Subscriptions, {
 
 		const query = {
 			rid: roomId,
-			roles: roleName,
 		};
 
-		return !_.isUndefined(this.findOne(query));
+		const subscription = this.findOne(query);
+
+		return subscription && Array.isArray(subscription.roles) && subscription.roles.includes(roleName);
 	},
 
 	findUsersInRoles(roles, scope, options) {
