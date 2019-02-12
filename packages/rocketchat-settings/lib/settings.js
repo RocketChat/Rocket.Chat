@@ -50,15 +50,7 @@ export const settings = {
 		return Meteor.call('saveSetting', _id, value, callback);
 	},
 	batchSet(settings, callback) {
-		// async -> sync
-		// http://daemon.co.za/2012/04/simple-async-with-only-underscore/
-		const save = function(setting) {
-			return function(callback) {
-				return Meteor.call('saveSetting', setting._id, setting.value, setting.editor, callback);
-			};
-		};
-		const actions = _.map(settings, (setting) => save(setting));
-		return _(actions).reduceRight(_.wrap, (err, success) => callback(err, success))();
+		return Meteor.call('saveSettings', settings, callback);
 	},
 	load(key, value, initialLoad) {
 		['*', key].forEach((item) => {
