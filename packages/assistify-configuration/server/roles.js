@@ -48,6 +48,11 @@ const createConfigurationRole = function() {
 		'change-setting-Livechat_title_color',
 		'change-setting-Livechat_title',
 		'change-setting-Livechat_enabled',
+		'change-setting-Livechat_conversation_finished_message',
+		'change-setting-Livechat_name_field_registration_form',
+		'change-setting-Livechat_email_field_registration_form',
+		'change-setting-Livechat_agents_alias',
+		'change-setting-Livechat_agent_typing_alias',
 		'change-setting-Livechat',
 		'change-setting-Katex_Dollar_Syntax',
 		'change-setting-Katex_Parenthesis_Syntax',
@@ -243,6 +248,7 @@ const createManagerRole = function() {
 const adjustStandardRoles = function() {
 	const additionalUserPermissions = [
 		'add-user-to-joined-room',
+		'auto-translate',
 	];
 
 	assignPermissions(USER_ROLE_NAME, additionalUserPermissions);
