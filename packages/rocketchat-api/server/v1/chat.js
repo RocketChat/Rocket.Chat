@@ -69,7 +69,7 @@ RocketChat.API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('chat.getMessage', { authRequired: true }, {
+RocketChat.API.v1.addRoute('chat.getMessage', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		if (!this.queryParams.msgId) {
 			return RocketChat.API.v1.failure('The "msgId" query parameter must be provided.');
@@ -111,7 +111,7 @@ RocketChat.API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
+RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true, rateLimiterOptions: false }, {
 	post() {
 		const messageReturn = processWebhookMessage(this.bodyParams, this.user, undefined, true)[0];
 
@@ -127,7 +127,7 @@ RocketChat.API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
+RocketChat.API.v1.addRoute('chat.search', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		const { roomId, searchText } = this.queryParams;
 		const { count } = this.getPaginationItems();
@@ -152,7 +152,7 @@ RocketChat.API.v1.addRoute('chat.search', { authRequired: true }, {
 // The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
 // for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
 // one channel whereas the other one allows for sending to more than one channel at a time.
-RocketChat.API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
+RocketChat.API.v1.addRoute('chat.sendMessage', { authRequired: true, rateLimiterOptions: false }, {
 	post() {
 		if (!this.bodyParams.message) {
 			throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
@@ -376,7 +376,7 @@ RocketChat.API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('chat.list', { authRequired: true }, {
+RocketChat.API.v1.addRoute('chat.list', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		if (!RocketChat.authz.hasPermission(this.userId, 'view-d-room')) {
 			return RocketChat.API.v1.unauthorized();

@@ -193,7 +193,7 @@ RocketChat.API.channels.create = {
 	execute: createChannel,
 };
 
-RocketChat.API.v1.addRoute('channels.create', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.create', { authRequired: true, rateLimiterOptions: false }, {
 	post() {
 		const { userId, bodyParams } = this;
 
@@ -321,7 +321,7 @@ RocketChat.API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.history', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
 
@@ -364,7 +364,7 @@ RocketChat.API.v1.addRoute('channels.history', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.info', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.info', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		return RocketChat.API.v1.success({
 			channel: findChannelByIdOrName({
@@ -392,7 +392,7 @@ RocketChat.API.v1.addRoute('channels.invite', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.join', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.join', { authRequired: true, rateLimiterOptions: false }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
@@ -436,7 +436,7 @@ RocketChat.API.v1.addRoute('channels.leave', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.list', { authRequired: true, rateLimiterOptions: false }, {
 	get: {
 		// This is defined as such only to provide an example of how the routes can be defined :X
 		action() {
@@ -475,7 +475,7 @@ RocketChat.API.v1.addRoute('channels.list', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
@@ -500,7 +500,7 @@ RocketChat.API.v1.addRoute('channels.list.joined', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.members', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		const findResult = findChannelByIdOrName({
 			params: this.requestParams(),
@@ -539,7 +539,7 @@ RocketChat.API.v1.addRoute('channels.members', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.messages', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		const findResult = findChannelByIdOrName({
 			params: this.requestParams(),
@@ -605,7 +605,7 @@ RocketChat.API.v1.addRoute('channels.messages', { authRequired: true }, {
 // 	}
 // });
 
-RocketChat.API.v1.addRoute('channels.online', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.online', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		const { query } = this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { t: 'c' });
@@ -709,7 +709,7 @@ RocketChat.API.v1.addRoute('channels.rename', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.setCustomFields', { authRequired: true }, {
+RocketChat.API.v1.addRoute('channels.setCustomFields', { authRequired: true, rateLimiterOptions: false }, {
 	post() {
 		if (!this.bodyParams.customFields || !(typeof this.bodyParams.customFields === 'object')) {
 			return RocketChat.API.v1.failure('The bodyParam "customFields" is required with a type like object.');

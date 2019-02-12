@@ -175,7 +175,7 @@ RocketChat.API.v1.addRoute('users.list', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('users.register', { authRequired: false }, {
+RocketChat.API.v1.addRoute('users.register', { authRequired: false, rateLimiterOptions: false }, {
 	post() {
 		if (this.userId) {
 			return RocketChat.API.v1.failure('Logged in users can not register again.');
@@ -293,7 +293,7 @@ RocketChat.API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('users.update', { authRequired: true }, {
+RocketChat.API.v1.addRoute('users.update', { authRequired: true, rateLimiterOptions: false }, {
 	post() {
 		check(this.bodyParams, {
 			userId: String,
@@ -357,7 +357,7 @@ RocketChat.API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('users.createToken', { authRequired: true }, {
+RocketChat.API.v1.addRoute('users.createToken', { authRequired: true, rateLimiterOptions: false }, {
 	post() {
 		const user = this.getUserFromParams();
 		let data;
