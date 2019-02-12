@@ -157,7 +157,7 @@ const server = http.createServer(app);
 
 let timer;
 const updatePrometheusConfig = async() => {
-	const port = settings.get('Prometheus_Port');
+	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
 	const enabled = settings.get('Prometheus_Enabled');
 	if (port == null || enabled == null) {
 		return;
