@@ -1,14 +1,7 @@
-/*
- * KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the web.
- * https://github.com/Khan/KaTeX
- */
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Blaze } from 'meteor/blaze';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import s from 'underscore.string';
-
 import katex from 'katex';
 
 class Boundary {
@@ -21,62 +14,42 @@ class Boundary {
 	extract(str) {
 		return str.substr(this.start, this.length());
 	}
-
 }
 
 class Katex {
 	constructor() {
-		this.delimiters_map = [
+		this.delimitersMap = [
 			{
 				opener: '\\[',
 				closer: '\\]',
 				displayMode: true,
-				enabled: () => this.parenthesis_syntax_enabled(),
+				enabled: () => this.isParenthesisSyntaxEnabled(),
 			}, {
 				opener: '\\(',
 				closer: '\\)',
 				displayMode: false,
-				enabled: () => this.parenthesis_syntax_enabled(),
+				enabled: () => this.isParenthesisSyntaxEnabled(),
 			}, {
 				opener: '$$',
 				closer: '$$',
 				displayMode: true,
-				enabled: () => this.dollar_syntax_enabled(),
+				enabled: () => this.isDollarSyntaxEnabled(),
 			}, {
 				opener: '$',
 				closer: '$',
 				displayMode: false,
-				enabled: () => this.dollar_syntax_enabled(),
+				enabled: () => this.isDollarSyntaxEnabled(),
 			},
 		];
 	}
-	// Searches for the first opening delimiter in the string from a given position
 
-	find_opening_delimiter(str, start) { // Search the string for each opening delimiter
-		const matches = (() => {
-			const map = this.delimiters_map;
-			const results = [];
+	findOpeningDelimiter(str, start) {
+		const matches = this.delimitersMap.filter((options) => options.enabled()).map((options) => ({
+			options,
+			pos: str.indexOf(options.opener, start),
+		}));
 
-			map.forEach((op) => {
-				if (op.enabled()) {
-					results.push({
-						options: op,
-						pos: str.indexOf(op.opener, start),
-					});
-				}
-			});
-			return results;
-		})();
-
-		const positions = (() => {
-			const results = [];
-			matches.forEach((pos) => {
-				if (pos.pos >= 0) {
-					results.push(pos.pos);
-				}
-			});
-			return results;
-		})();
+		const positions = matches.filter(({ pos }) => pos >= 0).map(({ pos }) => pos);
 
 		// No opening delimiters were found
 		if (positions.length === 0) {
@@ -84,38 +57,29 @@ class Katex {
 		}
 
 		// Take the first delimiter found
-		const pos = Math.min.apply(Math, positions);
+		const minPos = Math.min.apply(Math, positions);
 
-		const match_index = (() => {
-			const results = [];
-			matches.forEach((m) => {
-				results.push(m.pos);
-			});
-			return results;
-		})().indexOf(pos);
+		const matchIndex = matches.findIndex(({ pos }) => pos === minPos);
 
-		const match = matches[match_index];
+		const match = matches[matchIndex];
 		return match;
 	}
 
-	// Returns the outer and inner boundaries of the latex block starting
-	// at the given opening delimiter
-	get_latex_boundaries(str, opening_delimiter_match) {
+	getLatexBoundaries(str, { options: { closer }, pos }) {
+		const closerIndex = str.substr(pos + closer.length).indexOf(closer);
+		if (closerIndex < 0) {
+			return null;
+		}
+
 		const inner = new Boundary;
 		const outer = new Boundary;
 
-		// The closing delimiter matching to the opening one
-		const { closer } = opening_delimiter_match.options;
-		outer.start = opening_delimiter_match.pos;
-		inner.start = opening_delimiter_match.pos + closer.length;
+		inner.start = pos + closer.length;
+		inner.end = inner.start + closerIndex;
 
-		// Search for a closer delimiter after the opening one
-		const closer_index = str.substr(inner.start).indexOf(closer);
-		if (closer_index < 0) {
-			return null;
-		}
-		inner.end = inner.start + closer_index;
+		outer.start = pos;
 		outer.end = inner.end + closer.length;
+
 		return {
 			outer,
 			inner,
@@ -123,23 +87,24 @@ class Katex {
 	}
 
 	// Searches for the first latex block in the given string
-	find_latex(str) {
+	findLatex(str) {
 		let start = 0;
-		let opening_delimiter_match;
+		let openingDelimiterMatch;
 
-		while ((opening_delimiter_match = this.find_opening_delimiter(str, start++)) != null) {
-			const match = this.get_latex_boundaries(str, opening_delimiter_match);
+		while ((openingDelimiterMatch = this.findOpeningDelimiter(str, start++)) != null) {
+			const match = this.getLatexBoundaries(str, openingDelimiterMatch);
 			if (match && match.inner.extract(str).trim().length) {
-				match.options = opening_delimiter_match.options;
+				match.options = openingDelimiterMatch.options;
 				return match;
 			}
 		}
+
 		return null;
 	}
 
 	// Breaks a message to what comes before, after and to the content of a
 	// matched latex block
-	extract_latex(str, match) {
+	extractLatex(str, match) {
 		const before = str.substr(0, match.outer.start);
 		const after = str.substr(match.outer.end);
 		let latex = match.inner.extract(str);
@@ -153,33 +118,31 @@ class Katex {
 
 	// Takes a latex math string and the desired display mode and renders it
 	// to HTML using the KaTeX library
-	render_latex(latex, displayMode) {
-		let rendered;
+	renderLatex = (latex, displayMode) => {
 		try {
-			rendered = katex.renderToString(latex, {
+			return katex.renderToString(latex, {
 				displayMode,
+				macros: {
+					'\\href': '\\@secondoftwo',
+				},
 			});
-		} catch (error) {
-			const e = error;
-			const display_mode = displayMode ? 'block' : 'inline';
-			rendered = `<div class="katex-error katex-${ display_mode }-error">`;
-			rendered += `${ s.escapeHTML(e.message) }`;
-			rendered += '</div>';
+		} catch ({ message }) {
+			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">` +
+				`${ s.escapeHTML(message) }</div>`;
 		}
-		return rendered;
 	}
 
 	// Takes a string and renders all latex blocks inside it
-	render(str, render_func) {
+	render(str, renderFunction) {
 		let result = '';
-		while (this.find_latex(str) != null) {
+		while (this.findLatex(str) != null) {
 			// Find the first latex block in the string
-			const match = this.find_latex(str);
-			const parts = this.extract_latex(str, match);
+			const match = this.findLatex(str);
+			const parts = this.extractLatex(str, match);
 
 			// Add to the reuslt what comes before the latex block as well as
 			// the rendered latex content
-			const rendered = render_func(parts.latex, match.options.displayMode);
+			const rendered = renderFunction(parts.latex, match.options.displayMode);
 			result += parts.before + rendered;
 			// Set what comes after the latex block to be examined next
 			str = parts.after;
@@ -187,66 +150,44 @@ class Katex {
 		return result += str;
 	}
 
-	// Takes a rocketchat message and renders latex in its content
-	render_message(message) {
-		// Render only if enabled in admin panel
-		let render_func;
-		if (this.katex_enabled()) {
-			let msg = message;
-			if (!_.isString(message)) {
-				if (s.trim(message.html)) {
-					msg = message.html;
-				} else {
-					return message;
-				}
-			}
-			if (_.isString(message)) {
-				render_func = (latex, displayMode) => this.render_latex(latex, displayMode);
-			} else {
-				if (message.tokens == null) {
-					message.tokens = [];
-				}
-				render_func = (latex, displayMode) => {
-					const token = `=!=${ Random.id() }=!=`;
-					message.tokens.push({
-						token,
-						text: this.render_latex(latex, displayMode),
-					});
-					return token;
-				};
-			}
-			msg = this.render(msg, render_func);
-			if (!_.isString(message)) {
-				message.html = msg;
-			} else {
-				message = msg;
-			}
+	renderMessage = (message) => {
+		if (!this.isEnabled()) {
+			return message;
 		}
+
+		if (_.isString(message)) {
+			return this.render(message, this.renderLatex);
+		}
+
+		if (!s.trim(message.html)) {
+			return message;
+		}
+
+		if (message.tokens == null) {
+			message.tokens = [];
+		}
+
+		message.html = this.render(message.html, (latex, displayMode) => {
+			const token = `=!=${ Random.id() }=!=`;
+			message.tokens.push({
+				token,
+				text: this.renderLatex(latex, displayMode),
+			});
+			return token;
+		});
+
 		return message;
 	}
 
-	katex_enabled() {
-		return RocketChat.settings.get('Katex_Enabled');
-	}
+	isEnabled = () => RocketChat.settings.get('Katex_Enabled')
 
-	dollar_syntax_enabled() {
-		return RocketChat.settings.get('Katex_Dollar_Syntax');
-	}
+	isDollarSyntaxEnabled = () => RocketChat.settings.get('Katex_Dollar_Syntax')
 
-	parenthesis_syntax_enabled() {
-		return RocketChat.settings.get('Katex_Parenthesis_Syntax');
-	}
-
+	isParenthesisSyntaxEnabled = () => RocketChat.settings.get('Katex_Parenthesis_Syntax')
 }
 
-RocketChat.katex = new Katex;
+const instance = new Katex;
 
-const cb = RocketChat.katex.render_message.bind(RocketChat.katex);
+RocketChat.callbacks.add('renderMessage', instance.renderMessage, RocketChat.callbacks.priority.HIGH - 1, 'katex');
 
-RocketChat.callbacks.add('renderMessage', cb, RocketChat.callbacks.priority.HIGH - 1, 'katex');
-
-if (Meteor.isClient) {
-	Blaze.registerHelper('RocketChatKatex', function(text) {
-		return RocketChat.katex.render_message(text);
-	});
-}
+export default instance;
