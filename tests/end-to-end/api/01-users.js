@@ -21,7 +21,7 @@ describe('[Users]', function() {
 
 	it('enabling E2E in server and generating keys to user...', (done) => {
 		updateSetting('E2E_Enable', true).then(() => {
-			request.post(api('e2e.setUserPublicAndPivateKeys'))
+			request.post(api('e2e.setUserPublicAndPrivateKeys'))
 				.set(credentials)
 				.send({
 					private_key: 'test',
@@ -735,7 +735,7 @@ describe('[Users]', function() {
 
 		it('enabling E2E in server and generating keys to user...', (done) => {
 			updateSetting('E2E_Enable', true).then(() => {
-				request.post(api('e2e.setUserPublicAndPivateKeys'))
+				request.post(api('e2e.setUserPublicAndPrivateKeys'))
 					.set(userCredentials)
 					.send({
 						private_key: 'test',

@@ -33,12 +33,12 @@ RocketChat.API.v1.addRoute('e2e.setRoomKeyID', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('e2e.setUserPublicAndPivateKeys', { authRequired: true }, {
+RocketChat.API.v1.addRoute('e2e.setUserPublicAndPrivateKeys', { authRequired: true }, {
 	post() {
 		const { public_key, private_key } = this.bodyParams;
 
 		Meteor.runAsUser(this.userId, () => {
-			RocketChat.API.v1.success(Meteor.call('e2e.setUserPublicAndPivateKeys', {
+			RocketChat.API.v1.success(Meteor.call('e2e.setUserPublicAndPrivateKeys', {
 				public_key,
 				private_key,
 			}));

@@ -2,7 +2,7 @@ import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Notifications } from 'meteor/rocketchat:notifications';
 
 import './settings';
-import './methods/setUserPublicAndPivateKeys';
+import './methods/setUserPublicAndPrivateKeys';
 import './methods/getUsersOfRoomWithoutKey';
 import './methods/updateGroupKey';
 import './methods/setRoomKeyID';
