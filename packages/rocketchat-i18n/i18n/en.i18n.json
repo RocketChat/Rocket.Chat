@@ -999,6 +999,7 @@
   "Desktop_Notifications_Duration": "Desktop Notifications Duration",
   "Desktop_Notifications_Duration_Description": "Seconds to display desktop notification. This may affect OS X Notification Center. Enter 0 to use default browser settings and not affect OS X Notification Center.",
   "Desktop_Notifications_Enabled": "Desktop Notifications are Enabled",
+  "Desktop_Notifications_Not_Enabled": "Desktop Notifications are Not Enabled",
   "Details": "Details",
   "Different_Style_For_User_Mentions": "Different style for user mentions",
   "Direct_message_someone": "Direct message someone",
