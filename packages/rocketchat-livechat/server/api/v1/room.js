@@ -53,7 +53,7 @@ RocketChat.API.v1.addRoute('livechat/room.close', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			const language = RocketChat.settings.get('language') || 'en';
+			const language = RocketChat.settings.get('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
 			if (!RocketChat.Livechat.closeRoom({ visitor, room, comment })) {
