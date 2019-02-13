@@ -320,10 +320,6 @@
 				border-right-width: 0;
 			}
 
-			& > .stream-info {
-				float: right;
-			}
-
 			& > .formatting-tips {
 				position: relative;
 				right: auto;
