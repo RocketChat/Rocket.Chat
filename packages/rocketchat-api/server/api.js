@@ -328,7 +328,7 @@ class API extends Restivus {
 
 		const self = this;
 
-		this.addRoute('login', { authRequired: false }, {
+		this.addRoute('login', { authRequired: false, rateLimiterOptions: false }, {
 			post() {
 				const args = loginCompatibility(this.bodyParams);
 				const getUserInfo = self.getHelperMethod('getUserInfo');

@@ -21,7 +21,7 @@ RocketChat.API.v1.addRoute('info', { authRequired: false }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('me', { authRequired: true }, {
+RocketChat.API.v1.addRoute('me', { authRequired: true, rateLimiterOptions: false }, {
 	get() {
 		return RocketChat.API.v1.success(this.getUserInfo(RocketChat.models.Users.findOneById(this.userId)));
 	},
