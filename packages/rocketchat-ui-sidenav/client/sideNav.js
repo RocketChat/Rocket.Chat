@@ -21,10 +21,6 @@ Template.sideNav.helpers({
 		return String(settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
-	threadingFromSidebar() {
-		return RocketChat.authz.hasPermission('start-thread') && RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowThreads') && !Meteor.isCordova;
-	},
-
 	roomType() {
 		return roomTypes.getTypes().map((roomType) => ({
 			template: roomType.customTemplate || 'roomList',
@@ -67,10 +63,6 @@ Template.sideNav.events({
 
 	'dropped .sidebar'(e) {
 		return e.preventDefault();
-	},
-
-	'click .js-create-thread'() {
-		return FlowRouter.go('create-thread');
 	},
 });
 
