@@ -53,7 +53,7 @@ RocketChat.API.v1.addRoute('livechat/room.close', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			const language = RocketChat.settings.get('language') || 'en';
+			const language = RocketChat.settings.get('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
 			if (!RocketChat.Livechat.closeRoom({ visitor, room, comment })) {
@@ -151,5 +151,11 @@ RocketChat.API.v1.addRoute('livechat/room.survey', {
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
 		}
+	},
+});
+
+RocketChat.API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
+	post() {
+		RocketChat.API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
 	},
 });

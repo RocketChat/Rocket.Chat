@@ -41,29 +41,23 @@ export class HipChatEnterpriseImporter extends Base {
 		this.tarStream = require('tar-stream');
 		this.extract = this.tarStream.extract();
 		this.path = path;
-		this.messages = new Map();
-		this.directMessages = new Map();
 
 		this.emailList = [];
 	}
 
-	async parseData(data) {
-		const dataString = Buffer.concat(data).toString();
-		let file;
+	parseData(data) {
+		const dataString = data.toString();
 		try {
 			this.logger.debug('parsing file contents');
-			file = JSON.parse(dataString);
-			this.logger.debug('file parsed');
+			return JSON.parse(dataString);
 		} catch (e) {
 			console.error(e);
 			return false;
 		}
-
-		return file;
 	}
 
 	async storeTempUsers(tempUsers) {
-		await this.collection.upsert({
+		await this.collection.model.rawCollection().update({
 			import: this.importRecord._id,
 			importer: this.name,
 			type: 'users',
@@ -73,9 +67,11 @@ export class HipChatEnterpriseImporter extends Base {
 				importer: this.name,
 				type: 'users',
 			},
-			$addToSet: {
+			$push: {
 				users: { $each: tempUsers },
 			},
+		}, {
+			upsert: true,
 		});
 
 		this.usersCount += tempUsers.length;
@@ -122,7 +118,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async storeTempRooms(tempRooms) {
-		await this.collection.upsert({
+		await this.collection.model.rawCollection().update({
 			import: this.importRecord._id,
 			importer: this.name,
 			type: 'channels',
@@ -132,9 +128,11 @@ export class HipChatEnterpriseImporter extends Base {
 				importer: this.name,
 				type: 'channels',
 			},
-			$addToSet: {
+			$push: {
 				channels: { $each: tempRooms },
 			},
+		}, {
+			upsert: true,
 		});
 
 		this.channelsCount += tempRooms.length;
@@ -150,10 +148,11 @@ export class HipChatEnterpriseImporter extends Base {
 				id: r.Room.id,
 				creator: r.Room.owner,
 				created: new Date(r.Room.created),
-				name: s.slugify(r.Room.name),
+				name: r.Room.name,
 				isPrivate: r.Room.privacy === 'private',
 				isArchived: r.Room.is_archived,
 				topic: r.Room.topic,
+				members: r.Room.members,
 			});
 			count++;
 
@@ -175,7 +174,7 @@ export class HipChatEnterpriseImporter extends Base {
 		this.logger.debug('dumping messages to database');
 		const name = subIndex ? `${ roomIdentifier }/${ index }/${ subIndex }` : `${ roomIdentifier }/${ index }`;
 
-		await this.collection.insert({
+		await this.collection.model.rawCollection().insert({
 			import: this.importRecord._id,
 			importer: this.name,
 			type: 'messages',
@@ -203,6 +202,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async prepareUserMessagesFile(file, roomIdentifier, index) {
+		await this.loadExistingMessagesIfNecessary();
 		let msgs = [];
 		this.logger.debug(`preparing room with ${ file.length } messages `);
 		for (const m of file) {
@@ -251,7 +251,18 @@ export class HipChatEnterpriseImporter extends Base {
 			return false;
 		}
 
-		return Boolean(RocketChat.models.Messages.findOne({ _id: messageId }, { fields: { _id: 1 }, limit: 1 }));
+		return this._previewsMessagesIds.has(messageId);
+	}
+
+	async loadExistingMessagesIfNecessary() {
+		if (this._hasAnyImportedMessage === false) {
+			return false;
+		}
+
+		if (!this._previewsMessagesIds) {
+			this._previewsMessagesIds = new Set();
+			await RocketChat.models.Messages.model.rawCollection().find({}, { fields: { _id: 1 } }).forEach((i) => this._previewsMessagesIds.add(i._id));
+		}
 	}
 
 	async prepareRoomMessagesFile(file, roomIdentifier, id, index) {
@@ -259,11 +270,13 @@ export class HipChatEnterpriseImporter extends Base {
 		this.logger.debug(`preparing room with ${ file.length } messages `);
 		let subIndex = 0;
 
+		await this.loadExistingMessagesIfNecessary();
+
 		for (const m of file) {
 			if (m.UserMessage) {
 				const newId = `hipchatenterprise-${ id }-user-${ m.UserMessage.id }`;
 				const skipMessage = this._checkIfMessageExists(newId);
-				const skipAttachment = (skipMessage && m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
+				const skipAttachment = (skipMessage && (m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true));
 
 				if (!skipMessage || !skipAttachment) {
 					roomMsgs.push({
@@ -311,8 +324,12 @@ export class HipChatEnterpriseImporter extends Base {
 						skip: skipMessage,
 					});
 				}
+			} else if (m.ArchiveRoomMessage) {
+				this.logger.warn('Archived Room Notification was ignored.');
+			} else if (m.GuestAccessMessage) {
+				this.logger.warn('Guess Access Notification was ignored.');
 			} else {
-				this.logger.warn('HipChat Enterprise importer isn\'t configured to handle this message:', m);
+				this.logger.error('HipChat Enterprise importer isn\'t configured to handle this message:', m);
 			}
 
 			if (roomMsgs.length >= 500) {
@@ -347,15 +364,15 @@ export class HipChatEnterpriseImporter extends Base {
 				messageGroupIndex++;
 				return this.prepareRoomMessagesFile(file, roomIdentifier, id, messageGroupIndex);
 			default:
-				this.logger.warn(`HipChat Enterprise importer isn't configured to handle "${ type }" files.`);
+				this.logger.error(`HipChat Enterprise importer isn't configured to handle "${ type }" files (${ info.dir }).`);
 				return 0;
 		}
 	}
 
 	async prepareFile(info, data, fileName) {
-		const file = await this.parseData(data);
+		const file = this.parseData(data);
 		if (file === false) {
-			this.logger.warn('failed to parse data');
+			this.logger.error('failed to parse data');
 			return false;
 		}
 
@@ -369,17 +386,202 @@ export class HipChatEnterpriseImporter extends Base {
 			case 'history.json':
 				return await this.prepareMessagesFile(file, info);
 			case 'emoticons.json':
-				this.logger.warn('HipChat Enterprise importer doesn\'t import emoticons.', info);
+				this.logger.error('HipChat Enterprise importer doesn\'t import emoticons.', info);
 				break;
 			default:
-				this.logger.warn(`HipChat Enterprise importer doesn't know what to do with the file "${ fileName }" :o`, info);
+				this.logger.error(`HipChat Enterprise importer doesn't know what to do with the file "${ fileName }" :o`, info);
 				break;
 		}
 
 		return 0;
 	}
 
+	async _prepareFolderEntry(fullEntryPath, relativeEntryPath) {
+		const files = fs.readdirSync(fullEntryPath);
+		for (const fileName of files) {
+			try {
+				const fullFilePath = path.join(fullEntryPath, fileName);
+				const fullRelativePath = path.join(relativeEntryPath, fileName);
+
+				this.logger.info(`new entry from import folder: ${ fileName }`);
+
+				if (fs.statSync(fullFilePath).isDirectory()) {
+					await this._prepareFolderEntry(fullFilePath, fullRelativePath);
+					continue;
+				}
+
+				if (!fileName.endsWith('.json')) {
+					continue;
+				}
+
+				let fileData;
+
+				const promise = new Promise((resolve, reject) => {
+					fs.readFile(fullFilePath, (error, data) => {
+						if (error) {
+							this.logger.error(error);
+							return reject(error);
+						}
+
+						fileData = data;
+						return resolve();
+					});
+				});
+
+				await promise.catch((error) => {
+					this.logger.error(error);
+					fileData = null;
+				});
+
+				if (!fileData) {
+					this.logger.info(`Skipping the file: ${ fileName }`);
+					continue;
+				}
+
+				this.logger.info(`Processing the file: ${ fileName }`);
+				const info = this.path.parse(fullRelativePath);
+				await this.prepareFile(info, fileData, fileName);
+
+				this.logger.debug('moving to next import folder entry');
+			} catch (e) {
+				this.logger.debug('failed to prepare file');
+				this.logger.error(e);
+			}
+		}
+	}
+
+	prepareUsingLocalFolder(fullFolderPath) {
+		this.logger.debug('start preparing import operation using local folder');
+		this.collection.remove({});
+		this.emailList = [];
+
+		this._hasAnyImportedMessage = Boolean(RocketChat.models.Messages.findOne({ _id: /hipchatenterprise\-.*/ }));
+
+		this.usersCount = 0;
+		this.channelsCount = 0;
+		this.messagesCount = 0;
+
+		// HipChat duplicates direct messages (one for each user)
+		// This object will keep track of messages that have already been prepared so it doesn't try to do it twice
+		this.preparedMessages = {};
+
+		const promise = new Promise(async(resolve, reject) => {
+			try {
+				await this._prepareFolderEntry(fullFolderPath, '.');
+				this._finishPreparationProcess(resolve, reject);
+			} catch (e) {
+				this.logger.error(e);
+				reject(e);
+			}
+		});
+
+		return promise;
+	}
+
+	async _finishPreparationProcess(resolve, reject) {
+		await this.fixPublicChannelMembers();
+
+		this.logger.info('finished parsing files, checking for errors now');
+		this._previewsMessagesIds = undefined;
+		this.emailList = [];
+		this.preparedMessages = {};
+
+
+		super.updateRecord({ 'count.messages': this.messagesCount, messagesstatus: null });
+		super.addCountToTotal(this.messagesCount);
+
+		// Check if any of the emails used are already taken
+		if (this.emailList.length > 0) {
+			const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: this.emailList } });
+			const conflictingUserEmails = [];
+
+			conflictingUsers.forEach((conflictingUser) => {
+				if (conflictingUser.emails && conflictingUser.emails.length) {
+					conflictingUser.emails.forEach((email) => {
+						conflictingUserEmails.push(email.address);
+					});
+				}
+			});
+
+			if (conflictingUserEmails.length > 0) {
+				this.flagConflictingEmails(conflictingUserEmails);
+			}
+		}
+
+		// Ensure we have some users, channels, and messages
+		if (!this.usersCount && !this.channelsCount && !this.messagesCount) {
+			this.logger.info(`users: ${ this.usersCount }, channels: ${ this.channelsCount }, messages = ${ this.messagesCount }`);
+			super.updateProgress(ProgressStep.ERROR);
+			reject(new Meteor.Error('error-import-file-is-empty'));
+			return;
+		}
+
+		const tempUsers = this.collection.findOne({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'users',
+		});
+
+		const tempChannels = this.collection.findOne({
+			import: this.importRecord._id,
+			importer: this.name,
+			type: 'channels',
+		});
+
+		const selectionUsers = tempUsers.users.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
+		const selectionChannels = tempChannels.channels.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
+		const selectionMessages = this.messagesCount;
+
+		super.updateProgress(ProgressStep.USER_SELECTION);
+
+		resolve(new Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
+	}
+
+	async fixPublicChannelMembers() {
+		await this.collection.model.rawCollection().aggregate([{
+			$match: {
+				import: this.importRecord._id,
+				type: 'channels',
+			},
+		}, {
+			$unwind: '$channels',
+		}, {
+			$match: {
+				'channels.members.0': { $exists: false },
+			},
+		}, {
+			$group: { _id: '$channels.id' },
+		}]).forEach(async(channel) => {
+			const userIds = (await this.collection.model.rawCollection().aggregate([{
+				$match: {
+					$or: [
+						{ roomIdentifier: `rooms/${ channel._id }` },
+						{ roomIdentifier: `users/${ channel._id }` },
+					],
+				},
+			}, {
+				$unwind: '$messages',
+			}, {
+				$match: { 'messages.userId': { $ne: 'rocket.cat' } },
+			}, {
+				$group: { _id: '$messages.userId' },
+			}]).toArray()).map((i) => i._id);
+
+			await this.collection.model.rawCollection().update({
+				'channels.id': channel._id,
+			}, {
+				$set: {
+					'channels.$.members': userIds,
+				},
+			});
+		});
+	}
+
 	prepareUsingLocalFile(fullFilePath) {
+		if (fs.statSync(fullFilePath).isDirectory()) {
+			return this.prepareUsingLocalFolder(fullFilePath);
+		}
+
 		this.logger.debug('start preparing import operation');
 		this.collection.remove({});
 		this.emailList = [];
@@ -403,15 +605,18 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 
 				const info = this.path.parse(header.name);
-				const data = [];
+				let pos = 0;
+				let data = Buffer.allocUnsafe(header.size);
 
 				stream.on('data', Meteor.bindEnvironment((chunk) => {
-					data.push(chunk);
+					data.fill(chunk, pos, pos + chunk.length);
+					pos += chunk.length;
 				}));
 
 				stream.on('end', Meteor.bindEnvironment(async() => {
-					this.logger.debug(`Processing the file: ${ header.name }`);
+					this.logger.info(`Processing the file: ${ header.name }`);
 					await this.prepareFile(info, data, header.name);
+					data = undefined;
 
 					this.logger.debug('next import entry');
 					next();
@@ -422,69 +627,19 @@ export class HipChatEnterpriseImporter extends Base {
 			}));
 
 			this.extract.on('error', (err) => {
-				this.logger.warn('extract error:', err);
+				this.logger.error('extract error:', err);
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 
 			this.extract.on('finish', Meteor.bindEnvironment(() => {
-				this.logger.debug('finished parsing files, checking for errors now');
-
-				super.updateRecord({ 'count.messages': this.messagesCount, messagesstatus: null });
-				super.addCountToTotal(this.messagesCount);
-
-				// Check if any of the emails used are already taken
-
-				if (this.emailList.length > 0) {
-					const conflictingUsers = RocketChat.models.Users.find({ 'emails.address': { $in: this.emailList } });
-					const conflictingUserEmails = [];
-
-					conflictingUsers.forEach((conflictingUser) => {
-						if (conflictingUser.emails && conflictingUser.emails.length) {
-							conflictingUser.emails.forEach((email) => {
-								conflictingUserEmails.push(email.address);
-							});
-						}
-					});
-
-					if (conflictingUserEmails.length > 0) {
-						this.flagConflictingEmails(conflictingUserEmails);
-					}
-				}
-
-				// Ensure we have some users, channels, and messages
-				if (!this.usersCount && this.channelsCount && !this.messagesCount) {
-					this.logger.debug(`users: ${ this.usersCount }, channels: ${ this.channelsCount }, messages = ${ this.messagesCount }`);
-					super.updateProgress(ProgressStep.ERROR);
-					reject(new Meteor.Error('error-import-file-is-empty'));
-					return;
-				}
-
-				const tempUsers = this.collection.findOne({
-					import: this.importRecord._id,
-					importer: this.name,
-					type: 'users',
-				});
-
-				const tempChannels = this.collection.findOne({
-					import: this.importRecord._id,
-					importer: this.name,
-					type: 'channels',
-				});
-
-				const selectionUsers = tempUsers.users.map((u) => new SelectionUser(u.id, u.username, u.email, u.isDeleted, false, u.do_import !== false, u.is_email_taken === true));
-				const selectionChannels = tempChannels.channels.map((r) => new SelectionChannel(r.id, r.name, r.isArchived, true, r.isPrivate, r.creator));
-				const selectionMessages = this.messagesCount;
-
-				super.updateProgress(ProgressStep.USER_SELECTION);
-
-				resolve(new Selection(this.name, selectionUsers, selectionChannels, selectionMessages));
+				this._finishPreparationProcess(resolve, reject);
 			}));
 
 			const rs = fs.createReadStream(fullFilePath);
 			const gunzip = this.zlib.createGunzip();
 
 			gunzip.on('error', (err) => {
-				this.logger.warn('extract error:', err);
+				this.logger.error('extract error:', err);
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 			this.logger.debug('start extracting import file');
@@ -534,21 +689,20 @@ export class HipChatEnterpriseImporter extends Base {
 		this._saveUserIdReference(userToImport.id, existingUserId);
 
 		Meteor.runAsUser(existingUserId, () => {
-			RocketChat.models.Users.update({ _id: existingUserId }, { $addToSet: { importIds: userToImport.id } });
+			RocketChat.models.Users.update({ _id: existingUserId }, {
+				$push: {
+					importIds: userToImport.id,
+				},
+				$set: {
+					active: userToImport.isDeleted !== true,
+					name: userToImport.name,
+					username: userToImport.username,
+				},
+			});
 
-			// Meteor.call('setUsername', userToImport.username, { joinDefaultChannelsSilenced: true });
-
-			// TODO: Use moment timezone to calc the time offset - Meteor.call 'userSetUtcOffset', user.tz_offset / 3600
-			RocketChat.models.Users.setName(existingUserId, userToImport.name);
 			// TODO: Think about using a custom field for the users "title" field
-
 			if (userToImport.avatar) {
 				Meteor.call('setAvatarFromService', `data:image/png;base64,${ userToImport.avatar }`);
-			}
-
-			// Deleted users are 'inactive' users in Rocket.Chat
-			if (userToImport.deleted) {
-				Meteor.call('setUserActiveStatus', existingUserId, false);
 			}
 		});
 	}
@@ -576,16 +730,29 @@ export class HipChatEnterpriseImporter extends Base {
 					this.addUserError(userToImport.id, e);
 				}
 			} else {
-				const user = { email: userToImport.email, password: Random.id(), username: userToImport.username };
+				const user = {
+					email: userToImport.email,
+					password: Random.id(),
+					username: userToImport.username,
+					name: userToImport.name,
+					active: userToImport.isDeleted !== true,
+				};
 				if (!user.email) {
 					delete user.email;
 				}
 				if (!user.username) {
 					delete user.username;
 				}
+				if (!user.name) {
+					delete user.name;
+				}
 
 				try {
 					const userId = Accounts.createUser(user);
+
+					userToImport.rocketId = userId;
+					this._saveUserIdReference(userToImport.id, userId);
+
 					this._updateImportedUser(userToImport, userId);
 				} catch (e) {
 					this.logger.error(e);
@@ -720,8 +887,8 @@ export class HipChatEnterpriseImporter extends Base {
 				await this._importChannels(startedByUserId);
 
 				await super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				await this._importDirectMessages();
 				await this._importMessages(startedByUserId);
+				await this._importDirectMessages();
 
 				// super.updateProgress(ProgressStep.FINISHING);
 				await super.updateProgress(ProgressStep.DONE);
@@ -733,6 +900,9 @@ export class HipChatEnterpriseImporter extends Base {
 
 			const timeTook = Date.now() - started;
 			this.logger.log(`HipChat Enterprise Import took ${ timeTook } milliseconds.`);
+			this._userDataCache = {};
+			this._userIdReference = {};
+			this._roomIdReference = {};
 		});
 
 		return super.getProgress();
@@ -763,14 +933,48 @@ export class HipChatEnterpriseImporter extends Base {
 		});
 	}
 
+	_createSubscriptions(channelToImport, roomOrRoomId) {
+		if (!channelToImport || !channelToImport.members) {
+			return;
+		}
+
+		let room;
+		if (roomOrRoomId && typeof roomOrRoomId === 'string') {
+			room = RocketChat.models.Rooms.findOneByIdOrName(roomOrRoomId);
+		} else {
+			room = roomOrRoomId;
+		}
+
+		const extra = { open: true };
+		channelToImport.members.forEach((hipchatUserId) => {
+			if (hipchatUserId === channelToImport.creator) {
+				// Creators are subscribed automatically
+				return;
+			}
+
+			const user = this.getRocketUserFromUserId(hipchatUserId);
+			if (!user) {
+				this.logger.error(`User ${ hipchatUserId } not found on Rocket.Chat database.`);
+				return;
+			}
+
+			if (RocketChat.models.Subscriptions.find({ rid: room._id, 'u._id': user._id }, { limit: 1 }).count() === 0) {
+				this.logger.info(`Creating user's subscription to room ${ room._id }, rocket.chat user is ${ user._id }, hipchat user is ${ hipchatUserId }`);
+				RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, extra);
+			}
+		});
+	}
+
 	_importChannel(channelToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			const existingRoom = RocketChat.models.Rooms.findOneByName(channelToImport.name);
+			const existingRoom = RocketChat.models.Rooms.findOneByName(s.slugify(channelToImport.name));
 			// If the room exists or the name of it is 'general', then we don't need to create it again
 			if (existingRoom || channelToImport.name.toUpperCase() === 'GENERAL') {
 				channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;
 				this._saveRoomIdReference(channelToImport.id, channelToImport.rocketId);
-				RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $addToSet: { importIds: channelToImport.id } });
+				RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $push: { importIds: channelToImport.id } });
+
+				this._createSubscriptions(channelToImport, existingRoom || 'general');
 			} else {
 				// Find the rocketchatId of the user who created this channel
 				const creatorId = this._getUserRocketId(channelToImport.creator) || startedByUserId;
@@ -787,7 +991,8 @@ export class HipChatEnterpriseImporter extends Base {
 				});
 
 				if (channelToImport.rocketId) {
-					RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $set: { ts: channelToImport.created, topic: channelToImport.topic }, $addToSet: { importIds: channelToImport.id } });
+					RocketChat.models.Rooms.update({ _id: channelToImport.rocketId }, { $set: { ts: channelToImport.created, topic: channelToImport.topic }, $push: { importIds: channelToImport.id } });
+					this._createSubscriptions(channelToImport, channelToImport.rocketId);
 				}
 			}
 
@@ -834,38 +1039,43 @@ export class HipChatEnterpriseImporter extends Base {
 
 	_importSingleMessage(msg, roomIdentifier, room) {
 		if (isNaN(msg.ts)) {
-			this.logger.warn(`Timestamp on a message in ${ roomIdentifier } is invalid`);
+			this.logger.error(`Timestamp on a message in ${ roomIdentifier } is invalid`);
 			return;
 		}
 
 		try {
 			const creator = this.getRocketUserFromUserId(msg.userId);
 			if (creator) {
-				this._importAttachment(msg, room, creator);
+				Meteor.runAsUser(creator._id, () => {
+					this._importAttachment(msg, room, creator);
 
-				switch (msg.type) {
-					case 'user':
-						if (!msg.skip) {
-							RocketChat.insertMessage(creator, {
-								_id: msg.id,
-								ts: msg.ts,
-								msg: msg.text,
-								rid: room._id,
-								alias: msg.alias,
-								u: {
-									_id: creator._id,
-									username: creator.username,
-								},
-							}, room, false);
-						}
-						break;
-					case 'topic':
-						RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
-						break;
-				}
+					switch (msg.type) {
+						case 'user':
+							if (!msg.skip) {
+								RocketChat.insertMessage(creator, {
+									_id: msg.id,
+									ts: msg.ts,
+									msg: msg.text,
+									rid: room._id,
+									alias: msg.alias,
+									u: {
+										_id: creator._id,
+										username: creator.username,
+									},
+								}, room, false);
+							}
+							break;
+						case 'topic':
+							RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
+							break;
+					}
+				});
+			} else {
+				this.logger.error(`Hipchat user not found: ${ msg.userId }`);
+				this.addMessageError(new Meteor.Error('error-message-sender-is-invalid'), `Hipchat user not found: ${ msg.userId }`);
 			}
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			this.addMessageError(e, msg);
 		}
 	}
@@ -946,18 +1156,18 @@ export class HipChatEnterpriseImporter extends Base {
 			this.logger.debug(`New list of user messages: ${ item._id }`);
 			const list = this.collection.findOneById(item._id);
 			if (!list) {
-				this.logger.warn('Record of user-messages list not found');
+				this.logger.error('Record of user-messages list not found');
 				return;
 			}
 
 			if (!list.messages) {
-				this.logger.warn('No message list found on record.');
+				this.logger.error('No message list found on record.');
 				return;
 			}
 
 			const { roomIdentifier } = list;
 			if (!this.getRocketUserFromRoomIdentifier(roomIdentifier)) {
-				this.logger.warn(`Skipping ${ list.messages.length } messages due to missing room.`);
+				this.logger.error(`Skipping ${ list.messages.length } messages due to missing room ( ${ roomIdentifier } ).`);
 				return;
 			}
 
@@ -974,7 +1184,7 @@ export class HipChatEnterpriseImporter extends Base {
 			list.messages.forEach((msg) => {
 				msgCount++;
 				if (isNaN(msg.ts)) {
-					this.logger.warn(`Timestamp on a message in ${ list.name } is invalid`);
+					this.logger.error(`Timestamp on a message in ${ list.name } is invalid`);
 					return;
 				}
 
@@ -984,7 +1194,7 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 
 				if (!roomUsers[msg.senderId]) {
-					this.logger.warn('Skipping message due to missing sender.');
+					this.logger.error(`Skipping message due to missing sender ( ${ msg.senderId } ).`);
 					return;
 				}
 
@@ -994,7 +1204,7 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 
 				if (!roomUsers[msg.receiverId]) {
-					this.logger.warn('Skipping message due to missing receiver.');
+					this.logger.error(`Skipping message due to missing receiver ( ${ msg.receiverId } ).`);
 					return;
 				}
 
