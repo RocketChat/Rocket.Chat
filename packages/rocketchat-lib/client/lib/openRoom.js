@@ -24,6 +24,9 @@ openRoom = function(type, name) {
 				BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
 				return;
 			}
+
+			BlazeLayout.render('main');
+
 			if (currentTracker) {
 				currentTracker = undefined;
 			}
