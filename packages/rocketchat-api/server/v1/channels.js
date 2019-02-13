@@ -996,3 +996,25 @@ RocketChat.API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
         },
 });
 
+RocketChat.API.v1.addRoute('channels.setEncrypted', { authRequired: true }, {
+        post() {
+                if (typeof this.bodyParams.encrypted === 'undefined') {
+                        return RocketChat.API.v1.failure('The bodyParam "encrypted" is required');
+                }
+
+                const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+                if (findResult.encrypted === this.bodyParams.encrypted) {
+                        return RocketChat.API.v1.failure('The channel encrypted is the same as what it would be changed to.');
+                }
+
+                Meteor.runAsUser(this.userId, () => {
+                        Meteor.call('saveRoomSettings', findResult._id, 'encrypted', this.bodyParams.encrypted);
+                });
+
+                return RocketChat.API.v1.success({
+                        channel: findChannelByIdOrName({ params: this.requestParams(), userId: this.userId }),
+                });
+        },
+});
+

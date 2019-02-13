@@ -781,3 +781,25 @@ RocketChat.API.v1.addRoute('groups.moderators', { authRequired: true }, {
 	},
 });
 
+RocketChat.API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
+        post() {
+                if (typeof this.bodyParams.encrypted === 'undefined') {
+                        return RocketChat.API.v1.failure('The bodyParam "encrypted" is required');
+                }
+
+                const findResult = findPrivateGroupByIdOrName({ params: this.requestParams() });
+
+                if (findResult.encrypted === this.bodyParams.encrypted) {
+                        return RocketChat.API.v1.failure('The group encrypted is the same as what it would be changed to.');
+                }
+
+                Meteor.runAsUser(this.userId, () => {
+                        Meteor.call('saveRoomSettings', findResult._id, 'encrypted', this.bodyParams.encrypted);
+                });
+
+                return RocketChat.API.v1.success({
+                        groups: this.composeRoomWithLastMessage(RocketChat.models.Rooms.findOneById(findResult.rid, { fields: RocketChat.API.v1.defaultFieldsToExclude }), this.userId),
+                });
+        },
+});
+
