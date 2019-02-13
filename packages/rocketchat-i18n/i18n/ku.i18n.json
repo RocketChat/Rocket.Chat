@@ -1861,7 +1861,7 @@
   "No_results_found_for": "Ne encam nehat dîtin:",
   "No_snippet_messages": "Ne snippet",
   "No_starred_messages": "No mesajên stellati",
-  "No_such_command": "Ne vî rengî: `/ __ command__`",
+  "No_such_command": "Ne vî rengî: `/ __command__`",
   "No_user_with_username_%s_was_found": "No user bi navê <strong>\" %s\"</strong> hate dîtin!",
   "Nobody_available": "Kes tune",
   "Node_version": "Versiyon ji bo node",

@@ -46,7 +46,7 @@ RocketChat.API.v1.addRoute('livechat/agent.next/:token', {
 
 			const { token } = this.urlParams;
 			const room = findOpenRoom(token);
-			if (room) {
+			if (!room) {
 				throw new Meteor.Error('invalid-token');
 			}
 
