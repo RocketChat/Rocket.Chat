@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { call } from 'meteor/rocketchat:lib';
@@ -11,9 +12,8 @@ const condition = (rid, uid) => {
 };
 
 Meteor.startup(function() {
-	RocketChat.settings.get('Thread_from_context_menu', (key, value) => {
-
-		if (value !== 'button') {
+	Tracker.autorun(() => {
+		if (RocketChat.settings.get('Thread_from_context_menu') !== 'button') {
 			return RocketChat.MessageAction.removeButton('start-thread');
 		}
 
