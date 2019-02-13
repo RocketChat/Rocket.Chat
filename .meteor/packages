@@ -118,7 +118,6 @@ rocketchat:slackbridge
 rocketchat:slashcommands-archive
 rocketchat:slashcommands-asciiarts
 rocketchat:slashcommands-create
-rocketchat:slashcommands-create-thread
 rocketchat:slashcommands-help
 rocketchat:slashcommands-hide
 rocketchat:slashcommands-invite

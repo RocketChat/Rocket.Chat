@@ -195,7 +195,6 @@ rocketchat:mailer@0.0.1
 rocketchat:mailmessages@0.0.1
 rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.2
-rocketchat:metrics@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
 rocketchat:message-action@0.0.1
@@ -204,6 +203,7 @@ rocketchat:message-mark-as-unread@0.0.1
 rocketchat:message-pin@0.0.1
 rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
+rocketchat:metrics@0.0.1
 rocketchat:migrations@0.0.1
 rocketchat:models@1.0.0
 rocketchat:monitoring@2.30.2_3
@@ -226,7 +226,6 @@ rocketchat:slackbridge@0.0.1
 rocketchat:slashcommands-archive@0.0.1
 rocketchat:slashcommands-asciiarts@0.0.1
 rocketchat:slashcommands-create@0.0.1
-rocketchat:slashcommands-create-thread@0.0.1
 rocketchat:slashcommands-help@0.0.1
 rocketchat:slashcommands-hide@0.0.1
 rocketchat:slashcommands-invite@0.0.1
