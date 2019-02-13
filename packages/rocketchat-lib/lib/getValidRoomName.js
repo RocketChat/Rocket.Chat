@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
+import slug from 'limax';
 
 RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
 	let slugifiedName = displayName;
@@ -13,7 +13,7 @@ RocketChat.getValidRoomName = function getValidRoomName(displayName, rid = '') {
 				throw new Meteor.Error('error-duplicate-channel-name', `A channel with name '${ displayName }' exists`, { function: 'RocketChat.getValidRoomName', channel_name: displayName });
 			}
 		}
-		slugifiedName = s.slugify(displayName);
+		slugifiedName = slug(displayName);
 	}
 
 	let nameValidation;

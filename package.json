@@ -167,6 +167,7 @@
 		"ldapjs": "^1.0.2",
 		"less": "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6",
 		"less-plugin-autoprefix": "^2.0.0",
+		"limax": "^1.7.0",
 		"localforage": "^1.7.3",
 		"lokijs": "^1.5.5",
 		"lru-cache": "^5.1.1",
