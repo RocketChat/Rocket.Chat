@@ -229,6 +229,8 @@ Template.room.helpers({
 	},
 
 	messagesHistory() {
+		console.log('messagesHistory');
+
 		const hideMessagesOfType = [];
 		settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
 			let types;
