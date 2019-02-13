@@ -102,7 +102,7 @@ RocketChat.API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 			activeStatus: Boolean,
 		});
 
-		if (!RocketChat.authz.hasPermission(this.userId, 'edit-other-user-info')) {
+		if (!RocketChat.authz.hasPermission(this.userId, 'edit-other-user-active-status')) {
 			return RocketChat.API.v1.unauthorized();
 		}
 
