@@ -16,10 +16,6 @@ settings.cachedCollection.init();
 
 settings.dict = new ReactiveDict('settings');
 
-settings.get = function(_id) {
-	return settings.dict.get(_id);
-};
-
 settings.init = function() {
 	let initialLoad = true;
 	settings.collection.find().observe({
