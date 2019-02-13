@@ -289,9 +289,6 @@ Template.accountPreferences.events({
 	'change input[name=useEmojis]'(e, t) {
 		t.useEmojis.set($(e.currentTarget).val() === '1');
 	},
-	'click .enable-notifications'() {
-		KonchatNotification.getDesktopPermission();
-	},
 	'click .download-my-data'(e, t) {
 		e.preventDefault();
 		t.downloadMyData();
@@ -300,7 +297,7 @@ Template.accountPreferences.events({
 		e.preventDefault();
 		t.exportMyData();
 	},
-	'click .test-notifications'(e) {
+	'click .js-test-notifications'(e) {
 		e.preventDefault();
 		KonchatNotification.notify({
 			duration: $('input[name=desktopNotificationDuration]').val(),
@@ -309,6 +306,9 @@ Template.accountPreferences.events({
 			title: TAPi18n.__('Desktop_Notification_Test'),
 			text: TAPi18n.__('This_is_a_desktop_notification'),
 		});
+	},
+	'click .js-enable-notifications'() {
+		KonchatNotification.getDesktopPermission();
 	},
 	'change .audio'(e) {
 		e.preventDefault();
