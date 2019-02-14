@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
 
 FlowRouter.route('/snippet/:snippetId/:snippetName', {
 	name: 'snippetView',
@@ -8,11 +8,11 @@ FlowRouter.route('/snippet/:snippetId/:snippetName', {
 		BlazeLayout.render('main', { center: 'snippetPage', flexTabBar: null });
 	},
 	triggersEnter: [function() {
-		RocketChat.TabBar.hide();
+		TabBar.hide();
 	}],
 	triggersExit: [
 		function() {
-			RocketChat.TabBar.show();
+			TabBar.show();
 		},
 	],
 });

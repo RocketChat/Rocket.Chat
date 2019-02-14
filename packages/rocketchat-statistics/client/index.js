@@ -1,1 +1,1 @@
-import '../lib/rocketchat';
+export { statistics } from '../lib/rocketchat';

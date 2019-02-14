@@ -8,10 +8,19 @@
 
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../../lib/RoomTypeConfig';
 import { sendNotification } from './sendNotificationsOnMessage.js';
+export { hostname } from '../../lib/startup/settingsOnLoadSiteUrl';
+import { passwordPolicy } from './passwordPolicy';
+import { validateEmailDomain } from './validateEmailDomain';
+import { RateLimiterClass as RateLimiter } from './RateLimiter';
+import { processDirectEmail } from './processDirectEmail';
 
 export {
 	RoomSettingsEnum,
 	RoomTypeConfig,
 	RoomTypeRouteConfig,
 	sendNotification,
+	passwordPolicy,
+	validateEmailDomain,
+	RateLimiter,
+	processDirectEmail,
 };

@@ -1,4 +1,5 @@
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { SMS } from 'meteor/rocketchat:sms';
 import LivechatVisitors from './models/LivechatVisitors';
 
 RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
@@ -7,7 +8,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	if (!RocketChat.SMS.enabled) {
+	if (!SMS.enabled) {
 		return message;
 	}
 
@@ -26,7 +27,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	const SMSService = RocketChat.SMS.getService(RocketChat.settings.get('SMS_Service'));
+	const SMSService = SMS.getService(RocketChat.settings.get('SMS_Service'));
 
 	if (!SMSService) {
 		return message;

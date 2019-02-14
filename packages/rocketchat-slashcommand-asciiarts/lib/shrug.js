@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 /*
 * Shrug is a named function that will replace /shrug commands
 * @param {Object} message - The message object
@@ -14,7 +14,7 @@ function Shrug(command, params, item) {
 	}
 }
 
-RocketChat.slashCommands.add('shrug', Shrug, {
+slashCommands.add('shrug', Shrug, {
 	description: 'Slash_Shrug_Description',
 	params: 'your_message_optional',
 });

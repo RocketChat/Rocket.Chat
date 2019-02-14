@@ -495,7 +495,7 @@ Template.room.events({
 		roomTypes.openRouteLink('d', { name: this._arguments[1].u.username }, { ...FlowRouter.current().queryParams, reply: message._id });
 	},
 	'click, touchend'(e, t) {
-		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
+		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
 	'click .messages-container-main'() {
@@ -968,6 +968,9 @@ Template.room.onCreated(function() {
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
+	if (this.messageObserver) {
+		this.messageObserver.stop();
+	}
 	window.removeEventListener('resize', this.onWindowResize);
 });
 

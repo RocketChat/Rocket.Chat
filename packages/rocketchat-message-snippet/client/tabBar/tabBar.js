@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('Message_AllowSnippeting')) {
-			RocketChat.TabBar.addButton({
+		if (settings.get('Message_AllowSnippeting')) {
+			TabBar.addButton({
 				groups: ['channel', 'group', 'direct'],
 				id: 'snippeted-messages',
 				i18nTitle: 'snippet-message',
@@ -14,7 +15,7 @@ Meteor.startup(function() {
 				order: 20,
 			});
 		} else {
-			RocketChat.TabBar.removeButton('snippeted-messages');
+			TabBar.removeButton('snippeted-messages');
 		}
 	});
 });

@@ -8,7 +8,7 @@ Package.onUse(function(api) {
 	api.use([
 		'rocketchat:logger',
 		'kadira:flow-router',
-		'rocketchat:lib',
+		'rocketchat:settings',
 		'rocketchat:ui-utils',
 		'accounts-base',
 		'ecmascript',

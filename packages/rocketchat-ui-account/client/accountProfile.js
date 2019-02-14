@@ -4,16 +4,18 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { modal, SideNav } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
+import { modal, SideNav } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
 const validateEmail = (email) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
 const validateUsername = (username) => {
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return reg.test(username);
 };
 const validateName = (name) => name && name.length;
@@ -26,7 +28,7 @@ const validatePassword = (password, confirmationPassword) => {
 };
 
 const filterNames = (old) => {
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '')].filter((f) => reg.test(f)).join('');
 };
 const filterEmail = (old) => old.replace(' ', '');
@@ -83,7 +85,7 @@ Template.accountProfile.helpers({
 			return Object.keys(suggestions.avatars).map((service) => ({
 				name: service,
 				// TODO: improve this fix
-				service: !suggestions.avatars[service.toLowerCase()] ? RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
+				service: !suggestions.avatars[service.toLowerCase()] ? settings.get(`Accounts_OAuth_${ s.capitalize(service.toLowerCase()) }`) : false,
 				suggestion: suggestions.avatars[service.toLowerCase()],
 			}))
 				.filter(({ service, suggestion }) => service || suggestion);
@@ -133,7 +135,7 @@ Template.accountProfile.helpers({
 		return;
 	},
 	allowDeleteOwnAccount() {
-		return RocketChat.settings.get('Accounts_AllowDeleteOwnAccount');
+		return settings.get('Accounts_AllowDeleteOwnAccount');
 	},
 	realname() {
 		return Meteor.user().name;
@@ -150,23 +152,23 @@ Template.accountProfile.helpers({
 		return isUserEmailVerified(user);
 	},
 	allowRealNameChange() {
-		return RocketChat.settings.get('Accounts_AllowRealNameChange');
+		return settings.get('Accounts_AllowRealNameChange');
 	},
 	allowUsernameChange() {
-		return RocketChat.settings.get('Accounts_AllowUsernameChange') && RocketChat.settings.get('LDAP_Enable') !== true;
+		return settings.get('Accounts_AllowUsernameChange') && settings.get('LDAP_Enable') !== true;
 	},
 	allowEmailChange() {
-		return RocketChat.settings.get('Accounts_AllowEmailChange');
+		return settings.get('Accounts_AllowEmailChange');
 	},
 	allowPasswordChange() {
-		return RocketChat.settings.get('Accounts_AllowPasswordChange');
+		return settings.get('Accounts_AllowPasswordChange');
 	},
 	canConfirmNewPassword() {
 		const password = Template.instance().password.get();
-		return RocketChat.settings.get('Accounts_AllowPasswordChange') && password && password !== '';
+		return settings.get('Accounts_AllowPasswordChange') && password && password !== '';
 	},
 	allowAvatarChange() {
-		return RocketChat.settings.get('Accounts_AllowUserAvatarChange');
+		return settings.get('Accounts_AllowUserAvatarChange');
 	},
 	customFields() {
 		return Meteor.user().customFields;
@@ -187,7 +189,7 @@ Template.accountProfile.onCreated(function() {
 	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
 
-	RocketChat.Notifications.onLogged('updateAvatar', () => self.avatar.set());
+	Notifications.onLogged('updateAvatar', () => self.avatar.set());
 	self.getSuggestions = function() {
 		self.suggestions.set(undefined);
 		Meteor.call('getAvatarSuggestion', function(error, avatars) {
@@ -207,7 +209,7 @@ Template.accountProfile.onCreated(function() {
 		const instance = this;
 		if (!newPassword) {
 			return callback();
-		} else if (!RocketChat.settings.get('Accounts_AllowPasswordChange')) {
+		} else if (!settings.get('Accounts_AllowPasswordChange')) {
 			toastr.remove();
 			toastr.error(t('Password_Change_Disabled'));
 			instance.clearForm();
@@ -229,7 +231,7 @@ Template.accountProfile.onCreated(function() {
 					}));
 				} else {
 					toastr.success(t('Avatar_changed_successfully'));
-					RocketChat.callbacks.run('userAvatarSet', avatar.service);
+					callbacks.run('userAvatarSet', avatar.service);
 				}
 			});
 		}
@@ -239,11 +241,11 @@ Template.accountProfile.onCreated(function() {
 		if (typedPassword) {
 			data.typedPassword = typedPassword;
 		}
-		if (s.trim(self.password.get()) && RocketChat.settings.get('Accounts_AllowPasswordChange')) {
+		if (s.trim(self.password.get()) && settings.get('Accounts_AllowPasswordChange')) {
 			data.newPassword = self.password.get();
 		}
 		if (s.trim(self.realname.get()) !== user.name) {
-			if (!RocketChat.settings.get('Accounts_AllowRealNameChange')) {
+			if (!settings.get('Accounts_AllowRealNameChange')) {
 				toastr.remove();
 				toastr.error(t('RealName_Change_Disabled'));
 				instance.clearForm();
@@ -253,7 +255,7 @@ Template.accountProfile.onCreated(function() {
 			}
 		}
 		if (s.trim(self.username.get()) !== user.username) {
-			if (!RocketChat.settings.get('Accounts_AllowUsernameChange')) {
+			if (!settings.get('Accounts_AllowUsernameChange')) {
 				toastr.remove();
 				toastr.error(t('Username_Change_Disabled'));
 				instance.clearForm();
@@ -263,7 +265,7 @@ Template.accountProfile.onCreated(function() {
 			}
 		}
 		if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
-			if (!RocketChat.settings.get('Accounts_AllowEmailChange')) {
+			if (!settings.get('Accounts_AllowEmailChange')) {
 				toastr.remove();
 				toastr.error(t('Email_Change_Disabled'));
 				instance.clearForm();
@@ -299,7 +301,7 @@ Template.accountProfile.onCreated(function() {
 
 Template.accountProfile.onRendered(function() {
 	Tracker.afterFlush(() => {
-		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
+		if (!settings.get('Accounts_AllowUserProfileChange')) {
 			FlowRouter.go('home');
 		}
 		this.clearForm();
@@ -326,7 +328,7 @@ Template.accountProfile.events({
 				}));
 			} else {
 				toastr.success(t('Avatar_changed_successfully'));
-				RocketChat.callbacks.run('userAvatarSet', 'initials');
+				callbacks.run('userAvatarSet', 'initials');
 			}
 		});
 	},
@@ -527,7 +529,7 @@ Template.accountProfile.events({
 					contentType: blob.type,
 					blob: reader.result,
 				});
-				RocketChat.callbacks.run('userAvatarSet', 'upload');
+				callbacks.run('userAvatarSet', 'upload');
 			};
 		});
 	},

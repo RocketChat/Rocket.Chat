@@ -11,6 +11,10 @@ Package.onUse(function(api) {
 		'templating',
 		'rocketchat:utils',
 		'rocketchat:theme',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'rocketchat:models',
+		'rocketchat:authorization',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

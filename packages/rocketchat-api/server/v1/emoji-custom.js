@@ -1,17 +1,18 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { EmojiCustom } from 'meteor/rocketchat:models';
+import { API } from '../api';
 import Busboy from 'busboy';
 
-RocketChat.API.v1.addRoute('emoji-custom', { authRequired: true }, {
+API.v1.addRoute('emoji-custom', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
 		const emojis = Meteor.call('listEmojiCustom', query);
 
-		return RocketChat.API.v1.success({ emojis });
+		return API.v1.success({ emojis });
 	},
 });
 
-RocketChat.API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
+API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
 	post() {
 		Meteor.runAsUser(this.userId, () => {
 			const fields = {};
@@ -53,7 +54,7 @@ RocketChat.API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
+API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 	post() {
 		Meteor.runAsUser(this.userId, () => {
 			const fields = {};
@@ -82,7 +83,7 @@ RocketChat.API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 						if (!fields._id) {
 							return callback(new Meteor.Error('The required "_id" query param is missing.'));
 						}
-						const emojiToUpdate = RocketChat.models.EmojiCustom.findOneByID(fields._id);
+						const emojiToUpdate = EmojiCustom.findOneByID(fields._id);
 						if (!emojiToUpdate) {
 							return callback(new Meteor.Error('Emoji not found.'));
 						}
@@ -106,15 +107,15 @@ RocketChat.API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('emoji-custom.delete', { authRequired: true }, {
+API.v1.addRoute('emoji-custom.delete', { authRequired: true }, {
 	post() {
 		const { emojiId } = this.bodyParams;
 		if (!emojiId) {
-			return RocketChat.API.v1.failure('The "emojiId" params is required!');
+			return API.v1.failure('The "emojiId" params is required!');
 		}
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('deleteEmojiCustom', emojiId));
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
