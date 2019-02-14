@@ -30,6 +30,22 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 	}
 
+	findByRoomIds(roomIds) {
+		const query = {
+			rid: {
+				$in: roomIds,
+			},
+		};
+		const options = {
+			fields: {
+				'u._id': 1,
+				rid: 1,
+			},
+		};
+
+		return this._db.find(query, options);
+	}
+
 	updateAutoTranslateById(_id, autoTranslate) {
 		const query = {
 			_id,
