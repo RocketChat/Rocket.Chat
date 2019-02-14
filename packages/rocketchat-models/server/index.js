@@ -21,6 +21,7 @@ import CredentialTokens from './models/CredentialTokens';
 import EmojiCustom from './models/EmojiCustom';
 import OAuthApps from './models/OAuthApps';
 import OEmbedCache from './models/OEmbedCache';
+import SmarshHistory from './models/SmarshHistory';
 
 export {
 	Base,
@@ -46,4 +47,5 @@ export {
 	EmojiCustom,
 	OAuthApps,
 	OEmbedCache,
+	SmarshHistory,
 };
