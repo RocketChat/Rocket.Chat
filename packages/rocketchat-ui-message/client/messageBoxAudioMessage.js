@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
-import { RoomManager, AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
+import { AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
 import { call } from 'meteor/rocketchat:ui-utils';
 import { t } from 'meteor/rocketchat:utils';
 import './messageBoxAudioMessage.html';
@@ -111,7 +111,7 @@ Template.messageBoxAudioMessage.events({
 			return;
 		}
 
-		chatMessages[RoomManager.openedRoom].recording = true;
+		chatMessages[this.rid].recording = true;
 		instance.state.set('recording');
 
 		await startRecording();
@@ -141,7 +141,7 @@ Template.messageBoxAudioMessage.events({
 		await stopRecording();
 
 		instance.state.set(null);
-		chatMessages[RoomManager.openedRoom].recording = false;
+		chatMessages[this.rid].recording = false;
 	},
 
 	async 'click .js-audio-message-done'(event, instance) {
@@ -160,7 +160,7 @@ Template.messageBoxAudioMessage.events({
 		const blob = await stopRecording();
 
 		instance.state.set(null);
-		chatMessages[RoomManager.openedRoom].recording = false;
+		chatMessages[this.rid].recording = false;
 
 		await uploadRecord({ rid: this.rid, blob });
 	},
