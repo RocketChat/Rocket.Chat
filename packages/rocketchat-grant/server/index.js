@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import session from 'express-session';
-import SessionStorage from 'connect-mongodb-session';
 import Grant from 'grant-express';
 import fiber from 'fibers';
 
@@ -13,7 +12,7 @@ import Providers, { middleware as providers } from './providers';
 import Settings from './settings';
 
 let grant;
-let storeAddress = process.env.SESSIONS_URL || 'mongodb://localhost:27017/rocketsession';
+let storeAddress = process.env.MONGO_URL || 'mongodb://localhost:27017/';
 
 if (storeAddress.indexOf('connectTimeoutMS=') < 0) {
 	if (storeAddress.indexOf('?') < 0) {
@@ -22,9 +21,10 @@ if (storeAddress.indexOf('connectTimeoutMS=') < 0) {
 		storeAddress += '&connectTimeoutMS=1200';
 	}
 }
+const SessionStorage = require('connect-mongodb-session')(session);
 const store = new SessionStorage({
-	collection: process.env.SESSION_COLLECTION || 'mySessions',
-	databaseName: process.env.SESSION_DATABASE || 'connect_mongodb_session',
+	collection: process.env.SESSION_COLLECTION || 'rocketchat_grant_sessions',
+	databaseName: process.env.SESSION_DATABASE || 'rocketchat',
 	uri: storeAddress,
 }, ((e) => {
 	throw new GrantError('Sessions storage initialization failure:', e);
@@ -36,7 +36,7 @@ store.on('error', (e) => {
 
 WebApp.connectHandlers.use(session({
 	secret: 'grant',
-	store,
+	store: store,
 	resave: true,
 	saveUninitialized: true,
 }));
