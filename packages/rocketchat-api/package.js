@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 		'rocketchat:metrics',
 		'rocketchat:authorization',
 		'rocketchat:file-upload',
+		'rocketchat:authorization',
 	]);
 
 	api.mainModule('client/index.js', 'client');

@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import mime from 'mime-type/with-db';
 import { VRecDialog } from 'meteor/rocketchat:ui-vrecord';
 import { messageBox, modal } from 'meteor/rocketchat:ui-utils';
@@ -92,4 +94,30 @@ messageBox.actions.add('Share', 'My_location', {
 			});
 		});
 	},
+});
+
+Meteor.startup(() => {
+	RocketChat.Geolocation = new ReactiveVar(false);
+
+	const handleGeolocation = (position) => RocketChat.Geolocation.set(position);
+	const handleGeolocationError = () => RocketChat.Geolocation.set(false);
+
+	Tracker.autorun(() => {
+		const isMapViewEnabled = RocketChat.settings.get('MapView_Enabled') === true;
+		const isGeolocationWatchSupported = navigator.geolocation && navigator.geolocation.watchPosition;
+		const googleMapsApiKey = RocketChat.settings.get('MapView_GMapsAPIKey');
+		const canGetGeolocation =
+			isMapViewEnabled && isGeolocationWatchSupported && (googleMapsApiKey && googleMapsApiKey.length);
+
+		if (!canGetGeolocation) {
+			RocketChat.Geolocation.set(false);
+			return;
+		}
+
+		navigator.geolocation.watchPosition(handleGeolocation, handleGeolocationError, {
+			enableHighAccuracy: true,
+			maximumAge: 0,
+			timeout: 10000,
+		});
+	});
 });
