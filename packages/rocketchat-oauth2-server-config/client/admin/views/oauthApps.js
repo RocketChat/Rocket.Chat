@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 import { ChatOAuthApps } from '../collection';
 import moment from 'moment';
 
@@ -9,7 +9,7 @@ Template.oauthApps.onCreated(function() {
 
 Template.oauthApps.helpers({
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('manage-oauth-apps');
+		return hasAllPermission('manage-oauth-apps');
 	},
 	applications() {
 		return ChatOAuthApps.find();
