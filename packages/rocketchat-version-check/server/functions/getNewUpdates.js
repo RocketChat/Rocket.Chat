@@ -1,19 +1,21 @@
 import os from 'os';
 import { HTTP } from 'meteor/http';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Settings } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Info } from 'meteor/rocketchat:utils';
 import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
 import { MongoInternals } from 'meteor/mongo';
 
 export default () => {
 	try {
-		const uniqueID = RocketChat.models.Settings.findOne('uniqueID');
+		const uniqueID = Settings.findOne('uniqueID');
 		const { _oplogHandle } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-		const oplogEnabled = _oplogHandle && _oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true;
+		const oplogEnabled = _oplogHandle && _oplogHandle.onOplogEntry && settings.get('Force_Disable_OpLog_For_Cache') !== true;
 
 		const data = {
 			uniqueId: uniqueID.value,
 			installedAt: uniqueID.createdAt,
-			version: RocketChat.Info.version,
+			version: Info.version,
 			oplogEnabled,
 			osType: os.type(),
 			osPlatform: os.platform(),

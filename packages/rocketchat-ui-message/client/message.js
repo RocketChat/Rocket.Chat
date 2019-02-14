@@ -7,11 +7,14 @@ import _ from 'underscore';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { renderEmoji } from 'meteor/rocketchat:emoji';
-import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { RoomRoles, UserRoles } from 'meteor/rocketchat:ui';
+import { renderMessageBody, MessageTypes, MessageAction } from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { RoomRoles, UserRoles, Roles, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 import { AutoTranslate } from 'meteor/rocketchat:autotranslate';
-import { t } from 'meteor/rocketchat:utils';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Markdown } from 'meteor/rocketchat:markdown';
+import { t, getUserPreference, roomTypes } from 'meteor/rocketchat:utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -87,7 +90,7 @@ Template.message.helpers({
 		}
 	},
 	roleTags() {
-		if (!RocketChat.settings.get('UI_DisplayRoles') || RocketChat.getUserPreference(Meteor.userId(), 'hideRoles')) {
+		if (!settings.get('UI_DisplayRoles') || getUserPreference(Meteor.userId(), 'hideRoles')) {
 			return [];
 		}
 
@@ -100,7 +103,7 @@ Template.message.helpers({
 			rid: this.rid,
 		});
 		const roles = [...(userRoles && userRoles.roles) || [], ...(roomRoles && roomRoles.roles) || []];
-		return RocketChat.models.Roles.find({
+		return Roles.find({
 			_id: {
 				$in: roles,
 			},
@@ -142,10 +145,10 @@ Template.message.helpers({
 		if (!this.u) {
 			return '';
 		}
-		return (RocketChat.settings.get('UI_Use_Real_Name') && this.u.name) || this.u.username;
+		return (settings.get('UI_Use_Real_Name') && this.u.name) || this.u.username;
 	},
 	showUsername() {
-		return this.alias || (RocketChat.settings.get('UI_Use_Real_Name') && this.u && this.u.name);
+		return this.alias || (settings.get('UI_Use_Real_Name') && this.u && this.u.name);
 	},
 	own() {
 		if (this.u && this.u._id === Meteor.userId()) {
@@ -156,7 +159,7 @@ Template.message.helpers({
 		return +this.ts;
 	},
 	chatops() {
-		if (this.u && this.u.username === RocketChat.settings.get('Chatops_Username')) {
+		if (this.u && this.u.username === settings.get('Chatops_Username')) {
 			return 'chatops-message';
 		}
 	},
@@ -175,7 +178,7 @@ Template.message.helpers({
 		return Template.instance().body;
 	},
 	system(returnClass) {
-		if (RocketChat.MessageTypes.isSystemMessage(this)) {
+		if (MessageTypes.isSystemMessage(this)) {
 			if (returnClass) {
 				return 'color-info-font-color';
 			}
@@ -183,8 +186,8 @@ Template.message.helpers({
 		}
 	},
 	showTranslated() {
-		if (RocketChat.settings.get('AutoTranslate_Enabled') && this.u && this.u._id !== Meteor.userId() && !RocketChat.MessageTypes.isSystemMessage(this)) {
-			const subscription = RocketChat.models.Subscriptions.findOne({
+		if (settings.get('AutoTranslate_Enabled') && this.u && this.u._id !== Meteor.userId() && !MessageTypes.isSystemMessage(this)) {
+			const subscription = Subscriptions.findOne({
 				rid: this.rid,
 				'u._id': Meteor.userId(),
 			}, {
@@ -215,13 +218,13 @@ Template.message.helpers({
 		return (this.editedBy && this.editedBy.username) || '?';
 	},
 	canEdit() {
-		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', this.rid);
-		const isEditAllowed = RocketChat.settings.get('Message_AllowEditing');
+		const hasPermission = hasAtLeastOnePermission('edit-message', this.rid);
+		const isEditAllowed = settings.get('Message_AllowEditing');
 		const editOwn = this.u && this.u._id === Meteor.userId();
 		if (!(hasPermission || (isEditAllowed && editOwn))) {
 			return;
 		}
-		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
+		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (blockEditInMinutes) {
 			let msgTs;
 			if (this.ts != null) {
@@ -237,13 +240,13 @@ Template.message.helpers({
 		}
 	},
 	canDelete() {
-		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', this.rid);
-		const isDeleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
+		const hasPermission = hasAtLeastOnePermission('delete-message', this.rid);
+		const isDeleteAllowed = settings.get('Message_AllowDeleting');
 		const deleteOwn = this.u && this.u._id === Meteor.userId();
 		if (!(hasPermission || (isDeleteAllowed && deleteOwn))) {
 			return;
 		}
-		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
+		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes) {
 			let msgTs;
 			if (this.ts != null) {
@@ -259,7 +262,7 @@ Template.message.helpers({
 		}
 	},
 	showEditedStatus() {
-		return RocketChat.settings.get('Message_ShowEditedStatus');
+		return settings.get('Message_ShowEditedStatus');
 	},
 	label() {
 		if (this.i18nLabel) {
@@ -270,12 +273,12 @@ Template.message.helpers({
 	},
 	hasOembed() {
 		// there is no URLs, there is no template to show the oembed (oembed package removed) or oembed is not enable
-		if (!(this.urls && this.urls.length > 0) || !Template.oembedBaseWidget || !RocketChat.settings.get('API_Embed')) {
+		if (!(this.urls && this.urls.length > 0) || !Template.oembedBaseWidget || !settings.get('API_Embed')) {
 			return false;
 		}
 
 		// check if oembed is disabled for message's sender
-		if ((RocketChat.settings.get('API_EmbedDisabledFor') || '').split(',').map((username) => username.trim()).includes(this.u && this.u.username)) {
+		if ((settings.get('API_EmbedDisabledFor') || '').split(',').map((username) => username.trim()).includes(this.u && this.u.username)) {
 			return false;
 		}
 		return true;
@@ -337,7 +340,7 @@ Template.message.helpers({
 		data.index = index;
 	},
 	hideCog() {
-		const subscription = RocketChat.models.Subscriptions.findOne({
+		const subscription = Subscriptions.findOne({
 			rid: this.rid,
 		});
 		if (subscription == null) {
@@ -345,7 +348,7 @@ Template.message.helpers({
 		}
 	},
 	channelName() {
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid });
+		const subscription = Subscriptions.findOne({ rid: this.rid });
 		return subscription && subscription.name;
 	},
 	roomIcon() {
@@ -353,7 +356,7 @@ Template.message.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return RocketChat.roomTypes.getIcon(room && room.t);
+		return roomTypes.getIcon(room && room.t);
 	},
 	fromSearch() {
 		return this.customClass === 'search';
@@ -373,7 +376,7 @@ Template.message.helpers({
 			context = 'message';
 		}
 
-		return RocketChat.MessageAction.getButtons(Template.currentData(), context, messageGroup);
+		return MessageAction.getButtons(Template.currentData(), context, messageGroup);
 	},
 	isSnippet() {
 		return this.actionContext === 'snippeted';
@@ -384,9 +387,9 @@ Template.message.helpers({
 Template.message.onCreated(function() {
 	let msg = Template.currentData();
 
-	this.wasEdited = (msg.editedAt != null) && !RocketChat.MessageTypes.isSystemMessage(msg);
+	this.wasEdited = (msg.editedAt != null) && !MessageTypes.isSystemMessage(msg);
 
-	this.room = RocketChat.models.Rooms.findOne({
+	this.room = Rooms.findOne({
 		_id: msg.rid,
 	}, {
 		fields: {
@@ -395,8 +398,8 @@ Template.message.onCreated(function() {
 	});
 
 	return this.body = (() => {
-		const isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
-		const messageType = RocketChat.MessageTypes.getType(msg) || {};
+		const isSystemMessage = MessageTypes.isSystemMessage(msg);
+		const messageType = MessageTypes.getType(msg) || {};
 		if (messageType.render) {
 			msg = messageType.render(msg);
 		} else if (messageType.template) {
@@ -407,16 +410,16 @@ Template.message.onCreated(function() {
 			} else {
 				msg = TAPi18n.__(messageType.message);
 			}
-		} else if (msg.u && msg.u.username === RocketChat.settings.get('Chatops_Username')) {
+		} else if (msg.u && msg.u.username === settings.get('Chatops_Username')) {
 			msg.html = msg.msg;
-			msg = RocketChat.callbacks.run('renderMentions', msg);
+			msg = callbacks.run('renderMentions', msg);
 			msg = msg.html;
 		} else {
 			msg = renderMessageBody(msg);
 		}
 
 		if (isSystemMessage) {
-			msg.html = RocketChat.Markdown.parse(msg.html);
+			msg.html = Markdown.parse(msg.html);
 		}
 		return msg;
 	})();
@@ -458,7 +461,7 @@ Template.message.onViewRendered = function(context) {
 			}
 			if (previousDataset.groupable === 'false' || currentDataset.groupable === 'false') {
 				$currentNode.removeClass('sequential');
-			} else if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000) {
+			} else if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > settings.get('Message_GroupingPeriod') * 1000) {
 				$currentNode.removeClass('sequential');
 			} else if (!$currentNode.hasClass('new-day')) {
 				$currentNode.addClass('sequential');
@@ -472,7 +475,7 @@ Template.message.onViewRendered = function(context) {
 				$nextNode.removeClass('new-day');
 			}
 			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > RocketChat.settings.get('Message_GroupingPeriod') * 1000) {
+				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.get('Message_GroupingPeriod') * 1000) {
 					$nextNode.removeClass('sequential');
 				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
 					$nextNode.addClass('sequential');
