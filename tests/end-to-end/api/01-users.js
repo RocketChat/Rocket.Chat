@@ -1504,13 +1504,43 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should return an error when trying to set active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
+		it('should return an error when trying to set other user active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
 			updatePermission('edit-other-user-active-status', []).then(() => {
 				request.post(api('users.setActiveStatus'))
 					.set(userCredentials)
 					.send({
 						activeStatus: false,
 						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
+			request.post(api('users.setActiveStatus'))
+				.set(userCredentials)
+				.send({
+					activeStatus: false,
+					userId: user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', (done) => {
+			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
+				request.post(api('users.setActiveStatus'))
+					.set(userCredentials)
+					.send({
+						activeStatus: false,
+						userId: user._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(403)
