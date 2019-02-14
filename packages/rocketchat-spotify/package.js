@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:oembed',
-		'rocketchat:lib',
+		'rocketchat:callbacks',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

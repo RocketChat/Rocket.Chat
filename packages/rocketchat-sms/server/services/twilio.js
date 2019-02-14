@@ -1,10 +1,11 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { SMS } from '../SMS';
 import twilio from 'twilio';
 
 class Twilio {
 	constructor() {
-		this.accountSid = RocketChat.settings.get('SMS_Twilio_Account_SID');
-		this.authToken = RocketChat.settings.get('SMS_Twilio_authToken');
+		this.accountSid = settings.get('SMS_Twilio_Account_SID');
+		this.authToken = settings.get('SMS_Twilio_authToken');
 	}
 	parse(data) {
 		let numMedia = 0;
@@ -85,4 +86,4 @@ class Twilio {
 	}
 }
 
-RocketChat.SMS.registerService('twilio', Twilio);
+SMS.registerService('twilio', Twilio);
