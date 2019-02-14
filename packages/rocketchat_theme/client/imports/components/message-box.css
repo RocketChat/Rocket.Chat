@@ -184,7 +184,7 @@
 		}
 
 		&-timer-dot {
-			color: #d60000;
+			color: red;
 
 			font-size: 1.5em;
 
@@ -220,6 +220,14 @@
 
 			.rc-message-box__audio-message-loading {
 				display: flex;
+			}
+		}
+
+		&--busy {
+			.rc-message-box__audio-message-mic {
+				cursor: not-allowed;
+
+				opacity: 0.5;
 			}
 		}
 	}

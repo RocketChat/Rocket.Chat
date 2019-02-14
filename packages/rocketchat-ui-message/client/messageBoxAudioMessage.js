@@ -1,3 +1,4 @@
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
@@ -79,68 +80,86 @@ const uploadRecord = async({ rid, blob }) => {
 	});
 };
 
-let recordingInterval = null;
-let recordingRoomId = null;
+const recordingInterval = new ReactiveVar(null);
+const recordingRoomId = new ReactiveVar(null);
+
+Template.messageBoxAudioMessage.onCreated(function() {
+	this.state = new ReactiveVar(null);
+});
+
+Template.messageBoxAudioMessage.helpers({
+	stateClass() {
+		if (recordingRoomId.get() && (recordingRoomId.get() !== Template.currentData().rid)) {
+			return 'rc-message-box__audio-message--busy';
+		}
+
+		const state = Template.instance().state.get();
+		return state && `rc-message-box__audio-message--${ state }`;
+	},
+});
 
 Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-record'(event, instance) {
 		event.preventDefault();
 
+		if (recordingRoomId.get() && (recordingRoomId.get() !== this.rid)) {
+			return;
+		}
+
 		chatMessages[RoomManager.openedRoom].recording = true;
-		instance.firstNode.classList.add('rc-message-box__audio-message--recording');
+		instance.state.set('recording');
 
 		const timer = instance.find('.rc-message-box__audio-message-timer-text');
-		timer.innerHTML = '00:00';
+		timer.innerText = '00:00';
 
 		await startRecording();
 
 		const startTime = new Date;
-		recordingInterval = setInterval(() => {
+		recordingInterval.set(setInterval(() => {
 			const now = new Date;
 			const distance = (now.getTime() - startTime.getTime()) / 1000;
 			const minutes = Math.floor(distance / 60);
 			const seconds = Math.floor(distance % 60);
 			timer.innerText = `${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`;
-		}, 1000);
-		recordingRoomId = this.rid;
+		}, 1000));
+		recordingRoomId.set(this.rid);
 	},
 
 	async 'click .js-audio-message-cancel'(event, instance) {
 		event.preventDefault();
 
 		const timer = instance.find('.rc-message-box__audio-message-timer-text');
-		timer.innerHTML = '00:00';
+		timer.innerText = '00:00';
 
-		if (recordingInterval) {
+		if (recordingInterval.get()) {
 			clearInterval(recordingInterval);
-			recordingInterval = null;
-			recordingRoomId = null;
+			recordingInterval.set(null);
+			recordingRoomId.set(null);
 		}
 
 		await stopRecording();
 
-		instance.firstNode.classList.remove('rc-message-box__audio-message--recording');
+		instance.state.set(null);
 		chatMessages[RoomManager.openedRoom].recording = false;
 	},
 
 	async 'click .js-audio-message-done'(event, instance) {
 		event.preventDefault();
 
-		instance.firstNode.classList.remove('rc-message-box__audio-message--recording');
-		instance.firstNode.classList.add('rc-message-box__audio-message--loading');
+		instance.state.set('loading');
 
 		const timer = instance.find('.rc-message-box__audio-message-timer-text');
+		timer.innerText = '00:00';
 
-		timer.innerHTML = '00:00';
-		if (recordingInterval) {
+		if (recordingInterval.get()) {
 			clearInterval(recordingInterval);
-			recordingInterval = null;
-			recordingRoomId = null;
+			recordingInterval.set(null);
+			recordingRoomId.set(null);
 		}
 
 		const blob = await stopRecording();
 
-		instance.firstNode.classList.remove('rc-message-box__audio-message--loading');
+		instance.state.set(null);
 		chatMessages[RoomManager.openedRoom].recording = false;
 
 		await uploadRecord({ rid: this.rid, blob });
