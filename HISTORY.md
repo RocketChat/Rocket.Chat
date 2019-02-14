@@ -1,4 +1,55 @@
 
+# 0.74.3
+`2019-02-13  ·  3 🚀  ·  11 🐛  ·  2 🔍  ·  9 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🚀 Improvements
+
+- Open rooms quicker ([#13417](https://github.com/RocketChat/Rocket.Chat/pull/13417))
+- Allow configure Prometheus port per process via Environment Variable ([#13436](https://github.com/RocketChat/Rocket.Chat/pull/13436))
+- Add API option "permissionsRequired" ([#13430](https://github.com/RocketChat/Rocket.Chat/pull/13430))
+
+### 🐛 Bug fixes
+
+- Invalid condition on getting next livechat agent over REST API endpoint ([#13360](https://github.com/RocketChat/Rocket.Chat/pull/13360))
+- "Test Desktop Notifications" not triggering a notification ([#13457](https://github.com/RocketChat/Rocket.Chat/pull/13457))
+- Translated and incorrect i18n variables ([#13463](https://github.com/RocketChat/Rocket.Chat/pull/13463) by [@leonboot](https://github.com/leonboot))
+- Properly escape custom emoji names for pattern matching ([#13408](https://github.com/RocketChat/Rocket.Chat/pull/13408))
+- Not translated emails ([#13452](https://github.com/RocketChat/Rocket.Chat/pull/13452))
+- XML-decryption module not found ([#13437](https://github.com/RocketChat/Rocket.Chat/pull/13437))
+- Update Russian localization ([#13244](https://github.com/RocketChat/Rocket.Chat/pull/13244) by [@BehindLoader](https://github.com/BehindLoader))
+- Several Problems on HipChat Importer ([#13336](https://github.com/RocketChat/Rocket.Chat/pull/13336))
+- Invalid push gateway configuration, requires the uniqueId ([#13423](https://github.com/RocketChat/Rocket.Chat/pull/13423))
+- Notify private settings changes even on public settings changed ([#13369](https://github.com/RocketChat/Rocket.Chat/pull/13369))
+- Misaligned upload progress bar "cancel" button ([#13407](https://github.com/RocketChat/Rocket.Chat/pull/13407))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Room loading improvements ([#13471](https://github.com/RocketChat/Rocket.Chat/pull/13471))
+- Regression: Remove console.log on email translations ([#13456](https://github.com/RocketChat/Rocket.Chat/pull/13456))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@BehindLoader](https://github.com/BehindLoader)
+- [@leonboot](https://github.com/leonboot)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@d-gubert](https://github.com/d-gubert)
+- [@graywolf336](https://github.com/graywolf336)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 0.74.2
 `2019-02-05  ·  1 🚀  ·  3 🐛  ·  4 👩‍💻👨‍💻`
 
