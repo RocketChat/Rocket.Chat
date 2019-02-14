@@ -1,7 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+import mem from 'mem';
+
+
+const clockMode = mem(() => RocketChat.getUserPreference(Meteor.userId(), 'clockMode', false), { maxAge: 1000 });
+
 export const formatTime = (time) => {
-	switch (RocketChat.getUserPreference(Meteor.userId(), 'clockMode', false)) {
+	switch (clockMode()) {
 		case 1:
 			return moment(time).format('h:mm A');
 		case 2:
@@ -12,7 +17,7 @@ export const formatTime = (time) => {
 };
 
 export const formatDateAndTime = (time) => {
-	switch (RocketChat.getUserPreference(Meteor.userId(), 'clockMode', false)) {
+	switch (clockMode()) {
 		case 1:
 			return moment(time).format('MMMM D, Y h:mm A');
 		case 2:

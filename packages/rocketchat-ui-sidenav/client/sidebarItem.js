@@ -9,7 +9,8 @@ import { Users, ChatSubscription } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { menu } from 'meteor/rocketchat:ui-utils';
-
+import mem from 'mem';
+const sidebarViewMode = mem(() => getUserPreference(Meteor.userId(), 'sidebarViewMode'), { maxAge: 1000 });
 Template.sidebarItem.helpers({
 	or(...args) {
 		args.pop();
@@ -22,7 +23,7 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	isExtendedViewMode() {
-		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
+		return sidebarViewMode() === 'extended';
 	},
 	lastMessage() {
 		return this.lastMessage && Template.instance().renderedMessage;
@@ -60,8 +61,10 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
+const user = mem(() => Users.findOne(Meteor.userId(), { fields: { username: 1 } }), { maxAge: 1000 });
+
 Template.sidebarItem.onCreated(function() {
-	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
+	this.user = user();
 
 	this.lastMessageTs = new ReactiveVar();
 	this.timeAgoInterval;
@@ -71,7 +74,7 @@ Template.sidebarItem.onCreated(function() {
 	this.autorun(() => {
 		const currentData = Template.currentData();
 
-		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
+		if (!currentData.lastMessage || sidebarViewMode() !== 'extended') {
 			return clearInterval(this.timeAgoInterval);
 		}
 

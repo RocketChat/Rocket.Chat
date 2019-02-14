@@ -6,13 +6,15 @@
 	&--icon > svg {
 		margin: 0 5px 0 -5px;
 
+		font-size: 20px;
+		fill: currentColor;
+
 		.rtl & {
 			margin: 0 -5px 0 5px;
 		}
-
-		font-size: 20px;
-		fill: currentColor;
 	}
+
+	position: relative;
 
 	display: flex;
 
@@ -38,16 +40,15 @@
 	align-items: center;
 	justify-content: center;
 
-	position: relative;
-
 	&:active,
 	&:focus:hover {
 		outline: none;
 	}
 
 	&:active {
-		opacity: .9;
 		transform: translateY(2px);
+
+		opacity: 0.9;
 	}
 
 	&:active::before {
@@ -55,12 +56,13 @@
 	}
 
 	&::before {
-		content: "";
 		position: absolute;
 		top: 0;
-		left: 0;
 		right: 0;
 		bottom: 0;
+		left: 0;
+
+		content: "";
 		cursor: pointer;
 	}
 
@@ -179,9 +181,9 @@
 	&__group {
 		display: flex;
 
-		margin: 10px -5px;
-
 		flex-direction: row;
+
+		margin: 10px -5px;
 
 		& > .rc-button {
 			margin: 0 5px;
@@ -189,6 +191,7 @@
 
 		&--stretch {
 			justify-content: stretch;
+
 			& > .rc-button {
 				flex: 1 1;
 			}

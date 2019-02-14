@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
-import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
@@ -1004,11 +1003,11 @@ Template.room.onRendered(function() {
 		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 	};
 
-	template.checkIfScrollIsAtBottom = function() {
+	template.checkIfScrollIsAtBottom = _.throttle(function() {
 		template.atBottom = template.isAtBottom(100);
 		readMessage.enable();
 		readMessage.read();
-	};
+	}, 500);
 
 	template.sendToBottomIfNecessary = function() {
 		if (template.atBottom === true && template.isAtBottom() !== true) {
@@ -1097,7 +1096,7 @@ Template.room.onRendered(function() {
 		const subscription = ChatSubscription.findOne({ rid: template.data._id }, { reactive: false });
 		const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
 		template.unreadCount.set(count);
-	}, 300);
+	}, 500);
 
 	readMessage.onRead(function(rid) {
 		if (rid === template.data._id) {
@@ -1111,7 +1110,7 @@ Template.room.onRendered(function() {
 
 	const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
 	if (webrtc != null) {
-		Tracker.autorun(() => {
+		this.autorun(() => {
 			const remoteItems = webrtc.remoteItems.get();
 			if (remoteItems && remoteItems.length > 0) {
 				this.tabBar.setTemplate('membersList');
@@ -1132,7 +1131,7 @@ Template.room.onRendered(function() {
 			newMessage.classList.remove('not');
 		}
 	});
-	Tracker.autorun(function() {
+	this.autorun(function() {
 		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
 			FlowRouter.go('home');

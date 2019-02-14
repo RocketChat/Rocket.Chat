@@ -46,6 +46,7 @@ export const MessageAction = new class {
 
 	constructor() {
 		this.buttons = new ReactiveVar({});
+		this.arrayButtons = new ReactiveVar([]);
 	}
 
 	addButton(config) {
@@ -64,7 +65,8 @@ export const MessageAction = new class {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			btns[config.id] = config;
-			return this.buttons.set(btns);
+			this.arrayButtons.set(_.sortBy(_.toArray(btns), 'order'));
+			this.buttons.set(btns);
 		});
 	}
 
@@ -72,7 +74,8 @@ export const MessageAction = new class {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			delete btns[id];
-			return this.buttons.set(btns);
+			this.arrayButtons.set(_.sortBy(_.toArray(btns), 'order'));
+			this.buttons.set(btns);
 		});
 	}
 
@@ -81,7 +84,7 @@ export const MessageAction = new class {
 			const btns = this.buttons.get();
 			if (btns[id]) {
 				btns[id] = _.extend(btns[id], config);
-				return this.buttons.set(btns);
+				this.arrayButtons.set(_.sortBy(_.toArray(btns), 'order'));
 			}
 		});
 	}
@@ -92,22 +95,23 @@ export const MessageAction = new class {
 	}
 
 	getButtons(message, context, group) {
-		let allButtons = _.toArray(this.buttons.get());
+		let allButtons = this.arrayButtons.get();
 
 		if (group) {
 			allButtons = allButtons.filter((button) => button.group === group);
 		}
 
 		if (message) {
-			allButtons = _.compact(_.map(allButtons, function(button) {
+			allButtons = allButtons.filter(function(button) {
 				if (button.context == null || button.context.includes(context)) {
 					if (button.condition == null || button.condition(message, context)) {
 						return button;
 					}
 				}
-			}));
+				return false;
+			});
 		}
-		return _.sortBy(allButtons, 'order');
+		return allButtons;
 	}
 
 	resetButtons() {
