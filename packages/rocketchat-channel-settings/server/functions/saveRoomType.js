@@ -32,11 +32,11 @@ RocketChat.saveRoomType = function(rid, roomType, user, sendMessage = true) {
 		let message;
 		if (roomType === 'c') {
 			message = TAPi18n.__('Channel', {
-				lng: (user && user.language) || RocketChat.settings.get('language') || 'en',
+				lng: (user && user.language) || RocketChat.settings.get('Language') || 'en',
 			});
 		} else {
 			message = TAPi18n.__('Private_Group', {
-				lng: (user && user.language) || RocketChat.settings.get('language') || 'en',
+				lng: (user && user.language) || RocketChat.settings.get('Language') || 'en',
 			});
 		}
 		RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_privacy', rid, message, user);
