@@ -4,7 +4,7 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import { t } from 'meteor/rocketchat:utils';
 import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
@@ -35,11 +35,11 @@ const acEvents = {
 };
 
 const filterNames = (old) => {
-	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		return old;
 	}
 
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
