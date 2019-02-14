@@ -33,6 +33,17 @@ export class Messages extends Base {
 		});
 	}
 
+	deleteOldOTRMessages(roomId, ts) {
+		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
+		return this.remove(query);
+	}
+
+	updateOTRAck(_id, otrAck) {
+		const query = { _id };
+		const update = { $set: { otrAck } };
+		return this.update(query, update);
+	}
+
 	setGoogleVisionData(messageId, visionData) {
 		const updateObj = {};
 		for (const index in visionData) {
