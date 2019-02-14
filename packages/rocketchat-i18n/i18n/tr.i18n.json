@@ -1895,7 +1895,7 @@
   "No_results_found_for": "Için sonuç bulunamadı:",
   "No_snippet_messages": "Snippet yok",
   "No_starred_messages": "Favori iletin yok",
-  "No_such_command": "Böyle bir komut yok: `/__ command__`",
+  "No_such_command": "Böyle bir komut yok: `/__command__`",
   "No_user_with_username_%s_was_found": "<strong>\" %s\"</strong> adında hiçbir kullanıcı bulunamadı!",
   "Nobody_available": "Kimse yok",
   "Node_version": "düğüm versiyonu",

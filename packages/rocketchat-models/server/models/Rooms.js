@@ -469,7 +469,7 @@ export class Rooms extends Base {
 			t: type,
 		};
 
-		return this.find(query, options);
+		return this.findOne(query, options);
 	}
 
 	findByTypeAndNameContaining(type, name, options) {
