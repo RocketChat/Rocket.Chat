@@ -2564,15 +2564,6 @@ rc-old select,
 			}
 		}
 
-		& .stream-info {
-			float: left;
-
-			height: 25px;
-			padding: 3px;
-
-			font-size: 12px;
-		}
-
 		& .editing-commands {
 			display: none;
 
@@ -2605,10 +2596,6 @@ rc-old select,
 
 			& .editing-commands {
 				display: block;
-			}
-
-			& .stream-info {
-				display: none;
 			}
 		}
 	}
