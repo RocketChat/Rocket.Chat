@@ -1,4 +1,4 @@
-import { processWebhookMessage } from 'meteor/rocketchat:integrations';
+import { processWebhookMessage } from 'meteor/rocketchat:lib';
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/sendMessage.graphqls';
 

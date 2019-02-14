@@ -1,18 +1,22 @@
-RocketChat.addUserToDefaultChannels = function(user, silenced) {
-	RocketChat.callbacks.run('beforeJoinDefaultChannels', user);
-	const defaultRooms = RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c', 'p'], { fields: { usernames: 0 } }).fetch();
+import { Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+
+export const addUserToDefaultChannels = function(user, silenced) {
+	callbacks.run('beforeJoinDefaultChannels', user);
+	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], { fields: { usernames: 0 } }).fetch();
 	defaultRooms.forEach((room) => {
 
 		// put user in default rooms
-		const muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-readonly');
+		const muted = room.ro && !hasPermission(user._id, 'post-readonly');
 		if (muted) {
-			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, user.username);
+			Rooms.muteUsernameByRoomId(room._id, user.username);
 		}
 
-		if (!RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
+		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
 
 			// Add a subscription to this user
-			RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
+			Subscriptions.createWithRoomAndUser(room, user, {
 				ts: new Date(),
 				open: true,
 				alert: true,
@@ -23,8 +27,11 @@ RocketChat.addUserToDefaultChannels = function(user, silenced) {
 
 			// Insert user joined message
 			if (!silenced) {
-				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, user);
+				Messages.createUserJoinWithRoomIdAndUser(room._id, user);
 			}
 		}
 	});
 };
+
+RocketChat.addUserToDefaultChannels = addUserToDefaultChannels;
+

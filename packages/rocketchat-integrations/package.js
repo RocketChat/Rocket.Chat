@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'mongo',
 		'babel-compiler',
+		'rocketchat:api',
 		'rocketchat:lib',
 		'rocketchat:authorization',
 		'rocketchat:theme',

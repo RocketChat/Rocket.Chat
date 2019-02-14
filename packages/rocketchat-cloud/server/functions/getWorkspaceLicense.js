@@ -1,4 +1,6 @@
 import { HTTP } from 'meteor/http';
+import { settings } from 'meteor/rocketchat:settings';
+import { Settings } from 'meteor/rocketchat:models';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
@@ -12,7 +14,7 @@ export function getWorkspaceLicense() {
 
 	let licenseResult;
 	try {
-		licenseResult = HTTP.get(`${ RocketChat.settings.get('Cloud_Workspace_Registration_Client_Uri') }/license`, {
+		licenseResult = HTTP.get(`${ settings.get('Cloud_Workspace_Registration_Client_Uri') }/license`, {
 			headers: {
 				Authorization: `Bearer ${ token }`,
 			},
@@ -22,13 +24,13 @@ export function getWorkspaceLicense() {
 	}
 
 	const remoteLicense = licenseResult.data;
-	const currentLicense = RocketChat.settings.get('Cloud_Workspace_License');
+	const currentLicense = settings.get('Cloud_Workspace_License');
 
 	if (remoteLicense.updatedAt <= currentLicense._updatedAt) {
 		return { updated: false, license: '' };
 	}
 
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
+	Settings.updateValueById('Cloud_Workspace_License', remoteLicense.license);
 
 	return { updated: true, license: remoteLicense.license };
 }

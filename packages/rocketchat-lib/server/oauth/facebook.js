@@ -2,6 +2,8 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
+import { registerAccessTokenService } from './oauth';
+
 const crypto = Npm.require('crypto');
 const whitelisted = [
 	'id',
@@ -35,7 +37,7 @@ const getIdentity = function(accessToken, fields, secret) {
 	}
 };
 
-RocketChat.registerAccessTokenService('facebook', function(options) {
+registerAccessTokenService('facebook', function(options) {
 	check(options, Match.ObjectIncluding({
 		accessToken: String,
 		secret: String,

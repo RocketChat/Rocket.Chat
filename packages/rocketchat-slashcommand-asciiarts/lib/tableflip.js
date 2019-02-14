@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 /*
 * Tableflip is a named function that will replace /Tableflip commands
 * @param {Object} message - The message object
@@ -14,7 +14,7 @@ function Tableflip(command, params, item) {
 	}
 }
 
-RocketChat.slashCommands.add('tableflip', Tableflip, {
+slashCommands.add('tableflip', Tableflip, {
 	description: 'Slash_Tableflip_Description',
 	params: 'your_message_optional',
 });

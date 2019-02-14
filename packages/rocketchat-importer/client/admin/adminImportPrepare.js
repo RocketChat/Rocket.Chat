@@ -4,13 +4,15 @@ import { Importers } from 'meteor/rocketchat:importer';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:utils';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { API } from 'meteor/rocketchat:api';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({
 	isAdmin() {
-		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+		return hasRole(Meteor.userId(), 'admin');
 	},
 	importer() {
 		const importerKey = FlowRouter.getParam('importer');
@@ -33,7 +35,7 @@ Template.adminImportPrepare.helpers({
 		return Template.instance().message_count.get();
 	},
 	fileSizeLimitMessage() {
-		const maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize');
+		const maxFileSize = settings.get('FileUpload_MaxFileSize');
 		let message;
 
 		if (maxFileSize > 0) {
@@ -95,7 +97,7 @@ function showException(error, defaultErrorString) {
 }
 
 function getImportFileData(importer, template) {
-	RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
+	API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
 		if (!data) {
 			console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
 			toastr.error(t('Importer_not_setup'));
@@ -148,7 +150,7 @@ Template.adminImportPrepare.events({
 
 			reader.readAsBinaryString(file);
 			reader.onloadend = () => {
-				RocketChat.API.post('v1/uploadImportFile', {
+				API.post('v1/uploadImportFile', {
 					binaryContent: reader.result,
 					contentType: file.type,
 					fileName: file.name,
@@ -174,7 +176,7 @@ Template.adminImportPrepare.events({
 
 		template.preparing.set(true);
 
-		RocketChat.API.post('v1/downloadPublicImportFile', {
+		API.post('v1/downloadPublicImportFile', {
 			fileUrl,
 			importerKey: importer.key,
 		}).then(() => {
