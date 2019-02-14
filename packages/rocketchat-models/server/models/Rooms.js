@@ -12,6 +12,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ default: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
+		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -24,6 +25,38 @@ export class Rooms extends Base {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findByTokenpass(tokens) {
+		const query = {
+			'tokenpass.tokens.token': {
+				$in: tokens,
+			},
+		};
+
+		return this._db.find(query).fetch();
+	}
+
+	setTokensById(_id, tokens) {
+		const update = {
+			$set: {
+				'tokenpass.tokens.token': tokens,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	findAllTokenChannels() {
+		const query = {
+			tokenpass: { $exists: true },
+		};
+		const options = {
+			fields: {
+				tokenpass: 1,
+			},
+		};
+		return this._db.find(query, options);
 	}
 
 	setReactionsInLastMessage(roomId, lastMessage) {
