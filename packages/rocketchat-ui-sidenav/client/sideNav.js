@@ -64,19 +64,8 @@ Template.sideNav.events({
 	'dropped .sidebar'(e) {
 		return e.preventDefault();
 	},
-});
 
-Template.sideNav.onRendered(function() {
-	SideNav.init();
-	menu.init();
-	lazyloadtick();
-	const first_channel_login = settings.get('First_Channel_After_Login');
-	const room = roomTypes.findRoom('c', first_channel_login, Meteor.userId());
-	if (room !== undefined && room._id !== '') {
-		FlowRouter.go(`/channel/${ first_channel_login }`);
-	}
-
-	$('.sidebar').on('mouseenter', '.sidebar-item__link', (e) => {
+	'mouseenter .sidebar-item__link'(e) {
 		const element = e.currentTarget;
 		setTimeout(() => {
 			const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
@@ -88,7 +77,18 @@ Template.sideNav.onRendered(function() {
 				element.removeAttribute('title');
 			}
 		}, 0);
-	});
+	},
+});
+
+Template.sideNav.onRendered(function() {
+	SideNav.init();
+	menu.init();
+	lazyloadtick();
+	const first_channel_login = settings.get('First_Channel_After_Login');
+	const room = roomTypes.findRoom('c', first_channel_login, Meteor.userId());
+	if (room !== undefined && room._id !== '') {
+		FlowRouter.go(`/channel/${ first_channel_login }`);
+	}
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
