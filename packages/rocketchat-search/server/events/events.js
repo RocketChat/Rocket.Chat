@@ -1,4 +1,5 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Users, Rooms } from 'meteor/rocketchat:models';
 import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 
@@ -22,11 +23,11 @@ const eventService = new EventService();
 /**
  * Listen to message changes via Hooks
  */
-RocketChat.callbacks.add('afterSaveMessage', function(m) {
+callbacks.add('afterSaveMessage', function(m) {
 	eventService.promoteEvent('message.save', m._id, m);
 });
 
-RocketChat.callbacks.add('afterDeleteMessage', function(m) {
+callbacks.add('afterDeleteMessage', function(m) {
 	eventService.promoteEvent('message.delete', m._id);
 });
 
@@ -35,11 +36,11 @@ RocketChat.callbacks.add('afterDeleteMessage', function(m) {
  */
 
 
-RocketChat.models.Users.on('change', ({ clientAction, id, data }) => {
+Users.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
-			const user = data || RocketChat.models.Users.findOneById(id);
+			const user = data || Users.findOneById(id);
 			eventService.promoteEvent('user.save', id, user);
 			break;
 
@@ -49,11 +50,11 @@ RocketChat.models.Users.on('change', ({ clientAction, id, data }) => {
 	}
 });
 
-RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
+Rooms.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
-			const room = data || RocketChat.models.Rooms.findOneById(id);
+			const room = data || Rooms.findOneById(id);
 			eventService.promoteEvent('room.save', id, room);
 			break;
 
