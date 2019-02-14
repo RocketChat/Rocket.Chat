@@ -1862,7 +1862,7 @@
   "No_results_found_for": "Nuk u gjetën rezultate për:",
   "No_snippet_messages": "Asnjë copë",
   "No_starred_messages": "Nuk ka mesazhe me yll",
-  "No_such_command": "Asnjë komandë e tillë: `/ __ command__`",
+  "No_such_command": "Asnjë komandë e tillë: `/ __command__`",
   "No_user_with_username_%s_was_found": "Asnjë përdorues me emrin <strong>\"%s\"</strong> nuk u gjetë!",
   "Nobody_available": "Askush nuk është në dispozicion",
   "Node_version": "version Node",

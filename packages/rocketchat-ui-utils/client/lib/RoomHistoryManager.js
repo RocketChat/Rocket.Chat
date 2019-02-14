@@ -24,6 +24,17 @@ export const upsertMessage = ({ msg, subscription }) => {
 	return ChatMessage.upsert({ _id: msg._id }, msg);
 };
 
+function upsertMessageBulk({ msgs, subscription }) {
+	const { queries } = ChatMessage;
+	ChatMessage.queries = [];
+	msgs.forEach((msg, index) => {
+		if (index === msgs.length - 1) {
+			ChatMessage.queries = queries;
+		}
+		upsertMessage({ msg, subscription });
+	});
+}
+
 export const RoomHistoryManager = new class {
 	constructor() {
 		this.defaultLimit = 50;
@@ -91,7 +102,10 @@ export const RoomHistoryManager = new class {
 				previousHeight = wrapper.scrollHeight;
 			}
 
-			messages.forEach((msg) => msg.t !== 'command' && upsertMessage({ msg, subscription }));
+			upsertMessageBulk({
+				msgs: messages.filter((msg) => msg.t !== 'command'),
+				subscription,
+			});
 
 			if (wrapper) {
 				const heightDiff = wrapper.scrollHeight - previousHeight;
