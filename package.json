@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "0.74.2",
+	"version": "0.74.3",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -169,6 +169,7 @@
 		"lru-cache": "^5.1.1",
 		"mailparser": "^2.4.3",
 		"marked": "^0.5.2",
+		"mem": "4.1.0",
 		"meteor-node-stubs": "^0.4.1",
 		"mime-db": "^1.37.0",
 		"mime-type": "^3.0.7",
@@ -198,6 +199,7 @@
 		"webdav": "^2.0.0",
 		"wolfy87-eventemitter": "^5.2.5",
 		"xml-crypto": "^1.0.2",
+		"xml-encryption": "0.11.2",
 		"xml2js": "0.4.19",
 		"xmlbuilder": "^10.1.1",
 		"xmldom": "^0.1.27",

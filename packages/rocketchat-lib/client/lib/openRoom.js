@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from 'meteor/rocketchat:ui-utils';
@@ -8,6 +10,33 @@ import { ChatSubscription } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
 export let currentTracker = undefined;
+
+let loadingDom;
+function getDomOfLoading() {
+	if (loadingDom) {
+		return loadingDom;
+	}
+
+	loadingDom = document.createElement('div');
+	const contentAsFunc = (content) => () => content;
+
+	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
+	Blaze.render(template, loadingDom);
+
+	return loadingDom;
+}
+
+function replaceCenterDomBy(dom) {
+	const mainNode = document.querySelector('.main-content');
+	if (mainNode) {
+		for (const child of Array.from(mainNode.children)) {
+			if (child) { mainNode.removeChild(child); }
+		}
+		mainNode.appendChild(dom);
+	}
+
+	return mainNode;
+}
 
 openRoom = function(type, name) {
 	Session.set('openedRoom', null);
@@ -21,9 +50,10 @@ openRoom = function(type, name) {
 			}
 
 			if (RoomManager.open(type + name).ready() !== true) {
-				BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
+				replaceCenterDomBy(getDomOfLoading());
 				return;
 			}
+
 			if (currentTracker) {
 				currentTracker = undefined;
 			}
@@ -57,13 +87,10 @@ openRoom = function(type, name) {
 				return;
 			}
 
-			const mainNode = document.querySelector('.main-content');
+			const roomDom = RoomManager.getDomOfRoom(type + name, room._id);
+			const mainNode = replaceCenterDomBy(roomDom);
+
 			if (mainNode) {
-				for (const child of Array.from(mainNode.children)) {
-					if (child) { mainNode.removeChild(child); }
-				}
-				const roomDom = RoomManager.getDomOfRoom(type + name, room._id);
-				mainNode.appendChild(roomDom);
 				if (roomDom.classList.contains('room-container')) {
 					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
 				}
