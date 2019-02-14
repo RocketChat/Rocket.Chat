@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 		'rocketchat:utils',
 		'rocketchat:settings',
 		'rocketchat:promises',
+		'rocketchat:callbacks',
 		'rocketchat:notifications',
 		'rocketchat:authorization',
 		'rocketchat:streamer',
