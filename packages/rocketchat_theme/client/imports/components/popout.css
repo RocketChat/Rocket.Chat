@@ -121,11 +121,6 @@
 
 			font-size: 16px;
 
-			& > .rc-icon {
-				fill: currentColor;
-				stroke: currentColor;
-			}
-
 			&.preparing {
 				animation: loading 2s infinite;
 				pointer-events: none;

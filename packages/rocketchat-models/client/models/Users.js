@@ -1,15 +1,13 @@
-import _ from 'underscore';
-
 const Users = {};
 
 Object.assign(Users, {
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,
-			roles: roleName,
 		};
 
-		return !_.isUndefined(this.findOne(query, { fields: { roles: 1 } }));
+		const user = this.findOne(query);
+		return user && Array.isArray(user.roles) && user.roles.includes(roleName);
 	},
 
 	findUsersInRoles(roles, scope, options) {
