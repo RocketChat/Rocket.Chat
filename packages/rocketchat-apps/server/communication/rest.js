@@ -44,7 +44,7 @@ export class AppsRestApi {
 		const manager = this._manager;
 		const fileHandler = this._handleFile;
 
-		this.api.addRoute('', { authRequired: true }, {
+		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				const apps = manager.get().map((prl) => {
 					const info = prl.getInfo();
@@ -104,7 +104,7 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id', { authRequired: true }, {
+		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				console.log('Getting:', this.urlParams.id);
 				const prl = manager.getOneById(this.urlParams.id);
@@ -173,7 +173,7 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/icon', { authRequired: true }, {
+		this.api.addRoute(':id/icon', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				console.log('Getting the App\'s Icon:', this.urlParams.id);
 				const prl = manager.getOneById(this.urlParams.id);
@@ -203,7 +203,7 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/logs', { authRequired: true }, {
+		this.api.addRoute(':id/logs', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				console.log(`Getting ${ this.urlParams.id }'s logs..`);
 				const prl = manager.getOneById(this.urlParams.id);
@@ -229,7 +229,7 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/settings', { authRequired: true }, {
+		this.api.addRoute(':id/settings', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				console.log(`Getting ${ this.urlParams.id }'s settings..`);
 				const prl = manager.getOneById(this.urlParams.id);
@@ -275,7 +275,7 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/settings/:settingId', { authRequired: true }, {
+		this.api.addRoute(':id/settings/:settingId', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				console.log(`Getting the App ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
 
@@ -316,7 +316,7 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/apis', { authRequired: true }, {
+		this.api.addRoute(':id/apis', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				console.log(`Getting ${ this.urlParams.id }'s apis..`);
 				const prl = manager.getOneById(this.urlParams.id);
@@ -331,7 +331,7 @@ export class AppsRestApi {
 			},
 		});
 
-		this.api.addRoute(':id/status', { authRequired: true }, {
+		this.api.addRoute(':id/status', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				console.log(`Getting ${ this.urlParams.id }'s status..`);
 				const prl = manager.getOneById(this.urlParams.id);
