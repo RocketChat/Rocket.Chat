@@ -131,7 +131,7 @@ Template.messageBoxAudioMessage.events({
 		event.preventDefault();
 
 		if (recordingInterval.get()) {
-			clearInterval(recordingInterval);
+			clearInterval(recordingInterval.get());
 			recordingInterval.set(null);
 			recordingRoomId.set(null);
 		}
@@ -150,7 +150,7 @@ Template.messageBoxAudioMessage.events({
 		instance.state.set('loading');
 
 		if (recordingInterval.get()) {
-			clearInterval(recordingInterval);
+			clearInterval(recordingInterval.get());
 			recordingInterval.set(null);
 			recordingRoomId.set(null);
 		}
