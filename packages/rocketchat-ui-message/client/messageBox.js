@@ -22,7 +22,6 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 
-
 const formattingButtons = [
 	{
 		label: 'bold',

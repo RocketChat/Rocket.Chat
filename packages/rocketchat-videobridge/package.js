@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'less',
 		'rocketchat:utils',
 		'rocketchat:lib',
+		'rocketchat:api',
 		'rocketchat:bigbluebutton',
 		'templating',
 	]);

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { actionLinks } from '../both/lib/actionLinks';
 // Action Links Handler. This method will be called off the client.
 
 Meteor.methods({
@@ -8,10 +8,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'actionLinkHandler' });
 		}
 
-		const message = RocketChat.actionLinks.getMessage(name, messageId);
+		const message = actionLinks.getMessage(name, messageId);
 
 		const actionLink = message.actionLinks[name];
 
-		RocketChat.actionLinks.actions[actionLink.method_id](message, actionLink.params);
+		actionLinks.actions[actionLink.method_id](message, actionLink.params);
 	},
 });

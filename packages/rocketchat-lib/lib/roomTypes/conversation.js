@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { getUserPreference } from 'meteor/rocketchat:utils';
 import { RoomTypeConfig } from '../RoomTypeConfig';
 
 export class ConversationRoomType extends RoomTypeConfig {
@@ -12,6 +13,6 @@ export class ConversationRoomType extends RoomTypeConfig {
 
 	condition() {
 		// returns true only if sidebarGroupByType is not set
-		return !RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		return !getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 	}
 }

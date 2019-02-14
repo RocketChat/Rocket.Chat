@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
@@ -24,6 +23,51 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.loadSettings();
+	}
+
+	loadSettings() {
+		Meteor.startup(async() => {
+			const { settings } = await import('meteor/rocketchat:settings');
+			this.settings = settings;
+		});
+	}
+
+	setGoogleVisionData(messageId, visionData) {
+		const updateObj = {};
+		for (const index in visionData) {
+			if (visionData.hasOwnProperty(index)) {
+				updateObj[`attachments.0.${ index }`] = visionData[index];
+			}
+		}
+
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
+	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
+	}
+
+	createRoomRenamedWithRoomIdRoomNameAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
+	}
+
+	addTranslations(messageId, translations) {
+		const updateObj = {};
+		Object.keys(translations).forEach((key) => {
+			const translation = translations[key];
+			updateObj[`translations.${ key }`] = translation;
+		});
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
+	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
+		const updateObj = {};
+		Object.keys(translations).forEach((key) => {
+			const translation = translations[key];
+			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
+		});
+		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -600,7 +644,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (this.settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -629,7 +673,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (this.settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 

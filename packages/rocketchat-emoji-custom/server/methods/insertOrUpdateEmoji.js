@@ -1,12 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { EmojiCustom } from 'meteor/rocketchat:models';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import _ from 'underscore';
 import s from 'underscore.string';
 
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {
-		if (!RocketChat.authz.hasPermission(this.userId, 'manage-emoji')) {
+		if (!hasPermission(this.userId, 'manage-emoji')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
@@ -41,14 +43,14 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (emojiData._id) {
-			matchingResults = RocketChat.models.EmojiCustom.findByNameOrAliasExceptID(emojiData.name, emojiData._id).fetch();
+			matchingResults = EmojiCustom.findByNameOrAliasExceptID(emojiData.name, emojiData._id).fetch();
 			for (const alias of emojiData.aliases) {
-				matchingResults = matchingResults.concat(RocketChat.models.EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).fetch());
+				matchingResults = matchingResults.concat(EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).fetch());
 			}
 		} else {
-			matchingResults = RocketChat.models.EmojiCustom.findByNameOrAlias(emojiData.name).fetch();
+			matchingResults = EmojiCustom.findByNameOrAlias(emojiData.name).fetch();
 			for (const alias of emojiData.aliases) {
-				matchingResults = matchingResults.concat(RocketChat.models.EmojiCustom.findByNameOrAlias(alias).fetch());
+				matchingResults = matchingResults.concat(EmojiCustom.findByNameOrAlias(alias).fetch());
 			}
 		}
 
@@ -64,9 +66,9 @@ Meteor.methods({
 				extension: emojiData.extension,
 			};
 
-			const _id = RocketChat.models.EmojiCustom.create(createEmoji);
+			const _id = EmojiCustom.create(createEmoji);
 
-			RocketChat.Notifications.notifyLogged('updateEmojiCustom', { emojiData: createEmoji });
+			Notifications.notifyLogged('updateEmojiCustom', { emojiData: createEmoji });
 
 			return _id;
 		} else {
@@ -77,7 +79,7 @@ Meteor.methods({
 				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.extension }`));
 				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.previousExtension }`));
 
-				RocketChat.models.EmojiCustom.setExtension(emojiData._id, emojiData.extension);
+				EmojiCustom.setExtension(emojiData._id, emojiData.extension);
 			} else if (emojiData.name !== emojiData.previousName) {
 				const rs = RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(`${ emojiData.previousName }.${ emojiData.previousExtension }`));
 				if (rs !== null) {
@@ -91,16 +93,16 @@ Meteor.methods({
 			}
 
 			if (emojiData.name !== emojiData.previousName) {
-				RocketChat.models.EmojiCustom.setName(emojiData._id, emojiData.name);
+				EmojiCustom.setName(emojiData._id, emojiData.name);
 			}
 
 			if (emojiData.aliases) {
-				RocketChat.models.EmojiCustom.setAliases(emojiData._id, emojiData.aliases);
+				EmojiCustom.setAliases(emojiData._id, emojiData.aliases);
 			} else {
-				RocketChat.models.EmojiCustom.setAliases(emojiData._id, []);
+				EmojiCustom.setAliases(emojiData._id, []);
 			}
 
-			RocketChat.Notifications.notifyLogged('updateEmojiCustom', { emojiData });
+			Notifications.notifyLogged('updateEmojiCustom', { emojiData });
 
 			return true;
 		}

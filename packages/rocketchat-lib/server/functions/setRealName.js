@@ -1,13 +1,18 @@
 import { Meteor } from 'meteor/meteor';
+import { Users, Subscriptions } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { RateLimiter } from '../lib';
 import s from 'underscore.string';
 
-RocketChat._setRealName = function(userId, name) {
+export const _setRealName = function(userId, name) {
 	name = s.trim(name);
 	if (!userId || !name) {
 		return false;
 	}
 
-	const user = RocketChat.models.Users.findOneById(userId);
+	const user = Users.findOneById(userId);
 
 	// User already has desired name, return
 	if (user.name === name) {
@@ -15,16 +20,16 @@ RocketChat._setRealName = function(userId, name) {
 	}
 
 	// Set new name
-	RocketChat.models.Users.setName(user._id, name);
+	Users.setName(user._id, name);
 	user.name = name;
 
 	// if user has no username, there is no need to updated any direct messages (there is none)
 	if (user.username && user.username !== '') {
-		RocketChat.models.Subscriptions.updateDirectFNameByName(user.username, name);
+		Subscriptions.updateDirectFNameByName(user.username, name);
 	}
 
-	if (RocketChat.settings.get('UI_Use_Real_Name') === true) {
-		RocketChat.Notifications.notifyLogged('Users:NameChanged', {
+	if (settings.get('UI_Use_Real_Name') === true) {
+		Notifications.notifyLogged('Users:NameChanged', {
 			_id: user._id,
 			name: user.name,
 			username: user.username,
@@ -34,6 +39,9 @@ RocketChat._setRealName = function(userId, name) {
 	return user;
 };
 
-RocketChat.setRealName = RocketChat.RateLimiter.limitFunction(RocketChat._setRealName, 1, 60000, {
-	0() { return !Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others names, so don't limit those
+export const setRealName = RateLimiter.limitFunction(_setRealName, 1, 60000, {
+	0() { return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others names, so don't limit those
 });
+
+RocketChat.setRealName = setRealName;
+RocketChat._setRealName = _setRealName;

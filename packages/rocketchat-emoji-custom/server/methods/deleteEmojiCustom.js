@@ -1,13 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { EmojiCustom } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 Meteor.methods({
 	deleteEmojiCustom(emojiID) {
 		let emoji = null;
 
-		if (RocketChat.authz.hasPermission(this.userId, 'manage-emoji')) {
-			emoji = RocketChat.models.EmojiCustom.findOneByID(emojiID);
+		if (hasPermission(this.userId, 'manage-emoji')) {
+			emoji = EmojiCustom.findOneByID(emojiID);
 		} else {
 			throw new Meteor.Error('not_authorized');
 		}
@@ -17,8 +19,8 @@ Meteor.methods({
 		}
 
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emoji.name }.${ emoji.extension }`));
-		RocketChat.models.EmojiCustom.removeByID(emojiID);
-		RocketChat.Notifications.notifyLogged('deleteEmojiCustom', { emojiData: emoji });
+		EmojiCustom.removeByID(emojiID);
+		Notifications.notifyLogged('deleteEmojiCustom', { emojiData: emoji });
 
 		return true;
 	},

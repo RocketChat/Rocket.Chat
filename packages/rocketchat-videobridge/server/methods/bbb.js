@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import BigBlueButtonApi from 'meteor/rocketchat:bigbluebutton';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
 import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 
@@ -121,7 +122,7 @@ Meteor.methods({
 	},
 });
 
-RocketChat.API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
+API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
 	post() {
 		// TODO check checksum
 		const event = JSON.parse(this.bodyParams.event)[0];
