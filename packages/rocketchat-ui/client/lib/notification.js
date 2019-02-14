@@ -10,7 +10,7 @@ import s from 'underscore.string';
 import { e2e } from 'meteor/rocketchat:e2e';
 import { Users, ChatSubscription } from 'meteor/rocketchat:models';
 import { getUserPreference } from 'meteor/rocketchat:utils';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui-utils';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 import { promises } from 'meteor/rocketchat:promises';
 import { getAvatarAsPng } from './avatar';
 
