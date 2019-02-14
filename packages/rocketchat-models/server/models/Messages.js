@@ -33,6 +33,14 @@ export class Messages extends Base {
 		});
 	}
 
+	setReactions(messageId, reactions) {
+		return this.update({ _id: messageId }, { $set: { reactions } });
+	}
+
+	unsetReactions(messageId) {
+		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
+	}
+
 	deleteOldOTRMessages(roomId, ts) {
 		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
 		return this.remove(query);

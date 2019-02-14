@@ -26,6 +26,14 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setReactionsInLastMessage(roomId, lastMessage) {
+		return this.update({ _id: roomId }, { $set: { lastMessage } });
+	}
+
+	unsetReactionsInLastMessage(roomId) {
+		return this.update({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
+	}
+
 	updateLastMessageStar(roomId, userId, starred) {
 		let update;
 		const query = { _id: roomId };
