@@ -1,19 +1,19 @@
-<template name="messageBoxAudioMessage">
+<template name="messageBoxAudioMessage" args="rid">
 	<div class="rc-message-box__audio-message">
-		<div class="rc-message-box__icon cross js-audio-message-cross">
+		<div class="rc-message-box__icon rc-message-box__audio-message-cancel js-audio-message-cancel">
 			{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
 		</div>
-		<div class="rc-message-box__timer-box">
-			<p class="rc-message-box__timer-dot">&bull;&nbsp;</p>
-			<span class="rc-message-box__timer">00:00</span>
+		<div class="rc-message-box__audio-message-timer">
+			<p class="rc-message-box__audio-message-timer-dot">&bull;&nbsp;</p>
+			<span class="rc-message-box__audio-message-timer-text js-audio-message-timer-text">00:00</span>
 		</div>
-		<div class="rc-message-box__icon check js-audio-message-check">
+		<div class="rc-message-box__icon rc-message-box__audio-message-done js-audio-message-done">
 			{{> icon block="rc-input__icon-svg" icon="checkmark-circled"}}
 		</div>
-		<div class="rc-message-box__icon mic active js-audio-message-record">
+		<div class="rc-message-box__icon rc-message-box__audio-message-mic js-audio-message-record">
 			{{> icon block="rc-input__icon-svg" icon="mic"}}
 		</div>
-		<div class="rc-message-box__icon loading js-audio-message-loading">
+		<div class="rc-message-box__icon rc-message-box__audio-message-loading js-audio-message-loading">
 			{{> icon block="rc-input__icon-svg" icon="loading"}}
 		</div>
 	</div>

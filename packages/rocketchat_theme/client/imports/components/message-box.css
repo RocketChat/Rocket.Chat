@@ -143,49 +143,6 @@
 		& .rc-input__icon-svg--plus {
 			transition: transform 0.1s linear;
 		}
-
-		&.check {
-
-			display: none;
-
-			color: #2db730;
-
-			&.active {
-				display: flex;
-			}
-		}
-
-		&.cross {
-
-			display: none;
-
-			color: red;
-
-			&.active {
-				display: flex;
-			}
-		}
-
-		&.loading {
-
-			display: none;
-
-			cursor: pointer;
-
-			animation: spin 1s linear infinite;
-
-			&.active {
-				display: flex;
-			}
-		}
-
-		&.mic {
-			display: none;
-
-			&.active {
-				display: flex;
-			}
-		}
 	}
 
 	&__action-menu {
@@ -202,25 +159,69 @@
 
 	&__audio-message {
 		display: flex;
-	}
 
-	&__timer-box {
-		display: none;
-
-		width: 50px;
-
-		&.active {
+		&-mic {
 			display: flex;
 		}
-	}
 
-	&__timer-dot {
+		&-done,
+		&-cancel,
+		&-timer,
+		&-loading {
+			display: none;
+		}
 
-		color: #d60000;
+		&-done {
+			color: var(--rc-color-success);
+		}
 
-		font-size: 1.5em;
+		&-cancel {
+			color: var(--rc-color-error);
+		}
 
-		line-height: 0.8em;
+		&-timer {
+			width: 50px;
+		}
+
+		&-timer-dot {
+			color: #d60000;
+
+			font-size: 1.5em;
+
+			line-height: 0.8em;
+		}
+
+		&-loading {
+			cursor: pointer;
+
+			animation: spin 1s linear infinite;
+		}
+
+		&--recording {
+			.rc-message-box__audio-message-mic,
+			.rc-message-box__audio-message-loading {
+				display: none;
+			}
+
+			.rc-message-box__audio-message-done,
+			.rc-message-box__audio-message-cancel,
+			.rc-message-box__audio-message-timer {
+				display: flex;
+			}
+		}
+
+		&--loading {
+			.rc-message-box__audio-message-mic,
+			.rc-message-box__audio-message-done,
+			.rc-message-box__audio-message-cancel,
+			.rc-message-box__audio-message-timer {
+				display: none;
+			}
+
+			.rc-message-box__audio-message-loading {
+				display: flex;
+			}
+		}
 	}
 
 	&__join {
