@@ -1,55 +1,104 @@
-// TODO: embed Recorder class here
-// TODO: create the worker for mp3 encoding on-the-fly
-export const AudioRecorder = new (class AudioRecorder {
-	start(cb) {
-		window.audioContext = new (window.AudioContext || window.webkitAudioContext);
+import { AudioEncoder } from './recorder';
 
-		const handleSuccess = (stream) => {
-			this.startUserMedia(stream);
-			cb && cb.call(this, true);
-		};
+const getUserMedia = ((navigator) => {
+	if (navigator.mediaDevices) {
+		return navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+	}
 
-		const handleError = (error) => {
-			console.error(error);
-			cb && cb.call(this, false);
-		};
+	const legacyGetUserMedia = navigator.getUserMedia ||
+		navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
-		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia ||
-			navigator.msGetUserMedia;
+	if (legacyGetUserMedia) {
+		return (options) => new Promise((resolve, reject) => {
+			legacyGetUserMedia.call(navigator, options, resolve, reject);
+		});
+	}
+})(window.navigator);
 
-		if (navigator.mediaDevices) {
-			navigator.mediaDevices.getUserMedia({ audio: true })
-				.then(handleSuccess, handleError);
-			return;
-		} else if (oldGetUserMedia) {
-			oldGetUserMedia.call(navigator, { audio: true }, handleSuccess, handleError);
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+class AudioRecorder {
+	isSupported() {
+		return Boolean(getUserMedia);
+	}
+
+	createAudioContext() {
+		if (this.audioContext) {
 			return;
 		}
 
-		cb && cb.call(this, false);
+		this.audioContext = new AudioContext;
 	}
 
-	startUserMedia(stream) {
-		this.stream = stream;
-		const input = window.audioContext.createMediaStreamSource(stream);
-		this.recorder = new window.Recorder(input, {
+	destroyAudioContext() {
+		if (!this.audioContext) {
+			return;
+		}
+
+		this.audioContext.close();
+		delete this.audioContext;
+	}
+
+	async createStream() {
+		if (this.stream) {
+			return;
+		}
+
+		this.stream = await getUserMedia({ audio: true });
+	}
+
+	destroyStream() {
+		if (!this.stream) {
+			return;
+		}
+
+		this.stream.getAudioTracks().forEach((track) => track.stop());
+		delete this.stream;
+	}
+
+	async createEncoder() {
+		if (this.encoder) {
+			return;
+		}
+
+		const input = this.audioContext.createMediaStreamSource(this.stream);
+		this.encoder = new AudioEncoder(input, {
 			workerPath: 'mp3-realtime-worker.js',
 			numChannels: 1,
 		});
-		return this.recorder.record();
+	}
+
+	destroyEncoder() {
+		delete this.encoder;
+	}
+
+	async start(cb) {
+		try {
+			await this.createAudioContext();
+			await this.createStream();
+			await this.createEncoder();
+			this.encoder.record();
+			cb && cb.call(this, true);
+		} catch (error) {
+			console.error(error);
+			this.encoder.stop();
+			this.destroyEncoder();
+			this.destroyStream();
+			this.destroyAudioContext();
+			cb && cb.call(this, false);
+		}
 	}
 
 	stop(cb) {
-		this.recorder.stop();
+		this.encoder.stop();
+		cb && this.encoder.exportMP3(cb);
 
-		cb && this.recorder.exportMP3(cb);
-
-		this.stream.getAudioTracks()[0].stop();
-
-		window.audioContext.close();
-
-		delete window.audioContext;
-		delete this.recorder;
-		delete this.stream;
+		this.destroyEncoder();
+		this.destroyStream();
+		this.destroyAudioContext();
 	}
-});
+}
+
+const instance = new AudioRecorder;
+
+export { instance as AudioRecorder };

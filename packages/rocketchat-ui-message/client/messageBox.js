@@ -6,6 +6,7 @@ import { katex } from 'meteor/rocketchat:katex';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { settings } from 'meteor/rocketchat:settings';
 import {
+	AudioRecorder,
 	ChatSubscription,
 	RoomManager,
 	KonchatNotification,
@@ -226,8 +227,7 @@ Template.messageBox.helpers({
 		return !Template.instance().sendIconDisabled.get();
 	},
 	isAudioMessageAllowed() {
-		return (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
-			navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
+		return AudioRecorder.isSupported() &&
 			settings.get('FileUpload_Enabled') &&
 			settings.get('Message_AudioRecorderEnabled') &&
 			(!settings.get('FileUpload_MediaTypeWhiteList') ||
