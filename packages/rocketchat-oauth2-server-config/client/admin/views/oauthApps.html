@@ -1,8 +1,12 @@
 <template name="oauthApps">
-	<div class="permissions-manager">
+	<section class="permissions-manager page-container page-home page-static page-list">
+		{{# header sectionName=pageTitle}}
+			<div class="rc-header__section-button">
+				<a href="{{pathFor "admin-oauth-app"}}" class="rc-button rc-button--primary new-role">{{_ "New_Application"}}</a>
+			</div>
+		{{/header}}
+		<div class="content">
 		{{#if hasPermission}}
-			<a href="{{pathFor "admin-oauth-app"}}" class="button primary new-role">{{_ "New_Application"}}</a>
-
 			<div class="rocket-form">
 				<div class="section">
 					<div class="admin-integrations-new-panel">
@@ -29,5 +33,6 @@
 		{{else}}
 			{{_ "Not_authorized"}}
 		{{/if}}
-	</div>
+		</div>
+	</section>
 </template>
