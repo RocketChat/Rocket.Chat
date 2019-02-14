@@ -1,8 +1,12 @@
+import { settings } from 'meteor/rocketchat:settings';
+import { validateCustomFields, saveCustomFieldsWithoutValidation } from '.';
 import s from 'underscore.string';
 
-RocketChat.saveCustomFields = function(userId, formData) {
-	if (s.trim(RocketChat.settings.get('Accounts_CustomFields')) !== '') {
-		RocketChat.validateCustomFields(formData);
-		return RocketChat.saveCustomFieldsWithoutValidation(userId, formData);
+export const saveCustomFields = function(userId, formData) {
+	if (s.trim(settings.get('Accounts_CustomFields')) !== '') {
+		validateCustomFields(formData);
+		return saveCustomFieldsWithoutValidation(userId, formData);
 	}
 };
+
+RocketChat.saveCustomFields = saveCustomFields;

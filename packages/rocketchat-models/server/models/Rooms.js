@@ -26,6 +26,159 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setReactionsInLastMessage(roomId, lastMessage) {
+		return this.update({ _id: roomId }, { $set: { lastMessage } });
+	}
+
+	unsetReactionsInLastMessage(roomId) {
+		return this.update({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
+	}
+
+	updateLastMessageStar(roomId, userId, starred) {
+		let update;
+		const query = { _id: roomId };
+
+		if (starred) {
+			update = {
+				$addToSet: {
+					'lastMessage.starred': { _id: userId },
+				},
+			};
+		} else {
+			update = {
+				$pull: {
+					'lastMessage.starred': { _id: userId },
+				},
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
+		const query =	{ _id: roomId };
+
+		const msg = `\`\`\`${ message.msg }\`\`\``;
+
+		const update = {
+			$set: {
+				'lastMessage.msg': msg,
+				'lastMessage.snippeted': snippeted,
+				'lastMessage.snippetedAt': snippetedAt || new Date,
+				'lastMessage.snippetedBy': snippetedBy,
+				'lastMessage.snippetName': snippetName,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
+		const query = { _id: roomId };
+
+		const update = {
+			$set: {
+				'lastMessage.pinned': pinned,
+				'lastMessage.pinnedAt': pinnedAt || new Date,
+				'lastMessage.pinnedBy': pinnedBy,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setSentiment(roomId, sentiment) {
+		return this.update({ _id: roomId }, { $set: { sentiment } });
+	}
+
+	setDescriptionById(_id, description) {
+		const query = {
+			_id,
+		};
+		const update = {
+			$set: {
+				description,
+			},
+		};
+		return this.update(query, update);
+	}
+
+	setStreamingOptionsById(_id, streamingOptions) {
+		const update = {
+			$set: {
+				streamingOptions,
+			},
+		};
+		return this.update({ _id }, update);
+	}
+
+	setTokenpassById(_id, tokenpass) {
+		const update = {
+			$set: {
+				tokenpass,
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
+	setReadOnlyById(_id, readOnly, hasPermission) {
+		if (!hasPermission) {
+			throw new Error('You must provide "hasPermission" function to be able to call this method');
+		}
+		const query = {
+			_id,
+		};
+		const update = {
+			$set: {
+				ro: readOnly,
+				muted: [],
+			},
+		};
+		if (readOnly) {
+			Subscriptions.findByRoomIdWhenUsernameExists(_id, { fields: { 'u._id': 1, 'u.username': 1 } }).forEach(function({ u: user }) {
+				if (hasPermission(user._id, 'post-readonly')) {
+					return;
+				}
+				return update.$set.muted.push(user.username);
+			});
+		} else {
+			update.$unset = {
+				muted: '',
+			};
+		}
+
+		if (update.$set.muted.length === 0) {
+			delete update.$set.muted;
+		}
+
+		return this.update(query, update);
+	}
+
+	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
+		const query = {
+			_id,
+		};
+		const update = {
+			$set: {
+				reactWhenReadOnly: allowReacting,
+			},
+		};
+		return this.update(query, update);
+	}
+
+	setSystemMessagesById = function(_id, systemMessages) {
+		const query = {
+			_id,
+		};
+		const update = {
+			$set: {
+				sysMes: systemMessages,
+			},
+		};
+		return this.update(query, update);
+	}
+
 	setE2eKeyId(_id, e2eKeyId, options) {
 		const query = {
 			_id,

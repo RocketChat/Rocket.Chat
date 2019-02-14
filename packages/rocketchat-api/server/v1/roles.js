@@ -1,16 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Roles } from 'meteor/rocketchat:models';
+import { API } from '../api';
 
-RocketChat.API.v1.addRoute('roles.list', { authRequired: true }, {
+API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
-		const roles = RocketChat.models.Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
+		const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
 
-		return RocketChat.API.v1.success({ roles });
+		return API.v1.success({ roles });
 	},
 });
 
-RocketChat.API.v1.addRoute('roles.create', { authRequired: true }, {
+API.v1.addRoute('roles.create', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
 			name: String,
@@ -28,13 +29,13 @@ RocketChat.API.v1.addRoute('roles.create', { authRequired: true }, {
 			Meteor.call('authorization:saveRole', roleData);
 		});
 
-		return RocketChat.API.v1.success({
-			role: RocketChat.models.Roles.findOneByIdOrName(roleData.name, { fields: RocketChat.API.v1.defaultFieldsToExclude }),
+		return API.v1.success({
+			role: Roles.findOneByIdOrName(roleData.name, { fields: API.v1.defaultFieldsToExclude }),
 		});
 	},
 });
 
-RocketChat.API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
+API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
 			roleName: String,
@@ -48,8 +49,8 @@ RocketChat.API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 			Meteor.call('authorization:addUserToRole', this.bodyParams.roleName, user.username, this.bodyParams.roomId);
 		});
 
-		return RocketChat.API.v1.success({
-			role: RocketChat.models.Roles.findOneByIdOrName(this.bodyParams.roleName, { fields: RocketChat.API.v1.defaultFieldsToExclude }),
+		return API.v1.success({
+			role: Roles.findOneByIdOrName(this.bodyParams.roleName, { fields: API.v1.defaultFieldsToExclude }),
 		});
 	},
 });

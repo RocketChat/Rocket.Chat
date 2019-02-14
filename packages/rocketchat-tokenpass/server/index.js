@@ -2,7 +2,6 @@ import '../lib/common';
 import './startup';
 import './functions/getProtectedTokenpassBalances';
 import './functions/getPublicTokenpassBalances';
-import './functions/saveRoomTokens';
 import './functions/saveRoomTokensMinimumBalance';
 import './functions/updateUserTokenpassBalances';
 import './models/indexes';
