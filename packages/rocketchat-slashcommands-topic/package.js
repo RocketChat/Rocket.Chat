@@ -7,7 +7,9 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use([
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:models',
+		'rocketchat:callbacks',
 		'ecmascript',
 		'rocketchat:authorization',
 	]);
