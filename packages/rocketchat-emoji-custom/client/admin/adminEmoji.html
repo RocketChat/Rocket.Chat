@@ -22,33 +22,50 @@
 					<div class="results">
 						{{{_ "Showing_results" customemoji.length}}}
 					</div>
-					<div class="list">
-						<table class="secondary-background-color">
-							<thead>
-								<tr class="admin-table-row">
-									<th class="content-background-color border-component-color">&nbsp;</th>
-									<th class="content-background-color border-component-color" width="51%">{{_ "Name"}}</th>
-									<th class="content-background-color border-component-color" width="49%">{{_ "Aliases"}}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{{#each customemoji}}
-								<tr class="emoji-info row-link admin-table-row">
-									<td class="border-component-color">
-										<div class="emojiAdminPreview-image">
-											{{> emojiPreview name=name extension=extension}}
+					{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+						<thead>
+							<tr>
+								<th width="50%">
+									<div class="table-fake-th">{{_ "Name"}}</div>
+								</th>
+								<th width="50%">
+									<div class="table-fake-th">{{_ "Aliases"}}</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each customemoji}}
+							<tr>
+								<td width="50%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{name}}
+											</span>
 										</div>
-									</td>
-									<td class="border-component-color">{{name}}</td>
-									<td class="border-component-color">{{aliases}}</td>
-								</tr>
-								{{/each}}
-							</tbody>
-						</table>
-						{{#if hasMore}}
-							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
-						{{/if}}
-					</div>
+									</div>
+								</td>
+								<td width="50%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{aliases}}
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							{{else}} {{# with searchText}}
+							<tr class="table-no-click">
+								<td>{{_ "No_results_found_for"}} {{.}}</td>
+							</tr>
+							{{/with}} {{/each}} {{#unless isReady}}
+							<tr class="table-no-click">
+								<td class="table-loading-td">{{> loading}}</td>
+							</tr>
+							{{/unless}}
+						</tbody>
+					{{/table}}
 				{{/unless}}
 			</div>
 		</section>

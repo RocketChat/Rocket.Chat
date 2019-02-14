@@ -19,7 +19,7 @@ Meteor.startup(() => {
 });
 
 function getEmailContent({ message, user, room }) {
-	const lng = (user && user.language) || settings.get('language') || 'en';
+	const lng = (user && user.language) || settings.get('Language') || 'en';
 
 	const roomName = s.escapeHTML(`#${ roomTypes.getRoomName(room.t, room) }`);
 	const userName = s.escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
