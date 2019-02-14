@@ -1,1 +1,1 @@
-export { Katex } from '../lib/katex';
+export { default as katex } from '../lib/katex';

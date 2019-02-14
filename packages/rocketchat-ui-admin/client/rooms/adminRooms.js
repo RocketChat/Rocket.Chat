@@ -14,6 +14,10 @@ import s from 'underscore.string';
 export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		const instance = Template.instance();
 		return instance.ready && instance.ready.get();
@@ -55,6 +59,27 @@ Template.adminRooms.helpers({
 			tabBar: Template.instance().tabBar,
 		};
 	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
+				return instance.limit.set(instance.limit.get() + 50);
+			}
+		};
+	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function(item) {
+			Session.set('adminRoomsSelected', {
+				rid: item._id,
+			});
+			instance.tabBar.open('admin-room');
+		};
+	},
+
 });
 
 Template.adminRooms.onCreated(function() {
@@ -140,18 +165,6 @@ Template.adminRooms.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	},
-	'click .room-info'(e, instance) {
-		e.preventDefault();
-		Session.set('adminRoomsSelected', {
-			rid: this._id,
-		});
-		instance.tabBar.open('admin-room');
-	},
-	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
 	},
 	'change [name=room-type]'(e, t) {
 		t.types.set(t.getSearchTypes());
