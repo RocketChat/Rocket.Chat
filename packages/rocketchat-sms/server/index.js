@@ -1,3 +1,3 @@
 import './settings';
-import './SMS';
+export { SMS } from './SMS';
 import './services/twilio';

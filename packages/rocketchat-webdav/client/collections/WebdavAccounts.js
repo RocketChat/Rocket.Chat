@@ -1,4 +1,4 @@
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { Mongo } from 'meteor/mongo';
+import { WebdavAccounts } from 'meteor/rocketchat:models';
 
-RocketChat.models.WebdavAccounts = new Mongo.Collection('rocketchat_webdav_accounts');
+RocketChat.models.WebdavAccounts = WebdavAccounts;

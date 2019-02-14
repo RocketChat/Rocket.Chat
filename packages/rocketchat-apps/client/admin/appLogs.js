@@ -2,6 +2,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { API } from 'meteor/rocketchat:api';
 import moment from 'moment';
 import hljs from 'highlight.js';
 
@@ -17,8 +18,8 @@ Template.appLogs.onCreated(function() {
 	const id = this.id.get();
 
 	Promise.all([
-		RocketChat.API.get(`apps/${ id }`),
-		RocketChat.API.get(`apps/${ id }/logs`),
+		API.get(`apps/${ id }`),
+		API.get(`apps/${ id }/logs`),
 	]).then((results) => {
 
 		instance.app.set(results[0].app);

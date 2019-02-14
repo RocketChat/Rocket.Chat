@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { getUserPreference } from 'meteor/rocketchat:utils';
 
 Template.oembedYoutubeWidget.helpers({
 	collapsed() {
@@ -8,7 +8,7 @@ Template.oembedYoutubeWidget.helpers({
 			return this.collapsed;
 		} else {
 			const user = Meteor.user();
-			return RocketChat.getUserPreference(user, 'collapseMediaByDefault') === true;
+			return getUserPreference(user, 'collapseMediaByDefault') === true;
 		}
 	},
 });

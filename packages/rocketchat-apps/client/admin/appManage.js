@@ -5,6 +5,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { TAPi18next } from 'meteor/tap:i18n';
 import { isEmail } from 'meteor/rocketchat:utils';
+import { API } from 'meteor/rocketchat:api';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -21,7 +22,7 @@ function getApps(instance) {
 
 	return Promise.all([
 		fetch(`${ HOST }/v1/apps/${ id }?version=${ RocketChat.Info.marketplaceApiVersion }`).then((data) => data.json()),
-		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
+		API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
 	]).then(([remoteApps, [localApp]]) => {
 		remoteApps = remoteApps.sort((a, b) => {
 			if (semver.gt(a.version, b.version)) {
@@ -114,7 +115,7 @@ Template.appManage.onCreated(function() {
 			return;
 		}
 
-		RocketChat.API.get(`apps/${ id }/settings`).then((result) => {
+		API.get(`apps/${ id }/settings`).then((result) => {
 			_morphSettings(result.settings);
 		});
 	};
@@ -263,7 +264,7 @@ async function setActivate(actiavate, e, t) {
 	const status = actiavate ? 'manually_enabled' : 'manually_disabled';
 
 	try {
-		const result = await RocketChat.API.post(`apps/${ t.id.get() }/status`, { status });
+		const result = await API.post(`apps/${ t.id.get() }/status`, { status });
 		const info = t.app.get();
 		info.status = result.status;
 		t.app.set(info);
@@ -301,7 +302,7 @@ Template.appManage.events({
 	'click .js-uninstall': async(e, t) => {
 		t.ready.set(false);
 		try {
-			await RocketChat.API.delete(`apps/${ t.id.get() }`);
+			await API.delete(`apps/${ t.id.get() }`);
 			FlowRouter.go('/admin/apps');
 		} catch (err) {
 			console.warn('Error:', err);
@@ -321,7 +322,7 @@ Template.appManage.events({
 
 		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
 
-		RocketChat.API.post(api, { url }).then(() => {
+		API.post(api, { url }).then(() => {
 			getApps(t).then(() => {
 				el.prop('disabled', false);
 				el.removeClass('loading');
@@ -371,7 +372,7 @@ Template.appManage.events({
 			if (toSave.length === 0) {
 				throw 'Nothing to save..';
 			}
-			const result = await RocketChat.API.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
+			const result = await API.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
 			console.log('Updating results:', result);
 			result.updated.forEach((setting) => {
 				settings[setting.id].value = settings[setting.id].oldValue = setting.value;

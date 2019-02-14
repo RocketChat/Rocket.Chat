@@ -1972,7 +1972,7 @@
   "No_results_found_for": "រកមិនឃើញលទ្ធផលសម្រាប់:",
   "No_snippet_messages": "គ្មានកំណាត់",
   "No_starred_messages": "សារមិនមានផ្កាយ",
-  "No_such_command": "គ្មានពាក្យបញ្ជាបែបនេះទេ: `/ __ command__`",
+  "No_such_command": "គ្មានពាក្យបញ្ជាបែបនេះទេ: `/ __command__`",
   "No_user_with_username_%s_was_found": "មិន​មាន​អ្នក​ប្រើប្រាស់​ឈ្មោះ <strong>\"%s\"</strong> ឡើយ",
   "Nobody_available": "គ្មាននរណាម្នាក់អាចប្រើបានទេ",
   "Node_version": "កំណែថ្នាំង",

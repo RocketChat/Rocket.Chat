@@ -3,6 +3,8 @@ import './admin/cloud';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { AdminBox } from 'meteor/rocketchat:ui-utils';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 
 FlowRouter.route('/admin/cloud', {
 	name: 'cloud-config',
@@ -18,11 +20,11 @@ FlowRouter.route('/admin/cloud/oauth-callback', {
 	},
 });
 
-RocketChat.AdminBox.addOption({
+AdminBox.addOption({
 	icon: 'cloud-plus',
 	href: 'admin/cloud',
 	i18nLabel: 'Cloud',
 	permissionGranted() {
-		return RocketChat.authz.hasAtLeastOnePermission(['manage-cloud']);
+		return hasAtLeastOnePermission(['manage-cloud']);
 	},
 });

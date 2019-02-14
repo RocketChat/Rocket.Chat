@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'banner/dismiss'({ id }) {
@@ -7,6 +7,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'banner/dismiss' });
 		}
 
-		RocketChat.models.Users.setBannerReadById(this.userId, id);
+		Users.setBannerReadById(this.userId, id);
 	},
 });

@@ -4,7 +4,7 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import s from 'underscore.string';
 
 const parseNotEscaped = function(msg, message) {
@@ -22,9 +22,9 @@ const parseNotEscaped = function(msg, message) {
 		return token;
 	};
 
-	const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+	const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
-	if (RocketChat.settings.get('Markdown_Headers')) {
+	if (settings.get('Markdown_Headers')) {
 		// Support # Text for h1
 		msg = msg.replace(/^# (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h1>$1</h1>');
 

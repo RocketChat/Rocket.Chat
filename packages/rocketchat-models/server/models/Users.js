@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from 'meteor/rocketchat:settings';
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import _ from 'underscore';
@@ -17,6 +16,38 @@ export class Users extends Base {
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
+		this.loadSettings();
+	}
+
+	loadSettings() {
+		Meteor.startup(async() => {
+			const { settings } = await import('meteor/rocketchat:settings');
+			this.settings = settings;
+		});
+	}
+
+	setTokenpassTcaBalances(_id, tcaBalances) {
+		const update = {
+			$set: {
+				'services.tokenpass.tcaBalances': tcaBalances,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	getTokenBalancesByUserId(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const options = {
+			fields: {
+				'services.tokenpass.tcaBalances': 1,
+			},
+		};
+
+		return this.findOne(query, options);
 	}
 
 	roleBaseQuery(userId) {
@@ -32,6 +63,21 @@ export class Users extends Base {
 		});
 	}
 
+	rocketMailUnsubscribe(_id, createdAt) {
+		const query = {
+			_id,
+			createdAt: new Date(parseInt(createdAt)),
+		};
+		const update = {
+			$set: {
+				'mailer.unsubscribed': true,
+			},
+		};
+		const affectedRows = this.update(query, update);
+		console.log('[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt(createdAt)), affectedRows);
+		return affectedRows;
+	}
+
 	fetchKeysByUserId(userId) {
 		const user = this.findOne({ _id: userId }, { fields: { e2e: 1 } });
 
@@ -43,6 +89,56 @@ export class Users extends Base {
 			public_key: user.e2e.public_key,
 			private_key: user.e2e.private_key,
 		};
+	}
+
+	disable2FAAndSetTempSecretByUserId(userId, tempToken) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.totp': {
+					enabled: false,
+					tempSecret: tempToken,
+				},
+			},
+		});
+	}
+
+	enable2FAAndSetSecretAndCodesByUserId(userId, secret, backupCodes) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.totp.enabled': true,
+				'services.totp.secret': secret,
+				'services.totp.hashedBackup': backupCodes,
+			},
+			$unset: {
+				'services.totp.tempSecret': 1,
+			},
+		});
+	}
+
+	disable2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.totp': {
+					enabled: false,
+				},
+			},
+		});
+	}
+
+	update2FABackupCodesByUserId(userId, backupCodes) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.totp.hashedBackup': backupCodes,
+			},
+		});
 	}
 
 	findByIdsWithPublicE2EKey(ids, options) {
@@ -200,7 +296,7 @@ export class Users extends Base {
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 
-		const orStmt = _.reduce(settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+		const orStmt = _.reduce(this.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
