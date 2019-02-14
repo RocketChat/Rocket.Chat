@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from './_Base';
 
-RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base {
+export class OEmbedCache extends Base {
 	constructor() {
 		super('oembed_cache');
 		this.tryEnsureIndex({ updatedAt: 1 });
@@ -34,6 +34,6 @@ RocketChat.models.OEmbedCache = new class extends RocketChat.models._Base {
 		};
 		return this.remove(query);
 	}
-};
+}
 
-
+export default new OEmbedCache();

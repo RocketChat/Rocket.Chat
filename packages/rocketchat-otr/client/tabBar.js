@@ -1,13 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
+import { OTR } from './rocketchat.otr';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('OTR_Enable') && window.crypto) {
-			RocketChat.OTR.crypto = window.crypto.subtle || window.crypto.webkitSubtle;
-			RocketChat.OTR.enabled.set(true);
-			RocketChat.TabBar.addButton({
+		if (settings.get('OTR_Enable') && window.crypto) {
+			OTR.crypto = window.crypto.subtle || window.crypto.webkitSubtle;
+			OTR.enabled.set(true);
+			TabBar.addButton({
 				groups: ['direct'],
 				id: 'otr',
 				i18nTitle: 'OTR',
@@ -16,8 +18,8 @@ Meteor.startup(function() {
 				order: 11,
 			});
 		} else {
-			RocketChat.OTR.enabled.set(false);
-			RocketChat.TabBar.removeButton('otr');
+			OTR.enabled.set(false);
+			TabBar.removeButton('otr');
 		}
 	});
 });
