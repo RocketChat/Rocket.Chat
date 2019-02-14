@@ -86,19 +86,11 @@ Meteor.methods({
 
 		const roomFind = RocketChat.roomTypes.getRoomFind(type);
 
-		let room;
+		const room = roomFind ? roomFind.call(this, name) : RocketChat.models.Rooms.findByTypeAndName(type, name);
 
-		if (roomFind) {
-			room = roomFind.call(this, name);
-		} else {
-			room = RocketChat.models.Rooms.findByTypeAndName(type, name).fetch();
-		}
-
-		if (!room || room.length === 0) {
+		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
 		}
-
-		room = room[0];
 
 		if (!Meteor.call('canAccessRoom', room._id, userId)) {
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });

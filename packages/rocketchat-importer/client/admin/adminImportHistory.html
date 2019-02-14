@@ -1,6 +1,6 @@
 <template name="adminImportHistory">
 	<section class="page-container page-home page-static page-settings">
-		{{> header sectionName="Recent_Import_History"}}
+		{{> header sectionName="Recent_Import_History"  ullpage="true"}}
 		<div class="content">
 			{{#unless isAdmin}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
@@ -8,7 +8,7 @@
 				{{#if isPreparing}}
 					{{> loading}}
 				{{else}}
-					<button class="button primary import-list">{{_ "Back"}}</button>
+					<button class="rc-button rc-button--primary import-list">{{_ "Back"}}</button>
 
 					{{#each history}}
 						<div class="section">
