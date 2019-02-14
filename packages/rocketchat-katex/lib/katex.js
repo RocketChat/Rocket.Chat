@@ -1,5 +1,6 @@
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import _ from 'underscore';
 import s from 'underscore.string';
 import katex from 'katex';
@@ -179,15 +180,15 @@ class Katex {
 		return message;
 	}
 
-	isEnabled = () => RocketChat.settings.get('Katex_Enabled')
+	isEnabled = () => settings.get('Katex_Enabled')
 
-	isDollarSyntaxEnabled = () => RocketChat.settings.get('Katex_Dollar_Syntax')
+	isDollarSyntaxEnabled = () => settings.get('Katex_Dollar_Syntax')
 
-	isParenthesisSyntaxEnabled = () => RocketChat.settings.get('Katex_Parenthesis_Syntax')
+	isParenthesisSyntaxEnabled = () => settings.get('Katex_Parenthesis_Syntax')
 }
 
 const instance = new Katex;
 
-RocketChat.callbacks.add('renderMessage', instance.renderMessage, RocketChat.callbacks.priority.HIGH - 1, 'katex');
+callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH - 1, 'katex');
 
 export default instance;

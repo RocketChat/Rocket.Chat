@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import { IMAPIntercepter, POP3Helper } from '../lib/interceptDirectReplyEmails.js';
 
 const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 	console.log('Starting Email Intercepter...');
 
-	if (RocketChat.settings.get('Direct_Reply_Enable') && RocketChat.settings.get('Direct_Reply_Protocol') && RocketChat.settings.get('Direct_Reply_Host') && RocketChat.settings.get('Direct_Reply_Port') && RocketChat.settings.get('Direct_Reply_Username') && RocketChat.settings.get('Direct_Reply_Password')) {
-		if (RocketChat.settings.get('Direct_Reply_Protocol') === 'IMAP') {
+	if (settings.get('Direct_Reply_Enable') && settings.get('Direct_Reply_Protocol') && settings.get('Direct_Reply_Host') && settings.get('Direct_Reply_Port') && settings.get('Direct_Reply_Username') && settings.get('Direct_Reply_Password')) {
+		if (settings.get('Direct_Reply_Protocol') === 'IMAP') {
 			// stop already running IMAP instance
 			if (RocketChat.IMAP && RocketChat.IMAP.isActive()) {
 				console.log('Disconnecting already running IMAP instance...');
@@ -30,7 +31,7 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 				RocketChat.IMAP.start();
 				return true;
 			}
-		} else if (RocketChat.settings.get('Direct_Reply_Protocol') === 'POP') {
+		} else if (settings.get('Direct_Reply_Protocol') === 'POP') {
 			// stop already running POP instance
 			if (RocketChat.POP3 && RocketChat.POP3Helper && RocketChat.POP3Helper.isActive()) {
 				console.log('Disconnecting already running POP instance...');
@@ -64,4 +65,4 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 	}
 }), 1000);
 
-RocketChat.settings.onload(/^Direct_Reply_.+/, startEmailIntercepter);
+settings.onload(/^Direct_Reply_.+/, startEmailIntercepter);

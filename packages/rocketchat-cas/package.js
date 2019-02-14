@@ -9,6 +9,8 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:settings',
 		'rocketchat:logger',
 		'service-configuration',
 		'routepolicy',

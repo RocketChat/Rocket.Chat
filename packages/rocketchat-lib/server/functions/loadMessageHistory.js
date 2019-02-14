@@ -1,6 +1,10 @@
+import { settings } from 'meteor/rocketchat:settings';
+import { Messages } from 'meteor/rocketchat:models';
+import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
+
 const hideMessagesOfType = [];
 
-RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {
+settings.get(/Message_HideType_.+/, function(key, value) {
 	const type = key.replace('Message_HideType_', '');
 	const types = type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type];
 
@@ -17,7 +21,7 @@ RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {
 	});
 });
 
-RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
+export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 	const options = {
 		sort: {
 			ts: -1,
@@ -25,7 +29,7 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 		limit,
 	};
 
-	if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+	if (!settings.get('Message_ShowEditedStatus')) {
 		options.fields = {
 			editedAt: 0,
 		};
@@ -33,11 +37,11 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 
 	let records;
 	if (end != null) {
-		records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
+		records = Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
 	} else {
-		records = RocketChat.models.Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
+		records = Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
 	}
-	const messages = records.map((record) => RocketChat.composeMessageObjectWithUser(record, userId));
+	const messages = records.map((record) => composeMessageObjectWithUser(record, userId));
 	let unreadNotLoaded = 0;
 	let firstUnread;
 
@@ -47,7 +51,7 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
 
-			const unreadMessages = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hideMessagesOfType, {
+			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hideMessagesOfType, {
 				limit: 1,
 				sort: {
 					ts: 1,
@@ -65,3 +69,5 @@ RocketChat.loadMessageHistory = function loadMessageHistory({ userId, rid, end, 
 		unreadNotLoaded,
 	};
 };
+
+RocketChat.loadMessageHistory = loadMessageHistory;

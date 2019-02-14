@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(() => {
-	RocketChat.settings.add('Markdown_Parser', 'original', {
+	settings.add('Markdown_Parser', 'original', {
 		type: 'select',
 		values: [{
 			key: 'disabled',
@@ -20,14 +20,14 @@ Meteor.startup(() => {
 	});
 
 	const enableQueryOriginal = { _id: 'Markdown_Parser', value: 'original' };
-	RocketChat.settings.add('Markdown_Headers', false, {
+	settings.add('Markdown_Headers', false, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
 		enableQuery: enableQueryOriginal,
 	});
-	RocketChat.settings.add('Markdown_SupportSchemesForLink', 'http,https', {
+	settings.add('Markdown_SupportSchemesForLink', 'http,https', {
 		type: 'string',
 		group: 'Message',
 		section: 'Markdown',
@@ -37,28 +37,28 @@ Meteor.startup(() => {
 	});
 
 	const enableQueryMarked = { _id: 'Markdown_Parser', value: 'marked' };
-	RocketChat.settings.add('Markdown_Marked_GFM', true, {
+	settings.add('Markdown_Marked_GFM', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
 		enableQuery: enableQueryMarked,
 	});
-	RocketChat.settings.add('Markdown_Marked_Tables', true, {
+	settings.add('Markdown_Marked_Tables', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
 		enableQuery: enableQueryMarked,
 	});
-	RocketChat.settings.add('Markdown_Marked_Breaks', true, {
+	settings.add('Markdown_Marked_Breaks', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
 		enableQuery: enableQueryMarked,
 	});
-	RocketChat.settings.add('Markdown_Marked_Pedantic', false, {
+	settings.add('Markdown_Marked_Pedantic', false, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
@@ -71,14 +71,14 @@ Meteor.startup(() => {
 			value: false,
 		}],
 	});
-	RocketChat.settings.add('Markdown_Marked_SmartLists', true, {
+	settings.add('Markdown_Marked_SmartLists', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
 		public: true,
 		enableQuery: enableQueryMarked,
 	});
-	RocketChat.settings.add('Markdown_Marked_Smartypants', true, {
+	settings.add('Markdown_Marked_Smartypants', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Markdown',
