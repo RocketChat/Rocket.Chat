@@ -36,7 +36,7 @@ store.on('error', (e) => {
 
 WebApp.connectHandlers.use(session({
 	secret: 'grant',
-	store: store,
+	store,
 	resave: true,
 	saveUninitialized: true,
 }));
