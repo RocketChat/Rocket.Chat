@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
-RocketChat.API.v1.addRoute('livechat/agent.info/:rid/:token', {
+API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	get() {
 		try {
 			check(this.urlParams, {
@@ -26,14 +27,14 @@ RocketChat.API.v1.addRoute('livechat/agent.info/:rid/:token', {
 				throw new Meteor.Error('invalid-agent');
 			}
 
-			return RocketChat.API.v1.success({ agent });
+			return API.v1.success({ agent });
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/agent.next/:token', {
+API.v1.addRoute('livechat/agent.next/:token', {
 	get() {
 		try {
 			check(this.urlParams, {
@@ -46,7 +47,7 @@ RocketChat.API.v1.addRoute('livechat/agent.next/:token', {
 
 			const { token } = this.urlParams;
 			const room = findOpenRoom(token);
-			if (room) {
+			if (!room) {
 				throw new Meteor.Error('invalid-token');
 			}
 
@@ -68,9 +69,9 @@ RocketChat.API.v1.addRoute('livechat/agent.next/:token', {
 				throw new Meteor.Error('invalid-agent');
 			}
 
-			return RocketChat.API.v1.success({ agent });
+			return API.v1.success({ agent });
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });

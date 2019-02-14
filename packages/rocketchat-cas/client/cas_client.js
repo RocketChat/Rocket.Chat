@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 const openCenteredPopup = function(url, width, height) {
 
@@ -29,9 +29,9 @@ Meteor.loginWithCas = function(options, callback) {
 	options = options || {};
 
 	const credentialToken = Random.id();
-	const login_url = RocketChat.settings.get('CAS_login_url');
-	const popup_width = RocketChat.settings.get('CAS_popup_width');
-	const popup_height = RocketChat.settings.get('CAS_popup_height');
+	const login_url = settings.get('CAS_login_url');
+	const popup_width = settings.get('CAS_popup_width');
+	const popup_height = settings.get('CAS_popup_height');
 
 	if (!login_url) {
 		return;
