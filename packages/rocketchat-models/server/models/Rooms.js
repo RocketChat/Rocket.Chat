@@ -26,6 +26,59 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	updateLastMessageStar(roomId, userId, starred) {
+		let update;
+		const query = { _id: roomId };
+
+		if (starred) {
+			update = {
+				$addToSet: {
+					'lastMessage.starred': { _id: userId },
+				},
+			};
+		} else {
+			update = {
+				$pull: {
+					'lastMessage.starred': { _id: userId },
+				},
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
+		const query =	{ _id: roomId };
+
+		const msg = `\`\`\`${ message.msg }\`\`\``;
+
+		const update = {
+			$set: {
+				'lastMessage.msg': msg,
+				'lastMessage.snippeted': snippeted,
+				'lastMessage.snippetedAt': snippetedAt || new Date,
+				'lastMessage.snippetedBy': snippetedBy,
+				'lastMessage.snippetName': snippetName,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
+		const query = { _id: roomId };
+
+		const update = {
+			$set: {
+				'lastMessage.pinned': pinned,
+				'lastMessage.pinnedAt': pinnedAt || new Date,
+				'lastMessage.pinnedBy': pinnedBy,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	setSentiment(roomId, sentiment) {
 		return this.update({ _id: roomId }, { $set: { sentiment } });
 	}
