@@ -15,7 +15,7 @@ Meteor.startup(() => {
 });
 
 function getEmailContent({ message, user, room }) {
-	const lng = (user && user.language) || RocketChat.settings.get('language') || 'en';
+	const lng = (user && user.language) || RocketChat.settings.get('Language') || 'en';
 
 	const roomName = s.escapeHTML(`#${ RocketChat.roomTypes.getRoomName(room.t, room) }`);
 	const userName = s.escapeHTML(RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
