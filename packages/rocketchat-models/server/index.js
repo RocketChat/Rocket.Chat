@@ -19,6 +19,7 @@ import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
 import CredentialTokens from './models/CredentialTokens';
 import EmojiCustom from './models/EmojiCustom';
+import OAuthApps from './models/OAuthApps';
 
 export {
 	Base,
@@ -42,4 +43,5 @@ export {
 	IntegrationHistory,
 	CredentialTokens,
 	EmojiCustom,
+	OAuthApps,
 };

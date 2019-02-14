@@ -26,6 +26,27 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	updateLastMessageStar(roomId, userId, starred) {
+		let update;
+		const query = { _id: roomId };
+
+		if (starred) {
+			update = {
+				$addToSet: {
+					'lastMessage.starred': { _id: userId },
+				},
+			};
+		} else {
+			update = {
+				$pull: {
+					'lastMessage.starred': { _id: userId },
+				},
+			};
+		}
+
+		return this.update(query, update);
+	}
+
 	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
 		const query =	{ _id: roomId };
 
