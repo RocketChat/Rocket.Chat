@@ -180,15 +180,28 @@
 		}
 
 		&-timer {
-			width: 50px;
-		}
+			margin: 0 -0.25rem;
+			align-items: center;
+			justify-content: center;
 
-		&-timer-dot {
-			color: red;
+			&-dot,
+			&-text {
+				margin: 0 0.25rem;
+			}
 
-			font-size: 1.5em;
+			&-text {
+				min-width: 3em;
+			}
 
-			line-height: 0.8em;
+			&-dot {
+				flex: 0 0 auto;
+
+				width: 0.5rem;
+				height: 0.5rem;
+
+				border-radius: 50%;
+				background-color: red;
+			}
 		}
 
 		&-loading {

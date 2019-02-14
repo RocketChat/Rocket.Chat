@@ -85,6 +85,7 @@ const recordingRoomId = new ReactiveVar(null);
 
 Template.messageBoxAudioMessage.onCreated(function() {
 	this.state = new ReactiveVar(null);
+	this.time = new ReactiveVar('00:00');
 });
 
 Template.messageBoxAudioMessage.helpers({
@@ -95,6 +96,10 @@ Template.messageBoxAudioMessage.helpers({
 
 		const state = Template.instance().state.get();
 		return state && `rc-message-box__audio-message--${ state }`;
+	},
+
+	time() {
+		return Template.instance().time.get();
 	},
 });
 
@@ -109,9 +114,6 @@ Template.messageBoxAudioMessage.events({
 		chatMessages[RoomManager.openedRoom].recording = true;
 		instance.state.set('recording');
 
-		const timer = instance.find('.rc-message-box__audio-message-timer-text');
-		timer.innerText = '00:00';
-
 		await startRecording();
 
 		const startTime = new Date;
@@ -120,7 +122,7 @@ Template.messageBoxAudioMessage.events({
 			const distance = (now.getTime() - startTime.getTime()) / 1000;
 			const minutes = Math.floor(distance / 60);
 			const seconds = Math.floor(distance % 60);
-			timer.innerText = `${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`;
+			instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
 		}, 1000));
 		recordingRoomId.set(this.rid);
 	},
@@ -128,14 +130,13 @@ Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-cancel'(event, instance) {
 		event.preventDefault();
 
-		const timer = instance.find('.rc-message-box__audio-message-timer-text');
-		timer.innerText = '00:00';
-
 		if (recordingInterval.get()) {
 			clearInterval(recordingInterval);
 			recordingInterval.set(null);
 			recordingRoomId.set(null);
 		}
+
+		instance.time.set('00:00');
 
 		await stopRecording();
 
@@ -148,14 +149,13 @@ Template.messageBoxAudioMessage.events({
 
 		instance.state.set('loading');
 
-		const timer = instance.find('.rc-message-box__audio-message-timer-text');
-		timer.innerText = '00:00';
-
 		if (recordingInterval.get()) {
 			clearInterval(recordingInterval);
 			recordingInterval.set(null);
 			recordingRoomId.set(null);
 		}
+
+		instance.time.set('00:00');
 
 		const blob = await stopRecording();
 
