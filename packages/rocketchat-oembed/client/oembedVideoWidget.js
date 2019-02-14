@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { getUserPreference } from 'meteor/rocketchat:utils';
 
 const getTitle = function(self) {
 	if (self.meta == null) {
@@ -31,7 +31,7 @@ Template.oembedVideoWidget.helpers({
 		if (this.collapsed) {
 			return this.collapsed;
 		} else {
-			return RocketChat.getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
+			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
 	},
 

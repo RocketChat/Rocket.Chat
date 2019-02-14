@@ -15,6 +15,12 @@ import Statistics from './models/Statistics';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
+import Integrations from './models/Integrations';
+import IntegrationHistory from './models/IntegrationHistory';
+import CredentialTokens from './models/CredentialTokens';
+import EmojiCustom from './models/EmojiCustom';
+import OAuthApps from './models/OAuthApps';
+import OEmbedCache from './models/OEmbedCache';
 
 export {
 	Base,
@@ -34,4 +40,10 @@ export {
 	Permissions,
 	Roles,
 	CustomSounds,
+	Integrations,
+	IntegrationHistory,
+	CredentialTokens,
+	EmojiCustom,
+	OAuthApps,
+	OEmbedCache,
 };

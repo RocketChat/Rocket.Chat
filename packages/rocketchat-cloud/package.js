@@ -8,8 +8,14 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:authorization',
+		'rocketchat:models',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:settings',
 		'templating',
+		'kadira:flow-router',
+		'kadira:blaze-layout',
 	]);
 
 	api.mainModule('client/index.js', 'client');

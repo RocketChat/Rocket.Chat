@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Messages, Subscriptions } from 'meteor/rocketchat:models';
 
 // Action Links namespace creation.
-RocketChat.actionLinks = {
+export const actionLinks = {
 	actions: {},
 	register(name, funct) {
-		RocketChat.actionLinks.actions[name] = funct;
+		actionLinks.actions[name] = funct;
 	},
 	getMessage(name, messageId) {
 		const userId = Meteor.userId();
@@ -13,12 +13,12 @@ RocketChat.actionLinks = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'actionLinks.getMessage' });
 		}
 
-		const message = RocketChat.models.Messages.findOne({ _id: messageId });
+		const message = Messages.findOne({ _id: messageId });
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { function: 'actionLinks.getMessage' });
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOne({
+		const subscription = Subscriptions.findOne({
 			rid: message.rid,
 			'u._id': userId,
 		});
