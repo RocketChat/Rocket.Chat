@@ -9,7 +9,7 @@ Meteor.startup(() => {
 		id: 'clean-history',
 		anonymous: true,
 		i18nTitle: 'Prune_Messages',
-		icon: 'trash',
+		icon: 'eraser',
 		template: 'cleanHistory',
 		order: 250,
 		condition: () => hasAllPermission('clean-channel-history', Session.get('openedRoom')),

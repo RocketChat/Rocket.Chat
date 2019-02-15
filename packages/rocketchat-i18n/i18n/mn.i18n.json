@@ -1862,7 +1862,7 @@
   "No_results_found_for": "Үр дүн олдсонгүй:",
   "No_snippet_messages": "Ямар ч хэсэг",
   "No_starred_messages": "Зурвасгүй од байхгүй",
-  "No_such_command": "Ийм тушаал алга байна: `/ __ command__`",
+  "No_such_command": "Ийм тушаал алга байна: `/ __command__`",
   "No_user_with_username_%s_was_found": "Хэрэглэгчийн нэргүй хэрэглэгч <strong>\"%s\"</strong>олдсон!",
   "Nobody_available": "Хэн ч байхгүй",
   "Node_version": "Цэгийн хувилбар",
