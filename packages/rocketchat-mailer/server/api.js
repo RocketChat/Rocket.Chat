@@ -13,9 +13,15 @@ let Settings = {
 	get: () => {},
 };
 
-export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
+// define server language for email translations
+// @TODO: change TAPi18n.__ function to use the server language by default
+let lng = 'en';
+settings.get('Language', (key, value) => {
+	lng = value || 'en';
+});
 
-export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key));
+export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
+export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
 export const replace = function replace(str, data = {}) {
 	if (!str) {
 		return '';

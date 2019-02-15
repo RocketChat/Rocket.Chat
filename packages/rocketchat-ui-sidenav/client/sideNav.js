@@ -64,6 +64,20 @@ Template.sideNav.events({
 	'dropped .sidebar'(e) {
 		return e.preventDefault();
 	},
+
+	'mouseenter .sidebar-item__link'(e) {
+		const element = e.currentTarget;
+		setTimeout(() => {
+			const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
+			const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
+
+			if (isTextEllipsed) {
+				element.setAttribute('title', element.getAttribute('aria-label'));
+			} else {
+				element.removeAttribute('title');
+			}
+		}, 0);
+	},
 });
 
 Template.sideNav.onRendered(function() {

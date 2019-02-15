@@ -1,0 +1,10 @@
+<template name="messageBoxReplyPreview" args="replyMessageData input">
+	<div class="reply-preview message-popup">
+		<div class="message">
+			{{> messageAttachment text=replyMessageData.msg author_name=replyMessageData.u.username}}
+		</div>
+		<div class="rc-message-box__icon cancel-reply">
+			{{> icon block="rc-input__icon-svg" icon="cross"}}
+		</div>
+	</div>
+</template>

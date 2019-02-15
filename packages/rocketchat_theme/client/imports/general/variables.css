@@ -56,7 +56,7 @@
 	--status-invisible-sidebar: var(--rc-color-primary-darkest);
 	--default-padding: 1.5rem;
 	--default-small-padding: 1rem;
-	--status-bullet-size: 12px;
+	--status-bullet-size: 10px;
 	--status-bullet-radius: 50%;
 	--account-username-weight: 700;
 	--status-name-weight: 400;
@@ -326,4 +326,5 @@
 	--alerts-background: #1d73f5;
 	--alerts-color: var(--color-white);
 	--alerts-font-size: var(--text-default-size);
+	--content-page-padding: 2.5rem;
 }

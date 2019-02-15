@@ -1862,7 +1862,7 @@
   "No_results_found_for": "ບໍ່ພົບຜົນລັບສໍາລັບ:",
   "No_snippet_messages": "ບໍ່ມີຕົວຢ່າງ",
   "No_starred_messages": "ບໍ່ມີຂໍ້ຄວາມທີ່ຕິດດາວ",
-  "No_such_command": "ບໍ່ມີຄໍາສັ່ງດັ່ງກ່າວ: `/ __ command__`",
+  "No_such_command": "ບໍ່ມີຄໍາສັ່ງດັ່ງກ່າວ: `/ __command__`",
   "No_user_with_username_%s_was_found": "ຜູ້ໃຊ້ທີ່ມີຊື່ຜູ້ໃຊ້ <strong>\" %s\"</strong> ບໍ່ໄດ້ພົບເຫັນ!",
   "Nobody_available": "ບໍ່ມີໃຜມີ",
   "Node_version": "ສະບັບ node",
