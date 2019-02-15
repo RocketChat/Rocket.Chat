@@ -8,7 +8,7 @@ Meteor.methods({
 	'livechat:closeByVisitor'({ roomId, token }) {
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 
-		const language = (visitor && visitor.language) || RocketChat.settings.get('language') || 'en';
+		const language = (visitor && visitor.language) || RocketChat.settings.get('Language') || 'en';
 
 		return Livechat.closeRoom({
 			visitor,

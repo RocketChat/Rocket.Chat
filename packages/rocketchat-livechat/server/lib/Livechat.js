@@ -820,7 +820,7 @@ export const Livechat = {
 		const room = Rooms.findOneById(rid);
 
 		const visitor = LivechatVisitors.getVisitorByToken(token);
-		const userLanguage = (visitor && visitor.language) || settings.get('language') || 'en';
+		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
 
 		// allow to only user to send transcripts from their own chats
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
