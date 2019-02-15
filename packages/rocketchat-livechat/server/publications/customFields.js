@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { hasPermission } from 'meteor/rocketchat:authorization';
-import { LivechatCustomField } from '../models';
+import { LivechatCustomField } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 Meteor.publish('livechat:customFields', function(_id) {

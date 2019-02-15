@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { Base, Users } from 'meteor/rocketchat:models';
+import { Base } from './_Base';
+import { Users } from './Users';
 import _ from 'underscore';
 /**
  * Livechat Department model
  */
-class LivechatDepartmentAgentsClass extends Base {
+export class LivechatDepartmentAgents extends Base {
 	constructor() {
 		super('livechat_department_agents');
 	}
@@ -133,5 +134,4 @@ class LivechatDepartmentAgentsClass extends Base {
 		return this.update(query, update, { multi: true });
 	}
 }
-export const LivechatDepartmentAgents = new LivechatDepartmentAgentsClass();
-RocketChat.models.LivechatDepartmentAgents = LivechatDepartmentAgents;
+export default new LivechatDepartmentAgents();

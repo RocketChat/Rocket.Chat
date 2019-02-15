@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Base, Settings } from 'meteor/rocketchat:models';
+import { Base } from './_Base';
+import { Settings } from './Settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-class LivechatVisitorsClass extends Base {
+export class LivechatVisitors extends Base {
 	constructor() {
 		super('livechat_visitor');
 	}
@@ -207,4 +208,4 @@ class LivechatVisitorsClass extends Base {
 	}
 }
 
-export default new LivechatVisitorsClass();
+export default new LivechatVisitors();
