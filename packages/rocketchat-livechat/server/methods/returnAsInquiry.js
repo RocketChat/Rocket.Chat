@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:returnAsInquiry'(rid, departmentId) {
@@ -7,6 +8,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveDepartment' });
 		}
 
-		return RocketChat.Livechat.returnRoomAsInquiry(rid, departmentId);
+		return Livechat.returnRoomAsInquiry(rid, departmentId);
 	},
 });

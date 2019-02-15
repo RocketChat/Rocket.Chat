@@ -4,6 +4,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import { sendNotification } from 'meteor/rocketchat:lib';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { Livechat } from './Livechat';
 
 RocketChat.QueueMethods = {
 	/* Least Amount Queuing method:
@@ -13,7 +14,7 @@ RocketChat.QueueMethods = {
 	 */
 	'Least_Amount'(guest, message, roomInfo, agent) {
 		if (!agent) {
-			agent = RocketChat.Livechat.getNextAgent(guest.department);
+			agent = Livechat.getNextAgent(guest.department);
 			if (!agent) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
@@ -72,7 +73,7 @@ RocketChat.QueueMethods = {
 
 		RocketChat.models.Subscriptions.insert(subscriptionData);
 
-		RocketChat.Livechat.stream.emit(room._id, {
+		Livechat.stream.emit(room._id, {
 			type: 'agentData',
 			data: RocketChat.models.Users.getAgentInfo(agent.agentId),
 		});
@@ -89,10 +90,10 @@ RocketChat.QueueMethods = {
 	 * only the client until paired with an agent
 	 */
 	'Guest_Pool'(guest, message, roomInfo) {
-		let agents = RocketChat.Livechat.getOnlineAgents(guest.department);
+		let agents = Livechat.getOnlineAgents(guest.department);
 
 		if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
-			agents = RocketChat.Livechat.getAgents(guest.department);
+			agents = Livechat.getAgents(guest.department);
 		}
 
 		if (agents.count() === 0) {

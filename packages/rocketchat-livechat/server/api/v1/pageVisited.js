@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
 import _ from 'underscore';
 import { findGuest, findRoom } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/page.visited', {
 	post() {
@@ -32,7 +32,7 @@ API.v1.addRoute('livechat/page.visited', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const obj = RocketChat.Livechat.savePageHistory(token, rid, pageInfo);
+			const obj = Livechat.savePageHistory(token, rid, pageInfo);
 			if (obj) {
 				const page = _.pick(obj, 'msg', 'navigation');
 				return API.v1.success({ page });

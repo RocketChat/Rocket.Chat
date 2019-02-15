@@ -4,6 +4,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
 
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
+import { Livechat } from '../../../server/lib/Livechat';
 
 /**
  * @api {post} /livechat/facebook Send Facebook message
@@ -71,7 +72,7 @@ API.v1.addRoute('livechat/facebook', {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = this.bodyParams.token;
 
-			const userId = RocketChat.Livechat.registerGuest({
+			const userId = Livechat.registerGuest({
 				token: sendMessage.message.token,
 				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`,
 			});
@@ -85,7 +86,7 @@ API.v1.addRoute('livechat/facebook', {
 		try {
 			return {
 				sucess: true,
-				message: RocketChat.Livechat.sendMessage(sendMessage),
+				message: Livechat.sendMessage(sendMessage),
 			};
 		} catch (e) {
 			console.error('Error using Facebook ->', e);

@@ -5,6 +5,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest, findRoom } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/message', {
 	post() {
@@ -45,7 +46,7 @@ API.v1.addRoute('livechat/message', {
 				agent,
 			};
 
-			const result = RocketChat.Livechat.sendMessage(sendMessage);
+			const result = Livechat.sendMessage(sendMessage);
 			if (result) {
 				const message = { _id: result._id, rid: result.rid, msg: result.msg, u: result.u, ts: result.ts };
 				return API.v1.success({ message });
@@ -91,7 +92,7 @@ API.v1.addRoute('livechat/message/:_id', {
 
 			const message = { _id: msg._id, msg: this.bodyParams.msg };
 
-			const result = RocketChat.Livechat.updateMessage({ guest, message });
+			const result = Livechat.updateMessage({ guest, message });
 			if (result) {
 				const data = RocketChat.models.Messages.findOneById(_id);
 				return API.v1.success({
@@ -133,7 +134,7 @@ API.v1.addRoute('livechat/message/:_id', {
 				throw new Meteor.Error('invalid-message');
 			}
 
-			const result = RocketChat.Livechat.deleteMessage({ guest, message });
+			const result = Livechat.deleteMessage({ guest, message });
 			if (result) {
 				return API.v1.success({
 					message: {
@@ -232,7 +233,7 @@ API.v1.addRoute('livechat/messages', { authRequired: true }, {
 			}
 		} else {
 			rid = Random.id();
-			const visitorId = RocketChat.Livechat.registerGuest(this.bodyParams.visitor);
+			const visitorId = Livechat.registerGuest(this.bodyParams.visitor);
 			visitor = LivechatVisitors.findOneById(visitorId);
 		}
 
@@ -246,7 +247,7 @@ API.v1.addRoute('livechat/messages', { authRequired: true }, {
 					msg: message.msg,
 				},
 			};
-			const sentMessage = RocketChat.Livechat.sendMessage(sendMessage);
+			const sentMessage = Livechat.sendMessage(sendMessage);
 			return {
 				username: sentMessage.u.username,
 				msg: sentMessage.msg,
