@@ -83,6 +83,3 @@ export const getFullUserData = function({ userId, filter, limit: l }) {
 	const usernameReg = new RegExp(s.escapeRegExp(username), 'i');
 	return Users.findByUsernameNameOrEmailAddress(usernameReg, options);
 };
-
-RocketChat.getFullUserData = getFullUserData;
-

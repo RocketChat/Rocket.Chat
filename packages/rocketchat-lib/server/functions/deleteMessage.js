@@ -61,4 +61,3 @@ export const deleteMessage = function(message, user) {
 	}
 };
 
-RocketChat.deleteMessage = deleteMessage;
