@@ -1,5 +1,5 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { AccountBox } from 'meteor/rocketchat:ui';
+import { AccountBox } from 'meteor/rocketchat:ui-utils';
 
 const livechatManagerRoutes = FlowRouter.group({
 	prefix: '/livechat-manager',
