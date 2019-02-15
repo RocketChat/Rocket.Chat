@@ -245,7 +245,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/RocketChatAnnouncement.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
-	api.addFiles('client/lib/roomExit.js', 'client');
 	api.addFiles('client/lib/settings.js', 'client');
 	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');
