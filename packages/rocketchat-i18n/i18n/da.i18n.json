@@ -1951,7 +1951,7 @@
   "No_results_found_for": "Ingen resultater fundet for:",
   "No_snippet_messages": "Ingen uddrag",
   "No_starred_messages": "Ingen stjernemarkerede meddelelser",
-  "No_such_command": "Ingen sådan kommando: `/ __ command__`",
+  "No_such_command": "Ingen sådan kommando: `/ __command__`",
   "No_user_with_username_%s_was_found": "Ingen bruger med brugernavn <strong>\"%s\"</strong>blev fundet!",
   "Nobody_available": "Ingen tilgængelig",
   "Node_version": "Node Version",

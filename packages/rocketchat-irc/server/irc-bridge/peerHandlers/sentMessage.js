@@ -1,4 +1,5 @@
 import { Users, Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { sendMessage } from 'meteor/rocketchat:lib';
 /*
  *
  * Get direct chat room helper
@@ -76,5 +77,5 @@ export default function handleSentMessage(args) {
 		ts: new Date(),
 	};
 
-	RocketChat.sendMessage(user, message, room);
+	sendMessage(user, message, room);
 }
