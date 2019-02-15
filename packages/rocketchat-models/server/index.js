@@ -32,6 +32,10 @@ import LivechatTrigger from './models/LivechatTrigger';
 import LivechatVisitors from './models/LivechatVisitors';
 import ReadReceipts from './models/ReadReceipts';
 
+export { AppsLogsModel } from './models/apps-logs-model';
+export { AppsPersistenceModel } from './models/apps-persistence-model';
+export { AppsModel } from './models/apps-model';
+
 export {
 	Base,
 	BaseDb,

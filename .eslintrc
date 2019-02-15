@@ -4,7 +4,6 @@
 	"globals": {
 		"__meteor_bootstrap__"        : false,
 		"__meteor_runtime_config__"   : false,
-		"Apps"                        : false,
 		"Assets"                      : false,
 		"chrome"                      : false,
 		"DynamicCss"                  : false,
