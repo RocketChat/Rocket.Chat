@@ -6,6 +6,9 @@ import { settings } from 'meteor/rocketchat:settings';
 import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
 import _ from 'underscore';
+import mem from 'mem';
+
+const findSubscriptionByRid = mem((rid) => Subscriptions.findOne({ rid }));
 
 export const AutoTranslate = {
 	messageIdsToWait: {},
@@ -14,7 +17,7 @@ export const AutoTranslate = {
 	getLanguage(rid) {
 		let subscription = {};
 		if (rid) {
-			subscription = Subscriptions.findOne({ rid }, { fields: { autoTranslateLanguage: 1 } });
+			subscription = findSubscriptionByRid(rid);
 		}
 		const language = (subscription && subscription.autoTranslateLanguage) || Meteor.user().language || window.defaultUserLanguage();
 		if (language.indexOf('-') !== -1) {
@@ -52,7 +55,7 @@ export const AutoTranslate = {
 		Tracker.autorun(() => {
 			if (settings.get('AutoTranslate_Enabled') && hasAtLeastOnePermission(['auto-translate'])) {
 				callbacks.add('renderMessage', (message) => {
-					const subscription = Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+					const subscription = findSubscriptionByRid(message.rid);
 					const autoTranslateLanguage = this.getLanguage(message.rid);
 					if (message.u && message.u._id !== Meteor.userId()) {
 						if (!message.translations) {
@@ -76,7 +79,7 @@ export const AutoTranslate = {
 
 				callbacks.add('streamMessage', (message) => {
 					if (message.u && message.u._id !== Meteor.userId()) {
-						const subscription = Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+						const subscription = findSubscriptionByRid(message.rid);
 						const language = this.getLanguage(message.rid);
 						if (subscription && subscription.autoTranslate === true && ((message.msg && (!message.translations || !message.translations[language])))) { // || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 							Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
