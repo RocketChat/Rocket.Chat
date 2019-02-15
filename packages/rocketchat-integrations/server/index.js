@@ -14,8 +14,3 @@ import './methods/clearIntegrationHistory';
 import './api/api';
 import './lib/triggerHandler';
 import './triggers';
-import { processWebhookMessage } from './processWebhookMessage';
-
-export {
-	processWebhookMessage,
-};
