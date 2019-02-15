@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users, Rooms } from 'meteor/rocketchat:models';
 import { LivechatDepartment, LivechatTrigger } from '../../models';
 import _ from 'underscore';
 import LivechatVisitors from '../../models/LivechatVisitors';
 import { Livechat } from '../../lib/Livechat';
 
 export function online() {
-	return RocketChat.models.Users.findOnlineAgents().count() > 0;
+	return Users.findOnlineAgents().count() > 0;
 }
 
 export function findTriggers() {
@@ -38,10 +38,10 @@ export function findRoom(token, rid) {
 	};
 
 	if (!rid) {
-		return RocketChat.models.Rooms.findLivechatByVisitorToken(token, fields);
+		return Rooms.findLivechatByVisitorToken(token, fields);
 	}
 
-	return RocketChat.models.Rooms.findLivechatByIdAndVisitorToken(rid, token, fields);
+	return Rooms.findLivechatByIdAndVisitorToken(rid, token, fields);
 }
 
 export function findOpenRoom(token, departmentId) {
@@ -54,7 +54,7 @@ export function findOpenRoom(token, departmentId) {
 	};
 
 	let room;
-	const rooms = departmentId ? RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : RocketChat.models.Rooms.findOpenByVisitorToken(token, options).fetch();
+	const rooms = departmentId ? Rooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(token, options).fetch();
 	if (rooms && rooms.length > 0) {
 		room = rooms[0];
 	}
@@ -77,7 +77,7 @@ export function getRoom(guest, rid, roomInfo) {
 }
 
 export function findAgent(agentId) {
-	return RocketChat.models.Users.getAgentInfo(agentId);
+	return Users.getAgentInfo(agentId);
 }
 
 export function settings() {

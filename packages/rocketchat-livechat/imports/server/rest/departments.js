@@ -1,12 +1,12 @@
 import { check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../server/models';
 import { Livechat } from '../../../server/lib/Livechat';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
@@ -15,7 +15,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 		});
 	},
 	post() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
@@ -43,7 +43,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 
 API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
@@ -61,7 +61,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 		}
 	},
 	put() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
@@ -88,7 +88,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 		}
 	},
 	delete() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 

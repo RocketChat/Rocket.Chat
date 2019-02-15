@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 import { API } from 'meteor/rocketchat:api';
 import { SMS } from 'meteor/rocketchat:sms';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
@@ -26,7 +26,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		};
 
 		if (visitor) {
-			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			const rooms = Rooms.findOpenByVisitorToken(visitor.token).fetch();
 
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
