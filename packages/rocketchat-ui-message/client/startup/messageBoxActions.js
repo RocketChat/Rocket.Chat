@@ -102,9 +102,9 @@ Meteor.startup(() => {
 	const handleGeolocationError = () => geolocation.set(false);
 
 	Tracker.autorun(() => {
-		const isMapViewEnabled = RocketChat.settings.get('MapView_Enabled') === true;
+		const isMapViewEnabled = settings.get('MapView_Enabled') === true;
 		const isGeolocationWatchSupported = navigator.geolocation && navigator.geolocation.watchPosition;
-		const googleMapsApiKey = RocketChat.settings.get('MapView_GMapsAPIKey');
+		const googleMapsApiKey = settings.get('MapView_GMapsAPIKey');
 		const canGetGeolocation =
 			isMapViewEnabled && isGeolocationWatchSupported && (googleMapsApiKey && googleMapsApiKey.length);
 
