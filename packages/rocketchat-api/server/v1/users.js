@@ -115,13 +115,13 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		});
 
 		if (!RocketChat.authz.hasPermission(this.userId, 'edit-other-user-active-status')) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
 		});
-		return RocketChat.API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
+		return API.v1.success({ user: RocketChat.models.Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
 
 	},
 });
