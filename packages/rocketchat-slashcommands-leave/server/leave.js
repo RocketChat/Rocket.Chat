@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
 /*
 * Leave is a named function that will replace /leave commands
@@ -15,7 +16,7 @@ function Leave(command, params, item) {
 	try {
 		Meteor.call('leaveRoom', item.rid);
 	} catch ({ error }) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -24,5 +25,5 @@ function Leave(command, params, item) {
 	}
 }
 
-RocketChat.slashCommands.add('leave', Leave, { description: 'Leave_the_current_channel' });
-RocketChat.slashCommands.add('part', Leave, { description: 'Leave_the_current_channel' });
+slashCommands.add('leave', Leave, { description: 'Leave_the_current_channel' });
+slashCommands.add('part', Leave, { description: 'Leave_the_current_channel' });

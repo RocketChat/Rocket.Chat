@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:removeAgent'(username) {
@@ -7,6 +8,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeAgent' });
 		}
 
-		return RocketChat.Livechat.removeAgent(username);
+		return Livechat.removeAgent(username);
 	},
 });

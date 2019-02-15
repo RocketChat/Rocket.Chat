@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { t } from 'meteor/rocketchat:utils';
 import { AppEvents } from '../communication';
+import { API } from 'meteor/rocketchat:api';
 
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const HOST = 'https://marketplace.rocket.chat';
@@ -48,7 +49,7 @@ const getApps = (instance) => {
 
 const getInstalledApps = (instance) => {
 
-	RocketChat.API.get('apps').then((data) => {
+	API.get('apps').then((data) => {
 		const apps = data.apps.map((app) => ({ latest: app }));
 
 		instance.installedApps.set(apps);
@@ -253,14 +254,15 @@ Template.apps.events({
 
 		const url = `${ HOST }/v1/apps/${ this.latest.id }/download/${ this.latest.version }`;
 
-		RocketChat.API.post('apps/', { url }).then(() => {
-			getInstalledApps(template);
-		}).catch((e) => {
-			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-		});
-
 		// play animation
-		$(e.currentTarget).find('.rc-icon').addClass('play');
+		e.currentTarget.parentElement.classList.add('loading');
+
+		API.post('apps/', { url })
+			.then(() => {
+				getApps(template);
+				getInstalledApps(template);
+			})
+			.catch((e) => toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message));
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);

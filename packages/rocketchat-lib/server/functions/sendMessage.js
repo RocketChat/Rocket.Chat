@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Messages } from 'meteor/rocketchat:models';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
@@ -58,9 +61,17 @@ const validateAttachment = (attachment) => {
 		title: String,
 		title_link: String,
 		title_link_download: Boolean,
+		image_dimensions: Object,
 		image_url: String,
+		image_preview: String,
+		image_type: String,
+		image_size: Number,
 		audio_url: String,
+		audio_type: String,
+		audio_size: Number,
 		video_url: String,
+		video_type: String,
+		video_size: Number,
 		fields: [Match.Any],
 	}));
 
@@ -75,7 +86,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-RocketChat.sendMessage = function(user, message, room, upsert = false) {
+export const sendMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -113,7 +124,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		message.ts = new Date();
 	}
 
-	if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+	if (settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
 	}
 
@@ -148,7 +159,7 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		delete message.tokens;
 	}
 
-	message = RocketChat.callbacks.run('beforeSaveMessage', message);
+	message = callbacks.run('beforeSaveMessage', message);
 	if (message) {
 		// Avoid saving sandstormSessionId to the database
 		let sandstormSessionId = null;
@@ -160,13 +171,13 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		if (message._id && upsert) {
 			const { _id } = message;
 			delete message._id;
-			RocketChat.models.Messages.upsert({
+			Messages.upsert({
 				_id,
 				'u._id': message.u._id,
 			}, message);
 			message._id = _id;
 		} else {
-			message._id = RocketChat.models.Messages.insert(message);
+			message._id = Messages.insert(message);
 		}
 
 		if (Apps && Apps.isLoaded()) {
@@ -181,8 +192,10 @@ RocketChat.sendMessage = function(user, message, room, upsert = false) {
 		Meteor.defer(() => {
 			// Execute all callbacks
 			message.sandstormSessionId = sandstormSessionId;
-			return RocketChat.callbacks.run('afterSaveMessage', message, room, user._id);
+			return callbacks.run('afterSaveMessage', message, room, user._id);
 		});
 		return message;
 	}
 };
+
+RocketChat.sendMessage = sendMessage;

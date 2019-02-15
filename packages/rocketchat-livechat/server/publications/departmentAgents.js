@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatDepartmentAgents } from '../models';
 
 Meteor.publish('livechat:departmentAgents', function(departmentId) {
 	if (!this.userId) {
@@ -10,5 +11,5 @@ Meteor.publish('livechat:departmentAgents', function(departmentId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:departmentAgents' }));
 	}
 
-	return RocketChat.models.LivechatDepartmentAgents.find({ departmentId });
+	return LivechatDepartmentAgents.find({ departmentId });
 });

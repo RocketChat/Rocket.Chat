@@ -1,11 +1,12 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
-RocketChat.settings.onload('SlackBridge_Enabled', (key, value) => {
+settings.onload('SlackBridge_Enabled', (key, value) => {
 	if (value) {
-		RocketChat.slashCommands.add('slackbridge-import', null, {
+		slashCommands.add('slackbridge-import', null, {
 			description: 'Import_old_messages_from_slackbridge',
 		});
 	} else {
-		delete RocketChat.slashCommands.commands['slackbridge-import'];
+		delete slashCommands.commands['slackbridge-import'];
 	}
 });

@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.addGroup('OTR', function() {
+settings.addGroup('OTR', function() {
 	this.add('OTR_Enable', true, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',

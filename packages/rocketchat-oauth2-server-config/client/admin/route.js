@@ -6,9 +6,8 @@ FlowRouter.route('/admin/oauth-apps', {
 	name: 'admin-oauth-apps',
 	action() {
 		return BlazeLayout.render('main', {
-			center: 'pageSettingsContainer',
+			center: 'oauthApps',
 			pageTitle: t('OAuth_Applications'),
-			pageTemplate: 'oauthApps',
 		});
 	},
 });

@@ -1,19 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatDepartment, LivechatTrigger } from '../../models';
 import _ from 'underscore';
 import LivechatVisitors from '../../models/LivechatVisitors';
+import { Livechat } from '../../lib/Livechat';
 
 export function online() {
 	return RocketChat.models.Users.findOnlineAgents().count() > 0;
 }
 
 export function findTriggers() {
-	return RocketChat.models.LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
+	return LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 }
 
 export function findDepartments() {
-	return RocketChat.models.LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration'));
+	return LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration'));
 }
 
 export function findGuest(token) {
@@ -71,7 +73,7 @@ export function getRoom(guest, rid, roomInfo) {
 		ts: new Date(),
 	};
 
-	return RocketChat.Livechat.getRoom(guest, message, roomInfo);
+	return Livechat.getRoom(guest, message, roomInfo);
 }
 
 export function findAgent(agentId) {
@@ -79,7 +81,7 @@ export function findAgent(agentId) {
 }
 
 export function settings() {
-	const initSettings = RocketChat.Livechat.getInitSettings();
+	const initSettings = Livechat.getInitSettings();
 	const triggers = findTriggers();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;

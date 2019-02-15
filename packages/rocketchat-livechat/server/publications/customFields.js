@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatCustomField } from '../models';
 import s from 'underscore.string';
 
 Meteor.publish('livechat:customFields', function(_id) {
@@ -12,9 +13,9 @@ Meteor.publish('livechat:customFields', function(_id) {
 	}
 
 	if (s.trim(_id)) {
-		return RocketChat.models.LivechatCustomField.find({ _id });
+		return LivechatCustomField.find({ _id });
 	}
 
-	return RocketChat.models.LivechatCustomField.find();
+	return LivechatCustomField.find();
 
 });

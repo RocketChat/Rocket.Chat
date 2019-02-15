@@ -3,8 +3,12 @@ import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
 import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Info } from 'meteor/rocketchat:utils';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { statistics } from '../../lib/rocketchat';
 
 const wizardFields = [
 	'Organization_Type',
@@ -19,37 +23,37 @@ const wizardFields = [
 	'Allow_Marketing_Emails',
 ];
 
-RocketChat.statistics.get = function _getStatistics() {
+statistics.get = function _getStatistics() {
 	const statistics = {};
 
 	// Setup Wizard
 	statistics.wizard = {};
 	wizardFields.forEach((field) => {
-		const record = RocketChat.models.Settings.findOne(field);
+		const record = Settings.findOne(field);
 		if (record) {
 			const wizardField = field.replace(/_/g, '').replace(field[0], field[0].toLowerCase());
 			statistics.wizard[wizardField] = record.value;
 		}
 	});
 
-	const firstUser = RocketChat.models.Users.getOldest({ name: 1, emails: 1 });
+	const firstUser = Users.getOldest({ name: 1, emails: 1 });
 	statistics.wizard.contactName = firstUser && firstUser.name;
 	statistics.wizard.contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
 
-	if (RocketChat.settings.get('Organization_Email')) {
-		statistics.wizard.contactEmail = RocketChat.settings.get('Organization_Email');
+	if (settings.get('Organization_Email')) {
+		statistics.wizard.contactEmail = settings.get('Organization_Email');
 	}
 
 	// Version
-	statistics.uniqueId = RocketChat.settings.get('uniqueID');
-	if (RocketChat.models.Settings.findOne('uniqueID')) {
-		statistics.installedAt = RocketChat.models.Settings.findOne('uniqueID').createdAt;
+	statistics.uniqueId = settings.get('uniqueID');
+	if (Settings.findOne('uniqueID')) {
+		statistics.installedAt = Settings.findOne('uniqueID').createdAt;
 	}
 
-	if (RocketChat.Info) {
-		statistics.version = RocketChat.Info.version;
-		statistics.tag = RocketChat.Info.tag;
-		statistics.branch = RocketChat.Info.branch;
+	if (Info) {
+		statistics.version = Info.version;
+		statistics.tag = Info.tag;
+		statistics.branch = Info.branch;
 	}
 
 	// User statistics
@@ -61,31 +65,31 @@ RocketChat.statistics.get = function _getStatistics() {
 	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers;
 
 	// Room statistics
-	statistics.totalRooms = RocketChat.models.Rooms.find().count();
-	statistics.totalChannels = RocketChat.models.Rooms.findByType('c').count();
-	statistics.totalPrivateGroups = RocketChat.models.Rooms.findByType('p').count();
-	statistics.totalDirect = RocketChat.models.Rooms.findByType('d').count();
-	statistics.totalLivechat = RocketChat.models.Rooms.findByType('l').count();
+	statistics.totalRooms = Rooms.find().count();
+	statistics.totalChannels = Rooms.findByType('c').count();
+	statistics.totalPrivateGroups = Rooms.findByType('p').count();
+	statistics.totalDirect = Rooms.findByType('d').count();
+	statistics.totalLivechat = Rooms.findByType('l').count();
 
 	// livechat visitors
 	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
 
 	// livechat agents
-	statistics.totalLivechatAgents = RocketChat.models.Users.findAgents().count();
+	statistics.totalLivechatAgents = Users.findAgents().count();
 
 	// livechat enabled
-	statistics.livechatEnabled = RocketChat.settings.get('Livechat_enabled');
+	statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 	// Message statistics
-	statistics.totalMessages = RocketChat.models.Messages.find().count();
-	statistics.totalChannelMessages = _.reduce(RocketChat.models.Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
-	statistics.totalPrivateGroupMessages = _.reduce(RocketChat.models.Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
-	statistics.totalDirectMessages = _.reduce(RocketChat.models.Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
-	statistics.totalLivechatMessages = _.reduce(RocketChat.models.Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalMessages = Messages.find().count();
+	statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalDirectMessages = _.reduce(Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
+	statistics.totalLivechatMessages = _.reduce(Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
 
-	statistics.lastLogin = RocketChat.models.Users.getLastLogin();
-	statistics.lastMessageSentAt = RocketChat.models.Messages.getLastTimestamp();
-	statistics.lastSeenSubscription = RocketChat.models.Subscriptions.getLastSeen();
+	statistics.lastLogin = Users.getLastLogin();
+	statistics.lastMessageSentAt = Messages.getLastTimestamp();
+	statistics.lastSeenSubscription = Subscriptions.getLastSeen();
 
 	statistics.os = {
 		type: os.type(),
@@ -110,16 +114,16 @@ RocketChat.statistics.get = function _getStatistics() {
 		platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 	};
 
-	statistics.uploadsTotal = RocketChat.models.Uploads.find().count();
-	const [result] = Promise.await(RocketChat.models.Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
+	statistics.uploadsTotal = Uploads.find().count();
+	const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
 	statistics.uploadsTotalSize = result ? result.total : 0;
 
-	statistics.migration = RocketChat.Migrations._getControl();
+	statistics.migration = Migrations._getControl();
 	statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && RocketChat.settings.get('Force_Disable_OpLog_For_Cache') !== true) {
+	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && settings.get('Force_Disable_OpLog_For_Cache') !== true) {
 		statistics.oplogEnabled = true;
 	}
 
@@ -129,6 +133,11 @@ RocketChat.statistics.get = function _getStatistics() {
 	} catch (e) {
 		console.error('Error getting MongoDB version');
 	}
+
+	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
+	statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
+	statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+	statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 
 	return statistics;
 };

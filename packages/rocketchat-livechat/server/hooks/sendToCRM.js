@@ -1,4 +1,5 @@
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { Livechat } from '../lib/Livechat';
 
 const msgNavType = 'livechat_navigation_history';
 
@@ -19,7 +20,7 @@ function sendToCRM(type, room, includeMessages = true) {
 		return room;
 	}
 
-	const postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
+	const postData = Livechat.getLivechatRoomGuestInfo(room);
 
 	postData.type = type;
 
@@ -57,7 +58,7 @@ function sendToCRM(type, room, includeMessages = true) {
 		});
 	}
 
-	const response = RocketChat.Livechat.sendRequest(postData);
+	const response = Livechat.sendRequest(postData);
 
 	if (response && response.data && response.data.data) {
 		RocketChat.models.Rooms.saveCRMDataByRoomId(room._id, response.data.data);

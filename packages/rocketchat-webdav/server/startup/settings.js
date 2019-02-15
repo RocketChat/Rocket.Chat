@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.addGroup('Webdav Integration', function() {
+settings.addGroup('Webdav Integration', function() {
 	this.add('Webdav_Integration_Enabled', false, {
 		type: 'boolean',
 		public: true,

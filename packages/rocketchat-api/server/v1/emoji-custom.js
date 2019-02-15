@@ -1,55 +1,60 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { EmojiCustom } from 'meteor/rocketchat:models';
+import { API } from '../api';
 import Busboy from 'busboy';
 
-RocketChat.API.v1.addRoute('emoji-custom', { authRequired: true }, {
+API.v1.addRoute('emoji-custom', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
 		const emojis = Meteor.call('listEmojiCustom', query);
 
-		return RocketChat.API.v1.success({ emojis });
+		return API.v1.success({ emojis });
 	},
 });
 
-RocketChat.API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
+API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
 	post() {
 		Meteor.runAsUser(this.userId, () => {
 			const fields = {};
 			const busboy = new Busboy({ headers: this.request.headers });
+			const emojiData = [];
+			let emojiMimetype = '';
 
 			Meteor.wrapAsync((callback) => {
 				busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
 					if (fieldname !== 'emoji') {
 						return callback(new Meteor.Error('invalid-field'));
 					}
-					const emojiData = [];
+
 					file.on('data', Meteor.bindEnvironment((data) => emojiData.push(data)));
 
 					file.on('end', Meteor.bindEnvironment(() => {
 						const extension = mimetype.split('/')[1];
+						emojiMimetype = mimetype;
 						fields.extension = extension;
-						fields.newFile = true;
-						fields.aliases = fields.aliases || '';
-						try {
-							Meteor.call('insertOrUpdateEmoji', fields);
-							Meteor.call('uploadEmojiCustom', Buffer.concat(emojiData), mimetype, fields);
-							callback();
-						} catch (error) {
-							return callback(error);
-						}
 					}));
 				}));
 				busboy.on('field', (fieldname, val) => {
 					fields[fieldname] = val;
 				});
+				busboy.on('finish', Meteor.bindEnvironment(() => {
+					fields.newFile = true;
+					fields.aliases = fields.aliases || '';
+					try {
+						Meteor.call('insertOrUpdateEmoji', fields);
+						Meteor.call('uploadEmojiCustom', Buffer.concat(emojiData), emojiMimetype, fields);
+						callback();
+					} catch (error) {
+						return callback(error);
+					}
+				}));
 				this.request.pipe(busboy);
 			})();
-
 		});
 	},
 });
 
-RocketChat.API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
+API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 	post() {
 		Meteor.runAsUser(this.userId, () => {
 			const fields = {};
@@ -78,7 +83,7 @@ RocketChat.API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 						if (!fields._id) {
 							return callback(new Meteor.Error('The required "_id" query param is missing.'));
 						}
-						const emojiToUpdate = RocketChat.models.EmojiCustom.findOneByID(fields._id);
+						const emojiToUpdate = EmojiCustom.findOneByID(fields._id);
 						if (!emojiToUpdate) {
 							return callback(new Meteor.Error('Emoji not found.'));
 						}
@@ -102,15 +107,15 @@ RocketChat.API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('emoji-custom.delete', { authRequired: true }, {
+API.v1.addRoute('emoji-custom.delete', { authRequired: true }, {
 	post() {
 		const { emojiId } = this.bodyParams;
 		if (!emojiId) {
-			return RocketChat.API.v1.failure('The "emojiId" params is required!');
+			return API.v1.failure('The "emojiId" params is required!');
 		}
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('deleteEmojiCustom', emojiId));
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });

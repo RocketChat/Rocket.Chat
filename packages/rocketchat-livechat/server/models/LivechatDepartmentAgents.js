@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base, Users } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 /**
  * Livechat Department model
  */
-class LivechatDepartmentAgents extends RocketChat.models._Base {
+class LivechatDepartmentAgentsClass extends Base {
 	constructor() {
 		super('livechat_department_agents');
 	}
@@ -37,7 +37,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 			return;
 		}
 
-		const onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+		const onlineUsers = Users.findOnlineUserFromList(_.pluck(agents, 'username'));
 
 		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
@@ -80,7 +80,7 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 			return [];
 		}
 
-		const onlineUsers = RocketChat.models.Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+		const onlineUsers = Users.findOnlineUserFromList(_.pluck(agents, 'username'));
 
 		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
@@ -133,5 +133,5 @@ class LivechatDepartmentAgents extends RocketChat.models._Base {
 		return this.update(query, update, { multi: true });
 	}
 }
-
-RocketChat.models.LivechatDepartmentAgents = new LivechatDepartmentAgents();
+export const LivechatDepartmentAgents = new LivechatDepartmentAgentsClass();
+RocketChat.models.LivechatDepartmentAgents = LivechatDepartmentAgents;

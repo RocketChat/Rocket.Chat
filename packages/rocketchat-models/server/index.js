@@ -10,10 +10,19 @@ import Subscriptions from './models/Subscriptions';
 import Uploads from './models/Uploads';
 import UserDataFiles from './models/UserDataFiles';
 import Users from './models/Users';
+import Sessions from './models/Sessions';
 import Statistics from './models/Statistics';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
+import Integrations from './models/Integrations';
+import IntegrationHistory from './models/IntegrationHistory';
+import CredentialTokens from './models/CredentialTokens';
+import EmojiCustom from './models/EmojiCustom';
+import OAuthApps from './models/OAuthApps';
+import OEmbedCache from './models/OEmbedCache';
+import SmarshHistory from './models/SmarshHistory';
+import WebdavAccounts from './models/WebdavAccounts';
 
 export {
 	Base,
@@ -28,8 +37,17 @@ export {
 	Uploads,
 	UserDataFiles,
 	Users,
+	Sessions,
 	Statistics,
 	Permissions,
 	Roles,
 	CustomSounds,
+	Integrations,
+	IntegrationHistory,
+	CredentialTokens,
+	EmojiCustom,
+	OAuthApps,
+	OEmbedCache,
+	SmarshHistory,
+	WebdavAccounts,
 };

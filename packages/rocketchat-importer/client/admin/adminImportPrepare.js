@@ -4,13 +4,15 @@ import { Importers } from 'meteor/rocketchat:importer';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:utils';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { API } from 'meteor/rocketchat:api';
 import toastr from 'toastr';
 
 Template.adminImportPrepare.helpers({
 	isAdmin() {
-		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+		return hasRole(Meteor.userId(), 'admin');
 	},
 	importer() {
 		const importerKey = FlowRouter.getParam('importer');
@@ -33,7 +35,7 @@ Template.adminImportPrepare.helpers({
 		return Template.instance().message_count.get();
 	},
 	fileSizeLimitMessage() {
-		const maxFileSize = RocketChat.settings.get('FileUpload_MaxFileSize');
+		const maxFileSize = settings.get('FileUpload_MaxFileSize');
 		let message;
 
 		if (maxFileSize > 0) {
@@ -58,8 +60,44 @@ Template.adminImportPrepare.helpers({
 	},
 });
 
+function showToastrForErrorType(errorType, defaultErrorString) {
+	let errorCode;
+
+	if (typeof errorType === 'string') {
+		errorCode = errorType;
+	} else if (typeof errorType === 'object') {
+		if (errorType.error && typeof errorType.error === 'string') {
+			errorCode = errorType.error;
+		}
+	}
+
+	if (errorCode) {
+		const errorTranslation = t(errorCode);
+		if (errorTranslation !== errorCode) {
+			toastr.error(errorTranslation);
+			return;
+		}
+	}
+
+	toastr.error(t(defaultErrorString || 'Failed_To_upload_Import_File'));
+}
+
+function showException(error, defaultErrorString) {
+	console.error(error);
+	if (error && error.xhr && error.xhr.responseJSON) {
+		console.log(error.xhr.responseJSON);
+
+		if (error.xhr.responseJSON.errorType) {
+			showToastrForErrorType(error.xhr.responseJSON.errorType, defaultErrorString);
+			return;
+		}
+	}
+
+	toastr.error(t(defaultErrorString || 'Failed_To_upload_Import_File'));
+}
+
 function getImportFileData(importer, template) {
-	RocketChat.API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
+	API.get(`v1/getImportFileData?importerKey=${ importer.key }`).then((data) => {
 		if (!data) {
 			console.warn(`The importer ${ importer.key } is not set up correctly, as it did not return any data.`);
 			toastr.error(t('Importer_not_setup'));
@@ -70,7 +108,7 @@ function getImportFileData(importer, template) {
 		if (data.waiting) {
 			setTimeout(() => {
 				getImportFileData(importer, template);
-			}, 500);
+			}, 1000);
 			return;
 		}
 
@@ -88,12 +126,11 @@ function getImportFileData(importer, template) {
 		template.preparing.set(false);
 	}).catch((error) => {
 		if (error) {
-			toastr.error(t('Failed_To_Load_Import_Data'));
+			showException(error, 'Failed_To_Load_Import_Data');
 			template.preparing.set(false);
 		}
 	});
 }
-
 
 Template.adminImportPrepare.events({
 	'change .import-file-input'(event, template) {
@@ -113,7 +150,7 @@ Template.adminImportPrepare.events({
 
 			reader.readAsBinaryString(file);
 			reader.onloadend = () => {
-				RocketChat.API.post('v1/uploadImportFile', {
+				API.post('v1/uploadImportFile', {
 					binaryContent: reader.result,
 					contentType: file.type,
 					fileName: file.name,
@@ -122,7 +159,7 @@ Template.adminImportPrepare.events({
 					getImportFileData(importer, template);
 				}).catch((error) => {
 					if (error) {
-						toastr.error(t('Failed_To_upload_Import_File'));
+						showException(error);
 						template.preparing.set(false);
 					}
 				});
@@ -139,14 +176,14 @@ Template.adminImportPrepare.events({
 
 		template.preparing.set(true);
 
-		RocketChat.API.post('v1/downloadPublicImportFile', {
+		API.post('v1/downloadPublicImportFile', {
 			fileUrl,
 			importerKey: importer.key,
 		}).then(() => {
 			getImportFileData(importer, template);
 		}).catch((error) => {
 			if (error) {
-				toastr.error(t('Failed_To_upload_Import_File'));
+				showException(error);
 				template.preparing.set(false);
 			}
 		});
@@ -157,11 +194,11 @@ Template.adminImportPrepare.events({
 		const btn = this;
 		$(btn).prop('disabled', true);
 		for (const user of Array.from(template.users.get())) {
-			user.do_import = $(`[name=${ user.user_id }]`).is(':checked');
+			user.do_import = $(`[name='${ user.user_id }']`).is(':checked');
 		}
 
 		for (const channel of Array.from(template.channels.get())) {
-			channel.do_import = $(`[name=${ channel.channel_id }]`).is(':checked');
+			channel.do_import = $(`[name='${ channel.channel_id }']`).is(':checked');
 		}
 
 		Meteor.call('startImport', FlowRouter.getParam('importer'), { users: template.users.get(), channels: template.channels.get() }, function(error) {
@@ -189,13 +226,17 @@ Template.adminImportPrepare.events({
 	},
 
 	'click .button.uncheck-deleted-users'(event, template) {
-		Array.from(template.users.get()).filter((user) => user.is_deleted).map((user) =>
-			$(`[name=${ user.user_id }]`).attr('checked', false));
+		Array.from(template.users.get()).filter((user) => user.is_deleted).map((user) => {
+			const box = $(`[name=${ user.user_id }]`);
+			return box && box.length && box[0].checked && box.click();
+		});
 	},
 
 	'click .button.uncheck-archived-channels'(event, template) {
-		Array.from(template.channels.get()).filter((channel) => channel.is_archived).map((channel) =>
-			$(`[name=${ channel.channel_id }]`).attr('checked', false));
+		Array.from(template.channels.get()).filter((channel) => channel.is_archived).map((channel) => {
+			const box = $(`[name=${ channel.channel_id }]`);
+			return box && box.length && box[0].checked && box.click();
+		});
 	},
 });
 

@@ -18,6 +18,9 @@ Meteor.methods({
 		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = RocketChat.settings.get('Message_AllowEditing');
 		let editOwn = false;
+		if (originalMessage.msg === message.msg) {
+			return;
+		}
 		if (originalMessage && originalMessage.u && originalMessage.u._id) {
 			editOwn = originalMessage.u._id === Meteor.userId();
 		}

@@ -1,12 +1,16 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChat, RocketChatTabBar } from 'meteor/rocketchat:lib';
+import { RocketChatTabBar, SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
 import { Tracker } from 'meteor/tracker';
+import { EmojiCustom } from 'meteor/rocketchat:models';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { SideNav } from 'meteor/rocketchat:ui';
 import s from 'underscore.string';
 
 Template.adminEmoji.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		if (Template.instance().ready != null) {
 			return Template.instance().ready.get();
@@ -37,6 +41,13 @@ Template.adminEmoji.helpers({
 			data: Template.instance().tabBarData.get(),
 		};
 	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function({ _id }) {
+			instance.tabBarData.set(RocketChat.models.EmojiCustom.findOne({ _id }));
+			instance.tabBar.open('admin-emoji-info');
+		};
+	},
 });
 
 Template.adminEmoji.onCreated(function() {
@@ -49,7 +60,7 @@ Template.adminEmoji.onCreated(function() {
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['emoji-custom'],
 		id: 'add-emoji',
 		i18nTitle: 'Custom_Emoji_Add',
@@ -58,7 +69,7 @@ Template.adminEmoji.onCreated(function() {
 		order: 1,
 	});
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['emoji-custom'],
 		id: 'admin-emoji-info',
 		i18nTitle: 'Custom_Emoji_Info',
@@ -85,7 +96,7 @@ Template.adminEmoji.onCreated(function() {
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.EmojiCustom.find(query, { limit, sort: { name: 1 } }).fetch();
+		return EmojiCustom.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
 });
 
@@ -109,17 +120,5 @@ Template.adminEmoji.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	},
-
-	'click .emoji-info'(e, instance) {
-		e.preventDefault();
-		instance.tabBarData.set(RocketChat.models.EmojiCustom.findOne({ _id: this._id }));
-		instance.tabBar.open('admin-emoji-info');
-	},
-
-	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
 	},
 });
