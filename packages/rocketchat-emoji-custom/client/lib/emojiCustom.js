@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { isSetNotNull } from '../lib/function-isSet';
-import { RoomManager } from 'meteor/rocketchat:ui-utils';
+import { RoomManager, call } from 'meteor/rocketchat:ui-utils';
 import { emoji, EmojiPicker } from 'meteor/rocketchat:emoji';
 import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
 
@@ -127,27 +127,30 @@ emoji.packages.emojiCustom = {
 	emojiCategories: { rocket: 'Custom' },
 	toneList: {},
 	list: [],
+	_regexpSignature: null,
+	_regexp: null,
 
 	render(html) {
-		const regShortNames = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ emoji.packages.emojiCustom.list.join('|') })`, 'gi');
+		const emojisMatchGroup = emoji.packages.emojiCustom.list.map(RegExp.escape).join('|');
+		if (emojisMatchGroup !== RocketChat.emoji.packages.emojiCustom._regexpSignature) {
+			emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
+			emoji.packages.emojiCustom._regexp = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ emojisMatchGroup })`, 'gi');
+		}
 
-		// replace regular shortnames first
-		html = html.replace(regShortNames, function(shortname) {
-			// console.log('shortname (preif) ->', shortname, html);
+		html = html.replace(emoji.packages.emojiCustom._regexp, (shortname) => {
 			if ((typeof shortname === 'undefined') || (shortname === '') || (emoji.packages.emojiCustom.list.indexOf(shortname) === -1)) {
-				// if the shortname doesnt exist just return the entire match
 				return shortname;
-			} else {
-				let emojiAlias = shortname.replace(/:/g, '');
-
-				let dataCheck = emoji.list[shortname];
-				if (dataCheck.hasOwnProperty('aliasOf')) {
-					emojiAlias = dataCheck.aliasOf;
-					dataCheck = emoji.list[`:${ emojiAlias }:`];
-				}
-
-				return `<span class="emoji" style="background-image:url(${ getEmojiUrlFromName(emojiAlias, dataCheck.extension) });" data-emoji="${ emojiAlias }" title="${ shortname }">${ shortname }</span>`;
 			}
+
+			let emojiAlias = shortname.replace(/:/g, '');
+
+			let dataCheck = RocketChat.emoji.list[shortname];
+			if (dataCheck.hasOwnProperty('aliasOf')) {
+				emojiAlias = dataCheck.aliasOf;
+				dataCheck = RocketChat.emoji.list[`:${ emojiAlias }:`];
+			}
+
+			return `<span class="emoji" style="background-image:url(${ getEmojiUrlFromName(emojiAlias, dataCheck.extension) });" data-emoji="${ emojiAlias }" title="${ shortname }">${ shortname }</span>`;
 		});
 
 		return html;
@@ -155,22 +158,22 @@ emoji.packages.emojiCustom = {
 };
 
 Meteor.startup(() =>
-	CachedCollectionManager.onLogin(() => {
-		Meteor.call('listEmojiCustom', (error, result) => {
-			emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
-			for (const currentEmoji of result) {
-				emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
-				emoji.packages.emojiCustom.list.push(`:${ currentEmoji.name }:`);
-				emoji.list[`:${ currentEmoji.name }:`] = currentEmoji;
-				emoji.list[`:${ currentEmoji.name }:`].emojiPackage = 'emojiCustom';
-				for (const alias of currentEmoji.aliases) {
-					emoji.packages.emojiCustom.list.push(`:${ alias }:`);
-					emoji.list[`:${ alias }:`] = {
-						emojiPackage: 'emojiCustom',
-						aliasOf: currentEmoji.name,
-					};
-				}
+	CachedCollectionManager.onLogin(async() => {
+		const emojis = await call('listEmojiCustom');
+
+		emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
+		for (const currentEmoji of emojis) {
+			emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
+			emoji.packages.emojiCustom.list.push(`:${ currentEmoji.name }:`);
+			emoji.list[`:${ currentEmoji.name }:`] = currentEmoji;
+			emoji.list[`:${ currentEmoji.name }:`].emojiPackage = 'emojiCustom';
+			for (const alias of currentEmoji.aliases) {
+				emoji.packages.emojiCustom.list.push(`:${ alias }:`);
+				emoji.list[`:${ alias }:`] = {
+					emojiPackage: 'emojiCustom',
+					aliasOf: currentEmoji.name,
+				};
 			}
-		});
+		}
 	})
 );

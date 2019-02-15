@@ -1,0 +1,20 @@
+<template name="messageBoxAudioMessage">
+	<div class="rc-message-box__audio-message">
+		<div class="rc-message-box__icon cross js-audio-message-cross">
+			{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
+		</div>
+		<div class="rc-message-box__timer-box">
+			<p class="rc-message-box__timer-dot">&bull;&nbsp;</p>
+			<span class="rc-message-box__timer">00:00</span>
+		</div>
+		<div class="rc-message-box__icon check js-audio-message-check">
+			{{> icon block="rc-input__icon-svg" icon="checkmark-circled"}}
+		</div>
+		<div class="rc-message-box__icon mic active js-audio-message-record">
+			{{> icon block="rc-input__icon-svg" icon="mic"}}
+		</div>
+		<div class="rc-message-box__icon loading js-audio-message-loading">
+			{{> icon block="rc-input__icon-svg" icon="loading"}}
+		</div>
+	</div>
+</template>
