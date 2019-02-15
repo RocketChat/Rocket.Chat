@@ -1865,7 +1865,7 @@
   "No_results_found_for": "هیچ نتیجه ای یافت نشد:",
   "No_snippet_messages": "هیچ قطعه",
   "No_starred_messages": "پیام ستاره داری نیست",
-  "No_such_command": "دستور زیر وجود ندارد: `/ __ command__`",
+  "No_such_command": "دستور زیر وجود ندارد: `/ __command__`",
   "No_user_with_username_%s_was_found": "هیچ کاربر با نام کاربری <strong>\" %s\" را</strong> پیدا نشد!",
   "Nobody_available": "هیچ کس در دسترس نیست",
   "Node_version": "نسخه گره",

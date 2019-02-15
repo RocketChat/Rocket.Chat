@@ -1086,7 +1086,7 @@
   "error-room-is-not-closed": "Soba ni zaprta",
   "error-the-field-is-required": "Polje __field__ je zahtevano.",
   "error-this-is-not-a-livechat-room": "To ni soba Livechat",
-  "error-too-many-requests": "Napaka, preveč zahtev. Prosimo, upočasnite se. Preden poskusite znova, počakajte _seconds_ sekund. ",
+  "error-too-many-requests": "Napaka, preveč zahtev. Prosimo, upočasnite se. Preden poskusite znova, počakajte __seconds__ sekund. ",
   "error-user-has-no-roles": "Uporabnik nima vlog",
   "error-user-is-not-activated": "Uporabnik ni aktiviran",
   "error-user-limit-exceeded": "Število uporabnikov, ki jih poskušate povabiti v #ime_kanala presega omejitev, ki jo je določil skrbnik",

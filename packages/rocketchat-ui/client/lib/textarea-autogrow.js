@@ -119,12 +119,13 @@ const runTimes = (space) => `${ times('&nbsp;', space.length - 1) } `;
 				}
 			};
 
-			const updateThrottle = _.throttle(update, 300);
+			const updateThrottled = _.throttle(update, 300);
 
-			$self.on('focus change input', updateThrottle);
-			$(window).resize(updateThrottle);
+			$self.on('change input', updateThrottled);
+			$self.on('focus', update);
+			$(window).resize(updateThrottled);
 			update();
-			self.updateAutogrow = updateThrottle;
+			self.updateAutogrow = updateThrottled;
 		});
 	};
 }(jQuery));
