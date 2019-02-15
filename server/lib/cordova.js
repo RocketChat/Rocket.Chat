@@ -79,6 +79,8 @@ Meteor.methods({
 });
 
 function sendPush(service, token, options, tries = 0) {
+	options.uniqueId = RocketChat.settings.get('uniqueID');
+
 	const data = {
 		data: {
 			token,
