@@ -9,7 +9,7 @@ Meteor.methods({
 		check(userId, String);
 
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'deleteUser',
 			});
 		}
@@ -22,7 +22,7 @@ Meteor.methods({
 
 		const user = Users.findOneById(userId);
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
 				method: 'deleteUser',
 			});
 		}

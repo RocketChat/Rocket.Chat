@@ -10,7 +10,7 @@
 		padding: 24px 12px 12px;
 	}
 
-	&__toolbar-markdown {
+	&__toolbar-formatting {
 		position: absolute;
 		left: 0;
 
@@ -30,6 +30,7 @@
 			transition: color 0.1s;
 
 			color: var(--message-box-markdown-color);
+			align-items: center;
 			justify-content: center;
 
 			&:hover,
@@ -62,8 +63,10 @@
 
 		font-size: var(--message-box-user-typing-text-size);
 
-		&__user {
+		&-user {
 			color: var(--message-box-user-typing-user-color);
+
+			font-weight: bold;
 		}
 
 		&::after {
@@ -145,7 +148,7 @@
 
 			display: none;
 
-			color: red;
+			color: #2db730;
 
 			&.active {
 				display: flex;
@@ -219,6 +222,26 @@
 
 		line-height: 0.8em;
 	}
+
+	&__join {
+		display: flex;
+
+		margin: 0 -0.25rem;
+		align-items: center;
+		flex-wrap: nowrap;
+	}
+
+	&__join-code {
+		flex: 0 0 10rem;
+
+		margin: 0 0.25rem;
+	}
+
+	&__join-button {
+		flex: 0;
+
+		margin: 0 0.25rem;
+	}
 }
 
 @media (width <= 500px) {
@@ -232,7 +255,7 @@
 			margin-left: 1rem;
 		}
 
-		&__toolbar-markdown {
+		&__toolbar-formatting {
 			display: none;
 		}
 

@@ -7,6 +7,10 @@ import { Template } from 'meteor/templating';
 import s from 'underscore.string';
 
 Template.adminEmoji.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		if (Template.instance().ready != null) {
 			return Template.instance().ready.get();
@@ -35,6 +39,13 @@ Template.adminEmoji.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+		};
+	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function({ _id }) {
+			instance.tabBarData.set(RocketChat.models.EmojiCustom.findOne({ _id }));
+			instance.tabBar.open('admin-emoji-info');
 		};
 	},
 });
@@ -109,17 +120,5 @@ Template.adminEmoji.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	},
-
-	'click .emoji-info'(e, instance) {
-		e.preventDefault();
-		instance.tabBarData.set(EmojiCustom.findOne({ _id: this._id }));
-		instance.tabBar.open('admin-emoji-info');
-	},
-
-	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
 	},
 });

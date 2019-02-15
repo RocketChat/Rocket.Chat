@@ -50,6 +50,14 @@ Meteor.methods({
 			if (!fs.existsSync(fileUrl)) {
 				throw new Meteor.Error('error-import-file-missing', fileUrl, { method: 'downloadPublicImportFile' });
 			}
+
+			// If the url is actually a folder path on the current machine, skip moving it to the file store
+			if (fs.statSync(fileUrl).isDirectory()) {
+				importer.instance.updateRecord({ file: fileUrl });
+				importer.instance.updateProgress(ProgressStep.DOWNLOAD_COMPLETE);
+				return;
+			}
+
 			copyLocalFile(fileUrl, writeStream);
 		}
 
