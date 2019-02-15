@@ -8,7 +8,6 @@ import { messageBox, modal } from 'meteor/rocketchat:ui-utils';
 import { fileUpload } from 'meteor/rocketchat:ui';
 import { settings } from 'meteor/rocketchat:settings';
 import { t } from 'meteor/rocketchat:utils';
-import { geolocation } from '../messageBox';
 
 messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
@@ -63,6 +62,8 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 	},
 });
 
+const geolocation = new ReactiveVar(false);
+
 messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
@@ -97,20 +98,18 @@ messageBox.actions.add('Share', 'My_location', {
 });
 
 Meteor.startup(() => {
-	RocketChat.Geolocation = new ReactiveVar(false);
-
-	const handleGeolocation = (position) => RocketChat.Geolocation.set(position);
-	const handleGeolocationError = () => RocketChat.Geolocation.set(false);
+	const handleGeolocation = (position) => geolocation.set(position);
+	const handleGeolocationError = () => geolocation.set(false);
 
 	Tracker.autorun(() => {
-		const isMapViewEnabled = RocketChat.settings.get('MapView_Enabled') === true;
+		const isMapViewEnabled = settings.get('MapView_Enabled') === true;
 		const isGeolocationWatchSupported = navigator.geolocation && navigator.geolocation.watchPosition;
-		const googleMapsApiKey = RocketChat.settings.get('MapView_GMapsAPIKey');
+		const googleMapsApiKey = settings.get('MapView_GMapsAPIKey');
 		const canGetGeolocation =
 			isMapViewEnabled && isGeolocationWatchSupported && (googleMapsApiKey && googleMapsApiKey.length);
 
 		if (!canGetGeolocation) {
-			RocketChat.Geolocation.set(false);
+			geolocation.set(false);
 			return;
 		}
 
