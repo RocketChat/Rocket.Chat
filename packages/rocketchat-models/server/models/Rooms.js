@@ -27,6 +27,20 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	setJitsiTimeout(_id, time) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				jitsiTimeout: time,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	findByTokenpass(tokens) {
 		const query = {
 			'tokenpass.tokens.token': {

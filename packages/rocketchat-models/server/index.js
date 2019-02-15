@@ -22,6 +22,7 @@ import EmojiCustom from './models/EmojiCustom';
 import OAuthApps from './models/OAuthApps';
 import OEmbedCache from './models/OEmbedCache';
 import SmarshHistory from './models/SmarshHistory';
+import WebdavAccounts from './models/WebdavAccounts';
 
 export {
 	Base,
@@ -48,4 +49,5 @@ export {
 	OAuthApps,
 	OEmbedCache,
 	SmarshHistory,
+	WebdavAccounts,
 };
