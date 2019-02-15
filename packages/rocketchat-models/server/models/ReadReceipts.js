@@ -1,4 +1,6 @@
-class ModelReadReceipts extends RocketChat.models._Base {
+import { Base } from './_Base';
+
+export class ReadReceipts extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -16,4 +18,4 @@ class ModelReadReceipts extends RocketChat.models._Base {
 	}
 }
 
-export default new ModelReadReceipts('message_read_receipt');
+export default new ReadReceipts('message_read_receipt');
