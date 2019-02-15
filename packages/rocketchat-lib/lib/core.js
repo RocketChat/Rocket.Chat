@@ -1,5 +1,4 @@
-import EventEmitter from 'wolfy87-eventemitter';
-RocketChat = new EventEmitter();
+RocketChat = {};
 /*
 * Kick off the global namespace for RocketChat.
 * @namespace RocketChat

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(function() {
-	RocketChat.settings.addGroup('Video Conference', function() {
+	settings.addGroup('Video Conference', function() {
 
 		this.section('BigBlueButton', function() {
 

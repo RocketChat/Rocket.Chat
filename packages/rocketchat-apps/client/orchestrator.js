@@ -4,6 +4,7 @@ import { Utilities } from '../lib/misc/Utilities';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { TAPi18next } from 'meteor/tap:i18n';
+import { API } from 'meteor/rocketchat:api';
 
 class AppClientOrchestrator {
 	constructor() {
@@ -71,7 +72,7 @@ class AppClientOrchestrator {
 	}
 
 	_loadLanguages() {
-		return RocketChat.API.get('apps/languages').then((info) => {
+		return API.get('apps/languages').then((info) => {
 			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages, rlInfo.id));
 		});
 	}
@@ -92,7 +93,7 @@ class AppClientOrchestrator {
 	}
 
 	async getAppApis(appId) {
-		const result = await RocketChat.API.get(`apps/${ appId }/apis`);
+		const result = await API.get(`apps/${ appId }/apis`);
 		return result.apis;
 	}
 }

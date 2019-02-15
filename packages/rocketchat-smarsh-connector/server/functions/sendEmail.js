@@ -6,14 +6,16 @@
 // }
 import _ from 'underscore';
 import * as Mailer from 'meteor/rocketchat:mailer';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Uploads } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import { UploadFS } from 'meteor/jalik:ufs';
+import { smarsh } from '../lib/rocketchat';
 
-RocketChat.smarsh.sendEmail = (data) => {
+smarsh.sendEmail = (data) => {
 	const attachments = [];
 
 	_.each(data.files, (fileId) => {
-		const file = RocketChat.models.Uploads.findOneById(fileId);
+		const file = Uploads.findOneById(fileId);
 		if (file.store === 'rocketchat_uploads' || file.store === 'fileSystem') {
 			const rs = UploadFS.getStore(file.store).getReadStream(fileId, file);
 			attachments.push({
@@ -25,8 +27,8 @@ RocketChat.smarsh.sendEmail = (data) => {
 
 
 	Mailer.sendNoWrap({
-		to: RocketChat.settings.get('Smarsh_Email'),
-		from: RocketChat.settings.get('From_Email'),
+		to: settings.get('Smarsh_Email'),
+		from: settings.get('From_Email'),
 		subject: data.subject,
 		html: data.body,
 		attachments,

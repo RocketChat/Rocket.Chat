@@ -1,28 +1,29 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms, Users, Subscriptions } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
-RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type = '', tryDirectByUserIdOnly = false, joinChannel = true, errorOnEmpty = true }) {
+export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type = '', tryDirectByUserIdOnly = false, joinChannel = true, errorOnEmpty = true }) {
 	let room;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
 	if (nameOrId.startsWith('#')) {
 		nameOrId = nameOrId.substring(1);
-		room = RocketChat.models.Rooms.findOneByIdOrName(nameOrId);
+		room = Rooms.findOneByIdOrName(nameOrId);
 	} else if (nameOrId.startsWith('@') || type === 'd') {
 		// If the nameOrId starts with @ OR type is 'd', then let's try just a direct message
 		nameOrId = nameOrId.replace('@', '');
 
 		let roomUser;
 		if (tryDirectByUserIdOnly) {
-			roomUser = RocketChat.models.Users.findOneById(nameOrId);
+			roomUser = Users.findOneById(nameOrId);
 		} else {
-			roomUser = RocketChat.models.Users.findOne({
+			roomUser = Users.findOne({
 				$or: [{ _id: nameOrId }, { username: nameOrId }],
 			});
 		}
 
 		const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : nameOrId;
-		room = RocketChat.models.Rooms.findOneById(rid);
+		room = Rooms.findOneById(rid);
 
 		// If the room hasn't been found yet, let's try some more
 		if (!_.isObject(room)) {
@@ -38,12 +39,12 @@ RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOp
 
 			room = Meteor.runAsUser(currentUserId, function() {
 				const { rid } = Meteor.call('createDirectMessage', roomUser.username);
-				return RocketChat.models.Rooms.findOneById(rid);
+				return Rooms.findOneById(rid);
 			});
 		}
 	} else {
 		// Otherwise, we'll treat this as a channel or group.
-		room = RocketChat.models.Rooms.findOneByIdOrName(nameOrId);
+		room = Rooms.findOneByIdOrName(nameOrId);
 	}
 
 	// If no room was found, handle the room return based upon errorOnEmpty
@@ -67,7 +68,7 @@ RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOp
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
 	if (room.t === 'c' && joinChannel) {
-		const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
+		const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
 
 		if (!sub) {
 			Meteor.runAsUser(currentUserId, function() {
@@ -78,3 +79,5 @@ RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOp
 
 	return room;
 };
+
+RocketChat.getRoomByNameOrIdWithOptionToJoin = getRoomByNameOrIdWithOptionToJoin;

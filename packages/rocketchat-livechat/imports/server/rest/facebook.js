@@ -1,8 +1,10 @@
 import crypto from 'crypto';
 import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
 
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
+import { Livechat } from '../../../server/lib/Livechat';
 
 /**
  * @api {post} /livechat/facebook Send Facebook message
@@ -17,7 +19,7 @@ import LivechatVisitors from '../../../server/models/LivechatVisitors';
  * @apiParam {String} [text] Facebook message text
  * @apiParam {String} [attachments] Facebook message attachments
  */
-RocketChat.API.v1.addRoute('livechat/facebook', {
+API.v1.addRoute('livechat/facebook', {
 	post() {
 		if (!this.bodyParams.text && !this.bodyParams.attachments) {
 			return {
@@ -70,7 +72,7 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = this.bodyParams.token;
 
-			const userId = RocketChat.Livechat.registerGuest({
+			const userId = Livechat.registerGuest({
 				token: sendMessage.message.token,
 				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`,
 			});
@@ -84,7 +86,7 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 		try {
 			return {
 				sucess: true,
-				message: RocketChat.Livechat.sendMessage(sendMessage),
+				message: Livechat.sendMessage(sendMessage),
 			};
 		} catch (e) {
 			console.error('Error using Facebook ->', e);

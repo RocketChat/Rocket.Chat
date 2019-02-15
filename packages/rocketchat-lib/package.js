@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 	api.use('mongo');
 	api.use('oauth');
 	api.use('matb33:collection-hooks');
+	api.use('yasaricli:slugify');
 	api.use('service-configuration');
 	api.use('check');
 	api.use('rocketchat:utils');
@@ -36,7 +37,6 @@ Package.onUse(function(api) {
 	api.use('rocketchat:emoji');
 	api.use('rocketchat:ui');
 	api.use('rocketchat:accounts');
-	api.use('rocketchat:ui');
 	api.use('modules');
 	api.use('rocketchat:i18n');
 	api.use('rocketchat:streamer');
@@ -44,14 +44,19 @@ Package.onUse(function(api) {
 	api.use('rocketchat:logger');
 	api.use('rocketchat:mailer');
 	api.use('rocketchat:settings');
+	api.use('rocketchat:sandstorm');
 	api.use('rocketchat:authorization');
 	api.use('mizzao:timesync');
 	api.use('rocketchat:custom-oauth');
 	api.use('konecty:multiple-instances-status');
 	api.use('rocketchat:file');
 	api.use('rocketchat:file-upload');
-	api.use('rocketchat:push');
-	api.use('rocketchat:push-notifications', { unordered: true });
+	api.use('rocketchat:push-notifications');
+	api.use('rocketchat:action-links');
+	api.use('rocketchat:assets');
+	api.use('rocketchat:markdown');
+	api.use('rocketchat:channel-settings');
+	api.use('rocketchat:tokenpass');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -94,6 +99,8 @@ Package.onUse(function(api) {
 	api.addFiles('lib/templateVarHandler.js');
 	api.addFiles('lib/info.js');
 	api.addFiles('lib/authorization.js');
+	api.addFiles('lib/actionLinks.js');
+	api.addFiles('lib/Markdown.js');
 
 	api.addFiles('lib/getUserNotificationPreference.js');
 	api.addFiles('lib/getUserPreference.js');
@@ -112,7 +119,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/archiveRoom.js', 'server');
 	api.addFiles('server/functions/checkUsernameAvailability.js', 'server');
 	api.addFiles('server/functions/checkEmailAvailability.js', 'server');
-	api.addFiles('server/functions/composeMessageObjectWithUser.js', 'server');
+	api.addFiles('server/functions/composeMessageObjectWithUser_import.js', 'server');
 	api.addFiles('server/functions/createRoom.js', 'server');
 	api.addFiles('server/functions/cleanRoomHistory.js', 'server');
 	api.addFiles('server/functions/deleteMessage.js', 'server');
@@ -126,7 +133,6 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/saveCustomFieldsWithoutValidation.js', 'server');
 	api.addFiles('server/functions/sendMessage.js', 'server');
 	api.addFiles('server/functions/insertMessage.js', 'server');
-	api.addFiles('server/functions/settings.js', 'server');
 	api.addFiles('server/functions/setUserAvatar.js', 'server');
 	api.addFiles('server/functions/setUsername.js', 'server');
 	api.addFiles('server/functions/setRealName.js', 'server');
@@ -136,10 +142,13 @@ Package.onUse(function(api) {
 	api.addFiles('server/functions/validateCustomFields.js', 'server');
 	api.addFiles('server/functions/Notifications.js', 'server');
 	api.addFiles('server/functions/authorization.js', 'server');
+	api.addFiles('server/functions/getUsernameSuggestion.js', 'server');
+	api.addFiles('server/functions/saveRoomTopic.js', 'server');
+	api.addFiles('server/functions/saveRoomName.js', 'server');
 
 	// SERVER LIB
 	api.addFiles('server/lib/configLogger.js', 'server');
-	api.addFiles('server/lib/PushNotification.js', 'server');
+	api.addFiles('server/lib/PushNotification_import.js', 'server');
 	api.addFiles('server/lib/defaultBlockedDomainsList.js', 'server');
 	api.addFiles('server/lib/interceptDirectReplyEmails.js', 'server');
 	api.addFiles('server/lib/loginErrorMessageOverride.js', 'server');
@@ -150,11 +159,11 @@ Package.onUse(function(api) {
 	api.addFiles('server/lib/validateEmailDomain.js', 'server');
 	api.addFiles('server/lib/passwordPolicy.js', 'server');
 	api.addFiles('server/lib/migrations.js', 'server');
+	api.addFiles('server/lib/sandstorm.js', 'server');
+	api.addFiles('server/lib/Assets.js', 'server');
 
 	// SERVER MODELS
 	api.addFiles('server/models/index.js', 'server');
-	api.addFiles('server/models/Permissions.js', 'server');
-	api.addFiles('server/models/Roles.js', 'server');
 
 	api.addFiles('server/oauth/oauth.js', 'server');
 	api.addFiles('server/oauth/facebook.js', 'server');
@@ -214,6 +223,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/methods/unarchiveRoom.js', 'server');
 	api.addFiles('server/methods/unblockUser.js', 'server');
 	api.addFiles('server/methods/updateMessage.js', 'server');
+	api.addFiles('server/methods/getUsernameSuggestion.js', 'server');
 
 	// SERVER STARTUP
 	api.addFiles('server/startup/settingsOnLoadCdnPrefix.js', 'server');
@@ -229,7 +239,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/Notifications.js', 'client');
 	api.addFiles('client/OAuthProxy.js', 'client');
 	api.addFiles('client/UserDeleted.js', 'client');
-	api.addFiles('client/lib/RestApiClient.js', 'client');
 	api.addFiles('client/lib/TabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatTabBar.js', 'client');
 	api.addFiles('client/lib/RocketChatAnnouncement.js', 'client');
@@ -245,6 +254,8 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/tooltip.js', 'client');
 	api.addFiles('client/lib/EmojiPicker.js', 'client');
 	api.addFiles('client/lib/ui-buttons.js', 'client');
+	api.addFiles('client/lib/sandstorm.js', 'client');
+	api.addFiles('client/lib/ChannelSettings.js', 'client');
 
 	// CLIENT LIB STARTUP
 	api.addFiles('client/lib/startup/commands.js', 'client');
@@ -281,7 +292,7 @@ Package.onUse(function(api) {
 	api.export('openRoom', 'client');
 
 	// exports
-	api.mainModule('server/lib/index.js', 'server');
+	api.mainModule('server/index.js', 'server');
 	api.mainModule('client/lib/index.js', 'client');
 
 	api.imply('tap:i18n');

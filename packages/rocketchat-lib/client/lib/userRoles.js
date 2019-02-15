@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { UserRoles, RoomRoles, ChatMessage } from 'meteor/rocketchat:models';
+import { handleError } from 'meteor/rocketchat:utils';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
@@ -15,7 +17,7 @@ Meteor.startup(function() {
 				}
 			});
 
-			RocketChat.Notifications.onLogged('roles-change', function(role) {
+			Notifications.onLogged('roles-change', function(role) {
 				if (role.type === 'added') {
 					if (role.scope) {
 						RoomRoles.upsert({ rid: role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });

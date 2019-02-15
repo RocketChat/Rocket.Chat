@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatDepartment } from '../models';
 
 Meteor.publish('livechat:departments', function(_id) {
 	if (!this.userId) {
@@ -11,9 +12,9 @@ Meteor.publish('livechat:departments', function(_id) {
 	}
 
 	if (_id !== undefined) {
-		return RocketChat.models.LivechatDepartment.findByDepartmentId(_id);
+		return LivechatDepartment.findByDepartmentId(_id);
 	} else {
-		return RocketChat.models.LivechatDepartment.find();
+		return LivechatDepartment.find();
 	}
 
 });

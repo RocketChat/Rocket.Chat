@@ -1,9 +1,9 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from 'meteor/rocketchat:models';
 
 /**
  * Livechat Trigger model
  */
-class LivechatTrigger extends RocketChat.models._Base {
+class LivechatTriggerClass extends Base {
 	constructor() {
 		super('livechat_trigger');
 	}
@@ -28,5 +28,5 @@ class LivechatTrigger extends RocketChat.models._Base {
 		return this.find({ enabled: true });
 	}
 }
-
-RocketChat.models.LivechatTrigger = new LivechatTrigger();
+export const LivechatTrigger = new LivechatTriggerClass();
+RocketChat.models.LivechatTrigger = LivechatTrigger;

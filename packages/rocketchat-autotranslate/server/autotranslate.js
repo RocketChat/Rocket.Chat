@@ -1,21 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { Markdown } from 'meteor/rocketchat:markdown';
 import _ from 'underscore';
 import s from 'underscore.string';
 
 class AutoTranslate {
 	constructor() {
 		this.languages = [];
-		this.enabled = RocketChat.settings.get('AutoTranslate_Enabled');
-		this.apiKey = RocketChat.settings.get('AutoTranslate_GoogleAPIKey');
+		this.enabled = settings.get('AutoTranslate_Enabled');
+		this.apiKey = settings.get('AutoTranslate_GoogleAPIKey');
 		this.supportedLanguages = {};
-		RocketChat.callbacks.add('afterSaveMessage', this.translateMessage.bind(this), RocketChat.callbacks.priority.MEDIUM, 'AutoTranslate');
+		callbacks.add('afterSaveMessage', this.translateMessage.bind(this), callbacks.priority.MEDIUM, 'AutoTranslate');
 
-		RocketChat.settings.get('AutoTranslate_Enabled', (key, value) => {
+		settings.get('AutoTranslate_Enabled', (key, value) => {
 			this.enabled = value;
 		});
-		RocketChat.settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
+		settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
 			this.apiKey = value;
 		});
 	}
@@ -48,7 +51,7 @@ class AutoTranslate {
 	tokenizeURLs(message) {
 		let count = message.tokens.length;
 
-		const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+		const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 		// Support ![alt text](http://image url) and [text](http://link)
 		message.msg = message.msg.replace(new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\))`, 'gm'), function(match, pre, text, post) {
@@ -91,7 +94,7 @@ class AutoTranslate {
 		let count = message.tokens.length;
 
 		message.html = message.msg;
-		message = RocketChat.Markdown.parseMessageNotEscaped(message);
+		message = Markdown.parseMessageNotEscaped(message);
 		message.msg = message.html;
 
 		for (const tokenIndex in message.tokens) {
@@ -155,7 +158,7 @@ class AutoTranslate {
 			if (targetLanguage) {
 				targetLanguages = [targetLanguage];
 			} else {
-				targetLanguages = RocketChat.models.Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
+				targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
 			}
 			if (message.msg) {
 				Meteor.defer(() => {
@@ -187,7 +190,7 @@ class AutoTranslate {
 						}
 					});
 					if (!_.isEmpty(translations)) {
-						RocketChat.models.Messages.addTranslations(message._id, translations);
+						Messages.addTranslations(message._id, translations);
 					}
 				});
 			}
@@ -212,7 +215,7 @@ class AutoTranslate {
 									}
 								});
 								if (!_.isEmpty(translations)) {
-									RocketChat.models.Messages.addAttachmentTranslations(message._id, index, translations);
+									Messages.addAttachmentTranslations(message._id, index, translations);
 								}
 							}
 						}
@@ -257,4 +260,4 @@ class AutoTranslate {
 	}
 }
 
-RocketChat.AutoTranslate = new AutoTranslate;
+export default new AutoTranslate();

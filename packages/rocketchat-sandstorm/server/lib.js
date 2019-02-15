@@ -1,8 +1,7 @@
 import Future from 'fibers/future';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { UploadFS } from 'meteor/jalik:ufs';
 
-RocketChat.Sandstorm = {};
+export const Sandstorm = {};
 
 export let getHttpBridge;
 export let waitPromise;

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:getAnalyticsOverviewData'(options) {
@@ -14,6 +15,6 @@ Meteor.methods({
 			return;
 		}
 
-		return RocketChat.Livechat.Analytics.getAnalyticsOverviewData(options);
+		return Livechat.Analytics.getAnalyticsOverviewData(options);
 	},
 });

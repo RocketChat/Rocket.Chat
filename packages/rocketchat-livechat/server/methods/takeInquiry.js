@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:takeInquiry'(inquiryId) {
@@ -7,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:takeInquiry' });
 		}
 
-		const inquiry = RocketChat.models.LivechatInquiry.findOneById(inquiryId);
+		const inquiry = LivechatInquiry.findOneById(inquiryId);
 
 		if (!inquiry || inquiry.status === 'taken') {
 			throw new Meteor.Error('error-not-allowed', 'Inquiry already taken', { method: 'livechat:takeInquiry' });
@@ -55,14 +57,14 @@ Meteor.methods({
 		};
 
 		// mark inquiry as taken
-		RocketChat.models.LivechatInquiry.takeInquiry(inquiry._id);
+		LivechatInquiry.takeInquiry(inquiry._id);
 
 		// remove sending message from guest widget
 		// dont check if setting is true, because if settingwas switched off inbetween  guest entered pool,
 		// and inquiry being taken, message would not be switched off.
 		RocketChat.models.Messages.createCommandWithRoomIdAndUser('connected', room._id, user);
 
-		RocketChat.Livechat.stream.emit(room._id, {
+		Livechat.stream.emit(room._id, {
 			type: 'agentData',
 			data: RocketChat.models.Users.getAgentInfo(agent.agentId),
 		});
