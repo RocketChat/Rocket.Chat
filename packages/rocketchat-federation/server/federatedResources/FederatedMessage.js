@@ -143,7 +143,7 @@ class FederatedMessage extends FederatedResource {
 
 			localMessage = localMessageObject;
 
-			const localRoom = { _id: localMessage.rid };
+			const localRoom = RocketChat.models.Rooms.findOneById(localMessage.rid);
 
 			// Normalize mentions
 			for (const mention of localMessage.mentions) {
