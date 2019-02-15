@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Messages } from 'meteor/rocketchat:models';
+import { Apps } from 'meteor/rocketchat:apps';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {

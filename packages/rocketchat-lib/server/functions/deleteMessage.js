@@ -4,6 +4,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Messages, Uploads, Rooms } from 'meteor/rocketchat:models';
 import { Notifications } from 'meteor/rocketchat:notifications';
 import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Apps } from 'meteor/rocketchat:apps';
 
 export const deleteMessage = function(message, user) {
 	const keepHistory = settings.get('Message_KeepHistory');
