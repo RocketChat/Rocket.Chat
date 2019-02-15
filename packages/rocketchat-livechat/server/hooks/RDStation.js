@@ -1,12 +1,13 @@
 import { HTTP } from 'meteor/http';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { Livechat } from '../lib/Livechat';
 
 function sendToRDStation(room) {
 	if (!RocketChat.settings.get('Livechat_RDStation_Token')) {
 		return room;
 	}
 
-	const livechatData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
+	const livechatData = Livechat.getLivechatRoomGuestInfo(room);
 
 	if (!livechatData.visitor.email) {
 		return room;

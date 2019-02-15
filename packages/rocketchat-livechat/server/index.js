@@ -66,7 +66,7 @@ import './models/LivechatPageVisited';
 import './models/LivechatTrigger';
 import '../lib/LivechatInquiry';
 import './models/LivechatOfficeHour';
-import './lib/Livechat';
+export { Livechat } from './lib/Livechat';
 import './lib/Analytics';
 import './lib/QueueMethods';
 import './lib/OfficeClock';

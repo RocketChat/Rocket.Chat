@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../models/LivechatVisitors';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:setDepartmentForVisitor'({ roomId, visitorToken, departmentId } = {}) {
@@ -24,6 +25,6 @@ Meteor.methods({
 			departmentId,
 		};
 
-		return RocketChat.Livechat.transfer(room, visitor, transferData);
+		return Livechat.transfer(room, visitor, transferData);
 	},
 });
