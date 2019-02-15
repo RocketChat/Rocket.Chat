@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 import LivechatVisitors from '../models/LivechatVisitors';
 import { LivechatCustomField } from '../models';
 
@@ -8,7 +8,7 @@ Meteor.methods({
 		const customField = LivechatCustomField.findOneById(key);
 		if (customField) {
 			if (customField.scope === 'room') {
-				return RocketChat.models.Rooms.updateLivechatDataByToken(token, key, value, overwrite);
+				return Rooms.updateLivechatDataByToken(token, key, value, overwrite);
 			} else {
 				// Save in user
 				return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
