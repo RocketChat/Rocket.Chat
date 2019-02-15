@@ -87,7 +87,7 @@ Template.uploadedFilesList.helpers({
 		}
 
 		return {
-			id: 'file-generic',
+			id: 'clip',
 			type: 'generic',
 			extension,
 		};
@@ -132,7 +132,7 @@ Template.uploadedFilesList.events({
 						{
 							items: [
 								{
-									icon: 'import',
+									icon: 'download',
 									name: t('Download'),
 									action: () => {
 										const a = document.createElement('a');

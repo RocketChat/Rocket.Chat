@@ -19,6 +19,9 @@ callbacks.add('renderMessage', (message) => {
 		// &#39; to apostrophe (') for emojis such as :')
 		message.html = message.html.replace(/&#39;/g, '\'');
 
+		// '<br>' to ' <br> ' for emojis such at line breaks
+		message.html = message.html.replace(/<br>/g, ' <br> ');
+
 		Object.keys(emoji.packages).forEach((emojiPackage) => {
 			message.html = emoji.packages[emojiPackage].render(message.html);
 		});
@@ -49,6 +52,9 @@ callbacks.add('renderMessage', (message) => {
 
 		// apostrophe (') back to &#39;
 		message.html = message.html.replace(/\'/g, '&#39;');
+
+		// apostrophe ' <br> ' back to '<br>'
+		message.html = message.html.replace(/ <br> /g, '<br>');
 	}
 
 	return message;

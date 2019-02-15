@@ -1863,7 +1863,7 @@
   "No_results_found_for": "Ingen resultater funnet for:",
   "No_snippet_messages": "Ingen utdrag",
   "No_starred_messages": "Ingen stjernemerkede meldinger",
-  "No_such_command": "Ingen slik kommando: `/ __ command__`",
+  "No_such_command": "Ingen slik kommando: `/ __command__`",
   "No_user_with_username_%s_was_found": "Ingen bruker med brukernavn <strong>\"%s\"</strong>ble funnet!",
   "Nobody_available": "Ingen tilgjengelig",
   "Node_version": "Node Versjon",

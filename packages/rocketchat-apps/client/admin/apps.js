@@ -254,14 +254,15 @@ Template.apps.events({
 
 		const url = `${ HOST }/v1/apps/${ this.latest.id }/download/${ this.latest.version }`;
 
-		APIClient.post('apps/', { url }).then(() => {
-			getInstalledApps(template);
-		}).catch((e) => {
-			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-		});
-
 		// play animation
-		$(e.currentTarget).find('.rc-icon').addClass('play');
+		e.currentTarget.parentElement.classList.add('loading');
+
+		APIClient.post('apps/', { url })
+			.then(() => {
+				getApps(template);
+				getInstalledApps(template);
+			})
+			.catch((e) => toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message));
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
