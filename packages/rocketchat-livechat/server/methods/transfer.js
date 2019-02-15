@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission, hasRole } from 'meteor/rocketchat:authorization';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
 import LivechatVisitors from '../models/LivechatVisitors';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:transfer'(transferData) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });
 		}
 
@@ -16,13 +17,13 @@ Meteor.methods({
 			departmentId: Match.Optional(String),
 		});
 
-		const room = RocketChat.models.Rooms.findOneById(transferData.roomId);
+		const room = Rooms.findOneById(transferData.roomId);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:transfer' });
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), { fields: { _id: 1 } });
-		if (!subscription && !RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager')) {
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), { fields: { _id: 1 } });
+		if (!subscription && !hasRole(Meteor.userId(), 'livechat-manager')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:transfer' });
 		}
 
