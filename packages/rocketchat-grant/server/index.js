@@ -27,7 +27,9 @@ const store = new SessionStorage({
 	databaseName: process.env.SESSION_DATABASE || 'rocketchat',
 	uri: storeAddress,
 }, ((e) => {
-	throw new GrantError('Sessions storage initialization failure:', e);
+	if (e !== undefined) {
+		throw new GrantError('Sessions storage initialization failure:', e);
+	}
 }));
 
 store.on('error', (e) => {
