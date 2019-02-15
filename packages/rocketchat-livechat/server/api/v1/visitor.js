@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, LivechatVisitors, LivechatCustomField } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import { API } from 'meteor/rocketchat:api';
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest } from '../lib/livechat';
-import { LivechatCustomField } from '../../models';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/visitor', {
@@ -39,7 +38,7 @@ API.v1.addRoute('livechat/visitor', {
 
 			let visitor = LivechatVisitors.getVisitorByToken(token);
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const cursor = RocketChat.models.Rooms.findOpenByVisitorToken(token);
+			const cursor = Rooms.findOpenByVisitorToken(token);
 			cursor.forEach((room) => {
 				Livechat.saveRoomInfo(room, visitor);
 			});
@@ -109,11 +108,11 @@ API.v1.addRoute('livechat/visitor/:token', {
 
 API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
-		const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(this.urlParams.token, {
+		const rooms = Rooms.findOpenByVisitorToken(this.urlParams.token, {
 			fields: {
 				name: 1,
 				t: 1,

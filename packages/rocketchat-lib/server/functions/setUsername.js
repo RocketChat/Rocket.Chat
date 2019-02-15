@@ -2,7 +2,7 @@ import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
 import { settings } from 'meteor/rocketchat:settings';
-import { Users, Messages, Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { RateLimiter } from '../lib';
 import { checkUsernameAvailability, setUserAvatar } from '.';
@@ -74,7 +74,7 @@ const _setUsername = function(userId, u) {
 		Rooms.replaceUsernameOfUserByUserId(user._id, username);
 		Subscriptions.setUserUsernameByUserId(user._id, username);
 		Subscriptions.setNameForDirectRoomsWithOldName(previousUsername, username);
-		RocketChat.models.LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+		LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 		const fileStore = FileUpload.getStore('Avatars');
 		const file = fileStore.model.findOneByName(previousUsername);

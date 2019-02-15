@@ -1,9 +1,8 @@
 import { Blaze } from 'meteor/blaze';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { callbacks } from 'meteor/rocketchat:callbacks';
-import { currentTracker } from 'meteor/rocketchat:ui-utils';
 
-this.roomExit = function() {
+export const roomExit = function() {
 	// 7370 - Close flex-tab when opening a room on mobile UI
 	if (window.matchMedia('(max-width: 500px)').matches) {
 		const flex = document.querySelector('.flex-tab');
@@ -17,8 +16,8 @@ this.roomExit = function() {
 		center: 'none',
 	});
 
-	if (typeof currentTracker !== 'undefined') {
-		currentTracker.stop();
+	if (typeof window.currentTracker !== 'undefined') {
+		window.currentTracker.stop();
 	}
 	const mainNode = document.querySelector('.main-content');
 	if (mainNode == null) {

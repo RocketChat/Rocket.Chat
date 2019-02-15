@@ -1,4 +1,7 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Users } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 91,
 	up() {
 		const query = {
@@ -14,10 +17,10 @@ RocketChat.Migrations.add({
 			}],
 		};
 
-		RocketChat.models.Users.find(query, { 'services.linkedin.firstName': 1, username: 1 }).forEach((user) => {
+		Users.find(query, { 'services.linkedin.firstName': 1, username: 1 }).forEach((user) => {
 			const name = `${ user.services.linkedin.firstName } ${ user.services.linkedin.lastName }`;
 
-			RocketChat.models.Users.setName(user._id, name);
+			Users.setName(user._id, name);
 		});
 	},
 });

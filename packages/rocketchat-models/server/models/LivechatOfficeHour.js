@@ -1,7 +1,7 @@
-import { Base } from 'meteor/rocketchat:models';
+import { Base } from './_Base';
 import moment from 'moment';
 
-class LivechatOfficeHourClass extends Base {
+export class LivechatOfficeHour extends Base {
 	constructor() {
 		super('livechat_office_hour');
 
@@ -107,5 +107,4 @@ class LivechatOfficeHourClass extends Base {
 		return finish.isSame(currentTime, 'minute');
 	}
 }
-export const LivechatOfficeHour = new LivechatOfficeHourClass();
-RocketChat.models.LivechatOfficeHour = LivechatOfficeHour;
+export default new LivechatOfficeHour();

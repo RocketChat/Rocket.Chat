@@ -27,6 +27,45 @@ export class Users extends Base {
 		});
 	}
 
+	getLoginTokensByUserId(userId) {
+		const query = {
+			'services.resume.loginTokens.type': {
+				$exists: true,
+				$eq: 'personalAccessToken',
+			},
+			_id: userId,
+		};
+
+		return this.find(query, { fields: { 'services.resume.loginTokens': 1 } });
+	}
+
+	addPersonalAccessTokenToUser({ userId, loginTokenObject }) {
+		return this.update(userId, {
+			$push: {
+				'services.resume.loginTokens': loginTokenObject,
+			},
+		});
+	}
+
+	removePersonalAccessTokenOfUser({ userId, loginTokenObject }) {
+		return this.update(userId, {
+			$pull: {
+				'services.resume.loginTokens': loginTokenObject,
+			},
+		});
+	}
+
+	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }) {
+		const query = {
+			'services.resume.loginTokens': {
+				$elemMatch: { name: tokenName, type: 'personalAccessToken' },
+			},
+			_id: userId,
+		};
+
+		return this.findOne(query);
+	}
+
 	setOperator(_id, operator) {
 		const update = {
 			$set: {

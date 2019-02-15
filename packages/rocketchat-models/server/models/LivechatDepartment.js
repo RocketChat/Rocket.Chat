@@ -1,11 +1,11 @@
-import { Base } from 'meteor/rocketchat:models';
+import { Base } from './_Base';
 import { LivechatDepartmentAgents } from './LivechatDepartmentAgents';
 import _ from 'underscore';
 
 /**
  * Livechat Department model
  */
-class LivechatDepartmentClass extends Base {
+export class LivechatDepartment extends Base {
 	constructor() {
 		super('livechat_department');
 
@@ -93,5 +93,4 @@ class LivechatDepartmentClass extends Base {
 		return this.findOne(query, options);
 	}
 }
-export const LivechatDepartment = new LivechatDepartmentClass();
-RocketChat.models.LivechatDepartment = LivechatDepartment;
+export default new LivechatDepartment();
