@@ -133,6 +133,9 @@ const fixRoomName = (old) => {
 };
 
 Template.channelSettingsEditing.events({
+	'click .js-custom-group-notifs'(e, t) {
+		t.settingcustomGroupNotifs.set(true);
+	},
 	'input [name="name"]'(e) {
 		const input = e.currentTarget;
 		const modified = fixRoomName(input.value);
@@ -205,6 +208,7 @@ Template.channelSettingsEditing.events({
 
 Template.channelSettingsEditing.onCreated(function() {
 	const room = this.room = ChatRoom.findOne(this.data && this.data.rid);
+	this.settingcustomGroupNotifs = new ReactiveVar(false);
 	this.settings = {
 		name: {
 			type: 'text',
@@ -480,6 +484,10 @@ Template.channelSettingsEditing.onCreated(function() {
 				return Promise.resolve();
 			},
 		},
+		customGroupNotifs: {
+			type: 'text',
+			label: 'Role Name',
+		},
 		joinCode: {
 			type: 'text',
 			label: 'Password',
@@ -740,6 +748,12 @@ Template.channelSettingsEditing.helpers({
 	retentionMaxAgeLabel(label) {
 		const { room } = Template.instance();
 		return TAPi18n.__(label, { max: roomMaxAgeDefault(room.t) });
+	},
+	enableCustomGroupNotifs() {
+		return true;
+	},
+	settingcustomGroupNotifs() {
+		return Template.instance().settingcustomGroupNotifs.get();
 	},
 });
 
