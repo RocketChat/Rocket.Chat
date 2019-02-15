@@ -2248,7 +2248,7 @@
   "RetentionPolicyRoom_Enabled": "自动修剪旧邮件",
   "RetentionPolicyRoom_ExcludePinned": "排除固定消息",
   "RetentionPolicyRoom_FilesOnly": "仅修剪文件，保留消息",
-  "RetentionPolicyRoom_MaxAge": "最大邮件年龄（以天为单位）（默认值：__ max__）",
+  "RetentionPolicyRoom_MaxAge": "最大邮件年龄（以天为单位）（默认值：__max__）",
   "RetentionPolicyRoom_OverrideGlobal": "覆盖全局保留策略",
   "RetentionPolicyRoom_ReadTheDocs": "小心！调整这些设置可能会破坏所有消息历史记录。请在<a href=\"https://rocket.chat/docs/administrator-guides/retention-policies/\">此处</a>启用该功能之前阅读文档。",
   "Retry_Count": "重试计数",
