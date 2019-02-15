@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 Meteor.publish('livechat:inquiry', function() {
@@ -7,7 +7,7 @@ Meteor.publish('livechat:inquiry', function() {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:inquiry' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-l-room')) {
+	if (!hasPermission(this.userId, 'view-l-room')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:inquiry' }));
 	}
 

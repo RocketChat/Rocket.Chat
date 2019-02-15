@@ -1,14 +1,14 @@
 // Every minute check if office closed
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { LivechatOfficeHour } from '../models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users, LivechatOfficeHour } from 'meteor/rocketchat:models';
 
 Meteor.setInterval(function() {
-	if (RocketChat.settings.get('Livechat_enable_office_hours')) {
+	if (settings.get('Livechat_enable_office_hours')) {
 		if (LivechatOfficeHour.isOpeningTime()) {
-			RocketChat.models.Users.openOffice();
+			Users.openOffice();
 		} else if (LivechatOfficeHour.isClosingTime()) {
-			RocketChat.models.Users.closeOffice();
+			Users.closeOffice();
 		}
 	}
 }, 60000);

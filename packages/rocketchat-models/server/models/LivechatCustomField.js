@@ -1,10 +1,10 @@
-import { Base } from 'meteor/rocketchat:models';
+import { Base } from './_Base';
 import _ from 'underscore';
 
 /**
  * Livechat Custom Fields model
  */
-class LivechatCustomFieldClass extends Base {
+export class LivechatCustomField extends Base {
 	constructor() {
 		super('livechat_custom_field');
 	}
@@ -43,5 +43,4 @@ class LivechatCustomFieldClass extends Base {
 	}
 }
 
-export const LivechatCustomField = new LivechatCustomFieldClass();
-RocketChat.models.LivechatCustomField = LivechatCustomField;
+export default new LivechatCustomField();

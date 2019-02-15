@@ -4,6 +4,7 @@ import { Logger } from 'meteor/rocketchat:logger';
 import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { statistics } from 'meteor/rocketchat:statistics';
+import { settings } from 'meteor/rocketchat:settings';
 
 const logger = new Logger('SyncedCron');
 
@@ -19,7 +20,7 @@ function generateStatistics() {
 
 	cronStatistics.host = Meteor.absoluteUrl();
 
-	if (RocketChat.settings.get('Statistics_reporting')) {
+	if (settings.get('Statistics_reporting')) {
 		try {
 			const headers = {};
 			const token = getWorkspaceAccessToken();

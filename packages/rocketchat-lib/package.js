@@ -57,6 +57,7 @@ Package.onUse(function(api) {
 	api.use('rocketchat:markdown');
 	api.use('rocketchat:channel-settings');
 	api.use('rocketchat:tokenpass');
+	api.use('rocketchat:apps');
 
 	api.use('templating', 'client');
 	api.use('kadira:flow-router');
@@ -244,7 +245,6 @@ Package.onUse(function(api) {
 	api.addFiles('client/lib/RocketChatAnnouncement.js', 'client');
 	api.addFiles('client/lib/cachedCollection.js', 'client');
 	api.addFiles('client/lib/openRoom.js', 'client');
-	api.addFiles('client/lib/roomExit.js', 'client');
 	api.addFiles('client/lib/settings.js', 'client');
 	api.addFiles('client/lib/roomTypes.js', 'client');
 	api.addFiles('client/lib/userRoles.js', 'client');

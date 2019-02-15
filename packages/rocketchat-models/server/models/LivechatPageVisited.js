@@ -1,9 +1,9 @@
-import { Base } from 'meteor/rocketchat:models';
+import { Base } from './_Base';
 
 /**
  * Livechat Page Visited model
  */
-class LivechatPageVisitedClass extends Base {
+class LivechatPageVisited extends Base {
 	constructor() {
 		super('livechat_page_visited');
 
@@ -45,5 +45,4 @@ class LivechatPageVisitedClass extends Base {
 		});
 	}
 }
-export const LivechatPageVisited = new LivechatPageVisitedClass();
-RocketChat.models.LivechatPageVisited = LivechatPageVisited;
+export default new LivechatPageVisited();

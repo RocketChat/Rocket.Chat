@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from 'meteor/rocketchat:models';
 import _ from 'underscore';
-import { LivechatDepartment, LivechatTrigger } from '../models';
-import LivechatVisitors from '../models/LivechatVisitors';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -43,7 +41,7 @@ Meteor.methods({
 				departmentId: 1,
 			},
 		};
-		const room = (departmentId) ? RocketChat.models.Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
+		const room = (departmentId) ? Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}
@@ -83,7 +81,7 @@ Meteor.methods({
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 
-		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
+		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
 
 		LivechatTrigger.findEnabled().forEach((trigger) => {
 			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
@@ -94,7 +92,7 @@ Meteor.methods({
 		});
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
-		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
+		info.online = Users.findOnlineAgents().count() > 0;
 		return info;
 	},
 });
