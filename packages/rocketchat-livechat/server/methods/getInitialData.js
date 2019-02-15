@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
-
+import { LivechatDepartment, LivechatTrigger } from '../models';
 import LivechatVisitors from '../models/LivechatVisitors';
 
 Meteor.methods({
@@ -84,11 +84,11 @@ Meteor.methods({
 
 		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
 
-		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
+		LivechatTrigger.findEnabled().forEach((trigger) => {
 			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 		});
 
-		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {
+		LivechatDepartment.findEnabledWithAgents().forEach((department) => {
 			info.departments.push(department);
 		});
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;

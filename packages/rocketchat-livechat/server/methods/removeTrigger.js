@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatTrigger } from '../models';
 
 Meteor.methods({
 	'livechat:removeTrigger'(triggerId) {
@@ -10,6 +11,6 @@ Meteor.methods({
 
 		check(triggerId, String);
 
-		return RocketChat.models.LivechatTrigger.removeById(triggerId);
+		return LivechatTrigger.removeById(triggerId);
 	},
 });

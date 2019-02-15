@@ -4,6 +4,7 @@ import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest } from '../lib/livechat';
+import { LivechatCustomField } from '../../models';
 
 API.v1.addRoute('livechat/visitor', {
 	post() {
@@ -44,7 +45,7 @@ API.v1.addRoute('livechat/visitor', {
 
 			if (customFields && customFields instanceof Array) {
 				customFields.forEach((field) => {
-					const customField = RocketChat.models.LivechatCustomField.findOneById(field.key);
+					const customField = LivechatCustomField.findOneById(field.key);
 					if (!customField) {
 						return;
 					}

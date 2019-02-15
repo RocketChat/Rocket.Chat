@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatOfficeHour } from '../models';
 
 Meteor.methods({
 	'livechat:saveOfficeHours'(day, start, finish, open) {
-		RocketChat.models.LivechatOfficeHour.updateHours(day, start, finish, open);
+		LivechatOfficeHour.updateHours(day, start, finish, open);
 	},
 });

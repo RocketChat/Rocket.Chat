@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatDepartmentAgents } from '../models';
 
 Meteor.publish('livechat:queue', function() {
 	if (!this.userId) {
@@ -29,7 +30,7 @@ Meteor.publish('livechat:queue', function() {
 
 	const self = this;
 
-	const handleDepts = RocketChat.models.LivechatDepartmentAgents.findUsersInQueue().observeChanges({
+	const handleDepts = LivechatDepartmentAgents.findUsersInQueue().observeChanges({
 		added(id, fields) {
 			self.added('livechatQueueUser', id, fields);
 		},

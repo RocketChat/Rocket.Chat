@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatDepartment, LivechatTrigger } from '../../models';
 import _ from 'underscore';
 import LivechatVisitors from '../../models/LivechatVisitors';
 
@@ -9,11 +10,11 @@ export function online() {
 }
 
 export function findTriggers() {
-	return RocketChat.models.LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
+	return LivechatTrigger.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 }
 
 export function findDepartments() {
-	return RocketChat.models.LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration'));
+	return LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration'));
 }
 
 export function findGuest(token) {
