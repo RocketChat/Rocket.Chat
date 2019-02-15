@@ -42,7 +42,6 @@
       appendToBuffer(mp3buf);
       remaining -= maxSamples;
     }
-
   };
 
   var finish = function () {

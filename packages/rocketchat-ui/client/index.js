@@ -32,7 +32,6 @@ import './lib/textarea-autogrow';
 import './lib/codeMirror/codeMirror';
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
-import './lib/recorderjs/recorder';
 import './lib/textarea-cursor/set-cursor-position';
 import './views/cmsPage.html';
 import './views/fxos.html';

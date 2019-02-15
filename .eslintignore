@@ -13,7 +13,6 @@ packages/rocketchat_theme/client/minicolors/jquery.minicolors.js
 packages/rocketchat_theme/client/vendor/
 packages/rocketchat-ui/client/lib/customEventPolyfill.js
 packages/rocketchat-ui/client/lib/Modernizr.js
-packages/rocketchat-ui/client/lib/recorderjs/recorder.js
 packages/rocketchat-videobridge/client/public/external_api.js
 packages/tap-i18n/lib/tap_i18next/tap_i18next-1.7.3.js
 private/moment-locales/

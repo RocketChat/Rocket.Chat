@@ -1,4 +1,4 @@
-import { AudioEncoder } from './recorder';
+import { AudioEncoder } from './audioEncoder';
 
 const getUserMedia = ((navigator) => {
 	if (navigator.mediaDevices) {
@@ -19,7 +19,7 @@ const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 class AudioRecorder {
 	isSupported() {
-		return Boolean(getUserMedia);
+		return Boolean(getUserMedia) && Boolean(AudioContext);
 	}
 
 	createAudioContext() {
@@ -62,10 +62,7 @@ class AudioRecorder {
 		}
 
 		const input = this.audioContext.createMediaStreamSource(this.stream);
-		this.encoder = new AudioEncoder(input, {
-			workerPath: 'mp3-realtime-worker.js',
-			numChannels: 1,
-		});
+		this.encoder = new AudioEncoder(input, { numChannels: 1 });
 	}
 
 	destroyEncoder() {
@@ -77,11 +74,10 @@ class AudioRecorder {
 			await this.createAudioContext();
 			await this.createStream();
 			await this.createEncoder();
-			this.encoder.record();
 			cb && cb.call(this, true);
 		} catch (error) {
 			console.error(error);
-			this.encoder.stop();
+			this.encoder.close();
 			this.destroyEncoder();
 			this.destroyStream();
 			this.destroyAudioContext();
@@ -90,8 +86,8 @@ class AudioRecorder {
 	}
 
 	stop(cb) {
-		this.encoder.stop();
-		cb && this.encoder.exportMP3(cb);
+		this.encoder.on('encoded', cb);
+		this.encoder.close();
 
 		this.destroyEncoder();
 		this.destroyStream();
