@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { Settings, Rooms } from 'meteor/rocketchat:models';
+import { fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
 import { API } from 'meteor/rocketchat:api';
 import Busboy from 'busboy';
@@ -7,11 +9,11 @@ import filesize from 'filesize';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 let maxFileSize;
 
-RocketChat.settings.get('FileUpload_MaxFileSize', function(key, value) {
+settings.get('FileUpload_MaxFileSize', function(key, value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
-		maxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
 	}
 });
 
@@ -28,7 +30,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const room = RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
+		const room = Rooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
 		if (!room) {
 			return API.v1.unauthorized();
 		}
@@ -68,7 +70,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 
 		const file = files[0];
 
-		if (!RocketChat.fileUploadIsValidContentType(file.mimetype)) {
+		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({
 				reason: 'error-type-not-allowed',
 			});

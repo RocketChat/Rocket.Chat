@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
-
+import { Rooms, Users } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { Livechat } from '../../../server/lib/Livechat';
 
@@ -33,7 +33,7 @@ API.v1.addRoute('livechat/facebook', {
 			};
 		}
 
-		if (!RocketChat.settings.get('Livechat_Facebook_Enabled')) {
+		if (!settings.get('Livechat_Facebook_Enabled')) {
 			return {
 				success: false,
 				error: 'Integration disabled',
@@ -41,7 +41,7 @@ API.v1.addRoute('livechat/facebook', {
 		}
 
 		// validate if request come from omni
-		const signature = crypto.createHmac('sha1', RocketChat.settings.get('Livechat_Facebook_API_Secret')).update(JSON.stringify(this.request.body)).digest('hex');
+		const signature = crypto.createHmac('sha1', settings.get('Livechat_Facebook_API_Secret')).update(JSON.stringify(this.request.body)).digest('hex');
 		if (this.request.headers['x-hub-signature'] !== `sha1=${ signature }`) {
 			return {
 				success: false,
@@ -61,7 +61,7 @@ API.v1.addRoute('livechat/facebook', {
 		};
 		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
-			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			const rooms = Rooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
 			} else {
@@ -77,7 +77,7 @@ API.v1.addRoute('livechat/facebook', {
 				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`,
 			});
 
-			visitor = RocketChat.models.Users.findOneById(userId);
+			visitor = Users.findOneById(userId);
 		}
 
 		sendMessage.message.msg = this.bodyParams.text;
