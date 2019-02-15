@@ -146,23 +146,20 @@
 		margin: 0 7px;
 	}
 
-	.installer {
-		position: relative;
+	&__wrap-actions {
+		& > .rc-icon--loading {
+			display: none;
+		}
 
-		overflow: hidden;
+		&.loading {
+			& > .rc-icon--loading {
+				display: block;
 
-		width: 20px;
-		height: 20px;
+				animation: spin 1s linear infinite;
+			}
 
-		&--marketplace-installer {
-			position: absolute;
-			top: 0;
-
-			width: 818px;
-			height: 20px;
-
-			&.play {
-				animation: play90 steps(40) 4s forwards;
+			& > .apps-installer {
+				display: none;
 			}
 		}
 	}

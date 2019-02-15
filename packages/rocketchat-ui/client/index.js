@@ -64,5 +64,7 @@ import './components/selectDropdown.html';
 import './components/selectDropdown';
 import './components/header/header.html';
 import './components/header/header';
+import './components/header/headerRoom.html';
+import './components/header/headerRoom';
 import './components/contextualBar.html';
 import './components/contextualBar';
