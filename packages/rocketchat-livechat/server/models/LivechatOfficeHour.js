@@ -108,4 +108,3 @@ class LivechatOfficeHourClass extends Base {
 	}
 }
 export const LivechatOfficeHour = new LivechatOfficeHourClass();
-RocketChat.models.LivechatOfficeHour = LivechatOfficeHour;

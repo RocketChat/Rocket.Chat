@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import { LivechatDepartmentAgents } from '../models';
 
 Meteor.publish('livechat:departmentAgents', function(departmentId) {
@@ -7,7 +7,7 @@ Meteor.publish('livechat:departmentAgents', function(departmentId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:departmentAgents' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-rooms')) {
+	if (!hasPermission(this.userId, 'view-livechat-rooms')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:departmentAgents' }));
 	}
 

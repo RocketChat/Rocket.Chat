@@ -44,4 +44,3 @@ class LivechatCustomFieldClass extends Base {
 }
 
 export const LivechatCustomField = new LivechatCustomFieldClass();
-RocketChat.models.LivechatCustomField = LivechatCustomField;
