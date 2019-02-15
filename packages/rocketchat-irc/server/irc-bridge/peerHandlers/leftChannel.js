@@ -1,4 +1,5 @@
 import { Users, Rooms } from 'meteor/rocketchat:models';
+import { removeUserFromRoom } from 'meteor/rocketchat:lib';
 
 export default function handleLeftChannel(args) {
 	const user = Users.findOne({
@@ -16,5 +17,5 @@ export default function handleLeftChannel(args) {
 	}
 
 	this.log(`${ user.username } left room ${ room.name }`);
-	RocketChat.removeUserFromRoom(room._id, user);
+	removeUserFromRoom(room._id, user);
 }
