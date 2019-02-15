@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from 'meteor/rocketchat:settings';
-import { Settings, Rooms } from 'meteor/rocketchat:models';
+import { Settings, Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
 import { fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
 import { API } from 'meteor/rocketchat:api';
 import Busboy from 'busboy';
 import filesize from 'filesize';
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
 let maxFileSize;
 
 settings.get('FileUpload_MaxFileSize', function(key, value) {

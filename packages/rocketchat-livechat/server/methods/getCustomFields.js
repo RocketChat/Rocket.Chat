@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { LivechatCustomField } from '../models';
+import { LivechatCustomField } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'livechat:getCustomFields'() {

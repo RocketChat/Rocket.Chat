@@ -1,7 +1,7 @@
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { settings } from 'meteor/rocketchat:settings';
 import { SMS } from 'meteor/rocketchat:sms';
-import LivechatVisitors from './models/LivechatVisitors';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
