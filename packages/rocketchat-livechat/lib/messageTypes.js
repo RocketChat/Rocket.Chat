@@ -40,7 +40,7 @@ actionLinks.register('denyLivechatCall', function(message/* , params*/) {
 		Messages.createWithTypeRoomIdMessageAndUser('command', message.rid, 'endCall', user);
 		Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
 
-		const language = user.language || settings.get('language') || 'en';
+		const language = user.language || settings.get('Language') || 'en';
 
 		Livechat.closeRoom({
 			user,

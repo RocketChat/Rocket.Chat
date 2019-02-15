@@ -56,7 +56,7 @@ API.v1.addRoute('livechat/room.close', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			const language = rcSettings.get('language') || 'en';
+			const language = rcSettings.get('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
 			if (!Livechat.closeRoom({ visitor, room, comment })) {
