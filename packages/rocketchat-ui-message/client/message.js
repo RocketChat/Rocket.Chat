@@ -284,32 +284,36 @@ Template.message.helpers({
 		return true;
 	},
 	reactions() {
-		const userUsername = Meteor.user() && Meteor.user().username;
-		return Object.keys(this.reactions || {}).map((emoji) => {
-			const reaction = this.reactions[emoji];
-			const total = reaction.usernames.length;
-			let usernames = reaction.usernames
-				.slice(0, 15)
-				.map((username) => (username === userUsername ? t('You').toLowerCase() : `@${ username }`))
-				.join(', ');
-			if (total > 15) {
-				usernames = `${ usernames } ${ t('And_more', {
-					length: total - 15,
-				}).toLowerCase() }`;
-			} else {
-				usernames = usernames.replace(/,([^,]+)$/, ` ${ t('and') }$1`);
-			}
-			if (usernames[0] !== '@') {
-				usernames = usernames[0].toUpperCase() + usernames.substr(1);
-			}
-			return {
-				emoji,
-				count: reaction.usernames.length,
-				usernames,
-				reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-				userReacted: reaction.usernames.indexOf(userUsername) > -1,
-			};
-		});
+		const { username: myUsername, name: myName } = Meteor.user() || {};
+
+		return Object.entries(this.reactions || {})
+			.map(([emoji, reaction]) => {
+				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
+				const displayNames = (reaction.names || reaction.usernames.map((username) => `@${ username }`));
+				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
+
+				if (displayNames.some((displayName) => displayName === myDisplayName)) {
+					selectedDisplayNames.unshift(t('You'));
+				}
+
+				let usernames;
+
+				if (displayNames.length > 15) {
+					usernames = `${ selectedDisplayNames.join(', ') }${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
+				} else if (displayNames.length > 1) {
+					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
+				} else {
+					usernames = selectedDisplayNames[0];
+				}
+
+				return {
+					emoji,
+					count: displayNames.length,
+					usernames,
+					reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
+					userReacted: displayNames.indexOf(myDisplayName) > -1,
+				};
+			});
 	},
 	markUserReaction(reaction) {
 		if (reaction.userReacted) {
