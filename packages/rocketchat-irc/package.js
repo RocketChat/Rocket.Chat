@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'underscore',
 		'rocketchat:utils',
+		'rocketchat:lib',
 		'rocketchat:callbacks',
 		'rocketchat:settings',
 		'rocketchat:models',
