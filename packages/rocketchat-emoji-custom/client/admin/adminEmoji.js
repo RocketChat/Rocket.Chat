@@ -44,7 +44,7 @@ Template.adminEmoji.helpers({
 	onTableItemClick() {
 		const instance = Template.instance();
 		return function({ _id }) {
-			instance.tabBarData.set(RocketChat.models.EmojiCustom.findOne({ _id }));
+			instance.tabBarData.set(EmojiCustom.findOne({ _id }));
 			instance.tabBar.open('admin-emoji-info');
 		};
 	},
