@@ -60,5 +60,3 @@ export const updateMessage = function(message, user, originalMessage) {
 		callbacks.run('afterSaveMessage', Messages.findOneById(tempid), room, user._id);
 	});
 };
-
-RocketChat.updateMessage = updateMessage;
