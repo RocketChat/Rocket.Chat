@@ -64,31 +64,39 @@ class DeeplAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target] = [
 				{
 					language: 'en',
-					name: TAPi18n.__('English', { lng: target }),
+					name: TAPi18n.__('Language_English', { lng: target }),
 				},
 				{
 					language: 'de',
-					name: TAPi18n.__('German', { lng: target }),
+					name: TAPi18n.__('Language_German', { lng: target }),
 				},
 				{
 					language: 'fr',
-					name: TAPi18n.__('French', { lng: target }),
+					name: TAPi18n.__('Language_French', { lng: target }),
 				},
 				{
 					language: 'es',
-					name: TAPi18n.__('Spanish', { lng: target }),
+					name: TAPi18n.__('Language_Spanish', { lng: target }),
 				},
 				{
 					language: 'it',
-					name: TAPi18n.__('Italian', { lng: target }),
+					name: TAPi18n.__('Language_Italian', { lng: target }),
 				},
 				{
 					language: 'nl',
-					name: TAPi18n.__('Dutch', { lng: target }),
+					name: TAPi18n.__('Language_Dutch', { lng: target }),
 				},
 				{
 					language: 'pl',
-					name: TAPi18n.__('Polish', { lng: target }),
+					name: TAPi18n.__('Language_Polish', { lng: target }),
+				},
+				{
+					language: 'pt',
+					name: TAPi18n.__('Language_Portuguese', { lng: target }),
+				},
+				{
+					language: 'ru',
+					name: TAPi18n.__('Language_Russian', { lng: target }),
 				},
 			];
 		}

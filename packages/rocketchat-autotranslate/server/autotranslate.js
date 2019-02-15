@@ -4,6 +4,25 @@ import s from 'underscore.string';
 import _ from 'underscore';
 import { RocketChat } from 'meteor/rocketchat:lib';
 
+
+export class TranslationProviderRegistry {
+	static registerProvider(provider) {
+		// get provider information
+		const metadata = provider._getProviderMetadata();
+		if (!TranslationProviderRegistry._providers) {
+			TranslationProviderRegistry._providers = {};
+		}
+		TranslationProviderRegistry._providers[metadata.name] = provider;
+	}
+
+	static loadActiveServiceProvider() {
+		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
+			TranslationProviderRegistry._activeProvider = value;
+			RocketChat.AutoTranslate = TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
+		});
+	}
+}
+
 /**
  * Generic auto translate base implementation.
  * Can be used as superclass for translation providers
@@ -118,10 +137,14 @@ export class AutoTranslate {
 
 	tokenizeCode(message) {
 		let count = message.tokens.length;
-
 		message.html = message.msg;
 		message = RocketChat.Markdown.parseMessageNotEscaped(message);
-		message.msg = message.html;
+		message.msg = message.html.trim();
+		// Some parsers (e. g. Marked) wrap the complete message in a <p> - this is unnecessary and should be ignored with respect to translations
+		const wrappedInParagraph = message.msg.startsWith('<p>') && message.msg.endsWith('</p>');
+		if (wrappedInParagraph) {
+			message.msg = message.msg.substr(3, message.msg.length - 7);
+		}
 
 		for (const tokenIndex in message.tokens) {
 			if (message.tokens.hasOwnProperty(tokenIndex)) {
@@ -202,7 +225,7 @@ export class AutoTranslate {
 					targetMessage = this.tokenize(targetMessage);
 					const translations = this._translateMessage(targetMessage, targetLanguages);
 					if (!_.isEmpty(translations)) {
-						RocketChat.models.Messages.addTranslations(message._id, translations);
+						RocketChat.models.Messages.addTranslations(message._id, translations, TranslationProviderRegistry._activeProvider);
 					}
 				});
 			}
@@ -293,24 +316,6 @@ export class AutoTranslate {
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
 		SystemLogger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
-	}
-}
-
-export class TranslationProviderRegistry {
-	static registerProvider(provider) {
-		// get provider information
-		const metadata = provider._getProviderMetadata();
-		if (!TranslationProviderRegistry._providers) {
-			TranslationProviderRegistry._providers = {};
-		}
-		TranslationProviderRegistry._providers[metadata.name] = provider;
-	}
-
-	static loadActiveServiceProvider() {
-		RocketChat.settings.get('AutoTranslate_ServiceProvider', (key, value) => {
-			TranslationProviderRegistry._activeProvider = value;
-			RocketChat.AutoTranslate = TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
-		});
 	}
 }
 
