@@ -119,5 +119,3 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		name: room.name,
 	};
 };
-
-RocketChat.createRoom = createRoom;
