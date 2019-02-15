@@ -883,6 +883,7 @@ describe('[Administration]', () => {
 				});
 
 				it('it should show the messagebox view mode field', () => {
+					admin.accountsMessageViewMode.moveToObject();
 					admin.accountsMessageViewMode.click();
 					admin.accountsMessageViewMode.isVisible().should.be.true;
 				});

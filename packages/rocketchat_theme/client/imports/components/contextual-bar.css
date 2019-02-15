@@ -51,7 +51,7 @@
 
 		padding: var(--default-padding);
 
-		align-items: end;
+		align-items: flex-end;
 		justify-content: flex-end;
 
 		&-data {
