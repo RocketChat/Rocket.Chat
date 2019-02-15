@@ -7,6 +7,10 @@ import { CustomSounds } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 Template.adminSounds.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		if (Template.instance().ready != null) {
 			return Template.instance().ready.get();
@@ -35,6 +39,26 @@ Template.adminSounds.helpers({
 		return {
 			tabBar: Template.instance().tabBar,
 			data: Template.instance().tabBarData.get(),
+		};
+	},
+
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
+				return instance.limit.set(instance.limit.get() + 50);
+			}
+		};
+	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function(item) {
+			instance.tabBarData.set(CustomSounds.findOne({ _id: item._id }));
+			instance.tabBar.showGroup('custom-sounds-selected');
+			instance.tabBar.open('admin-sound-info');
 		};
 	},
 });
@@ -108,26 +132,11 @@ Template.adminSounds.events({
 			e.preventDefault();
 		}
 	},
-
 	'keyup #sound-filter'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	},
-
-	'click .sound-info'(e, instance) {
-		e.preventDefault();
-		instance.tabBarData.set(CustomSounds.findOne({ _id: this._id }));
-		instance.tabBar.showGroup('custom-sounds-selected');
-		instance.tabBar.open('admin-sound-info');
-	},
-
-	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
-	},
-
 	'click .icon-play-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();

@@ -36,7 +36,7 @@ RocketChat.actionLinks.register('denyLivechatCall', function(message/* , params*
 		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('command', message.rid, 'endCall', user);
 		RocketChat.Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
 
-		const language = user.language || RocketChat.settings.get('language') || 'en';
+		const language = user.language || RocketChat.settings.get('Language') || 'en';
 
 		Livechat.closeRoom({
 			user,
