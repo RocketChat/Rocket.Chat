@@ -1,66 +1,58 @@
-(function () {
-  'use strict';
+'use strict';
 
+(function () {
   importScripts('lame.min.js');
 
-  var mp3Encoder, maxSamples = 1152, samplesMono, config, dataBuffer;
-  var clearBuffer = function () {
-    dataBuffer = [];
-  };
+	var encoder;
+	var maxSamples = 1152;
+	var samplesMono;
+	var config;
+	var dataBuffer;
 
-  var appendToBuffer = function (mp3Buf) {
-    dataBuffer.push(new Int8Array(mp3Buf));
-  };
+  function convertBuffer(arrayBuffer) {
+    var input = new Float32Array(arrayBuffer);
+    var output = new Int16Array(arrayBuffer.length);
 
-
-  var init = function (prefConfig) {
-    config = prefConfig || {};
-    mp3Encoder = new lamejs.Mp3Encoder(1, config.sampleRate || 44100, config.bitRate || 128);
-    clearBuffer();
-  };
-
-  var floatTo16BitPCM = function floatTo16BitPCM(input, output) {
-    for (var i = 0; i < input.length; i++) {
+		for (var i = 0; i < input.length; i++) {
       var s = Math.max(-1, Math.min(1, input[i]));
       output[i] = (s < 0 ? s * 0x8000 : s * 0x7FFF);
     }
-  };
 
-  var convertBuffer = function(arrayBuffer){
-    var data = new Float32Array(arrayBuffer);
-    var out = new Int16Array(arrayBuffer.length);
-    floatTo16BitPCM(data, out)
-    return out;
-  };
+    return output;
+  }
 
-  var encode = function (arrayBuffer) {
+  function init(config) {
+    config = config || {};
+    encoder = new lamejs.Mp3Encoder(config.numChannels || 1, config.sampleRate || 44100, config.bitRate || 32);
+    dataBuffer = [];
+  }
+
+  function encode(arrayBuffer) {
     samplesMono = convertBuffer(arrayBuffer);
     var remaining = samplesMono.length;
     for (var i = 0; remaining >= 0; i += maxSamples) {
       var left = samplesMono.subarray(i, i + maxSamples);
-      var mp3buf = mp3Encoder.encodeBuffer(left);
-      appendToBuffer(mp3buf);
+      var buffer = encoder.encodeBuffer(left);
+      dataBuffer.push(new Int8Array(buffer));
       remaining -= maxSamples;
     }
   };
 
-  var finish = function () {
-    appendToBuffer(mp3Encoder.flush());
-    self.postMessage({
-      command: 'end',
-      buffer: dataBuffer
-    });
-    clearBuffer();
+  function finish() {
+		var buffer = encoder.flush();
+		dataBuffer.push(new Int8Array(buffer));
+    self.postMessage({ command: 'end', buffer: dataBuffer });
+    dataBuffer = [];
   };
 
-  self.onmessage = function (e) {
-    switch (e.data.command) {
+  self.onmessage = function (event) {
+    switch (event.data.command) {
       case 'init':
-        init(e.data.config);
+        init(event.data.config);
         break;
 
       case 'encode':
-        encode(e.data.buffer);
+        encode(event.data.buffer);
         break;
 
       case 'finish':
@@ -68,5 +60,4 @@
         break;
     }
   };
-
 })();

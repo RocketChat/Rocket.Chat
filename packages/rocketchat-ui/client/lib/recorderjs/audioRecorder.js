@@ -62,7 +62,7 @@ class AudioRecorder {
 		}
 
 		const input = this.audioContext.createMediaStreamSource(this.stream);
-		this.encoder = new AudioEncoder(input, { numChannels: 1 });
+		this.encoder = new AudioEncoder(input);
 	}
 
 	destroyEncoder() {
