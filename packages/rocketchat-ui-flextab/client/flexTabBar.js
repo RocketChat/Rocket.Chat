@@ -4,7 +4,8 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { popover } from 'meteor/rocketchat:ui';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { popover } from 'meteor/rocketchat:ui-utils';
 import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
@@ -19,13 +20,13 @@ const commonHelpers = {
 	},
 };
 function canShowAddUsersButton(rid) {
-	const canAddToChannel = RocketChat.authz.hasAllPermission(
+	const canAddToChannel = hasAllPermission(
 		'add-user-to-any-c-room', rid
 	);
-	const canAddToGroup = RocketChat.authz.hasAllPermission(
+	const canAddToGroup = hasAllPermission(
 		'add-user-to-any-p-room', rid
 	);
-	const canAddToJoinedRoom = RocketChat.authz.hasAllPermission(
+	const canAddToJoinedRoom = hasAllPermission(
 		'add-user-to-joined-room', rid
 	);
 	if (

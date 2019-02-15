@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { generateUsernameSuggestion } from 'meteor/rocketchat:lib';
 import { logger } from './logger';
 
 // Updates or creates a user after we authenticate with Blockstack
@@ -53,7 +53,7 @@ export const updateOrCreateUser = (serviceData, options) => {
 		if (profile.username && profile.username !== '') {
 			newUser.username = profile.username;
 		} else if (serviceConfig.generateUsername === true) {
-			newUser.username = RocketChat.generateUsernameSuggestion(newUser);
+			newUser.username = generateUsernameSuggestion(newUser);
 		}
 		// If no username at this point it will suggest one from the name
 

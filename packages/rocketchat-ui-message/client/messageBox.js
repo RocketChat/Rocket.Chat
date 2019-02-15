@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { EmojiPicker } from 'meteor/rocketchat:emoji';
 import { katex } from 'meteor/rocketchat:katex';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Markdown } from 'meteor/rocketchat:markdown';
 import { settings } from 'meteor/rocketchat:settings';
 import {
 	AudioRecorder,
@@ -15,7 +16,8 @@ import {
 	fileUpload,
 	chatMessages,
 } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
+import { messageBox, Layout } from 'meteor/rocketchat:ui-utils';
+import { t, roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
 import moment from 'moment';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
@@ -23,52 +25,51 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 
-
 const formattingButtons = [
 	{
 		label: 'bold',
 		icon: 'bold',
 		pattern: '*{{text}}*',
 		command: 'b',
-		condition: () => RocketChat.Markdown && settings.get('Markdown_Parser') === 'original',
+		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
 	},
 	{
 		label: 'bold',
 		icon: 'bold',
 		pattern: '**{{text}}**',
 		command: 'b',
-		condition: () => RocketChat.Markdown && settings.get('Markdown_Parser') === 'marked',
+		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
 		command: 'i',
-		condition: () => RocketChat.Markdown && settings.get('Markdown_Parser') !== 'disabled',
+		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
-		condition: () => RocketChat.Markdown && settings.get('Markdown_Parser') === 'original',
+		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
 	},
 	{
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~~{{text}}~~',
-		condition: () => RocketChat.Markdown && settings.get('Markdown_Parser') === 'marked',
+		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'inline_code',
 		icon: 'code',
 		pattern: '`{{text}}`',
-		condition: () => RocketChat.Markdown && settings.get('Markdown_Parser') !== 'disabled',
+		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'multi_line',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
-		condition: () => RocketChat.Markdown && settings.get('Markdown_Parser') !== 'disabled',
+		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'KaTeX',
@@ -139,11 +140,11 @@ function applyFormatting(event, instance) {
 
 
 Template.messageBox.onCreated(function() {
-	RocketChat.EmojiPicker.init();
+	EmojiPicker.init();
 	this.replyMessageData = new ReactiveVar();
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
-	RocketChat.messageBox.emit('created', this);
+	messageBox.emit('created', this);
 });
 
 Template.messageBox.onRendered(function() {
@@ -174,16 +175,16 @@ Template.messageBox.onRendered(function() {
 
 Template.messageBox.helpers({
 	isEmbedded() {
-		return RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded();
 	},
 	subscribed() {
-		return RocketChat.roomTypes.verifyCanSendMessage(this._id);
+		return roomTypes.verifyCanSendMessage(this._id);
 	},
 	canSend() {
-		if (RocketChat.roomTypes.readOnly(this._id, Meteor.user())) {
+		if (roomTypes.readOnly(this._id, Meteor.user())) {
 			return false;
 		}
-		if (RocketChat.roomTypes.archived(this._id)) {
+		if (roomTypes.archived(this._id)) {
 			return false;
 		}
 		const roomData = Session.get(`roomData${ this._id }`);
@@ -218,7 +219,7 @@ Template.messageBox.helpers({
 		return Template.instance().replyMessageData.get();
 	},
 	isEmojiEnabled() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'useEmojis');
+		return getUserPreference(Meteor.userId(), 'useEmojis');
 	},
 	maxMessageLength() {
 		return settings.get('Message_MaxAllowedSize');
@@ -234,7 +235,7 @@ Template.messageBox.helpers({
 			settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
 	actions() {
-		const actionGroups = RocketChat.messageBox.actions.get();
+		const actionGroups = messageBox.actions.get();
 		return Object.values(actionGroups)
 			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
@@ -267,16 +268,16 @@ Template.messageBox.events({
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
+		if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
 			return;
 		}
 
-		if (RocketChat.EmojiPicker.isOpened()) {
-			RocketChat.EmojiPicker.close();
+		if (EmojiPicker.isOpened()) {
+			EmojiPicker.close();
 			return;
 		}
 
-		RocketChat.EmojiPicker.open(event.currentTarget, (emoji) => {
+		EmojiPicker.open(event.currentTarget, (emoji) => {
 			const emojiValue = `:${ emoji }:`;
 			const { input } = chatMessages[RoomManager.openedRoom];
 
@@ -356,7 +357,7 @@ Template.messageBox.events({
 		});
 	},
 	'click .rc-message-box__action-menu'(event) {
-		const groups = RocketChat.messageBox.actions.get();
+		const groups = messageBox.actions.get();
 		const config = {
 			popoverClass: 'message-box',
 			columns: [

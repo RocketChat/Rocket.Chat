@@ -13,7 +13,9 @@ Package.onUse(function(api) {
 		'rocketchat:models',
 		'rocketchat:custom-sounds',
 		'rocketchat:settings',
+		'rocketchat:metrics',
 		'rocketchat:ui',
+		'rocketchat:push',
 		'templating',
 	]);
 	api.addFiles('client/stylesheets/pushNotifications.css', 'client');

@@ -10,8 +10,13 @@ import {
 	UserDataFiles,
 	Users,
 	CustomSounds,
+	Integrations,
+	IntegrationHistory,
+	Base as _Base,
+	Permissions,
+	Roles,
+	EmojiCustom,
 } from 'meteor/rocketchat:models';
-import { Base as _Base } from 'meteor/rocketchat:models';
 
 Object.assign(RocketChat.models, {
 	_Base,
@@ -26,4 +31,9 @@ Object.assign(RocketChat.models, {
 	UserDataFiles,
 	Users,
 	CustomSounds,
+	Integrations,
+	IntegrationHistory,
+	Permissions,
+	Roles,
+	EmojiCustom,
 });

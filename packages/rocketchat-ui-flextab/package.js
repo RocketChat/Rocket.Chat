@@ -16,7 +16,11 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:utils',
+		'rocketchat:models',
 		'rocketchat:lib',
+		'rocketchat:ui-utils',
+		'rocketchat:settings',
+		'rocketchat:authorization',
 		'mizzao:autocomplete',
 		'rocketchat:webrtc',
 	]);

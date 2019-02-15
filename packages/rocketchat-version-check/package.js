@@ -9,8 +9,11 @@ Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:ui-utils',
 		'rocketchat:logger',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:utils',
 		'rocketchat:cloud',
 		'littledata:synced-cron',
 	]);

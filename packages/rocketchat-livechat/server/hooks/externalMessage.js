@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { SystemLogger } from 'meteor/rocketchat:logger';
 import { HTTP } from 'meteor/http';
+import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
 import _ from 'underscore';
 
 let knowledgeEnabled = false;
@@ -51,7 +52,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			});
 
 			if (response.data && response.data.status.code === 200 && !_.isEmpty(response.data.result.fulfillment.speech)) {
-				RocketChat.models.LivechatExternalMessage.insert({
+				LivechatExternalMessage.insert({
 					rid: message.rid,
 					msg: response.data.result.fulfillment.speech,
 					orig: message._id,

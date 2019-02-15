@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import LivechatVisitors from '../models/LivechatVisitors';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
-		const userId = RocketChat.Livechat.registerGuest.call(this, {
+		const userId = Livechat.registerGuest.call(this, {
 			token,
 			name,
 			email,
@@ -27,7 +28,7 @@ Meteor.methods({
 		// If it's updating an existing visitor, it must also update the roomInfo
 		const cursor = RocketChat.models.Rooms.findOpenByVisitorToken(token);
 		cursor.forEach((room) => {
-			RocketChat.Livechat.saveRoomInfo(room, visitor);
+			Livechat.saveRoomInfo(room, visitor);
 		});
 
 		if (customFields && customFields instanceof Array) {

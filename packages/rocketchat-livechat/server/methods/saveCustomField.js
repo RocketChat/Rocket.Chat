@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatCustomField } from '../models';
 
 Meteor.methods({
 	'livechat:saveCustomField'(_id, customFieldData) {
@@ -19,12 +20,12 @@ Meteor.methods({
 		}
 
 		if (_id) {
-			const customField = RocketChat.models.LivechatCustomField.findOneById(_id);
+			const customField = LivechatCustomField.findOneById(_id);
 			if (!customField) {
 				throw new Meteor.Error('error-invalid-custom-field', 'Custom Field Not found', { method: 'livechat:saveCustomField' });
 			}
 		}
 
-		return RocketChat.models.LivechatCustomField.createOrUpdateCustomField(_id, customFieldData.field, customFieldData.label, customFieldData.scope, customFieldData.visibility);
+		return LivechatCustomField.createOrUpdateCustomField(_id, customFieldData.field, customFieldData.label, customFieldData.scope, customFieldData.visibility);
 	},
 });

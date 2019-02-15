@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
-RocketChat.slashCommands.add('archive', null, {
+slashCommands.add('archive', null, {
 	description: 'Archive',
 	params: '#channel',
 });

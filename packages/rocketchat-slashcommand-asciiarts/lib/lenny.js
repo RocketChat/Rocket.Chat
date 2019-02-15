@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 /*
 * Lenny is a named function that will replace /lenny commands
 * @param {Object} message - The message object
@@ -14,7 +14,7 @@ function LennyFace(command, params, item) {
 	}
 }
 
-RocketChat.slashCommands.add('lennyface', LennyFace, {
+slashCommands.add('lennyface', LennyFace, {
 	description: 'Slash_LennyFace_Description',
 	params: 'your_message_optional',
 });

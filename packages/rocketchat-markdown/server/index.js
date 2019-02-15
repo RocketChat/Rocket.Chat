@@ -1,2 +1,2 @@
 import './settings';
-import '../lib/markdown';
+export { Markdown } from '../lib/markdown';

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base, Settings } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-class LivechatVisitors extends RocketChat.models._Base {
+class LivechatVisitorsClass extends Base {
 	constructor() {
 		super('livechat_visitor');
 	}
@@ -93,7 +93,7 @@ class LivechatVisitors extends RocketChat.models._Base {
 	 * @return {string} The next visitor name
 	 */
 	getNextVisitorUsername() {
-		const settingsRaw = RocketChat.models.Settings.model.rawCollection();
+		const settingsRaw = Settings.model.rawCollection();
 		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
 
 		const query = {
@@ -207,4 +207,4 @@ class LivechatVisitors extends RocketChat.models._Base {
 	}
 }
 
-export default new LivechatVisitors();
+export default new LivechatVisitorsClass();

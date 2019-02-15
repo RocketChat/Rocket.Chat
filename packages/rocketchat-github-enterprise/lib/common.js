@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 // GitHub Enterprise Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/github_enterprise
 // In RocketChat -> Administration the URL needs to be http(s)://{github.enterprise.server}/
@@ -21,7 +21,7 @@ const GitHubEnterprise = new CustomOAuth('github_enterprise', config);
 
 if (Meteor.isServer) {
 	Meteor.startup(function() {
-		RocketChat.settings.get('API_GitHub_Enterprise_URL', function(key, value) {
+		settings.get('API_GitHub_Enterprise_URL', function(key, value) {
 			config.serverURL = value;
 			GitHubEnterprise.configure(config);
 		});
@@ -29,8 +29,8 @@ if (Meteor.isServer) {
 } else {
 	Meteor.startup(function() {
 		Tracker.autorun(function() {
-			if (RocketChat.settings.get('API_GitHub_Enterprise_URL')) {
-				config.serverURL = RocketChat.settings.get('API_GitHub_Enterprise_URL');
+			if (settings.get('API_GitHub_Enterprise_URL')) {
+				config.serverURL = settings.get('API_GitHub_Enterprise_URL');
 				GitHubEnterprise.configure(config);
 			}
 		});

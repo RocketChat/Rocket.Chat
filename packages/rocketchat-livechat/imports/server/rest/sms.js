@@ -1,11 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { API } from 'meteor/rocketchat:api';
+import { SMS } from 'meteor/rocketchat:sms';
 import LivechatVisitors from '../../../server/models/LivechatVisitors';
+import { Livechat } from '../../../server/lib/Livechat';
 
-RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
+API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
-		const SMSService = RocketChat.SMS.getService(this.urlParams.service);
+		const SMSService = SMS.getService(this.urlParams.service);
 
 		const sms = SMSService.parse(this.bodyParams);
 
@@ -35,7 +38,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = Random.id();
 
-			const visitorId = RocketChat.Livechat.registerGuest({
+			const visitorId = Livechat.registerGuest({
 				username: sms.from.replace(/[^0-9]/g, ''),
 				token: sendMessage.message.token,
 				phone: {
@@ -71,7 +74,7 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 		});
 
 		try {
-			const message = SMSService.response.call(this, RocketChat.Livechat.sendMessage(sendMessage));
+			const message = SMSService.response.call(this, Livechat.sendMessage(sendMessage));
 
 			Meteor.defer(() => {
 				if (sms.extra) {
