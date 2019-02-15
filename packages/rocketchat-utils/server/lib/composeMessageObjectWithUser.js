@@ -1,21 +1,25 @@
 import { Users } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 
-const getUser = (userId) => Users.findOneById(userId);
+const getNameOfUser = (username) => Users.findOneByUsername(username, { fields: { name: 1 } });
 
 export const composeMessageObjectWithUser = function(message, userId) {
 	if (message) {
 		if (message.starred && Array.isArray(message.starred)) {
 			message.starred = message.starred.filter((star) => star._id === userId);
 		}
-		if (message.u && message.u._id && settings.get('UI_Use_Real_Name')) {
-			const user = getUser(message.u._id);
-			message.u.name = user && user.name;
+		if (message.u && message.u.name && !settings.get('UI_Use_Real_Name')) {
+			delete message.u.name;
 		}
-		if (message.mentions && message.mentions.length && settings.get('UI_Use_Real_Name')) {
+		if (message.mentions && message.mentions.length && !settings.get('UI_Use_Real_Name')) {
 			message.mentions.forEach((mention) => {
-				const user = getUser(mention._id);
-				mention.name = user && user.name;
+				delete mention.name;
+			});
+		}
+		if (message.reactions && Object.keys(message.reactions).length && settings.get('UI_Use_Real_Name')) {
+			Object.keys(message.reactions).forEach((reaction) => {
+				const names = message.reactions[reaction].usernames.map((username) => getNameOfUser(username).name);
+				message.reactions[reaction].names = names;
 			});
 		}
 	}
