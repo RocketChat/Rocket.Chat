@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatCustomField } from '../models';
 
 Meteor.methods({
 	'livechat:removeCustomField'(_id) {
@@ -10,12 +11,12 @@ Meteor.methods({
 
 		check(_id, String);
 
-		const customField = RocketChat.models.LivechatCustomField.findOneById(_id, { fields: { _id: 1 } });
+		const customField = LivechatCustomField.findOneById(_id, { fields: { _id: 1 } });
 
 		if (!customField) {
 			throw new Meteor.Error('error-invalid-custom-field', 'Custom field not found', { method: 'livechat:removeCustomField' });
 		}
 
-		return RocketChat.models.LivechatCustomField.removeById(_id);
+		return LivechatCustomField.removeById(_id);
 	},
 });

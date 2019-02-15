@@ -46,6 +46,14 @@ export class Subscriptions extends Base {
 		return this._db.find(query, options);
 	}
 
+	removeByVisitorToken(token) {
+		const query = {
+			'v.token': token,
+		};
+
+		this.remove(query);
+	}
+
 	updateAutoTranslateById(_id, autoTranslate) {
 		const query = {
 			_id,

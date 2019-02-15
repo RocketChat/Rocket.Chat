@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 Meteor.publish('livechat:inquiry', function() {
 	if (!this.userId) {
@@ -15,5 +16,5 @@ Meteor.publish('livechat:inquiry', function() {
 		status: 'open',
 	};
 
-	return RocketChat.models.LivechatInquiry.find(query);
+	return LivechatInquiry.find(query);
 });

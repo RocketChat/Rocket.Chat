@@ -1,5 +1,6 @@
 import { check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../server/models';
 import { API } from 'meteor/rocketchat:api';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
@@ -9,7 +10,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 		}
 
 		return API.v1.success({
-			departments: RocketChat.models.LivechatDepartment.find().fetch(),
+			departments: LivechatDepartment.find().fetch(),
 		});
 	},
 	post() {
@@ -28,7 +29,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 			if (department) {
 				return API.v1.success({
 					department,
-					agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
+					agents: LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
 				});
 			}
 
@@ -51,8 +52,8 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			});
 
 			return API.v1.success({
-				department: RocketChat.models.LivechatDepartment.findOneById(this.urlParams._id),
-				agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
+				department: LivechatDepartment.findOneById(this.urlParams._id),
+				agents: LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
 			});
 		} catch (e) {
 			return API.v1.failure(e.error);
@@ -75,8 +76,8 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 
 			if (RocketChat.Livechat.saveDepartment(this.urlParams._id, this.bodyParams.department, this.bodyParams.agents)) {
 				return API.v1.success({
-					department: RocketChat.models.LivechatDepartment.findOneById(this.urlParams._id),
-					agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
+					department: LivechatDepartment.findOneById(this.urlParams._id),
+					agents: LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
 				});
 			}
 
