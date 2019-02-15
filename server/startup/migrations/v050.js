@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Subscriptions } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 50,
 	up() {
-		RocketChat.models.Subscriptions.tryDropIndex('u._id_1_name_1_t_1');
-		RocketChat.models.Subscriptions.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
+		Subscriptions.tryDropIndex('u._id_1_name_1_t_1');
+		Subscriptions.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
 	},
 });
