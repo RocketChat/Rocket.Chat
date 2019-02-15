@@ -776,6 +776,9 @@ export class Subscriptions extends Base {
 			},
 		};
 
+		console.log(JSON.stringify(query, null, 2));
+		console.log(JSON.stringify(update, null, 2));
+
 		return this.update(query, update, { multi: true });
 	}
 

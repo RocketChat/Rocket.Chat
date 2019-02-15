@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { logger } from '../logger.js';
 
 import FederatedMessage from '../federatedResources/FederatedMessage';
 import FederatedRoom from '../federatedResources/FederatedRoom';
@@ -19,7 +20,7 @@ class PeerServer {
 	}
 
 	log(message) {
-		console.log(`[federation-server] ${ message }`);
+		logger.info(`[federation-server] ${ message }`);
 	}
 
 	start() {

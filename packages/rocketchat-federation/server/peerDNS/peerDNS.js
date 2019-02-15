@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { logger } from '../logger.js';
 
 import dns from 'dns';
 
@@ -22,7 +23,7 @@ class PeerDNS {
 	}
 
 	log(message) {
-		console.log(`[federation-dns] ${ message }`);
+		logger.info(`[federation-dns] ${ message }`);
 	}
 
 	// ########

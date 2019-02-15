@@ -147,6 +147,9 @@ class FederatedMessage extends FederatedResource {
 
 			// Normalize mentions
 			for (const mention of localMessage.mentions) {
+				// Ignore if we are dealing with all or here
+				if (['all', 'here'].indexOf(mention.username) !== -1) { continue; }
+
 				let usernameToReplace = '';
 
 				if (mention.federation.peer !== this.localPeerIdentifier) {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { logger } from './logger.js';
 
 import PeerClient from './peerClient';
 import PeerDNS from './peerDNS';
@@ -23,7 +24,7 @@ function setupFederation() {
 	// Ignore if one of the values is not set, or federation is not enabled
 	if (!_enabled || !_domain || !_discoveryMethod || !_hubUrl) { return; }
 
-	console.log(`[federation] ${ Meteor.federationEnabled ? 'Updating settings' : 'Booting' }...`);
+	logger.info(`[federation] ${ Meteor.federationEnabled ? 'Updating settings' : 'Booting' }...`);
 
 	const peerUrl = RocketChat.settings.get('Site_Url');
 	let domain = _domain.replace('@', '').trim();
@@ -33,7 +34,7 @@ function setupFederation() {
 	if (!localPeerDNSEntry) {
 		RocketChat.models.FederationDNSCache.insert({ local: true, domain });
 	} else if (localPeerDNSEntry.domain !== domain) {
-		console.log(`[federation] User tried to change the current domain from ${ localPeerDNSEntry.domain } to ${ domain }, currently not supported.`);
+		logger.info(`[federation] User tried to change the current domain from ${ localPeerDNSEntry.domain } to ${ domain }, currently not supported.`);
 
 		// RocketChat.settings.set('FEDERATION_Domain', localPeerDNSEntry.domain);
 
@@ -41,8 +42,8 @@ function setupFederation() {
 	}
 
 	if (!domain) {
-		console.log('[federation] Configuration is not correct, federation is NOT running.');
-		console.log(`[federation] domain:${ domain }`);
+		logger.info('[federation] Configuration is not correct, federation is NOT running.');
+		logger.info(`[federation] domain:${ domain }`);
 
 		// RocketChat.settings.set('FEDERATION_Enabled', false);
 
@@ -50,8 +51,8 @@ function setupFederation() {
 	}
 
 	if (_discoveryMethod === 'hub' && !_hubUrl) {
-		console.log('[federation] Configuration is not correct, federation is NOT running.');
-		console.log(`[federation] domain:${ domain } | hub:${ _hubUrl }`);
+		logger.info('[federation] Configuration is not correct, federation is NOT running.');
+		logger.info(`[federation] domain:${ domain } | hub:${ _hubUrl }`);
 
 		// RocketChat.settings.set('FEDERATION_Enabled', false);
 

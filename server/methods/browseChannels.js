@@ -96,21 +96,25 @@ Meteor.methods({
 			const nonFederatedUsers = RocketChat.models.Users.find({
 				$or: [
 					{ federation: { $exists: false } },
-					{ 'federation.domain': Meteor.federationLocalIdentifier },
+					{ 'federation.peer': Meteor.federationLocalIdentifier },
 				],
 			}, { fields: { username: 1 } }).map((u) => u.username);
 
 			exceptions = exceptions.concat(nonFederatedUsers);
 		} else if (type === 'users' && workspace === 'local') {
 			const federatedUsers = RocketChat.models.Users.find({
-				federation: { $exists: true },
-				'federation.domain': { $ne: Meteor.federationLocalIdentifier },
+				$and: [
+					{ federation: { $exists: true } },
+					{ 'federation.peer': { $ne: Meteor.federationLocalIdentifier } },
+				],
 			}, { fields: { username: 1 } }).map((u) => u.username);
 
 			exceptions = exceptions.concat(federatedUsers);
 		}
 
 		const sort = sortUsers(sortBy, sortDirection);
+
+		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
 		const results = RocketChat.models.Users.findByActiveUsersExcept(text, exceptions, {
 			...options,
@@ -122,7 +126,7 @@ Meteor.methods({
 				emails: 1,
 				federation: 1,
 			},
-		}).fetch();
+		}, forcedSearchFields).fetch();
 
 		const total = RocketChat.models.Users.findByActiveUsersExcept(text, exceptions).count();
 

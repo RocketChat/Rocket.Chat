@@ -21,26 +21,26 @@ class FederatedRoom extends FederatedResource {
 			room.name = `${ room.name }@${ localPeerIdentifier }`;
 		}
 
-		// Set the federated owner
+		// Set the federated owner, if there is one
 		const { owner } = extras;
 
-		if (!owner && room.federation) {
-			this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
-		} else {
-			this.federatedOwner = FederatedUser.loadOrCreate(localPeerIdentifier, owner);
+		if (owner) {
+			if (!owner && room.federation) {
+				this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
+			} else {
+				this.federatedOwner = FederatedUser.loadOrCreate(localPeerIdentifier, owner);
+			}
 		}
 
 		// Set base federation
 		room.federation = room.federation || {
 			_id: room._id,
 			peer: localPeerIdentifier,
-			ownerId: this.federatedOwner.getFederationId(),
+			ownerId: this.federatedOwner ? this.federatedOwner.getFederationId() : null,
 		};
 
 		// Set room property
 		this.room = room;
-
-		// }
 	}
 
 	getFederationId() {
@@ -56,7 +56,7 @@ class FederatedRoom extends FederatedResource {
 	}
 
 	getOwner() {
-		return this.federatedOwner.getUser();
+		return this.federatedOwner ? this.federatedOwner.getUser() : null;
 	}
 
 	getUsers() {

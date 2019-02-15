@@ -1,4 +1,5 @@
 import NodeRSA from 'node-rsa';
+import { logger } from '../logger.js';
 
 class FederationKeys extends RocketChat.models._Base {
 	constructor() {
@@ -18,7 +19,7 @@ class FederationKeys extends RocketChat.models._Base {
 	}
 
 	generateKeys() {
-		console.log('[federation] Generating key pairs');
+		logger.info('[federation] Generating key pairs');
 
 		const key = new NodeRSA({ b: 512 });
 

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { logger } from '../logger.js';
 
 import qs from 'querystring';
 
@@ -6,7 +7,7 @@ import FederatedMessage from '../federatedResources/FederatedMessage';
 import FederatedRoom from '../federatedResources/FederatedRoom';
 import FederatedUser from '../federatedResources/FederatedUser';
 
-const { FederationKeys } = RocketChat.models;
+const { FederationKeys, Subscriptions } = RocketChat.models;
 
 class PeerClient {
 	constructor(config) {
@@ -28,7 +29,7 @@ class PeerClient {
 	}
 
 	log(message) {
-		console.log(`[federation-client] ${ message }`);
+		logger.info(`[federation-client] ${ message }`);
 	}
 
 	// ###########
@@ -300,8 +301,24 @@ class PeerClient {
 
 		const extras = {};
 
+		// If the room is not federated and has an owner
 		if (!room.federation) {
-			extras.owner = RocketChat.models.Users.findOneById(room.u._id);
+			let ownerId;
+
+			// If the room does not have an owner, get the first user subscribed to that room
+			if (!room.u) {
+				const userSubscription = Subscriptions.findOne({ rid: room._id }, {
+					sort: {
+						ts: 1,
+					},
+				});
+
+				ownerId = userSubscription.u._id;
+			} else {
+				ownerId = room.u._id;
+			}
+
+			extras.owner = RocketChat.models.Users.findOneById(ownerId);
 		}
 
 		const federatedRoom = new FederatedRoom(localPeerDomain, room, extras);

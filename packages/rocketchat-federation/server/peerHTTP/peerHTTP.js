@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { logger } from '../logger.js';
 
 class PeerHTTP {
 
@@ -13,7 +14,7 @@ class PeerHTTP {
 	}
 
 	log(message) {
-		console.log(`[federation-http] ${ message }`);
+		logger.info(`[federation-http] ${ message }`);
 	}
 
 	//

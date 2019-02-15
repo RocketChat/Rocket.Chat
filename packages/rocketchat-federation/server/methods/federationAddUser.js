@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { logger } from '../logger.js';
 
 import { findFederatedUser } from './federationSearchUser';
 
@@ -13,16 +14,21 @@ Meteor.methods({
 
 		let user = null;
 
+		const localUser = federatedUser.getLocalUser();
+
+		// Delete the _id
+		delete localUser._id;
+
 		try {
-			const localUser = federatedUser.getLocalUser();
-
-			// Delete the _id
-			delete localUser._id;
-
 			// Create the local user
 			user = RocketChat.models.Users.create(localUser);
 		} catch (err) {
-			console.log(err);
+			// If the user already exists, return the existing user
+			if (err.code === 11000) {
+				return RocketChat.models.Users.findOne({ 'federation._id': localUser.federation._id });
+			}
+
+			logger.error(err);
 		}
 
 		return user;
