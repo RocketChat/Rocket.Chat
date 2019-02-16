@@ -207,5 +207,11 @@
 		"xmlbuilder": "^10.1.1",
 		"xmldom": "^0.1.27",
 		"yaqrcode": "^0.2.1"
+	},
+	"meteor": {
+		"mainModule": {
+			"client": "client/main.js",
+			"server": "server/main.js"
+		}
 	}
 }
