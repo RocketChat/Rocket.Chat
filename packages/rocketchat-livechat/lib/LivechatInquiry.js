@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from 'meteor/rocketchat:models';
 import { Mongo } from 'meteor/mongo';
 
 export let LivechatInquiry;
@@ -9,7 +9,7 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-	class LivechatInquiryClass extends RocketChat.models._Base {
+	class LivechatInquiryClass extends Base {
 		constructor() {
 			super('livechat_inquiry');
 
@@ -101,6 +101,5 @@ if (Meteor.isServer) {
 		}
 	}
 
-	RocketChat.models.LivechatInquiry = new LivechatInquiryClass();
-	LivechatInquiry = RocketChat.models.LivechatInquiry;
+	LivechatInquiry = new LivechatInquiryClass();
 }

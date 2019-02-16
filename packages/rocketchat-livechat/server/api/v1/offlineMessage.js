@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/offline.message', {
 	post() {
@@ -13,7 +13,7 @@ API.v1.addRoute('livechat/offline.message', {
 			});
 
 			const { name, email, message } = this.bodyParams;
-			if (!RocketChat.Livechat.sendOfflineMessage({ name, email, message })) {
+			if (!Livechat.sendOfflineMessage({ name, email, message })) {
 				return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_offline_message') });
 			}
 

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
 import { findGuest } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/custom.field', {
 	post() {
@@ -21,7 +21,7 @@ API.v1.addRoute('livechat/custom.field', {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			if (!RocketChat.Livechat.setCustomFields({ token, key, value, overwrite })) {
+			if (!Livechat.setCustomFields({ token, key, value, overwrite })) {
 				return API.v1.failure();
 			}
 
@@ -53,7 +53,7 @@ API.v1.addRoute('livechat/custom.fields', {
 
 		const fields = this.bodyParams.customFields.map((customField) => {
 			const data = Object.assign({ token }, customField);
-			if (!RocketChat.Livechat.setCustomFields(data)) {
+			if (!Livechat.setCustomFields(data)) {
 				return API.v1.failure();
 			}
 

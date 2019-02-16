@@ -1,4 +1,6 @@
 import { Match, check } from 'meteor/check';
+import { Markdown } from 'meteor/rocketchat:markdown';
+import { Messages } from 'meteor/rocketchat:models';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
@@ -73,7 +75,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-RocketChat.insertMessage = function(user, message, room, upsert = false) {
+export const insertMessage = function(user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -112,14 +114,14 @@ RocketChat.insertMessage = function(user, message, room, upsert = false) {
 
 	if (message.parseUrls !== false) {
 		message.html = message.msg;
-		message = RocketChat.Markdown.code(message);
+		message = Markdown.code(message);
 
 		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
 		if (urls) {
 			message.urls = urls.map((url) => ({ url }));
 		}
 
-		message = RocketChat.Markdown.mountTokensBack(message, false);
+		message = Markdown.mountTokensBack(message, false);
 		message.msg = message.html;
 		delete message.html;
 		delete message.tokens;
@@ -135,13 +137,13 @@ RocketChat.insertMessage = function(user, message, room, upsert = false) {
 	if (message._id && upsert) {
 		const { _id } = message;
 		delete message._id;
-		RocketChat.models.Messages.upsert({
+		Messages.upsert({
 			_id,
 			'u._id': message.u._id,
 		}, message);
 		message._id = _id;
 	} else {
-		message._id = RocketChat.models.Messages.insert(message);
+		message._id = Messages.insert(message);
 	}
 
 	message.sandstormSessionId = sandstormSessionId;

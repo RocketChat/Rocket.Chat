@@ -2,7 +2,6 @@ import { settings } from 'meteor/rocketchat:settings';
 import PasswordPolicy from './PasswordPolicyClass';
 
 export const passwordPolicy = new PasswordPolicy();
-RocketChat.passwordPolicy = passwordPolicy;
 
 settings.get('Accounts_Password_Policy_Enabled', (key, value) => passwordPolicy.enabled = value);
 settings.get('Accounts_Password_Policy_MinLength', (key, value) => passwordPolicy.minLength = value);

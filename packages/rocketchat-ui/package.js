@@ -40,5 +40,4 @@ Package.onUse(function(api) {
 		'rocketchat:emoji',
 	]);
 	api.mainModule('client/index.js', 'client');
-	api.mainModule('server/index.js', 'server');
 });

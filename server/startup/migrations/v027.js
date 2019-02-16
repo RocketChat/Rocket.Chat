@@ -1,8 +1,11 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Users, Roles } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 27,
 	up() {
 
-		RocketChat.models.Users.update({}, {
+		Users.update({}, {
 			$rename: {
 				roles: '_roles',
 			},
@@ -10,18 +13,18 @@ RocketChat.Migrations.add({
 			multi: true,
 		});
 
-		RocketChat.models.Users.find({
+		Users.find({
 			_roles: {
 				$exists: 1,
 			},
 		}).forEach((user) => {
 			for (const scope of Object.keys(user._roles)) {
 				const roles = user._roles[scope];
-				RocketChat.models.Roles.addUserRoles(user._id, roles, scope);
+				Roles.addUserRoles(user._id, roles, scope);
 			}
 		});
 
-		return RocketChat.models.Users.update({}, {
+		return Users.update({}, {
 			$unset: {
 				_roles: 1,
 			},

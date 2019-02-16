@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 		'rocketchat:settings',
 		'rocketchat:metrics',
 		'rocketchat:ui',
+		'rocketchat:assets',
 		'rocketchat:push',
 		'templating',
 	]);

@@ -1,9 +1,12 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Users, Subscriptions } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 121,
 	up() {
 
 		// set user preferences on subscriptions
-		RocketChat.models.Users.find({
+		Users.find({
 			$or: [
 				{ 'settings.preferences.desktopNotifications': { $exists: true } },
 				{ 'settings.preferences.mobileNotifications': { $exists: true } },
@@ -11,7 +14,7 @@ RocketChat.Migrations.add({
 			],
 		}).forEach((user) => {
 			if (user.settings.preferences.desktopNotifications && user.settings.preferences.desktopNotifications !== 'default') {
-				RocketChat.models.Subscriptions.update({
+				Subscriptions.update({
 					'u._id': user._id,
 					desktopPrefOrigin: { $exists: false },
 				}, {
@@ -25,7 +28,7 @@ RocketChat.Migrations.add({
 			}
 
 			if (user.settings.preferences.mobileNotifications && user.settings.preferences.mobileNotifications !== 'default') {
-				RocketChat.models.Subscriptions.update({
+				Subscriptions.update({
 					'u._id': user._id,
 					mobilePrefOrigin: { $exists: false },
 				}, {
@@ -39,7 +42,7 @@ RocketChat.Migrations.add({
 			}
 
 			if (user.settings.preferences.emailNotificationMode && user.settings.preferences.emailNotificationMode !== 'default') {
-				RocketChat.models.Subscriptions.update({
+				Subscriptions.update({
 					'u._id': user._id,
 					emailPrefOrigin: { $exists: false },
 				}, {

@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	unmuteUserInRoom(data) {
@@ -10,13 +12,13 @@ Meteor.methods({
 			username: String,
 		}));
 
-		if (!RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)) {
+		if (!hasPermission(fromId, 'mute-user', data.rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'unmuteUserInRoom',
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(data.rid);
+		const room = Rooms.findOneById(data.rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -31,20 +33,20 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 				method: 'unmuteUserInRoom',
 			});
 		}
 
-		const unmutedUser = RocketChat.models.Users.findOneByUsername(data.username);
+		const unmutedUser = Users.findOneByUsername(data.username);
 
-		RocketChat.models.Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
+		Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
 
-		const fromUser = RocketChat.models.Users.findOneById(fromId);
+		const fromUser = Users.findOneById(fromId);
 
-		RocketChat.models.Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
+		Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
