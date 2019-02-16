@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'rocketchat:utils',
 		'rocketchat:tooltip',
+		'rocketchat:settings',
 		'rocketchat:ui-utils',
 		'rocketchat:ui-sidenav',
 		'meteorhacks:inject-initial',

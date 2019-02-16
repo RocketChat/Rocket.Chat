@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { getHttpBridge, waitPromise } from './lib';
+import { Sandstorm } from './lib';
 import _ from 'underscore';
 
-RocketChat.Sandstorm.notify = function() {};
+Sandstorm.notify = function() {};
 
 if (process.env.SANDSTORM === '1') {
 	const ACTIVITY_TYPES = {
@@ -11,7 +11,7 @@ if (process.env.SANDSTORM === '1') {
 		privateMessage: 1,
 	};
 
-	RocketChat.Sandstorm.notify = function(message, userIds, caption, type) {
+	Sandstorm.notify = function(message, userIds, caption, type) {
 		const sessionId = message.sandstormSessionId;
 		if (!sessionId) {
 			return;

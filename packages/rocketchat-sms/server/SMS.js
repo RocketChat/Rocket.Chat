@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.SMS = {
+export const SMS = {
 	enabled: false,
 	services: {},
 	accountSid: null,
@@ -20,6 +20,6 @@ RocketChat.SMS = {
 	},
 };
 
-RocketChat.settings.get('SMS_Enabled', function(key, value) {
-	RocketChat.SMS.enabled = value;
+settings.get('SMS_Enabled', function(key, value) {
+	SMS.enabled = value;
 });

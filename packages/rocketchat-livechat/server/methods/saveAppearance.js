@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAppearance' });
 		}
 
@@ -32,7 +32,7 @@ Meteor.methods({
 		}
 
 		settings.forEach((setting) => {
-			RocketChat.settings.updateById(setting._id, setting.value);
+			settings.updateById(setting._id, setting.value);
 		});
 
 		return;

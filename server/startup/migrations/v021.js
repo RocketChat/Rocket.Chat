@@ -1,11 +1,14 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 21,
 	up() {
 		/*
 		 * Remove any i18nLabel from rocketchat_settings
 		 * They will be added again where necessary on next restart
 		 */
-		RocketChat.models.Settings.update({
+		Settings.update({
 			i18nLabel: {
 				$exists: true,
 			},
