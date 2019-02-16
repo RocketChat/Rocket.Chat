@@ -5,7 +5,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { RateLimiter } from '../lib';
-import { checkUsernameAvailability, setUserAvatar } from '.';
+import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
 const _setUsername = function(userId, u) {
 	const username = s.trim(u);
