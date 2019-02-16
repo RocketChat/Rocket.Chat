@@ -8,5 +8,3 @@ export const archiveRoom = function(rid) {
 
 	callbacks.run('afterRoomArchived', Rooms.findOneById(rid), Meteor.user());
 };
-
-RocketChat.archiveRoom = archiveRoom;

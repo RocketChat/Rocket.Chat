@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { Users } from 'meteor/rocketchat:models';
 
 Meteor.publish('userData', function() {
 	if (!this.userId) {
 		return this.ready();
 	}
 
-	return RocketChat.models.Users.find(this.userId, {
+	return Users.find(this.userId, {
 		fields: {
 			name: 1,
 			username: 1,

@@ -43,5 +43,3 @@ export const RateLimiterClass = new class {
 	}
 
 };
-
-RocketChat.RateLimiter = RateLimiterClass;

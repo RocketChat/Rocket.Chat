@@ -36,7 +36,7 @@ Meteor.methods({
 		}
 
 		if (!(updatedAfter instanceof Date)) {
-			return RocketChat.models.Settings.findNotHidden().fetch();
+			return Settings.findNotHidden().fetch();
 		}
 
 		const records = Settings.findNotHidden({ updatedAfter }).fetch();

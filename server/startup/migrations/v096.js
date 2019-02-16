@@ -1,8 +1,11 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 96,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
-			RocketChat.models.Settings.update({ _id: 'InternalHubot_ScriptsToLoad' }, { $set: { value: '' } });
+		if (Settings) {
+			Settings.update({ _id: 'InternalHubot_ScriptsToLoad' }, { $set: { value: '' } });
 		}
 	},
 });

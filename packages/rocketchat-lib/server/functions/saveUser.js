@@ -269,5 +269,3 @@ export const saveUser = function(userId, userData) {
 
 	return true;
 };
-
-RocketChat.saveUser = saveUser;

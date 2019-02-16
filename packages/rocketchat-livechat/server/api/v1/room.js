@@ -2,9 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings as rcSettings } from 'meteor/rocketchat:settings';
+import { Messages, Rooms } from 'meteor/rocketchat:models';
 import { API } from 'meteor/rocketchat:api';
 import { findGuest, findRoom, getRoom, settings } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -54,10 +56,10 @@ API.v1.addRoute('livechat/room.close', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			const language = RocketChat.settings.get('Language') || 'en';
+			const language = rcSettings.get('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
-			if (!RocketChat.Livechat.closeRoom({ visitor, room, comment })) {
+			if (!Livechat.closeRoom({ visitor, room, comment })) {
 				return API.v1.failure();
 			}
 
@@ -90,9 +92,9 @@ API.v1.addRoute('livechat/room.transfer', {
 			}
 
 			// update visited page history to not expire
-			RocketChat.models.Messages.keepHistoryForToken(token);
+			Messages.keepHistoryForToken(token);
 
-			if (!RocketChat.Livechat.transfer(room, guest, { roomId: rid, departmentId: department })) {
+			if (!Livechat.transfer(room, guest, { roomId: rid, departmentId: department })) {
 				return API.v1.failure();
 			}
 
@@ -144,7 +146,7 @@ API.v1.addRoute('livechat/room.survey', {
 				throw new Meteor.Error('invalid-data');
 			}
 
-			if (!RocketChat.models.Rooms.updateSurveyFeedbackById(room._id, updateData)) {
+			if (!Rooms.updateSurveyFeedbackById(room._id, updateData)) {
 				return API.v1.failure();
 			}
 

@@ -41,5 +41,3 @@ export const validateCustomFields = function(fields) {
 		}
 	});
 };
-
-RocketChat.validateCustomFields = validateCustomFields;

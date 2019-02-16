@@ -10,7 +10,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { API } from 'meteor/rocketchat:api';
+import { APIClient } from 'meteor/rocketchat:utils';
 
 Template.appInstall.helpers({
 	appFile() {
@@ -73,9 +73,9 @@ Template.appInstall.events({
 				let result;
 
 				if (isUpdating) {
-					result = await API.post(`apps/${ t.isUpdatingId.get() }`, { url });
+					result = await APIClient.post(`apps/${ t.isUpdatingId.get() }`, { url });
 				} else {
-					result = await API.post('apps', { url });
+					result = await APIClient.post('apps', { url });
 				}
 
 				if (result.compilerErrors.length !== 0 || result.app.status === 'compiler_error') {
@@ -116,9 +116,9 @@ Template.appInstall.events({
 			let result;
 
 			if (isUpdating) {
-				result = await API.upload(`apps/${ t.isUpdatingId.get() }`, data);
+				result = await APIClient.upload(`apps/${ t.isUpdatingId.get() }`, data);
 			} else {
-				result = await API.upload('apps', data);
+				result = await APIClient.upload('apps', data);
 			}
 
 			console.log('install result', result);
