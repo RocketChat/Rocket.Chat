@@ -2,14 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
+import { msgStream } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { SlackBridge } from './slackbridge';
 
 function SlackBridgeImport(command, params, item) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
 		return;
 	}
 
-	const room = RocketChat.models.Rooms.findOneById(item.rid);
+	const room = Rooms.findOneById(item.rid);
 	const channel = room.name;
 	const user = Meteor.users.findOne(Meteor.userId());
 
@@ -25,7 +28,7 @@ function SlackBridgeImport(command, params, item) {
 	});
 
 	try {
-		RocketChat.SlackBridge.importMessages(item.rid, (error) => {
+		SlackBridge.importMessages(item.rid, (error) => {
 			if (error) {
 				msgStream.emit(item.rid, {
 					_id: Random.id(),
@@ -66,4 +69,4 @@ function SlackBridgeImport(command, params, item) {
 	return SlackBridgeImport;
 }
 
-RocketChat.slashCommands.add('slackbridge-import', SlackBridgeImport);
+slashCommands.add('slackbridge-import', SlackBridgeImport);

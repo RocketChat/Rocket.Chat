@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import Autolinker from 'autolinker';
 
 const createAutolinker = () => {
-	const regUrls = new RegExp(RocketChat.settings.get('AutoLinker_UrlsRegExp'));
+	const regUrls = new RegExp(settings.get('AutoLinker_UrlsRegExp'));
 
 	const replaceAutolinkerMatch = (match) => {
 		if (match.getType() !== 'url') {
@@ -25,14 +26,14 @@ const createAutolinker = () => {
 	};
 
 	return new Autolinker({
-		stripPrefix: RocketChat.settings.get('AutoLinker_StripPrefix'),
+		stripPrefix: settings.get('AutoLinker_StripPrefix'),
 		urls: {
-			schemeMatches: RocketChat.settings.get('AutoLinker_Urls_Scheme'),
-			wwwMatches: RocketChat.settings.get('AutoLinker_Urls_www'),
-			tldMatches: RocketChat.settings.get('AutoLinker_Urls_TLD'),
+			schemeMatches: settings.get('AutoLinker_Urls_Scheme'),
+			wwwMatches: settings.get('AutoLinker_Urls_www'),
+			tldMatches: settings.get('AutoLinker_Urls_TLD'),
 		},
-		email: RocketChat.settings.get('AutoLinker_Email'),
-		phone: RocketChat.settings.get('AutoLinker_Phone'),
+		email: settings.get('AutoLinker_Email'),
+		phone: settings.get('AutoLinker_Phone'),
 		twitter: false,
 		stripTrailingSlash: false,
 		replaceFn: replaceAutolinkerMatch,
@@ -40,7 +41,7 @@ const createAutolinker = () => {
 };
 
 const renderMessage = (message) => {
-	if (RocketChat.settings.get('AutoLinker') !== true) {
+	if (settings.get('AutoLinker') !== true) {
 		return message;
 	}
 
@@ -64,4 +65,4 @@ const renderMessage = (message) => {
 	return message;
 };
 
-RocketChat.callbacks.add('renderMessage', renderMessage, RocketChat.callbacks.priority.LOW, 'autolinker');
+callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'autolinker');

@@ -16,10 +16,6 @@ window.addEventListener('resize', _.debounce((() => {
 	};
 })(), 100));
 
-export {
-	menu,
-};
-
 emitter.on('grid', () => {
 	menu.close();
 });

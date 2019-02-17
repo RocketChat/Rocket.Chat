@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.addGroup('UserDataDownload', function() {
+settings.addGroup('UserDataDownload', function() {
 
 	this.add('UserData_EnableDownload', true, {
 		type: 'boolean',
