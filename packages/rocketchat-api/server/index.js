@@ -1,5 +1,5 @@
 import './settings';
-import './api';
+export { API } from './api';
 import './helpers/composeRoomWithLastMessage';
 import './helpers/deprecationWarning';
 import './helpers/getLoggedInUser';

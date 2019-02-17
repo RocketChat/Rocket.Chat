@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(function() {
-	RocketChat.settings.addGroup('Bots', function() {
+	settings.addGroup('Bots', function() {
 		this.add('BotHelpers_userFields', '_id, name, username, emails, language, utcOffset', {
 			type: 'string',
 			section: 'Helpers',

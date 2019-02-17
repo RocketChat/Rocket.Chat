@@ -1,4 +1,3 @@
-import './models/OAuthApps';
 import './oauth/oauth2-server';
 import './oauth/default-services';
 import './admin/publications/oauthApps';

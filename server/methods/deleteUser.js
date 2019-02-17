@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Users } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { deleteUser } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	deleteUser(userId) {
@@ -11,13 +14,13 @@ Meteor.methods({
 			});
 		}
 
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'delete-user') !== true) {
+		if (hasPermission(Meteor.userId(), 'delete-user') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'deleteUser',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
 				method: 'deleteUser',
@@ -35,7 +38,7 @@ Meteor.methods({
 			});
 		}
 
-		RocketChat.deleteUser(userId);
+		deleteUser(userId);
 
 		return true;
 	},

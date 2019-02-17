@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { getUserPreference } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 const getTitle = function(self) {
@@ -66,7 +66,7 @@ Template.oembedUrlWidget.helpers({
 		if (this.collapsed != null) {
 			return this.collapsed;
 		} else {
-			return RocketChat.getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
+			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
 	},
 });

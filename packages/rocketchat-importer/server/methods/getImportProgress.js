@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	getImportProgress(key) {
@@ -8,7 +8,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getImportProgress' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
+		if (!hasPermission(Meteor.userId(), 'run-import')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter' });
 		}
 

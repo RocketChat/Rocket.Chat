@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
+import { TOTP } from '../lib/totp';
 
 Meteor.methods({
 	'2fa:disable'(code) {
@@ -9,7 +10,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		const verified = RocketChat.TOTP.verify({
+		const verified = TOTP.verify({
 			secret: user.services.totp.secret,
 			token: code,
 			userId: Meteor.userId(),
@@ -20,6 +21,6 @@ Meteor.methods({
 			return false;
 		}
 
-		return RocketChat.models.Users.disable2FAByUserId(Meteor.userId());
+		return Users.disable2FAByUserId(Meteor.userId());
 	},
 });

@@ -99,10 +99,9 @@ export const RoomManager = new function() {
 							Notifications.onRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 						}
 					}
-					Meteor.defer(() => {
-						record.ready = true;
-						Dep.changed();
-					});
+
+					record.ready = true;
+					Dep.changed();
 				});
 			});
 		}

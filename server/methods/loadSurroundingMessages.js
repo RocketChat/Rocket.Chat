@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Messages } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
 
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
@@ -18,7 +21,7 @@ Meteor.methods({
 			return false;
 		}
 
-		message = RocketChat.models.Messages.findOneById(message._id);
+		message = Messages.findOneById(message._id);
 
 		if (!message || !message.rid) {
 			return false;
@@ -37,13 +40,13 @@ Meteor.methods({
 			limit: Math.ceil(limit / 2),
 		};
 
-		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+		if (!settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
 				editedAt: 0,
 			};
 		}
 
-		const messages = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
+		const messages = Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
 
 		const moreBefore = messages.length === options.limit;
 
@@ -55,13 +58,13 @@ Meteor.methods({
 
 		options.limit = Math.floor(limit / 2);
 
-		const afterMessages = RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
+		const afterMessages = Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
 
 		const moreAfter = afterMessages.length === options.limit;
 
 		return {
 			messages: messages.concat(afterMessages)
-				.map((message) => RocketChat.composeMessageObjectWithUser(message, fromId)),
+				.map((message) => composeMessageObjectWithUser(message, fromId)),
 			moreBefore,
 			moreAfter,
 		};

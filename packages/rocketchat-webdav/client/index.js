@@ -5,6 +5,5 @@ import './webdavFilePicker.html';
 import './webdavFilePicker';
 import './selectWebdavAccount.html';
 import './selectWebdavAccount';
-import './collections/WebdavAccounts';
 import './startup/messageBoxActions';
 import './startup/subscription';

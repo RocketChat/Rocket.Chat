@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { roomTypes } from 'meteor/rocketchat:utils';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Messages, Subscriptions } from 'meteor/rocketchat:models';
+import { Apps } from 'meteor/rocketchat:apps';
 
 Meteor.methods({
 	eraseRoom(rid) {
@@ -13,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -28,16 +30,16 @@ Meteor.methods({
 			}
 		}
 
-		if (!RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(hasPermission, room)) {
+		if (!roomTypes.roomTypes[room.t].canBeDeleted(hasPermission, room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'eraseRoom',
 			});
 		}
 
-		RocketChat.models.Messages.removeFilesByRoomId(rid);
-		RocketChat.models.Messages.removeByRoomId(rid);
-		RocketChat.models.Subscriptions.removeByRoomId(rid);
-		const result = RocketChat.models.Rooms.removeById(rid);
+		Messages.removeFilesByRoomId(rid);
+		Messages.removeByRoomId(rid);
+		Subscriptions.removeByRoomId(rid);
+		const result = Rooms.removeById(rid);
 
 		if (Apps && Apps.isLoaded()) {
 			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);

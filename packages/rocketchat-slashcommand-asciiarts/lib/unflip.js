@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 /*
 * Unflip is a named function that will replace /unflip commands
 * @param {Object} message - The message object
@@ -14,7 +14,7 @@ function Unflip(command, params, item) {
 	}
 }
 
-RocketChat.slashCommands.add('unflip', Unflip, {
+slashCommands.add('unflip', Unflip, {
 	description: 'Slash_TableUnflip_Description',
 	params: 'your_message_optional',
 });

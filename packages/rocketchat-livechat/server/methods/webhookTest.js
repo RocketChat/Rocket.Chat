@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import { HTTP } from 'meteor/http';
 
 const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
@@ -65,12 +65,12 @@ Meteor.methods({
 
 		const options = {
 			headers: {
-				'X-RocketChat-Livechat-Token': RocketChat.settings.get('Livechat_secret_token'),
+				'X-RocketChat-Livechat-Token': settings.get('Livechat_secret_token'),
 			},
 			data: sampleData,
 		};
 
-		const response = postCatchError(RocketChat.settings.get('Livechat_webhookUrl'), options);
+		const response = postCatchError(settings.get('Livechat_webhookUrl'), options);
 
 		console.log('response ->', response);
 

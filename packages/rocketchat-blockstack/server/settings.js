@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-
+import { settings } from 'meteor/rocketchat:settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { logger } from './logger';
 
@@ -18,7 +17,7 @@ const defaults = {
 };
 
 Meteor.startup(() => {
-	RocketChat.settings.addGroup('Blockstack', function() {
+	settings.addGroup('Blockstack', function() {
 		this.add('Blockstack_Enable', defaults.enable, {
 			type: 'boolean',
 			i18nLabel: 'Enable',
@@ -37,10 +36,10 @@ Meteor.startup(() => {
 
 // Helper to return all Blockstack settings
 const getSettings = () => Object.assign({}, defaults, {
-	enable: RocketChat.settings.get('Blockstack_Enable'),
-	authDescription: RocketChat.settings.get('Blockstack_Auth_Description'),
-	buttonLabelText: RocketChat.settings.get('Blockstack_ButtonLabelText'),
-	generateUsername: RocketChat.settings.get('Blockstack_Generate_Username'),
+	enable: settings.get('Blockstack_Enable'),
+	authDescription: settings.get('Blockstack_Auth_Description'),
+	buttonLabelText: settings.get('Blockstack_ButtonLabelText'),
+	generateUsername: settings.get('Blockstack_Generate_Username'),
 });
 
 const configureService = _.debounce(Meteor.bindEnvironment(() => {
@@ -64,7 +63,7 @@ const configureService = _.debounce(Meteor.bindEnvironment(() => {
 
 // Add settings to auth provider configs on startup
 Meteor.startup(() => {
-	RocketChat.settings.get(/^Blockstack_.+/, () => {
+	settings.get(/^Blockstack_.+/, () => {
 		configureService();
 	});
 });

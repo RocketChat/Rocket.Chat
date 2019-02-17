@@ -1,14 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import AutoTranslate from '../autotranslate';
 
 Meteor.methods({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'auto-translate')) {
+		if (!hasPermission(Meteor.userId(), 'auto-translate')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings' });
 		}
 
-		return RocketChat.AutoTranslate.getSupportedLanguages(targetLanguage);
+		return AutoTranslate.getSupportedLanguages(targetLanguage);
 	},
 });
 
