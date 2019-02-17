@@ -11,7 +11,9 @@ Package.onUse(function(api) {
 		'underscore',
 		'rocketchat:utils',
 		'rocketchat:lib',
-		'rocketchat:ui',
+		'rocketchat:callbacks',
+		'rocketchat:settings',
+		'rocketchat:models',
 	]);
 	api.mainModule('server/index.js', 'server');
 });

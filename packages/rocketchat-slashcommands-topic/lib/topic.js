@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { ChatRoom } from 'meteor/rocketchat:ui';
+import { handleError, slashCommands } from 'meteor/rocketchat:utils';
+import { ChatRoom } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 /*
  * Join is a named function that will replace /topic commands
  * @param {Object} message - The message object
@@ -8,7 +10,7 @@ import { ChatRoom } from 'meteor/rocketchat:ui';
 
 function Topic(command, params, item) {
 	if (command === 'topic') {
-		if ((Meteor.isClient && RocketChat.authz.hasPermission('edit-room', item.rid)) || (Meteor.isServer && RocketChat.authz.hasPermission(Meteor.userId(), 'edit-room', item.rid))) {
+		if ((Meteor.isClient && hasPermission('edit-room', item.rid)) || (Meteor.isServer && hasPermission(Meteor.userId(), 'edit-room', item.rid))) {
 			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err) => {
 				if (err) {
 					if (Meteor.isClient) {
@@ -19,14 +21,14 @@ function Topic(command, params, item) {
 				}
 
 				if (Meteor.isClient) {
-					RocketChat.callbacks.run('roomTopicChanged', ChatRoom.findOne(item.rid));
+					callbacks.run('roomTopicChanged', ChatRoom.findOne(item.rid));
 				}
 			});
 		}
 	}
 }
 
-RocketChat.slashCommands.add('topic', Topic, {
+slashCommands.add('topic', Topic, {
 	description: 'Slash_Topic_Description',
 	params: 'Slash_Topic_Params',
 });

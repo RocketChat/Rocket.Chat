@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -85,12 +85,12 @@ export const marked = (message) => {
 		msg.tokens = [];
 	}
 
-	if (gfm == null) { gfm = RocketChat.settings.get('Markdown_Marked_GFM'); }
-	if (tables == null) { tables = RocketChat.settings.get('Markdown_Marked_Tables'); }
-	if (breaks == null) { breaks = RocketChat.settings.get('Markdown_Marked_Breaks'); }
-	if (pedantic == null) { pedantic = RocketChat.settings.get('Markdown_Marked_Pedantic'); }
-	if (smartLists == null) { smartLists = RocketChat.settings.get('Markdown_Marked_SmartLists'); }
-	if (smartypants == null) { smartypants = RocketChat.settings.get('Markdown_Marked_Smartypants'); }
+	if (gfm == null) { gfm = settings.get('Markdown_Marked_GFM'); }
+	if (tables == null) { tables = settings.get('Markdown_Marked_Tables'); }
+	if (breaks == null) { breaks = settings.get('Markdown_Marked_Breaks'); }
+	if (pedantic == null) { pedantic = settings.get('Markdown_Marked_Pedantic'); }
+	if (smartLists == null) { smartLists = settings.get('Markdown_Marked_SmartLists'); }
+	if (smartypants == null) { smartypants = settings.get('Markdown_Marked_Smartypants'); }
 
 	msg.html = _marked(s.unescapeHTML(msg.html), {
 		gfm,

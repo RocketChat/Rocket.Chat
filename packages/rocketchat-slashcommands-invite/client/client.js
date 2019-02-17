@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
-RocketChat.slashCommands.add('invite', undefined, {
+slashCommands.add('invite', undefined, {
 	description: 'Invite_user_to_join_channel',
 	params: '@username',
 });

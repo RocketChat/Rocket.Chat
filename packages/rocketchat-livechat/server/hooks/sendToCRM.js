@@ -1,15 +1,18 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Messages, Rooms } from 'meteor/rocketchat:models';
+import { Livechat } from '../lib/Livechat';
 
 const msgNavType = 'livechat_navigation_history';
 
 const crmEnabled = () => {
-	const secretToken = RocketChat.settings.get('Livechat_secret_token');
-	const webhookUrl = RocketChat.settings.get('Livechat_webhookUrl');
+	const secretToken = settings.get('Livechat_secret_token');
+	const webhookUrl = settings.get('Livechat_webhookUrl');
 	return secretToken !== '' && secretToken !== undefined && webhookUrl !== '' && webhookUrl !== undefined;
 };
 
 const sendMessageType = (msgType) => {
-	const sendNavHistory = RocketChat.settings.get('Livechat_Visitor_navigation_as_a_message') && RocketChat.settings.get('Send_visitor_navigation_history_livechat_webhook_request');
+	const sendNavHistory = settings.get('Livechat_Visitor_navigation_as_a_message') && settings.get('Send_visitor_navigation_history_livechat_webhook_request');
 
 	return sendNavHistory && msgType === msgNavType;
 };
@@ -19,7 +22,7 @@ function sendToCRM(type, room, includeMessages = true) {
 		return room;
 	}
 
-	const postData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
+	const postData = Livechat.getLivechatRoomGuestInfo(room);
 
 	postData.type = type;
 
@@ -27,7 +30,7 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	let messages;
 	if (typeof includeMessages === 'boolean' && includeMessages) {
-		messages = RocketChat.models.Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } });
+		messages = Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } });
 	} else if (includeMessages instanceof Array) {
 		messages = includeMessages;
 	}
@@ -57,33 +60,33 @@ function sendToCRM(type, room, includeMessages = true) {
 		});
 	}
 
-	const response = RocketChat.Livechat.sendRequest(postData);
+	const response = Livechat.sendRequest(postData);
 
 	if (response && response.data && response.data.data) {
-		RocketChat.models.Rooms.saveCRMDataByRoomId(room._id, response.data.data);
+		Rooms.saveCRMDataByRoomId(room._id, response.data.data);
 	}
 
 	return room;
 }
 
-RocketChat.callbacks.add('livechat.closeRoom', (room) => {
-	if (!RocketChat.settings.get('Livechat_webhook_on_close')) {
+callbacks.add('livechat.closeRoom', (room) => {
+	if (!settings.get('Livechat_webhook_on_close')) {
 		return room;
 	}
 
 	return sendToCRM('LivechatSession', room);
-}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-close-room');
+}, callbacks.priority.MEDIUM, 'livechat-send-crm-close-room');
 
-RocketChat.callbacks.add('livechat.saveInfo', (room) => {
+callbacks.add('livechat.saveInfo', (room) => {
 	// Do not send to CRM if the chat is still open
 	if (room.open) {
 		return room;
 	}
 
 	return sendToCRM('LivechatEdit', room);
-}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-save-info');
+}, callbacks.priority.MEDIUM, 'livechat-send-crm-save-info');
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+callbacks.add('afterSaveMessage', function(message, room) {
 	// only call webhook if it is a livechat room
 	if (room.t !== 'l' || room.v == null || room.v.token == null) {
 		return message;
@@ -92,10 +95,10 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	// if the message has a token, it was sent from the visitor
 	// if not, it was sent from the agent
 	if (message.token) {
-		if (!RocketChat.settings.get('Livechat_webhook_on_visitor_message')) {
+		if (!settings.get('Livechat_webhook_on_visitor_message')) {
 			return message;
 		}
-	} else if (!RocketChat.settings.get('Livechat_webhook_on_agent_message')) {
+	} else if (!settings.get('Livechat_webhook_on_agent_message')) {
 		return message;
 	}
 	// if the message has a type means it is a special message (like the closing comment), so skips
@@ -106,11 +109,11 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	sendToCRM('Message', room, [message]);
 	return message;
-}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-message');
+}, callbacks.priority.MEDIUM, 'livechat-send-crm-message');
 
-RocketChat.callbacks.add('livechat.leadCapture', (room) => {
-	if (!RocketChat.settings.get('Livechat_webhook_on_capture')) {
+callbacks.add('livechat.leadCapture', (room) => {
+	if (!settings.get('Livechat_webhook_on_capture')) {
 		return room;
 	}
 	return sendToCRM('LeadCapture', room, false);
-}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-crm-lead-capture');
+}, callbacks.priority.MEDIUM, 'livechat-send-crm-lead-capture');

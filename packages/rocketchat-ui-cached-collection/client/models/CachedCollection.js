@@ -347,9 +347,8 @@ export class CachedCollection {
 	async setupListener(eventType, eventName) {
 		Meteor.startup(async() => {
 			const { Notifications } = await import('meteor/rocketchat:notifications');
-			const { RoomManager } = await import('meteor/rocketchat:ui');
-			const { ChatRoom } = await import('meteor/rocketchat:models');
-			const { CachedChatRoom } = await import('meteor/rocketchat:models');
+			const { RoomManager } = await import('meteor/rocketchat:ui-utils');
+			const { ChatRoom, CachedChatRoom } = await import('meteor/rocketchat:models');
 			Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 				this.log('record received', t, record);
 				callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
