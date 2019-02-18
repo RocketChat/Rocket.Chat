@@ -1,7 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Messages, EmojiCustom, Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { emoji } from 'meteor/rocketchat:emoji';
+import { isTheLastMessage, msgStream } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 const removeUserReaction = (message, reaction, username) => {
@@ -12,22 +16,22 @@ const removeUserReaction = (message, reaction, username) => {
 	return message;
 };
 
-RocketChat.setReaction = function(room, user, message, reaction, shouldReact) {
+export function setReaction(room, user, message, reaction, shouldReact) {
 	reaction = `:${ reaction.replace(/:/g, '') }:`;
 
-	if (!RocketChat.emoji.list[reaction] && RocketChat.models.EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
+	if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
 	}
 
 	if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: room._id,
 			ts: new Date(),
 			msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 		});
 		return false;
-	} else if (!RocketChat.models.Subscriptions.findOne({ rid: message.rid })) {
+	} else if (!Subscriptions.findOne({ rid: message.rid })) {
 		return false;
 	}
 
@@ -45,19 +49,19 @@ RocketChat.setReaction = function(room, user, message, reaction, shouldReact) {
 
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
-			if (RocketChat.isTheLastMessage(room, message)) {
-				RocketChat.models.Rooms.unsetReactionsInLastMessage(room._id);
+			if (isTheLastMessage(room, message)) {
+				Rooms.unsetReactionsInLastMessage(room._id);
 			}
-			RocketChat.models.Messages.unsetReactions(message._id);
-			RocketChat.callbacks.run('unsetReaction', message._id, reaction);
-			RocketChat.callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
+			Messages.unsetReactions(message._id);
+			callbacks.run('unsetReaction', message._id, reaction);
+			callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
 		} else {
-			if (RocketChat.isTheLastMessage(room, message)) {
-				RocketChat.models.Rooms.setReactionsInLastMessage(room._id, message);
+			if (isTheLastMessage(room, message)) {
+				Rooms.setReactionsInLastMessage(room._id, message);
 			}
-			RocketChat.models.Messages.setReactions(message._id, message.reactions);
-			RocketChat.callbacks.run('setReaction', message._id, reaction);
-			RocketChat.callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
+			Messages.setReactions(message._id, message.reactions);
+			callbacks.run('setReaction', message._id, reaction);
+			callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 		}
 	} else {
 		if (!message.reactions) {
@@ -69,22 +73,22 @@ RocketChat.setReaction = function(room, user, message, reaction, shouldReact) {
 			};
 		}
 		message.reactions[reaction].usernames.push(user.username);
-		if (RocketChat.isTheLastMessage(room, message)) {
-			RocketChat.models.Rooms.setReactionsInLastMessage(room._id, message);
+		if (isTheLastMessage(room, message)) {
+			Rooms.setReactionsInLastMessage(room._id, message);
 		}
-		RocketChat.models.Messages.setReactions(message._id, message.reactions);
-		RocketChat.callbacks.run('setReaction', message._id, reaction);
-		RocketChat.callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
+		Messages.setReactions(message._id, message.reactions);
+		callbacks.run('setReaction', message._id, reaction);
+		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 	}
 
 	msgStream.emit(message.rid, message);
-};
+}
 
 Meteor.methods({
 	setReaction(reaction, messageId, shouldReact) {
 		const user = Meteor.user();
 
-		const message = RocketChat.models.Messages.findOneById(messageId);
+		const message = Messages.findOneById(messageId);
 
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 
@@ -100,7 +104,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 		}
 
-		RocketChat.setReaction(room, user, message, reaction, shouldReact);
+		setReaction(room, user, message, reaction, shouldReact);
 
 		return;
 	},

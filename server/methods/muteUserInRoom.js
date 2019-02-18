@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Rooms, Subscriptions, Users, Messages } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
 Meteor.methods({
 	muteUserInRoom(data) {
@@ -16,13 +19,13 @@ Meteor.methods({
 
 		const fromId = Meteor.userId();
 
-		if (!RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)) {
+		if (!hasPermission(fromId, 'mute-user', data.rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'muteUserInRoom',
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(data.rid);
+		const room = Rooms.findOneById(data.rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -37,22 +40,22 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 				method: 'muteUserInRoom',
 			});
 		}
 
-		const mutedUser = RocketChat.models.Users.findOneByUsername(data.username);
+		const mutedUser = Users.findOneByUsername(data.username);
 
-		const fromUser = RocketChat.models.Users.findOneById(fromId);
+		const fromUser = Users.findOneById(fromId);
 
-		RocketChat.callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
+		callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
 
-		RocketChat.models.Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
+		Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
 
-		RocketChat.models.Messages.userMutedWithRoomIdAndUser(data.rid, mutedUser, {
+		Messages.createUserMutedWithRoomIdAndUser(data.rid, mutedUser, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
@@ -60,7 +63,7 @@ Meteor.methods({
 		});
 
 		Meteor.defer(function() {
-			RocketChat.callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
+			callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
 		});
 
 		return true;

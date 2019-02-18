@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Users } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 const sortChannels = function(field, direction) {
@@ -57,12 +59,11 @@ Meteor.methods({
 
 		if (type === 'channels') {
 			const sort = sortChannels(sortBy, sortDirection);
-
-			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
+			if (!hasPermission(user._id, 'view-c-room')) {
 				return;
 			}
 
-			const results = RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
+			const results = Rooms.findByNameAndType(regex, 'c', {
 				...options,
 				sort,
 				fields: {
@@ -76,7 +77,7 @@ Meteor.methods({
 				},
 			}).fetch();
 
-			const total = RocketChat.models.Rooms.findByNameAndType(regex, 'c').count();
+			const total = Rooms.findByNameAndType(regex, 'c').count();
 
 			return {
 				results,
@@ -85,7 +86,7 @@ Meteor.methods({
 		}
 
 		// type === users
-		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
+		if (!hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
 			return;
 		}
 
@@ -93,7 +94,7 @@ Meteor.methods({
 
 		// Get exceptions
 		if (type === 'users' && workspace === 'all') {
-			const nonFederatedUsers = RocketChat.models.Users.find({
+			const nonFederatedUsers = Users.find({
 				$or: [
 					{ federation: { $exists: false } },
 					{ 'federation.peer': Meteor.federationLocalIdentifier },
@@ -102,7 +103,7 @@ Meteor.methods({
 
 			exceptions = exceptions.concat(nonFederatedUsers);
 		} else if (type === 'users' && workspace === 'local') {
-			const federatedUsers = RocketChat.models.Users.find({
+			const federatedUsers = Users.find({
 				$and: [
 					{ federation: { $exists: true } },
 					{ 'federation.peer': { $ne: Meteor.federationLocalIdentifier } },
@@ -116,7 +117,7 @@ Meteor.methods({
 
 		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
-		const results = RocketChat.models.Users.findByActiveUsersExcept(text, exceptions, {
+		const results = Users.findByActiveUsersExcept(text, exceptions, {
 			...options,
 			sort,
 			fields: {
@@ -128,7 +129,7 @@ Meteor.methods({
 			},
 		}, forcedSearchFields).fetch();
 
-		const total = RocketChat.models.Users.findByActiveUsersExcept(text, exceptions).count();
+		const total = Users.findByActiveUsersExcept(text, exceptions).count();
 
 		return {
 			results,

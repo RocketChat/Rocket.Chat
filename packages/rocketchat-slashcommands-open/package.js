@@ -9,7 +9,8 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'check',
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:models',
 		'kadira:flow-router',
 		'templating',
 	]);

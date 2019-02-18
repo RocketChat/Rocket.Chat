@@ -5,9 +5,11 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Messages, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { hasAllPermission, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { EmojiPicker, emoji } from 'meteor/rocketchat:emoji';
 import { RoomManager } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { t, getUserPreference, slashCommands } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);
@@ -18,7 +20,7 @@ const reloadUsersFromRoomMessages = (userId, rid) => {
 	usersFromRoomMessages.remove({});
 	const uniqueMessageUsersControl = {};
 
-	RocketChat.models.Messages.find({
+	Messages.find({
 		rid,
 		'u.username': { $ne: user.username },
 		t: { $exists: false },
@@ -93,7 +95,7 @@ const fetchUsersFromServer = (filterText, records, cb, rid) => {
 };
 
 const fetchRoomsFromServer = (filterText, records, cb, rid) => {
-	if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
+	if (!hasAllPermission('view-outside-room')) {
 		return cb && cb([]);
 	}
 
@@ -128,7 +130,7 @@ const addEmojiToRecents = (emoji) => {
 		const view = Blaze.getView(pickerEl);
 		if (view) {
 			Template._withTemplateInstanceFunc(view.templateInstance, () => {
-				RocketChat.EmojiPicker.addRecent(emoji.replace(/:/g, ''));
+				EmojiPicker.addRecent(emoji.replace(/:/g, ''));
 			});
 		}
 	}
@@ -161,16 +163,16 @@ const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?:\:|$)$');
 const getEmojis = function(collection, filter) {
 	const key = `:${ filter }`;
 
-	if (!RocketChat.getUserPreference(Meteor.userId(), 'useEmojis')) {
+	if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
 		return [];
 	}
 
-	if (!RocketChat.emoji.packages.emojione || RocketChat.emoji.packages.emojione.asciiList[key]) {
+	if (!emoji.packages.emojione || emoji.packages.emojione.asciiList[key]) {
 		return [];
 	}
 
 	const regExp = new RegExp(RegExp.escape(filter), 'i');
-	const recents = RocketChat.EmojiPicker.getRecent().map((item) => `:${ item }:`);
+	const recents = EmojiPicker.getRecent().map((item) => `:${ item }:`);
 	return Object.keys(collection).map((_id) => {
 		const data = collection[key];
 		return { _id, data };
@@ -214,8 +216,8 @@ Template.messagePopupConfig.helpers({
 				// If needed, add to list the online users
 				if (items.length < 5 && filterText !== '') {
 					const usernamesAlreadyFetched = items.map(({ username }) => username);
-					if (!RocketChat.authz.hasAllPermission('view-outside-room')) {
-						const usernamesFromDMs = RocketChat.models.Subscriptions
+					if (!hasAllPermission('view-outside-room')) {
+						const usernamesFromDMs = Subscriptions
 							.find(
 								{
 									t: 'd',
@@ -236,7 +238,7 @@ Template.messagePopupConfig.helpers({
 								}
 							)
 							.map(({ name }) => name);
-						const newItems = RocketChat.models.Users
+						const newItems = Users
 							.find(
 								{
 									username: {
@@ -344,7 +346,7 @@ Template.messagePopupConfig.helpers({
 		const self = this;
 		const config = {
 			title: t('Channels'),
-			collection: RocketChat.models.Subscriptions,
+			collection: Subscriptions,
 			trigger: '#',
 			suffix: ' ',
 			textFilterDelay: 500,
@@ -383,7 +385,7 @@ Template.messagePopupConfig.helpers({
 		const self = this;
 		const config = {
 			title: t('Commands'),
-			collection: RocketChat.slashCommands.commands,
+			collection: slashCommands.commands,
 			trigger: '/',
 			suffix: ' ',
 			triggerAnywhere: false,
@@ -409,21 +411,21 @@ Template.messagePopupConfig.helpers({
 						return true;
 					}
 
-					return RocketChat.authz.hasAtLeastOnePermission(command.permission, Session.get('openedRoom'));
+					return hasAtLeastOnePermission(command.permission, Session.get('openedRoom'));
 				}).sort((a, b) => a._id > b._id).slice(0, 11);
 			},
 		};
 		return config;
 	},
 	emojiEnabled() {
-		return RocketChat.emoji != null;
+		return emoji != null;
 	},
 	popupEmojiConfig() {
-		if (RocketChat.emoji != null) {
+		if (emoji != null) {
 			const self = this;
 			return {
 				title: t('Emoji'),
-				collection: RocketChat.emoji.list,
+				collection: emoji.list,
 				template: 'messagePopupEmoji',
 				trigger: ':',
 				prefix: '',
@@ -438,11 +440,11 @@ Template.messagePopupConfig.helpers({
 		}
 	},
 	popupReactionEmojiConfig() {
-		if (RocketChat.emoji != null) {
+		if (emoji != null) {
 			const self = this;
 			return {
 				title: t('Emoji'),
-				collection: RocketChat.emoji.list,
+				collection: emoji.list,
 				template: 'messagePopupEmoji',
 				trigger: '\\+:',
 				prefix: '+',

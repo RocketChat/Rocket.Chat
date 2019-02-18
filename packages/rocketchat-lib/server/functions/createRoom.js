@@ -1,11 +1,16 @@
 import { Meteor } from 'meteor/meteor';
+import { Users, Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { hasPermission, addUserRoles } from 'meteor/rocketchat:authorization';
+import { getValidRoomName } from 'meteor/rocketchat:utils';
+import { Apps } from 'meteor/rocketchat:apps';
 import _ from 'underscore';
 import s from 'underscore.string';
 
 function createDirectRoom(source, target, extraData, options) {
 	const rid = [source._id, target._id].sort().join('');
 
-	RocketChat.models.Rooms.upsert({ _id: rid }, {
+	Rooms.upsert({ _id: rid }, {
 		$setOnInsert: Object.assign({
 			t: 'd',
 			usernames: [source.username, target.username],
@@ -14,7 +19,7 @@ function createDirectRoom(source, target, extraData, options) {
 		}, extraData),
 	});
 
-	RocketChat.models.Subscriptions.upsert({ rid, 'u._id': target._id }, {
+	Subscriptions.upsert({ rid, 'u._id': target._id }, {
 		$setOnInsert: Object.assign({
 			name: source.username,
 			t: 'd',
@@ -28,7 +33,7 @@ function createDirectRoom(source, target, extraData, options) {
 		}, options.subscriptionExtra),
 	});
 
-	RocketChat.models.Subscriptions.upsert({ rid, 'u._id': source._id }, {
+	Subscriptions.upsert({ rid, 'u._id': source._id }, {
 		$setOnInsert: Object.assign({
 			name: target.username,
 			t: 'd',
@@ -48,7 +53,7 @@ function createDirectRoom(source, target, extraData, options) {
 	};
 }
 
-RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData = {}, options = {}) {
+export const createRoom = function(type, name, owner, members, readOnly, extraData = {}, options = {}) {
 	if (type === 'd') {
 		return createDirectRoom(members[0], members[1], extraData, options);
 	}
@@ -61,7 +66,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { function: 'RocketChat.createRoom' });
 	}
 
-	owner = RocketChat.models.Users.findOneByUsername(owner, { fields: { username: 1 } });
+	owner = Users.findOneByUsername(owner, { fields: { username: 1 } });
 	if (!owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
@@ -84,7 +89,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	}
 
 	let room = Object.assign({
-		name: RocketChat.getValidRoomName(name, null, validRoomNameOptions),
+		name: getValidRoomName(name, null, validRoomNameOptions),
 		fname: name,
 		t: type,
 		msgs: 0,
@@ -119,21 +124,21 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 	}
 
 	if (type === 'c') {
-		RocketChat.callbacks.run('beforeCreateChannel', owner, room);
+		callbacks.run('beforeCreateChannel', owner, room);
 	}
 
-	room = RocketChat.models.Rooms.createWithFullRoomData(room);
+	room = Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {
-		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });
+		const member = Users.findOneByUsername(username, { fields: { username: 1, 'settings.preferences': 1 } });
 		const isTheOwner = username === owner.username;
 		if (!member) {
 			continue;
 		}
 
 		// make all room members (Except the owner) muted by default, unless they have the post-readonly permission
-		if (readOnly === true && !RocketChat.authz.hasPermission(member._id, 'post-readonly') && !isTheOwner) {
-			RocketChat.models.Rooms.muteUsernameByRoomId(room._id, username);
+		if (readOnly === true && !hasPermission(member._id, 'post-readonly') && !isTheOwner) {
+			Rooms.muteUsernameByRoomId(room._id, username);
 		}
 
 		const extra = options.subscriptionExtra || {};
@@ -144,22 +149,22 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 			extra.ls = now;
 		}
 
-		RocketChat.models.Subscriptions.createWithRoomAndUser(room, member, extra);
+		Subscriptions.createWithRoomAndUser(room, member, extra);
 	}
 
-	RocketChat.authz.addUserRoles(owner._id, ['owner'], room._id);
+	addUserRoles(owner._id, ['owner'], room._id);
 
 	if (type === 'c') {
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('afterCreateChannel', owner, room);
+			callbacks.run('afterCreateChannel', owner, room);
 		});
 	} else if (type === 'p') {
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('afterCreatePrivateGroup', owner, room);
+			callbacks.run('afterCreatePrivateGroup', owner, room);
 		});
 	}
 	Meteor.defer(() => {
-		RocketChat.callbacks.run('afterCreateRoom', owner, room);
+		callbacks.run('afterCreateRoom', owner, room);
 	});
 
 	if (Apps && Apps.isLoaded()) {

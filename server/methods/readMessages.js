@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
 Meteor.methods({
 	readMessages(rid) {
@@ -13,12 +14,12 @@ Meteor.methods({
 			});
 		}
 
-		RocketChat.callbacks.run('beforeReadMessages', rid, userId);
+		callbacks.run('beforeReadMessages', rid, userId);
 
 		RocketChat.readMessages(rid, userId);
 
 		Meteor.defer(() => {
-			RocketChat.callbacks.run('afterReadMessages', rid, userId);
+			callbacks.run('afterReadMessages', rid, userId);
 		});
 	},
 });
