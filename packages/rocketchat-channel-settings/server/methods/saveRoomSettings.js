@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { Rooms } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
@@ -213,8 +215,8 @@ Meteor.methods({
 		});
 
 		Meteor.defer(function() {
-			const room = RocketChat.models.Rooms.findOneById(rid);
-			RocketChat.callbacks.run('afterSaveRoomSettings', room);
+			const room = Rooms.findOneById(rid);
+			callbacks.run('afterSaveRoomSettings', room);
 		});
 
 		return {

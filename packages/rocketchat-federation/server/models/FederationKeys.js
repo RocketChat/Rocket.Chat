@@ -1,7 +1,8 @@
 import NodeRSA from 'node-rsa';
+import { Base } from 'meteor/rocketchat:models';
 import { logger } from '../logger.js';
 
-class FederationKeys extends RocketChat.models._Base {
+class FederationKeysModel extends Base {
 	constructor() {
 		super('federation_keys');
 	}
@@ -56,4 +57,4 @@ class FederationKeys extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.FederationKeys = new FederationKeys();
+export const FederationKeys = new FederationKeysModel();

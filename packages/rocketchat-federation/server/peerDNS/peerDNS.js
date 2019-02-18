@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { logger } from '../logger.js';
+import { FederationDNSCache } from '../models/FederationDNSCache';
 
 import dns from 'dns';
-
-const { FederationDNSCache } = RocketChat.models;
 
 const dnsResolveSRV = Meteor.wrapAsync(dns.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dns.resolveTxt);
@@ -152,7 +151,7 @@ class PeerDNS {
 		// Make sure public_key has no line breaks
 		peer.public_key = peer.public_key.replace(/\n|\r/g, '');
 
-		return RocketChat.models.FederationDNSCache.upsert({ domain }, peer);
+		return FederationDNSCache.upsert({ domain }, peer);
 	}
 
 	updateDNSCache(peers) {

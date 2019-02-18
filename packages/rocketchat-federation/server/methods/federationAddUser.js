@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { logger } from '../logger.js';
+import { Users } from 'meteor/rocketchat:models';
 
+import { logger } from '../logger.js';
 import { findFederatedUser } from './federationSearchUser';
 
 Meteor.methods({
@@ -21,11 +22,11 @@ Meteor.methods({
 
 		try {
 			// Create the local user
-			user = RocketChat.models.Users.create(localUser);
+			user = Users.create(localUser);
 		} catch (err) {
 			// If the user already exists, return the existing user
 			if (err.code === 11000) {
-				return RocketChat.models.Users.findOne({ 'federation._id': localUser.federation._id });
+				return Users.findOne({ 'federation._id': localUser.federation._id });
 			}
 
 			logger.error(err);

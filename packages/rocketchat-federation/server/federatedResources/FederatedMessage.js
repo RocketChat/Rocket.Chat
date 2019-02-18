@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { sendMessage, updateMessage } from 'meteor/rocketchat:lib';
+import { Messages, Rooms, Users } from 'meteor/rocketchat:models';
 
 import FederatedResource from './FederatedResource';
 import FederatedRoom from './FederatedRoom';
@@ -24,7 +26,7 @@ class FederatedMessage extends FederatedResource {
 		if (message.u.federation) {
 			this.federatedAuthor = FederatedUser.loadByFederationId(localPeerIdentifier, message.u.federation._id);
 		} else {
-			const author = RocketChat.models.Users.findOneById(message.u._id);
+			const author = Users.findOneById(message.u._id);
 			this.federatedAuthor = new FederatedUser(localPeerIdentifier, author);
 		}
 
@@ -36,7 +38,7 @@ class FederatedMessage extends FederatedResource {
 		};
 
 		// Set the room
-		const room = RocketChat.models.Rooms.findOneById(message.rid);
+		const room = Rooms.findOneById(message.rid);
 
 		// Prepare the federation property
 		if (!message.federation) {
@@ -50,7 +52,7 @@ class FederatedMessage extends FederatedResource {
 			message.federation = federation;
 
 			// Update the user
-			RocketChat.models.Messages.update(message._id, { $set: { federation } });
+			Messages.update(message._id, { $set: { federation } });
 
 			// Prepare mentions
 			for (const mention of message.mentions) {
@@ -135,7 +137,7 @@ class FederatedMessage extends FederatedResource {
 		const { federation: { _id: federationId } } = localMessageObject;
 
 		// Check if the message exists
-		let localMessage = RocketChat.models.Messages.findOne({ 'federation._id': federationId });
+		let localMessage = Messages.findOne({ 'federation._id': federationId });
 
 		// Create if needed
 		if (!localMessage) {
@@ -143,7 +145,7 @@ class FederatedMessage extends FederatedResource {
 
 			localMessage = localMessageObject;
 
-			const localRoom = RocketChat.models.Rooms.findOneById(localMessage.rid);
+			const localRoom = Rooms.findOneById(localMessage.rid);
 
 			// Normalize mentions
 			for (const mention of localMessage.mentions) {
@@ -202,7 +204,7 @@ class FederatedMessage extends FederatedResource {
 			}
 
 			// Create the message
-			const { _id } = RocketChat.sendMessage(localMessage.u, localMessage, localRoom, false);
+			const { _id } = sendMessage(localMessage.u, localMessage, localRoom, false);
 
 			localMessage._id = _id;
 		}
@@ -214,7 +216,7 @@ class FederatedMessage extends FederatedResource {
 		this.log('update');
 
 		// Get the original message
-		const originalMessage = RocketChat.models.Messages.findOne({ 'federation._id': this.getFederationId() });
+		const originalMessage = Messages.findOne({ 'federation._id': this.getFederationId() });
 
 		// Error if message does not exist
 		if (!originalMessage) {
@@ -231,14 +233,14 @@ class FederatedMessage extends FederatedResource {
 		const user = updatedByFederatedUser.getLocalUser();
 
 		// Update the message
-		RocketChat.updateMessage(localMessage, user, originalMessage);
+		updateMessage(localMessage, user, originalMessage);
 
 		return localMessage;
 	}
 }
 
 FederatedMessage.loadByFederationId = function loadByFederationId(localPeerIdentifier, federationId) {
-	const localMessage = RocketChat.models.Messages.findOne({ 'federation._id': federationId });
+	const localMessage = Messages.findOne({ 'federation._id': federationId });
 
 	if (!localMessage) { return; }
 

@@ -1,13 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import { logger } from '../logger.js';
-
 import qs from 'querystring';
+import { Meteor } from 'meteor/meteor';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from 'meteor/rocketchat:settings';
+import { Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 
+import { logger } from '../logger.js';
 import FederatedMessage from '../federatedResources/FederatedMessage';
 import FederatedRoom from '../federatedResources/FederatedRoom';
 import FederatedUser from '../federatedResources/FederatedUser';
-
-const { FederationKeys, Subscriptions } = RocketChat.models;
+import { FederationEvents } from '../models/FederationEvents';
+import { FederationKeys } from '../models/FederationKeys';
 
 class PeerClient {
 	constructor(config) {
@@ -86,21 +88,21 @@ class PeerClient {
 		// Accounts.onLogin(onLoginCallbackHandler.bind(this));
 		// Accounts.onLogout(onLogoutCallbackHandler.bind(this));
 
-		RocketChat.models.FederationEvents.on('createEvent', this.onCreateEvent.bind(this));
+		FederationEvents.on('createEvent', this.onCreateEvent.bind(this));
 
-		RocketChat.callbacks.add('afterCreateDirectRoom', this.afterCreateDirectRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-create-direct-room');
-		RocketChat.callbacks.add('afterCreateRoom', this.afterCreateRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-join-room');
-		RocketChat.callbacks.add('afterSaveRoomSettings', this.afterSaveRoomSettings.bind(this), RocketChat.callbacks.priority.LOW, 'federation-after-save-room-settings');
-		RocketChat.callbacks.add('afterAddedToRoom', this.afterAddedToRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-join-room');
-		RocketChat.callbacks.add('beforeLeaveRoom', this.beforeLeaveRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-leave-room');
-		RocketChat.callbacks.add('beforeRemoveFromRoom', this.beforeRemoveFromRoom.bind(this), RocketChat.callbacks.priority.LOW, 'federation-leave-room');
-		RocketChat.callbacks.add('afterSaveMessage', this.afterSaveMessage.bind(this), RocketChat.callbacks.priority.LOW, 'federation-save-message');
-		RocketChat.callbacks.add('afterDeleteMessage', this.afterDeleteMessage.bind(this), RocketChat.callbacks.priority.LOW, 'federation-delete-message');
-		RocketChat.callbacks.add('afterReadMessages', this.afterReadMessages.bind(this), RocketChat.callbacks.priority.LOW, 'federation-read-messages');
-		RocketChat.callbacks.add('afterSetReaction', this.afterSetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'federation-after-set-reaction');
-		RocketChat.callbacks.add('afterUnsetReaction', this.afterUnsetReaction.bind(this), RocketChat.callbacks.priority.LOW, 'federation-after-unset-reaction');
-		RocketChat.callbacks.add('afterMuteUser', this.afterMuteUser.bind(this), RocketChat.callbacks.priority.LOW, 'federation-mute-user');
-		RocketChat.callbacks.add('afterUnmuteUser', this.afterUnmuteUser.bind(this), RocketChat.callbacks.priority.LOW, 'federation-unmute-user');
+		callbacks.add('afterCreateDirectRoom', this.afterCreateDirectRoom.bind(this), callbacks.priority.LOW, 'federation-create-direct-room');
+		callbacks.add('afterCreateRoom', this.afterCreateRoom.bind(this), callbacks.priority.LOW, 'federation-join-room');
+		callbacks.add('afterSaveRoomSettings', this.afterSaveRoomSettings.bind(this), callbacks.priority.LOW, 'federation-after-save-room-settings');
+		callbacks.add('afterAddedToRoom', this.afterAddedToRoom.bind(this), callbacks.priority.LOW, 'federation-join-room');
+		callbacks.add('beforeLeaveRoom', this.beforeLeaveRoom.bind(this), callbacks.priority.LOW, 'federation-leave-room');
+		callbacks.add('beforeRemoveFromRoom', this.beforeRemoveFromRoom.bind(this), callbacks.priority.LOW, 'federation-leave-room');
+		callbacks.add('afterSaveMessage', this.afterSaveMessage.bind(this), callbacks.priority.LOW, 'federation-save-message');
+		callbacks.add('afterDeleteMessage', this.afterDeleteMessage.bind(this), callbacks.priority.LOW, 'federation-delete-message');
+		callbacks.add('afterReadMessages', this.afterReadMessages.bind(this), callbacks.priority.LOW, 'federation-read-messages');
+		callbacks.add('afterSetReaction', this.afterSetReaction.bind(this), callbacks.priority.LOW, 'federation-after-set-reaction');
+		callbacks.add('afterUnsetReaction', this.afterUnsetReaction.bind(this), callbacks.priority.LOW, 'federation-after-unset-reaction');
+		callbacks.add('afterMuteUser', this.afterMuteUser.bind(this), callbacks.priority.LOW, 'federation-mute-user');
+		callbacks.add('afterUnmuteUser', this.afterUnmuteUser.bind(this), callbacks.priority.LOW, 'federation-unmute-user');
 
 		this.log('Callbacks set');
 	}
@@ -120,7 +122,7 @@ class PeerClient {
 		if (!peer || !peer.public_key) {
 			this.log(`Could not find valid peer:${ domain }`);
 
-			RocketChat.models.FederationEvents.setEventAsErrored(e, 'Could not find valid peer');
+			FederationEvents.setEventAsErrored(e, 'Could not find valid peer');
 		} else {
 			try {
 				const stringPayload = JSON.stringify({ event: e });
@@ -133,7 +135,7 @@ class PeerClient {
 
 				Meteor.federationPeerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload });
 
-				RocketChat.models.FederationEvents.setEventAsFullfilled(e);
+				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
 				this.log(`[${ e.t }] Event was refused by peer:${ domain }`);
 
@@ -151,7 +153,7 @@ class PeerClient {
 					const localUsername = username.split('@')[0];
 
 					// Create system message
-					RocketChat.models.Messages.createRejectedMessageByPeer(roomId, localUsername, {
+					Messages.createRejectedMessageByPeer(roomId, localUsername, {
 						u: {
 							_id: userId,
 							username: localUsername,
@@ -159,10 +161,10 @@ class PeerClient {
 						peer: domain,
 					});
 
-					return RocketChat.models.FederationEvents.setEventAsErrored(e, err.error, true);
+					return FederationEvents.setEventAsErrored(e, err.error, true);
 				}
 
-				return RocketChat.models.FederationEvents.setEventAsErrored(e, `Could not send request to ${ domain }`);
+				return FederationEvents.setEventAsErrored(e, `Could not send request to ${ domain }`);
 			}
 		}
 	}
@@ -173,7 +175,7 @@ class PeerClient {
 
 	resendUnfulfilledEvents() {
 		// Should we use queues in here?
-		const events = RocketChat.models.FederationEvents.getUnfulfilled();
+		const events = FederationEvents.getUnfulfilled();
 
 		for (const e of events) {
 			this.propagateEvent(e);
@@ -257,7 +259,7 @@ class PeerClient {
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
 
-		RocketChat.models.FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
+		FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
 	}
 
 	afterCreateRoom({ _id: ownerId }, room) {
@@ -268,7 +270,7 @@ class PeerClient {
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return; }
 
-		const owner = RocketChat.models.Users.findOneById(ownerId);
+		const owner = Users.findOneById(ownerId);
 
 		const federatedRoom = new FederatedRoom(localPeerDomain, room, { owner });
 
@@ -281,7 +283,7 @@ class PeerClient {
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
 
-		RocketChat.models.FederationEvents.roomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
+		FederationEvents.roomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
 	}
 
 	afterSaveRoomSettings(/* room */) {
@@ -318,7 +320,7 @@ class PeerClient {
 				ownerId = room.u._id;
 			}
 
-			extras.owner = RocketChat.models.Users.findOneById(ownerId);
+			extras.owner = Users.findOneById(ownerId);
 		}
 
 		const federatedRoom = new FederatedRoom(localPeerDomain, room, extras);
@@ -332,7 +334,7 @@ class PeerClient {
 		// If the user who joined is from a different peer...
 		if (userWhoJoined.federation && userWhoJoined.federation.peer !== localPeerDomain) {
 			// ...create a "create room" event for that peer
-			RocketChat.models.FederationEvents.roomCreated(federatedRoom, { peers: [userWhoJoined.federation.peer] });
+			FederationEvents.roomCreated(federatedRoom, { peers: [userWhoJoined.federation.peer] });
 		}
 
 		// Then, create a "user join/added" event to the other peers
@@ -341,9 +343,9 @@ class PeerClient {
 		if (userWhoInvited) {
 			const federatedInviter = FederatedUser.loadOrCreate(localPeerDomain, userWhoInvited);
 
-			RocketChat.models.FederationEvents.userAdded(federatedRoom, federatedUserWhoJoined, federatedInviter, { skipPeers: [localPeerDomain] });
+			FederationEvents.userAdded(federatedRoom, federatedUserWhoJoined, federatedInviter, { skipPeers: [localPeerDomain] });
 		} else {
-			RocketChat.models.FederationEvents.userJoined(federatedRoom, federatedUserWhoJoined, { skipPeers: [localPeerDomain] });
+			FederationEvents.userJoined(federatedRoom, federatedUserWhoJoined, { skipPeers: [localPeerDomain] });
 		}
 	}
 
@@ -363,7 +365,7 @@ class PeerClient {
 		const federatedUserWhoLeft = FederatedUser.loadByFederationId(localPeerDomain, userWhoLeft.federation._id);
 
 		// Then, create a "user left" event to the other peers
-		RocketChat.models.FederationEvents.userLeft(federatedRoom, federatedUserWhoLeft, { skipPeers: [localPeerDomain] });
+		FederationEvents.userLeft(federatedRoom, federatedUserWhoLeft, { skipPeers: [localPeerDomain] });
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -389,7 +391,7 @@ class PeerClient {
 
 		const federatedUserWhoRemoved = FederatedUser.loadByFederationId(localPeerDomain, userWhoRemoved.federation._id);
 
-		RocketChat.models.FederationEvents.userRemoved(federatedRoom, federatedRemovedUser, federatedUserWhoRemoved, { skipPeers: [localPeerDomain] });
+		FederationEvents.userRemoved(federatedRoom, federatedRemovedUser, federatedUserWhoRemoved, { skipPeers: [localPeerDomain] });
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -415,13 +417,13 @@ class PeerClient {
 
 		// If editedAt exists, it means it is an update
 		if (message.editedAt) {
-			const user = RocketChat.models.Users.findOneById(message.editedBy._id);
+			const user = Users.findOneById(message.editedBy._id);
 
 			const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, user.federation._id);
 
-			RocketChat.models.FederationEvents.messageUpdated(federatedRoom, federatedMessage, federatedUser, { skipPeers: [localPeerDomain] });
+			FederationEvents.messageUpdated(federatedRoom, federatedMessage, federatedUser, { skipPeers: [localPeerDomain] });
 		} else {
-			RocketChat.models.FederationEvents.messageCreated(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
+			FederationEvents.messageCreated(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
 		}
 	}
 
@@ -433,7 +435,7 @@ class PeerClient {
 
 		const { peer: { domain: localPeerDomain } } = this;
 
-		const room = RocketChat.models.Rooms.findOneById(message.rid);
+		const room = Rooms.findOneById(message.rid);
 
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
@@ -442,34 +444,36 @@ class PeerClient {
 
 		const federatedMessage = new FederatedMessage(localPeerDomain, message);
 
-		RocketChat.models.FederationEvents.messageDeleted(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
+		FederationEvents.messageDeleted(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
 	}
 
 	afterReadMessages(roomId, userId) {
 		this.log('afterReadMessages');
 
-		if (!RocketChat.settings.get('Message_Read_Receipt_Enabled')) { this.log('Skipping: read receipts are not enabled'); return; }
-
-		const room = RocketChat.models.Rooms.findOneById(roomId);
+		if (!settings.get('Message_Read_Receipt_Enabled')) { this.log('Skipping: read receipts are not enabled'); return; }
 
 		const { peer: { domain: localPeerDomain } } = this;
+
+		const room = Rooms.findOneById(roomId);
+
+		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
+
+		if (this.skipCallbackIfNeeded('afterReadMessages', federatedRoom.getLocalRoom())) { return; }
 
 		// Check if room is federated
 		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
 
-		const user = RocketChat.models.Users.findOneById(userId);
-
-		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
+		const user = Users.findOneById(userId);
 
 		const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, user.federation._id);
 
-		RocketChat.models.FederationEvents.messagesRead(federatedRoom, federatedUser, { skipPeers: [localPeerDomain] });
+		FederationEvents.messagesRead(federatedRoom, federatedUser, { skipPeers: [localPeerDomain] });
 	}
 
 	afterSetReaction(message, { user, reaction, shouldReact }) {
 		this.log('afterSetReaction');
 
-		const room = RocketChat.models.Rooms.findOneById(message.rid);
+		const room = Rooms.findOneById(message.rid);
 
 		const { peer: { domain: localPeerDomain } } = this;
 
@@ -482,13 +486,13 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
-		RocketChat.models.FederationEvents.messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
+		FederationEvents.messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
 	}
 
 	afterUnsetReaction(message, { user, reaction, shouldReact }) {
 		this.log('afterUnsetReaction');
 
-		const room = RocketChat.models.Rooms.findOneById(message.rid);
+		const room = Rooms.findOneById(message.rid);
 
 		const { peer: { domain: localPeerDomain } } = this;
 
@@ -501,7 +505,7 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
-		RocketChat.models.FederationEvents.messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
+		FederationEvents.messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
 	}
 
 	afterMuteUser({ mutedUser, fromUser }, room) {
@@ -518,7 +522,7 @@ class PeerClient {
 
 		const federatedUserWhoMuted = FederatedUser.loadByFederationId(localPeerDomain, fromUser.federation._id);
 
-		RocketChat.models.FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipPeers: [localPeerDomain] });
+		FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipPeers: [localPeerDomain] });
 	}
 
 	afterUnmuteUser({ unmutedUser, fromUser }, room) {
@@ -535,7 +539,7 @@ class PeerClient {
 
 		const federatedUserWhoUnmuted = FederatedUser.loadByFederationId(localPeerDomain, fromUser.federation._id);
 
-		RocketChat.models.FederationEvents.userUnmuted(federatedRoom, federatedUnmutedUser, federatedUserWhoUnmuted, { skipPeers: [localPeerDomain] });
+		FederationEvents.userUnmuted(federatedRoom, federatedUnmutedUser, federatedUserWhoUnmuted, { skipPeers: [localPeerDomain] });
 	}
 }
 

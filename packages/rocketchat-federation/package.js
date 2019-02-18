@@ -6,7 +6,15 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use(['ecmascript', 'underscore', 'rocketchat:lib']);
+	api.use([
+		'ecmascript',
+		'underscore',
+		'rocketchat:api',
+		'rocketchat:lib',
+		'rocketchat:reactions',
+		'rocketchat:models',
+		'rocketchat:settings',
+	]);
 
 	api.use('accounts-base', 'server');
 	api.use('accounts-password', 'server');

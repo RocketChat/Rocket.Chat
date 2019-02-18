@@ -1,5 +1,7 @@
-import FederatedResource from './FederatedResource';
+import { createRoom } from 'meteor/rocketchat:lib';
+import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 
+import FederatedResource from './FederatedResource';
 import FederatedUser from './FederatedUser';
 
 class FederatedRoom extends FederatedResource {
@@ -112,7 +114,7 @@ class FederatedRoom extends FederatedResource {
 		room.federation = federation;
 
 		// Update the room
-		RocketChat.models.Rooms.update(room._id, { $set: { federation } });
+		Rooms.update(room._id, { $set: { federation } });
 	}
 
 	getLocalRoom() {
@@ -216,7 +218,7 @@ class FederatedRoom extends FederatedResource {
 			}
 
 			// Create the room
-			const { rid } = RocketChat.createRoom(type, name, ownerUsername, members, false, extraData, createRoomOptions);
+			const { rid } = createRoom(type, name, ownerUsername, members, false, extraData, createRoomOptions);
 
 			localRoom._id = rid;
 		}
@@ -226,7 +228,7 @@ class FederatedRoom extends FederatedResource {
 }
 
 FederatedRoom.loadByFederationId = function loadByFederationId(localPeerIdentifier, federationId) {
-	const localRoom = RocketChat.models.Rooms.findOne({ 'federation._id': federationId });
+	const localRoom = Rooms.findOne({ 'federation._id': federationId });
 
 	if (!localRoom) { return; }
 
@@ -234,9 +236,9 @@ FederatedRoom.loadByFederationId = function loadByFederationId(localPeerIdentifi
 };
 
 FederatedRoom.loadRoomUsers = function loadRoomUsers(room) {
-	const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(room._id, { fields: { 'u._id': 1 } }).fetch();
+	const subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id, { fields: { 'u._id': 1 } }).fetch();
 	const userIds = subscriptions.map((s) => s.u._id);
-	return RocketChat.models.Users.findUsersWithUsernameByIds(userIds).fetch();
+	return Users.findUsersWithUsernameByIds(userIds).fetch();
 };
 
 FederatedRoom.isFederated = function isFederated(localPeerIdentifier, room, options = {}) {

@@ -1,18 +1,19 @@
 import { Meteor } from 'meteor/meteor';
+import { API } from 'meteor/rocketchat:api';
 
-const { FederationKeys } = RocketChat.models;
+import { FederationKeys } from '../../../../models/FederationKeys';
 
 export default function eventsRoutes() {
 	const self = this;
 
-	RocketChat.API.v1.addRoute('federation.events', { authRequired: false }, {
+	API.v1.addRoute('federation.events', { authRequired: false }, {
 		post() {
 			if (!this.bodyParams.payload) {
-				return RocketChat.API.v1.failure('Payload was not sent');
+				return API.v1.failure('Payload was not sent');
 			}
 
 			if (!this.request.headers['x-federation-domain']) {
-				return RocketChat.API.v1.failure('Cannot handle that request');
+				return API.v1.failure('Cannot handle that request');
 			}
 
 			const remotePeerDomain = this.request.headers['x-federation-domain'];
@@ -20,7 +21,7 @@ export default function eventsRoutes() {
 			const peer = Meteor.federationPeerDNS.searchPeer(remotePeerDomain);
 
 			if (!peer) {
-				return RocketChat.API.v1.failure('Could not find valid peer');
+				return API.v1.failure('Could not find valid peer');
 			}
 
 			const payloadBuffer = Buffer.from(this.bodyParams.payload.data);
@@ -35,7 +36,7 @@ export default function eventsRoutes() {
 			const { event: e } = JSON.parse(payload.toString());
 
 			if (!e) {
-				return RocketChat.API.v1.failure('Event was not sent');
+				return API.v1.failure('Event was not sent');
 			}
 
 			self.log(`Received event:${ e.t }`);
@@ -91,11 +92,11 @@ export default function eventsRoutes() {
 				self.log('Success, responding...');
 
 				// Respond
-				return RocketChat.API.v1.success();
+				return API.v1.success();
 			} catch (err) {
 				self.log(`Error handling event:${ e.t } - ${ err.toString() }`);
 
-				return RocketChat.API.v1.failure(`Error handling event:${ e.t } - ${ err.toString() }`, err.error || 'unknown-error');
+				return API.v1.failure(`Error handling event:${ e.t } - ${ err.toString() }`, err.error || 'unknown-error');
 			}
 		},
 	});

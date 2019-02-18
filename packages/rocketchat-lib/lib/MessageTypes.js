@@ -148,7 +148,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'rejected-message-by-peer',
 		system: true,
 		message: 'This_message_was_rejected_by__peer__peer',

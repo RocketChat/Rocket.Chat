@@ -1,4 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { setReaction } from 'meteor/rocketchat:reactions';
+import { addUserToRoom, removeUserFromRoom, deleteMessage } from 'meteor/rocketchat:lib';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+
 import { logger } from '../logger.js';
 
 import FederatedMessage from '../federatedResources/FederatedMessage';
@@ -92,7 +97,7 @@ class PeerServer {
 		Meteor.federationPeerClient.addCallbackToSkip('afterAddedToRoom', federatedUser.getFederationId());
 
 		// Add the user to the room
-		RocketChat.addUserToRoom(federatedRoom.room._id, localUser, null, false);
+		addUserToRoom(federatedRoom.room._id, localUser, null, false);
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -128,7 +133,7 @@ class PeerServer {
 		Meteor.federationPeerClient.addCallbackToSkip('afterAddedToRoom', federatedUser.getFederationId());
 
 		// Add the user to the room
-		RocketChat.addUserToRoom(federatedRoom.room._id, localUser, localInviter, false);
+		addUserToRoom(federatedRoom.room._id, localUser, localInviter, false);
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -155,7 +160,7 @@ class PeerServer {
 		Meteor.federationPeerClient.addCallbackToSkip('beforeLeaveRoom', federatedUser.getFederationId());
 
 		// Remove the user from the room
-		RocketChat.removeUserFromRoom(federatedRoom.room._id, localUser);
+		removeUserFromRoom(federatedRoom.room._id, localUser);
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -186,7 +191,7 @@ class PeerServer {
 		Meteor.federationPeerClient.addCallbackToSkip('beforeRemoveFromRoom', federatedUser.getFederationId());
 
 		// Remove the user from the room
-		RocketChat.removeUserFromRoom(federatedRoom.room._id, localUser, { byUser: localUserWhoRemoved });
+		removeUserFromRoom(federatedRoom.room._id, localUser, { byUser: localUserWhoRemoved });
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -215,7 +220,7 @@ class PeerServer {
 		// const localUserWhoMuted = federatedUserWhoMuted.getLocalUser();
 
 		// Mute user
-		RocketChat.models.Rooms.muteUsernameByRoomId(federatedRoom.room._id, localUser.username);
+		Rooms.muteUsernameByRoomId(federatedRoom.room._id, localUser.username);
 
 		// TODO: should we create a message?
 	}
@@ -240,7 +245,7 @@ class PeerServer {
 		// const localUserWhoUnmuted = federatedUserWhoUnmuted.getLocalUser();
 
 		// Unmute user
-		RocketChat.models.Rooms.unmuteUsernameByRoomId(federatedRoom.room._id, localUser.username);
+		Rooms.unmuteUsernameByRoomId(federatedRoom.room._id, localUser.username);
 
 		// TODO: should we create a message?
 	}
@@ -301,7 +306,7 @@ class PeerServer {
 		Meteor.federationPeerClient.addCallbackToSkip('afterDeleteMessage', federatedMessage.getFederationId());
 
 		// Create the federated message
-		RocketChat.deleteMessage(localMessage, localAuthor);
+		deleteMessage(localMessage, localAuthor);
 	}
 
 	handleMessagesReadEvent(e) {
@@ -314,12 +319,17 @@ class PeerServer {
 		// Load the federated room
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, federated_room_id);
 
+		Meteor.federationPeerClient.addCallbackToSkip('afterReadMessages', federatedRoom.getFederationId());
+
 		// Load the user who left
 		const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, federated_user_id);
 		const localUser = federatedUser.getLocalUser();
 
 		// Mark the messages as read
-		RocketChat.readMessages(federatedRoom.room._id, localUser._id);
+		// TODO: move below calls to an exported function
+		Subscriptions.setAsReadByRoomIdAndUserId(federatedRoom.room._id, localUser._id);
+
+		callbacks.run('afterReadMessages', federatedRoom.room._id, localUser._id);
 	}
 
 	handleMessagesSetReactionEvent(e) {
@@ -345,7 +355,7 @@ class PeerServer {
 		Meteor.federationPeerClient.addCallbackToSkip('afterSetReaction', federatedMessage.getFederationId());
 
 		// Set message reaction
-		RocketChat.setReaction(localRoom, localUser, localMessage, reaction, shouldReact);
+		setReaction(localRoom, localUser, localMessage, reaction, shouldReact);
 	}
 
 	handleMessagesUnsetReactionEvent(e) {
@@ -371,9 +381,8 @@ class PeerServer {
 		Meteor.federationPeerClient.addCallbackToSkip('afterUnsetReaction', federatedMessage.getFederationId());
 
 		// Unset message reaction
-		RocketChat.setReaction(localRoom, localUser, localMessage, reaction, shouldReact);
+		setReaction(localRoom, localUser, localMessage, reaction, shouldReact);
 	}
-
 }
 
 export default PeerServer;

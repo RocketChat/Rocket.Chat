@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
-const { FederationKeys } = RocketChat.models;
+import { settings } from 'meteor/rocketchat:settings';
+
+import { FederationKeys } from './models/FederationKeys';
 
 Meteor.startup(function() {
 	const federationPublicKey = FederationKeys.getPublicKeyString();
 
-	RocketChat.settings.addGroup('Federation', function() {
+	settings.addGroup('Federation', function() {
 		this.add('FEDERATION_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',

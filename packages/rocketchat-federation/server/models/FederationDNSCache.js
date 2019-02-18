@@ -1,4 +1,6 @@
-class FederationDNSCache extends RocketChat.models._Base {
+import { Base } from 'meteor/rocketchat:models';
+
+class FederationDNSCacheModel extends Base {
 	constructor() {
 		super('federation_dns_cache');
 	}
@@ -8,4 +10,4 @@ class FederationDNSCache extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.FederationDNSCache = new FederationDNSCache();
+export const FederationDNSCache = new FederationDNSCacheModel();

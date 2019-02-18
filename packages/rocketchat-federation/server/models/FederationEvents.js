@@ -1,7 +1,21 @@
+import { Base } from 'meteor/rocketchat:models';
+
+const normalizePeers = (basePeers, options) => {
+	const { peers: sentPeers, skipPeers } = options;
+
+	let peers = sentPeers || basePeers || [];
+
+	if (skipPeers) {
+		peers = peers.filter((p) => skipPeers.indexOf(p) === -1);
+	}
+
+	return peers;
+};
+
 //
 // We should create a time to live index in this table to remove fulfilled events
 //
-class FederationEvents extends RocketChat.models._Base {
+class FederationEventsModel extends Base {
 	constructor() {
 		super('federation_events');
 	}
@@ -54,7 +68,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `directRoomCreated(drc)` event
 	directRoomCreated(federatedRoom, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			room: federatedRoom.getRoom(),
@@ -67,7 +81,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `roomCreated(roc)` event
 	roomCreated(federatedRoom, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			room: federatedRoom.getRoom(),
@@ -80,7 +94,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `userJoined(usj)` event
 	userJoined(federatedRoom, federatedUser, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -92,7 +106,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `userAdded(usa)` event
 	userAdded(federatedRoom, federatedUser, federatedInviter, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -105,7 +119,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `userLeft(usl)` event
 	userLeft(federatedRoom, federatedUser, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -117,7 +131,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `userRemoved(usr)` event
 	userRemoved(federatedRoom, federatedUser, federatedRemovedByUser, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -130,7 +144,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `userMuted(usm)` event
 	userMuted(federatedRoom, federatedUser, federatedMutedByUser, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -143,7 +157,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `userUnmuted(usu)` event
 	userUnmuted(federatedRoom, federatedUser, federatedUnmutedByUser, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -156,7 +170,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `messageCreated(msc)` event
 	messageCreated(federatedRoom, federatedMessage, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			message: federatedMessage.getMessage(),
@@ -167,7 +181,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `messageUpdated(msu)` event
 	messageUpdated(federatedRoom, federatedMessage, federatedUser, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			message: federatedMessage.getMessage(),
@@ -179,7 +193,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `deleteMessage(msd)` event
 	messageDeleted(federatedRoom, federatedMessage, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_message_id: federatedMessage.getFederationId(),
@@ -190,7 +204,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `messagesRead(msr)` event
 	messagesRead(federatedRoom, federatedUser, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -202,7 +216,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `messagesSetReaction(mrs)` event
 	messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -217,7 +231,7 @@ class FederationEvents extends RocketChat.models._Base {
 
 	// Create a `messagesUnsetReaction(mru)` event
 	messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
-		const peers = FederationEvents.normalizePeers(federatedRoom.getPeers(), options);
+		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
 			federated_room_id: federatedRoom.getFederationId(),
@@ -234,18 +248,8 @@ class FederationEvents extends RocketChat.models._Base {
 	getUnfulfilled() {
 		return this.find({ fulfilled: false }, { sort: { ts: 1 } }).fetch();
 	}
+
+
 }
 
-FederationEvents.normalizePeers = function normalizePeers(basePeers, options) {
-	const { peers: sentPeers, skipPeers } = options;
-
-	let peers = sentPeers || basePeers || [];
-
-	if (skipPeers) {
-		peers = peers.filter((p) => skipPeers.indexOf(p) === -1);
-	}
-
-	return peers;
-};
-
-RocketChat.models.FederationEvents = new FederationEvents();
+export const FederationEvents = new FederationEventsModel();

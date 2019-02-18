@@ -1,22 +1,24 @@
 import { Meteor } from 'meteor/meteor';
+import { API } from 'meteor/rocketchat:api';
+import { Uploads } from 'meteor/rocketchat:models';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 export default function uploadsRoutes() {
-	RocketChat.API.v1.addRoute('federation.uploads', { authRequired: false }, {
+	API.v1.addRoute('federation.uploads', { authRequired: false }, {
 		get() {
 			const { upload_id } = this.requestParams();
 
-			const upload = RocketChat.models.Uploads.findOneById(upload_id);
+			const upload = Uploads.findOneById(upload_id);
 
 			if (!upload) {
-				return RocketChat.API.v1.failure('There is no such file in this server');
+				return API.v1.failure('There is no such file in this server');
 			}
 
 			const getFileBuffer = Meteor.wrapAsync(FileUpload.getBuffer, FileUpload);
 
 			const buffer = getFileBuffer(upload);
 
-			return RocketChat.API.v1.success({ upload, buffer });
+			return API.v1.success({ upload, buffer });
 		},
 	});
 }

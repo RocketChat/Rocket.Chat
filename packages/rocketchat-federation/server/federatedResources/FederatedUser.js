@@ -1,3 +1,5 @@
+import { Users } from 'meteor/rocketchat:models';
+
 import FederatedResource from './FederatedResource';
 
 class FederatedUser extends FederatedResource {
@@ -22,7 +24,7 @@ class FederatedUser extends FederatedResource {
 			user.federation = federation;
 
 			// Update the user
-			RocketChat.models.Users.update(user._id, { $set: { federation } });
+			Users.update(user._id, { $set: { federation } });
 		}
 
 		// Make sure user dates are correct
@@ -79,7 +81,7 @@ class FederatedUser extends FederatedResource {
 		const { federation: { _id: federationId } } = localUserObject;
 
 		// Check if the user exists
-		let localUser = RocketChat.models.Users.findOne({ 'federation._id': federationId });
+		let localUser = Users.findOne({ 'federation._id': federationId });
 
 		// Create if needed
 		if (!localUser) {
@@ -87,7 +89,7 @@ class FederatedUser extends FederatedResource {
 
 			localUser = localUserObject;
 
-			localUser._id = RocketChat.models.Users.create(localUserObject);
+			localUser._id = Users.create(localUserObject);
 		}
 
 		// Update the id
@@ -98,7 +100,7 @@ class FederatedUser extends FederatedResource {
 }
 
 FederatedUser.loadByFederationId = function loadByFederationId(localPeerIdentifier, federationId) {
-	const localUser = RocketChat.models.Users.findOne({ 'federation._id': federationId });
+	const localUser = Users.findOne({ 'federation._id': federationId });
 
 	if (!localUser) { return; }
 

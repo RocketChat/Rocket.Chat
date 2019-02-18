@@ -1,9 +1,12 @@
+import { API } from 'meteor/rocketchat:api';
+import { Users } from 'meteor/rocketchat:models';
+
 import FederationUser from '../../../federatedResources/FederatedUser';
 
 export default function usersRoutes() {
 	const self = this;
 
-	RocketChat.API.v1.addRoute('federation.users', { authRequired: false }, {
+	API.v1.addRoute('federation.users', { authRequired: false }, {
 		get() {
 			const { peer: { domain: localPeerDomain } } = self.config;
 
@@ -16,20 +19,20 @@ export default function usersRoutes() {
 			if (username) {
 				self.log(`[users] Trying to find user by username:${ username }`);
 
-				user = RocketChat.models.Users.findOneByUsername(username, options);
+				user = Users.findOneByUsername(username, options);
 			} else {
 				self.log(`[users] Trying to find user by email:${ email }`);
 
-				user = RocketChat.models.Users.findOneByEmailAddress(email, options);
+				user = Users.findOneByEmailAddress(email, options);
 			}
 
 			if (!user) {
-				return RocketChat.API.v1.failure('There is no such user in this server');
+				return API.v1.failure('There is no such user in this server');
 			}
 
 			const federatedUser = new FederationUser(localPeerDomain, user);
 
-			return RocketChat.API.v1.success({ federatedUser });
+			return API.v1.success({ federatedUser });
 		},
 	});
 }
