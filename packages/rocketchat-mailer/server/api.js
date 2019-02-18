@@ -14,8 +14,8 @@ let Settings = {
 
 export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
 
-export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key));
-export const replace = function replace(str, data = {}) {
+export const translate = (str, lng = undefined) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
+export const replace = function replace(str, data = {}, lng = undefined) {
 	if (!str) {
 		return '';
 	}
@@ -29,18 +29,18 @@ export const replace = function replace(str, data = {}) {
 		}),
 		...data,
 	};
-	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
+	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str, lng));
 };
 
-export const replaceEscaped = (str, data = {}) => replace(str, {
+export const replaceEscaped = (str, data = {}, lng = undefined) => replace(str, {
 	Site_Name: s.escapeHTML(RocketChat.settings.get('Site_Name')),
 	Site_Url: s.escapeHTML(RocketChat.settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
 		ret[key] = s.escapeHTML(value);
 		return ret;
 	}, {}),
-});
-export const wrap = (html, data = {}) => replaceEscaped(body.replace('{{body}}', html), data);
+}, lng);
+export const wrap = (html, data = {}, lng = undefined) => replaceEscaped(body.replace('{{body}}', html), data, lng);
 export const inlinecss = (html) => juice.inlineContent(html, Settings.get('email_style'));
 export const getTemplate = (template, fn, escape = true) => {
 	let html = '';
@@ -92,7 +92,7 @@ export const sendNoWrap = ({ to, from, subject, html, headers }) => {
 	return true;
 };
 
-export const send = ({ to, from, subject, html, data, headers }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data), headers });
+export const send = ({ to, from, subject, html, data, headers, lng = undefined }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data, lng), headers });
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {

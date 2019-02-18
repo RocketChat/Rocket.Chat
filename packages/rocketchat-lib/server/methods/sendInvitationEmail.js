@@ -9,7 +9,6 @@ Meteor.startup(() => {
 	});
 });
 
-/* eslint no-unused-vars: ["error", { "args": "none" }] */
 Meteor.methods({
 	sendInvitationEmail(emails, language) {
 		check(emails, [String]);
@@ -26,7 +25,6 @@ Meteor.methods({
 		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
 		const subject = RocketChat.settings.get('Invitation_Subject');
-
 		return validEmails.filter((email) => {
 			try {
 				return Mailer.send({
@@ -40,6 +38,7 @@ Meteor.methods({
 						Username:Meteor.user().username,
 						Avatar_Link:`${ RocketChat.settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
 					},
+					lng: language,
 				});
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ message }`, {
