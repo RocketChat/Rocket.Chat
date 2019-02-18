@@ -193,7 +193,6 @@ rocketchat:mailer@0.0.1
 rocketchat:mailmessages@0.0.1
 rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.2
-rocketchat:metrics@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
 rocketchat:message-action@0.0.1
@@ -202,6 +201,7 @@ rocketchat:message-mark-as-unread@0.0.1
 rocketchat:message-pin@0.0.1
 rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
+rocketchat:metrics@0.0.1
 rocketchat:migrations@0.0.1
 rocketchat:models@1.0.0
 rocketchat:monitoring@2.30.2_3
@@ -293,5 +293,4 @@ underscore@1.0.10
 url@1.2.0
 webapp@1.7.2
 webapp-hashing@1.0.9
-yasaricli:slugify@0.0.7
 yasinuslu:blaze-meta@0.3.3

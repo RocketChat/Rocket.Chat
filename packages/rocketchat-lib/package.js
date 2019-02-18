@@ -28,7 +28,6 @@ Package.onUse(function(api) {
 		'mizzao:timesync',
 		'konecty:multiple-instances-status',
 		'matb33:collection-hooks',
-		'yasaricli:slugify',
 		'service-configuration',
 		'rocketchat:utils',
 		'rocketchat:models',
