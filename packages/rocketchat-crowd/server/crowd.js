@@ -3,7 +3,10 @@ import { SHA256 } from 'meteor/sha';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
 import { Logger } from 'meteor/rocketchat:logger';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { _setRealName } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 
 const logger = new Logger('CROWD', {});
@@ -33,17 +36,17 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 export class CROWD {
 	constructor() {
 		const AtlassianCrowd = require('atlassian-crowd');
-		let url = RocketChat.settings.get('CROWD_URL');
+		let url = settings.get('CROWD_URL');
 
 		this.options = {
 			crowd: {
 				base: (!/\/$/.test(url) ? url += '/' : url),
 			},
 			application: {
-				name: RocketChat.settings.get('CROWD_APP_USERNAME'),
-				password: RocketChat.settings.get('CROWD_APP_PASSWORD'),
+				name: settings.get('CROWD_APP_USERNAME'),
+				password: settings.get('CROWD_APP_PASSWORD'),
 			},
-			rejectUnauthorized: RocketChat.settings.get('CROWD_Reject_Unauthorized'),
+			rejectUnauthorized: settings.get('CROWD_Reject_Unauthorized'),
 		};
 
 		this.crowdClient = new AtlassianCrowd(this.options);
@@ -107,11 +110,11 @@ export class CROWD {
 				logout: false,
 			});
 
-			RocketChat.models.Users.unsetRequirePasswordChange(id);
+			Users.unsetRequirePasswordChange(id);
 		}
 
 		if (crowdUser.displayname) {
-			RocketChat._setRealName(id, crowdUser.displayname);
+			_setRealName(id, crowdUser.displayname);
 		}
 
 		Meteor.users.update(id, {
@@ -121,12 +124,12 @@ export class CROWD {
 
 	sync() {
 		// if crowd is disabled bail out
-		if (RocketChat.settings.get('CROWD_Enable') !== true) {
+		if (settings.get('CROWD_Enable') !== true) {
 			return;
 		}
 
 		const self = this;
-		const users = RocketChat.models.Users.findCrowdUsers() || [];
+		const users = Users.findCrowdUsers() || [];
 
 		logger.info('Sync started...');
 
@@ -161,7 +164,7 @@ export class CROWD {
 	}
 
 	cleanUsername(username) {
-		if (RocketChat.settings.get('CROWD_Clean_Usernames') === true) {
+		if (settings.get('CROWD_Clean_Usernames') === true) {
 			return username.split('@')[0];
 		}
 		return username;
@@ -216,7 +219,7 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 
 	logger.info('Init CROWD login', loginRequest.username);
 
-	if (RocketChat.settings.get('CROWD_Enable') !== true) {
+	if (settings.get('CROWD_Enable') !== true) {
 		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
 	}
 
@@ -236,7 +239,7 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 const jobName = 'CROWD_Sync';
 
 const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
-	if (RocketChat.settings.get('CROWD_Sync_User_Data') !== true) {
+	if (settings.get('CROWD_Sync_User_Data') !== true) {
 		logger.info('Disabling CROWD Background Sync');
 		if (SyncedCron.nextScheduledAtDate(jobName)) {
 			SyncedCron.remove(jobName);
@@ -246,11 +249,11 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 
 	const crowd = new CROWD();
 
-	if (RocketChat.settings.get('CROWD_Sync_Interval')) {
+	if (settings.get('CROWD_Sync_Interval')) {
 		logger.info('Enabling CROWD Background Sync');
 		SyncedCron.add({
 			name: jobName,
-			schedule: (parser) => parser.text(RocketChat.settings.get('CROWD_Sync_Interval')),
+			schedule: (parser) => parser.text(settings.get('CROWD_Sync_Interval')),
 			job() {
 				crowd.sync();
 			},
@@ -261,8 +264,8 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 
 Meteor.startup(() => {
 	Meteor.defer(() => {
-		RocketChat.settings.get('CROWD_Sync_Interval', addCronJob);
-		RocketChat.settings.get('CROWD_Sync_User_Data', addCronJob);
+		settings.get('CROWD_Sync_Interval', addCronJob);
+		settings.get('CROWD_Sync_User_Data', addCronJob);
 	});
 });
 
@@ -273,11 +276,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'crowd_test_connection' });
 		}
 
-		if (!RocketChat.authz.hasRole(user._id, 'admin')) {
+		if (!hasRole(user._id, 'admin')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'crowd_test_connection' });
 		}
 
-		if (RocketChat.settings.get('CROWD_Enable') !== true) {
+		if (settings.get('CROWD_Enable') !== true) {
 			throw new Meteor.Error('crowd_disabled');
 		}
 
@@ -296,11 +299,11 @@ Meteor.methods({
 	},
 	crowd_sync_users() {
 		const user = Meteor.user();
-		if (RocketChat.settings.get('CROWD_Enable') !== true) {
+		if (settings.get('CROWD_Enable') !== true) {
 			throw new Meteor.Error('crowd_disabled');
 		}
 
-		if (!RocketChat.authz.hasRole(user._id, 'admin')) {
+		if (!hasRole(user._id, 'admin')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'crowd_sync_users' });
 		}
 

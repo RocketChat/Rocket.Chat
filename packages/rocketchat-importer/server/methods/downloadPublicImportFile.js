@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import http from 'http';
 import fs from 'fs';
 
@@ -24,7 +25,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'downloadPublicImportFile' });
 		}
 
-		if (!RocketChat.authz.hasRole(userId, 'admin')) {
+		if (!hasRole(userId, 'admin')) {
 			throw new Meteor.Error('not_authorized', 'User not authorized', { method: 'downloadPublicImportFile' });
 		}
 
@@ -49,6 +50,14 @@ Meteor.methods({
 			if (!fs.existsSync(fileUrl)) {
 				throw new Meteor.Error('error-import-file-missing', fileUrl, { method: 'downloadPublicImportFile' });
 			}
+
+			// If the url is actually a folder path on the current machine, skip moving it to the file store
+			if (fs.statSync(fileUrl).isDirectory()) {
+				importer.instance.updateRecord({ file: fileUrl });
+				importer.instance.updateProgress(ProgressStep.DOWNLOAD_COMPLETE);
+				return;
+			}
+
 			copyLocalFile(fileUrl, writeStream);
 		}
 

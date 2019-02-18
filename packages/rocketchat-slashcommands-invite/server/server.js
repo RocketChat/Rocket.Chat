@@ -2,7 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { Subscriptions } from 'meteor/rocketchat:models';
 
 /*
 * Invite is a named function that will replace /invite commands
@@ -27,7 +29,7 @@ function Invite(command, params, item) {
 	const userId = Meteor.userId();
 	const currentUser = Meteor.users.findOne(userId);
 	if (users.count() === 0) {
-		RocketChat.Notifications.notifyUser(userId, 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -39,11 +41,11 @@ function Invite(command, params, item) {
 		return;
 	}
 	users = users.fetch().filter(function(user) {
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, { fields: { _id: 1 } });
 		if (subscription == null) {
 			return true;
 		}
-		RocketChat.Notifications.notifyUser(userId, 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -64,14 +66,14 @@ function Invite(command, params, item) {
 			});
 		} catch ({ error }) {
 			if (error === 'cant-invite-for-direct-room') {
-				RocketChat.Notifications.notifyUser(userId, 'message', {
+				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date,
 					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language),
 				});
 			} else {
-				RocketChat.Notifications.notifyUser(userId, 'message', {
+				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date,
@@ -82,7 +84,7 @@ function Invite(command, params, item) {
 	});
 }
 
-RocketChat.slashCommands.add('invite', Invite, {
+slashCommands.add('invite', Invite, {
 	description: 'Invite_user_to_join_channel',
 	params: '@username',
 });

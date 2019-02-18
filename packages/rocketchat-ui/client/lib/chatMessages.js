@@ -166,7 +166,6 @@ export const ChatMessages = class ChatMessages {
 		this.input.classList.add('editing');
 
 		element.classList.add('editing');
-		this.$input.closest('.message-form').addClass('editing');
 
 		if (message.attachments && message.attachments[0].description) {
 			this.input.value = message.attachments[0].description;
@@ -189,7 +188,6 @@ export const ChatMessages = class ChatMessages {
 			this.input.parentElement.classList.remove('editing');
 
 			this.editing.element.classList.remove('editing');
-			this.$input.closest('.message-form').removeClass('editing');
 			delete this.editing.id;
 			delete this.editing.element;
 			delete this.editing.index;

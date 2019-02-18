@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Messages } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	getSingleMessage(msgId) {
@@ -9,7 +10,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getSingleMessage' });
 		}
 
-		const msg = RocketChat.models.Messages.findOneById(msgId);
+		const msg = Messages.findOneById(msgId);
 
 		if (!msg || !msg.rid) {
 			return undefined;

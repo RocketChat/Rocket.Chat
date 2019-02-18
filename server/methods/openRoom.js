@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Subscriptions } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	openRoom(rid) {
@@ -11,6 +12,6 @@ Meteor.methods({
 			});
 		}
 
-		return RocketChat.models.Subscriptions.openByRoomIdAndUserId(rid, Meteor.userId());
+		return Subscriptions.openByRoomIdAndUserId(rid, Meteor.userId());
 	},
 });

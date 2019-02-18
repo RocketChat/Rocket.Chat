@@ -1,6 +1,9 @@
 import { Session } from 'meteor/session';
-import { ChatRoom } from 'meteor/rocketchat:ui';
-import { RocketChat, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, openRoom } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { openRoom } from 'meteor/rocketchat:ui-utils';
+import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from 'meteor/rocketchat:utils';
 import { LivechatInquiry } from './LivechatInquiry';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
@@ -46,7 +49,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasPermission('view-l-room');
+		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	}
 
 	canSendMessage(roomId) {

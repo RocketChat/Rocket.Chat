@@ -101,17 +101,6 @@ Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
 	},
-	'mouseenter .sidebar-item__link'(e) {
-		const element = e.currentTarget;
-		const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
-		const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
-
-		if (isTextEllipsed) {
-			element.setAttribute('title', element.getAttribute('aria-label'));
-		} else {
-			element.removeAttribute('title');
-		}
-	},
 	'click .sidebar-item__menu'(e) {
 		e.preventDefault();
 
