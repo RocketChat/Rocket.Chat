@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Messages } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	loadMissedMessages(rid, start) {
@@ -23,12 +25,12 @@ Meteor.methods({
 			},
 		};
 
-		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+		if (!settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
 				editedAt: 0,
 			};
 		}
 
-		return RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
+		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
 	},
 });

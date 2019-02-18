@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
+import { Rooms, LivechatVisitors, LivechatCustomField } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { API } from 'meteor/rocketchat:api';
 import { findGuest } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
-RocketChat.API.v1.addRoute('livechat/visitor', {
+API.v1.addRoute('livechat/visitor', {
 	post() {
 		try {
 			check(this.bodyParams, {
@@ -32,37 +34,37 @@ RocketChat.API.v1.addRoute('livechat/visitor', {
 				guest.phone = { number: this.bodyParams.visitor.phone };
 			}
 
-			const visitorId = RocketChat.Livechat.registerGuest(guest);
+			const visitorId = Livechat.registerGuest(guest);
 
 			let visitor = LivechatVisitors.getVisitorByToken(token);
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const cursor = RocketChat.models.Rooms.findOpenByVisitorToken(token);
+			const cursor = Rooms.findOpenByVisitorToken(token);
 			cursor.forEach((room) => {
-				RocketChat.Livechat.saveRoomInfo(room, visitor);
+				Livechat.saveRoomInfo(room, visitor);
 			});
 
 			if (customFields && customFields instanceof Array) {
 				customFields.forEach((field) => {
-					const customField = RocketChat.models.LivechatCustomField.findOneById(field.key);
+					const customField = LivechatCustomField.findOneById(field.key);
 					if (!customField) {
 						return;
 					}
 					const { key, value, overwrite } = field;
 					if (customField.scope === 'visitor' && !LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite)) {
-						return RocketChat.API.v1.failure();
+						return API.v1.failure();
 					}
 				});
 			}
 
 			visitor = LivechatVisitors.findOneById(visitorId);
-			return RocketChat.API.v1.success({ visitor });
+			return API.v1.success({ visitor });
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/visitor/:token', {
+API.v1.addRoute('livechat/visitor/:token', {
 	get() {
 		try {
 			check(this.urlParams, {
@@ -70,9 +72,9 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token', {
 			});
 
 			const visitor = LivechatVisitors.getVisitorByToken(this.urlParams.token);
-			return RocketChat.API.v1.success({ visitor });
+			return API.v1.success({ visitor });
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 	delete() {
@@ -87,9 +89,9 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token', {
 			}
 
 			const { _id } = visitor;
-			const result = RocketChat.Livechat.removeGuest(_id);
+			const result = Livechat.removeGuest(_id);
 			if (result) {
-				return RocketChat.API.v1.success({
+				return API.v1.success({
 					visitor: {
 						_id,
 						ts: new Date().toISOString(),
@@ -97,20 +99,20 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token', {
 				});
 			}
 
-			return RocketChat.API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
+API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+			return API.v1.unauthorized();
 		}
 
-		const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(this.urlParams.token, {
+		const rooms = Rooms.findOpenByVisitorToken(this.urlParams.token, {
 			fields: {
 				name: 1,
 				t: 1,
@@ -120,11 +122,11 @@ RocketChat.API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true 
 				servedBy: 1,
 			},
 		}).fetch();
-		return RocketChat.API.v1.success({ rooms });
+		return API.v1.success({ rooms });
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/visitor.status', {
+API.v1.addRoute('livechat/visitor.status', {
 	post() {
 		try {
 			check(this.bodyParams, {
@@ -139,11 +141,11 @@ RocketChat.API.v1.addRoute('livechat/visitor.status', {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			RocketChat.Livechat.notifyGuestStatusChanged(token, status);
+			Livechat.notifyGuestStatusChanged(token, status);
 
-			return RocketChat.API.v1.success({ token, status });
+			return API.v1.success({ token, status });
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });

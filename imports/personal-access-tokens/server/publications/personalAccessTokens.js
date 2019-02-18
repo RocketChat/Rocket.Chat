@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Users } from 'meteor/rocketchat:models';
 
 Meteor.publish('personalAccessTokens', function() {
 	if (!this.userId) {
 		return this.ready();
 	}
-	if (!RocketChat.authz.hasPermission(this.userId, 'create-personal-access-tokens')) {
+	if (!hasPermission(this.userId, 'create-personal-access-tokens')) {
 		return this.ready();
 	}
 	const self = this;
@@ -15,7 +17,7 @@ Meteor.publish('personalAccessTokens', function() {
 			createdAt: loginToken.createdAt,
 			lastTokenPart: loginToken.lastTokenPart,
 		}));
-	const handle = RocketChat.models.Users.getLoginTokensByUserId(this.userId).observeChanges({
+	const handle = Users.getLoginTokensByUserId(this.userId).observeChanges({
 		added(id, fields) {
 			self.added('personal_access_tokens', id, { tokens: getFieldsToPublish(fields) });
 		},

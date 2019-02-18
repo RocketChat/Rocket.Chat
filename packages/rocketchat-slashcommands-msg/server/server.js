@@ -2,7 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { Users } from 'meteor/rocketchat:models';
 
 /*
 * Msg is a named function that will replace /msg commands
@@ -16,7 +18,7 @@ function Msg(command, params, item) {
 	const separator = trimmedParams.indexOf(' ');
 	const user = Meteor.users.findOne(Meteor.userId());
 	if (separator === -1) {
-		return	RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		return	Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -26,9 +28,9 @@ function Msg(command, params, item) {
 	const message = trimmedParams.slice(separator + 1);
 	const targetUsernameOrig = trimmedParams.slice(0, separator);
 	const targetUsername = targetUsernameOrig.replace('@', '');
-	const targetUser = RocketChat.models.Users.findOneByUsername(targetUsername);
+	const targetUser = Users.findOneByUsername(targetUsername);
 	if (targetUser == null) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -48,7 +50,7 @@ function Msg(command, params, item) {
 	Meteor.call('sendMessage', msgObject);
 }
 
-RocketChat.slashCommands.add('msg', Msg, {
+slashCommands.add('msg', Msg, {
 	description: 'Direct_message_someone',
 	params: '@username <message>',
 });

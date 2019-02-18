@@ -1,2 +1,1 @@
-import './messages';
 import './server';

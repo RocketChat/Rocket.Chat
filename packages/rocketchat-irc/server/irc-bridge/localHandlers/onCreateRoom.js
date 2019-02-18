@@ -1,7 +1,7 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
 
 export default function handleOnCreateRoom(user, room) {
-	const users = RocketChat.models.Users.findByRoomId(room._id);
+	const users = Users.findByRoomId(room._id);
 
 	users.forEach((user) => {
 		if (user.profile.irc.fromIRC) {
