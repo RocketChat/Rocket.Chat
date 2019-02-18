@@ -1,3 +1,4 @@
+import slug from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import {
@@ -11,7 +12,6 @@ import { RocketChatFile } from 'meteor/rocketchat:file';
 import { Users, Rooms } from 'meteor/rocketchat:models';
 import { sendMessage } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
-import s from 'underscore.string';
 import moment from 'moment';
 
 import 'moment-timezone';
@@ -48,11 +48,11 @@ export class HipChatImporter extends Base {
 					super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 					tempRooms = JSON.parse(entry.getData().toString()).rooms;
 					tempRooms.forEach((room) => {
-						room.name = s.slugify(room.name);
+						room.name = slug(room.name);
 					});
 				} else if (roomName.indexOf('/') > -1) {
 					const item = roomName.split('/');
-					roomName = s.slugify(item[0]);
+					roomName = slug(item[0]);
 					const msgGroupData = item[1].split('.')[0];
 					if (!tempMessages[roomName]) {
 						tempMessages[roomName] = {};
