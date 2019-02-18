@@ -36,7 +36,8 @@ Package.onUse(function(api) {
 		'rocketchat:file-upload',
 		'konecty:user-presence',
 		'rocketchat:webrtc',
+		'rocketchat:markdown',
+		'rocketchat:emoji',
 	]);
 	api.mainModule('client/index.js', 'client');
-	api.mainModule('server/index.js', 'server');
 });

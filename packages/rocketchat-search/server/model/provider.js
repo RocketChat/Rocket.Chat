@@ -1,6 +1,6 @@
 /* eslint no-unused-vars: [2, { "args": "none" }]*/
 import SearchLogger from '../logger/logger';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 /**
  * Setting Object in order to manage settings loading for providers and admin ui display
@@ -28,7 +28,7 @@ class Setting {
 	}
 
 	load() {
-		this._value = RocketChat.settings.get(this.id);
+		this._value = settings.get(this.id);
 
 		if (this._value === undefined) { this._value = this.defaultValue; }
 	}

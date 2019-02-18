@@ -11,8 +11,12 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'http',
 		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:settings',
 		'rocketchat:api',
 		'rocketchat:accounts',
+		'rocketchat:integrations',
 		'swydo:graphql',
 	]);
 	api.mainModule('server/index.js', 'server');

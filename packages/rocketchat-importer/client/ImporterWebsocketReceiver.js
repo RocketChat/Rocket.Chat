@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
 
 class ImporterWebsocketReceiverDef {
 	constructor() {
 		this.streamer = new Meteor.Streamer('importers');
 
 		this.callbacks = [];
-		RocketChat.CachedCollectionManager.onLogin(() => {
+		CachedCollectionManager.onLogin(() => {
 			this.streamer.on('progress', this.progressUpdated.bind(this));
 		});
 	}

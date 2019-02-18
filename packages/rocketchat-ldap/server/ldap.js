@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import { Logger } from 'meteor/rocketchat:logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
@@ -20,32 +20,32 @@ export default class LDAP {
 		this.connected = false;
 
 		this.options = {
-			host: RocketChat.settings.get('LDAP_Host'),
-			port: RocketChat.settings.get('LDAP_Port'),
-			Reconnect: RocketChat.settings.get('LDAP_Reconnect'),
-			Internal_Log_Level: RocketChat.settings.get('LDAP_Internal_Log_Level'),
-			timeout: RocketChat.settings.get('LDAP_Timeout'),
-			connect_timeout: RocketChat.settings.get('LDAP_Connect_Timeout'),
-			idle_timeout: RocketChat.settings.get('LDAP_Idle_Timeout'),
-			encryption: RocketChat.settings.get('LDAP_Encryption'),
-			ca_cert: RocketChat.settings.get('LDAP_CA_Cert'),
-			reject_unauthorized: RocketChat.settings.get('LDAP_Reject_Unauthorized') || false,
-			Authentication: RocketChat.settings.get('LDAP_Authentication'),
-			Authentication_UserDN: RocketChat.settings.get('LDAP_Authentication_UserDN'),
-			Authentication_Password: RocketChat.settings.get('LDAP_Authentication_Password'),
-			BaseDN: RocketChat.settings.get('LDAP_BaseDN'),
-			User_Search_Filter: RocketChat.settings.get('LDAP_User_Search_Filter'),
-			User_Search_Scope: RocketChat.settings.get('LDAP_User_Search_Scope'),
-			User_Search_Field: RocketChat.settings.get('LDAP_User_Search_Field'),
-			Search_Page_Size: RocketChat.settings.get('LDAP_Search_Page_Size'),
-			Search_Size_Limit: RocketChat.settings.get('LDAP_Search_Size_Limit'),
-			group_filter_enabled: RocketChat.settings.get('LDAP_Group_Filter_Enable'),
-			group_filter_object_class: RocketChat.settings.get('LDAP_Group_Filter_ObjectClass'),
-			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
-			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
-			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
-			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name'),
-			find_user_after_login: RocketChat.settings.get('LDAP_Find_User_After_Login'),
+			host: settings.get('LDAP_Host'),
+			port: settings.get('LDAP_Port'),
+			Reconnect: settings.get('LDAP_Reconnect'),
+			Internal_Log_Level: settings.get('LDAP_Internal_Log_Level'),
+			timeout: settings.get('LDAP_Timeout'),
+			connect_timeout: settings.get('LDAP_Connect_Timeout'),
+			idle_timeout: settings.get('LDAP_Idle_Timeout'),
+			encryption: settings.get('LDAP_Encryption'),
+			ca_cert: settings.get('LDAP_CA_Cert'),
+			reject_unauthorized: settings.get('LDAP_Reject_Unauthorized') || false,
+			Authentication: settings.get('LDAP_Authentication'),
+			Authentication_UserDN: settings.get('LDAP_Authentication_UserDN'),
+			Authentication_Password: settings.get('LDAP_Authentication_Password'),
+			BaseDN: settings.get('LDAP_BaseDN'),
+			User_Search_Filter: settings.get('LDAP_User_Search_Filter'),
+			User_Search_Scope: settings.get('LDAP_User_Search_Scope'),
+			User_Search_Field: settings.get('LDAP_User_Search_Field'),
+			Search_Page_Size: settings.get('LDAP_Search_Page_Size'),
+			Search_Size_Limit: settings.get('LDAP_Search_Size_Limit'),
+			group_filter_enabled: settings.get('LDAP_Group_Filter_Enable'),
+			group_filter_object_class: settings.get('LDAP_Group_Filter_ObjectClass'),
+			group_filter_group_id_attribute: settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
+			group_filter_group_member_attribute: settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
+			group_filter_group_member_format: settings.get('LDAP_Group_Filter_Group_Member_Format'),
+			group_filter_group_name: settings.get('LDAP_Group_Filter_Group_Name'),
+			find_user_after_login: settings.get('LDAP_Find_User_After_Login'),
 		};
 	}
 
@@ -91,7 +91,7 @@ export default class LDAP {
 
 		if (this.options.ca_cert && this.options.ca_cert !== '') {
 			// Split CA cert into array of strings
-			const chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
+			const chainLines = settings.get('LDAP_CA_Cert').split('\n');
 			let cert = [];
 			const ca = [];
 			chainLines.forEach((line) => {
@@ -249,7 +249,7 @@ export default class LDAP {
 	getUserByIdSync(id, attribute) {
 		this.bindIfNecessary();
 
-		const Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
+		const Unique_Identifier_Field = settings.get('LDAP_Unique_Identifier_Field').split(',');
 
 		let filter;
 

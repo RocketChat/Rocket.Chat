@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Messages } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 35,
 	up() {
-		return RocketChat.models.Messages.update({
+		return Messages.update({
 			'file._id': {
 				$exists: true,
 			},

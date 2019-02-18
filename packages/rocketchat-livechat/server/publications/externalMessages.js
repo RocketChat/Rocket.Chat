@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
 
 Meteor.publish('livechat:externalMessages', function(roomId) {
-	return RocketChat.models.LivechatExternalMessage.findByRoomId(roomId);
+	return LivechatExternalMessage.findByRoomId(roomId);
 });

@@ -2,7 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, Messages } from 'meteor/rocketchat:models';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 function Unarchive(command, params, item) {
 	if (command !== 'unarchive' || !Match.test(params, String)) {
@@ -13,17 +15,17 @@ function Unarchive(command, params, item) {
 	let room;
 
 	if (channel === '') {
-		room = RocketChat.models.Rooms.findOneById(item.rid);
+		room = Rooms.findOneById(item.rid);
 		channel = room.name;
 	} else {
 		channel = channel.replace('#', '');
-		room = RocketChat.models.Rooms.findOneByName(channel);
+		room = Rooms.findOneByName(channel);
 	}
 
 	const user = Meteor.users.findOne(Meteor.userId());
 
 	if (!room) {
-		return RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		return Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -40,7 +42,7 @@ function Unarchive(command, params, item) {
 	}
 
 	if (!room.archived) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -54,8 +56,8 @@ function Unarchive(command, params, item) {
 
 	Meteor.call('unarchiveRoom', room._id);
 
-	RocketChat.models.Messages.createRoomUnarchivedByRoomIdAndUser(room._id, Meteor.user());
-	RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+	Messages.createRoomUnarchivedByRoomIdAndUser(room._id, Meteor.user());
+	Notifications.notifyUser(Meteor.userId(), 'message', {
 		_id: Random.id(),
 		rid: item.rid,
 		ts: new Date(),
@@ -68,7 +70,7 @@ function Unarchive(command, params, item) {
 	return Unarchive;
 }
 
-RocketChat.slashCommands.add('unarchive', Unarchive, {
+slashCommands.add('unarchive', Unarchive, {
 	description: 'Unarchive',
 	params: '#channel',
 });

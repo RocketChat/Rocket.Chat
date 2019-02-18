@@ -7,7 +7,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:settings',
 		'rocketchat:custom-oauth',
 		'templating',
 	]);

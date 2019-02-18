@@ -1,14 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Users, Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'livechat:getAgentData'({ roomId, token }) {
 		check(roomId, String);
 		check(token, String);
 
-		const room = RocketChat.models.Rooms.findOneById(roomId);
+		const room = Rooms.findOneById(roomId);
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== visitor.token) {
@@ -19,6 +18,6 @@ Meteor.methods({
 			return;
 		}
 
-		return RocketChat.models.Users.getAgentInfo(room.servedBy._id);
+		return Users.getAgentInfo(room.servedBy._id);
 	},
 });

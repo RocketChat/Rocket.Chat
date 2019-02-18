@@ -98,6 +98,7 @@ describe('[Emoji]', () => {
 			});
 
 			it('it should be that the value on the message is the same as the emoji clicked', () => {
+				browser.pause(100);
 				mainContent.lastMessage.getText().should.equal('😀');
 			});
 		});
@@ -132,6 +133,7 @@ describe('[Emoji]', () => {
 			});
 
 			it('it should be that the value on the message is the same as the emoji clicked', () => {
+				browser.pause(100);
 				mainContent.lastMessage.getText().should.equal('😄');
 			});
 		});
