@@ -34,9 +34,7 @@
 	&__block {
 		display: flex;
 
-		margin: 0 -0.5rem;
-
-		padding: 0 0.5rem;
+		margin: 0 1rem 0 0;
 
 		align-items: center;
 	}
@@ -323,10 +321,6 @@
 	.rc-header {
 		&__visual-status {
 			display: none;
-		}
-
-		&__block {
-			margin: 0 0.25rem;
 		}
 
 		&__block-action {
