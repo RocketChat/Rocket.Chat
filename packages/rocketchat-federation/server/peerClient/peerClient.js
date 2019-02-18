@@ -246,12 +246,12 @@ class PeerClient {
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return room; }
 
 		const federatedRoom = new FederatedRoom(localPeerDomain, room, { owner });
 
 		// Check if this should be skipped
-		if (this.skipCallbackIfNeeded('afterCreateDirectRoom', federatedRoom.getLocalRoom())) { return; }
+		if (this.skipCallbackIfNeeded('afterCreateDirectRoom', federatedRoom.getLocalRoom())) { return room; }
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -262,20 +262,22 @@ class PeerClient {
 		FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
 	}
 
-	afterCreateRoom({ _id: ownerId }, room) {
+	afterCreateRoom(roomOwner, room) {
 		this.log('afterCreateRoom');
+
+		const { _id: ownerId } = roomOwner;
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return roomOwner; }
 
 		const owner = Users.findOneById(ownerId);
 
 		const federatedRoom = new FederatedRoom(localPeerDomain, room, { owner });
 
 		// Check if this should be skipped
-		if (this.skipCallbackIfNeeded('afterCreateRoom', federatedRoom.getLocalRoom())) { return; }
+		if (this.skipCallbackIfNeeded('afterCreateRoom', federatedRoom.getLocalRoom())) { return roomOwner; }
 
 		// Load federated users
 		federatedRoom.loadUsers();
@@ -353,12 +355,12 @@ class PeerClient {
 		this.log('beforeLeaveRoom');
 
 		// Check if this should be skipped
-		if (this.skipCallbackIfNeeded('beforeLeaveRoom', userWhoLeft)) { return; }
+		if (this.skipCallbackIfNeeded('beforeLeaveRoom', userWhoLeft)) { return userWhoLeft; }
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return userWhoLeft; }
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
@@ -404,12 +406,12 @@ class PeerClient {
 		this.log('afterSaveMessage');
 
 		// Check if this should be skipped
-		if (this.skipCallbackIfNeeded('afterSaveMessage', message)) { return; }
+		if (this.skipCallbackIfNeeded('afterSaveMessage', message)) { return message; }
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return message; }
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
@@ -431,14 +433,14 @@ class PeerClient {
 		this.log('afterDeleteMessage');
 
 		// Check if this should be skipped
-		if (this.skipCallbackIfNeeded('afterDeleteMessage', message)) { return; }
+		if (this.skipCallbackIfNeeded('afterDeleteMessage', message)) { return message; }
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		const room = Rooms.findOneById(message.rid);
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return message; }
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
@@ -450,7 +452,7 @@ class PeerClient {
 	afterReadMessages(roomId, userId) {
 		this.log('afterReadMessages');
 
-		if (!settings.get('Message_Read_Receipt_Enabled')) { this.log('Skipping: read receipts are not enabled'); return; }
+		if (!settings.get('Message_Read_Receipt_Enabled')) { this.log('Skipping: read receipts are not enabled'); return roomId; }
 
 		const { peer: { domain: localPeerDomain } } = this;
 
@@ -458,10 +460,10 @@ class PeerClient {
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
-		if (this.skipCallbackIfNeeded('afterReadMessages', federatedRoom.getLocalRoom())) { return; }
+		if (this.skipCallbackIfNeeded('afterReadMessages', federatedRoom.getLocalRoom())) { return roomId; }
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return roomId; }
 
 		const user = Users.findOneById(userId);
 
@@ -478,7 +480,7 @@ class PeerClient {
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return message; }
 
 		const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, user.federation._id);
 
@@ -497,7 +499,7 @@ class PeerClient {
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return message; }
 
 		const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, user.federation._id);
 
