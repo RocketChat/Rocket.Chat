@@ -971,7 +971,7 @@ API.v1.addRoute('channels.moderators', { authRequired: true }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.addLeader', { authRequired: true }, {
+API.v1.addRoute('channels.addLeader', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
@@ -981,11 +981,11 @@ RocketChat.API.v1.addRoute('channels.addLeader', { authRequired: true }, {
 			Meteor.call('addRoomLeader', findResult._id, user._id);
 		});
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
 
-RocketChat.API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
+API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
@@ -995,7 +995,7 @@ RocketChat.API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
 			Meteor.call('removeRoomLeader', findResult._id, user._id);
 		});
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
 
