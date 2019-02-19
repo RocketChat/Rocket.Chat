@@ -4,6 +4,8 @@
 	width: 100%;
 
 	&__label {
+		display: block;
+
 		cursor: pointer;
 	}
 
@@ -47,6 +49,8 @@
 		width: 100%;
 		padding: 0 1rem;
 
+		text-overflow: ellipsis;
+
 		color: var(--input-text-color);
 
 		border-width: var(--input-border-width);
@@ -63,6 +67,8 @@
 		}
 
 		&::placeholder {
+			text-overflow: ellipsis;
+
 			color: var(--input-placeholder-color);
 		}
 
@@ -128,6 +134,8 @@
 	width: 100%;
 
 	&__label {
+		display: block;
+
 		cursor: pointer;
 	}
 

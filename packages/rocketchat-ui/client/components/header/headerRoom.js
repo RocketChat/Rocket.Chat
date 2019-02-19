@@ -6,6 +6,7 @@ import { t, roomTypes, handleError } from 'meteor/rocketchat:utils';
 import { TabBar, fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -13,7 +14,7 @@ const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
 const isThread = ({ _id }) => {
 	const room = ChatRoom.findOne({ _id });
-	return !!(room && room.parentRoomId);
+	return !!(room && room.prid);
 };
 
 
@@ -173,6 +174,12 @@ Template.headerRoom.events({
 				.focus()
 				.select(),
 		10);
+	},
+
+	'click .js-open-parent-channel'(event, t) {
+		event.preventDefault();
+		const { prid } = t.currentChannel;
+		FlowRouter.goToRoomById(prid);
 	},
 });
 

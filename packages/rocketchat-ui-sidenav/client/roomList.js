@@ -60,7 +60,7 @@ Template.roomList.helpers({
 
 			if (this.identifier === 'thread') {
 				types = ['c', 'p', 'd'];
-				query.parentRoomId = { $exists: true };
+				query.prid = { $exists: true };
 			}
 
 			if (this.identifier === 'unread' || this.identifier === 'tokens') {
@@ -75,7 +75,7 @@ Template.roomList.helpers({
 
 			// if we display threads as a separate group, we should hide them from the other lists
 			if (getUserPreference(user, 'sidebarShowThreads')) {
-				query.parentRoomId = { $exists: false };
+				query.prid = { $exists: false };
 			}
 
 			if (getUserPreference(user, 'sidebarShowUnread')) {

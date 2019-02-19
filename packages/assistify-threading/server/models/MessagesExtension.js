@@ -8,31 +8,34 @@ import { RocketChat } from 'meteor/rocketchat:lib';
  * only if the new state of the thread room is really newer.
  */
 Object.assign(RocketChat.models.Messages, {
-	refreshThreadMetadata(linkMessageId) {
-		const linkMessage = this.findOneById(linkMessageId);
+	refreshThreadMetadata({ rid, pmid }) {
+		if (!rid || !pmid) {
+			return false;
+		}
+		const { lm, msgs: count } = RocketChat.models.Rooms.findOneById(rid, {
+			fields: {
+				msgs: 1,
+				lm: 1,
+			},
+		});
 
-		if (linkMessage && linkMessage.channels[0] && linkMessage.channels[0]._id) {
-			const threadRoom = RocketChat.models.Rooms.findOneById(linkMessage.channels[0]._id);
-			const query = {
-				_id: linkMessageId,
-				_updatedAt: {
-					$lt: threadRoom._updatedAt,
-				},
-			};
+		const query = {
+			_id: pmid,
+		};
 
-			return this.update(query, {
-				$set: {
-					'attachments.0.fields': [
-						{
-							type: 'messageCounter',
-							count: threadRoom.msgs,
-						},
-						{
-							type: 'lastMessageAge',
-							lm: threadRoom.lm,
-						}],
-				},
-			});
-		} else { return null; }
+		return this.update(query, {
+			$set: {
+				t_rid: rid,
+				'attachments.0.fields': [
+					{
+						type: 'messageCounter',
+						count,
+					},
+					{
+						type: 'lastMessageAge',
+						lm,
+					}],
+			},
+		});
 	},
 });

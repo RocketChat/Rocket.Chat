@@ -355,7 +355,8 @@ Template.messageBox.events({
 			input.focus();
 		});
 	},
-	'click .rc-message-box__action-menu'(event) {
+	'click .rc-message-box__action-menu'(event, instance) {
+		const { input } = instance;
 		const groups = RocketChat.messageBox.actions.get();
 		const config = {
 			popoverClass: 'message-box',
@@ -383,6 +384,7 @@ Template.messageBox.events({
 			currentTarget: event.currentTarget.firstElementChild.firstElementChild,
 			data: {
 				rid: this._id,
+				msg: input.value,
 			},
 			activeElement: event.currentTarget,
 		};

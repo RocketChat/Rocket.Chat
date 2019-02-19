@@ -5,7 +5,7 @@ import moment from 'moment';
 Template.LastMessageAge.helpers({
 	lastMessageAge() {
 		const lastMessageTimestamp = Template.instance().data.field.lm;
-		return moment(lastMessageTimestamp).format('LLL');
+		return lastMessageTimestamp && moment(lastMessageTimestamp).format('LLL');
 	},
 });
 

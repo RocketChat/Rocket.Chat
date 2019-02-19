@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { RocketChat } from 'meteor/rocketchat:lib';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { call } from 'meteor/rocketchat:lib';
+import { modal } from 'meteor/rocketchat:ui';
 
 const condition = (rid, uid) => {
 	if (!RocketChat.models.Subscriptions.findOne({ rid })) {
@@ -24,10 +23,18 @@ Meteor.startup(function() {
 			context: ['message', 'message-mobile'],
 			async action() {
 				const [, message] = this._arguments;
-				const { _id } = await call('createThreadFromMessage', message);
-				FlowRouter.goToRoomById(_id);
+
+				modal.open({
+					content: 'CreateThread',
+					data : { rid: message.rid, message },
+					showConfirmButton: false,
+					showCancelButton: false,
+				});
 			},
-			condition({ rid, u: { _id: uid } }) {
+			condition({ rid, u: { _id: uid }, attachments }) {
+				if (attachments && attachments[0].fields && attachments[0].fields[0].type === 'messageCounter') {
+					return false;
+				}
 				return condition(rid, uid);
 			},
 			order: 0,

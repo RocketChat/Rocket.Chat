@@ -252,7 +252,9 @@ Template.createChannel.events({
 			if (!isPrivate) {
 				callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 			}
-
+			if (instance.data.onCreate) {
+				instance.data.onCreate(result);
+			}
 			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
@@ -326,15 +328,17 @@ Template.createChannel.onCreated(function() {
 	this.ac = new AutoComplete(
 		{
 			selector:{
+				anchor: '.rc-input__label',
 				item: '.rc-popup-list__item',
 				container: '.rc-popup-list__list',
 			},
-
+			position:'fixed',
 			limit: 10,
 			inputDelay: 300,
 			rules: [
 				{
 				// @TODO maybe change this 'collection' and/or template
+
 					collection: 'UserAndRoom',
 					subscription: 'userAutocomplete',
 					field: 'username',

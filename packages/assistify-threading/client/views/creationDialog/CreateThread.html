@@ -1,68 +1,88 @@
 <template name="CreateThread">
-	<div class="create-thread">
-		<div class="full-modal content-background">
-			<div class="full-modal__wrapper">
-				<button class="full-modal__back-button">
-					<span class="full-modal__back-text">{{_ "Cancel"}}</span>
-					{{> icon block="full-modal__back-icon" icon="plus"}}
-				</button>
-				{{#unless showChannelSelection}}
-				<section class="create-channel">
-					<div class="create-channel__wrapper">
-						<header class="create-channel__header">
-							<h1 class="create-channel__title">{{_ "Threading_title"}}</h1>
-							<p class="create-channel__description">{{_ "Threading_description"}}</p>
-						</header>
-						<form class="create-channel__content">
-							<div class="create-channel__inputs">
-								<div class="rc-input">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ "Threading_first_message_title"}}</div>
-										<div class="rc-input__wrapper">
-											<textarea name="first_question" id="first_question" class="rc-input__element" placeholder="{{_ 'New_thread_first_message'}}"
-											 maxlength="{{maxMessageLength}}"></textarea>
-										</div>
-									</label>
-								</div>
-								{{#unless selectParent}}
-								<div class="target-channel create-channel__description">
-									<span>{{ targetChannelText }}</span>
-									<span class="color-primary-action-color action-link js-select-parent">{{_ "Thread_target_channel_suffix"}}</span>
-								</div>
-								{{/unless}}
-								<div class="rc-input {{#if parentChannelError}} rc-input--error {{/if}} {{selectParentVisibility}}">
-									<label class="rc-input__label">
-										<div class="rc-input__title">{{_ "Thread_target_channel"}}</div>
-										<div class="rc-input__wrapper">
-											<input name="parentChannel" type="text" class="rc-input__element" id="parentChannel-search" placeholder={{_
-											 "Thread_target_channel_description"}} autocomplete=off value={{parentChannel}}>
-											<!-- disable wordcloud for the time being -->
-											<div class="rc-input__icon rc-input__icon--right" style="display: none">
-												<svg class="rc-icon rc-input__icon-svg rc-input__icon-svg--book-alt" aria-hidden="true">
-													<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-book-alt"></use>
-												</svg>
-											</div>
 
-										</div>
-										{{#unless autocomplete 'isShowing'}} {{#if parentChannel}} {{#if parentChannelError}} {{> CreateThreadInputError text=parentChannelError}}
-										{{/if}} {{/if}} {{/unless}} {{#with config}} {{#if autocomplete 'isShowing'}}
-										<div class="fadeInDown">
-											{{#if autocomplete 'isLoaded'}} {{> popupList data=config items=items}} {{/if}}
-										</div>
-										{{/if}} {{/with}}
-									</label>
-								</div>
-								<div class="submit">
-									<div class="rc-input">
-										<button class="rc-button rc-button--primary js-save-thread {{createIsDisabled}}" {{createIsDisabled}}>{{_ " Create "}}</button>
-									</div>
-								</div>
+	<section class="create-channel">
+		<div class="create-channel__wrapper">
+			<header class="create-channel__header">
+				<h1 class="create-channel__title">{{_ "Threading_title"}}</h1>
+				<p class="create-channel__description">{{_ "Threading_description"}}</p>
+			</header>
+			<form id="create-thread" class="create-channel__content">
+				{{#unless disabled}}
+				{{> search
+					onClickTag=onClickTagRoom
+					deleteLastItem=deleteLastItemRoom
+					list=selectedRoom
+					onSelect=onSelectRoom
+					collection=roomCollection
+					field='name'
+					sort='name'
+					label="Thread_target_channel"
+					placeholder="Thread_target_channel_description"
+					name="parentChannel"
+					icon="at"
+					disabled=disabled
+					selector=roomSelector
+					description=targetChannelText
+				}} {{else}}
+					<div class="rc-input" disabled>
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Thread_target_channel"}}</div>
+							<div class="rc-input__wrapper">
+								<input disabled name="parentChannel" id="parentChannel" value={{parentChannel}} class="rc-input__element" placeholder="{{_ 'New_thread_first_message'}}" maxlength="{{maxMessageLength}}"
+								/>
 							</div>
-						</form>
+						</label>
 					</div>
-				</section>
-				{{else}} {{> ChannelSelection properties=getWordcloudProperties hideMe=hideWordcloud}} {{/unless}}
+				{{/unless}}
+
+				<div class="create-channel__inputs">
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Thread name"}}</div>
+							<div class="rc-input__wrapper">
+								<input name="thread_name" id="thread_name" class="rc-input__element" placeholder="{{_ 'New_thread_first_message'}}"
+									maxlength="{{maxMessageLength}}"/>
+							</div>
+						</label>
+					</div>
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Threading_first_message_title"}}</div>
+							<div class="rc-input__wrapper">
+								<textarea name="first_question" id="first_question" class="rc-input__element" placeholder="{{_ 'New_thread_first_message'}}"
+									maxlength="{{maxMessageLength}}"></textarea>
+							</div>
+						</label>
+					</div>
+					{{> search onClickTag=onClickTagUser deleteLastItem=deleteLastItemUser list=selectedUsers onSelect=onSelectUser collection='UserAndRoom' subscription='userAutocomplete' field='username' sort='username' label="Invite_Users" placeholder="Username_Placeholder" name="users" icon="at"}}
+				</div>
+			</form>
+			<div class="rc-input">
+				<button form="create-thread" class="rc-button rc-button--primary js-save-thread {{createIsDisabled}}" {{createIsDisabled}}>{{_ " Create "}}</button>
 			</div>
 		</div>
+	</section>
+</template>
+
+<template name="search">
+	<div class="rc-input" id='search-{{name}}' {{disabled}}>
+		<label class="rc-input__label">
+			<div class="rc-input__title">{{_ label}}</div>
+			<div class="rc-input__wrapper">
+				<div class="rc-input__icon">
+					{{> icon block="rc-input__icon-svg" icon=icon}}
+				</div>
+				<div class="rc-tags">
+					{{#each item in list}} {{> tag item}} {{/each}}
+					<input type="text" class="rc-tags__input" placeholder="{{_ placeholder}}" name="{{name}}" autocomplete="off" {{disabled}} />
+				</div>
+			</div>
+			{{#with config}} {{#if autocomplete 'isShowing'}}
+			<div class="fadeInDown">
+				{{> popupList data=config items=items}}
+			</div>
+			{{/if}} {{/with}}
+		</label>
+		<div class="rc-input__description">{{ description }}</div>
 	</div>
 </template>

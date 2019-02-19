@@ -80,8 +80,8 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		}
 
 		const extra = { open: true };
-		if (room.parentRoomId) {
-			extra.parentRoomId = room.parentRoomId;
+		if (room.prid) {
+			extra.prid = room.prid;
 		}
 
 		if (username === owner.username) {
@@ -112,8 +112,5 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		Apps.getBridges().getListenerBridge().roomEvent('IPostRoomCreate', room);
 	}
 
-	return {
-		rid: room._id,
-		name: room.name,
-	};
+	return room;
 };

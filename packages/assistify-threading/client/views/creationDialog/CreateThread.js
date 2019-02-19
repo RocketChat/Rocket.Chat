@@ -3,99 +3,24 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { ChatRoom } from 'meteor/rocketchat:models';
 import { Blaze } from 'meteor/blaze';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { call } from 'meteor/rocketchat:lib';
+
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import toastr from 'toastr';
 
-const parent = document.querySelector('.main-content');
-let oldRoute = '';
-
-/*
-	provide a dedicated route to enter the threading creation screen.
-	Unfortunately, it is not easily possible to re-use the full-modal-dynamic template:
-	If one opens the create *channel* modal and the triggers the thread creation modal,
-	the complete application is getting stuck. Thus, we opted for duplicating the code
-	and triggering an exclusive modal template.
-*/
-FlowRouter.route('/create-thread', {
-	name: 'create-thread',
-
-	triggersEnter: [function() {
-		oldRoute = FlowRouter.current().oldRoute;
-	}],
-
-	action() {
-		if (parent) {
-			Blaze.renderWithData('CreateThread', parent);
-		} else {
-			BlazeLayout.render('main', { center: 'CreateThread' });
-		}
-	},
-
-	triggersExit: [function() {
-		Blaze.remove(Blaze.getView(document.getElementsByClassName('full-modal')[0]));
-		$('.main-content').addClass('rc-old');
-	}],
-});
-
-const acEvents = {
-	'click .rc-popup-list__item'(e, t) {
-		t.ac.onItemClick(this, e);
-		t.debounceValidateParentChannel(this.item.name);
-	},
-	'click .rc-input__icon-svg--book-alt'(e, t) {
-		e.preventDefault();
-		t.showChannelSelection.set(true);
-	},
-	'click #more-topics'(e, t) {
-		e.preventDefault();
-		t.showChannelSelection.set(true);
-	},
-	'keydown [name="parentChannel"]'(e, t) {
-		t.ac.onKeyDown(e);
-	},
-	'keyup [name="parentChannel"]'(e, t) {
-		if (e.target.value === '' && t.showDropDown.get() === '') {
-			t.showDropDown.set('isShowing');
-		}
-		t.ac.onKeyUp(e);
-	},
-	'focus [name="parentChannel"]'(e, t) {
-		if (t.parentChannel.get() === '' && t.showDropDown.get() === '') {
-			t.showDropDown.set('isShowing');
-		}
-		t.ac.onFocus(e);
-	},
-	'blur [name="parentChannel"]'(e, t) {
-		t.ac.onBlur(e);
-		t.debounceValidateParentChannel(e.target.value);
-		t.debounceDropDown();
-	},
-};
-
-
 Template.CreateThread.helpers({
-	autocomplete(key) {
-		const instance = Template.instance();
-		const param = instance.ac[key];
-		if (!Template.instance().parentChannel.get() && Template.instance().showDropDown.get() === 'isShowing') {
-			return true; // show the parentChannel auto complete drop down
-		}
-		return typeof param === 'function' ? param.apply(instance.ac) : param;
+
+	onSelectUser() {
+		return Template.instance().onSelectUser;
 	},
-	items() {
+	roomItems() {
 		const instance = Template.instance();
-		if (instance.parentChannel.get() === '') {
-			if (instance.parentChannelsList.get() && instance.parentChannelsList.get().length <= 10) {
-				return instance.parentChannelsList.get();
-			}
-			// instance.showDropDown.set('');
-		}
-		return instance.ac.filteredList();
+		return instance.acRoom.filteredList();
 	},
-	config() {
+	roomConfig() {
 		const filter = Template.instance().parentChannel;
 		return {
 			filter: filter.get(),
@@ -109,16 +34,37 @@ Template.CreateThread.helpers({
 			},
 		};
 	},
-	selectParent() {
-		return Template.instance().selectParent.get();
+	userItems() {
+		const instance = Template.instance();
+		return instance.acUsers.filteredList();
+	},
+	userConfig() {
+		const filter = Template.instance().parentChannel;
+		return {
+			filter: filter.get(),
+			template_item: 'CreateThreadAutocomplete',
+			noMatchTemplate: 'ChannelNotFound',
+			modifier(text) {
+				const f = filter.get();
+				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
+					return `<strong>${ part }</strong>`;
+				}) }`;
+			},
+		};
+	},
+	disabled() {
+		if (Template.instance().selectParent.get()) {
+			return 'disabled';
+		}
 	},
 	targetChannelText() {
 		const instance = Template.instance();
-		return `${ TAPi18n.__('Thread_target_channel_prefix') } "${ instance.parentChannel.get() }"`;
+		const parentChannel = instance.parentChannel.get();
+		return parentChannel && `${ TAPi18n.__('Thread_target_channel_prefix') } "${ parentChannel }"`;
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
-		if (instance.openingQuestion.get() && instance.parentChannel.get() && !instance.error.get()) {
+		if (instance.reply.get() && instance.parentChannel.get() && !instance.error.get()) {
 			return '';
 		} else {
 			return 'disabled';
@@ -135,10 +81,6 @@ Template.CreateThread.helpers({
 	error() {
 		const instance = Template.instance();
 		return instance.error.get();
-	},
-	showChannelSelection() {
-		const instance = Template.instance();
-		return instance.showChannelSelection.get();
 	},
 	getWordcloudProperties() {
 		const instance = Template.instance();
@@ -206,17 +148,39 @@ Template.CreateThread.helpers({
 		return hideMe;
 	},
 
-	selectParentVisibility() {
-		const instance = Template.instance();
+	selectedUsers() {
+		return Template.instance().selectedUsers.get();
+	},
 
-		return instance.selectParent.get() ? '' : 'hidden';
+	onClickTagUser() {
+		return Template.instance().onClickTagUser;
+	},
+	deleteLastItemUser() {
+		return Template.instance().deleteLastItemUser;
+	},
+	onClickTagRoom() {
+		return Template.instance().onClickTagRoom;
+	},
+	deleteLastItemRoom() {
+		return Template.instance().deleteLastItemRoom;
+	},
+	selectedRoom() {
+		return Template.instance().selectedRoom.get();
+	},
+	onSelectRoom() {
+		return Template.instance().onSelectRoom;
+	},
+	roomCollection() {
+		return ChatRoom;
+	},
+	roomSelector() {
+		return (expression) => ({ name: { $regex: `.*${ expression }.*` } });
 	},
 });
 
 Template.CreateThread.events({
-	...acEvents,
-	'click .js-select-parent'(e, t) {
-		t.selectParent.set(true);
+	'input #thread_name'(e, t) {
+		t.threadName.set(e.target.value);
 	},
 	'input #parentChannel-search'(e, t) {
 		const input = e.target;
@@ -228,95 +192,54 @@ Template.CreateThread.events({
 		t.parentChannelError.set('');
 	},
 	'input #first_question'(e, t) {
-		const input = e.target;
-		if (input.value) {
-			t.openingQuestion.set(input.value);
-		} else {
-			t.openingQuestion.set('');
-		}
+		const { value } = e.target;
+		t.reply.set(value);
 	},
-	'submit create-channel__content, click .js-save-thread'(event, instance) {
+	async 'submit create-channel__content, click .js-save-thread'(event, instance) {
 		event.preventDefault();
 		const parentChannel = instance.parentChannel.get();
-		const parentChannelId = instance.parentChannelId.get();
-		const openingQuestion = instance.openingQuestion.get();
-		let errorText = '';
-		if (parentChannelId) {
-			instance.error.set(null);
-			Meteor.call('createThread', parentChannelId, {
-				msg: openingQuestion,
-			}, (err, result) => {
-				if (err) {
-					console.log(err);
-					switch (err.error) {
-						case 'error-invalid-name':
-							errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
-							break;
-						case 'error-duplicate-channel-name':
-							errorText = TAPi18n.__('Request_already_exists');
-							break;
-						case 'error-archived-duplicate-name':
-							errorText = TAPi18n.__('Duplicate_archived_channel_name', name);
-							break;
-						case 'error-invalid-room-name':
-							console.log('room name slug error');
-							errorText = TAPi18n.__('Invalid_room_name', err.details.channel_name);
-							break;
-						default:
-							return handleError(err);
-					}
-				} else {
-					// callback to enable tracking
-					Meteor.defer(() => {
-						RocketChat.callbacks.run('afterCreateThread', Meteor.user(), result);
-					});
-					RocketChat.roomTypes.openRouteLink(result.t, result);
-				}
-			});
-		} else {
-			errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
-		}
 
-		if (errorText) {
+		const { pmid } = instance;
+		const t_name = instance.threadName.get();
+		const users = instance.selectedUsers.get().map(({ _id }) => _id);
+
+		const prid = instance.parentChannelId.get();
+		const reply = instance.reply.get();
+
+		if (!prid) {
+			const errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
+
 			instance.parentChannelError.set(errorText);
 			if (!instance.selectParent.get()) {
 				toastr.error(errorText);
 			}
+			return;
 		}
-	},
-	'click .full-modal__back-button'() {
-		oldRoute ? history.back() : FlowRouter.go('home');
+		const result = await call('createThread', { prid, pmid, t_name, reply, users });
+		// callback to enable tracking
+		Meteor.defer(() => RocketChat.callbacks.run('afterCreateThread', Meteor.user(), result));
+		// instance.error.set(null);
+		if (instance.data.onCreate) {
+			instance.data.onCreate(result);
+		}
+		RocketChat.roomTypes.openRouteLink(result.t, result);
 	},
 });
 
 Template.CreateThread.onRendered(function() {
 	const instance = this;
-	const parentChannelElement = this.find('#parentChannel-search');
-	const questionElement = this.find('#first_question');
 
-	questionElement.focus();
-	instance.ac.element = parentChannelElement;
-	instance.ac.$element = $(instance.ac.element);
-	instance.ac.$element.on('autocompleteselect', function(e, { item }) {
-		instance.parentChannel.set(item.name);
-		$('input[name="parentChannel"]').val(item.name);
-		instance.debounceValidateParentChannel(item.name);
-		return instance.find('.js-save-thread').focus();
-	});
-
-	if (instance.openingQuestion.get()) {
-		questionElement.value = instance.openingQuestion.get();
-	}
+	this.find(this.data.rid ? '#thread_name' : '#parentChannel').focus();
 
 	this.autorun(() => {
 		instance.debounceWordCloudSelect = _.debounce((parentChannel) => { // integrate Wordcloud
 			/*
-			 * Update the parentChannel html reference to autocomplete
-			 */
-			instance.ac.element = this.find('#parentChannel-search');
-			instance.ac.$element = $(instance.ac.element);
+			* Update the parentChannel html reference to autocomplete
+			*/
+			instance.acRoom.element = this.find('#parentChannel-search');
+			instance.acRoom.$element = $(instance.acRoom.element);
 			$('input[name="parentChannel-search"]').val(parentChannel.name); // copy the selected value to screen field
-			instance.ac.$element.on('autocompleteselect', function(e, { item }) {
+			instance.acRoom.$element.on('autocompleteselect', function(e, { item }) {
 				instance.parentChannel.set(item.name);
 				$('input[name="parentChannel-search"]').val(item.name);
 				instance.debounceValidateParentChannel(item.name);
@@ -329,71 +252,94 @@ Template.CreateThread.onRendered(function() {
 });
 
 Template.CreateThread.onCreated(function() {
+	const { rid, message: msg } = this.data;
 	const instance = this;
-	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Thread_default_parent_Channel')); // determine parent Channel from setting and allow to overwrite
-	instance.parentChannelId = new ReactiveVar('');
-	instance.parentChannelError = new ReactiveVar(null);
-	instance.selectParent = new ReactiveVar(false);
-	instance.parentChannelsList = new ReactiveVar('');
-	instance.error = new ReactiveVar(null);
-	instance.openingQuestion = new ReactiveVar('');
-	instance.showDropDown = new ReactiveVar('');
-	instance.showChannelSelection = new ReactiveVar(false);
-	instance.debounceDropDown = _.debounce(() => {
-		instance.showDropDown.set('');
-	}, 200);
+
+	const room = rid && ChatRoom.findOne(rid);
+
+	if (room) {
+		room.text = room.name;
+	}
+
+	this.threadName = new ReactiveVar('');
+
+	this.pmid = msg && msg._id;
+
+	this.parentChannel = new ReactiveVar(room && room.name); // determine parent Channel from setting and allow to overwrite
+	this.parentChannelId = new ReactiveVar(rid);
+	this.parentChannelError = new ReactiveVar(null);
+
+	this.selectParent = new ReactiveVar(!!rid);
+
+	this.error = new ReactiveVar(null);
+	this.reply = new ReactiveVar('');
+
+
+	this.selectedRoom = new ReactiveVar(room ? [room] : []);
+
+
+	this.onClickTagRoom = () => {
+		this.selectedRoom.set([]);
+	};
+	this.deleteLastItemRoom = () => {
+		this.selectedRoom.set([]);
+	};
+
+	this.onSelectRoom = ({ item: room }) => {
+		room.text = room.name;
+		this.selectedRoom.set([room]);
+	};
+
+	this.autorun(() => {
+		const [room = {}] = this.selectedRoom.get();
+		this.parentChannel.set(room && room.name); // determine parent Channel from setting and allow to overwrite
+		this.parentChannelId.set(room && room._id);
+	});
+
+
+	this.selectedUsers = new ReactiveVar([]);
+	this.onSelectUser = ({ item: user }) => {
+		this.selectedUsers.set([...this.selectedUsers.get(), user]);
+	};
+	this.onClickTagUser = (({ username }) => {
+		this.selectedUsers.set(this.selectedUsers.get().filter((user) => user.username !== username));
+	});
+	this.deleteLastItemUser = (() => {
+		const arr = this.selectedUsers.get();
+		arr.pop();
+		this.selectedUsers.set(arr);
+	});
+
 
 	// callback to allow setting a parent Channel or e. g. tracking the event using Piwik or GA
 	const callbackDefaults = RocketChat.callbacks.run('openThreadCreationScreen');
 	if (callbackDefaults) {
 		if (callbackDefaults.parentChannel) {
-			instance.parentChannel.set(callbackDefaults.parentChannel);
+			this.parentChannel.set(callbackDefaults.parentChannel);
 		}
-		if (callbackDefaults.openingQuestion) {
-			instance.openingQuestion.set(callbackDefaults.openingQuestion);
+		if (callbackDefaults.reply) {
+			this.reply.set(callbackDefaults.reply);
 		}
 	}
 
-	instance.debounceValidateParentChannel = _.debounce((parentChannel) => {
+	this.debounceValidateParentChannel = _.debounce((parentChannel) => {
 		if (!parentChannel) {
 			return false; // parentChannel is mandatory
 		}
 		return Meteor.call('assistify:getParentChannelId', parentChannel, (error, result) => {
 			if (!result) {
-				instance.parentChannelId.set(false);
-				instance.parentChannelError.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
-			} else {
-				instance.parentChannelError.set('');
-				instance.parentChannelId.set(result); // assign parent channel Id
+				this.parentChannelId.set(false);
+				return this.parentChannelError.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
 			}
+			this.parentChannelError.set('');
+			this.parentChannelId.set(result); // assign parent channel Id
 		});
 	}, 500);
 
 	// trigger the validation once
-	instance.debounceValidateParentChannel(instance.parentChannel.get());
+	this.debounceValidateParentChannel(this.parentChannel.get());
 
-	instance.ac = new AutoComplete({
-		selector: {
-			item: '.rc-popup-list__item',
-			container: '.rc-popup-list__list',
-		},
-		limit: 10,
-		inputDelay: 300,
-		rules: [{
-			collection: 'CachedChannelList',
-			subscription: 'threadParentAutocomplete',
-			field: 'name',
-			matchAll: true,
-			doNotChangeWidth: false,
-			selector(match) {
-				return {
-					name: match,
-				};
-			},
-			sort: 'name',
-		}],
-	});
-	this.ac.tmplInst = this;
+
 
 	// pre-fill form based on query parameters if passed
 	if (FlowRouter.current().queryParams) {
@@ -405,15 +351,118 @@ Template.CreateThread.onCreated(function() {
 
 		const question = FlowRouter.getQueryParam('question') || FlowRouter.getQueryParam('message');
 		if (question) {
-			instance.openingQuestion.set(question);
+			instance.reply.set(question);
 		}
 	}
+});
 
-	Meteor.call('getParentChannelList', {
-		sort: 'name',
-	}, function(err, result) {
-		if (result) {
-			instance.parentChannelsList.set(result.channels);
+Template.search.helpers({
+	list() {
+		return this.list;
+	},
+	items() {
+		return Template.instance().ac.filteredList();
+	},
+	config() {
+		const { filter } = Template.instance();
+		return {
+			filter: filter.get(),
+			template_item: 'CreateThreadAutocomplete',
+			noMatchTemplate: 'ChannelNotFound',
+			modifier(text) {
+				const f = filter.get();
+				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			},
+		};
+	},
+	autocomplete(key) {
+		const instance = Template.instance();
+		const param = instance.ac[key];
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
+	},
+});
+
+Template.search.events({
+	'input input'(e, t) {
+		const input = e.target;
+		const position = input.selectionEnd || input.selectionStart;
+		const { length } = input.value;
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+		t.filter.set(input.value);
+	},
+	'click .rc-popup-list__item'(e, t) {
+		t.ac.onItemClick(this, e);
+	},
+	'click .rc-input__icon-svg--book-alt'(e, t) {
+		e.preventDefault();
+		t.showChannelSelection.set(true);
+	},
+	'click #more-topics'(e, t) {
+		e.preventDefault();
+		t.showChannelSelection.set(true);
+	},
+	'keydown input'(e, t) {
+		t.ac.onKeyDown(e);
+		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+			const { deleteLastItem } = t;
+			return deleteLastItem && deleteLastItem();
 		}
-	});
+
+	},
+	'keyup input'(e, t) {
+		t.ac.onKeyUp(e);
+	},
+	'focus input'(e, t) {
+		t.ac.onFocus(e);
+	},
+	'blur input'(e, t) {
+		t.ac.onBlur(e);
+	},
+	'click .rc-tags__tag'({ target }, t) {
+		const { onClickTag } = t;
+		return onClickTag & onClickTag(Blaze.getData(target));
+	},
+});
+Template.search.onRendered(function() {
+
+	const { name } = this.data;
+
+	this.ac.element = this.firstNode.querySelector(`[name=${ name }]`);
+	this.ac.$element = $(this.ac.element);
+});
+
+Template.search.onCreated(function() {
+	this.filter = new ReactiveVar('');
+	this.selected = new ReactiveVar([]);
+	this.onClickTag = this.data.onClickTag;
+	this.deleteLastItem = this.data.deleteLastItem;
+
+	const { collection, subscription, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
+	this.ac = new AutoComplete(
+		{
+			selector: {
+				anchor: '.rc-input__label',
+				item: '.rc-popup-list__item',
+				container: '.rc-popup-list__list',
+			},
+			onSelect,
+			position: 'fixed',
+			limit: 10,
+			inputDelay: 300,
+			rules: [
+				{
+					// @TODO maybe change this 'collection' and/or template
+					collection,
+					subscription,
+					field,
+					matchAll: true,
+					// filter,
+					doNotChangeWidth: false,
+					selector,
+					sort,
+				},
+			],
+
+		});
+	this.ac.tmplInst = this;
 });

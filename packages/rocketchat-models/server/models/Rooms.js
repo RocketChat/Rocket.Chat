@@ -12,7 +12,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ default: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ parentRoomId: 1 });
+		this.tryEnsureIndex({ prid: 1 });
 	}
 
 	findOneByIdOrName(_idOrName, options) {

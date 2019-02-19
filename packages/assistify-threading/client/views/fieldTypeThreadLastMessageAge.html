@@ -1,5 +1,7 @@
 <template name="LastMessageAge">
 	{{#with field}}
-		<button class="rc-tags__tag rc-tags--no-icon">{{lastMessageAge}}</button>
+		{{#if lastMessageAge}}
+			<button class="rc-tags__tag rc-tags--no-icon">{{lastMessageAge}}</button>
+		{{/if}}
 	{{/with}}
 </template>

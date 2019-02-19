@@ -12,7 +12,7 @@ Object.assign(RocketChat.models.Rooms, {
 			},
 			name: nameRegex,
 			archived: { $ne: true },
-			parentRoomId: {
+			prid: {
 				$exists: false,
 			},
 		};
