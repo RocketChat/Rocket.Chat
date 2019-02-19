@@ -23,6 +23,7 @@ export function findGuest(token) {
 			username: 1,
 			token: 1,
 			visitorEmails: 1,
+			department: 1,
 		},
 	});
 }
