@@ -17,7 +17,3 @@ Package.onUse(function(api) {
 	]);
 	api.mainModule('server/index.js', 'server');
 });
-
-Npm.depends({
-	'queue-fifo': '0.2.4',
-});
