@@ -292,16 +292,18 @@ class PeerClient {
 		this.log('afterSaveRoomSettings - NOT IMPLEMENTED');
 	}
 
-	afterAddedToRoom({ user: userWhoJoined, inviter: userWhoInvited }, room) {
+	afterAddedToRoom(users, room) {
 		this.log('afterAddedToRoom');
 
+		const { user: userWhoJoined, inviter: userWhoInvited } = users;
+
 		// Check if this should be skipped
-		if (this.skipCallbackIfNeeded('afterAddedToRoom', userWhoJoined)) { return; }
+		if (this.skipCallbackIfNeeded('afterAddedToRoom', userWhoJoined)) { return users; }
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return users; }
 
 		const extras = {};
 
@@ -376,16 +378,18 @@ class PeerClient {
 		federatedRoom.refreshFederation();
 	}
 
-	beforeRemoveFromRoom({ removedUser, userWhoRemoved }, room) {
+	beforeRemoveFromRoom(users, room) {
 		this.log('beforeRemoveFromRoom');
 
+		const { removedUser, userWhoRemoved } = users;
+
 		// Check if this should be skipped
-		if (this.skipCallbackIfNeeded('beforeRemoveFromRoom', removedUser)) { return; }
+		if (this.skipCallbackIfNeeded('beforeRemoveFromRoom', removedUser)) { return users; }
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return users; }
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
@@ -510,13 +514,15 @@ class PeerClient {
 		FederationEvents.messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
 	}
 
-	afterMuteUser({ mutedUser, fromUser }, room) {
+	afterMuteUser(users, room) {
 		this.log('afterMuteUser');
+
+		const { mutedUser, fromUser } = users;
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return users; }
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
@@ -527,13 +533,15 @@ class PeerClient {
 		FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipPeers: [localPeerDomain] });
 	}
 
-	afterUnmuteUser({ unmutedUser, fromUser }, room) {
+	afterUnmuteUser(users, room) {
 		this.log('afterUnmuteUser');
+
+		const { unmutedUser, fromUser } = users;
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return; }
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return users; }
 
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
