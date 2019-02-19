@@ -48,7 +48,7 @@ API.v1.addRoute('livechat/agent.next/:token', {
 			const { token } = this.urlParams;
 			const room = findOpenRoom(token);
 			if (room) {
-				return RocketChat.API.v1.success();
+				return API.v1.success();
 			}
 
 			let { department } = this.queryParams;
