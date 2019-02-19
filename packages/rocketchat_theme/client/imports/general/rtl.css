@@ -494,7 +494,6 @@
 
 		& .unread-burger-alert {
 			right: auto;
-			left: 4px;
 		}
 
 		&.menu-opened i {

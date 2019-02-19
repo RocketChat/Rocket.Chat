@@ -644,7 +644,7 @@ rc-old select,
 
 		width: 20px;
 		height: 2px;
-		margin: 5px 0;
+		margin: 3px 0;
 
 		transition: transform 0.2s ease-out;
 
@@ -5620,8 +5620,9 @@ body:not(.is-cordova) {
 
 	.rc-old {
 		&.burger {
-			display: inline-block;
+			display: inline-flex;
 			visibility: visible;
+			flex-direction: column;
 		}
 
 		& .fixed-title h2 {

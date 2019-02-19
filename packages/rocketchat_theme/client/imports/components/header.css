@@ -20,7 +20,7 @@
 
 		height: 36px;
 
-		margin: 0 -0.5rem;
+		margin: 0 -1rem;
 
 		white-space: nowrap;
 
@@ -34,7 +34,7 @@
 	&__block {
 		display: flex;
 
-		margin: 0 1rem 0 0;
+		margin: 0 0.5rem;
 
 		align-items: center;
 	}
