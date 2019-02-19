@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Base } from './_Base';
-import { Users } from './Users';
+import Users from './Users';
 import _ from 'underscore';
 /**
  * Livechat Department model
