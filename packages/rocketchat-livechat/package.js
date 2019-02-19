@@ -6,7 +6,9 @@ Package.describe({
 
 Package.registerBuildPlugin({
 	name: 'Livechat',
-	use: [],
+	use: [
+		'ecmascript',
+	],
 	sources: [
 		'plugin/build-livechat.js',
 	],
@@ -14,10 +16,6 @@ Package.registerBuildPlugin({
 		shelljs: '0.8.1',
 		'uglify-js': '2.8.29',
 	},
-});
-
-Npm.depends({
-	'ua-parser-js': '0.7.17',
 });
 
 Package.onUse(function(api) {
