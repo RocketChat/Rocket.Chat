@@ -1,11 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
-import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
+import { Layout, RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
 import { ChatSubscription, Rooms } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
@@ -13,21 +11,6 @@ import { roomTypes, handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 window.currentTracker = undefined;
-
-let loadingDom;
-function getDomOfLoading() {
-	if (loadingDom) {
-		return loadingDom;
-	}
-
-	loadingDom = document.createElement('div');
-	const contentAsFunc = (content) => () => content;
-
-	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
-	Blaze.render(template, loadingDom);
-
-	return loadingDom;
-}
 
 function replaceCenterDomBy(dom) {
 	const mainNode = document.querySelector('.main-content');
@@ -53,7 +36,7 @@ export const openRoom = function(type, name) {
 			}
 
 			if (RoomManager.open(type + name).ready() !== true) {
-				replaceCenterDomBy(getDomOfLoading());
+				BlazeLayout.render('main', { modal: Layout.isEmbedded(), center: 'loading' });
 				return;
 			}
 			if (window.currentTracker) {
