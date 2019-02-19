@@ -63,7 +63,7 @@ Meteor.methods({
 				return;
 			}
 
-			const results = Rooms.findByNameAndType(regex, 'c', {
+			const result = Rooms.findByNameAndType(regex, 'c', {
 				...options,
 				sort,
 				fields: {
@@ -75,13 +75,11 @@ Meteor.methods({
 					archived: 1,
 					usersCount: 1,
 				},
-			}).fetch();
-
-			const total = Rooms.findByNameAndType(regex, 'c').count();
+			});
 
 			return {
-				results,
-				total,
+				total: result.count(), // count ignores the `skip` and `limit` options
+				results: result.fetch(),
 			};
 		}
 
@@ -117,7 +115,7 @@ Meteor.methods({
 
 		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
-		const results = Users.findByActiveUsersExcept(text, exceptions, {
+		const result = Users.findByActiveUsersExcept(text, exceptions, {
 			...options,
 			sort,
 			fields: {
@@ -127,13 +125,11 @@ Meteor.methods({
 				emails: 1,
 				federation: 1,
 			},
-		}, forcedSearchFields).fetch();
-
-		const total = Users.findByActiveUsersExcept(text, exceptions).count();
+		}, forcedSearchFields);
 
 		return {
-			results,
-			total,
+			total: result.count(), // count ignores the `skip` and `limit` options
+			results: result.fetch(),
 		};
 	},
 });
