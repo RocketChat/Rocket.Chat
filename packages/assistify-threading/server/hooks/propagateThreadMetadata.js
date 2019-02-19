@@ -17,3 +17,7 @@ RocketChat.callbacks.add('afterDeleteMessage', function(message, { _id, prid, pm
 	}
 	return message;
 }, RocketChat.callbacks.priority.LOW, 'PropagateThreadMetadata');
+
+RocketChat.callbacks.add('afterDeleteRoom', function(rid) {
+	RocketChat.models.Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => RocketChat.deleteRoom(_id));
+}, 'DeleteThreadChain');
