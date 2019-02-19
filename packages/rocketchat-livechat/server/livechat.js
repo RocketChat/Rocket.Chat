@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { settings } from 'meteor/rocketchat:settings';
+import { Autoupdate } from 'meteor/autoupdate';
 import _ from 'underscore';
 import url from 'url';
-
-const { Autoupdate } = Package.autoupdate;
 
 WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {
 	const reqUrl = url.parse(req.url);
