@@ -18,9 +18,3 @@ Package.onUse(function(api) {
 
 	api.mainModule('server/index.js', 'server');
 });
-
-Npm.depends({
-	express: '4.15.3',
-	'express-session': '1.15.4',
-	'grant-express': '3.8.0',
-});

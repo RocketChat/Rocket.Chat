@@ -4,7 +4,8 @@ import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { registerAccessTokenService } from './oauth';
 
-const crypto = Npm.require('crypto');
+import crypto from 'crypto';
+
 const whitelisted = [
 	'id',
 	'email',
