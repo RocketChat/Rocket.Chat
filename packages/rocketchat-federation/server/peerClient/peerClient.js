@@ -51,9 +51,6 @@ class PeerClient {
 		// Setup callbacks only if it correctly registered
 		this.setupCallbacks();
 
-		// Also, send the unfulfilled events
-		this.resendUnfulfilledEvents();
-
 		return true;
 	}
 
@@ -133,7 +130,7 @@ class PeerClient {
 				// Encrypt with the local private key
 				payload = Meteor.federationPrivateKey.encryptPrivate(payload);
 
-				Meteor.federationPeerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload });
+				Meteor.federationPeerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, 5);
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
