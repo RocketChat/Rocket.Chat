@@ -1,7 +1,6 @@
 import { Base } from './_Base';
-import { LivechatDepartmentAgents } from './LivechatDepartmentAgents';
+import LivechatDepartmentAgents from './LivechatDepartmentAgents';
 import _ from 'underscore';
-
 /**
  * Livechat Department model
  */
