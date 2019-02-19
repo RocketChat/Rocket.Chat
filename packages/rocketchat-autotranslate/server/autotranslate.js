@@ -139,12 +139,9 @@ export class AutoTranslate {
 		let count = message.tokens.length;
 		message.html = message.msg;
 		message = RocketChat.Markdown.parseMessageNotEscaped(message);
-		message.msg = message.html.trim();
 		// Some parsers (e. g. Marked) wrap the complete message in a <p> - this is unnecessary and should be ignored with respect to translations
-		const wrappedInParagraph = message.msg.startsWith('<p>') && message.msg.endsWith('</p>');
-		if (wrappedInParagraph) {
-			message.msg = message.msg.substr(3, message.msg.length - 7);
-		}
+		const regexWrappedParagraph = new RegExp('^\s*<p>|<\/p>\s*$', 'gm');
+		message.msg = message.msg.replace(regexWrappedParagraph, '');
 
 		for (const tokenIndex in message.tokens) {
 			if (message.tokens.hasOwnProperty(tokenIndex)) {

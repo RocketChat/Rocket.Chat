@@ -130,10 +130,11 @@ class DeeplAutoTranslate extends AutoTranslate {
 
 				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
 					// store translation only when the source and target language are different.
-					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
-						const txt = result.data.translations.map((translation) => translation.text);
-						translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
-					}
+					// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
+					const translatedText = result.data.translations
+						.map((translation, index) => (translation.detected_source_language !== language ? translation.text : msgs[index]))
+						.join('\n');
+					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);
