@@ -16,7 +16,8 @@ Package.onUse(function(api) {
 	api.use('meteorhacks:inject-initial'); // for provisioning of svg-icons
 
 	api.addFiles('config.js', 'server');
-	api.addFiles('auth.js', 'server');
+	api.addFiles('authorization.js', 'server');
+	api.addFiles('permissions.js', 'server');
 	api.addFiles('lib/messageTypes/threadMessage.js');
 	api.addFiles('lib/threadRoomType.js');
 

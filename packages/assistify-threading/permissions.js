@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(() => {
-
 	// Add permissions for threading
 	const permissions = [
 		{ _id: 'start-thread', roles: ['admin', 'user', 'expert', 'guest'] },
