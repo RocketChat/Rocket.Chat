@@ -2,12 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
 import { Template } from 'meteor/templating';
 import { hasRole } from 'meteor/rocketchat:authorization';
-import { t } from 'meteor/rocketchat:utils';
+import { t, APIClient } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { API } from 'meteor/rocketchat:api';
 
 Template.adminImportHistory.helpers({
 	isAdmin() {
@@ -184,7 +183,7 @@ Template.adminImportHistory.onCreated(function() {
 	this.preparing = new ReactiveVar(true);
 	this.history = new ReactiveVar([]);
 
-	API.get('v1/getLatestImportOperations').then((data) => {
+	APIClient.get('v1/getLatestImportOperations').then((data) => {
 		instance.history.set(data);
 		instance.preparing.set(false);
 	}).catch((error) => {

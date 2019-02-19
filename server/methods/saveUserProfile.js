@@ -1,13 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { saveCustomFields, passwordPolicy } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
+import { settings as rcSettings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	saveUserProfile(settings, customFields) {
 		check(settings, Object);
 		check(customFields, Match.Maybe(Object));
 
-		if (!RocketChat.settings.get('Accounts_AllowUserProfileChange')) {
+		if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'saveUserProfile',
 			});
@@ -19,7 +22,7 @@ Meteor.methods({
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(Meteor.userId());
+		const user = Users.findOneById(Meteor.userId());
 
 		function checkPassword(user = {}, typedPassword) {
 			if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
@@ -56,24 +59,24 @@ Meteor.methods({
 		}
 
 		// Should be the last check to prevent error when trying to check password for users without password
-		if ((settings.newPassword) && RocketChat.settings.get('Accounts_AllowPasswordChange') === true) {
+		if ((settings.newPassword) && rcSettings.get('Accounts_AllowPasswordChange') === true) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
 					method: 'saveUserProfile',
 				});
 			}
 
-			RocketChat.passwordPolicy.validate(settings.newPassword);
+			passwordPolicy.validate(settings.newPassword);
 
 			Accounts.setPassword(Meteor.userId(), settings.newPassword, {
 				logout: false,
 			});
 		}
 
-		RocketChat.models.Users.setProfile(Meteor.userId(), {});
+		Users.setProfile(Meteor.userId(), {});
 
 		if (customFields && Object.keys(customFields).length) {
-			RocketChat.saveCustomFields(Meteor.userId(), customFields);
+			saveCustomFields(Meteor.userId(), customFields);
 		}
 
 		return true;

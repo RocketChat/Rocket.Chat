@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Users, Rooms } from 'meteor/rocketchat:models';
+import { canAccessRoom } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	canAccessRoom(rid, userId, extraData) {
@@ -9,7 +12,7 @@ Meteor.methods({
 		let user;
 
 		if (userId) {
-			user = RocketChat.models.Users.findOneById(userId, {
+			user = Users.findOneById(userId, {
 				fields: {
 					username: 1,
 				},
@@ -28,16 +31,16 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid);
 		if (room) {
-			if (RocketChat.authz.canAccessRoom.call(this, room, user, extraData)) {
+			if (canAccessRoom.call(this, room, user, extraData)) {
 				if (user) {
 					room.username = user.username;
 				}
 				return room;
 			}
 
-			if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
+			if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
 				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 					method: 'canAccessRoom',
 				});

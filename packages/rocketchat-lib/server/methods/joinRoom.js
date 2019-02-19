@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { hasPermission, canAccessRoom } from 'meteor/rocketchat:authorization';
 import { Rooms } from 'meteor/rocketchat:models';
+import { Tokenpass, updateUserTokenpassBalances } from 'meteor/rocketchat:tokenpass';
 import { addUserToRoom } from '../functions';
 
 Meteor.methods({
@@ -21,9 +22,9 @@ Meteor.methods({
 		// TODO we should have a 'beforeJoinRoom' call back so external services can do their own validations
 		const user = Meteor.user();
 		if (room.tokenpass && user && user.services && user.services.tokenpass) {
-			const balances = RocketChat.updateUserTokenpassBalances(user);
+			const balances = updateUserTokenpassBalances(user);
 
-			if (!RocketChat.Tokenpass.validateAccess(room.tokenpass, balances)) {
+			if (!Tokenpass.validateAccess(room.tokenpass, balances)) {
 				throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 			}
 		} else {

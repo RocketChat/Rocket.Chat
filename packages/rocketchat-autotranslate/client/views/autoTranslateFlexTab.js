@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { ChatSubscription, Subscriptions, Messages } from 'meteor/rocketchat:models';
-import { t } from 'meteor/rocketchat:utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import toastr from 'toastr';
 

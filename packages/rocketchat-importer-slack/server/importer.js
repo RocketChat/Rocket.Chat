@@ -8,7 +8,7 @@ import {
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
 import { RocketChatFile } from 'meteor/rocketchat:file';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 import { Users, Rooms, Messages } from 'meteor/rocketchat:models';
 import { sendMessage } from 'meteor/rocketchat:lib';
 

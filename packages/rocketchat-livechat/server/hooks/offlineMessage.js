@@ -1,7 +1,9 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from 'meteor/rocketchat:settings';
+import { Livechat } from '../lib/Livechat';
 
-RocketChat.callbacks.add('livechat.offlineMessage', (data) => {
-	if (!RocketChat.settings.get('Livechat_webhook_on_offline_msg')) {
+callbacks.add('livechat.offlineMessage', (data) => {
+	if (!settings.get('Livechat_webhook_on_offline_msg')) {
 		return data;
 	}
 
@@ -15,5 +17,5 @@ RocketChat.callbacks.add('livechat.offlineMessage', (data) => {
 		message: data.message,
 	};
 
-	RocketChat.Livechat.sendRequest(postData);
-}, RocketChat.callbacks.priority.MEDIUM, 'livechat-send-email-offline-message');
+	Livechat.sendRequest(postData);
+}, callbacks.priority.MEDIUM, 'livechat-send-email-offline-message');

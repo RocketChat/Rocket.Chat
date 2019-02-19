@@ -3,6 +3,7 @@ import { Session } from 'meteor/session';
 import { t, UiTextContext, roomTypes, handleError } from 'meteor/rocketchat:utils';
 import { modal } from './modal';
 import { call } from './callMethod';
+import { RoomManager } from './RoomManager';
 
 export function hide(type, rid, name) {
 	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
@@ -35,7 +36,6 @@ export function hide(type, rid, name) {
 }
 
 export async function leave(type, rid, name) {
-	const { RoomManager } = await import('meteor/rocketchat:ui');
 	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.LEAVE_WARNING);
 
 	modal.open({

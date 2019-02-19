@@ -1,27 +1,31 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { Rooms } from 'meteor/rocketchat:models';
+import { hasPermission, addRoomAccessValidator } from 'meteor/rocketchat:authorization';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(() => {
-	RocketChat.roomTypes.setRoomFind('l', (_id) => RocketChat.models.Rooms.findLivechatById(_id).fetch());
+	roomTypes.setRoomFind('l', (_id) => Rooms.findLivechatById(_id).fetch());
 
-	RocketChat.authz.addRoomAccessValidator(function(room, user) {
-		return room && room.t === 'l' && user && RocketChat.authz.hasPermission(user._id, 'view-livechat-rooms');
+	addRoomAccessValidator(function(room, user) {
+		return room && room.t === 'l' && user && hasPermission(user._id, 'view-livechat-rooms');
 	});
 
-	RocketChat.authz.addRoomAccessValidator(function(room, user, extraData) {
+	addRoomAccessValidator(function(room, user, extraData) {
 		if (!room && extraData && extraData.rid) {
-			room = RocketChat.models.Rooms.findOneById(extraData.rid);
+			room = Rooms.findOneById(extraData.rid);
 		}
 		return room && room.t === 'l' && extraData && extraData.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	});
 
-	RocketChat.callbacks.add('beforeLeaveRoom', function(user, room) {
+	callbacks.add('beforeLeaveRoom', function(user, room) {
 		if (room.t !== 'l') {
 			return user;
 		}
 		throw new Meteor.Error(TAPi18n.__('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
-			lng: user.language || RocketChat.settings.get('Language') || 'en',
+			lng: user.language || settings.get('Language') || 'en',
 		}));
-	}, RocketChat.callbacks.priority.LOW, 'cant-leave-room');
+	}, callbacks.priority.LOW, 'cant-leave-room');
 });
