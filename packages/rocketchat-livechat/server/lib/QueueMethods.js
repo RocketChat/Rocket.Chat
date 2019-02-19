@@ -93,7 +93,7 @@ export const QueueMethods = {
 	'Guest_Pool'(guest, message, roomInfo) {
 		let agents = Livechat.getOnlineAgents(guest.department);
 
-		if (agents.count() === 0 && settings.get('Livechat_guest_pool_with_no_agents')) {
+		if ((!agents || agents.count() === 0) && settings.get('Livechat_guest_pool_with_no_agents')) {
 			agents = Livechat.getAgents(guest.department);
 		}
 

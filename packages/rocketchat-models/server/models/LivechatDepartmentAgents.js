@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Base } from './_Base';
-import { Users } from './Users';
+import Users from './Users';
 import _ from 'underscore';
 /**
  * Livechat Department model
@@ -100,6 +100,28 @@ export class LivechatDepartmentAgents extends Base {
 			return [];
 		}
 	}
+
+	departmentIsOnline(departmentId) {
+		const agents = this.findByDepartmentId(departmentId).fetch();
+
+		if (agents.length === 0) {
+			return false;
+		}
+
+		const onlineUsers = Users.findOnlineUserFromList(_.pluck(agents, 'username'));
+
+		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
+		const query = {
+			departmentId,
+			username: {
+				$in: onlineUsernames,
+			},
+		};
+
+		const depAgents = this.find(query);
+		return depAgents.count() > 0;
+	}
+
 
 	findUsersInQueue(usersList) {
 		const query = {};
