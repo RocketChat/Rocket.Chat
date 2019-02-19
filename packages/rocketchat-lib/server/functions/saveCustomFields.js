@@ -8,5 +8,3 @@ export const saveCustomFields = function(userId, formData) {
 		return saveCustomFieldsWithoutValidation(userId, formData);
 	}
 };
-
-RocketChat.saveCustomFields = saveCustomFields;

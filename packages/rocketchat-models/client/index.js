@@ -17,6 +17,7 @@ import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
 import { AuthzCachedCollection, ChatPermissions } from './models/ChatPermissions';
+import { WebdavAccounts } from './models/WebdavAccounts';
 import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
 import _ from 'underscore';
@@ -51,4 +52,5 @@ export {
 	Rooms,
 	CustomSounds,
 	EmojiCustom,
+	WebdavAccounts,
 };

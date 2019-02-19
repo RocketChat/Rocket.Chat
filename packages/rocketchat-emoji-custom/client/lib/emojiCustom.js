@@ -132,7 +132,7 @@ emoji.packages.emojiCustom = {
 
 	render(html) {
 		const emojisMatchGroup = emoji.packages.emojiCustom.list.map(RegExp.escape).join('|');
-		if (emojisMatchGroup !== RocketChat.emoji.packages.emojiCustom._regexpSignature) {
+		if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
 			emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
 			emoji.packages.emojiCustom._regexp = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ emojisMatchGroup })`, 'gi');
 		}
@@ -144,10 +144,10 @@ emoji.packages.emojiCustom = {
 
 			let emojiAlias = shortname.replace(/:/g, '');
 
-			let dataCheck = RocketChat.emoji.list[shortname];
+			let dataCheck = emoji.list[shortname];
 			if (dataCheck.hasOwnProperty('aliasOf')) {
 				emojiAlias = dataCheck.aliasOf;
-				dataCheck = RocketChat.emoji.list[`:${ emojiAlias }:`];
+				dataCheck = emoji.list[`:${ emojiAlias }:`];
 			}
 
 			return `<span class="emoji" style="background-image:url(${ getEmojiUrlFromName(emojiAlias, dataCheck.extension) });" data-emoji="${ emojiAlias }" title="${ shortname }">${ shortname }</span>`;

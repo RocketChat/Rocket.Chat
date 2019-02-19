@@ -1,5 +1,4 @@
-import '../lib/rocketchat';
-import './models/import';
+export { statistics } from '../lib/rocketchat';
 import './functions/get';
 import './functions/save';
 import './methods/getStatistics';

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 import s from 'underscore.string';
 
 /*
  * Me is a named function that will replace /me commands
  * @param {Object} message - The message object
  */
-RocketChat.slashCommands.add('me', function Me(command, params, item) {
+slashCommands.add('me', function Me(command, params, item) {
 	if (command !== 'me') {
 		return;
 	}

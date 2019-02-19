@@ -79,5 +79,3 @@ export const getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWith
 
 	return room;
 };
-
-RocketChat.getRoomByNameOrIdWithOptionToJoin = getRoomByNameOrIdWithOptionToJoin;

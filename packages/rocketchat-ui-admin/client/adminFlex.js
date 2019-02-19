@@ -1,22 +1,23 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { SideNav } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { CachedCollection } from 'meteor/rocketchat:ui-cached-collection';
+import { SideNav, AdminBox, Layout } from 'meteor/rocketchat:ui-utils';
 import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 
 Template.adminFlex.onCreated(function() {
 	this.settingsFilter = new ReactiveVar('');
-	if (RocketChat.settings.cachedCollectionPrivate == null) {
-		RocketChat.settings.cachedCollectionPrivate = new RocketChat.CachedCollection({
+	if (settings.cachedCollectionPrivate == null) {
+		settings.cachedCollectionPrivate = new CachedCollection({
 			name: 'private-settings',
 			eventType: 'onLogged',
 			useCache: false,
 		});
-		RocketChat.settings.collectionPrivate = RocketChat.settings.cachedCollectionPrivate.collection;
-		RocketChat.settings.cachedCollectionPrivate.init();
+		settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
+		settings.cachedCollectionPrivate.init();
 	}
 });
 
@@ -36,7 +37,7 @@ Template.adminFlex.helpers({
 		};
 		if (filter) {
 			const filterRegex = new RegExp(s.escapeRegExp(filter), 'i');
-			const records = RocketChat.settings.collectionPrivate.find().fetch();
+			const records = settings.collectionPrivate.find().fetch();
 			let groups = [];
 			records.forEach(function(record) {
 				if (filterRegex.test(TAPi18n.__(record.i18nLabel || record._id))) {
@@ -50,7 +51,7 @@ Template.adminFlex.helpers({
 				};
 			}
 		}
-		return RocketChat.settings.collectionPrivate.find(query).fetch().map(function(el) {
+		return settings.collectionPrivate.find(query).fetch().map(function(el) {
 			el.label = label.apply(el);
 			return el;
 		}).sort(function(a, b) {
@@ -63,7 +64,7 @@ Template.adminFlex.helpers({
 	},
 	label,
 	adminBoxOptions() {
-		return RocketChat.AdminBox.getOptions();
+		return AdminBox.getOptions();
 	},
 	menuItem(name, icon, section, group) {
 		return {
@@ -76,7 +77,7 @@ Template.adminFlex.helpers({
 		};
 	},
 	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded();
 	},
 });
 

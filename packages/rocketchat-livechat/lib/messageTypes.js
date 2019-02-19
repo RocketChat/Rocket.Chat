@@ -1,8 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { actionLinks } from 'meteor/rocketchat:action-links';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { Messages, Rooms } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Livechat } from 'meteor/rocketchat:livechat';
 
-RocketChat.MessageTypes.registerType({
+MessageTypes.registerType({
 	id: 'livechat_navigation_history',
 	system: true,
 	message: 'New_visitor_navigation',
@@ -16,34 +21,34 @@ RocketChat.MessageTypes.registerType({
 	},
 });
 
-RocketChat.MessageTypes.registerType({
+MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
 	message: 'New_videocall_request',
 });
 
-RocketChat.actionLinks.register('createLivechatCall', function(message, params, instance) {
+actionLinks.register('createLivechatCall', function(message, params, instance) {
 	if (Meteor.isClient) {
 		instance.tabBar.open('video');
 	}
 });
 
-RocketChat.actionLinks.register('denyLivechatCall', function(message/* , params*/) {
+actionLinks.register('denyLivechatCall', function(message/* , params*/) {
 	if (Meteor.isServer) {
 		const user = Meteor.user();
 
-		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('command', message.rid, 'endCall', user);
-		RocketChat.Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
+		Messages.createWithTypeRoomIdMessageAndUser('command', message.rid, 'endCall', user);
+		Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
 
-		const language = user.language || RocketChat.settings.get('Language') || 'en';
+		const language = user.language || settings.get('Language') || 'en';
 
-		RocketChat.Livechat.closeRoom({
+		Livechat.closeRoom({
 			user,
-			room: RocketChat.models.Rooms.findOneById(message.rid),
+			room: Rooms.findOneById(message.rid),
 			comment: TAPi18n.__('Videocall_declined', { lng: language }),
 		});
 		Meteor.defer(() => {
-			RocketChat.models.Messages.setHiddenById(message._id);
+			Messages.setHiddenById(message._id);
 		});
 	}
 });

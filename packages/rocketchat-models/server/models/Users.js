@@ -16,6 +16,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
+		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.loadSettings();
 	}
 
@@ -24,6 +25,229 @@ export class Users extends Base {
 			const { settings } = await import('meteor/rocketchat:settings');
 			this.settings = settings;
 		});
+	}
+
+	getLoginTokensByUserId(userId) {
+		const query = {
+			'services.resume.loginTokens.type': {
+				$exists: true,
+				$eq: 'personalAccessToken',
+			},
+			_id: userId,
+		};
+
+		return this.find(query, { fields: { 'services.resume.loginTokens': 1 } });
+	}
+
+	addPersonalAccessTokenToUser({ userId, loginTokenObject }) {
+		return this.update(userId, {
+			$push: {
+				'services.resume.loginTokens': loginTokenObject,
+			},
+		});
+	}
+
+	removePersonalAccessTokenOfUser({ userId, loginTokenObject }) {
+		return this.update(userId, {
+			$pull: {
+				'services.resume.loginTokens': loginTokenObject,
+			},
+		});
+	}
+
+	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }) {
+		const query = {
+			'services.resume.loginTokens': {
+				$elemMatch: { name: tokenName, type: 'personalAccessToken' },
+			},
+			_id: userId,
+		};
+
+		return this.findOne(query);
+	}
+
+	setOperator(_id, operator) {
+		const update = {
+			$set: {
+				operator,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	findOnlineAgents() {
+		const query = {
+			status: {
+				$exists: true,
+				$ne: 'offline',
+			},
+			statusLivechat: 'available',
+			roles: 'livechat-agent',
+		};
+
+		return this.find(query);
+	}
+
+	findOneOnlineAgentByUsername(username) {
+		const query = {
+			username,
+			status: {
+				$exists: true,
+				$ne: 'offline',
+			},
+			statusLivechat: 'available',
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query);
+	}
+
+	findOneOnlineAgentById(_id) {
+		const query = {
+			_id,
+			status: {
+				$exists: true,
+				$ne: 'offline',
+			},
+			statusLivechat: 'available',
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query);
+	}
+
+	findAgents() {
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		return this.find(query);
+	}
+
+	findOnlineUserFromList(userList) {
+		const query = {
+			status: {
+				$exists: true,
+				$ne: 'offline',
+			},
+			statusLivechat: 'available',
+			roles: 'livechat-agent',
+			username: {
+				$in: [].concat(userList),
+			},
+		};
+
+		return this.find(query);
+	}
+
+	getNextAgent() {
+		const query = {
+			status: {
+				$exists: true,
+				$ne: 'offline',
+			},
+			statusLivechat: 'available',
+			roles: 'livechat-agent',
+		};
+
+		const collectionObj = this.model.rawCollection();
+		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+
+		const sort = {
+			livechatCount: 1,
+			username: 1,
+		};
+
+		const update = {
+			$inc: {
+				livechatCount: 1,
+			},
+		};
+
+		const user = findAndModify(query, sort, update);
+		if (user && user.value) {
+			return {
+				agentId: user.value._id,
+				username: user.value.username,
+			};
+		} else {
+			return null;
+		}
+	}
+
+	setLivechatStatus(userId, status) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	closeOffice() {
+		self = this;
+		self.findAgents().forEach(function(agent) {
+			self.setLivechatStatus(agent._id, 'not-available');
+		});
+	}
+
+	openOffice() {
+		self = this;
+		self.findAgents().forEach(function(agent) {
+			self.setLivechatStatus(agent._id, 'available');
+		});
+	}
+
+	getAgentInfo(agentId) {
+		const query = {
+			_id: agentId,
+		};
+
+		const options = {
+			fields: {
+				name: 1,
+				username: 1,
+				phone: 1,
+				customFields: 1,
+				status: 1,
+			},
+		};
+
+		if (this.settings.get('Livechat_show_agent_email')) {
+			options.fields.emails = 1;
+		}
+
+		return this.findOne(query, options);
+	}
+
+	setTokenpassTcaBalances(_id, tcaBalances) {
+		const update = {
+			$set: {
+				'services.tokenpass.tcaBalances': tcaBalances,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	getTokenBalancesByUserId(userId) {
+		const query = {
+			_id: userId,
+		};
+
+		const options = {
+			fields: {
+				'services.tokenpass.tcaBalances': 1,
+			},
+		};
+
+		return this.findOne(query, options);
 	}
 
 	roleBaseQuery(userId) {

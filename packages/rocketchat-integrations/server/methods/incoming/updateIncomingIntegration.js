@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasAllPermission, hasPermission } from 'meteor/rocketchat:authorization';
+import { Integrations, Rooms, Users, Roles, Subscriptions } from 'meteor/rocketchat:models';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -21,10 +22,10 @@ Meteor.methods({
 
 		let currentIntegration;
 
-		if (RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
-			currentIntegration = RocketChat.models.Integrations.findOne(integrationId);
-		} else if (RocketChat.authz.hasPermission(this.userId, 'manage-own-integrations')) {
-			currentIntegration = RocketChat.models.Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
+		if (hasPermission(this.userId, 'manage-integrations')) {
+			currentIntegration = Integrations.findOne(integrationId);
+		} else if (hasPermission(this.userId, 'manage-own-integrations')) {
+			currentIntegration = Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'updateIncomingIntegration' });
 		}
@@ -53,7 +54,7 @@ Meteor.methods({
 
 			switch (channelType) {
 				case '#':
-					record = RocketChat.models.Rooms.findOne({
+					record = Rooms.findOne({
 						$or: [
 							{ _id: channel },
 							{ name: channel },
@@ -61,7 +62,7 @@ Meteor.methods({
 					});
 					break;
 				case '@':
-					record = RocketChat.models.Users.findOne({
+					record = Users.findOne({
 						$or: [
 							{ _id: channel },
 							{ username: channel },
@@ -74,20 +75,20 @@ Meteor.methods({
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'updateIncomingIntegration' });
 			}
 
-			if (!RocketChat.authz.hasAllPermission(this.userId, ['manage-integrations', 'manage-own-integrations']) && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
+			if (!hasAllPermission(this.userId, ['manage-integrations', 'manage-own-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'updateIncomingIntegration' });
 			}
 		}
 
-		const user = RocketChat.models.Users.findOne({ username: currentIntegration.username });
+		const user = Users.findOne({ username: currentIntegration.username });
 
 		if (!user || !user._id) {
 			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', { method: 'updateIncomingIntegration' });
 		}
 
-		RocketChat.models.Roles.addUserRoles(user._id, 'bot');
+		Roles.addUserRoles(user._id, 'bot');
 
-		RocketChat.models.Integrations.update(integrationId, {
+		Integrations.update(integrationId, {
 			$set: {
 				enabled: integration.enabled,
 				name: integration.name,
@@ -100,10 +101,10 @@ Meteor.methods({
 				scriptCompiled: integration.scriptCompiled,
 				scriptError: integration.scriptError,
 				_updatedAt: new Date(),
-				_updatedBy: RocketChat.models.Users.findOne(this.userId, { fields: { username: 1 } }),
+				_updatedBy: Users.findOne(this.userId, { fields: { username: 1 } }),
 			},
 		});
 
-		return RocketChat.models.Integrations.findOne(integrationId);
+		return Integrations.findOne(integrationId);
 	},
 });

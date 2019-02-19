@@ -144,9 +144,14 @@
 
 	DynamicCss.run = debounce(function () {
 		var replace = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+		var settings = arguments.length && arguments[1];
+
+		if (replace && !settings) {
+			console.error('You must provide settings to the "run" function in DynamicCss');
+		}
 
 		if (replace) {
-			var colors = RocketChat.settings.collection.find({
+			var colors = settings.collection.find({
 				_id: /theme-color-rc/i
 			}, {
 				fields: {
