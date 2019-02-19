@@ -23,6 +23,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 		this.loadSettings();
 	}
 
@@ -35,6 +36,34 @@ export class Messages extends Base {
 
 	setReactions(messageId, reactions) {
 		return this.update({ _id: messageId }, { $set: { reactions } });
+	}
+
+	keepHistoryForToken(token) {
+		return this.update({
+			'navigation.token': token,
+			expireAt: {
+				$exists: true,
+			},
+		}, {
+			$unset: {
+				expireAt: 1,
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	setRoomIdByToken(token, rid) {
+		return this.update({
+			'navigation.token': token,
+			rid: null,
+		}, {
+			$set: {
+				rid,
+			},
+		}, {
+			multi: true,
+		});
 	}
 
 	createRoomArchivedByRoomIdAndUser(roomId, user) {

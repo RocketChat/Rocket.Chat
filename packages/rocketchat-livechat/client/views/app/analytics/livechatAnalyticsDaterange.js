@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { popover } from 'meteor/rocketchat:ui';
+import { popover } from 'meteor/rocketchat:ui-utils';
 import moment from 'moment';
 import { setDateRange } from '../../../lib/dateHandler';
 

@@ -1,5 +1,5 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { actionLinks } from 'meteor/rocketchat:action-links';
 
-RocketChat.actionLinks.register('joinJitsiCall', function(/* message, params*/) {
+actionLinks.register('joinJitsiCall', function(/* message, params*/) {
 
 });

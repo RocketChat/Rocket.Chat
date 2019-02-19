@@ -1,12 +1,14 @@
 import { HTTP } from 'meteor/http';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Livechat } from '../lib/Livechat';
 
 function sendToRDStation(room) {
-	if (!RocketChat.settings.get('Livechat_RDStation_Token')) {
+	if (!settings.get('Livechat_RDStation_Token')) {
 		return room;
 	}
 
-	const livechatData = RocketChat.Livechat.getLivechatRoomGuestInfo(room);
+	const livechatData = Livechat.getLivechatRoomGuestInfo(room);
 
 	if (!livechatData.visitor.email) {
 		return room;
@@ -19,7 +21,7 @@ function sendToRDStation(room) {
 			'Content-Type': 'application/json',
 		},
 		data: {
-			token_rdstation: RocketChat.settings.get('Livechat_RDStation_Token'),
+			token_rdstation: settings.get('Livechat_RDStation_Token'),
 			identificador: 'rocketchat-livechat',
 			client_id: livechatData.visitor._id,
 			email,
@@ -53,6 +55,6 @@ function sendToRDStation(room) {
 	return room;
 }
 
-RocketChat.callbacks.add('livechat.closeRoom', sendToRDStation, RocketChat.callbacks.priority.MEDIUM, 'livechat-rd-station-close-room');
+callbacks.add('livechat.closeRoom', sendToRDStation, callbacks.priority.MEDIUM, 'livechat-rd-station-close-room');
 
-RocketChat.callbacks.add('livechat.saveInfo', sendToRDStation, RocketChat.callbacks.priority.MEDIUM, 'livechat-rd-station-save-info');
+callbacks.add('livechat.saveInfo', sendToRDStation, callbacks.priority.MEDIUM, 'livechat-rd-station-save-info');

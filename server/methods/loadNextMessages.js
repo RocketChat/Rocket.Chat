@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Messages } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
 
 Meteor.methods({
 	loadNextMessages(rid, end, limit = 20) {
@@ -25,7 +28,7 @@ Meteor.methods({
 			limit,
 		};
 
-		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+		if (!settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
 				editedAt: 0,
 			};
@@ -33,13 +36,13 @@ Meteor.methods({
 
 		let records;
 		if (end) {
-			records = RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
+			records = Messages.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
 		} else {
-			records = RocketChat.models.Messages.findVisibleByRoomId(rid, options).fetch();
+			records = Messages.findVisibleByRoomId(rid, options).fetch();
 		}
 
 		return {
-			messages: records.map((message) => RocketChat.composeMessageObjectWithUser(message, fromId)),
+			messages: records.map((message) => composeMessageObjectWithUser(message, fromId)),
 		};
 	},
 });

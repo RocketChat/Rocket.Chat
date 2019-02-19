@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { WebdavAccounts } from 'meteor/rocketchat:models';
 import { createClient } from 'webdav';
 
 Meteor.methods({
@@ -12,7 +13,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'addWebdavAccount' });
 		}
 
-		if (!RocketChat.settings.get('Webdav_Integration_Enabled')) {
+		if (!settings.get('Webdav_Integration_Enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'addWebdavAccount' });
 		}
 
@@ -44,7 +45,7 @@ Meteor.methods({
 			name: formData.name,
 		};
 		try {
-			RocketChat.models.WebdavAccounts.insert(accountData);
+			WebdavAccounts.insert(accountData);
 			return { success: true, message: 'webdav-account-saved' };
 		} catch (error) {
 			return { success: false, message: error.code === 11000 ? 'duplicated-account' : 'unknown-write-error', error };
