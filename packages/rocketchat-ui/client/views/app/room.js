@@ -495,7 +495,7 @@ Template.room.events({
 		roomTypes.openRouteLink('d', { name: this._arguments[1].u.username }, { ...FlowRouter.current().queryParams, reply: message._id });
 	},
 	'click, touchend'(e, t) {
-		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
+		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
 	'click .messages-container-main'() {
@@ -721,8 +721,8 @@ Template.room.events({
 
 			const room = ChatRoom.findOne({ name: channel }) || ChatRoom.findOne({ _id: channel });
 			if (room) {
-				if (RocketChat.Layout.isEmbedded()) {
-					fireGlobalEvent('click-mention-link', { path: RocketChat.roomTypes.getRouteLink(room.t, { name: room.name }), channel });
+				if (Layout.isEmbedded()) {
+					fireGlobalEvent('click-mention-link', { path: roomTypes.getRouteLink(room.t, { name: room.name }), channel });
 				}
 
 				FlowRouter.goToRoomById(room._id);
@@ -975,6 +975,9 @@ Template.room.onCreated(function() {
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
+	if (this.messageObserver) {
+		this.messageObserver.stop();
+	}
 	window.removeEventListener('resize', this.onWindowResize);
 });
 

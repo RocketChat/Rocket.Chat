@@ -2795,7 +2795,7 @@
   "Unstar_Message": "Aus den Favoriten entfernen",
   "Update": "Aktualisierung",
   "Update_LatestAvailableVersion": "Aktualisieren Sie auf die aktuellste verfügbare Version",
-  "Update_to_version": "Auf Version _version_ aktualisieren",
+  "Update_to_version": "Auf Version __version__ aktualisieren",
   "Update_your_RocketChat": "Aktualisieren Sie Ihr Rocket.Chat",
   "Updated_at": "Aktualisiert am",
   "Upload_file_description": "Dateibeschreibung",

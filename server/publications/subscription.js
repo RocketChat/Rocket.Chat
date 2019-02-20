@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 const fields = {
 	t: 1,
@@ -47,14 +49,14 @@ Meteor.methods({
 
 		const options = { fields };
 
-		const records = RocketChat.models.Subscriptions.findByUserId(Meteor.userId(), options).fetch();
+		const records = Subscriptions.findByUserId(Meteor.userId(), options).fetch();
 
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {
 					return record._updatedAt > updatedAt;
 				}),
-				remove: RocketChat.models.Subscriptions.trashFindDeletedAfter(updatedAt, {
+				remove: Subscriptions.trashFindDeletedAfter(updatedAt, {
 					'u._id': Meteor.userId(),
 				}, {
 					fields: {
@@ -69,20 +71,20 @@ Meteor.methods({
 	},
 });
 
-RocketChat.models.Subscriptions.on('change', ({ clientAction, id, data }) => {
+Subscriptions.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'inserted':
 		case 'updated':
 			// Override data cuz we do not publish all fields
-			data = RocketChat.models.Subscriptions.findOneById(id, { fields });
+			data = Subscriptions.findOneById(id, { fields });
 			break;
 
 		case 'removed':
-			data = RocketChat.models.Subscriptions.trashFindOneById(id, { fields: { u: 1, rid: 1 } });
+			data = Subscriptions.trashFindOneById(id, { fields: { u: 1, rid: 1 } });
 			break;
 	}
 
-	RocketChat.Notifications.streamUser.__emit(data.u._id, clientAction, data);
+	Notifications.streamUser.__emit(data.u._id, clientAction, data);
 
-	RocketChat.Notifications.notifyUserInThisInstance(data.u._id, 'subscriptions-changed', clientAction, data);
+	Notifications.notifyUserInThisInstance(data.u._id, 'subscriptions-changed', clientAction, data);
 });

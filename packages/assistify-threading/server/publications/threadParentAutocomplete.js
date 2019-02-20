@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.publish('threadParentAutocomplete', function(selector) {
 	if (!this.userId) {
 		return this.ready();
 	}
 
-	if (RocketChat.authz.hasPermission(this.userId, 'view-c-room') !== true) {
+	if (hasPermission(this.userId, 'view-c-room') !== true) {
 		return this.ready();
 	}
 
@@ -21,7 +23,7 @@ Meteor.publish('threadParentAutocomplete', function(selector) {
 		},
 	};
 
-	const cursorHandle = RocketChat.models.Rooms.findThreadParentByNameStarting(selector.name, options).observeChanges({
+	const cursorHandle = Rooms.findThreadParentByNameStarting(selector.name, options).observeChanges({
 		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},

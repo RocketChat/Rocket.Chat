@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -8,6 +9,8 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import toastr from 'toastr';
+import { handleError } from 'meteor/rocketchat:utils';
+
 
 const parent = document.querySelector('.main-content');
 let oldRoute = '';

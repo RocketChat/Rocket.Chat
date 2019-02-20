@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { Autoupdate } from 'meteor/autoupdate';
 import _ from 'underscore';
 import url from 'url';
-
-const { Autoupdate } = Package.autoupdate;
 
 WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {
 	const reqUrl = url.parse(req.url);
@@ -13,7 +12,7 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 	}
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
-	let domainWhiteList = RocketChat.settings.get('Livechat_AllowedDomainsList');
+	let domainWhiteList = settings.get('Livechat_AllowedDomainsList');
 	if (req.headers.referer && !_.isEmpty(domainWhiteList.trim())) {
 		domainWhiteList = _.map(domainWhiteList.split(','), function(domain) {
 			return domain.trim();

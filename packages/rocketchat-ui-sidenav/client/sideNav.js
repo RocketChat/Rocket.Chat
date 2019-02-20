@@ -7,6 +7,7 @@ import { SideNav, menu } from 'meteor/rocketchat:ui-utils';
 import { settings } from 'meteor/rocketchat:settings';
 import { roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
 import { Users } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Template.sideNav.helpers({
 	flexTemplate() {
@@ -22,7 +23,7 @@ Template.sideNav.helpers({
 	},
 
 	threadingFromSidebar() {
-		return RocketChat.authz.hasPermission('start-thread') && RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowThreads') && !Meteor.isCordova;
+		return hasPermission('start-thread') && getUserPreference(Meteor.userId(), 'sidebarShowThreads');
 	},
 
 	roomType() {
@@ -71,6 +72,19 @@ Template.sideNav.events({
 
 	'click .js-create-thread'() {
 		return FlowRouter.go('create-thread');
+	},
+	'mouseenter .sidebar-item__link'(e) {
+		const element = e.currentTarget;
+		setTimeout(() => {
+			const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
+			const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
+
+			if (isTextEllipsed) {
+				element.setAttribute('title', element.getAttribute('aria-label'));
+			} else {
+				element.removeAttribute('title');
+			}
+		}, 0);
 	},
 });
 

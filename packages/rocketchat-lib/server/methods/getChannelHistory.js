@@ -1,5 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -17,7 +21,7 @@ Meteor.methods({
 		}
 
 		// Make sure they can access the room
-		if (room.t === 'c' && !RocketChat.authz.hasPermission(fromUserId, 'preview-c-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, { fields: { _id: 1 } })) {
+		if (room.t === 'c' && !hasPermission(fromUserId, 'preview-c-room') && !Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, { fields: { _id: 1 } })) {
 			return false;
 		}
 
@@ -38,22 +42,22 @@ Meteor.methods({
 			limit: count,
 		};
 
-		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+		if (!settings.get('Message_ShowEditedStatus')) {
 			options.fields = { editedAt: 0 };
 		}
 
 		let records = [];
 		if (_.isUndefined(oldest) && inclusive) {
-			records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestampInclusive(rid, latest, options).fetch();
+			records = Messages.findVisibleByRoomIdBeforeTimestampInclusive(rid, latest, options).fetch();
 		} else if (_.isUndefined(oldest) && !inclusive) {
-			records = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(rid, latest, options).fetch();
+			records = Messages.findVisibleByRoomIdBeforeTimestamp(rid, latest, options).fetch();
 		} else if (!_.isUndefined(oldest) && inclusive) {
-			records = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestampsInclusive(rid, oldest, latest, options).fetch();
+			records = Messages.findVisibleByRoomIdBetweenTimestampsInclusive(rid, oldest, latest, options).fetch();
 		} else {
-			records = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
+			records = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
 		}
 
-		const messages = records.map((record) => RocketChat.composeMessageObjectWithUser(record, fromUserId));
+		const messages = records.map((record) => composeMessageObjectWithUser(record, fromUserId));
 
 		if (unreads) {
 			let unreadNotLoaded = 0;
@@ -62,7 +66,7 @@ Meteor.methods({
 			if (!_.isUndefined(oldest)) {
 				const firstMsg = messages[messages.length - 1];
 				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
-					const unreadMessages = RocketChat.models.Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, firstMsg.ts, { limit: 1, sort: { ts: 1 } });
+					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, firstMsg.ts, { limit: 1, sort: { ts: 1 } });
 					firstUnread = unreadMessages.fetch()[0];
 					unreadNotLoaded = unreadMessages.count();
 				}

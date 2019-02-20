@@ -1,4 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { getUserPreference } from 'meteor/rocketchat:utils';
+import { API } from '../api';
 
 const getInfoFromUserObject = (user) => {
 	const {
@@ -32,7 +34,7 @@ const getInfoFromUserObject = (user) => {
 };
 
 
-RocketChat.API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
+API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 	const me = getInfoFromUserObject(user);
 	const isVerifiedEmail = () => {
 		if (me && me.emails && Array.isArray(me.emails)) {
@@ -42,11 +44,11 @@ RocketChat.API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 	};
 	const getUserPreferences = () => {
 		const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
-		const allDefaultUserSettings = RocketChat.settings.get(new RegExp(`^${ defaultUserSettingPrefix }.*$`));
+		const allDefaultUserSettings = settings.get(new RegExp(`^${ defaultUserSettingPrefix }.*$`));
 
 		return allDefaultUserSettings.reduce((accumulator, setting) => {
 			const settingWithoutPrefix = setting.key.replace(defaultUserSettingPrefix, ' ').trim();
-			accumulator[settingWithoutPrefix] = RocketChat.getUserPreference(user, settingWithoutPrefix);
+			accumulator[settingWithoutPrefix] = getUserPreference(user, settingWithoutPrefix);
 			return accumulator;
 		}, {});
 	};

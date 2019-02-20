@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Base } from './_Base';
 import { Match } from 'meteor/check';
 import Rooms from './Rooms';
@@ -28,6 +29,78 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ autoTranslateLanguage: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ parentRoomId: 1 });
+	}
+
+	findByRoomIds(roomIds) {
+		const query = {
+			rid: {
+				$in: roomIds,
+			},
+		};
+		const options = {
+			fields: {
+				'u._id': 1,
+				rid: 1,
+			},
+		};
+
+		return this._db.find(query, options);
+	}
+
+	removeByVisitorToken(token) {
+		const query = {
+			'v.token': token,
+		};
+
+		this.remove(query);
+	}
+
+	updateAutoTranslateById(_id, autoTranslate) {
+		const query = {
+			_id,
+		};
+
+		let update;
+		if (autoTranslate) {
+			update = {
+				$set: {
+					autoTranslate,
+				},
+			};
+		} else {
+			update = {
+				$unset: {
+					autoTranslate: 1,
+				},
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	updateAutoTranslateLanguageById(_id, autoTranslateLanguage) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				autoTranslateLanguage,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	getAutoTranslateLanguagesByRoomAndNotUser(rid, userId) {
+		const subscriptionsRaw = this.model.rawCollection();
+		const distinct = Meteor.wrapAsync(subscriptionsRaw.distinct, subscriptionsRaw);
+		const query = {
+			rid,
+			'u._id': { $ne: userId },
+			autoTranslate: true,
+		};
+		return distinct('autoTranslateLanguage', query);
 	}
 
 	roleBaseQuery(userId, scope) {

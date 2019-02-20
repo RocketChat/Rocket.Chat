@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Users } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 const sortChannels = function(field, direction) {
@@ -57,11 +59,11 @@ Meteor.methods({
 		if (type === 'channels') {
 
 			const sort = sortChannels(sortBy, sortDirection);
-			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
+			if (!hasPermission(user._id, 'view-c-room')) {
 				return;
 			}
 			return {
-				results: RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
+				results: Rooms.findByNameAndType(regex, 'c', {
 					...options,
 					sort,
 					fields: {
@@ -74,17 +76,17 @@ Meteor.methods({
 						usersCount: 1,
 					},
 				}).fetch(),
-				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count(),
+				total: Rooms.findByNameAndType(regex, 'c').count(),
 			};
 		}
 
 		// type === users
-		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
+		if (!hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
 			return;
 		}
 		const sort = sortUsers(sortBy, sortDirection);
 		return {
-			results: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
+			results: Users.findByActiveUsersExcept(text, [user.username], {
 				...options,
 				sort,
 				fields: {
@@ -94,7 +96,7 @@ Meteor.methods({
 					emails: 1,
 				},
 			}).fetch(),
-			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count(),
+			total: Users.findByActiveUsersExcept(text, [user.username]).count(),
 		};
 	},
 });
