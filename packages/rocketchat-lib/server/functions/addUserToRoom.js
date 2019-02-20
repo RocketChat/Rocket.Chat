@@ -53,5 +53,3 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 
 	return true;
 };
-
-RocketChat.addUserToRoom = addUserToRoom;

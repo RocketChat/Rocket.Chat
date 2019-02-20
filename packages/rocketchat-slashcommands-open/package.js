@@ -14,5 +14,5 @@ Package.onUse(function(api) {
 		'kadira:flow-router',
 		'templating',
 	]);
-	api.addFiles('client/index.js', 'client');
+	api.mainModule('client/index.js', 'client');
 });

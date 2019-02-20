@@ -122,8 +122,10 @@ export class SAUMonitorClass {
 
 		Accounts.onLogout((info) => {
 			const sessionId = info.connection.id;
-			const userId = info.user._id;
-			Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
+			if (info.user) {
+				const userId = info.user._id;
+				Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
+			}
 		});
 	}
 

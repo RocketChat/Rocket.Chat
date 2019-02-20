@@ -49,12 +49,18 @@ const renderMessage = (message) => {
 		return message;
 	}
 
-	const regexTokens = new RegExp(`(${ (message.tokens || []).map(({ token }) => RegExp.escape(token)) })`, 'g');
-
+	let msgParts;
+	let regexTokens;
+	if (message.tokens && message.tokens.length) {
+		regexTokens = new RegExp(`(${ (message.tokens || []).map(({ token }) => RegExp.escape(token)) })`, 'g');
+		msgParts = message.html.split(regexTokens);
+	} else {
+		msgParts = [message.html];
+	}
 	const autolinker = createAutolinker();
-	message.html = message.html.split(regexTokens)
+	message.html = msgParts
 		.map((msgPart) => {
-			if (regexTokens.test(msgPart)) {
+			if (regexTokens && regexTokens.test(msgPart)) {
 				return msgPart;
 			}
 

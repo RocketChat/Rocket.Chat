@@ -63,5 +63,3 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 		}, 500);
 	});
 };
-
-RocketChat.setUserAvatar = setUserAvatar;

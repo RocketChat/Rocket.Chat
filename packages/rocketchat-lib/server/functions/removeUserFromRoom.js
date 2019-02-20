@@ -27,5 +27,3 @@ export const removeUserFromRoom = function(rid, user) {
 		});
 	}
 };
-
-RocketChat.removeUserFromRoom = removeUserFromRoom;

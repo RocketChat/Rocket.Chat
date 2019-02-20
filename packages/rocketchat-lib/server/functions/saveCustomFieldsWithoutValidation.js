@@ -38,5 +38,3 @@ export const saveCustomFieldsWithoutValidation = function(userId, formData) {
 		});
 	}
 };
-
-RocketChat.saveCustomFieldsWithoutValidation = saveCustomFieldsWithoutValidation;

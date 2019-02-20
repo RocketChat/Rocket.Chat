@@ -97,5 +97,3 @@ export const deleteUser = function(userId) {
 
 	Users.removeById(userId); // Remove user from users database
 };
-
-RocketChat.deleteUser = deleteUser;

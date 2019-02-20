@@ -1,3 +1,4 @@
+import { Settings } from 'meteor/rocketchat:models';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 
 export class AppSettingsConverter {
@@ -6,7 +7,7 @@ export class AppSettingsConverter {
 	}
 
 	convertById(settingId) {
-		const setting = RocketChat.models.Settings.findOneNotHiddenById(settingId);
+		const setting = Settings.findOneNotHiddenById(settingId);
 
 		return this.convertToApp(setting);
 	}
