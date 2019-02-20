@@ -86,9 +86,7 @@ export class CROWD {
 		if (username.indexOf('@') !== -1) {
 			const email = username;
 
-			user = Meteor.users
-				.findOne({ 'emails.address': email })
-				.project({ username: 1, crowd_username: 1, crowd: 1 });
+			user = Meteor.users.findOne({ 'emails.address': email }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -97,9 +95,7 @@ export class CROWD {
 		}
 
 		if (user == null) {
-			user = Meteor.users
-				.findOne({ username })
-				.project({ username: 1, crowd_username: 1, crowd: 1 });
+			user = Meteor.users.findOne({ username }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -108,9 +104,7 @@ export class CROWD {
 		}
 
 		if (user == null) {
-			user = Meteor.users
-				.findOne({ crowd_username: username })
-				.project({ username: 1, crowd_username: 1, crowd: 1 });
+			user = Meteor.users.findOne({ crowd_username: username }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
