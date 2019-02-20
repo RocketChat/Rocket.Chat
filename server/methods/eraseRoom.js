@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms } from 'meteor/rocketchat:models';
+import { Apps } from 'meteor/rocketchat:apps';
 
 Meteor.methods({
 	eraseRoom(rid) {
@@ -13,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

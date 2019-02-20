@@ -7,6 +7,8 @@ import { TabBar, fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { emoji } from 'meteor/rocketchat:emoji';
+import { Markdown } from 'meteor/rocketchat:markdown';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -74,13 +76,13 @@ Template.headerRoom.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData || !roomData.topic) { return ''; }
 
-		let roomTopic = RocketChat.Markdown.parse(roomData.topic);
+		let roomTopic = Markdown.parse(roomData.topic);
 
 		// &#39; to apostrophe (') for emojis such as :')
 		roomTopic = roomTopic.replace(/&#39;/g, '\'');
 
-		Object.keys(RocketChat.emoji.packages).forEach((emojiPackage) => {
-			roomTopic = RocketChat.emoji.packages[emojiPackage].render(roomTopic);
+		Object.keys(emoji.packages).forEach((emojiPackage) => {
+			roomTopic = emoji.packages[emojiPackage].render(roomTopic);
 		});
 
 		// apostrophe (') back to &#39;

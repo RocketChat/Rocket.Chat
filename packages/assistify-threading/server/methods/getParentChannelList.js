@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-
+import { Rooms } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 Meteor.methods({
 	'getParentChannelList'({ sort, limit }) {
 		this.unblock();
@@ -49,12 +50,12 @@ Meteor.methods({
 		}
 
 		const roomTypes = ['c'];
-		if (RocketChat.authz.hasPermission(this.userId, 'view-other-user-channels')) {
+		if (hasPermission(this.userId, 'view-other-user-channels')) {
 			roomTypes.push('p');
 		}
 
 		return {
-			channels: RocketChat.models.Rooms.findThreadParentByNameStarting('', options).fetch(),
+			channels: Rooms.findThreadParentByNameStarting('', options).fetch(),
 		};
 	},
 });

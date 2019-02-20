@@ -1,10 +1,11 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { AdminBox } from 'meteor/rocketchat:ui-utils';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 
-RocketChat.AdminBox.addOption({
+AdminBox.addOption({
 	href: 'admin-oauth-apps',
 	i18nLabel: 'OAuth Apps',
 	icon: 'discover',
 	permissionGranted() {
-		return RocketChat.authz.hasAllPermission('manage-oauth-apps');
+		return hasAllPermission('manage-oauth-apps');
 	},
 });

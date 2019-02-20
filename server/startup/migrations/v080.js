@@ -1,4 +1,7 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Integrations } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 80,
 	up() {
 		const query = {
@@ -20,6 +23,6 @@ RocketChat.Migrations.add({
 			},
 		};
 
-		RocketChat.models.Integrations.update(query, update, { multi: true });
+		Integrations.update(query, update, { multi: true });
 	},
 });

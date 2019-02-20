@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(function() {
-	RocketChat.settings.addGroup('Accounts', function() {
+	settings.addGroup('Accounts', function() {
 		this.section('Iframe', function() {
 			this.add('Accounts_iframe_enabled', false, { type: 'boolean', public: true });
 			this.add('Accounts_iframe_url', '', { type: 'string', public: true });

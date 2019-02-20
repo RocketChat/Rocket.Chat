@@ -1,17 +1,20 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
+import { Tokenpass } from './Tokenpass';
 
-function removeUsersFromTokenChannels() {
+async function removeUsersFromTokenChannels() {
 	const rooms = {};
+	const { removeUserFromRoom } = await import('meteor/rocketchat:lib');
 
-	RocketChat.models.Rooms.findAllTokenChannels().forEach((room) => {
+	Rooms.findAllTokenChannels().forEach((room) => {
 		rooms[room._id] = room.tokenpass;
 	});
 
 	const users = {};
 
-	RocketChat.models.Subscriptions.findByRoomIds(Object.keys(rooms)).forEach((sub) => {
+	Subscriptions.findByRoomIds(Object.keys(rooms)).forEach((sub) => {
 		if (!users[sub.u._id]) {
 			users[sub.u._id] = [];
 		}
@@ -19,16 +22,16 @@ function removeUsersFromTokenChannels() {
 	});
 
 	Object.keys(users).forEach((user) => {
-		const userInfo = RocketChat.models.Users.findOneById(user);
+		const userInfo = Users.findOneById(user);
 
 		if (userInfo && userInfo.services && userInfo.services.tokenpass) {
-			const balances = RocketChat.updateUserTokenpassBalances(userInfo);
+			const balances = updateUserTokenpassBalances(userInfo);
 
 			users[user].forEach((roomId) => {
-				const valid = RocketChat.Tokenpass.validateAccess(rooms[roomId], balances);
+				const valid = Tokenpass.validateAccess(rooms[roomId], balances);
 
 				if (!valid) {
-					RocketChat.removeUserFromRoom(roomId, userInfo);
+					removeUserFromRoom(roomId, userInfo);
 				}
 			});
 		}
@@ -36,8 +39,8 @@ function removeUsersFromTokenChannels() {
 }
 
 Meteor.startup(function() {
-	Meteor.defer(function() {
-		removeUsersFromTokenChannels();
+	Meteor.defer(async function() {
+		await removeUsersFromTokenChannels();
 
 		SyncedCron.add({
 			name: 'Remove users from Token Channels',

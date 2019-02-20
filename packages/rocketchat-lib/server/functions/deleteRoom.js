@@ -1,7 +1,9 @@
-RocketChat.deleteRoom = function(rid) {
-	RocketChat.models.Messages.removeFilesByRoomId(rid);
-	RocketChat.models.Messages.removeByRoomId(rid);
-	RocketChat.models.Subscriptions.removeByRoomId(rid);
-	RocketChat.callbacks.run('afterDeleteRoom', rid);
-	return RocketChat.models.Rooms.removeById(rid);
+import { Messages, Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+export const deleteRoom = function(rid) {
+	Messages.removeFilesByRoomId(rid);
+	Messages.removeByRoomId(rid);
+	Subscriptions.removeByRoomId(rid);
+	callbacks.run('afterDeleteRoom', rid);
+	return Rooms.removeById(rid);
 };

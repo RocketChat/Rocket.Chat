@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-
+import { Messages } from 'meteor/rocketchat:models';
 Meteor.methods({
 	/**
 	 * Non-reactively retrieves metadata about messages of a room
@@ -16,8 +16,8 @@ Meteor.methods({
 
 		const metadata = {};
 
-		metadata.visibleMessagesCount = RocketChat.models.Messages.findVisibleByRoomId(roomId).count();
-		const lastMessage = RocketChat.models.Messages.getLastVisibleMessageSentWithNoTypeByRoomId(roomId);
+		metadata.visibleMessagesCount = Messages.findVisibleByRoomId(roomId).count();
+		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(roomId);
 		metadata.lastMessageTimestamp = lastMessage && lastMessage.ts;
 
 		return metadata;

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 function getParentChannels() {
 	const result = Meteor.call('getParentChannelList', { sort: 'name', default: -1 });

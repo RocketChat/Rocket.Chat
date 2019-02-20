@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-
+import { Rooms } from 'meteor/rocketchat:models';
 Meteor.methods({
 	'assistify:getParentChannelId'(channelName) {
 		check(channelName, String);
@@ -16,7 +16,7 @@ Meteor.methods({
 			},
 		};
 
-		const cursorHandle = RocketChat.models.Rooms.findByNameAndTypesNotInIds(channelName, ['c', 'p'], '', options);
+		const cursorHandle = Rooms.findByNameAndTypesNotInIds(channelName, ['c', 'p'], '', options);
 		const room = cursorHandle.fetch();
 		if (!room.length) {
 			throw new Meteor.Error('invalid-channel', 'Invalid channel', { method: 'assistify:getParentChannelId' });

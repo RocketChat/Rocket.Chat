@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -10,6 +11,7 @@ import { call } from 'meteor/rocketchat:lib';
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import toastr from 'toastr';
+
 
 Template.CreateThread.helpers({
 

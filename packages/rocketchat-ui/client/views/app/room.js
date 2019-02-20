@@ -721,8 +721,8 @@ Template.room.events({
 
 			const room = ChatRoom.findOne({ name: channel }) || ChatRoom.findOne({ _id: channel });
 			if (room) {
-				if (RocketChat.Layout.isEmbedded()) {
-					fireGlobalEvent('click-mention-link', { path: RocketChat.roomTypes.getRouteLink(room.t, { name: room.name }), channel });
+				if (Layout.isEmbedded()) {
+					fireGlobalEvent('click-mention-link', { path: roomTypes.getRouteLink(room.t, { name: room.name }), channel });
 				}
 
 				FlowRouter.goToRoomById(room._id);

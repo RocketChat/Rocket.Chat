@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import * as Models from 'meteor/rocketchat:models';
 import { Restivus } from 'meteor/nimble:restivus';
+import { API } from 'meteor/rocketchat:api';
+import { Livechat } from 'meteor/rocketchat:livechat';
+import { processWebhookMessage } from 'meteor/rocketchat:lib';
 import { logger } from '../logger';
-import { processWebhookMessage } from '../processWebhookMessage';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';
@@ -35,7 +37,7 @@ const Api = new Restivus({
 				}
 			}
 
-			this.integration = RocketChat.models.Integrations.findOne({
+			this.integration = Models.Integrations.findOne({
 				_id: this.request.params.integrationId,
 				token: decodeURIComponent(this.request.params.token),
 			});
@@ -54,7 +56,7 @@ const Api = new Restivus({
 				};
 			}
 
-			const user = RocketChat.models.Users.findOne({
+			const user = Models.Users.findOne({
 				_id: this.integration.userId,
 			});
 
@@ -75,7 +77,7 @@ function buildSandbox(store = {}) {
 		moment,
 		Fiber,
 		Promise,
-		Livechat: RocketChat.Livechat,
+		Livechat,
 		Store: {
 			set(key, val) {
 				return store[key] = val;
@@ -97,7 +99,7 @@ function buildSandbox(store = {}) {
 		},
 	};
 
-	Object.keys(RocketChat.models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = RocketChat.models[k]);
+	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = Models[k]);
 	return { store, sandbox	};
 }
 
@@ -129,12 +131,12 @@ function getIntegrationScript(integration) {
 		logger.incoming.error(script.replace(/^/gm, '  '));
 		logger.incoming.error('[Stack:]');
 		logger.incoming.error(stack.replace(/^/gm, '  '));
-		throw RocketChat.API.v1.failure('error-evaluating-script');
+		throw API.v1.failure('error-evaluating-script');
 	}
 
 	if (!sandbox.Script) {
 		logger.incoming.error('[Class "Script" not in Trigger', integration.name, ']');
-		throw RocketChat.API.v1.failure('class-script-not-found');
+		throw API.v1.failure('class-script-not-found');
 	}
 }
 
@@ -172,20 +174,20 @@ function createIntegration(options, user) {
 		}
 	});
 
-	return RocketChat.API.v1.success();
+	return API.v1.success();
 }
 
 function removeIntegration(options, user) {
 	logger.incoming.info('Remove integration');
 	logger.incoming.debug(options);
 
-	const integrationToRemove = RocketChat.models.Integrations.findOne({
+	const integrationToRemove = Models.Integrations.findOne({
 		urls: options.target_url,
 	});
 
 	Meteor.runAsUser(user._id, () => Meteor.call('deleteOutgoingIntegration', integrationToRemove._id));
 
-	return RocketChat.API.v1.success();
+	return API.v1.success();
 }
 
 function executeIntegrationRest() {
@@ -213,7 +215,7 @@ function executeIntegrationRest() {
 			script = getIntegrationScript(this.integration);
 		} catch (e) {
 			logger.incoming.warn(e);
-			return RocketChat.API.v1.failure(e.message);
+			return API.v1.failure(e.message);
 		}
 
 		this.request.setEncoding('utf8');
@@ -262,9 +264,9 @@ function executeIntegrationRest() {
 
 			if (!result) {
 				logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':] No data');
-				return RocketChat.API.v1.success();
+				return API.v1.success();
 			} else if (result && result.error) {
-				return RocketChat.API.v1.failure(result.error);
+				return API.v1.failure(result.error);
 			}
 
 			this.bodyParams = result && result.content;
@@ -280,7 +282,7 @@ function executeIntegrationRest() {
 			logger.incoming.error(this.integration.scriptCompiled.replace(/^/gm, '  '));
 			logger.incoming.error('[Stack:]');
 			logger.incoming.error(stack.replace(/^/gm, '  '));
-			return RocketChat.API.v1.failure('error-running-script');
+			return API.v1.failure('error-running-script');
 		}
 	}
 
@@ -288,7 +290,7 @@ function executeIntegrationRest() {
 	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
 	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
 		// return RocketChat.API.v1.failure('body-empty');
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	}
 
 	this.bodyParams.bot = { i: this.integration._id };
@@ -296,16 +298,16 @@ function executeIntegrationRest() {
 	try {
 		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
 		if (_.isEmpty(message)) {
-			return RocketChat.API.v1.failure('unknown-error');
+			return API.v1.failure('unknown-error');
 		}
 
 		if (this.scriptResponse) {
 			logger.incoming.debug('response', this.scriptResponse);
 		}
 
-		return RocketChat.API.v1.success(this.scriptResponse);
+		return API.v1.success(this.scriptResponse);
 	} catch ({ error, message }) {
-		return RocketChat.API.v1.failure(error || message);
+		return API.v1.failure(error || message);
 	}
 }
 

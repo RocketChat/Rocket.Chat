@@ -8,5 +8,5 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use('ecmascript');
 
-	api.mainModule('nrr.js');
+	api.mainModule('client/index.js', 'client');
 });
