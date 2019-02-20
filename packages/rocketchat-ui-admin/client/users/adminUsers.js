@@ -131,7 +131,7 @@ Template.adminUsers.onRendered(function() {
 	});
 });
 
-const DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS = 300
+const DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS = 300;
 
 Template.adminUsers.events({
 	'keydown #users-filter'(e) {
