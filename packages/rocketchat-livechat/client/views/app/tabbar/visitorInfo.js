@@ -9,6 +9,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { t, handleError, roomTypes } from 'meteor/rocketchat:utils';
 import { hasRole } from 'meteor/rocketchat:authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
+import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -37,6 +38,10 @@ Template.visitorInfo.helpers({
 
 	room() {
 		return ChatRoom.findOne({ _id: this.rid });
+	},
+
+	department() {
+		return Template.instance().department.get();
 	},
 
 	joinTags() {
@@ -232,6 +237,8 @@ Template.visitorInfo.onCreated(function() {
 	this.customFields = new ReactiveVar([]);
 	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
+	this.departmentId = new ReactiveVar(null);
+	this.department = new ReactiveVar();
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -243,18 +250,17 @@ Template.visitorInfo.onCreated(function() {
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {
-			const room = ChatRoom.findOne(currentData.rid);
-			if (room && room.v && room.v._id) {
-				this.visitorId.set(room.v._id);
-			} else {
-				this.visitorId.set();
-			}
+			const room = Rooms.findOne(currentData.rid);
+			this.visitorId.set(room && room.v && room.v._id);
+			this.departmentId.set(room && room.departmentId);
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid: currentData.rid });
+		this.subscribe('livechat:departments');
 	}
 
 	this.autorun(() => {
 		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));
+		this.department.set(LivechatDepartment.findOne({ _id: this.departmentId.get() }));
 	});
 });
