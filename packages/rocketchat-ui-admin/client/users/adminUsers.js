@@ -131,6 +131,8 @@ Template.adminUsers.onRendered(function() {
 	});
 });
 
+const DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS = 300
+
 Template.adminUsers.events({
 	'keydown #users-filter'(e) {
 		if (e.which === 13) {
@@ -142,7 +144,7 @@ Template.adminUsers.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	}, 300),
+	}, DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS),
 	'click .user-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(Meteor.users.findOne(this._id));
