@@ -131,7 +131,7 @@ export class CROWD {
 
 		const crowdUser = this.fetchCrowdUser(crowd_username);
 
-		if (user && RocketChat.settings.get('CROWD_Allow_Custom_Username') === true) {
+		if (user && settings.get('CROWD_Allow_Custom_Username') === true) {
 			crowdUser.username = user.username;
 		}
 
@@ -210,7 +210,7 @@ export class CROWD {
 				crowdUser = self.fetchCrowdUser(crowd_username);
 			}
 
-			if (RocketChat.settings.get('CROWD_Allow_Custom_Username') === true) {
+			if (settings.get('CROWD_Allow_Custom_Username') === true) {
 				crowdUser.username = user.username;
 			}
 
