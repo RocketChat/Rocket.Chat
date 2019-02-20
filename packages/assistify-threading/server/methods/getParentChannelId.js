@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Rooms } from 'meteor/rocketchat:models';
 Meteor.methods({
+
 	'assistify:getParentChannelId'(channelName) {
 		check(channelName, String);
 

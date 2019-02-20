@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Rooms } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+
 Meteor.methods({
 	'getParentChannelList'({ sort, limit }) {
 		this.unblock();
