@@ -138,11 +138,11 @@ Template.adminUsers.events({
 			e.preventDefault();
 		}
 	},
-	'keyup #users-filter'(e, t) {
+	'keyup #users-filter': _.debounce((e, t) => {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	},
+	}, 300),
 	'click .user-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(Meteor.users.findOne(this._id));
