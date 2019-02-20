@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { Blaze } from 'meteor/blaze';
+import { settings } from 'meteor/rocketchat:settings';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
@@ -271,9 +273,9 @@ Template.CreateThread.events({
 				} else {
 					// callback to enable tracking
 					Meteor.defer(() => {
-						RocketChat.callbacks.run('afterCreateThread', Meteor.user(), result);
+						callbacks.run('afterCreateThread', Meteor.user(), result);
 					});
-					RocketChat.roomTypes.openRouteLink(result.t, result);
+					roomTypes.openRouteLink(result.t, result);
 				}
 			});
 		} else {
@@ -333,7 +335,7 @@ Template.CreateThread.onRendered(function() {
 
 Template.CreateThread.onCreated(function() {
 	const instance = this;
-	instance.parentChannel = new ReactiveVar(RocketChat.settings.get('Thread_default_parent_Channel')); // determine parent Channel from setting and allow to overwrite
+	instance.parentChannel = new ReactiveVar(settings.get('Thread_default_parent_Channel')); // determine parent Channel from setting and allow to overwrite
 	instance.parentChannelId = new ReactiveVar('');
 	instance.parentChannelError = new ReactiveVar(null);
 	instance.selectParent = new ReactiveVar(false);
@@ -347,7 +349,7 @@ Template.CreateThread.onCreated(function() {
 	}, 200);
 
 	// callback to allow setting a parent Channel or e. g. tracking the event using Piwik or GA
-	const callbackDefaults = RocketChat.callbacks.run('openThreadCreationScreen');
+	const callbackDefaults = callbacks.run('openThreadCreationScreen');
 	if (callbackDefaults) {
 		if (callbackDefaults.parentChannel) {
 			instance.parentChannel.set(callbackDefaults.parentChannel);

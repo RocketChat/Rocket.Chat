@@ -1,14 +1,17 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { ChatMessage } from 'meteor/rocketchat:models';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { MessageAction } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
 	const instance = this;
 	instance.room = new ReactiveVar('');
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'start-thread',
 		icon: 'thread',
 		label: 'Thread_start',
@@ -30,16 +33,16 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-			if (RocketChat.settings.get('Thread_from_context_menu') !== 'button') {
+			if (settings.get('Thread_from_context_menu') !== 'button') {
 				return false;
 			}
 			if (message.u._id !== Meteor.userId()) {
-				return RocketChat.authz.hasAtLeastOnePermission('start-thread-other-user');
+				return hasAtLeastOnePermission('start-thread-other-user');
 			} else {
-				return RocketChat.authz.hasAtLeastOnePermission('start-thread');
+				return hasAtLeastOnePermission('start-thread');
 			}
 		},
 		order: 0,

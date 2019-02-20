@@ -3,7 +3,7 @@ import { FileUpload } from 'meteor/rocketchat:file-upload';
 import { Messages, Rooms } from 'meteor/rocketchat:models';
 import { Notifications } from 'meteor/rocketchat:notifications';
 
-export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, filesOnly = false, fromUsers = [] }) {
+export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, excludeThreads = true, filesOnly = false, fromUsers = [] }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -15,6 +15,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	Messages.findFilesByRoomIdPinnedTimestampAndUsers(
 		rid,
 		excludePinned,
+		excludeThreads,
 		ts,
 		fromUsers,
 		{ fields: { 'file._id': 1, pinned: 1 }, limit }
@@ -29,13 +30,14 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 		return fileCount;
 	}
 
-	const count = limit ? Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ts, limit, fromUsers) : Messages.removeByIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers);
+	const count = limit ? Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, excludeThreads, ts, limit, fromUsers) : Messages.removeByIdPinnedTimestampAndUsers(rid, excludePinned, excludeThreads, ts, fromUsers);
 
 	if (count) {
 		Rooms.resetLastMessageById(rid);
 		Notifications.notifyRoom(rid, 'deleteMessageBulk', {
 			rid,
 			excludePinned,
+			excludeThreads,
 			ts,
 			users: fromUsers,
 		});
