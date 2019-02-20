@@ -1,76 +1,58 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-
-function getParentChannels() {
-	const result = Meteor.call('getParentChannelList', { sort: 'name', default: -1 });
-
-	return result.channels
-		.filter((channel) => !!channel.name)
-		.map((channel) => ({
-			key: channel.name, // has to be "key" in order to be able to select it in the settings as dropdown
-			i18nLabel: channel.name,
-		}));
-}
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(() => {
-	RocketChat.settings.addGroup('Threading');
+	settings.addGroup('Threading', function() {
+		// the channel for which threads are created if none is explicitly chosen
+		this.add('Thread_invitations_threshold', 10, {
+			group: 'Threading',
+			i18nLabel: 'Thread_invitations_threshold',
+			i18nDescription: 'Thread_invitations_threshold_description',
+			type: 'int',
+			public: true,
+		});
 
-	// the channel for which threads are created if none is explicitly chosen
-	let defaultChannel = '';
+		this.add('Thread_from_context_menu', 'button', {
+			group: 'Threading',
+			i18nLabel: 'Thread_from_context_menu',
+			type: 'select',
+			values: [
+				{ key: 'button', i18nLabel: 'Threading_context_menu_button' },
+				{ key: 'none', i18nLabel: 'Threading_context_menu_none' },
+			],
+			public: true,
+		});
 
-	const generalChannel = RocketChat.models.Rooms.findOneById('GENERAL');
+		this.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
+			group: 'Accounts',
+			section: 'Accounts_Default_User_Preferences',
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Threads_in_sidebar',
+		});
 
-	if (generalChannel) {
-		defaultChannel = generalChannel.name;
-	} else {
-		const potentialParentChannels = getParentChannels();
-		defaultChannel = potentialParentChannels[0] ? potentialParentChannels[0].key : '';
-	}
-	RocketChat.settings.add('Thread_default_parent_Channel', defaultChannel, {
-		group: 'Threading',
-		i18nLabel: 'Thread_default_parent_Channel',
-		type: 'string',
-		public: true,
-	});
+		// this is a technical counter which allows for generation of unique room names
+		this.add('Thread_Count', 1, {
+			group: 'Threading',
+			i18nLabel: 'Thread_count',
+			type: 'int',
+			public: false,
+			hidden: true,
+		});
 
-	// Set the default channel on each restart if unset
-	if (!RocketChat.settings.get('Thread_default_parent_Channel')) {
-		RocketChat.models.Settings.updateValueById('Thread_default_parent_Channel', defaultChannel);
-	}
 
-	RocketChat.settings.add('Thread_invitations_threshold', 10, {
-		group: 'Threading',
-		i18nLabel: 'Thread_invitations_threshold',
-		i18nDescription: 'Thread_invitations_threshold_description',
-		type: 'int',
-		public: true,
-	});
+		const globalQuery = {
+			_id: 'RetentionPolicy_Enabled',
+			value: true,
+		};
 
-	RocketChat.settings.add('Thread_from_context_menu', 'button', {
-		group: 'Threading',
-		i18nLabel: 'Thread_from_context_menu',
-		type: 'select',
-		values: [
-			{ key: 'button', i18nLabel: 'Threading_context_menu_button' },
-			{ key: 'none', i18nLabel: 'Threading_context_menu_none' },
-		],
-		public: true,
-	});
-
-	RocketChat.settings.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
-		group: 'Accounts',
-		section: 'Accounts_Default_User_Preferences',
-		type: 'boolean',
-		public: true,
-		i18nLabel: 'Threads_in_sidebar',
-	});
-
-	// this is a technical counter which allows for generation of unique room names
-	RocketChat.settings.add('Thread_Count', 1, {
-		group: 'Threading',
-		i18nLabel: 'Thread_count',
-		type: 'int',
-		public: false,
-		hidden: true,
+		this.add('RetentionPolicy_ExcludeThreads', false, {
+			group:'RetentionPolicy',
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'RetentionPolicy_ExcludeThreads',
+			i18nDescription: 'RetentionPolicy_ExcludeThreads_Description',
+			enableQuery: globalQuery,
+		});
 	});
 });

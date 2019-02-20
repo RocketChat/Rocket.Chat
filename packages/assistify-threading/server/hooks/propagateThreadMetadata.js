@@ -1,23 +1,25 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
 
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Messages, Rooms } from 'meteor/rocketchat:models';
+import { RocketChat } from 'meteor/rocketchat:lib';
 /**
  * We need to propagate the writing of new message in a thread to the linking
  * system message
  */
-RocketChat.callbacks.add('afterSaveMessage', function(message, { _id, prid, pmid }) {
+callbacks.add('afterSaveMessage', function(message, { _id, prid, pmid }) {
 	if (prid && pmid) {
-		RocketChat.models.Messages.refreshThreadMetadata({ rid: _id, prid, pmid }, message);
+		Messages.refreshThreadMetadata({ rid: _id, prid, pmid }, message);
 	}
 	return message;
-}, RocketChat.callbacks.priority.LOW, 'PropagateThreadMetadata');
+}, callbacks.priority.LOW, 'PropagateThreadMetadata');
 
-RocketChat.callbacks.add('afterDeleteMessage', function(message, { _id, prid, pmid }) {
+callbacks.add('afterDeleteMessage', function(message, { _id, prid, pmid }) {
 	if (prid && pmid) {
-		RocketChat.models.Messages.refreshThreadMetadata({ rid: _id, prid, pmid }, message);
+		Messages.refreshThreadMetadata({ rid: _id, prid, pmid }, message);
 	}
 	return message;
-}, RocketChat.callbacks.priority.LOW, 'PropagateThreadMetadata');
+}, callbacks.priority.LOW, 'PropagateThreadMetadata');
 
-RocketChat.callbacks.add('afterDeleteRoom', function(rid) {
-	RocketChat.models.Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => RocketChat.deleteRoom(_id));
+callbacks.add('afterDeleteRoom', function(rid) {
+	Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => RocketChat.deleteRoom(_id));
 }, 'DeleteThreadChain');

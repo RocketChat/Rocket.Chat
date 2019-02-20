@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Permissions } from 'meteor/rocketchat:models';
 
 Meteor.startup(() => {
 	// Add permissions for threading
@@ -9,8 +9,8 @@ Meteor.startup(() => {
 	];
 
 	for (const permission of permissions) {
-		if (!RocketChat.models.Permissions.findOneById(permission._id)) {
-			RocketChat.models.Permissions.upsert(permission._id, { $set: permission });
+		if (!Permissions.findOneById(permission._id)) {
+			Permissions.upsert(permission._id, { $set: permission });
 		}
 	}
 });

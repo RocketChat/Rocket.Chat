@@ -1,8 +1,8 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 
 import s from 'underscore.string';
 
-Object.assign(RocketChat.models.Rooms, {
+Object.assign(Rooms, {
 	findThreadParentByNameStarting(name, options) {
 		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
 

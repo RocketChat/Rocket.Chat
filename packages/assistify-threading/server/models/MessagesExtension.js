@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Messages, Rooms } from 'meteor/rocketchat:models';
 
 /**
  * Copy metadata from the thread to the system message in the parent channel
@@ -7,12 +7,12 @@ import { RocketChat } from 'meteor/rocketchat:lib';
  * to race conditions: If multiple updates occur, the current state will be updated
  * only if the new state of the thread room is really newer.
  */
-Object.assign(RocketChat.models.Messages, {
+Object.assign(Messages, {
 	refreshThreadMetadata({ rid, pmid }) {
 		if (!rid || !pmid) {
 			return false;
 		}
-		const { lm, msgs: count } = RocketChat.models.Rooms.findOneById(rid, {
+		const { lm, msgs: count } = Rooms.findOneById(rid, {
 			fields: {
 				msgs: 1,
 				lm: 1,
