@@ -13,6 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "katex": "^0.7.1"
+    "katex": "^0.9.0"
   }
 }

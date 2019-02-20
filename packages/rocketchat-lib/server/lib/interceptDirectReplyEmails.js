@@ -1,21 +1,24 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
 import IMAP from 'imap';
-import POP3 from 'poplib';
+import POP3Lib from 'poplib';
 import { simpleParser } from 'mailparser';
+import { processDirectEmail } from '.';
 
 export class IMAPIntercepter {
 	constructor() {
 		this.imap = new IMAP({
-			user: RocketChat.settings.get('Direct_Reply_Username'),
-			password: RocketChat.settings.get('Direct_Reply_Password'),
-			host: RocketChat.settings.get('Direct_Reply_Host'),
-			port: RocketChat.settings.get('Direct_Reply_Port'),
-			debug: RocketChat.settings.get('Direct_Reply_Debug') ? console.log : false,
-			tls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
+			user: settings.get('Direct_Reply_Username'),
+			password: settings.get('Direct_Reply_Password'),
+			host: settings.get('Direct_Reply_Host'),
+			port: settings.get('Direct_Reply_Port'),
+			debug: settings.get('Direct_Reply_Debug') ? console.log : false,
+			tls: !settings.get('Direct_Reply_IgnoreTLS'),
 			connTimeout: 30000,
-			keepalive: true
+			keepalive: true,
 		});
 
-		this.delete = RocketChat.settings.get('Direct_Reply_Delete') ? RocketChat.settings.get('Direct_Reply_Delete') : true;
+		this.delete = settings.get('Direct_Reply_Delete') ? settings.get('Direct_Reply_Delete') : true;
 
 		// On successfully connected.
 		this.imap.on('ready', Meteor.bindEnvironment(() => {
@@ -86,7 +89,7 @@ export class IMAPIntercepter {
 					// fetch headers & first body part.
 					bodies: ['HEADER.FIELDS (FROM TO DATE MESSAGE-ID)', '1'],
 					struct: true,
-					markSeen: true
+					markSeen: true,
 				});
 
 				f.on('message', Meteor.bindEnvironment((msg, seqno) => {
@@ -126,7 +129,7 @@ export class IMAPIntercepter {
 								if (err) { console.log(`Mark deleted error: ${ err }`); }
 							});
 						}
-						RocketChat.processDirectEmail(email);
+						processDirectEmail(email);
 					}));
 				}));
 				f.once('error', (err) => {
@@ -139,16 +142,16 @@ export class IMAPIntercepter {
 
 export class POP3Intercepter {
 	constructor() {
-		this.pop3 = new POP3(RocketChat.settings.get('Direct_Reply_Port'), RocketChat.settings.get('Direct_Reply_Host'), {
-			enabletls: !RocketChat.settings.get('Direct_Reply_IgnoreTLS'),
-			debug: RocketChat.settings.get('Direct_Reply_Debug') ? console.log : false
+		this.pop3 = new POP3Lib(settings.get('Direct_Reply_Port'), settings.get('Direct_Reply_Host'), {
+			enabletls: !settings.get('Direct_Reply_IgnoreTLS'),
+			debug: settings.get('Direct_Reply_Debug') ? console.log : false,
 		});
 
 		this.totalMsgCount = 0;
 		this.currentMsgCount = 0;
 
 		this.pop3.on('connect', Meteor.bindEnvironment(() => {
-			this.pop3.login(RocketChat.settings.get('Direct_Reply_Username'), RocketChat.settings.get('Direct_Reply_Password'));
+			this.pop3.login(settings.get('Direct_Reply_Username'), settings.get('Direct_Reply_Password'));
 		}));
 
 		this.pop3.on('login', Meteor.bindEnvironment((status) => {
@@ -225,14 +228,15 @@ export class POP3Intercepter {
 				from: mail.from.text,
 				to: mail.to.text,
 				date: mail.date,
-				'message-id': mail.messageId
+				'message-id': mail.messageId,
 			},
-			body: mail.text
+			body: mail.text,
 		};
 
-		RocketChat.processDirectEmail(email);
+		processDirectEmail(email);
 	}
 }
+export let POP3;
 
 export class POP3Helper {
 	constructor() {
@@ -241,13 +245,13 @@ export class POP3Helper {
 
 	start() {
 		// run every x-minutes
-		if (RocketChat.settings.get('Direct_Reply_Frequency')) {
-			RocketChat.POP3 = new POP3Intercepter();
+		if (settings.get('Direct_Reply_Frequency')) {
+			POP3 = new POP3Intercepter();
 
 			this.running = Meteor.setInterval(() => {
 				// get new emails and process
-				RocketChat.POP3 = new POP3Intercepter();
-			}, Math.max(RocketChat.settings.get('Direct_Reply_Frequency')*60*1000, 2*60*1000));
+				POP3 = new POP3Intercepter();
+			}, Math.max(settings.get('Direct_Reply_Frequency') * 60 * 1000, 2 * 60 * 1000));
 		}
 	}
 

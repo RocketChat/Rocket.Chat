@@ -1,4 +1,6 @@
-RocketChat.API.helperMethods.set('isUserFromParams', function _isUserFromParams() {
+import { API } from '../api';
+
+API.helperMethods.set('isUserFromParams', function _isUserFromParams() {
 	const params = this.requestParams();
 
 	return (!params.userId && !params.username && !params.user) ||

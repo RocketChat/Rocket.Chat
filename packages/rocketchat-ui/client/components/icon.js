@@ -1,7 +1,9 @@
-/* globals isFirefox */
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { isChrome, isFirefox } from 'meteor/rocketchat:utils';
 
-const firefoxBaseUrlFix = () => `${ window.location.origin }${ FlowRouter.current().path }`;
+const baseUrlFix = () => `${ document.baseURI }${ FlowRouter.current().path.substring(1) }`;
 
 Template.icon.helpers({
-	baseUrl: isFirefox && isFirefox[1] < 55 ? firefoxBaseUrlFix : undefined
+	baseUrl: ((isFirefox && isFirefox[1] < 55) || (isChrome && isChrome[1] < 55)) ? baseUrlFix : undefined,
 });

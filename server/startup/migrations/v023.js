@@ -1,10 +1,13 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 23,
 	up() {
-		RocketChat.models.Settings.remove({
-			_id: 'Accounts_denyUnverifiedEmails'
+		Settings.remove({
+			_id: 'Accounts_denyUnverifiedEmails',
 		});
 
 		return console.log('Deleting not used setting Accounts_denyUnverifiedEmails');
-	}
+	},
 });

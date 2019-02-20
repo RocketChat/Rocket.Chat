@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { EmojiCustom } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 Meteor.publish('fullEmojiData', function(filter, limit) {
@@ -8,7 +10,7 @@ Meteor.publish('fullEmojiData', function(filter, limit) {
 	const fields = {
 		name: 1,
 		aliases: 1,
-		extension: 1
+		extension: 1,
 	};
 
 	filter = s.trim(filter);
@@ -16,13 +18,13 @@ Meteor.publish('fullEmojiData', function(filter, limit) {
 	const options = {
 		fields,
 		limit,
-		sort: { name: 1 }
+		sort: { name: 1 },
 	};
 
 	if (filter) {
 		const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-		return RocketChat.models.EmojiCustom.findByNameOrAlias(filterReg, options);
+		return EmojiCustom.findByNameOrAlias(filterReg, options);
 	}
 
-	return RocketChat.models.EmojiCustom.find({}, options);
+	return EmojiCustom.find({}, options);
 });

@@ -1,33 +1,36 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Integrations } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 33,
 	up() {
 		const scriptAlert = '/**\n * This script is out-of-date, convert to the new format\n * (https://rocket.chat/docs/administrator-guides/integrations)\n**/\n\n';
 
-		const integrations = RocketChat.models.Integrations.find({
+		const integrations = Integrations.find({
 			$or: [
 				{
 					script: {
-						$exists: false
+						$exists: false,
 					},
 					processIncomingRequestScript: {
-						$exists: true
-					}
+						$exists: true,
+					},
 				}, {
 					script: {
-						$exists: false
+						$exists: false,
 					},
 					prepareOutgoingRequestScript: {
-						$exists: true
-					}
+						$exists: true,
+					},
 				}, {
 					script: {
-						$exists: false
+						$exists: false,
 					},
 					processOutgoingResponseScript: {
-						$exists: true
-					}
-				}
-			]
+						$exists: true,
+					},
+				},
+			],
 		}).fetch();
 
 		integrations.forEach(function(integration) {
@@ -42,10 +45,10 @@ RocketChat.Migrations.add({
 				script += `${ integration.processOutgoingResponseScript }\n\n`;
 			}
 
-			return RocketChat.models.Integrations.update(integration._id, {
+			return Integrations.update(integration._id, {
 				$set: {
-					script: scriptAlert + script.replace(/^/gm, '// ')
-				}
+					script: scriptAlert + script.replace(/^/gm, '// '),
+				},
 			});
 		});
 
@@ -53,26 +56,26 @@ RocketChat.Migrations.add({
 			$unset: {
 				processIncomingRequestScript: 1,
 				prepareOutgoingRequestScript: 1,
-				processOutgoingResponseScript: 1
-			}
+				processOutgoingResponseScript: 1,
+			},
 		};
 
-		RocketChat.models.Integrations.update({}, update, {
-			multi: true
+		Integrations.update({}, update, {
+			multi: true,
 		});
 
 		update = {
 			$set: {
-				enabled: true
-			}
+				enabled: true,
+			},
 		};
 
-		RocketChat.models.Integrations.update({
+		Integrations.update({
 			enabled: {
-				$exists: false
-			}
+				$exists: false,
+			},
 		}, update, {
-			multi: true
+			multi: true,
 		});
-	}
+	},
 });

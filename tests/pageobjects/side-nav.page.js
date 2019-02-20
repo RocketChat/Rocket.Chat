@@ -46,10 +46,12 @@ class SideNav extends Page {
 
 	get burgerBtn() { return browser.element('.burger'); }
 
+	get sidebarWrap() { return browser.element('.sidebar-wrap'); }
+
 	// Opens a channel via rooms list
 	openChannel(channelName) {
-		browser.waitForVisible(`.sidebar-item__name=${ channelName }`, 5000);
-		browser.click(`.sidebar-item__name=${ channelName }`);
+		browser.waitForVisible(`.sidebar-item__ellipsis=${ channelName }`, 10000);
+		browser.click(`.sidebar-item__ellipsis=${ channelName }`);
 		browser.waitForVisible('.rc-message-box__container textarea', 5000);
 		browser.waitForVisible('.rc-header', 5000);
 		browser.waitUntil(function() {
@@ -60,23 +62,21 @@ class SideNav extends Page {
 
 	// Opens a channel via spotlight search
 	searchChannel(channelName) {
-		let currentRoom;
 		browser.waitForVisible('.rc-header', 15000);
 		if (browser.isVisible('.rc-header__name')) {
-			currentRoom = browser.element('.rc-header__name').getText();
+			if (channelName === browser.element('.rc-header__name').getText()) {
+				return;
+			}
 		}
-		if (currentRoom !== channelName) {
-			this.spotlightSearch.waitForVisible(5000);
-			this.spotlightSearch.click();
-			this.spotlightSearch.setValue(channelName);
-			browser.waitForVisible(`[title='${ channelName }']`, 5000);
-			browser.click(`[title='${ channelName }']`);
-			browser.waitForVisible('.rc-header__name', 8000);
-			browser.waitUntil(function() {
-				return browser.getText('.rc-header__name') === channelName;
-			}, 10000);
-
-		}
+		this.spotlightSearch.waitForVisible(5000);
+		this.spotlightSearch.click();
+		this.spotlightSearch.setValue(channelName);
+		browser.waitForVisible(`[aria-label='${ channelName }']`, 5000);
+		browser.click(`[aria-label='${ channelName }']`);
+		browser.waitForVisible('.rc-header__name', 8000);
+		browser.waitUntil(function() {
+			return browser.getText('.rc-header__name') === channelName;
+		}, 10000);
 	}
 
 	// Gets a channel from the spotlight search
@@ -105,12 +105,12 @@ class SideNav extends Page {
 		return browser.element(`.sidebar-item__name=${ channelName }`);
 	}
 
-	createChannel(channelName, isPrivate, /*isReadOnly*/) {
+	createChannel(channelName, isPrivate, /* isReadOnly*/) {
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
 		this.channelName.waitForVisible(10000);
 
-		//workaround for incomplete setvalue bug
+		// workaround for incomplete setvalue bug
 		this.channelName.setValue(channelName);
 
 		browser.waitUntil(function() {

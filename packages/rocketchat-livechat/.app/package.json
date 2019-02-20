@@ -20,14 +20,18 @@
     "email": "support@rocket.chat"
   },
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.40",
-    "autolinker": "^1.6.2",
-    "bcrypt": "^1.0.3",
-    "core-js": "^2.5.3",
+    "@babel/runtime": "^7.2.0",
+    "autolinker": "^1.8.1",
+    "bcrypt": "^3.0.2",
+    "core-js": "^2.5.7",
     "jquery": "^3.3.1",
-    "moment": "^2.20.1",
+    "meteor-node-stubs": "^0.4.1",
+    "mime-db": "^1.37.0",
+    "mime-type": "^3.0.7",
+    "moment": "^2.22.2",
+    "sweetalert2": "^7.29.2",
     "toastr": "^2.1.4",
-    "underscore": "^1.8.3",
-    "underscore.string": "^3.3.4"
+    "underscore": "^1.9.1",
+    "underscore.string": "^3.3.5"
   }
 }

@@ -26,6 +26,24 @@
 		</div>
 		<div class="rc-user-info__row rc-user-info__row--separator">
 			<div class="rc-switch-double">
+				<div class="rc-switch-double__label {{#if muteGroupMentions}}disabled{{/if}}">
+					{{_ "Receive_Group_Mentions"}}
+				</div>
+				<div class="rc-switch rc-switch--blue">
+					<label class="rc-switch__label">
+						<input type="checkbox" class="rc-switch__input js-input-check" id="muteGroupMentions" name="muteGroupMentions" value="1" checked="{{$eq muteGroupMentions true}}">
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
+				<div class="rc-switch-double__label {{#unless muteGroupMentions}}disabled{{/unless}}">
+					{{_ "Mute_Group_Mentions"}}
+				</div>
+			</div>
+		</div>
+		<div class="rc-user-info__row rc-user-info__row--separator">
+			<div class="rc-switch-double">
 				<div class="rc-switch-double__label {{#if showUnreadStatus}}disabled{{/if}}">
 					{{_ "Hide_counter"}}
 					<div class="rc-switch-double__description">
@@ -84,7 +102,7 @@
 						{{/with}}
 					</div>
 					<div class="rc-user-info__config-content">
-						<div class="rc-user-info__config-name">{{_ "Notifications Duration"}}:</div>
+						<div class="rc-user-info__config-name">{{_ "Notifications_Duration"}}:</div>
 						{{# with "desktopNotificationDuration"}}
 							<div class="rc-user-info__config-value">
 								{{#if desktopNotificationDuration }}

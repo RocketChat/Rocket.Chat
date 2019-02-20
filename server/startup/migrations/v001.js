@@ -1,20 +1,24 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Users } from 'meteor/rocketchat:models';
+import { generateUsernameSuggestion } from 'meteor/rocketchat:lib';
+
+Migrations.add({
 	version: 1,
 	up() {
-		return RocketChat.models.Users.find({
+		return Users.find({
 			username: {
-				$exists: false
+				$exists: false,
 			},
 			lastLogin: {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}).forEach((user) => {
-			const username = RocketChat.generateUsernameSuggestion(user);
+			const username = generateUsernameSuggestion(user);
 			if (username && username.trim() !== '') {
-				return RocketChat.models.Users.setUsername(user._id, username);
+				return Users.setUsername(user._id, username);
 			} else {
 				return console.log('User without username', JSON.stringify(user, null, ' '));
 			}
 		});
-	}
+	},
 });

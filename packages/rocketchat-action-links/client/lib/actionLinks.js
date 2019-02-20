@@ -1,15 +1,18 @@
-//Action Links Handler. This method will be called off the client.
+import { Meteor } from 'meteor/meteor';
+import { handleError } from 'meteor/rocketchat:utils';
+import { actionLinks } from '../../both/lib/actionLinks';
+// Action Links Handler. This method will be called off the client.
 
-RocketChat.actionLinks.run = (name, messageId, instance) => {
-	const message = RocketChat.actionLinks.getMessage(name, messageId);
+actionLinks.run = (name, messageId, instance) => {
+	const message = actionLinks.getMessage(name, messageId);
 
 	const actionLink = message.actionLinks[name];
 
 	let ranClient = false;
 
-	if (RocketChat.actionLinks && RocketChat.actionLinks.actions && RocketChat.actionLinks.actions[actionLink.method_id]) {
+	if (actionLinks && actionLinks.actions && actionLinks.actions[actionLink.method_id]) {
 		// run just on client side
-		RocketChat.actionLinks.actions[actionLink.method_id](message, actionLink.params, instance);
+		actionLinks.actions[actionLink.method_id](message, actionLink.params, instance);
 
 		ranClient = true;
 	}

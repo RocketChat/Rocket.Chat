@@ -1,9 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from 'meteor/rocketchat:models';
 import _ from 'underscore';
-
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:getInitialData'(visitorToken) {
+	'livechat:getInitialData'(visitorToken, departmentId) {
 		const info = {
 			enabled: null,
 			title: null,
@@ -20,10 +21,15 @@ Meteor.methods({
 			offlineSuccessMessage: null,
 			offlineUnavailableMessage: null,
 			displayOfflineForm: null,
-			videoCall: null
+			videoCall: null,
+			fileUpload: null,
+			conversationFinishedMessage: null,
+			nameFieldRegistrationForm: null,
+			emailFieldRegistrationForm: null,
+			registrationFormMessage: null,
 		};
 
-		const room = RocketChat.models.Rooms.findOpenByVisitorToken(visitorToken, {
+		const options = {
 			fields: {
 				name: 1,
 				t: 1,
@@ -31,10 +37,11 @@ Meteor.methods({
 				u: 1,
 				usernames: 1,
 				v: 1,
-				servedBy: 1
-			}
-		}).fetch();
-
+				servedBy: 1,
+				departmentId: 1,
+			},
+		};
+		const room = (departmentId) ? Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}
@@ -43,15 +50,16 @@ Meteor.methods({
 			fields: {
 				name: 1,
 				username: 1,
-				visitorEmails: 1
-			}
+				visitorEmails: 1,
+				department: 1,
+			},
 		});
 
 		if (room) {
 			info.visitor = visitor;
 		}
 
-		const initSettings = RocketChat.Livechat.getInitSettings();
+		const initSettings = Livechat.getInitSettings();
 
 		info.title = initSettings.Livechat_title;
 		info.color = initSettings.Livechat_title_color;
@@ -65,22 +73,26 @@ Meteor.methods({
 		info.displayOfflineForm = initSettings.Livechat_display_offline_form;
 		info.language = initSettings.Language;
 		info.videoCall = initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true;
+		info.fileUpload = initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled;
 		info.transcript = initSettings.Livechat_enable_transcript;
 		info.transcriptMessage = initSettings.Livechat_transcript_message;
+		info.conversationFinishedMessage = initSettings.Livechat_conversation_finished_message;
+		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
+		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
+		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 
-		info.agentData = room && room[0] && room[0].servedBy && RocketChat.models.Users.getAgentInfo(room[0].servedBy._id);
+		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
 
-		RocketChat.models.LivechatTrigger.findEnabled().forEach((trigger) => {
-			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions'));
+		LivechatTrigger.findEnabled().forEach((trigger) => {
+			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
 		});
 
-		RocketChat.models.LivechatDepartment.findEnabledWithAgents().forEach((department) => {
+		LivechatDepartment.findEnabledWithAgents().forEach((department) => {
 			info.departments.push(department);
 		});
 		info.allowSwitchingDepartments = initSettings.Livechat_allow_switching_departments;
 
-		info.online = RocketChat.models.Users.findOnlineAgents().count() > 0;
-
+		info.online = Users.findOnlineAgents().count() > 0;
 		return info;
-	}
+	},
 });

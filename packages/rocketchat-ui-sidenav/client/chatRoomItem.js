@@ -1,27 +1,36 @@
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { t } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { Rooms } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+
 Template.chatRoomItem.helpers({
 	roomData() {
-		let {name} = this;
-		const realNameForDirectMessages = RocketChat.settings.get('UI_Use_Real_Name') && this.t === 'd';
-		const realNameForChannel = RocketChat.settings.get('UI_Allow_room_names_with_special_chars') && this.t !== 'd';
-		if ((realNameForDirectMessages || realNameForChannel) && this.fname) {
-			name = this.fname;
+		let { name } = this;
+		if (this.fname) {
+			const realNameForDirectMessages = this.t === 'd' && settings.get('UI_Use_Real_Name');
+			const realNameForChannel = this.t !== 'd' && settings.get('UI_Allow_room_names_with_special_chars');
+			if (realNameForDirectMessages || realNameForChannel) {
+				name = this.fname;
+			}
 		}
 
-		let unread = false;
-		if (((FlowRouter.getParam('_id') !== this.rid) || !document.hasFocus()) && (this.unread > 0)) {
-			unread = this.unread;
-		}
+		const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
+		const unread = this.unread > 0 ? this.unread : false;
+		// if (this.unread > 0 && (!hasFocus || openedRoom !== this.rid)) {
+		// 	unread = this.unread;
+		// }
 
-		let active = false;
-		if ([this.rid, this._id].find(id => id === Session.get('openedRoom'))) {
-			active = true;
-		}
+		const active = [this.rid, this._id].includes((id) => id === openedRoom);
 
 		const archivedClass = this.archived ? 'archived' : false;
 
-		this.alert = !this.hideUnreadStatus && (FlowRouter.getParam('_id') !== this.rid || !document.hasFocus()) && this.alert;
+		this.alert = !this.hideUnreadStatus && this.alert; // && (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
 
-		const icon = RocketChat.roomTypes.getIcon(this.t);
+		const icon = roomTypes.getIcon(this.t);
 		const avatar = !icon;
 
 		const roomData = {
@@ -29,23 +38,28 @@ Template.chatRoomItem.helpers({
 			icon,
 			avatar,
 			username : this.name,
-			route: RocketChat.roomTypes.getRouteLink(this.t, this),
-			name,
+			route: roomTypes.getRouteLink(this.t, this),
+			name: name || roomTypes.getRoomName(this.t, this),
 			unread,
 			active,
 			archivedClass,
-			statusClass: this.t === 'd' ? Session.get(`user_${ this.name }_status`) || 'offline' : this.t === 'l' ? RocketChat.roomTypes.getUserStatus(this.t, this.rid) || 'offline' : false
+			status: this.t === 'd' || this.t === 'l',
 		};
+		roomData.username = roomData.username || roomData.name;
 
-		if (RocketChat.settings.get('Store_Last_Message')) {
-			if (this.lastMessage) {
-				roomData.lastMessage = this.lastMessage;
-			} else {
-				const room = RocketChat.models.Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });
-				roomData.lastMessage = room && room.lastMessage || { msg: t('No_messages_yet') };
-			}
+		if (!this.lastMessage && settings.get('Store_Last_Message')) {
+			const room = Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });
+			roomData.lastMessage = (room && room.lastMessage) || { msg: t('No_messages_yet') };
 		}
-
 		return roomData;
+	},
+});
+
+callbacks.add('enter-room', (sub) => {
+	const items = $('.rooms-list .sidebar-item');
+	items.filter('.sidebar-item--active').removeClass('sidebar-item--active');
+	if (sub) {
+		items.filter(`[data-id=${ sub._id }]`).addClass('sidebar-item--active');
 	}
+	return sub;
 });

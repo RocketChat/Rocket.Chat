@@ -1,9 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Utils2fa } from './lib/2fa';
+
 Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 	if (typeof selector === 'string') {
 		if (selector.indexOf('@') === -1) {
-			selector = {username: selector};
+			selector = { username: selector };
 		} else {
-			selector = {email: selector};
+			selector = { email: selector };
 		}
 	}
 
@@ -12,25 +16,23 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 			totp: {
 				login: {
 					user: selector,
-					password: Accounts._hashPassword(password)
+					password: Accounts._hashPassword(password),
 				},
-				code
-			}
+				code,
+			},
 		}],
 		userCallback(error) {
 			if (error) {
-				/* globals reportError*/
-				reportError(error, callback);
+				Utils2fa.reportError(error, callback);
 			} else {
 				callback && callback();
 			}
-		}
+		},
 	});
 };
 
-const loginWithPassword = Meteor.loginWithPassword;
+const { loginWithPassword } = Meteor;
 
 Meteor.loginWithPassword = function(email, password, cb) {
-	/* globals overrideLoginMethod*/
-	overrideLoginMethod(loginWithPassword, [email, password], cb, Meteor.loginWithPasswordAndTOTP);
+	Utils2fa.overrideLoginMethod(loginWithPassword, [email, password], cb, Meteor.loginWithPasswordAndTOTP);
 };

@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	setupImporter(key) {
@@ -6,8 +8,8 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setupImporter' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter'});
+		if (!hasPermission(Meteor.userId(), 'run-import')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter' });
 		}
 
 		const importer = Importers.get(key);
@@ -21,7 +23,7 @@ Meteor.methods({
 			return importer.instance.getProgress();
 		}
 
-		importer.instance = new importer.importer(importer); //eslint-disable-line new-cap
+		importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
 		return importer.instance.getProgress();
-	}
+	},
 });

@@ -1,3 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { settings } from 'meteor/rocketchat:settings';
+import { t } from 'meteor/rocketchat:utils';
+import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
 
 const acEvents = {
@@ -22,16 +31,16 @@ const acEvents = {
 	},
 	'blur [name="users"]'(e, t) {
 		t.ac.onBlur(e);
-	}
+	},
 };
 
 const filterNames = (old) => {
-	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		return old;
 	}
 
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
-	return [...old.replace(' ', '').toLocaleLowerCase()].filter(f => reg.test(f)).join('');
+	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
+	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
 Template.inviteUsers.helpers({
@@ -44,7 +53,7 @@ Template.inviteUsers.helpers({
 	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
-		return typeof param === 'function' ? param.apply(instance.ac): param;
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
 	},
 	items() {
 		return Template.instance().ac.filteredList();
@@ -59,29 +68,29 @@ Template.inviteUsers.helpers({
 				return `@${ f.length === 0 ? text : text.replace(new RegExp(filter), function(part) {
 					return `<strong>${ part }</strong>`;
 				}) }`;
-			}
+			},
 		};
 	},
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
-	}
+	},
 });
 
 Template.inviteUsers.events({
 
 	...acEvents,
-	'click .rc-tags__tag'({target}, t) {
-		const {username} = Blaze.getData(target);
-		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+	'click .rc-tags__tag'({ target }, t) {
+		const { username } = Blaze.getData(target);
+		t.selectedUsers.set(t.selectedUsers.get().filter((user) => user.username !== username));
 	},
 	'click .rc-tags__tag-icon'(e, t) {
-		const {username} = Blaze.getData(t.find('.rc-tags__tag-text'));
-		t.selectedUsers.set(t.selectedUsers.get().filter(user => user.username !== username));
+		const { username } = Blaze.getData(t.find('.rc-tags__tag-text'));
+		t.selectedUsers.set(t.selectedUsers.get().filter((user) => user.username !== username));
 	},
 	'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
-		const length = input.value.length;
+		const { length } = input.value;
 		const modified = filterNames(input.value);
 		input.value = modified;
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
@@ -89,11 +98,11 @@ Template.inviteUsers.events({
 		t.userFilter.set(modified);
 	},
 	'click .js-add'(e, instance) {
-		const users = instance.selectedUsers.get().map(({username}) => username);
+		const users = instance.selectedUsers.get().map(({ username }) => username);
 
 		Meteor.call('addUsersToRoom', {
 			rid: Session.get('openedRoom'),
-			users
+			users,
 		}, function(err) {
 			if (err) {
 				return toastr.error(err);
@@ -101,7 +110,7 @@ Template.inviteUsers.events({
 			toastr.success(t('Users_added'));
 			instance.selectedUsers.set([]);
 		});
-	}
+	},
 });
 
 Template.inviteUsers.onRendered(function() {
@@ -110,25 +119,25 @@ Template.inviteUsers.onRendered(function() {
 	this.firstNode.querySelector('[name="users"]').focus();
 	this.ac.element = this.firstNode.querySelector('[name="users"]');
 	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, {item}) {
+	this.ac.$element.on('autocompleteselect', function(e, { item }) {
 		const usersArr = users.get();
 		usersArr.push(item);
 		users.set(usersArr);
 	});
 });
-/* global AutoComplete Deps */
+
 Template.inviteUsers.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
-	const filter = {exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username))};
+	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map(u => u.username));
+		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
 	});
 	this.userFilter = new ReactiveVar('');
 
 	this.ac = new AutoComplete({
 		selector:{
 			item: '.rc-popup-list__item',
-			container: '.rc-popup-list__list'
+			container: '.rc-popup-list__list',
 		},
 
 		limit: 10,
@@ -144,8 +153,8 @@ Template.inviteUsers.onCreated(function() {
 			selector(match) {
 				return { term: match };
 			},
-			sort: 'username'
-		}]
+			sort: 'username',
+		}],
 	});
 	this.ac.tmplInst = this;
 });

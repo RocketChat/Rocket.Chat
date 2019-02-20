@@ -2,13 +2,13 @@ Package.describe({
 	name: 'rocketchat:accounts',
 	version: '0.0.1',
 	summary: 'JS-Accounts integration',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'underscore',
-		'ecmascript'
+		'ecmascript',
 	]);
 
 	api.use('mongo', ['client', 'server']);
@@ -18,5 +18,5 @@ Package.onUse(function(api) {
 
 Npm.depends({
 	'@accounts/server': '0.0.18',
-	'@accounts/mongo': '0.0.12'
+	'@accounts/mongo': '0.0.12',
 });

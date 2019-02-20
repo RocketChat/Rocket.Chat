@@ -1,6 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { loadMessageHistory } from 'meteor/rocketchat:lib';
+
 const hideMessagesOfType = [];
 
-RocketChat.settings.get(/Message_HideType_.+/, function(key, value) {
+settings.get(/Message_HideType_.+/, function(key, value) {
 	const type = key.replace('Message_HideType_', '');
 	const types = type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type];
 
@@ -22,9 +29,9 @@ Meteor.methods({
 		this.unblock();
 		check(rid, String);
 
-		if (!Meteor.userId() && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
+		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadHistory'
+				method: 'loadHistory',
 			});
 		}
 
@@ -35,12 +42,13 @@ Meteor.methods({
 			return false;
 		}
 
-		const canAnonymous = RocketChat.settings.get('Accounts_AllowAnonymousRead');
-		const canPreview = RocketChat.authz.hasPermission(fromId, 'preview-c-room');
-		if (room.t === 'c' && !canAnonymous && !canPreview && room.usernames.indexOf(room.username) === -1) {
+		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
+		const canPreview = hasPermission(fromId, 'preview-c-room');
+
+		if (room.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
 			return false;
 		}
 
-		return RocketChat.loadMessageHistory({ userId: fromId, rid, end, limit, ls });
-	}
+		return loadMessageHistory({ userId: fromId, rid, end, limit, ls });
+	},
 });

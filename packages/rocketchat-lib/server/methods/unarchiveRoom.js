@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms } from 'meteor/rocketchat:models';
+import { unarchiveRoom } from '../functions';
+
 Meteor.methods({
 	unarchiveRoom(rid) {
 
@@ -7,16 +13,16 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unarchiveRoom' });
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'unarchiveRoom' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'unarchive-room', room._id)) {
+		if (!hasPermission(Meteor.userId(), 'unarchive-room', room._id)) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'unarchiveRoom' });
 		}
 
-		return RocketChat.unarchiveRoom(rid);
-	}
+		return unarchiveRoom(rid);
+	},
 });

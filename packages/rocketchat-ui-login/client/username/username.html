@@ -1,5 +1,5 @@
 <template name="username">
-	<section class="rc-old full-page color-tertiary-font-color">
+	<section class="rc-old full-page color-tertiary-font-color" style="{{#with backgroundUrl}}background-image: url('{{.}}'){{/with}}">
 		<div class="wrapper">
 			<form id="login-card" class="content-background-color color-primary-font-color" method='/'>
 				<header>
@@ -8,12 +8,12 @@
 				</header>
 				{{#if username.error}}
 					<div class="alert error-color error-background error-border">
-						{{{_ "error-field-unavailable" field=username.username}}}
+						{{{_ "error-field-unavailable" field=username.escaped}}}
 					</div>
 				{{/if}}
 				{{#if username.invalid}}
 					<div class="alert error-color error-background error-border">
-						{{{_ "Username_invalid" username.username}}}
+						{{{_ "Username_invalid" username.escaped}}}
 					</div>
 				{{/if}}
 				{{#if username.empty}}

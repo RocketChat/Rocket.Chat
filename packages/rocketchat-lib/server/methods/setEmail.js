@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { settings } from 'meteor/rocketchat:settings';
+import { setEmail } from '../functions';
+import { RateLimiter } from '../lib';
+
 Meteor.methods({
 	setEmail(email) {
 
@@ -9,7 +15,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (!RocketChat.settings.get('Accounts_AllowEmailChange')) {
+		if (!settings.get('Accounts_AllowEmailChange')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing email is not allowed', { method: 'setEmail', action: 'Changing_email' });
 		}
 
@@ -17,14 +23,14 @@ Meteor.methods({
 			return email;
 		}
 
-		if (!RocketChat.setEmail(user._id, email)) {
+		if (!setEmail(user._id, email)) {
 			throw new Meteor.Error('error-could-not-change-email', 'Could not change email', { method: 'setEmail' });
 		}
 
 		return email;
-	}
+	},
 });
 
-RocketChat.RateLimiter.limitMethod('setEmail', 1, 1000, {
-	userId(/*userId*/) { return true; }
+RateLimiter.limitMethod('setEmail', 1, 1000, {
+	userId(/* userId*/) { return true; },
 });

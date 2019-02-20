@@ -1,10 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { hasRole } from 'meteor/rocketchat:authorization';
+
 Meteor.methods({
 	restart_server() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'restart_server' });
 		}
 
-		if (RocketChat.authz.hasRole(Meteor.userId(), 'admin') !== true) {
+		if (hasRole(Meteor.userId(), 'admin') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'restart_server' });
 		}
 
@@ -18,7 +21,7 @@ Meteor.methods({
 
 		return {
 			message: 'The_server_will_restart_in_s_seconds',
-			params: [2]
+			params: [2],
 		};
-	}
+	},
 });

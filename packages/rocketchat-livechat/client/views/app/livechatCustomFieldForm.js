@@ -1,8 +1,15 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { LivechatCustomField } from '../../collections/LivechatCustomField';
 import toastr from 'toastr';
+
 Template.livechatCustomFieldForm.helpers({
 	customField() {
 		return Template.instance().customField.get();
-	}
+	},
 });
 
 Template.livechatCustomFieldForm.events({
@@ -31,7 +38,7 @@ Template.livechatCustomFieldForm.events({
 			field,
 			label,
 			scope: scope.trim(),
-			visibility: visibility.trim()
+			visibility: visibility.trim(),
 		};
 
 		Meteor.call('livechat:saveCustomField', _id, customFieldData, function(error) {
@@ -45,10 +52,10 @@ Template.livechatCustomFieldForm.events({
 		});
 	},
 
-	'click button.back'(e/*, instance*/) {
+	'click button.back'(e/* , instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-customfields');
-	}
+	},
 });
 
 Template.livechatCustomFieldForm.onCreated(function() {

@@ -1,7 +1,9 @@
+import { Meteor } from 'meteor/meteor';
 import {
 	Importers,
-	ProgressStep
+	ProgressStep,
 } from 'meteor/rocketchat:importer';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	getSelectionData(key) {
@@ -9,8 +11,8 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getSelectionData' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter'});
+		if (!hasPermission(Meteor.userId(), 'run-import')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter' });
 		}
 
 		const importer = Importers.get(key);
@@ -27,5 +29,5 @@ Meteor.methods({
 			default:
 				return undefined;
 		}
-	}
+	},
 });

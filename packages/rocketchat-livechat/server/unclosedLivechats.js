@@ -1,4 +1,8 @@
-/* globals UserPresenceMonitor */
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users } from 'meteor/rocketchat:models';
+import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
+import { Livechat } from './lib/Livechat';
 
 let agentsHandler;
 let monitorAgents = false;
@@ -30,27 +34,27 @@ const onlineAgents = {
 
 	exists(userId) {
 		return !!this.users[userId];
-	}
+	},
 };
 
 function runAgentLeaveAction(userId) {
-	const action = RocketChat.settings.get('Livechat_agent_leave_action');
+	const action = settings.get('Livechat_agent_leave_action');
 	if (action === 'close') {
-		return RocketChat.Livechat.closeOpenChats(userId, RocketChat.settings.get('Livechat_agent_leave_comment'));
+		return Livechat.closeOpenChats(userId, settings.get('Livechat_agent_leave_comment'));
 	} else if (action === 'forward') {
-		return RocketChat.Livechat.forwardOpenChats(userId);
+		return Livechat.forwardOpenChats(userId);
 	}
 }
 
-RocketChat.settings.get('Livechat_agent_leave_action_timeout', function(key, value) {
+settings.get('Livechat_agent_leave_action_timeout', function(key, value) {
 	actionTimeout = value * 1000;
 });
 
-RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
+settings.get('Livechat_agent_leave_action', function(key, value) {
 	monitorAgents = value;
 	if (value !== 'none') {
 		if (!agentsHandler) {
-			agentsHandler = RocketChat.models.Users.findOnlineAgents().observeChanges({
+			agentsHandler = Users.findOnlineAgents().observeChanges({
 				added(id) {
 					onlineAgents.add(id);
 				},
@@ -67,7 +71,7 @@ RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
 					onlineAgents.remove(id, () => {
 						runAgentLeaveAction(id);
 					});
-				}
+				},
 			});
 		}
 	} else if (agentsHandler) {
@@ -76,7 +80,7 @@ RocketChat.settings.get('Livechat_agent_leave_action', function(key, value) {
 	}
 });
 
-UserPresenceMonitor.onSetUserStatus((user, status/*, statusConnection*/) => {
+UserPresenceMonitor.onSetUserStatus((user, status/* , statusConnection*/) => {
 	if (!monitorAgents) {
 		return;
 	}

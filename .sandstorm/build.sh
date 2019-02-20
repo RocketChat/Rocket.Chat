@@ -5,6 +5,7 @@ set -euvo pipefail
 # Make meteor bundle
 sudo chown vagrant:vagrant /home/vagrant -R
 cd /opt/app
+meteor npm install capnp
 meteor npm install
 meteor build --directory /home/vagrant/
 

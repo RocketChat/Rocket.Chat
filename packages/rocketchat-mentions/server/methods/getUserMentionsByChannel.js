@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Rooms, Users, Messages } from 'meteor/rocketchat:models';
+
 Meteor.methods({
 	getUserMentionsByChannel({ roomId, options }) {
 		check(roomId, String);
@@ -6,14 +10,14 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUserMentionsByChannel' });
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(roomId);
+		const room = Rooms.findOneById(roomId);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUserMentionsByChannel' });
 		}
 
-		const user = RocketChat.models.Users.findOneById(Meteor.userId());
+		const user = Users.findOneById(Meteor.userId());
 
-		return RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
-	}
+		return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
+	},
 });

@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Users } from 'meteor/rocketchat:models';
+import { TOTP } from '../lib/totp';
+
 Meteor.methods({
 	'2fa:enable'() {
 		if (!Meteor.userId()) {
@@ -6,13 +10,13 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		const secret = RocketChat.TOTP.generateSecret();
+		const secret = TOTP.generateSecret();
 
-		RocketChat.models.Users.disable2FAAndSetTempSecretByUserId(Meteor.userId(), secret.base32);
+		Users.disable2FAAndSetTempSecretByUserId(Meteor.userId(), secret.base32);
 
 		return {
 			secret: secret.base32,
-			url: RocketChat.TOTP.generateOtpauthURL(secret, user.username)
+			url: TOTP.generateOtpauthURL(secret, user.username),
 		};
-	}
+	},
 });

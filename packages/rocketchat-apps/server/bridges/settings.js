@@ -1,3 +1,5 @@
+import { Settings } from 'meteor/rocketchat:models';
+
 export class AppSettingBridge {
 	constructor(orch) {
 		this.orch = orch;
@@ -15,19 +17,19 @@ export class AppSettingBridge {
 			'Accounts_OAuth_Linkedin_secret', 'Accounts_OAuth_Meteor_secret', 'Accounts_OAuth_Twitter_secret', 'API_Wordpress_URL',
 			'Accounts_OAuth_Wordpress_secret', 'Push_apn_passphrase', 'Push_apn_key', 'Push_apn_cert', 'Push_apn_dev_passphrase',
 			'Push_apn_dev_key', 'Push_apn_dev_cert', 'Push_gcm_api_key', 'Push_gcm_project_number', 'SAML_Custom_Default_cert',
-			'SAML_Custom_Default_private_key', 'SlackBridge_APIToken', 'Smarsh_Email', 'SMS_Twilio_Account_SID', 'SMS_Twilio_authToken'
+			'SAML_Custom_Default_private_key', 'SlackBridge_APIToken', 'Smarsh_Email', 'SMS_Twilio_Account_SID', 'SMS_Twilio_authToken',
 		];
 	}
 
-	getAll(appId) {
+	async getAll(appId) {
 		console.log(`The App ${ appId } is getting all the settings.`);
 
-		return RocketChat.models.Settings.find({ _id: { $nin: this.disallowedSettings } }).fetch().map((s) => {
-			this.orch.getConverters().get('settings').convertToApp(s);
-		});
+		return Settings.find({ _id: { $nin: this.disallowedSettings } })
+			.fetch()
+			.map((s) => this.orch.getConverters().get('settings').convertToApp(s));
 	}
 
-	getOneById(id, appId) {
+	async getOneById(id, appId) {
 		console.log(`The App ${ appId } is getting the setting by id ${ id }.`);
 
 		if (!this.isReadableById(id, appId)) {
@@ -37,13 +39,13 @@ export class AppSettingBridge {
 		return this.orch.getConverters().get('settings').convertById(id);
 	}
 
-	hideGroup(name, appId) {
+	async hideGroup(name, appId) {
 		console.log(`The App ${ appId } is hidding the group ${ name }.`);
 
 		throw new Error('Method not implemented.');
 	}
 
-	hideSetting(id, appId) {
+	async hideSetting(id, appId) {
 		console.log(`The App ${ appId } is hidding the setting ${ id }.`);
 
 		if (!this.isReadableById(id, appId)) {
@@ -53,13 +55,13 @@ export class AppSettingBridge {
 		throw new Error('Method not implemented.');
 	}
 
-	isReadableById(id, appId) {
+	async isReadableById(id, appId) {
 		console.log(`The App ${ appId } is checking if they can read the setting ${ id }.`);
 
 		return !this.disallowedSettings.includes(id);
 	}
 
-	updateOne(setting, appId) {
+	async updateOne(setting, appId) {
 		console.log(`The App ${ appId } is updating the setting ${ setting.id } .`);
 
 		if (!this.isReadableById(setting.id, appId)) {

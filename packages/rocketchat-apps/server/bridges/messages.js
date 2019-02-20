@@ -1,9 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Messages, Users, Subscriptions } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
+
 export class AppMessageBridge {
 	constructor(orch) {
 		this.orch = orch;
 	}
 
-	create(message, appId) {
+	async create(message, appId) {
 		console.log(`The App ${ appId } is creating a new message.`);
 
 		let msg = this.orch.getConverters().get('messages').convertAppMessage(message);
@@ -15,52 +20,67 @@ export class AppMessageBridge {
 		return msg._id;
 	}
 
-	getById(messageId, appId) {
+	async getById(messageId, appId) {
 		console.log(`The App ${ appId } is getting the message: "${ messageId }"`);
 
 		return this.orch.getConverters().get('messages').convertById(messageId);
 	}
 
-	update(message, appId) {
+	async update(message, appId) {
 		console.log(`The App ${ appId } is updating a message.`);
+		if (!this.updateMessage) {
+			const { updateMessage } = await import('meteor/rocketchat:lib');
+			this.updateMessage = updateMessage;
+		}
 
 		if (!message.editor) {
 			throw new Error('Invalid editor assigned to the message for the update.');
 		}
 
-		if (!message.id || !RocketChat.models.Messages.findOneById(message.id)) {
+		if (!message.id || !Messages.findOneById(message.id)) {
 			throw new Error('A message must exist to update.');
 		}
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
-		const editor = RocketChat.models.Users.findOneById(message.editor.id);
+		const editor = Users.findOneById(message.editor.id);
 
-		RocketChat.updateMessage(msg, editor);
+		this.updateMessage(msg, editor);
 	}
 
-	notifyUser(user, message, appId) {
+	async notifyUser(user, message, appId) {
 		console.log(`The App ${ appId } is notifying a user.`);
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 
-		RocketChat.Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
+		Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
 			_id: Random.id(),
 			ts: new Date(),
 			u: undefined,
-			editor: undefined
+			editor: undefined,
 		}));
 	}
 
-	notifyRoom(room, message, appId) {
+	async notifyRoom(room, message, appId) {
 		console.log(`The App ${ appId } is notifying a room's users.`);
 
-		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+		if (room) {
+			const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+			const rmsg = Object.assign(msg, {
+				_id: Random.id(),
+				rid: room.id,
+				ts: new Date(),
+				u: undefined,
+				editor: undefined,
+			});
 
-		RocketChat.Notifications.notifyUsersOfRoom(room.id, 'message', Object.assign(msg, {
-			_id: Random.id(),
-			ts: new Date(),
-			u: undefined,
-			editor: undefined
-		}));
+			const users = Subscriptions.findByRoomIdWhenUserIdExists(room._id, { fields: { 'u._id': 1 } })
+				.fetch()
+				.map((s) => s.u._id);
+			Users.findByIds(users, { fields: { _id: 1 } })
+				.fetch()
+				.forEach(({ _id }) =>
+					Notifications.notifyUser(_id, 'message', rmsg)
+				);
+		}
 	}
 }

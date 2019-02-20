@@ -4,6 +4,9 @@ set -euvo pipefail
 
 echo localhost > /etc/hostname
 hostname localhost
+# Install curl that is needed below.
+apt-get update
+apt-get install -y curl
 curl https://install.sandstorm.io/ > /host-dot-sandstorm/caches/install.sh
 SANDSTORM_CURRENT_VERSION=$(curl -fs "https://install.sandstorm.io/dev?from=0&type=install")
 SANDSTORM_PACKAGE="sandstorm-$SANDSTORM_CURRENT_VERSION.tar.xz"

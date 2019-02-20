@@ -1,40 +1,55 @@
+import { Meteor } from 'meteor/meteor';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+
 Meteor.methods({
-	getUsersOfRoom(roomId, showAll) {
-		if (!Meteor.userId()) {
+	async getUsersOfRoom(rid, showAll) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
 		}
 
-		const room = Meteor.call('canAccessRoom', roomId, Meteor.userId());
+		const room = Meteor.call('canAccessRoom', rid, userId);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		const filter = (record) => {
-			if (!record._user) {
-				console.log('Subscription without user', record._id);
-				return false;
-			}
+		if (room.broadcast && !hasPermission(userId, 'view-broadcast-member-list', rid)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
+		}
 
-			if (showAll === true) {
-				return true;
-			}
-
-			return record._user.status !== 'offline';
-		};
-
-		const map = (record) => {
-			return {
-				_id: record._user._id,
-				username: record._user.username,
-				name: record._user.name
-			};
-		};
-
-		const records = RocketChat.models.Subscriptions.findByRoomId(roomId).fetch();
+		const subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(rid);
 
 		return {
-			total: records.length,
-			records: records.filter(filter).map(map)
+			total: subscriptions.count(),
+			records: await Subscriptions.model.rawCollection().aggregate([
+				{ $match: { rid } },
+				{
+					$lookup:
+						{
+							from: 'users',
+							localField: 'u._id',
+							foreignField: '_id',
+							as: 'u',
+						},
+				},
+				{
+					$project: {
+						'u._id': 1,
+						'u.name': 1,
+						'u.username': 1,
+						'u.status': 1,
+					},
+				},
+				...(showAll ? [] : [{ $match: { 'u.status': { $in: ['online', 'away', 'busy'] } } }]),
+				{
+					$project: {
+						_id: { $arrayElemAt: ['$u._id', 0] },
+						name: { $arrayElemAt: ['$u.name', 0] },
+						username: { $arrayElemAt: ['$u.username', 0] },
+					},
+				},
+			]).toArray(),
 		};
-	}
+	},
 });

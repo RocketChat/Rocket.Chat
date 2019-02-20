@@ -11,5 +11,5 @@ export {
 	FavoriteRoomType,
 	PrivateRoomType,
 	PublicRoomType,
-	UnreadRoomType
+	UnreadRoomType,
 };

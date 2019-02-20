@@ -1,3 +1,15 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { metrics } from 'meteor/rocketchat:metrics';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { messageProperties } from 'meteor/rocketchat:ui-utils';
+import { Subscriptions, Users } from 'meteor/rocketchat:models';
+import { sendMessage } from '../functions';
+import { RateLimiter } from '../lib';
 import moment from 'moment';
 
 Meteor.methods({
@@ -6,8 +18,12 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'sendMessage'
+				method: 'sendMessage',
 			});
+		}
+
+		if (!message.rid) {
+			throw new Error('The \'rid\' property on the message object is missing.');
 		}
 
 		if (message.ts) {
@@ -16,7 +32,7 @@ Meteor.methods({
 				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
 					method: 'sendMessage',
 					message_ts: message.ts,
-					server_ts: new Date().getTime()
+					server_ts: new Date().getTime(),
 				});
 			} else if (tsDiff > 10000) {
 				message.ts = new Date();
@@ -25,17 +41,21 @@ Meteor.methods({
 			message.ts = new Date();
 		}
 
-		if (message.msg && message.msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
-			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-				method: 'sendMessage'
-			});
+		if (message.msg) {
+			const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
+
+			if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+					method: 'sendMessage',
+				});
+			}
 		}
 
-		const user = RocketChat.models.Users.findOneById(Meteor.userId(), {
+		const user = Users.findOneById(Meteor.userId(), {
 			fields: {
 				username: 1,
-				name: 1
-			}
+				name: 1,
+			},
 		});
 
 		const room = Meteor.call('canAccessRoom', message.rid, user._id);
@@ -43,42 +63,42 @@ Meteor.methods({
 			return false;
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId());
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId());
 		if (subscription && (subscription.blocked || subscription.blocker)) {
-			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+			Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,
 				ts: new Date,
-				msg: TAPi18n.__('room_is_blocked', {}, user.language)
+				msg: TAPi18n.__('room_is_blocked', {}, user.language),
 			});
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you are blocked');
 		}
 
-		if ((room.muted||[]).includes(user.username)) {
-			RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		if ((room.muted || []).includes(user.username)) {
+			Notifications.notifyUser(Meteor.userId(), 'message', {
 				_id: Random.id(),
 				rid: room._id,
 				ts: new Date,
-				msg: TAPi18n.__('You_have_been_muted', {}, user.language)
+				msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 			});
-			return false;
+			throw new Meteor.Error('You can\'t send messages because you have been muted');
 		}
 
-		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {
+		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
 			message.alias = user.name;
 		}
 
-		if (Meteor.settings['public'].sandstorm) {
+		if (Meteor.settings.public.sandstorm) {
 			message.sandstormSessionId = this.connection.sandstormSessionId();
 		}
 
-		RocketChat.metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return RocketChat.sendMessage(user, message, room);
-	}
+		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+		return sendMessage(user, message, room);
+	},
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second
-RocketChat.RateLimiter.limitMethod('sendMessage', 5, 1000, {
+RateLimiter.limitMethod('sendMessage', 5, 1000, {
 	userId(userId) {
-		return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
-	}
+		return !hasPermission(userId, 'send-many-messages');
+	},
 });

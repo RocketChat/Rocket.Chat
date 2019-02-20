@@ -1,6 +1,9 @@
-RocketChat.statistics.save = function() {
-	const statistics = RocketChat.statistics.get();
-	statistics.createdAt = new Date;
-	RocketChat.models.Statistics.insert(statistics);
-	return statistics;
+import { Statistics } from 'meteor/rocketchat:models';
+import { statistics } from '../../lib/rocketchat';
+
+statistics.save = function() {
+	const rcStatistics = statistics.get();
+	rcStatistics.createdAt = new Date;
+	Statistics.insert(rcStatistics);
+	return rcStatistics;
 };

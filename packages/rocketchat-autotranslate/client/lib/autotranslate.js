@@ -1,15 +1,25 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
 import _ from 'underscore';
+import mem from 'mem';
 
-RocketChat.AutoTranslate = {
+const findSubscriptionByRid = mem((rid) => Subscriptions.findOne({ rid }));
+
+export const AutoTranslate = {
 	messageIdsToWait: {},
 	supportedLanguages: [],
 
 	getLanguage(rid) {
 		let subscription = {};
 		if (rid) {
-			subscription = RocketChat.models.Subscriptions.findOne({ rid }, { fields: { autoTranslateLanguage: 1 } });
+			subscription = findSubscriptionByRid(rid);
 		}
-		const language = subscription && subscription.autoTranslateLanguage || Meteor.user().language || window.defaultUserLanguage();
+		const language = (subscription && subscription.autoTranslateLanguage) || Meteor.user().language || window.defaultUserLanguage();
 		if (language.indexOf('-') !== -1) {
 			if (!_.findWhere(this.supportedLanguages, { language })) {
 				return language.substr(0, 2);
@@ -43,16 +53,16 @@ RocketChat.AutoTranslate = {
 		});
 
 		Tracker.autorun(() => {
-			if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
-				RocketChat.callbacks.add('renderMessage', (message) => {
-					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+			if (settings.get('AutoTranslate_Enabled') && hasAtLeastOnePermission(['auto-translate'])) {
+				callbacks.add('renderMessage', (message) => {
+					const subscription = findSubscriptionByRid(message.rid);
 					const autoTranslateLanguage = this.getLanguage(message.rid);
 					if (message.u && message.u._id !== Meteor.userId()) {
 						if (!message.translations) {
 							message.translations = {};
 						}
 						if (subscription && subscription.autoTranslate !== message.autoTranslateShowInverse) {
-							message.translations['original'] = message.html;
+							message.translations.original = message.html;
 							if (message.translations[autoTranslateLanguage]) {
 								message.html = message.translations[autoTranslateLanguage];
 							}
@@ -65,30 +75,32 @@ RocketChat.AutoTranslate = {
 						message.attachments = this.translateAttachments(message.attachments, autoTranslateLanguage);
 					}
 					return message;
-				}, RocketChat.callbacks.priority.HIGH - 3, 'autotranslate');
+				}, callbacks.priority.HIGH - 3, 'autotranslate');
 
-				RocketChat.callbacks.add('streamMessage', (message) => {
+				callbacks.add('streamMessage', (message) => {
 					if (message.u && message.u._id !== Meteor.userId()) {
-						const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+						const subscription = findSubscriptionByRid(message.rid);
 						const language = this.getLanguage(message.rid);
 						if (subscription && subscription.autoTranslate === true && ((message.msg && (!message.translations || !message.translations[language])))) { // || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
-							RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+							Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						} else if (this.messageIdsToWait[message._id] !== undefined && subscription && subscription.autoTranslate !== true) {
-							RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });
+							Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });
 							delete this.messageIdsToWait[message._id];
 						} else if (message.autoTranslateFetching === true) {
-							RocketChat.models.Messages.update({ _id: message._id }, { $unset: { autoTranslateFetching: true } });
+							Messages.update({ _id: message._id }, { $unset: { autoTranslateFetching: true } });
 						}
 					}
-				}, RocketChat.callbacks.priority.HIGH - 3, 'autotranslate-stream');
+				}, callbacks.priority.HIGH - 3, 'autotranslate-stream');
 			} else {
-				RocketChat.callbacks.remove('renderMessage', 'autotranslate');
-				RocketChat.callbacks.remove('streamMessage', 'autotranslate-stream');
+				callbacks.remove('renderMessage', 'autotranslate');
+				callbacks.remove('streamMessage', 'autotranslate-stream');
 			}
 		});
-	}
+	},
 };
 
 Meteor.startup(function() {
-	RocketChat.AutoTranslate.init();
+	CachedCollectionManager.onLogin(() => {
+		AutoTranslate.init();
+	});
 });

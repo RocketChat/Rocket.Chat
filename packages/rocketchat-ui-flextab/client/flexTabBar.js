@@ -1,4 +1,11 @@
-/* globals popover, isRtl */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { popover, TabBar, Layout } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 const commonHelpers = {
@@ -9,24 +16,55 @@ const commonHelpers = {
 		if (this.template === Template.instance().tabBar.getTemplate() && Template.instance().tabBar.getState() === 'opened') {
 			return 'active';
 		}
-	}
+	},
 };
-
+function canShowAddUsersButton(rid) {
+	const canAddToChannel = hasAllPermission(
+		'add-user-to-any-c-room', rid
+	);
+	const canAddToGroup = hasAllPermission(
+		'add-user-to-any-p-room', rid
+	);
+	const canAddToJoinedRoom = hasAllPermission(
+		'add-user-to-joined-room', rid
+	);
+	if (
+		!canAddToJoinedRoom &&
+		!canAddToChannel &&
+		Template.instance().tabBar.currentGroup() === 'channel'
+	) {
+		return false;
+	}
+	if (
+		!canAddToJoinedRoom &&
+		!canAddToGroup &&
+		Template.instance().tabBar.currentGroup() === 'group'
+	) {
+		return false;
+	}
+	return true;
+}
+const filterButtons = (button, anonymous, rid) => {
+	if (!Meteor.userId() && !anonymous) {
+		return false;
+	}
+	if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
+		return false;
+	}
+	if (button.id === 'addUsers' && !canShowAddUsersButton(rid)) {
+		return false;
+	}
+	return true;
+};
 Template.flexTabBar.helpers({
 	headerData() {
 		return Template.instance().tabBar.getData();
 	},
 	...commonHelpers,
 	buttons() {
-		return RocketChat.TabBar.getButtons().filter(button => {
-			if (!Meteor.userId() && !this.anonymous) {
-				return false;
-			}
-			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
-				return false;
-			}
-			return true;
-		});
+		return TabBar.getButtons().filter((button) =>
+			filterButtons(button, this.anonymous, this.data && this.data.rid)
+		);
 	},
 	opened() {
 		return Template.instance().tabBar.getState();
@@ -38,74 +76,74 @@ Template.flexTabBar.helpers({
 
 	flexData() {
 		return Object.assign(Template.currentData().data || {}, {
-			tabBar: Template.instance().tabBar
+			tabBar: Template.instance().tabBar,
 		});
 	},
 
 	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
-	}
+		return Layout.isEmbedded();
+	},
 });
 
 const commonEvents = {
-	'click .js-action'(e, instance) {
+	'click .js-action'(e, t) {
 		$('button', e.currentTarget).blur();
 		e.preventDefault();
 		const $flexTab = $('.flex-tab-container .flex-tab');
 
-		if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
+		if (t.tabBar.getState() === 'opened' && t.tabBar.getTemplate() === this.template) {
 			$flexTab.attr('template', '');
-			return instance.tabBar.close();
+			return t.tabBar.close();
 		}
 
 		$flexTab.attr('template', this.template);
-		instance.tabBar.setData({
+		t.tabBar.setData({
 			label: this.i18nTitle,
-			icon: this.icon
+			icon: this.icon,
 		});
-		instance.tabBar.open(this);
+		t.tabBar.open(this);
 
 		popover.close();
-	}
+	},
 };
-const action = function(e, instance) {
+const action = function(e, t) {
 	$('button', e.currentTarget).blur();
 	e.preventDefault();
 	const $flexTab = $('.flex-tab-container .flex-tab');
 
-	if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
+	if (t.tabBar.getState() === 'opened' && t.tabBar.getTemplate() === this.template) {
 		$flexTab.attr('template', '');
-		return instance.tabBar.close();
+		return t.tabBar.close();
 	}
 
 	$flexTab.attr('template', this.template);
-	instance.tabBar.setData({
+	t.tabBar.setData({
 		label: this.i18nTitle,
-		icon: this.icon
+		icon: this.icon,
 	});
-	instance.tabBar.open(this);
+	t.tabBar.open(this);
 
 	popover.close();
 };
 
 Template.flexTabBar.events({
-	'click .tab-button'(e, instance) {
+	'click .tab-button'(e, t) {
 		e.preventDefault();
 		const $flexTab = $('.flex-tab-container .flex-tab');
 
-		if (instance.tabBar.getState() === 'opened' && instance.tabBar.getTemplate() === this.template) {
+		if (t.tabBar.getState() === 'opened' && t.tabBar.getTemplate() === this.template) {
 			$flexTab.attr('template', '');
-			return instance.tabBar.close();
+			return t.tabBar.close();
 		}
 
 		$flexTab.attr('template', this.template);
 
-		instance.tabBar.open(this.id);
+		t.tabBar.open(this.id);
 	},
 
-	'click .close-flex-tab'(event, instance) {
-		instance.tabBar.close();
-	}
+	'click .close-flex-tab'(event, t) {
+		t.tabBar.close();
+	},
 });
 
 Template.flexTabBar.onCreated(function() {
@@ -114,12 +152,12 @@ Template.flexTabBar.onCreated(function() {
 
 
 Template.RoomsActionMore.events({
-	...commonEvents
+	...commonEvents,
 });
 
 
 Template.RoomsActionMore.helpers({
-	...commonHelpers
+	...commonHelpers,
 });
 
 Template.RoomsActionMore.onCreated(function() {
@@ -128,47 +166,32 @@ Template.RoomsActionMore.onCreated(function() {
 
 Template.RoomsActionTab.events({
 	...commonEvents,
-	'click .js-more'(e, instance) {
+	'click .js-more'(e, t) {
 		$(e.currentTarget).blur();
 		e.preventDefault();
-		const buttons = RocketChat.TabBar.getButtons().filter(button => {
-			if (!Meteor.userId() && !this.anonymous) {
-				return false;
-			}
-			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
-				return false;
-			}
-			return true;
-		});
-		const groups = [{items:(instance.small.get() ? buttons : buttons.slice(4)).map(item => {
+		const buttons = TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
+		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => {
 			item.name = TAPi18n.__(item.i18nTitle);
 			item.action = action;
 			return item;
-		})}];
+		}) }];
 		const columns = [groups];
-		columns[0] = {groups};
+		columns[0] = { groups };
 		const config = {
 			columns,
-			// template: 'RoomsActionMore',
 			popoverClass: 'message-box',
-			mousePosition: () => ({
-				x: e.currentTarget.getBoundingClientRect().right + 10,
-				y: e.currentTarget.getBoundingClientRect().bottom + 100
-			}),
-			customCSSProperties: () => ({
-				top:  `${ e.currentTarget.getBoundingClientRect().bottom + 10 }px`,
-				left: isRtl() ? `${ e.currentTarget.getBoundingClientRect().left - 10 }px` : undefined
-			}),
 			data: {
 				rid: this._id,
-				buttons: instance.small.get() ? buttons : buttons.slice(4),
-				tabBar: instance.tabBar
+				buttons: t.small.get() ? buttons : buttons.slice(TabBar.size),
+				tabBar: t.tabBar,
 			},
-			activeElement: e.currentTarget
+			currentTarget: e.currentTarget,
+			offsetHorizontal: -e.currentTarget.clientWidth,
+			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
 
 		popover.open(config);
-	}
+	},
 });
 
 Template.RoomsActionTab.onDestroyed(function() {
@@ -185,6 +208,12 @@ Template.RoomsActionTab.onCreated(function() {
 
 Template.RoomsActionTab.helpers({
 	...commonHelpers,
+
+	postButtons() {
+		const toolbar = Session.get('toolbarButtons') || {};
+		return Object.keys(toolbar.buttons || []).map((key) => ({ id: key, ...toolbar.buttons[key] }));
+	},
+
 	active() {
 		if (this.template === Template.instance().tabBar.getTemplate() && Template.instance().tabBar.getState() === 'opened') {
 			return 'active';
@@ -195,31 +224,17 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return [];
 		}
-		const buttons = RocketChat.TabBar.getButtons().filter(button => {
-			if (!Meteor.userId() && !this.anonymous) {
-				return false;
-			}
-			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
-				return false;
-			}
-			return true;
-		});
-		return buttons.length <= 5 ? buttons : buttons.slice(0, 4);
+		const buttons = TabBar.getButtons()
+			.filter((button) => filterButtons(button, Template.instance().anonymous, Template.instance().data.rid));
+		return buttons.length <= TabBar.size ? buttons : buttons.slice(0, TabBar.size);
 	},
 
 	moreButtons() {
 		if (Template.instance().small.get()) {
 			return true;
 		}
-		const buttons = RocketChat.TabBar.getButtons().filter(button => {
-			if (!Meteor.userId() && !this.anonymous) {
-				return false;
-			}
-			if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
-				return false;
-			}
-			return true;
-		});
-		return buttons.length > 5;
-	}
+		const buttons = TabBar.getButtons()
+			.filter((button) => filterButtons(button, Template.instance().anonymous, Template.instance().data.rid));
+		return buttons.length > TabBar.size;
+	},
 });

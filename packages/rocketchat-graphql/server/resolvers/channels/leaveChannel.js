@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/leaveChannel.graphqls';
@@ -7,9 +7,9 @@ import schema from '../../schemas/channels/leaveChannel.graphqls';
 const resolver = {
 	Mutation: {
 		leaveChannel: authenticated((root, args, { user }) => {
-			const channel = RocketChat.models.Rooms.findOne({
+			const channel = Rooms.findOne({
 				_id: args.channelId,
-				t: 'c'
+				t: 'c',
 			});
 
 			if (!channel) {
@@ -21,11 +21,11 @@ const resolver = {
 			});
 
 			return true;
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

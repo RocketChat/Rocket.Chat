@@ -1,4 +1,6 @@
-import { RoomTypeConfig } from '../RoomTypeConfig';
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { getUserPreference, RoomTypeConfig } from 'meteor/rocketchat:utils';
 
 export class FavoriteRoomType extends RoomTypeConfig {
 	constructor() {
@@ -7,11 +9,10 @@ export class FavoriteRoomType extends RoomTypeConfig {
 			order: 20,
 			header: 'favorite',
 			icon: 'star',
-			label: 'Favorites'
+			label: 'Favorites',
 		});
 	}
 	condition() {
-		const user = Meteor.user();
-		return RocketChat.settings.get('Favorite_Rooms') && RocketChat.getUserPreference(user, 'sidebarShowFavorites');
+		return settings.get('Favorite_Rooms') && getUserPreference(Meteor.userId(), 'sidebarShowFavorites');
 	}
 }

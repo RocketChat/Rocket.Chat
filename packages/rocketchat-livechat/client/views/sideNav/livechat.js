@@ -1,11 +1,24 @@
-/* globals LivechatInquiry, KonchatNotification */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+import { KonchatNotification } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { Users } from 'meteor/rocketchat:models';
+import { t, handleError, getUserPreference, roomTypes } from 'meteor/rocketchat:utils';
+import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+
 Template.livechat.helpers({
 	isActive() {
 		const query = {
 			t: 'l',
 			f: { $ne: true },
 			open: true,
-			rid: Session.get('openedRoom')
+			rid: Session.get('openedRoom'),
 		};
 
 		const options = { fields: { _id: 1 } };
@@ -18,32 +31,32 @@ Template.livechat.helpers({
 	rooms() {
 		const query = {
 			t: 'l',
-			open: true
+			open: true,
 		};
 
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
-			fields: { 'settings.preferences.roomsListExhibitionMode': 1 }
+		const user = Users.findOne(Meteor.userId(), {
+			fields: { 'settings.preferences.sidebarShowUnread': 1 },
 		});
 
-		if (RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'unread') {
+		if (getUserPreference(user, 'sidebarShowUnread')) {
 			query.alert = { $ne: true };
 		}
 
 		return ChatSubscription.find(query, { sort: {
-			't': 1,
-			'name': 1
-		}});
+			t: 1,
+			fname: 1,
+		} });
 	},
 
 	inquiries() {
 		// get all inquiries of the department
 		const inqs = LivechatInquiry.find({
 			agents: Meteor.userId(),
-			status: 'open'
+			status: 'open',
 		}, {
 			sort: {
-				'ts' : 1
-			}
+				ts : 1,
+			},
 		});
 
 		// for notification sound
@@ -55,7 +68,7 @@ Template.livechat.helpers({
 	},
 
 	guestPool() {
-		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
 
 	available() {
@@ -64,7 +77,7 @@ Template.livechat.helpers({
 		return {
 			status: statusLivechat === 'available' ? 'status-online' : '',
 			icon: statusLivechat === 'available' ? 'icon-toggle-on' : 'icon-toggle-off',
-			hint: statusLivechat === 'available' ? t('Available') : t('Not_Available')
+			hint: statusLivechat === 'available' ? t('Available') : t('Not_Available'),
 		};
 	},
 
@@ -73,10 +86,10 @@ Template.livechat.helpers({
 	},
 
 	showQueueLink() {
-		if (RocketChat.settings.get('Livechat_Routing_Method') !== 'Least_Amount') {
+		if (settings.get('Livechat_Routing_Method') !== 'Least_Amount') {
 			return false;
 		}
-		return RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager') || (Template.instance().statusLivechat.get() === 'available' && RocketChat.settings.get('Livechat_show_queue_list_link'));
+		return hasRole(Meteor.userId(), 'livechat-manager') || (Template.instance().statusLivechat.get() === 'available' && settings.get('Livechat_show_queue_list_link'));
 	},
 
 	activeLivechatQueue() {
@@ -84,12 +97,12 @@ Template.livechat.helpers({
 		if (FlowRouter.current().route.name === 'livechat-queue') {
 			return 'active';
 		}
-	}
+	},
 });
 
 Template.livechat.events({
 	'click .livechat-status'() {
-		Meteor.call('livechat:changeLivechatStatus', (err /*, results*/) => {
+		Meteor.call('livechat:changeLivechatStatus', (err /* , results*/) => {
 			if (err) {
 				return handleError(err);
 			}
@@ -106,17 +119,17 @@ Template.livechat.events({
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
-			confirmButtonText: t('Take_it')
+			confirmButtonText: t('Take_it'),
 		}, (isConfirm) => {
 			if (isConfirm) {
 				Meteor.call('livechat:takeInquiry', this._id, (error, result) => {
 					if (!error) {
-						RocketChat.roomTypes.openRouteLink(result.t, result);
+						roomTypes.openRouteLink(result.t, result);
 					}
 				});
 			}
 		});
-	}
+	},
 });
 
 Template.livechat.onCreated(function() {
@@ -124,7 +137,7 @@ Template.livechat.onCreated(function() {
 
 	this.autorun(() => {
 		if (Meteor.userId()) {
-			const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
+			const user = Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
 			this.statusLivechat.set(user.statusLivechat);
 		} else {
 			this.statusLivechat.set();

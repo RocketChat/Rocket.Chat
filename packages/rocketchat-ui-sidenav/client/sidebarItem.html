@@ -1,50 +1,57 @@
+<template name="sidebarItemIcon">
+	{{#if icon}}
+		<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}} {{#if status}}sidebar-item__icon-status--{{status}}{{/if}}">
+			{{> icon block="rc-icon--default-size sidebar-item__icon sidebar-item__icon" icon=icon}}
+		</div>
+	{{else}}
+		<div class="sidebar-item__user-status {{#if status}}sidebar-item__user-status--{{status}}{{/if}}" aria-label="{{status}}"></div>
+	{{/if}}
+</template>
+
 <template name="sidebarItem">
-	<li class="sidebar-item {{#if or unread alert }}sidebar-item--unread{{/if}} {{#if active}}sidebar-item--active{{/if}} {{#if toolbar}}popup-item{{/if}}" data-id="{{_id}}">
-		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" title="{{name}}">
+	<li class="sidebar-item{{#if or unread alert }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}}" data-id="{{_id}}">
+		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" aria-label="{{name}}">
 			{{#unless isLivechatQueue}}
-				<div class="sidebar-item__picture">
+
+				<div class=" {{#if isRoom}}sidebar-item__picture{{else}}sidebar-item-option-icon{{/if}}">
 					{{#if darken}}
 						{{#if icon}}
 							<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}}">
-								{{> icon block="sidebar-item__icon" icon=icon}}
+								{{> icon block="sidebar-item__icon rc-icon--default-size" icon=icon}}
 							</div>
 						{{/if}}
 					{{else}}
 						<div class="sidebar-item__user-thumb">
-							{{> avatar username=username roomIcon=icon}}
+							{{> avatar username=username roomIcon=icon lazy=true}}
 						</div>
 					{{/if}}
 				</div>
 			{{/unless}}
 			<div class="sidebar-item__body">
+				{{# let extended=isExtendedViewMode}}
 				<div class="sidebar-item__message">
 					<div class="sidebar-item__message-top">
 						<div class="sidebar-item__name">
-							{{#if statusClass}}
-								<div class="sidebar-item__user-status sidebar-item__user-status--{{statusClass}}"></div>
-							{{/if}}
 							{{#unless darken}}
-								{{#if icon}}
-									<div class="{{#if isRoom}}sidebar-item__room-type{{else}}sidebar-item__icon{{/if}}">
-										{{> icon block="sidebar-item__icon" icon=icon}}
-									</div>
-								{{/if}}
+								{{> sidebarItemIcon}}
 							{{/unless}}
+
 							<div class="sidebar-item__ellipsis">
 								{{name}}
 								{{#if mySelf}}
 									<span class="sidebar-item__me">({{_ "You"}})</span>
 								{{/if}}
 							</div>
+							{{#if streaming}} {{>icon icon="video" block="sidebar-item__video pulse"}} {{/if}}
 						</div>
-						{{#if isExtendedViewMode}}
+						{{#if extended}}
 							{{#if lastMessageTs}}
 								<span class="sidebar-item__time">{{lastMessageTs}}</span>
 							{{/if}}
 						{{/if}}
 					</div>
 					<div class="sidebar-item__message-bottom">
-						{{#if isExtendedViewMode}}
+						{{#if extended}}
 							{{#if lastMessage}}
 								<div class="sidebar-item__last-message">{{{lastMessage}}}</div>
 							{{/if}}
@@ -54,10 +61,11 @@
 						{{/if}}
 					</div>
 				</div>
+				{{/let}}
 
 				{{#if isRoom}}
 					<div class="sidebar-item__menu">
-						{{> icon block="sidebar-item__menu-icon" icon="menu"}}
+						{{> icon block="sidebar-item__menu-icon rc-icon--default-size" icon="menu"}}
 					</div>
 				{{/if}}
 			</div>

@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
@@ -7,25 +7,26 @@ import schema from '../../schemas/channels/channelsByUser.graphqls';
 const resolver = {
 	Query: {
 		channelsByUser: authenticated((root, { userId }) => {
-			const user = RocketChat.models.Users.findOneById(userId);
+			const user = Users.findOneById(userId);
 
 			if (!user) {
 				throw new Error('No user');
 			}
 
-			const rooms = RocketChat.models.Rooms.findByContainingUsername(user.username, {
+			const roomIds = Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+			const rooms = Rooms.findByIds(roomIds, {
 				sort: {
-					name: 1
+					name: 1,
 				},
-				fields: roomPublicFields
+				fields: roomPublicFields,
 			}).fetch();
 
 			return rooms;
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

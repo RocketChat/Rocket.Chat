@@ -1,5 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
-
+import { API } from 'meteor/rocketchat:api';
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/createChannel.graphqls';
 
@@ -7,34 +6,34 @@ const resolver = {
 	Mutation: {
 		createChannel: authenticated((root, args, { user }) => {
 			try {
-				RocketChat.API.channels.create.validate({
+				API.channels.create.validate({
 					user: {
-						value: user._id
+						value: user._id,
 					},
 					name: {
 						value: args.name,
-						key: 'name'
+						key: 'name',
 					},
 					members: {
 						value: args.membersId,
-						key: 'membersId'
-					}
+						key: 'membersId',
+					},
 				});
 			} catch (e) {
 				throw e;
 			}
 
-			const { channel } = RocketChat.API.channels.create.execute(user._id, {
+			const { channel } = API.channels.create.execute(user._id, {
 				name: args.name,
-				members: args.membersId
+				members: args.membersId,
 			});
 
 			return channel;
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

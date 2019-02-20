@@ -1,5 +1,14 @@
 /* globals Department, Livechat, LivechatVideoCall */
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import visitor from '../../imports/client/visitor';
+
+function showDepartments() {
+	return Department.find({ showOnRegistration: true }).count() > 1;
+}
 
 Template.livechatWindow.helpers({
 	title() {
@@ -21,7 +30,7 @@ Template.livechatWindow.helpers({
 		if (Session.get('triggered') || visitor.getId()) {
 			return false;
 		}
-		return Livechat.registrationForm;
+		return (Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments()));
 	},
 	showSwitchDepartmentForm() {
 		return Livechat.showSwitchDepartmentForm;
@@ -40,7 +49,7 @@ Template.livechatWindow.helpers({
 			offlineMessage: Livechat.offlineMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
 			offlineSuccessMessage: Livechat.offlineSuccessMessage,
 			offlineUnavailableMessage: Livechat.offlineUnavailableMessage.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2'),
-			displayOfflineForm: Livechat.displayOfflineForm
+			displayOfflineForm: Livechat.displayOfflineForm,
 		};
 	},
 	videoCalling() {
@@ -51,12 +60,40 @@ Template.livechatWindow.helpers({
 	},
 	showWidget() {
 		return Livechat.online || Livechat.displayOfflineForm;
-	}
+	},
 });
 
 Template.livechatWindow.events({
+	'mousedown .title'({ target, clientX: x, clientY: y }) {
+		parentCall('startDragWindow', { x, y });
+
+		this.onDrag = ({ clientX: x, clientY: y }) => {
+			parentCall('dragWindow', {
+				x: x - target.getBoundingClientRect().left,
+				y: y - target.getBoundingClientRect().top,
+			});
+		};
+
+		this.onDragStop = () => {
+			parentCall('stopDragWindow');
+			window.removeEventListener('mousemove', this.onDrag);
+			window.removeEventListener('mousedown', this.onDragStop);
+			this.onDrag = this.onDragStop = null;
+		};
+
+		window.addEventListener('mousemove', this.onDrag);
+		window.addEventListener('mouseup', this.onDragStop);
+	},
 	'click .title'() {
+		parentCall('restoreWindow');
+	},
+	'click .maximize'(e) {
 		parentCall('toggleWindow');
+		e.stopPropagation();
+	},
+	'click .minimize'(e) {
+		parentCall('toggleWindow');
+		e.stopPropagation();
 	},
 	'click .popout'(event) {
 		event.stopPropagation();
@@ -64,12 +101,12 @@ Template.livechatWindow.events({
 	},
 	'click .sound'(event) {
 		event.stopPropagation();
-		Session.set({sound: !Session.get('sound')});
-	}
+		Session.set({ sound: !Session.get('sound') });
+	},
 });
 
 Template.livechatWindow.onCreated(function() {
-	Session.set({sound: true});
+	Session.set({ sound: true });
 
 	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
 
@@ -86,11 +123,20 @@ Template.livechatWindow.onCreated(function() {
 		return lng;
 	};
 
-	// get all needed live chat info for the user
-	Meteor.call('livechat:getInitialData', visitor.getToken(), (err, result) => {
-		if (err) {
-			console.error(err);
-		} else {
+	const loadDepartments = (departments) => {
+		Department.remove({});
+		departments.forEach((department) => {
+			Department.insert(department);
+		});
+	};
+
+	this.autorun(() => {
+		// get all needed live chat info for the user
+		Meteor.call('livechat:getInitialData', visitor.getToken(), Livechat.department, (err, result) => {
+			if (err) {
+				return console.error(err);
+			}
+
 			if (!result.enabled) {
 				Triggers.setDisabled();
 				return parentCall('removeWidget');
@@ -111,19 +157,44 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.online = true;
 				Livechat.transcript = result.transcript;
 				Livechat.transcriptMessage = result.transcriptMessage;
+				Livechat.conversationFinishedMessage = result.conversationFinishedMessage;
 			}
 			Livechat.videoCall = result.videoCall;
+			Livechat.fileUpload = result.fileUpload;
 			Livechat.registrationForm = result.registrationForm;
+			Livechat.nameFieldRegistrationForm = result.nameFieldRegistrationForm;
+			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
+			Livechat.registrationFormMessage = result.registrationFormMessage;
 
-			if (result.room) {
-				Livechat.room = result.room._id;
-
-				visitor.setConnected();
-			}
+			loadDepartments(result.departments);
 
 			if (result.visitor) {
 				visitor.setData(result.visitor);
+
+				if (result.visitor.department) {
+					Livechat.department = result.visitor.department;
+				}
+
+				if (result.visitor.name) {
+					Livechat.guestName = result.visitor.name;
+				}
+
+				if (result.visitor.visitorEmails && result.visitor.visitorEmails.length > 0) {
+					Livechat.guestEmail = result.visitor.visitorEmails[0].address;
+				}
+
+				if (!Livechat.department) {
+					Livechat.department = result.visitor.department;
+				}
 			}
+
+			let room;
+			if (result.room && (!result.room.departmentId || !Livechat.department || result.room.departmentId === Livechat.department)) {
+				room = result.room._id;
+
+				visitor.setConnected();
+			}
+			Livechat.room = room;
 
 			if (result.agentData) {
 				Livechat.agent = result.agentData;
@@ -137,15 +208,12 @@ Template.livechatWindow.onCreated(function() {
 
 			TAPi18n.setLanguage(language);
 
-			Triggers.setTriggers(result.triggers);
-			Triggers.init();
+			Triggers.init(result.triggers);
 
-			result.departments.forEach((department) => {
-				Department.insert(department);
-			});
 			Livechat.allowSwitchingDepartments = result.allowSwitchingDepartments;
+
 			Livechat.ready();
-		}
+		});
 	});
 
 	$(window).on('focus', () => {

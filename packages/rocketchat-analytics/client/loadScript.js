@@ -1,12 +1,17 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+
 Template.body.onRendered(() => {
 	Tracker.autorun((c) => {
-		const piwikUrl = RocketChat.settings.get('PiwikAnalytics_enabled') && RocketChat.settings.get('PiwikAnalytics_url');
-		const piwikSiteId = piwikUrl && RocketChat.settings.get('PiwikAnalytics_siteId');
-		const piwikPrependDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_prependDomain');
-		const piwikCookieDomain = piwikUrl && RocketChat.settings.get('PiwikAnalytics_cookieDomain');
-		const piwikDomains = piwikUrl && RocketChat.settings.get('PiwikAnalytics_domains');
-		const piwikAdditionalTracker = piwikUrl && RocketChat.settings.get('PiwikAdditionalTrackers');
-		const googleId = RocketChat.settings.get('GoogleAnalytics_enabled') && RocketChat.settings.get('GoogleAnalytics_ID');
+		const piwikUrl = settings.get('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url');
+		const piwikSiteId = piwikUrl && settings.get('PiwikAnalytics_siteId');
+		const piwikPrependDomain = piwikUrl && settings.get('PiwikAnalytics_prependDomain');
+		const piwikCookieDomain = piwikUrl && settings.get('PiwikAnalytics_cookieDomain');
+		const piwikDomains = piwikUrl && settings.get('PiwikAnalytics_domains');
+		const piwikAdditionalTracker = piwikUrl && settings.get('PiwikAdditionalTrackers');
+		const googleId = settings.get('GoogleAnalytics_enabled') && settings.get('GoogleAnalytics_ID');
 		if (piwikSiteId || googleId) {
 			c.stop();
 
@@ -44,14 +49,14 @@ Template.body.onRendered(() => {
 							const addTrackers = JSON.parse(piwikAdditionalTracker);
 							for (let i = 0; i < addTrackers.length; i++) {
 								const tracker = addTrackers[i];
-								window._paq.push(['addTracker', `${ tracker['trackerURL'] }piwik.php`, tracker['siteId']]);
+								window._paq.push(['addTracker', `${ tracker.trackerURL }js/`, tracker.siteId]);
 							}
 						}
 					} catch (e) {
 						// parsing JSON faild
 						console.log('Error while parsing JSON value of "piwikAdditionalTracker": ', e);
 					}
-					window._paq.push(['setTrackerUrl', `${ piwikUrl }piwik.php`]);
+					window._paq.push(['setTrackerUrl', `${ piwikUrl }js/`]);
 					window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
 					const d = document;
 					const g = d.createElement('script');
@@ -59,7 +64,7 @@ Template.body.onRendered(() => {
 					g.type = 'text/javascript';
 					g.async = true;
 					g.defer = true;
-					g.src = `${ piwikUrl }piwik.js`;
+					g.src = `${ piwikUrl }js/`;
 					s.parentNode.insertBefore(g, s);
 				})();
 			}
@@ -73,7 +78,7 @@ Template.body.onRendered(() => {
 
 			  ga('create', googleId, 'auto');
 			  ga('send', 'pageview');
-				/*eslint-enable */
+				/* eslint-enable */
 			}
 		}
 	});

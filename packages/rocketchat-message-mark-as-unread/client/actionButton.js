@@ -1,5 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { RoomManager, MessageAction } from 'meteor/rocketchat:ui-utils';
+import { handleError } from 'meteor/rocketchat:utils';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+
 Meteor.startup(() => {
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'mark-message-as-unread',
 		icon: 'flag',
 		label: 'Mark_as_unread',
@@ -11,7 +17,7 @@ Meteor.startup(() => {
 					return handleError(error);
 				}
 				const subscription = ChatSubscription.findOne({
-					rid: message.rid
+					rid: message.rid,
 				});
 				if (subscription == null) {
 					return;
@@ -24,6 +30,6 @@ Meteor.startup(() => {
 			return message.u._id !== Meteor.user()._id;
 		},
 		order: 22,
-		group: 'menu'
+		group: 'menu',
 	});
 });

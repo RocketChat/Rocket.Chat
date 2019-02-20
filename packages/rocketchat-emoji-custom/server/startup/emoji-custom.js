@@ -1,11 +1,16 @@
-/* globals RocketChatFileEmojiCustomInstance */
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
+import { settings } from 'meteor/rocketchat:settings';
+import { RocketChatFile } from 'meteor/rocketchat:file';
 import _ from 'underscore';
+
+export let RocketChatFileEmojiCustomInstance;
 
 Meteor.startup(function() {
 	let storeType = 'GridFS';
 
-	if (RocketChat.settings.get('EmojiUpload_Storage_Type')) {
-		storeType = RocketChat.settings.get('EmojiUpload_Storage_Type');
+	if (settings.get('EmojiUpload_Storage_Type')) {
+		storeType = settings.get('EmojiUpload_Storage_Type');
 	}
 
 	const RocketChatStore = RocketChatFile[storeType];
@@ -17,20 +22,21 @@ Meteor.startup(function() {
 	console.log(`Using ${ storeType } for custom emoji storage`.green);
 
 	let path = '~/uploads';
-	if (RocketChat.settings.get('EmojiUpload_FileSystemPath') != null) {
-		if (RocketChat.settings.get('EmojiUpload_FileSystemPath').trim() !== '') {
-			path = RocketChat.settings.get('EmojiUpload_FileSystemPath');
+	if (settings.get('EmojiUpload_FileSystemPath') != null) {
+		if (settings.get('EmojiUpload_FileSystemPath').trim() !== '') {
+			path = settings.get('EmojiUpload_FileSystemPath');
 		}
 	}
 
-	this.RocketChatFileEmojiCustomInstance = new RocketChatStore({
+	RocketChatFileEmojiCustomInstance = new RocketChatStore({
 		name: 'custom_emoji',
-		absolutePath: path
+		absolutePath: path,
 	});
 
-	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/*, next*/) {
+
+	return WebApp.connectHandlers.use('/emoji-custom/', Meteor.bindEnvironment(function(req, res/* , next*/) {
 		const params =
-			{emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''))};
+			{ emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
 		if (_.isEmpty(params.emoji)) {
 			res.writeHead(403);
@@ -44,7 +50,7 @@ Meteor.startup(function() {
 		res.setHeader('Content-Disposition', 'inline');
 
 		if (file == null) {
-			//use code from username initials renderer until file upload is complete
+			// use code from username initials renderer until file upload is complete
 			res.setHeader('Content-Type', 'image/svg+xml');
 			res.setHeader('Cache-Control', 'public, max-age=0');
 			res.setHeader('Expires', '-1');

@@ -1,17 +1,22 @@
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import AutoTranslate from '../autotranslate';
+
 Meteor.methods({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'auto-translate')) {
-			throw new Meteor.Error('error-action-now-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings'});
+		if (!hasPermission(Meteor.userId(), 'auto-translate')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings' });
 		}
 
-		return RocketChat.AutoTranslate.getSupportedLanguages(targetLanguage);
-	}
+		return AutoTranslate.getSupportedLanguages(targetLanguage);
+	},
 });
 
 DDPRateLimiter.addRule({
 	type: 'method',
 	name: 'autoTranslate.getSupportedLanguages',
-	userId(/*userId*/) {
+	userId(/* userId*/) {
 		return true;
-	}
+	},
 }, 5, 60000);

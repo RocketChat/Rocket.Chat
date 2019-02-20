@@ -1,24 +1,22 @@
-/* eslint-env mocha */
-
 const supertest = require('supertest');
 const request = supertest('http://localhost:3000');
 
-import {adminUsername, adminPassword, adminEmail} from '../../data/user.js';
+import { adminUsername, adminPassword, adminEmail } from '../../data/user.js';
 
-const user = {username: adminUsername, password: adminPassword, email: adminEmail, accessToken: null};
+const user = { username: adminUsername, password: adminPassword, email: adminEmail, accessToken: null };
 const channel = {};
-const message = {content: 'Test Message GraphQL', modifiedContent: 'Test Message GraphQL Modified'};
+const message = { content: 'Test Message GraphQL', modifiedContent: 'Test Message GraphQL Modified' };
 
 const { expect } = require('chai');
 
 const credentials = {
 	['X-Auth-Token']: undefined,
-	['X-User-Id']: undefined
+	['X-User-Id']: undefined,
 };
 
 const login = {
 	user: adminUsername,
-	password: adminPassword
+	password: adminPassword,
 };
 
 describe('GraphQL Tests', function() {
@@ -45,7 +43,7 @@ describe('GraphQL Tests', function() {
 	before((done) => {
 		request.post('/api/v1/settings/Graphql_Enabled')
 			.set(credentials)
-			.send({'value': true})
+			.send({ value: true })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
@@ -57,7 +55,7 @@ describe('GraphQL Tests', function() {
 	after((done) => {
 		request.post('/api/v1/settings/Graphql_Enabled')
 			.set(credentials)
-			.send({'value': false})
+			.send({ value: false })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
@@ -68,8 +66,8 @@ describe('GraphQL Tests', function() {
 
 	it('Is able to login with username and password', (done) => {
 		const query = `
-			mutation login{
-				loginWithPassword(user: {username: "${ user.username }"}, password: "${ user.password }") {
+			mutation login {
+			loginWithPassword(user: "${ user.username }", password: "${ user.password }") {
 					user {
 						username,
 						email
@@ -81,7 +79,7 @@ describe('GraphQL Tests', function() {
 			}`;
 		request.post('/api/graphql')
 			.send({
-				query
+				query,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -102,7 +100,7 @@ describe('GraphQL Tests', function() {
 	it('Is able to login with email and password', (done) => {
 		const query = `
 			mutation login {
-				loginWithPassword(user: {email: "${ user.email }"}, password: "${ user.password }") {
+				loginWithPassword(user: "", userFields: {email: "${ user.email }"}, password: "${ user.password }") {
 					user {
 						username,
 						email,
@@ -115,7 +113,7 @@ describe('GraphQL Tests', function() {
 			}`;
 		request.post('/api/graphql')
 			.send({
-				query
+				query,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -135,7 +133,7 @@ describe('GraphQL Tests', function() {
 	it('Fails when trying to login with wrong password', (done) => {
 		const query = `
 			mutation login {
-				loginWithPassword(user: {username: "${ user.username }"}, password: "not!${ user.password }") {
+				loginWithPassword(user: "${ user.username }", password: "not!${ user.password }") {
 					user {
 						username
 					},
@@ -146,7 +144,7 @@ describe('GraphQL Tests', function() {
 			}`;
 		request.post('/api/graphql')
 			.send({
-				query
+				query,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -179,14 +177,14 @@ describe('GraphQL Tests', function() {
 		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
-				query
+				query,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('data');
 				expect(res.body).to.not.have.property('errors');
-				const me = res.body.data.me;
+				const { me } = res.body.data;
 				expect(me).to.have.property('username', user.username);
 				expect(me).to.have.property('email', user.email);
 				expect(me.channels).to.be.an('array');
@@ -219,7 +217,7 @@ describe('GraphQL Tests', function() {
 		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
-				query
+				query,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -257,7 +255,7 @@ describe('GraphQL Tests', function() {
 		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
-				query
+				query,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -295,7 +293,7 @@ describe('GraphQL Tests', function() {
 		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
-				query
+				query,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -327,7 +325,7 @@ describe('GraphQL Tests', function() {
 		request.post('/api/graphql')
 			.set('Authorization', user.accessToken)
 			.send({
-				query
+				query,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)

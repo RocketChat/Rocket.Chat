@@ -1,18 +1,34 @@
-/* globals WebAppInternals*/
+import { Meteor } from 'meteor/meteor';
+import { WebAppInternals } from 'meteor/webapp';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 
 function testWebAppInternals(fn) {
 	typeof WebAppInternals !== 'undefined' && fn(WebAppInternals);
 }
-RocketChat.settings.onload('CDN_PREFIX', function(key, value) {
-	if (_.isString(value) && value.trim()) {
-		return testWebAppInternals(WebAppInternals => WebAppInternals.setBundledJsCssPrefix(value));
+settings.onload('CDN_PREFIX', function(key, value) {
+	const useForAll = settings.get('CDN_PREFIX_ALL');
+	if (_.isString(value) && value.trim() && useForAll) {
+		return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(value));
+	}
+});
+
+settings.onload('CDN_JSCSS_PREFIX', function(key, value) {
+	const useForAll = settings.get('CDN_PREFIX_ALL');
+	if (_.isString(value) && value.trim() && !useForAll) {
+		return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(value));
 	}
 });
 
 Meteor.startup(function() {
-	const value = RocketChat.settings.get('CDN_PREFIX');
-	if (_.isString(value) && value.trim()) {
-		return testWebAppInternals(WebAppInternals => WebAppInternals.setBundledJsCssPrefix(value));
+	const cdnValue = settings.get('CDN_PREFIX');
+	const useForAll = settings.get('CDN_PREFIX_ALL');
+	const cdnJsCss = settings.get('CDN_JSCSS_PREFIX');
+	if (_.isString(cdnValue) && cdnValue.trim()) {
+		if (useForAll) {
+			return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(cdnValue));
+		} else if (_.isString(cdnJsCss) && cdnJsCss.trim()) {
+			return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(cdnJsCss));
+		}
 	}
 });

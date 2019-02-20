@@ -1,45 +1,53 @@
-RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
+import { Meteor } from 'meteor/meteor';
+import { Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+
+export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
-	const room = RocketChat.models.Rooms.findOneById(rid);
+	const room = Rooms.findOneById(rid);
 
 	// Check if user is already in room
-	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	if (subscription) {
 		return;
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		RocketChat.callbacks.run('beforeJoinRoom', user, room);
+		callbacks.run('beforeJoinRoom', user, room);
 	}
 
-	const muted = room.ro && !RocketChat.authz.hasPermission(user._id, 'post-readonly');
-	RocketChat.models.Rooms.addUsernameById(rid, user.username, muted);
-	RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
+	const muted = room.ro && !hasPermission(user._id, 'post-readonly');
+	if (muted) {
+		Rooms.muteUsernameByRoomId(rid, user.username);
+	}
+
+	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
 		open: true,
 		alert: true,
 		unread: 1,
 		userMentions: 1,
-		groupMentions: 0
+		groupMentions: 0,
 	});
 
 	if (!silenced) {
 		if (inviter) {
-			RocketChat.models.Messages.createUserAddedWithRoomIdAndUser(rid, user, {
+			Messages.createUserAddedWithRoomIdAndUser(rid, user, {
 				ts: now,
 				u: {
 					_id: inviter._id,
-					username: inviter.username
-				}
+					username: inviter.username,
+				},
 			});
 		} else {
-			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
+			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
 		}
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
 		Meteor.defer(function() {
-			RocketChat.callbacks.run('afterJoinRoom', user, room);
+			callbacks.run('afterJoinRoom', user, room);
 		});
 	}
 

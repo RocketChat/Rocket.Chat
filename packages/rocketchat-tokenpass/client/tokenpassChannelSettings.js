@@ -1,13 +1,21 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { ChatRoom } from 'meteor/rocketchat:ui-utils';
+import toastr from 'toastr';
+
 Template.channelSettings__tokenpass.helpers({
 	addDisabled() {
-		const {balance, token} = Template.instance();
+		const { balance, token } = Template.instance();
 		return balance.get() && token.get() ? '' : 'disabled';
 	},
 	list() {
 		return Template.instance().list.get();
 	},
 	save() {
-		const {list, initial} = Template.instance();
+		const { list, initial } = Template.instance();
 		return JSON.stringify(list.get()) !== JSON.stringify(initial);
 	},
 	editing() {
@@ -24,7 +32,7 @@ Template.channelSettings__tokenpass.helpers({
 	},
 	editDisabled() {
 		return Template.instance().editing.get() ? 'disabled' : '';
-	}
+	},
 });
 
 Template.channelSettings__tokenpass.onCreated(function() {
@@ -51,21 +59,21 @@ Template.channelSettings__tokenpass.events({
 	'click .js-add'(e, i) {
 		e.preventDefault();
 		const instance = Template.instance();
-		const {balance, token, list} = instance;
-		list.set([...list.get().filter(t => t.token !== token), {token:token.get(), balance: balance.get()}]);
+		const { balance, token, list } = instance;
+		list.set([...list.get().filter((t) => t.token !== token), { token:token.get(), balance: balance.get() }]);
 
 
-		[...i.findAll('input')].forEach(el => el.value = '');
+		[...i.findAll('input')].forEach((el) => el.value = '');
 		return balance.set('') && token.set('');
 	},
 	'click .js-remove'(e, instance) {
 		e.preventDefault();
-		const {list, editing} = instance;
+		const { list, editing } = instance;
 
 		if (!editing.get()) {
 			return;
 		}
-		list.set(list.get().filter(t => t.token !== this.token));
+		list.set(list.get().filter((t) => t.token !== this.token));
 
 	},
 	'click .js-save'(e, i) {
@@ -73,7 +81,7 @@ Template.channelSettings__tokenpass.events({
 
 		const tokenpass = {
 			require: i.find('[name=requireAllTokens]').checked ? 'all' : 'any',
-			tokens: i.list.get()
+			tokens: i.list.get(),
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'tokenpass', tokenpass, function(err) {
@@ -84,7 +92,7 @@ Template.channelSettings__tokenpass.events({
 			i.token.set('');
 			i.balance.set('');
 			i.initial = tokenpass;
-			[...i.findAll('input')].forEach(el => el.value = '');
+			[...i.findAll('input')].forEach((el) => el.value = '');
 			return toastr.success(TAPi18n.__('Room_tokenpass_config_changed_successfully'));
 		});
 	},
@@ -94,9 +102,9 @@ Template.channelSettings__tokenpass.events({
 		i.list.set(i.initial.tokens);
 		i.token.set('');
 		i.balance.set('');
-		[...i.findAll('input')].forEach(el => el.value = '');
+		[...i.findAll('input')].forEach((el) => el.value = '');
 	},
 	'change [name=requireAllTokens]'(e, instance) {
 		instance.requireAll.set(e.currentTarget.checked);
-	}
+	},
 });

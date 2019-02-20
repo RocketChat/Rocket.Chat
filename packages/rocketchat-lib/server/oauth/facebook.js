@@ -1,5 +1,9 @@
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
+import { HTTP } from 'meteor/http';
+import { registerAccessTokenService } from './oauth';
+
 const crypto = Npm.require('crypto');
 const whitelisted = [
 	'id',
@@ -24,28 +28,28 @@ const getIdentity = function(accessToken, fields, secret) {
 			params: {
 				access_token: accessToken,
 				appsecret_proof: hmac.digest('hex'),
-				fields: fields.join(',')
-			}
+				fields: fields.join(','),
+			},
 		}).data;
 	} catch (err) {
 		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${ err.message }`),
-			{response: err.response});
+			{ response: err.response });
 	}
 };
 
-RocketChat.registerAccessTokenService('facebook', function(options) {
+registerAccessTokenService('facebook', function(options) {
 	check(options, Match.ObjectIncluding({
 		accessToken: String,
 		secret: String,
 		expiresIn: Match.Integer,
-		identity: Match.Maybe(Object)
+		identity: Match.Maybe(Object),
 	}));
 
 	const identity = options.identity || getIdentity(options.accessToken, whitelisted, options.secret);
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10))
+		expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
 	};
 
 	const fields = _.pick(identity, whitelisted);
@@ -55,9 +59,9 @@ RocketChat.registerAccessTokenService('facebook', function(options) {
 		serviceData,
 		options: {
 			profile: {
-				name: identity.name
-			}
-		}
+				name: identity.name,
+			},
+		},
 	};
 });
 

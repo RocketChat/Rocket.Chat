@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Rooms } from 'meteor/rocketchat:models';
+import { Tokenpass } from '../Tokenpass';
+
 Meteor.methods({
 	findTokenChannels() {
 		if (!Meteor.userId()) {
@@ -8,14 +12,14 @@ Meteor.methods({
 
 		if (user.services && user.services.tokenpass && user.services.tokenpass.tcaBalances) {
 			const tokens = {};
-			user.services.tokenpass.tcaBalances.forEach(token => {
+			user.services.tokenpass.tcaBalances.forEach((token) => {
 				tokens[token.asset] = 1;
 			});
 
-			return RocketChat.models.Rooms.findByTokenpass(Object.keys(tokens))
-				.filter(room => RocketChat.Tokenpass.validateAccess(room.tokenpass, user.services.tokenpass.tcaBalances));
+			return Rooms.findByTokenpass(Object.keys(tokens))
+				.filter((room) => Tokenpass.validateAccess(room.tokenpass, user.services.tokenpass.tcaBalances));
 		}
 
 		return [];
-	}
+	},
 });

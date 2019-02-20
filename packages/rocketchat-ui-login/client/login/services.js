@@ -1,18 +1,21 @@
-/* globals CustomOAuth */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
 Meteor.startup(function() {
 	return ServiceConfiguration.configurations.find({
-		custom: true
+		custom: true,
 	}).observe({
 		added(record) {
 			return new CustomOAuth(record.service, {
 				serverURL: record.serverURL,
 				authorizePath: record.authorizePath,
-				scope: record.scope
+				scope: record.scope,
 			});
-		}
+		},
 	});
 });
 
@@ -21,8 +24,8 @@ Template.loginServices.helpers({
 		const services = [];
 		const authServices = ServiceConfiguration.configurations.find({}, {
 			sort: {
-				service: 1
-			}
+				service: 1,
+			},
 		}).fetch();
 		authServices.forEach(function(service) {
 			let icon;
@@ -51,16 +54,16 @@ Template.loginServices.helpers({
 			return services.push({
 				service,
 				displayName: serviceName,
-				icon
+				icon,
 			});
 		});
 		return services;
-	}
+	},
 });
 
 const longinMethods = {
 	'meteor-developer': 'MeteorDeveloperAccount',
-	'linkedin': 'Linkedin'
+	linkedin: 'Linkedin',
 };
 
 Template.loginServices.events({
@@ -72,34 +75,20 @@ Template.loginServices.events({
 		const serviceIcon = $(e.currentTarget).find('.service-icon');
 		loadingIcon.removeClass('hidden');
 		serviceIcon.addClass('hidden');
-		if (Meteor.isCordova && this.service.service === 'facebook') {
-			return Meteor.loginWithFacebookCordova({}, function(error) {
-				loadingIcon.addClass('hidden');
-				serviceIcon.removeClass('hidden');
-				if (error) {
-					console.log(JSON.stringify(error));
-					if (error.reason) {
-						toastr.error(error.reason);
-					} else {
-						toastr.error(error.message);
-					}
+
+		const loginWithService = `loginWith${ longinMethods[this.service.service] || s.capitalize(this.service.service) }`;
+		const serviceConfig = this.service.clientConfig || {};
+		return Meteor[loginWithService](serviceConfig, function(error) {
+			loadingIcon.addClass('hidden');
+			serviceIcon.removeClass('hidden');
+			if (error) {
+				console.log(JSON.stringify(error));
+				if (error.reason) {
+					toastr.error(error.reason);
+				} else {
+					toastr.error(error.message);
 				}
-			});
-		} else {
-			const loginWithService = `loginWith${ longinMethods[this.service.service] || s.capitalize(this.service.service) }`;
-			const serviceConfig = this.service.clientConfig || {};
-			return Meteor[loginWithService](serviceConfig, function(error) {
-				loadingIcon.addClass('hidden');
-				serviceIcon.removeClass('hidden');
-				if (error) {
-					console.log(JSON.stringify(error));
-					if (error.reason) {
-						toastr.error(error.reason);
-					} else {
-						toastr.error(error.message);
-					}
-				}
-			});
-		}
-	}
+			}
+		});
+	},
 });

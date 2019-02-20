@@ -1,6 +1,8 @@
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Rooms } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 10,
 	up() {
 		/*
@@ -8,28 +10,28 @@ RocketChat.Migrations.add({
 		 */
 		let count = 0;
 
-		RocketChat.models.Rooms.find({
+		Rooms.find({
 			'usernames.0': {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}, {
 			fields: {
-				usernames: 1
-			}
+				usernames: 1,
+			},
 		}).forEach((room) => {
 			const newUsernames = _.uniq(room.usernames);
 			if (newUsernames.length !== room.usernames.length) {
 				count++;
-				return RocketChat.models.Rooms.update({
-					_id: room._id
+				return Rooms.update({
+					_id: room._id,
 				}, {
 					$set: {
-						usernames: newUsernames
-					}
+						usernames: newUsernames,
+					},
 				});
 			}
 		});
 
 		return console.log(`Removed duplicated usernames from ${ count } rooms`);
-	}
+	},
 });

@@ -1,15 +1,18 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings, Users } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 83,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Settings && RocketChat.models.Users) {
-			const setting = RocketChat.models.Settings.findOne({ _id: 'InternalHubot_Username' });
+		if (Settings && Users) {
+			const setting = Settings.findOne({ _id: 'InternalHubot_Username' });
 			if (setting && setting.value) {
 				const username = setting.value;
-				const user = RocketChat.models.Users.findOne({ username });
+				const user = Users.findOne({ username });
 				if (!user && setting.value === 'Rocket.Cat') {
-					RocketChat.models.Settings.update({ _id: 'InternalHubot_Username' }, { $set: { value: 'rocket.cat', packageValue: 'rocket.cat' } });
+					Settings.update({ _id: 'InternalHubot_Username' }, { $set: { value: 'rocket.cat', packageValue: 'rocket.cat' } });
 				}
 			}
 		}
-	}
+	},
 });

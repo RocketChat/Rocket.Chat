@@ -1,64 +1,66 @@
-RocketChat.settings.addGroup('Analytics', function addSettings() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('Analytics', function addSettings() {
 	this.section('Piwik', function() {
-		const enableQuery = {_id: 'PiwikAnalytics_enabled', value: true};
+		const enableQuery = { _id: 'PiwikAnalytics_enabled', value: true };
 		this.add('PiwikAnalytics_enabled', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Enable'
+			i18nLabel: 'Enable',
 		});
 		this.add('PiwikAnalytics_url', '', {
 			type: 'string',
 			public: true,
 			i18nLabel: 'URL',
-			enableQuery
+			enableQuery,
 		});
 		this.add('PiwikAnalytics_siteId', '', {
 			type: 'string',
 			public: true,
 			i18nLabel: 'Client_ID',
-			enableQuery
+			enableQuery,
 		});
 		this.add('PiwikAdditionalTrackers', '', {
 			type: 'string',
 			multiline: true,
 			public: true,
 			i18nLabel: 'PiwikAdditionalTrackers',
-			enableQuery
+			enableQuery,
 		});
 		this.add('PiwikAnalytics_prependDomain', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'PiwikAnalytics_prependDomain',
-			enableQuery
+			enableQuery,
 		});
 		this.add('PiwikAnalytics_cookieDomain', false, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'PiwikAnalytics_cookieDomain',
-			enableQuery
+			enableQuery,
 		});
 		this.add('PiwikAnalytics_domains', '', {
 			type: 'string',
 			multiline: true,
 			public: true,
 			i18nLabel: 'PiwikAnalytics_domains',
-			enableQuery
+			enableQuery,
 		});
 	});
 
 	this.section('Analytics_Google', function() {
-		const enableQuery = {_id: 'GoogleAnalytics_enabled', value: true};
+		const enableQuery = { _id: 'GoogleAnalytics_enabled', value: true };
 		this.add('GoogleAnalytics_enabled', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Enable'
+			i18nLabel: 'Enable',
 		});
 
 		this.add('GoogleAnalytics_ID', '', {
 			type: 'string',
 			public: true,
 			i18nLabel: 'Analytics_Google_id',
-			enableQuery
+			enableQuery,
 		});
 	});
 
@@ -67,19 +69,19 @@ RocketChat.settings.addGroup('Analytics', function addSettings() {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Messages',
-			i18nDescription: 'Analytics_features_messages_Description'
+			i18nDescription: 'Analytics_features_messages_Description',
 		});
 		this.add('Analytics_features_rooms', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Rooms',
-			i18nDescription: 'Analytics_features_rooms_Description'
+			i18nDescription: 'Analytics_features_rooms_Description',
 		});
 		this.add('Analytics_features_users', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Users',
-			i18nDescription: 'Analytics_features_users_Description'
+			i18nDescription: 'Analytics_features_users_Description',
 		});
 	});
 });

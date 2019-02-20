@@ -66,6 +66,52 @@
 						<textarea class="preview-settings rc-input__element" name="offlineSuccessMessage" id="offlineSuccessMessage">{{offlineSuccessMessage}}</textarea>
 					</div>
 				</fieldset>
+				<fieldset>
+					<legend>{{_ "Livechat_registration_form"}}</legend>
+					<!--
+					<label class="rc-switch__label">
+						<input class="rc-switch__input" type="checkbox" name="registrationFormEnabled" checked="{{registrationFormEnabled}}"/>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+						<span class="rc-switch__text">
+							{{_ "Show_preregistration_form"}}
+						</span>
+					</label>
+					-->
+					<label class="rc-switch__label">
+						<input class="rc-switch__input js-input-check" type="checkbox" name="registrationFormEnabled" {{registrationFormEnabled}}/>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+						<span class="rc-switch__text">{{_ "Enabled"}}</span>
+					</label>
+					<label class="rc-switch__label">
+						<input class="rc-switch__input js-input-check" type="checkbox" name="registrationFormNameFieldEnabled" {{registrationFormNameFieldEnabled}}/>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+						<span class="rc-switch__text">{{_ "Show_name_field"}}</span>
+					</label>
+					<label class="rc-switch__label">
+						<input class="rc-switch__input js-input-check" type="checkbox" name="registrationFormEmailFieldEnabled" {{registrationFormEmailFieldEnabled}}/>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+						<span class="rc-switch__text">{{_ "Show_email_field"}}</span>
+					</label>
+					<div class="input-line">
+						<label for="registrationFormMessage">{{_ "Livechat_Registration_form_message"}}</label>
+						<textarea class="preview-settings rc-input__element" name="registrationFormMessage" id="registrationFormMessage">{{registrationFormMessage}}</textarea>
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>{{_ "Conversation_finished"}}</legend>
+					<div class="input-line">
+						<label for="conversationFinishedMessage">{{_ "Conversation_finished_message"}}</label>
+						<textarea class="preview-settings rc-input__element" name="conversationFinishedMessage" id="conversationFinishedMessage">{{conversationFinishedMessage}}</textarea>
+					</div>
+				</fieldset>
 				<div class="submit">
 					<button class="button secondary reset-settings"><i class="icon-ccw"></i>{{_ "Reset"}}</button>
 					<button class="button primary save"><i class="icon-floppy"></i>{{_ "Save"}}</button>

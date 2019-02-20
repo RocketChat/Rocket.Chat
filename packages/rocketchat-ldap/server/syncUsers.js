@@ -1,4 +1,7 @@
-import {importNewUsers} from './sync';
+import { Meteor } from 'meteor/meteor';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { importNewUsers } from './sync';
 
 Meteor.methods({
 	ldap_sync_now() {
@@ -7,11 +10,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'ldap_sync_users' });
 		}
 
-		if (!RocketChat.authz.hasRole(user._id, 'admin')) {
+		if (!hasRole(user._id, 'admin')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'ldap_sync_users' });
 		}
 
-		if (RocketChat.settings.get('LDAP_Enable') !== true) {
+		if (settings.get('LDAP_Enable') !== true) {
 			throw new Meteor.Error('LDAP_disabled');
 		}
 
@@ -21,7 +24,7 @@ Meteor.methods({
 
 		return {
 			message: 'Sync_in_progress',
-			params: []
+			params: [],
 		};
-	}
+	},
 });

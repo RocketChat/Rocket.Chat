@@ -1,4 +1,7 @@
-/* globals Google, overrideLoginMethod*/
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Utils2fa } from './lib/2fa';
+import { Google } from 'meteor/google-oauth';
 import _ from 'underscore';
 
 const loginWithGoogleAndTOTP = function(options, code, callback) {
@@ -31,7 +34,7 @@ const loginWithGoogleAndTOTP = function(options, code, callback) {
 	Google.requestCredential(options, credentialRequestCompleteCallback);
 };
 
-const loginWithGoogle = Meteor.loginWithGoogle;
+const { loginWithGoogle } = Meteor;
 Meteor.loginWithGoogle = function(options, cb) {
-	overrideLoginMethod(loginWithGoogle, [options], cb, loginWithGoogleAndTOTP);
+	Utils2fa.overrideLoginMethod(loginWithGoogle, [options], cb, loginWithGoogleAndTOTP);
 };

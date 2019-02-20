@@ -8,5 +8,5 @@ export const roomPublicFields = {
 	msgs: 1,
 	ro: 1,
 	u: 1,
-	archived: 1
+	archived: 1,
 };

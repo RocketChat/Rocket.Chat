@@ -1,8 +1,12 @@
-RocketChat.saveRoomSystemMessages = function(rid, systemMessages) {
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Rooms } from 'meteor/rocketchat:models';
+
+export const saveRoomSystemMessages = function(rid, systemMessages) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
-			'function': 'RocketChat.saveRoomSystemMessages'
+			function: 'RocketChat.saveRoomSystemMessages',
 		});
 	}
-	return RocketChat.models.Rooms.setSystemMessagesById(rid, systemMessages);
+	return Rooms.setSystemMessagesById(rid, systemMessages);
 };

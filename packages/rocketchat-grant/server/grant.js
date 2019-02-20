@@ -1,5 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
-
+import { hostname } from 'meteor/rocketchat:lib';
 import Providers from './providers';
 import Settings from './settings';
 import { path, generateCallback, generateAppCallback } from './routes';
@@ -18,13 +17,13 @@ function addProviders(config) {
 				key: settings.key,
 				secret: settings.secret,
 				scope: registeredProvider.scope,
-				callback: generateCallback(providerName)
+				callback: generateCallback(providerName),
 			};
 
 			// set each app
 			Settings.apps.forEach((_, appName) => {
 				data[appName] = {
-					callback: generateAppCallback(providerName, appName)
+					callback: generateAppCallback(providerName, appName),
 				};
 			});
 
@@ -36,11 +35,11 @@ function addProviders(config) {
 const config = {};
 
 export function generateConfig() {
-	config['server'] = {
+	config.server = {
 		protocol: 'http',
-		host: RocketChat.hostname,
+		host: hostname,
 		path,
-		state: true
+		state: true,
 	};
 
 	addProviders(config);

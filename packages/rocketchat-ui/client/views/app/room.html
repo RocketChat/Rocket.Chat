@@ -7,21 +7,22 @@
 		</div>
 		<div class="main-content-flex">
 			<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
-				{{#unless embeddedVersion}}
-					{{# header}}
+				{{# unless embeddedVersion}}
+					{{# headerRoom}}
 						{{#with flexData}}
 							<div class="rc-header__block rc-header__block-action">
 								{{> RoomsActionTab}}
 							</div>
 						{{/with}}
-					{{/header}}
+					{{/headerRoom}}
 				{{/unless}}
+
 				<div class="messages-container-wrapper">
 					<div class="messages-container-main">
 						{{#unless embeddedVersion}}
 							{{#if showAnnouncement}}
-							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdown roomAnnouncement}}">
-								{{{RocketChatMarkdown roomAnnouncement}}}
+							<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline roomAnnouncement}}">
+								<p>{{{RocketChatMarkdownInline roomAnnouncement}}}</p>
 							</div>
 							{{/if}}
 						{{/unless}}
@@ -61,14 +62,14 @@
 										<div class="upload-progress-text">
 											[{{percentage}}%] {{name}}
 										</div>
-										<button>
+										<button class="upload-progress-close">
 											{{_ "Cancel"}}
 										</button>
 									{{/if}}
 								</div>
 							{{/each}}
 						</div>
-						<div class="messages-box {{#if selectable}}selectable{{/if}} {{hasLeader}}">
+						<div class="messages-box {{#if selectable}}selectable{{/if}} {{messageViewMode}} {{hasLeader}}">
 							<div class="ticks-bar"></div>
 							<button class="new-message background-primary-action-color color-content-background-color not">
 								<i class="icon-down-big"></i>
@@ -108,13 +109,29 @@
 											</li>
 										{{else}}
 											<li class="start color-info-font-color">
+												{{#if hasPurge}}
+													<div class="start__purge-warning error-background error-border error-color">
+														{{> icon block="start__purge-warning-icon" icon="warning"}}
+														{{#unless filesOnly}}
+															{{#unless excludePinned}}
+																{{_ "RetentionPolicy_RoomWarning" time=purgeTimeout}}
+															{{else}}
+																{{_ "RetentionPolicy_RoomWarning_Unpinned" time=purgeTimeout}}
+															{{/unless}}
+														{{else}}
+															{{#unless excludePinned}}
+																{{_ "RetentionPolicy_RoomWarning_FilesOnly" time=purgeTimeout}}
+															{{else}}
+																{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
+															{{/unless}}
+														{{/unless}}
+													</div>
+												{{/if}}
 												{{_ "Start_of_conversation"}}
 											</li>
 										{{/if}}
 									{{/if}}
-									{{#each messagesHistory}}
-										{{#nrr nrrargs 'message' .}}{{/nrr}}
-									{{/each}}
+									{{#each messagesHistory}}{{#nrr nrrargs 'message' .}}{{/nrr}}{{/each}}
 									{{#if hasMoreNext}}
 										<li class="load-more">
 											{{#if isLoading}}

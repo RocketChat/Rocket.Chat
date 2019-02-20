@@ -1,6 +1,4 @@
-/* globals ansispan:true */
-
-ansispan = function(str) {
+export const ansispan = function(str) {
 	str = str.replace(/>/g, '&gt;');
 	str = str.replace(/</g, '&lt;');
 
@@ -35,12 +33,12 @@ ansispan = function(str) {
 };
 
 ansispan.foregroundColors = {
-	'30': 'gray',
-	'31': 'red',
-	'32': 'lime',
-	'33': 'yellow',
-	'34': '#6B98FF',
-	'35': '#FF00FF',
-	'36': 'cyan',
-	'37': 'white'
+	30: 'gray',
+	31: 'red',
+	32: 'lime',
+	33: 'yellow',
+	34: '#6B98FF',
+	35: '#FF00FF',
+	36: 'cyan',
+	37: 'white',
 };

@@ -1,4 +1,5 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Meteor } from 'meteor/meteor';
+import { Avatars, Rooms } from 'meteor/rocketchat:models';
 import property from 'lodash.property';
 
 import schema from '../../schemas/users/User-type.graphqls';
@@ -6,27 +7,23 @@ import schema from '../../schemas/users/User-type.graphqls';
 const resolver = {
 	User: {
 		id: property('_id'),
-		status: ({status}) => status.toUpperCase(),
+		status: ({ status }) => status.toUpperCase(),
 		avatar: async({ _id }) => {
 			// XXX js-accounts/graphql#16
-			const avatar = await RocketChat.models.Avatars.model.rawCollection().findOne({
-				userId: _id
-			}, { fields: { url: 1 }});
+			const avatar = await Avatars.model.rawCollection().findOne({
+				userId: _id,
+			}, { fields: { url: 1 } });
 
 			if (avatar) {
 				return avatar.url;
 			}
 		},
-		channels: Meteor.bindEnvironment(async({ _id }) => {
-			return await RocketChat.models.Rooms.findBySubscriptionUserId(_id).fetch();
-		}),
-		directMessages: ({ username }) => {
-			return RocketChat.models.Rooms.findByTypeContainingUsername('d', username).fetch();
-		}
-	}
+		channels: Meteor.bindEnvironment(async({ _id }) => await Rooms.findBySubscriptionUserId(_id).fetch()),
+		directMessages: ({ username }) => Rooms.findDirectRoomContainingUsername(username).fetch(),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

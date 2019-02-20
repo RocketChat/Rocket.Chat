@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { createRoom } from '../functions';
+
 Meteor.methods({
 	createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
@@ -7,7 +12,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createPrivateGroup' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-p')) {
+		if (!hasPermission(Meteor.userId(), 'create-p')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 
@@ -17,11 +22,11 @@ Meteor.methods({
 				require: String,
 				tokens: [{
 					token: String,
-					balance: String
-				}]
-			})
+					balance: String,
+				}],
+			}),
 		}));
 
-		return RocketChat.createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, {customFields, ...extraData});
-	}
+		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+	},
 });

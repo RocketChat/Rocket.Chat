@@ -1,11 +1,19 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Users, Messages } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Message } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import moment from 'moment';
+import * as Mailer from 'meteor/rocketchat:mailer';
 
 Meteor.methods({
 	'mailMessages'(data) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'mailMessages'
+				method: 'mailMessages',
 			});
 		}
 		check(data, Match.ObjectIncluding({
@@ -14,26 +22,26 @@ Meteor.methods({
 			to_emails: String,
 			subject: String,
 			messages: [String],
-			language: String
+			language: String,
 		}));
-		const room = Meteor.call('canAccessRoom', data.rid, Meteor.userId());
+		const room = Meteor.call('canAccessRoom', data.rid, userId);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'mailMessages'
+				method: 'mailMessages',
 			});
 		}
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'mail-messages')) {
+		if (!hasPermission(userId, 'mail-messages')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed', {
 				method: 'mailMessages',
-				action: 'Mailing'
+				action: 'Mailing',
 			});
 		}
-		const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
+
 		const emails = _.compact(data.to_emails.trim().split(','));
 		const missing = [];
 		if (data.to_users.length > 0) {
 			_.each(data.to_users, (username) => {
-				const user = RocketChat.models.Users.findOneByUsername(username);
+				const user = Users.findOneByUsername(username);
 				if (user && user.emails && user.emails[0] && user.emails[0].address) {
 					emails.push(user.emails[0].address);
 				} else {
@@ -41,12 +49,11 @@ Meteor.methods({
 				}
 			});
 		}
-		console.log('Sending messages to e-mails: ', emails);
 		_.each(emails, (email) => {
-			if (!rfcMailPatternWithName.test(email.trim())) {
+			if (!Mailer.checkAddressFormat(email.trim())) {
 				throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, {
 					method: 'mailMessages',
-					email
+					email,
 				});
 			}
 		});
@@ -56,33 +63,29 @@ Meteor.methods({
 		if (data.language !== 'en') {
 			const localeFn = Meteor.call('loadLocale', data.language);
 			if (localeFn) {
-				Function(localeFn).call({moment});
+				Function(localeFn).call({ moment });
 				moment.locale(data.language);
 			}
 		}
 
-		const header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
-		const footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
-		const html = RocketChat.models.Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
-			sort: {	ts: 1 }
+		const html = Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
+			sort: {	ts: 1 },
 		}).map(function(message) {
 			const dateTime = moment(message.ts).locale(data.language).format('L LT');
-			return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br />${ RocketChat.Message.parse(message, data.language) }</p>`;
+			return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br/>${ Message.parse(message, data.language) }</p>`;
 		}).join('');
 
-		Meteor.defer(function() {
-			Email.send({
-				to: emails,
-				from: RocketChat.settings.get('From_Email'),
-				replyTo: email,
-				subject: data.subject,
-				html: header + html + footer
-			});
-			return console.log(`Sending email to ${ emails.join(', ') }`);
+		Mailer.send({
+			to: emails,
+			from: settings.get('From_Email'),
+			replyTo: email,
+			subject: data.subject,
+			html,
 		});
+
 		return {
 			success: true,
-			missing
+			missing,
 		};
-	}
+	},
 });

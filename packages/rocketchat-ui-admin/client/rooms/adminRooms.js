@@ -1,12 +1,24 @@
-/*globals AdminChatRoom, RocketChat */
+import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { SideNav, RocketChatTabBar, TabBar } from 'meteor/rocketchat:ui-utils';
+import { t, roomTypes } from 'meteor/rocketchat:utils';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { ChannelSettings } from 'meteor/rocketchat:channel-settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
-
-this.AdminChatRoom = new Mongo.Collection('rocketchat_room');
+export const AdminChatRoom = new Mongo.Collection('rocketchat_room');
 
 Template.adminRooms.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		const instance = Template.instance();
 		return instance.ready && instance.ready.get();
@@ -31,13 +43,13 @@ Template.adminRooms.helpers({
 		return rooms && rooms.count();
 	},
 	name() {
-		return RocketChat.roomTypes.roomTypes[this.t].getDisplayName(this);
+		return roomTypes.roomTypes[this.t].getDisplayName(this);
 	},
 	type() {
-		return TAPi18n.__(RocketChat.roomTypes.roomTypes[this.t].label);
+		return TAPi18n.__(roomTypes.roomTypes[this.t].label);
 	},
 	'default'() {
-		if (this['default']) {
+		if (this.default) {
 			return t('True');
 		} else {
 			return t('False');
@@ -45,9 +57,30 @@ Template.adminRooms.helpers({
 	},
 	flexData() {
 		return {
-			tabBar: Template.instance().tabBar
+			tabBar: Template.instance().tabBar,
 		};
-	}
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
+				return instance.limit.set(instance.limit.get() + 50);
+			}
+		};
+	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function(item) {
+			Session.set('adminRoomsSelected', {
+				rid: item._id,
+			});
+			instance.tabBar.open('admin-room');
+		};
+	},
+
 });
 
 Template.adminRooms.onCreated(function() {
@@ -58,15 +91,15 @@ Template.adminRooms.onCreated(function() {
 	this.ready = new ReactiveVar(true);
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-rooms'],
 		id: 'admin-room',
 		i18nTitle: 'Room_Info',
 		icon: 'info-circled',
 		template: 'adminRoomInfo',
-		order: 1
+		order: 1,
 	});
-	RocketChat.ChannelSettings.addOption({
+	ChannelSettings.addOption({
 		group: ['admin-room'],
 		id: 'make-default',
 		template: 'channelSettingsDefault',
@@ -74,8 +107,8 @@ Template.adminRooms.onCreated(function() {
 			return Session.get('adminRoomsSelected');
 		},
 		validation() {
-			return RocketChat.authz.hasAllPermission('view-room-administration');
-		}
+			return hasAllPermission('view-room-administration');
+		},
 	});
 	this.autorun(function() {
 		const filter = instance.filter.get();
@@ -100,13 +133,13 @@ Template.adminRooms.onCreated(function() {
 		filter = s.trim(filter);
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg } ]};
+			query = { $or: [{ name: filterReg }, { t: 'd', usernames: filterReg }] };
 		}
 		if (types.length) {
-			query['t'] = { $in: types };
+			query.t = { $in: types };
 		}
 		const limit = instance.limit && instance.limit.get();
-		return AdminChatRoom.find(query, { limit, sort: { 'default': -1, name: 1}});
+		return AdminChatRoom.find(query, { limit, sort: { default: -1, name: 1 } });
 	};
 	this.getSearchTypes = function() {
 		return _.map($('[name=room-type]:checked'), function(input) {
@@ -134,19 +167,7 @@ Template.adminRooms.events({
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	},
-	'click .room-info'(e, instance) {
-		e.preventDefault();
-		Session.set('adminRoomsSelected', {
-			rid: this._id
-		});
-		instance.tabBar.open('admin-room');
-	},
-	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
-	},
 	'change [name=room-type]'(e, t) {
 		t.types.set(t.getSearchTypes());
-	}
+	},
 });

@@ -1,12 +1,15 @@
-import LivechatVisitors from './models/LivechatVisitors';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from 'meteor/rocketchat:settings';
+import { SMS } from 'meteor/rocketchat:sms';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
 	}
 
-	if (!RocketChat.SMS.enabled) {
+	if (!SMS.enabled) {
 		return message;
 	}
 
@@ -25,7 +28,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 		return message;
 	}
 
-	const SMSService = RocketChat.SMS.getService(RocketChat.settings.get('SMS_Service'));
+	const SMSService = SMS.getService(settings.get('SMS_Service'));
 
 	if (!SMSService) {
 		return message;
@@ -41,4 +44,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 
 	return message;
 
-}, RocketChat.callbacks.priority.LOW, 'sendMessageBySms');
+}, callbacks.priority.LOW, 'sendMessageBySms');

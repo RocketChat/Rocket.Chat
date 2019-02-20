@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, Messages } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/messages.graphqls';
@@ -8,7 +8,7 @@ const resolver = {
 		messages: authenticated((root, args, { user }) => {
 			const messagesQuery = {};
 			const messagesOptions = {
-				sort: { ts: -1 }
+				sort: { ts: -1 },
 			};
 			const channelQuery = {};
 			const isPagination = !!args.cursor || args.count > 0;
@@ -30,21 +30,21 @@ const resolver = {
 				return null;
 			}
 
-			const channel = RocketChat.models.Rooms.findOne(channelQuery);
+			const channel = Rooms.findOne(channelQuery);
 
 			let messagesArray = [];
 
 			if (channel) {
 				// cursor
 				if (isPagination && args.cursor) {
-					const cursorMsg = RocketChat.models.Messages.findOne(args.cursor, { fields: { ts: 1 } });
+					const cursorMsg = Messages.findOne(args.cursor, { fields: { ts: 1 } });
 					messagesQuery.ts = { $lt: cursorMsg.ts };
 				}
 
 				// search
 				if (typeof args.searchRegex === 'string') {
 					messagesQuery.msg = {
-						$regex: new RegExp(args.searchRegex, 'i')
+						$regex: new RegExp(args.searchRegex, 'i'),
 					};
 				}
 
@@ -61,7 +61,7 @@ const resolver = {
 				// look for messages that belongs to specific channel
 				messagesQuery.rid = channel._id;
 
-				const messages = RocketChat.models.Messages.find(messagesQuery, messagesOptions);
+				const messages = Messages.find(messagesQuery, messagesOptions);
 
 				messagesArray = messages.fetch();
 
@@ -69,7 +69,7 @@ const resolver = {
 					// oldest first (because of findOne)
 					messagesOptions.sort.ts = 1;
 
-					const firstMessage = RocketChat.models.Messages.findOne(messagesQuery, messagesOptions);
+					const firstMessage = Messages.findOne(messagesQuery, messagesOptions);
 					const lastId = (messagesArray[messagesArray.length - 1] || {})._id;
 
 					cursor = !lastId || lastId === firstMessage._id ? null : lastId;
@@ -79,13 +79,13 @@ const resolver = {
 			return {
 				cursor,
 				channel,
-				messagesArray
+				messagesArray,
 			};
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

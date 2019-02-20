@@ -1,12 +1,9 @@
-/* eslint-env mocha */
-/* globals expect */
-
-import {getCredentials, api, request, credentials} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
 describe('[Settings]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	describe('[/settings.public]', () => {
 		it('should return public settings', (done) => {
@@ -61,6 +58,31 @@ describe('[Settings]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('configurations');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/settings.oauth', () => {
+		it('should have return list of available oauth services when user is not logged', (done) => {
+			request.get(api('settings.oauth'))
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('services').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should have return list of available oauth services when user is logged', (done) => {
+			request.get(api('settings.oauth'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('services').and.to.be.an('array');
 				})
 				.end(done);
 		});

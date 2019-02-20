@@ -1,5 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { MessageAction, RoomHistoryManager } from 'meteor/rocketchat:ui-utils';
+
 Meteor.startup(function() {
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'jump-to-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
@@ -15,6 +19,6 @@ Meteor.startup(function() {
 			return message.mentionedList === true;
 		},
 		order: 100,
-		group: 'menu'
+		group: 'menu',
 	});
 });

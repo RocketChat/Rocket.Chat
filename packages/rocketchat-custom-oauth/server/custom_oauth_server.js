@@ -1,4 +1,11 @@
-/*globals OAuth*/
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import { OAuth } from 'meteor/oauth';
+import { HTTP } from 'meteor/http';
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { Logger } from 'meteor/rocketchat:logger';
+import { Users } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');
@@ -77,7 +84,7 @@ export class CustomOAuth {
 	}
 
 	getAccessToken(query) {
-		const config = ServiceConfiguration.configurations.findOne({service: this.name});
+		const config = ServiceConfiguration.configurations.findOne({ service: this.name });
 		if (!config) {
 			throw new ServiceConfiguration.ConfigError();
 		}
@@ -87,29 +94,29 @@ export class CustomOAuth {
 		const allOptions = {
 			headers: {
 				'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
-				Accept: 'application/json'
+				Accept: 'application/json',
 			},
 			params: {
 				code: query.code,
 				redirect_uri: OAuth._redirectUri(this.name, config),
 				grant_type: 'authorization_code',
-				state: query.state
-			}
+				state: query.state,
+			},
 		};
 
 		// Only send clientID / secret once on header or payload.
 		if (this.tokenSentVia === 'header') {
-			allOptions['auth'] = `${ config.clientId }:${ OAuth.openSecret(config.secret) }`;
+			allOptions.auth = `${ config.clientId }:${ OAuth.openSecret(config.secret) }`;
 		} else {
-			allOptions['params']['client_secret'] = OAuth.openSecret(config.secret);
-			allOptions['params']['client_id'] = config.clientId;
+			allOptions.params.client_secret = OAuth.openSecret(config.secret);
+			allOptions.params.client_id = config.clientId;
 		}
 
 		try {
 			response = HTTP.post(this.tokenPath, allOptions);
 		} catch (err) {
 			const error = new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ err.message }`);
-			throw _.extend(error, {response: err.response});
+			throw _.extend(error, { response: err.response });
 		}
 
 		let data;
@@ -119,7 +126,7 @@ export class CustomOAuth {
 			data = JSON.parse(response.content);
 		}
 
-		if (data.error) { //if the http response was a json object with an error attribute
+		if (data.error) { // if the http response was a json object with an error attribute
 			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
 		} else {
 			return data.access_token;
@@ -129,19 +136,19 @@ export class CustomOAuth {
 	getIdentity(accessToken) {
 		const params = {};
 		const headers = {
-			'User-Agent': this.userAgent // http://doc.gitlab.com/ce/api/users.html#Current-user
+			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
 		};
 
 		if (this.identityTokenSentVia === 'header') {
-			headers['Authorization'] = `Bearer ${ accessToken }`;
+			headers.Authorization = `Bearer ${ accessToken }`;
 		} else {
-			params['access_token'] = accessToken;
+			params.access_token = accessToken;
 		}
 
 		try {
 			const response = HTTP.get(this.identityPath, {
 				headers,
-				params
+				params,
 			});
 
 			let data;
@@ -157,7 +164,7 @@ export class CustomOAuth {
 			return data;
 		} catch (err) {
 			const error = new Error(`Failed to fetch identity from ${ this.name } at ${ this.identityPath }. ${ err.message }`);
-			throw _.extend(error, {response: err.response});
+			throw _.extend(error, { response: err.response });
 		}
 	}
 
@@ -240,7 +247,7 @@ export class CustomOAuth {
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken
+				accessToken,
 			};
 
 			_.extend(serviceData, identity);
@@ -249,9 +256,9 @@ export class CustomOAuth {
 				serviceData,
 				options: {
 					profile: {
-						name: identity.name || identity.username || identity.nickname || identity.CharacterName || identity.userName || identity.preferred_username || (identity.user && identity.user.name)
-					}
-				}
+						name: identity.name || identity.username || identity.nickname || identity.CharacterName || identity.userName || identity.preferred_username || (identity.user && identity.user.name),
+					},
+				},
 			};
 
 			// console.log data
@@ -277,7 +284,7 @@ export class CustomOAuth {
 	}
 
 	addHookToProcessUser() {
-		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData/*, options*/) => {
+		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData/* , options*/) => {
 			if (serviceName !== this.name) {
 				return;
 			}
@@ -285,7 +292,7 @@ export class CustomOAuth {
 			if (this.usernameField) {
 				const username = this.getUsername(serviceData);
 
-				const user = RocketChat.models.Users.findOneByUsername(username);
+				const user = Users.findOneByUsername(username);
 				if (!user) {
 					return;
 				}
@@ -302,11 +309,11 @@ export class CustomOAuth {
 				const serviceIdKey = `services.${ serviceName }.id`;
 				const update = {
 					$set: {
-						[serviceIdKey]: serviceData.id
-					}
+						[serviceIdKey]: serviceData.id,
+					},
 				};
 
-				RocketChat.models.Users.update({_id: user._id}, update);
+				Users.update({ _id: user._id }, update);
 			}
 		});
 
@@ -326,11 +333,11 @@ export class CustomOAuth {
 }
 
 
-const updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
-Accounts.updateOrCreateUserFromExternalService = function(/*serviceName, serviceData, options*/) {
+const { updateOrCreateUserFromExternalService } = Accounts;
+Accounts.updateOrCreateUserFromExternalService = function(...args /* serviceName, serviceData, options*/) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
-		hook.apply(this, arguments);
+		hook.apply(this, args);
 	}
 
-	return updateOrCreateUserFromExternalService.apply(this, arguments);
+	return updateOrCreateUserFromExternalService.apply(this, args);
 };

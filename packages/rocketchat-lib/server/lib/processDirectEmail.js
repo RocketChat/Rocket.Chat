@@ -1,13 +1,18 @@
-import {EmailReplyParser as reply} from 'emailreplyparser';
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Rooms, Messages, Users, Subscriptions } from 'meteor/rocketchat:models';
+import { metrics } from 'meteor/rocketchat:metrics';
+import { EmailReplyParser as reply } from 'emailreplyparser';
+import { sendMessage as _sendMessage } from '../functions';
 import moment from 'moment';
 
-RocketChat.processDirectEmail = function(email) {
+export const processDirectEmail = function(email) {
 	function sendMessage(email) {
 		const message = {
 			ts: new Date(email.headers.date),
 			msg: email.body,
 			sentByEmail: true,
-			groupable: false
+			groupable: false,
 		};
 
 		if (message.ts) {
@@ -19,27 +24,27 @@ RocketChat.processDirectEmail = function(email) {
 			message.ts = new Date();
 		}
 
-		if (message.msg && message.msg.length > RocketChat.settings.get('Message_MaxAllowedSize')) {
+		if (message.msg && message.msg.length > settings.get('Message_MaxAllowedSize')) {
 			return false;
 		}
 
 		// reduce new lines in multiline message
 		message.msg = message.msg.split('\n\n').join('\n');
 
-		const user = RocketChat.models.Users.findOneByEmailAddress(email.headers.from, {
+		const user = Users.findOneByEmailAddress(email.headers.from, {
 			fields: {
 				username: 1,
-				name: 1
-			}
+				name: 1,
+			},
 		});
 		if (!user) {
 			// user not found
 			return false;
 		}
 
-		const prevMessage = RocketChat.models.Messages.findOneById(email.headers.mid, {
+		const prevMessage = Messages.findOneById(email.headers.mid, {
 			rid: 1,
-			u: 1
+			u: 1,
 		});
 		if (!prevMessage) {
 			// message doesn't exist anymore
@@ -52,9 +57,9 @@ RocketChat.processDirectEmail = function(email) {
 			return false;
 		}
 
-		const roomInfo = RocketChat.models.Rooms.findOneById(message.rid, {
+		const roomInfo = Rooms.findOneById(message.rid, {
 			t: 1,
-			name: 1
+			name: 1,
 		});
 
 		// check mention
@@ -74,8 +79,8 @@ RocketChat.processDirectEmail = function(email) {
 		// add reply message link
 		message.msg = prevMessageLink + message.msg;
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
-		if (subscription && subscription.blocked || subscription.blocker) {
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id);
+		if (subscription && (subscription.blocked || subscription.blocker)) {
 			// room is blocked
 			return false;
 		}
@@ -85,13 +90,13 @@ RocketChat.processDirectEmail = function(email) {
 			return false;
 		}
 
-		if (message.alias == null && RocketChat.settings.get('Message_SetNameToAliasEnabled')) {
+		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
 			message.alias = user.name;
 		}
 
-		RocketChat.metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 
-		return RocketChat.sendMessage(user, message, room);
+		return _sendMessage(user, message, room);
 	}
 
 	// Extract/parse reply from email body

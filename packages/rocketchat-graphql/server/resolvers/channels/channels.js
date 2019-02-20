@@ -1,4 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';
@@ -10,9 +10,9 @@ const resolver = {
 			const query = {};
 			const options = {
 				sort: {
-					name: 1
+					name: 1,
 				},
-				fields: roomPublicFields
+				fields: roomPublicFields,
 			};
 
 			// Filter
@@ -20,14 +20,14 @@ const resolver = {
 				// nameFilter
 				if (typeof args.filter.nameFilter !== undefined) {
 					query.name = {
-						$regex: new RegExp(args.filter.nameFilter, 'i')
+						$regex: new RegExp(args.filter.nameFilter, 'i'),
 					};
 				}
 
 				// sortBy
 				if (args.filter.sortBy === 'NUMBER_OF_MESSAGES') {
 					options.sort = {
-						msgs: -1
+						msgs: -1,
 					};
 				}
 
@@ -38,19 +38,19 @@ const resolver = {
 						break;
 					case 'PUBLIC':
 						query.t = {
-							$ne: 'p'
+							$ne: 'p',
 						};
 						break;
 				}
 			}
 
-			return RocketChat.models.Rooms.find(query, options).fetch();
-		})
-	}
+			return Rooms.find(query, options).fetch();
+		}),
+	},
 };
 
 
 export {
 	schema,
-	resolver
+	resolver,
 };

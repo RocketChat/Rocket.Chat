@@ -1,26 +1,29 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 31,
 	up() {
 		const changes = {
-			API_Analytics: 'GoogleTagManager_id'
+			API_Analytics: 'GoogleTagManager_id',
 		};
 
 		for (const from of Object.keys(changes)) {
 			const to = changes[from];
-			const record = RocketChat.models.Settings.findOne({
-				_id: from
+			const record = Settings.findOne({
+				_id: from,
 			});
 
 			if (record) {
 				delete record._id;
-				RocketChat.models.Settings.upsert({
-					_id: to
+				Settings.upsert({
+					_id: to,
 				}, record);
 			}
 
-			RocketChat.models.Settings.remove({
-				_id: from
+			Settings.remove({
+				_id: from,
 			});
 		}
-	}
+	},
 });

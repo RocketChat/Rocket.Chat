@@ -1,21 +1,19 @@
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
+import { Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:closeByVisitor'({ roomId, token }) {
-		const room = RocketChat.models.Rooms.findOneOpenByVisitorToken(token, roomId);
-
-		if (!room || !room.open) {
-			return false;
-		}
-
 		const visitor = LivechatVisitors.getVisitorByToken(token);
 
-		const language = (visitor && visitor.language) || RocketChat.settings.get('language') || 'en';
+		const language = (visitor && visitor.language) || settings.get('Language') || 'en';
 
-		return RocketChat.Livechat.closeRoom({
+		return Livechat.closeRoom({
 			visitor,
-			room,
-			comment: TAPi18n.__('Closed_by_visitor', { lng: language })
+			room: Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, token),
+			comment: TAPi18n.__('Closed_by_visitor', { lng: language }),
 		});
-	}
+	},
 });

@@ -1,8 +1,13 @@
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
+import { API } from 'meteor/rocketchat:api';
+import { SMS } from 'meteor/rocketchat:sms';
+import { Livechat } from '../../../server/lib/Livechat';
 
-RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
+API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
-		const SMSService = RocketChat.SMS.getService(this.urlParams.service);
+		const SMSService = SMS.getService(this.urlParams.service);
 
 		const sms = SMSService.parse(this.bodyParams);
 
@@ -10,17 +15,17 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const sendMessage = {
 			message: {
-				_id: Random.id()
+				_id: Random.id(),
 			},
 			roomInfo: {
 				sms: {
-					from: sms.to
-				}
-			}
+					from: sms.to,
+				},
+			},
 		};
 
 		if (visitor) {
-			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			const rooms = Rooms.findOpenByVisitorToken(visitor.token).fetch();
 
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
@@ -32,12 +37,12 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = Random.id();
 
-			const visitorId = RocketChat.Livechat.registerGuest({
+			const visitorId = Livechat.registerGuest({
 				username: sms.from.replace(/[^0-9]/g, ''),
 				token: sendMessage.message.token,
 				phone: {
-					number: sms.from
-				}
+					number: sms.from,
+				},
 			});
 
 			visitor = LivechatVisitors.findOneById(visitorId);
@@ -46,8 +51,29 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 		sendMessage.message.msg = sms.body;
 		sendMessage.guest = visitor;
 
+		sendMessage.message.attachments = sms.media.map((curr) => {
+			const attachment = {
+				message_link: curr.url,
+			};
+
+			const { contentType } = curr;
+			switch (contentType.substr(0, contentType.indexOf('/'))) {
+				case 'image':
+					attachment.image_url = curr.url;
+					break;
+				case 'video':
+					attachment.video_url = curr.url;
+					break;
+				case 'audio':
+					attachment.audio_url = curr.url;
+					break;
+			}
+
+			return attachment;
+		});
+
 		try {
-			const message = SMSService.response.call(this, RocketChat.Livechat.sendMessage(sendMessage));
+			const message = SMSService.response.call(this, Livechat.sendMessage(sendMessage));
 
 			Meteor.defer(() => {
 				if (sms.extra) {
@@ -67,5 +93,5 @@ RocketChat.API.v1.addRoute('livechat/sms-incoming/:service', {
 		} catch (e) {
 			return SMSService.error.call(this, e);
 		}
-	}
+	},
 });

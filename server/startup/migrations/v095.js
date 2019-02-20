@@ -1,25 +1,28 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 95,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
-			const emailHeader = RocketChat.models.Settings.findOne({ _id: 'Email_Header' });
-			const emailFooter = RocketChat.models.Settings.findOne({ _id: 'Email_Footer' });
+		if (Settings) {
+			const emailHeader = Settings.findOne({ _id: 'Email_Header' });
+			const emailFooter = Settings.findOne({ _id: 'Email_Footer' });
 			const startWithHTML = emailHeader.value.match(/^<html>/);
 			const endsWithHTML = emailFooter.value.match(/<\/html>$/);
 
 			if (!startWithHTML) {
-				RocketChat.models.Settings.update(
+				Settings.update(
 					{ _id: 'Email_Header' },
-					{ $set: { value: `<html>${ emailHeader.value }`} }
+					{ $set: { value: `<html>${ emailHeader.value }` } }
 				);
 			}
 
 			if (!endsWithHTML) {
-				RocketChat.models.Settings.update(
+				Settings.update(
 					{ _id: 'Email_Footer' },
-					{ $set: { value: `${ emailFooter.value }</html>`} }
+					{ $set: { value: `${ emailFooter.value }</html>` } }
 				);
 			}
 		}
-	}
+	},
 });

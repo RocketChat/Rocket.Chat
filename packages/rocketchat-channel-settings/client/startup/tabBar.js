@@ -1,11 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
+
 Meteor.startup(() => {
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['channel', 'group', 'direct'],
 		id: 'channel-settings',
 		anonymous: true,
 		i18nTitle: 'Room_Info',
 		icon: 'info-circled',
 		template: 'channelSettings',
-		order: 0
+		order: 0,
 	});
 });

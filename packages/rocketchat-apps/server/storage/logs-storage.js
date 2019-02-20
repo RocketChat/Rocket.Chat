@@ -7,12 +7,12 @@ export class AppRealLogsStorage extends AppLogStorage {
 		this.db = model;
 	}
 
-	find() {
+	find(...args) {
 		return new Promise((resolve, reject) => {
 			let docs;
 
 			try {
-				docs = this.db.find(...arguments).fetch();
+				docs = this.db.find(...args).fetch();
 			} catch (e) {
 				return reject(e);
 			}
@@ -46,6 +46,18 @@ export class AppRealLogsStorage extends AppLogStorage {
 			}
 
 			resolve(docs);
+		});
+	}
+
+	removeEntriesFor(appId) {
+		return new Promise((resolve, reject) => {
+			try {
+				this.db.remove({ appId });
+			} catch (e) {
+				return reject(e);
+			}
+
+			resolve();
 		});
 	}
 }

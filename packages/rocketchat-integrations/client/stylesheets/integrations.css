@@ -52,3 +52,24 @@
 		list-style: none;
 	}
 }
+
+.integrate-other-ways {
+	& p {
+		font-size: 1rem;
+		line-height: 1.5rem;
+
+		& a {
+			color: #175cc4 !important;
+		}
+	}
+}
+
+.content.zapier {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	#zapier-goes-here {
+		width: 95%;
+	}
+}

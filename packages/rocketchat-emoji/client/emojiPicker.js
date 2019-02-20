@@ -1,4 +1,10 @@
-/* globals Template, isSetNotNull */
+import { ReactiveVar } from 'meteor/reactive-var';
+import { emoji } from '../lib/rocketchat';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { isSetNotNull } from './function-isSet';
+import { EmojiPicker } from './lib/EmojiPicker';
+
 const emojiCategories = {};
 /**
  * Turns category hash to a nice readable translated name
@@ -6,10 +12,10 @@ const emojiCategories = {};
  * @return {string} readable and translated
  */
 function categoryName(category) {
-	for (const emojiPackage in RocketChat.emoji.packages) {
-		if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
-			if (RocketChat.emoji.packages[emojiPackage].emojiCategories.hasOwnProperty(category)) {
-				const categoryTag = RocketChat.emoji.packages[emojiPackage].emojiCategories[category];
+	for (const emojiPackage in emoji.packages) {
+		if (emoji.packages.hasOwnProperty(emojiPackage)) {
+			if (emoji.packages[emojiPackage].emojiCategories.hasOwnProperty(category)) {
+				const categoryTag = emoji.packages[emojiPackage].emojiCategories[category];
 				return TAPi18n.__(categoryTag);
 			}
 		}
@@ -25,24 +31,24 @@ function getEmojisByCategory(category) {
 	const t = Template.instance();
 	const actualTone = t.tone;
 	let html = '';
-	for (const emojiPackage in RocketChat.emoji.packages) {
-		if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
-			if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
-				const total = RocketChat.emoji.packages[emojiPackage].emojisByCategory[category].length;
+	for (const emojiPackage in emoji.packages) {
+		if (emoji.packages.hasOwnProperty(emojiPackage)) {
+			if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
+				const total = emoji.packages[emojiPackage].emojisByCategory[category].length;
 				for (let i = 0; i < total; i++) {
-					const emoji = RocketChat.emoji.packages[emojiPackage].emojisByCategory[category][i];
+					const _emoji = emoji.packages[emojiPackage].emojisByCategory[category][i];
 					let tone = '';
 
-					if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
+					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
 						tone = `_tone${ actualTone }`;
 					}
 
-					//set correctPackage here to allow for recent emojis to work properly
-					if (isSetNotNull(() => RocketChat.emoji.list[`:${ emoji }:`].emojiPackage)) {
-						const correctPackage = RocketChat.emoji.list[`:${ emoji }:`].emojiPackage;
-						const image = RocketChat.emoji.packages[correctPackage].render(`:${ emoji }${ tone }:`);
+					// set correctPackage here to allow for recent emojis to work properly
+					if (isSetNotNull(() => emoji.list[`:${ _emoji }:`].emojiPackage)) {
+						const correctPackage = emoji.list[`:${ _emoji }:`].emojiPackage;
+						const image = emoji.packages[correctPackage].render(`:${ _emoji }${ tone }:`);
 
-						html += `<li class="emoji-${ emoji }" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
+						html += `<li class="emoji-${ _emoji }" data-emoji="${ _emoji }" title="${ _emoji }">${ image }</li>`;
 					}
 				}
 			}
@@ -58,27 +64,27 @@ function getEmojisBySearchTerm(searchTerm) {
 
 	const searchRegExp = new RegExp(RegExp.escape(searchTerm.replace(/:/g, '')), 'i');
 
-	for (let emoji in RocketChat.emoji.list) {
-		if (!RocketChat.emoji.list.hasOwnProperty(emoji)) {
+	for (let current in emoji.list) {
+		if (!emoji.list.hasOwnProperty(current)) {
 			continue;
 		}
 
-		if (searchRegExp.test(emoji)) {
-			const emojiObject = RocketChat.emoji.list[emoji];
-			const emojiPackage = emojiObject.emojiPackage;
+		if (searchRegExp.test(current)) {
+			const emojiObject = emoji.list[current];
+			const { emojiPackage } = emojiObject;
 			let tone = '';
-			emoji = emoji.replace(/:/g, '');
+			current = current.replace(/:/g, '');
 
-			if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
+			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 				tone = `_tone${ actualTone }`;
 			}
 
 			let emojiFound = false;
 
-			for (const key in RocketChat.emoji.packages[emojiPackage].emojisByCategory) {
-				if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
-					const contents = RocketChat.emoji.packages[emojiPackage].emojisByCategory[key];
-					if (contents.indexOf(emoji) !== -1) {
+			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
+				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
+					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
+					if (contents.indexOf(current) !== -1) {
 						emojiFound = true;
 						break;
 					}
@@ -86,8 +92,8 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				const image = RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }${ tone }:`);
-				html += `<li class="emoji-${ emoji }" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
+				const image = emoji.packages[emojiPackage].render(`:${ current }${ tone }:`);
+				html += `<li class="emoji-${ current }" data-emoji="${ current }" title="${ current }">${ image }</li>`;
 			}
 		}
 	}
@@ -98,10 +104,10 @@ function getEmojisBySearchTerm(searchTerm) {
 Template.emojiPicker.helpers({
 	category() {
 		const categories = [];
-		for (const emojiPackage in RocketChat.emoji.packages) {
-			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
-				for (const key in RocketChat.emoji.packages[emojiPackage].emojisByCategory) {
-					if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
+		for (const emojiPackage in emoji.packages) {
+			if (emoji.packages.hasOwnProperty(emojiPackage)) {
+				for (const key in emoji.packages[emojiPackage].emojisByCategory) {
+					if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 						categories.push(key);
 					}
 				}
@@ -111,10 +117,10 @@ Template.emojiPicker.helpers({
 	},
 	emojiByCategory(category) {
 		let emojisByCategory = [];
-		for (const emojiPackage in RocketChat.emoji.packages) {
-			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (RocketChat.emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
-					emojisByCategory = emojisByCategory.concat(RocketChat.emoji.packages[emojiPackage].emojisByCategory[category]);
+		for (const emojiPackage in emoji.packages) {
+			if (emoji.packages.hasOwnProperty(emojiPackage)) {
+				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
+					emojisByCategory = emojisByCategory.concat(emoji.packages[emojiPackage].emojisByCategory[category]);
 				}
 			}
 		}
@@ -127,10 +133,10 @@ Template.emojiPicker.helpers({
 		const t = Template.instance();
 		const searchTerm = t.currentSearchTerm.get();
 		const activeCategory = t.currentCategory.get();
-		//this will cause the reflow when recent list gets updated
+		// this will cause the reflow when recent list gets updated
 		t.recentNeedsUpdate.get();
 
-		//we only need to replace the active category, since switching tabs resets the filter
+		// we only need to replace the active category, since switching tabs resets the filter
 		if (activeCategory !== category) {
 			return;
 		}
@@ -169,7 +175,7 @@ Template.emojiPicker.helpers({
 		} else {
 			return categoryName(hash);
 		}
-	}
+	},
 });
 
 Template.emojiPicker.events({
@@ -207,19 +213,19 @@ Template.emojiPicker.events({
 			newTone = '';
 		}
 
-		for (const emojiPackage in RocketChat.emoji.packages) {
-			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (RocketChat.emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
-					for (const emoji in RocketChat.emoji.packages[emojiPackage].toneList) {
-						if (RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
-							$(`.emoji-${ emoji }`).html(RocketChat.emoji.packages[emojiPackage].render(`:${ emoji }${ newTone }:`));
+		for (const emojiPackage in emoji.packages) {
+			if (emoji.packages.hasOwnProperty(emojiPackage)) {
+				if (emoji.packages[emojiPackage].hasOwnProperty('toneList')) {
+					for (const _emoji in emoji.packages[emojiPackage].toneList) {
+						if (emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+							$(`.emoji-${ _emoji }`).html(emoji.packages[emojiPackage].render(`:${ _emoji }${ newTone }:`));
 						}
 					}
 				}
 			}
 		}
 
-		RocketChat.EmojiPicker.setTone(tone);
+		EmojiPicker.setTone(tone);
 
 		instance.setCurrentTone(tone);
 
@@ -228,13 +234,13 @@ Template.emojiPicker.events({
 	'click .emoji-list li'(event, instance) {
 		event.stopPropagation();
 
-		const emoji = event.currentTarget.dataset.emoji;
+		const _emoji = event.currentTarget.dataset.emoji;
 		const actualTone = instance.tone;
 		let tone = '';
 
-		for (const emojiPackage in RocketChat.emoji.packages) {
-			if (RocketChat.emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (actualTone > 0 && RocketChat.emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
+		for (const emojiPackage in emoji.packages) {
+			if (emoji.packages.hasOwnProperty(emojiPackage)) {
+				if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
 					tone = `_tone${ actualTone }`;
 				}
 			}
@@ -246,7 +252,7 @@ Template.emojiPicker.events({
 		}
 		instance.currentSearchTerm.set('');
 
-		RocketChat.EmojiPicker.pickEmoji(emoji + tone);
+		EmojiPicker.pickEmoji(_emoji + tone);
 	},
 	'keyup .js-emojipicker-search, change .js-emojipicker-search'(event, instance) {
 		const value = event.target.value.trim();
@@ -255,18 +261,18 @@ Template.emojiPicker.events({
 			return;
 		}
 		cst.set(value);
-	}
+	},
 });
 
 Template.emojiPicker.onCreated(function() {
-	this.tone = RocketChat.EmojiPicker.getTone();
-	const recent = RocketChat.EmojiPicker.getRecent();
+	this.tone = EmojiPicker.getTone();
+	const recent = EmojiPicker.getRecent();
 	this.recentNeedsUpdate = new ReactiveVar(false);
 	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
 	this.currentSearchTerm = new ReactiveVar('');
 
-	recent.forEach((emoji) => {
-		RocketChat.emoji.packages.base.emojisByCategory.recent.push(emoji);
+	recent.forEach((_emoji) => {
+		emoji.packages.base.emojisByCategory.recent.push(_emoji);
 	});
 
 	this.setCurrentTone = (newTone) => {

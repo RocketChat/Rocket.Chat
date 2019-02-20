@@ -1,21 +1,23 @@
-/* globals getHttpBridge, waitPromise */
+import { Meteor } from 'meteor/meteor';
+import { Sandstorm } from './lib';
+import { getHttpBridge, waitPromise } from './lib';
 
-RocketChat.Sandstorm.offerUiView = function() {};
+Sandstorm.offerUiView = function() {};
 
 if (process.env.SANDSTORM === '1') {
-	const Capnp = require('/node_modules/capnp.js');
+	const Capnp = require('capnp');
 	const Powerbox = Capnp.importSystem('sandstorm/powerbox.capnp');
 	const Grain = Capnp.importSystem('sandstorm/grain.capnp');
 
-	RocketChat.Sandstorm.offerUiView = function(token, serializedDescriptor, sessionId) {
+	Sandstorm.offerUiView = function(token, serializedDescriptor, sessionId) {
 		const httpBridge = getHttpBridge();
 		const session = httpBridge.getSessionContext(sessionId).context;
-		const api = httpBridge.getSandstormApi(sessionId).api;
-		const cap = waitPromise(api.restore(new Buffer(token, 'base64'))).cap;
-		return waitPromise(session.offer(cap, undefined, {tags: [{
+		const { api } = httpBridge.getSandstormApi(sessionId);
+		const { cap } = waitPromise(api.restore(new Buffer(token, 'base64')));
+		return waitPromise(session.offer(cap, undefined, { tags: [{
 			id: '15831515641881813735',
-			value: new Buffer(serializedDescriptor, 'base64')
-		}]}));
+			value: new Buffer(serializedDescriptor, 'base64'),
+		}] }));
 	};
 
 	Meteor.methods({
@@ -26,10 +28,10 @@ if (process.env.SANDSTORM === '1') {
 			const httpBridge = getHttpBridge();
 			const session = httpBridge.getSessionContext(sessionId).context;
 			const cap = waitPromise(session.claimRequest(token)).cap.castAs(Grain.UiView);
-			const api = httpBridge.getSandstormApi(sessionId).api;
+			const { api } = httpBridge.getSandstormApi(sessionId);
 			const newToken = waitPromise(api.save(cap)).token.toString('base64');
 			const viewInfo = waitPromise(cap.getViewInfo());
-			const appTitle = viewInfo.appTitle;
+			const { appTitle } = viewInfo;
 			const asset = waitPromise(viewInfo.grainIcon.getUrl());
 			const appIconUrl = `${ asset.protocol }://${ asset.hostPath }`;
 			return {
@@ -37,12 +39,12 @@ if (process.env.SANDSTORM === '1') {
 				appTitle,
 				appIconUrl,
 				grainTitle,
-				descriptor: descriptor.tags[0].value.toString('base64')
+				descriptor: descriptor.tags[0].value.toString('base64'),
 			};
 		},
 		sandstormOffer(token, serializedDescriptor) {
-			RocketChat.Sandstorm.offerUiView(token, serializedDescriptor,
+			Sandstorm.offerUiView(token, serializedDescriptor,
 				this.connection.sandstormSessionId());
-		}
+		},
 	});
 }

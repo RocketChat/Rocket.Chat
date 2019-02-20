@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { Roles } from 'meteor/rocketchat:models';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
@@ -7,7 +15,7 @@ Template.userEdit.helpers({
 		return cursor.count() === 0 ? 'disabled' : '';
 	},
 	canEditOrAdd() {
-		return (Template.instance().user && RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) || (!Template.instance().user && RocketChat.authz.hasAtLeastOnePermission('create-user'));
+		return (Template.instance().user && hasAtLeastOnePermission('edit-other-user-info')) || (!Template.instance().user && hasAtLeastOnePermission('create-user'));
 	},
 
 	user() {
@@ -20,7 +28,7 @@ Template.userEdit.helpers({
 
 	role() {
 		const roles = Template.instance().roles.get();
-		return RocketChat.models.Roles.find({_id: {$nin:roles}, scope: 'Users'}, { sort: { description: 1, _id: 1 } });
+		return Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {
@@ -29,7 +37,7 @@ Template.userEdit.helpers({
 
 	name() {
 		return this.description || this._id;
-	}
+	},
 });
 
 Template.userEdit.events({
@@ -44,7 +52,7 @@ Template.userEdit.events({
 		e.stopPropagation();
 		e.preventDefault();
 		let roles = t.roles.get();
-		roles = roles.filter(el => el !== this.valueOf());
+		roles = roles.filter((el) => el !== this.valueOf());
 		t.roles.set(roles);
 		$(`[title=${ this }]`).remove();
 	},
@@ -52,7 +60,20 @@ Template.userEdit.events({
 	'click #randomPassword'(e) {
 		e.stopPropagation();
 		e.preventDefault();
-		$('#password').val(Random.id());
+		e.target.classList.add('loading');
+		$('#password').val('');
+		setTimeout(() => {
+			$('#password').val(Random.id());
+			e.target.classList.remove('loading');
+		}, 1000);
+	},
+
+	'mouseover #password'(e) {
+		e.target.type = 'text';
+	},
+
+	'mouseout #password'(e) {
+		e.target.type = 'password';
 	},
 
 	'click #addRole'(e, instance) {
@@ -71,9 +92,8 @@ Template.userEdit.events({
 		e.stopPropagation();
 		e.preventDefault();
 		t.save(e.currentTarget);
-	}
+	},
 });
-
 
 Template.userEdit.onCreated(function() {
 	this.user = this.data != null ? this.data.user : undefined;
@@ -105,10 +125,8 @@ Template.userEdit.onCreated(function() {
 		const roleSelect = this.$('.remove-role').toArray();
 
 		if (roleSelect.length > 0) {
-			const notSorted = roleSelect.map(role => {
-				return role.title;
-			});
-			//Remove duplicate strings from the array
+			const notSorted = roleSelect.map((role) => role.title);
+			// Remove duplicate strings from the array
 			userData.roles = notSorted.filter((el, index) => notSorted.indexOf(el) === index);
 		}
 		return userData;
@@ -139,7 +157,7 @@ Template.userEdit.onCreated(function() {
 		return errors.length === 0;
 	};
 
-	this.save = form => {
+	this.save = (form) => {
 		if (!this.validate()) {
 			return;
 		}

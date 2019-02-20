@@ -21,6 +21,14 @@
 								</div>
 							</li>
 						{{/if}}
+						{{#if roomOwner}}
+							<li>
+								<label>{{_ "Owner"}}</label>
+								<div>
+									<span>{{roomOwner}}</span>
+								</div>
+							</li>
+						{{/if}}
 						<li>
 							<label>{{_ "Topic"}}</label>
 							<div>
@@ -29,7 +37,7 @@
 									<button type="button" class="button cancel">{{_ "Cancel"}}</button>
 									<button type="button" class="button primary save">{{_ "Save"}}</button>
 								{{else}}
-									<span>{{roomTopic}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
+									<span>{{{RocketChatMarkdown roomTopic}}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
 								{{/if}}
 							</div>
 						</li>

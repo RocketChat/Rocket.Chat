@@ -1,45 +1,99 @@
-RocketChat.deleteUser = function(userId) {
-	const user = RocketChat.models.Users.findOneById(userId);
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { Users, Subscriptions, Messages, Rooms, Integrations } from 'meteor/rocketchat:models';
+import { hasRole, getUsersInRole } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+
+export const deleteUser = function(userId) {
+	const user = Users.findOneById(userId, {
+		fields: { username: 1, avatarOrigin: 1 },
+	});
 
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
-		const messageErasureType = RocketChat.settings.get('Message_ErasureType');
+		const roomCache = [];
 
+		// Iterate through all the rooms the user is subscribed to, to check if they are the last owner of any of them.
+		Subscriptions.db.findByUserId(userId).forEach((subscription) => {
+			const roomData = {
+				rid: subscription.rid,
+				t: subscription.t,
+				subscribers: null,
+			};
+
+			// DMs can always be deleted, so let's ignore it on this check
+			if (roomData.t !== 'd') {
+				// If the user is an owner on this room
+				if (hasRole(user._id, 'owner', subscription.rid)) {
+					// Fetch the number of owners
+					const numOwners = getUsersInRole('owner', subscription.rid).fetch().length;
+					// If it's only one, then this user is the only owner.
+					if (numOwners === 1) {
+						// If the user is the last owner of a public channel, then we need to abort the deletion
+						if (roomData.t === 'c') {
+							throw new Meteor.Error('error-user-is-last-owner', `To delete this user you'll need to set a new owner to the following room: ${ subscription.name }.`, {
+								method: 'deleteUser',
+							});
+						}
+
+						// For private groups, let's check how many subscribers it has. If the user is the only subscriber, then it will be eliminated and doesn't need to abort the deletion
+						roomData.subscribers = Subscriptions.findByRoomId(subscription.rid).count();
+
+						if (roomData.subscribers > 1) {
+							throw new Meteor.Error('error-user-is-last-owner', `To delete this user you'll need to set a new owner to the following room: ${ subscription.name }.`, {
+								method: 'deleteUser',
+							});
+						}
+					}
+				}
+			}
+
+			roomCache.push(roomData);
+		});
+
+		const messageErasureType = settings.get('Message_ErasureType');
 		switch (messageErasureType) {
-			case 'Delete' :
-				RocketChat.models.Messages.removeByUserId(userId);
+			case 'Delete':
+				const store = FileUpload.getStore('Uploads');
+				Messages.findFilesByUserId(userId).forEach(function({ file }) {
+					store.deleteById(file._id);
+				});
+				Messages.removeByUserId(userId);
 				break;
-			case 'Unlink' :
-				const rocketCat = RocketChat.models.Users.findById('rocket.cat').fetch()[0];
+			case 'Unlink':
+				const rocketCat = Users.findOneById('rocket.cat');
 				const nameAlias = TAPi18n.__('Removed_User');
-				RocketChat.models.Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
+				Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
 				break;
 		}
 
-		RocketChat.models.Subscriptions.db.findByUserId(userId).forEach((subscription) => {
-			const room = RocketChat.models.Rooms.findOneById(subscription.rid);
-			if (room) {
-				if (room.t !== 'c' && room.usernames.length === 1) {
-					RocketChat.models.Rooms.removeById(subscription.rid); // Remove non-channel rooms with only 1 user (the one being deleted)
-				}
-				if (room.t === 'd') {
-					RocketChat.models.Subscriptions.removeByRoomId(subscription.rid);
-					RocketChat.models.Messages.removeByRoomId(subscription.rid);
-				}
+		roomCache.forEach((roomData) => {
+			if (roomData.subscribers === null && roomData.t !== 'd' && roomData.t !== 'c') {
+				roomData.subscribers = Subscriptions.findByRoomId(roomData.rid).count();
+			}
+
+			// Remove DMs and non-channel rooms with only 1 user (the one being deleted)
+			if (roomData.t === 'd' || (roomData.t !== 'c' && roomData.subscribers === 1)) {
+				Subscriptions.removeByRoomId(roomData.rid);
+				Messages.removeFilesByRoomId(roomData.rid);
+				Messages.removeByRoomId(roomData.rid);
+				Rooms.removeById(roomData.rid);
 			}
 		});
 
-		RocketChat.models.Subscriptions.removeByUserId(userId); // Remove user subscriptions
-		RocketChat.models.Rooms.removeByTypeContainingUsername('d', user.username); // Remove direct rooms with the user
-		RocketChat.models.Rooms.removeUsernameFromAll(user.username); // Remove user from all other rooms
+		Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url') {
 			FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 
-		RocketChat.models.Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
+		Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
+		Notifications.notifyLogged('Users:Deleted', { userId });
 	}
 
-	RocketChat.models.Users.removeById(userId); // Remove user from users database
+	Users.removeById(userId); // Remove user from users database
 };

@@ -1,8 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Info } from 'meteor/rocketchat:utils';
 import bugsnag from 'bugsnag';
 
-RocketChat.bugsnag = bugsnag;
-
-RocketChat.settings.get('Bugsnag_api_key', (key, value) => {
+settings.get('Bugsnag_api_key', (key, value) => {
 	if (value) {
 		bugsnag.register(value);
 	}
@@ -13,12 +14,12 @@ const notify = function(message, stack) {
 		message += ` ${ stack }`;
 	}
 	let options = {};
-	if (RocketChat.Info) {
-		options = { app: { version: RocketChat.Info.version, info: RocketChat.Info } };
+	if (Info) {
+		options = { app: { version: Info.version, info: Info } };
 	}
 	const error = new Error(message);
 	error.stack = stack;
-	RocketChat.bugsnag.notify(error, options);
+	bugsnag.notify(error, options);
 };
 
 process.on('uncaughtException', Meteor.bindEnvironment((error) => {
@@ -27,7 +28,7 @@ process.on('uncaughtException', Meteor.bindEnvironment((error) => {
 }));
 
 const originalMeteorDebug = Meteor._debug;
-Meteor._debug = function() {
-	notify(...arguments);
-	return originalMeteorDebug(...arguments);
+Meteor._debug = function(...args) {
+	notify(...args);
+	return originalMeteorDebug(...args);
 };

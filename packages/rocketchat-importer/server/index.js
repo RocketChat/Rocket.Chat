@@ -9,6 +9,18 @@ import { RawImports } from './models/RawImports';
 import { Selection } from './classes/ImporterSelection';
 import { SelectionChannel } from './classes/ImporterSelectionChannel';
 import { SelectionUser } from './classes/ImporterSelectionUser';
+import './methods/getImportProgress';
+import './methods/getSelectionData';
+import './methods/prepareImport';
+import './methods/restartImport';
+import './methods/setupImporter';
+import './methods/startImport';
+import './methods/uploadImportFile';
+import './methods/getImportFileData';
+import './methods/downloadPublicImportFile';
+import './methods/getLatestImportOperations';
+import './startup/setImportsToInvalid';
+import './startup/store';
 
 export {
 	Base,
@@ -21,5 +33,5 @@ export {
 	RawImports,
 	Selection,
 	SelectionChannel,
-	SelectionUser
+	SelectionUser,
 };

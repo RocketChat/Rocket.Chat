@@ -1,21 +1,22 @@
-import { RoomTypeConfig } from 'meteor/rocketchat:lib';
+import { Meteor } from 'meteor/meteor';
+import { roomTypes, RoomTypeConfig } from 'meteor/rocketchat:utils';
 
 class TokenPassRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'tokenpass',
-			order: 1
+			order: 1,
 		});
 
 		this.customTemplate = 'tokenChannelsList';
 	}
 
 	condition() {
-		const user = Meteor.user();
+		const user = Meteor.users.findOne(Meteor.userId(), { fields: { 'services.tokenpass': 1 } });
 		const hasTokenpass = !!(user && user.services && user.services.tokenpass);
 
 		return hasTokenpass;
 	}
 }
 
-RocketChat.roomTypes.add(new TokenPassRoomType());
+roomTypes.add(new TokenPassRoomType());

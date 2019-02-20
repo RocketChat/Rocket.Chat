@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Logger } from 'meteor/rocketchat:logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 
@@ -6,8 +9,8 @@ const logger = new Logger('LDAP', {
 		connection: 'Connection',
 		bind: 'Bind',
 		search: 'Search',
-		auth: 'Auth'
-	}
+		auth: 'Auth',
+	},
 });
 
 export default class LDAP {
@@ -17,31 +20,32 @@ export default class LDAP {
 		this.connected = false;
 
 		this.options = {
-			host: RocketChat.settings.get('LDAP_Host'),
-			port: RocketChat.settings.get('LDAP_Port'),
-			Reconnect: RocketChat.settings.get('LDAP_Reconnect'),
-			Internal_Log_Level: RocketChat.settings.get('LDAP_Internal_Log_Level'),
-			timeout: RocketChat.settings.get('LDAP_Timeout'),
-			connect_timeout: RocketChat.settings.get('LDAP_Connect_Timeout'),
-			idle_timeout: RocketChat.settings.get('LDAP_Idle_Timeout'),
-			encryption: RocketChat.settings.get('LDAP_Encryption'),
-			ca_cert: RocketChat.settings.get('LDAP_CA_Cert'),
-			reject_unauthorized: RocketChat.settings.get('LDAP_Reject_Unauthorized') || false,
-			Authentication: RocketChat.settings.get('LDAP_Authentication'),
-			Authentication_UserDN: RocketChat.settings.get('LDAP_Authentication_UserDN'),
-			Authentication_Password: RocketChat.settings.get('LDAP_Authentication_Password'),
-			BaseDN: RocketChat.settings.get('LDAP_BaseDN'),
-			User_Search_Filter: RocketChat.settings.get('LDAP_User_Search_Filter'),
-			User_Search_Scope: RocketChat.settings.get('LDAP_User_Search_Scope'),
-			User_Search_Field: RocketChat.settings.get('LDAP_User_Search_Field'),
-			Search_Page_Size: RocketChat.settings.get('LDAP_Search_Page_Size'),
-			Search_Size_Limit: RocketChat.settings.get('LDAP_Search_Size_Limit'),
-			group_filter_enabled: RocketChat.settings.get('LDAP_Group_Filter_Enable'),
-			group_filter_object_class: RocketChat.settings.get('LDAP_Group_Filter_ObjectClass'),
-			group_filter_group_id_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
-			group_filter_group_member_attribute: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
-			group_filter_group_member_format: RocketChat.settings.get('LDAP_Group_Filter_Group_Member_Format'),
-			group_filter_group_name: RocketChat.settings.get('LDAP_Group_Filter_Group_Name')
+			host: settings.get('LDAP_Host'),
+			port: settings.get('LDAP_Port'),
+			Reconnect: settings.get('LDAP_Reconnect'),
+			Internal_Log_Level: settings.get('LDAP_Internal_Log_Level'),
+			timeout: settings.get('LDAP_Timeout'),
+			connect_timeout: settings.get('LDAP_Connect_Timeout'),
+			idle_timeout: settings.get('LDAP_Idle_Timeout'),
+			encryption: settings.get('LDAP_Encryption'),
+			ca_cert: settings.get('LDAP_CA_Cert'),
+			reject_unauthorized: settings.get('LDAP_Reject_Unauthorized') || false,
+			Authentication: settings.get('LDAP_Authentication'),
+			Authentication_UserDN: settings.get('LDAP_Authentication_UserDN'),
+			Authentication_Password: settings.get('LDAP_Authentication_Password'),
+			BaseDN: settings.get('LDAP_BaseDN'),
+			User_Search_Filter: settings.get('LDAP_User_Search_Filter'),
+			User_Search_Scope: settings.get('LDAP_User_Search_Scope'),
+			User_Search_Field: settings.get('LDAP_User_Search_Field'),
+			Search_Page_Size: settings.get('LDAP_Search_Page_Size'),
+			Search_Size_Limit: settings.get('LDAP_Search_Size_Limit'),
+			group_filter_enabled: settings.get('LDAP_Group_Filter_Enable'),
+			group_filter_object_class: settings.get('LDAP_Group_Filter_ObjectClass'),
+			group_filter_group_id_attribute: settings.get('LDAP_Group_Filter_Group_Id_Attribute'),
+			group_filter_group_member_attribute: settings.get('LDAP_Group_Filter_Group_Member_Attribute'),
+			group_filter_group_member_format: settings.get('LDAP_Group_Filter_Group_Member_Format'),
+			group_filter_group_name: settings.get('LDAP_Group_Filter_Group_Name'),
+			find_user_after_login: settings.get('LDAP_Find_User_After_Login'),
 		};
 	}
 
@@ -69,7 +73,7 @@ export default class LDAP {
 			timeout: this.options.timeout,
 			connectTimeout: this.options.connect_timeout,
 			idleTimeout: this.options.idle_timeout,
-			reconnect: this.options.Reconnect
+			reconnect: this.options.Reconnect,
 		};
 
 		if (this.options.Internal_Log_Level !== 'disabled') {
@@ -77,17 +81,17 @@ export default class LDAP {
 				name: 'ldapjs',
 				component: 'client',
 				stream: process.stderr,
-				level: this.options.Internal_Log_Level
+				level: this.options.Internal_Log_Level,
 			});
 		}
 
 		const tlsOptions = {
-			rejectUnauthorized: this.options.reject_unauthorized
+			rejectUnauthorized: this.options.reject_unauthorized,
 		};
 
 		if (this.options.ca_cert && this.options.ca_cert !== '') {
 			// Split CA cert into array of strings
-			const chainLines = RocketChat.settings.get('LDAP_CA_Cert').split('\n');
+			const chainLines = settings.get('LDAP_CA_Cert').split('\n');
 			let cert = [];
 			const ca = [];
 			chainLines.forEach((line) => {
@@ -188,7 +192,7 @@ export default class LDAP {
 			}
 		}
 
-		const usernameFilter = this.options.User_Search_Field.split(',').map(item => `(${ item }=${ username })`);
+		const usernameFilter = this.options.User_Search_Field.split(',').map((item) => `(${ item }=${ username })`);
 
 		if (usernameFilter.length === 0) {
 			logger.error('LDAP_LDAP_User_Search_Field not defined');
@@ -221,13 +225,13 @@ export default class LDAP {
 		const searchOptions = {
 			filter: this.getUserFilter(username),
 			scope: this.options.User_Search_Scope || 'sub',
-			sizeLimit: this.options.Search_Size_Limit
+			sizeLimit: this.options.Search_Size_Limit,
 		};
 
 		if (this.options.Search_Page_Size > 0) {
 			searchOptions.paged = {
 				pageSize: this.options.Search_Page_Size,
-				pagePause: !!page
+				pagePause: !!page,
 			};
 		}
 
@@ -245,30 +249,30 @@ export default class LDAP {
 	getUserByIdSync(id, attribute) {
 		this.bindIfNecessary();
 
-		const Unique_Identifier_Field = RocketChat.settings.get('LDAP_Unique_Identifier_Field').split(',');
+		const Unique_Identifier_Field = settings.get('LDAP_Unique_Identifier_Field').split(',');
 
 		let filter;
 
 		if (attribute) {
 			filter = new this.ldapjs.filters.EqualityFilter({
 				attribute,
-				value: new Buffer(id, 'hex')
+				value: new Buffer(id, 'hex'),
 			});
 		} else {
 			const filters = [];
 			Unique_Identifier_Field.forEach((item) => {
 				filters.push(new this.ldapjs.filters.EqualityFilter({
 					attribute: item,
-					value: new Buffer(id, 'hex')
+					value: new Buffer(id, 'hex'),
 				}));
 			});
 
-			filter = new this.ldapjs.filters.OrFilter({filters});
+			filter = new this.ldapjs.filters.OrFilter({ filters });
 		}
 
 		const searchOptions = {
 			filter,
-			scope: 'sub'
+			scope: 'sub',
 		};
 
 		logger.search.info('Searching by id', id);
@@ -293,7 +297,7 @@ export default class LDAP {
 
 		const searchOptions = {
 			filter: this.getUserFilter(username),
-			scope: this.options.User_Search_Scope || 'sub'
+			scope: this.options.User_Search_Scope || 'sub',
 		};
 
 		logger.search.info('Searching user', username);
@@ -313,7 +317,7 @@ export default class LDAP {
 		return result[0];
 	}
 
-	isUserInGroup(username) {
+	isUserInGroup(username, userdn) {
 		if (!this.options.group_filter_enabled) {
 			return true;
 		}
@@ -334,8 +338,8 @@ export default class LDAP {
 		filter.push(')');
 
 		const searchOptions = {
-			filter: filter.join('').replace(/#{username}/g, username),
-			scope: 'sub'
+			filter: filter.join('').replace(/#{username}/g, username).replace(/#{userdn}/g, userdn),
+			scope: 'sub',
 		};
 
 		logger.search.debug('Group filter LDAP:', searchOptions.filter);
@@ -350,7 +354,7 @@ export default class LDAP {
 
 	extractLdapEntryData(entry) {
 		const values = {
-			_raw: entry.raw
+			_raw: entry.raw,
 		};
 
 		Object.keys(values._raw).forEach((key) => {
@@ -371,15 +375,15 @@ export default class LDAP {
 	searchAllPaged(BaseDN, options, page) {
 		this.bindIfNecessary();
 
-		const processPage = ({entries, title, end, next}) => {
+		const processPage = ({ entries, title, end, next }) => {
 			logger.search.info(title);
 			// Force LDAP idle to wait the record processing
 			this.client._updateIdle(true);
-			page(null, entries, {end, next: () => {
+			page(null, entries, { end, next: () => {
 				// Reset idle timer
 				this.client._updateIdle();
 				next && next();
-			}});
+			} });
 		};
 
 		this.client.search(BaseDN, options, (error, res) => {
@@ -406,7 +410,7 @@ export default class LDAP {
 					processPage({
 						entries,
 						title: 'Internal Page',
-						end: false
+						end: false,
 					});
 					entries = [];
 				}
@@ -418,7 +422,7 @@ export default class LDAP {
 					processPage({
 						entries,
 						title: 'Final Page',
-						end: true
+						end: true,
 					});
 				} else if (entries.length) {
 					logger.search.info('Page');
@@ -426,7 +430,7 @@ export default class LDAP {
 						entries,
 						title: 'Page',
 						end: false,
-						next
+						next,
 					});
 					entries = [];
 				}
@@ -437,7 +441,7 @@ export default class LDAP {
 					processPage({
 						entries,
 						title: 'Final Page',
-						end: true
+						end: true,
 					});
 					entries = [];
 				}
@@ -479,6 +483,16 @@ export default class LDAP {
 
 		try {
 			this.bindSync(dn, password);
+			if (this.options.find_user_after_login) {
+				const searchOptions = {
+					scope: this.options.User_Search_Scope || 'sub',
+				};
+				const result = this.searchAllSync(dn, searchOptions);
+				if (result.length === 0) {
+					logger.auth.info('Bind successful but user was not found via search', dn, searchOptions);
+					return false;
+				}
+			}
 			logger.auth.info('Authenticated', dn);
 			return true;
 		} catch (error) {
