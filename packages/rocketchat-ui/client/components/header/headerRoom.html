@@ -6,17 +6,19 @@
 				{{> burger}}
 			</div>
 
-			{{#if showToggleFavorite}}
-				<div class="rc-header__block rc-header__favorite">
-					<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
+			{{#if isThread}}
+				<div class="rc-header__block rc-header__block--action rc-header__thread_open_parent js-open-parent-channel">
+					<span class="rc-header__first-icon">{{> icon block="rc-header__icon rc-header__icon" icon="back"}}</span>
+
 				</div>
 			{{/if}}
 
-			{{#if isThread}}
-				<div class="rc-header__block rc-header__thread_open_parent js-open-parent-channel">
-					{{> icon block="rc-header__icon" icon="back"}}
+			{{#if showToggleFavorite}}
+				<div class="rc-header__block rc-header__favorite rc-header__block--action">
+					<a href="#favorite" class="rc-header__toggle-favorite rc-header__first-icon {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
 				</div>
 			{{/if}}
+
 
 			<!-- TODO: fix it style and helper -->
 			{{#if tokenAccessChannel}}
