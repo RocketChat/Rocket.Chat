@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { modal } from 'meteor/rocketchat:ui';
 import { Tracker } from 'meteor/tracker';
+import { messageBox, modal } from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
-		if (RocketChat.settings.get('Thread_from_context_menu') !== 'button') {
-			return RocketChat.messageBox.actions.remove('Create_new', /start-thread/);
+		if (settings.get('Thread_from_context_menu') !== 'button') {
+			return messageBox.actions.remove('Create_new', /start-thread/);
 		}
-		RocketChat.messageBox.actions.add('Create_new', 'Thread', {
+		messageBox.actions.add('Create_new', 'Thread', {
 			id: 'start-thread',
 			icon: 'thread',
 			condition: () => true,

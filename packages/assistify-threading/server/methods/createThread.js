@@ -1,11 +1,11 @@
 /* UserRoles RoomRoles*/
-import { RocketChat } from 'meteor/rocketchat:lib';
 // import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 // import { Random } from 'meteor/random';
 // import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 import { hasAtLeastOnePermission, canAccessRoom } from 'meteor/rocketchat:authorization';
 import { Messages, Rooms } from 'meteor/rocketchat:models';
+import { createRoom, addUserToRoom, sendMessage } from 'meteor/rocketchat:lib';
 /*
  * When a repostedMessage is eligible to be replyed as a independent question then it can be threaded into a new channel.
  * When threading, the question is re-posted into a new room. To leave origin traces between the messages we update
@@ -253,13 +253,13 @@ export const create = ({ uid, prid, pmid, t_name, reply, users }) => {
 	});
 
 	if (threadAlreadyExists) { // do not allow multiple threads to the same message
-		RocketChat.addUserToRoom(threadAlreadyExists._id, user);
+		addUserToRoom(threadAlreadyExists._id, user);
 		return threadAlreadyExists;
 	}
 
 	const name = getName({ t_name, p_name: p_room.name, message: message.msg });
 
-	const thread = RocketChat.createRoom(t_type, name, user.username, users, false, {
+	const thread = createRoom(t_type, name, user.username, users, false, {
 		description: message.msg, // TODO threads remove
 		topic: p_room.name, // TODO threads remove
 		prid,
@@ -274,7 +274,7 @@ export const create = ({ uid, prid, pmid, t_name, reply, users }) => {
 
 	// message_cloned.attachments = attachments;
 
-	RocketChat.models.Messages.update({
+	Messages.update({
 		_id: message._id,
 	}, {
 		...message_cloned,
@@ -292,13 +292,13 @@ export const create = ({ uid, prid, pmid, t_name, reply, users }) => {
 		t_rid: thread._id,
 	});
 
-	RocketChat.models.Messages.insert({
+	Messages.insert({
 		...message_cloned,
 		rid: thread._id,
 	});
 
 	if (reply) {
-		RocketChat.sendMessage(user, { msg: reply }, thread);
+		sendMessage(user, { msg: reply }, thread);
 	}
 
 	return thread;

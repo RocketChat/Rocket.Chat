@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { deleteRoom } from 'meteor/rocketchat:lib';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { Rooms } from 'meteor/rocketchat:models';
 import { Apps } from 'meteor/rocketchat:apps';
+import { roomTypes } from 'meteor/rocketchat:utils';
 
 Meteor.methods({
 	eraseRoom(rid) {
@@ -23,7 +24,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.roomTypes.roomTypes[room.t].canBeDeleted(hasPermission, room)) {
+		if (!roomTypes.roomTypes[room.t].canBeDeleted(hasPermission, room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'eraseRoom',
 			});
@@ -36,7 +37,7 @@ Meteor.methods({
 			}
 		}
 
-		const result = RocketChat.deleteRoom(rid);
+		const result = deleteRoom(rid);
 
 		if (Apps && Apps.isLoaded()) {
 			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);

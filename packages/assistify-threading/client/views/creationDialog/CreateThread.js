@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { ChatRoom } from 'meteor/rocketchat:models';
 import { Blaze } from 'meteor/blaze';
-import { call } from 'meteor/rocketchat:lib';
+import { call } from 'meteor/rocketchat:ui-utils';
 
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
@@ -219,12 +220,12 @@ Template.CreateThread.events({
 		}
 		const result = await call('createThread', { prid, pmid, t_name, reply, users });
 		// callback to enable tracking
-		Meteor.defer(() => RocketChat.callbacks.run('afterCreateThread', Meteor.user(), result));
+		Meteor.defer(() => callbacks.run('afterCreateThread', Meteor.user(), result));
 		// instance.error.set(null);
 		if (instance.data.onCreate) {
 			instance.data.onCreate(result);
 		}
-		RocketChat.roomTypes.openRouteLink(result.t, result);
+		roomTypes.openRouteLink(result.t, result);
 	},
 });
 
@@ -314,7 +315,7 @@ Template.CreateThread.onCreated(function() {
 
 
 	// callback to allow setting a parent Channel or e. g. tracking the event using Piwik or GA
-	const callbackDefaults = RocketChat.callbacks.run('openThreadCreationScreen');
+	const callbackDefaults = callbacks.run('openThreadCreationScreen');
 	if (callbackDefaults) {
 		if (callbackDefaults.parentChannel) {
 			this.parentChannel.set(callbackDefaults.parentChannel);

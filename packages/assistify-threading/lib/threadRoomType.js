@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { RoomTypeConfig, roomTypes } from 'meteor/rocketchat:utils';
+import { RoomTypeConfig, roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
 export class ThreadRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
@@ -14,7 +13,7 @@ export class ThreadRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		return getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 	}
 }
 

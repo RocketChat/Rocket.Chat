@@ -1,7 +1,7 @@
 
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Messages, Rooms } from 'meteor/rocketchat:models';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { deleteRoom } from 'meteor/rocketchat:lib';
 /**
  * We need to propagate the writing of new message in a thread to the linking
  * system message
@@ -21,5 +21,5 @@ callbacks.add('afterDeleteMessage', function(message, { _id, prid, pmid }) {
 }, callbacks.priority.LOW, 'PropagateThreadMetadata');
 
 callbacks.add('afterDeleteRoom', function(rid) {
-	Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => RocketChat.deleteRoom(_id));
+	Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => deleteRoom(_id));
 }, 'DeleteThreadChain');

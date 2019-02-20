@@ -23,13 +23,6 @@ Meteor.startup(() => {
 			public: true,
 		});
 
-		this.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
-			group: 'Accounts',
-			section: 'Accounts_Default_User_Preferences',
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Threads_in_sidebar',
-		});
 
 		// this is a technical counter which allows for generation of unique room names
 		this.add('Thread_Count', 1, {
@@ -39,20 +32,28 @@ Meteor.startup(() => {
 			public: false,
 			hidden: true,
 		});
+	});
 
+	settings.add('Accounts_Default_User_Preferences_sidebarShowThreads', true, {
+		group: 'Accounts',
+		section: 'Accounts_Default_User_Preferences',
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'Threads_in_sidebar',
+	});
 
-		const globalQuery = {
-			_id: 'RetentionPolicy_Enabled',
-			value: true,
-		};
+	const globalQuery = {
+		_id: 'RetentionPolicy_Enabled',
+		value: true,
+	};
 
-		this.add('RetentionPolicy_ExcludeThreads', false, {
-			group:'RetentionPolicy',
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'RetentionPolicy_ExcludeThreads',
-			i18nDescription: 'RetentionPolicy_ExcludeThreads_Description',
-			enableQuery: globalQuery,
-		});
+	settings.add('RetentionPolicy_ExcludeThreads', false, {
+		group: 'RetentionPolicy',
+		section: 'Global Policy',
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'RetentionPolicy_ExcludeThreads',
+		i18nDescription: 'RetentionPolicy_ExcludeThreads_Description',
+		enableQuery: globalQuery,
 	});
 });

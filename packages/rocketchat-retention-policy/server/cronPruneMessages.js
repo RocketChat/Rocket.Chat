@@ -21,6 +21,7 @@ function job() {
 	const now = new Date();
 	const filesOnly = settings.get('RetentionPolicy_FilesOnly');
 	const excludePinned = settings.get('RetentionPolicy_ExcludePinned');
+	const excludeThreads = settings.get('RetentionPolicy_ExcludeThreads');
 
 	// get all rooms with default values
 	types.forEach((type) => {
@@ -36,7 +37,7 @@ function job() {
 			],
 			'retention.overrideGlobal': { $ne: true },
 		}, { fields : { _id: 1 } }).forEach(({ _id: rid }) => {
-			cleanRoomHistory({ rid, latest, oldest, filesOnly, excludePinned });
+			cleanRoomHistory({ rid, latest, oldest, filesOnly, excludePinned, excludeThreads });
 		});
 	});
 
@@ -48,7 +49,7 @@ function job() {
 	}).forEach((room) => {
 		const { maxAge = 30, filesOnly, excludePinned } = room.retention;
 		const latest = new Date(now.getTime() - maxAge * toDays);
-		cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned });
+		cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned, excludeThreads });
 	});
 	lastPrune = new Date(now.getTime() - gracePeriod);
 }
