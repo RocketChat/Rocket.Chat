@@ -1,17 +1,17 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import LivechatVisitors from '../models/LivechatVisitors';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
 
 Meteor.publish('livechat:visitorInfo', function({ rid: roomId }) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorInfo' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-l-room')) {
+	if (!hasPermission(this.userId, 'view-l-room')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorInfo' }));
 	}
 
-	const room = RocketChat.models.Rooms.findOneById(roomId);
+	const room = Rooms.findOneById(roomId);
 
 	if (room && room.v && room.v._id) {
 		return LivechatVisitors.findById(room.v._id);

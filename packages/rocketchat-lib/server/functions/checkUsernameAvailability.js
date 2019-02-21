@@ -25,5 +25,3 @@ export const checkUsernameAvailability = function(username) {
 		},
 	}, { fields: { _id: 1 } });
 };
-
-RocketChat.checkUsernameAvailability = checkUsernameAvailability;

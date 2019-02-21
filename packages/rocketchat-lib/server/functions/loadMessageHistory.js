@@ -69,5 +69,3 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 		unreadNotLoaded,
 	};
 };
-
-RocketChat.loadMessageHistory = loadMessageHistory;

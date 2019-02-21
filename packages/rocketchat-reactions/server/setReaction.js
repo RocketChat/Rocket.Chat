@@ -5,7 +5,7 @@ import { Messages, EmojiCustom, Subscriptions, Rooms } from 'meteor/rocketchat:m
 import { Notifications } from 'meteor/rocketchat:notifications';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { emoji } from 'meteor/rocketchat:emoji';
-import { isTheLastMessage } from 'meteor/rocketchat:lib';
+import { isTheLastMessage, msgStream } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 const removeUserReaction = (message, reaction, username) => {

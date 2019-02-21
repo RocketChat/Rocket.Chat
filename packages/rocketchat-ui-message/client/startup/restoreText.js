@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { RoomManager, chatMessages } from 'meteor/rocketchat:ui';
+import { RoomManager } from 'meteor/rocketchat:ui-utils';
+import { chatMessages } from 'meteor/rocketchat:ui';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
 
 Meteor.startup(() => {
-	RocketChat.callbacks.add('enter-room', () => {
+	callbacks.add('enter-room', () => {
 		setTimeout(() => {
 			if (!chatMessages[RoomManager.openedRoom].input) {
 				return;

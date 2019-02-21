@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { LivechatCustomField } from '../models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { LivechatCustomField } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'livechat:saveCustomField'(_id, customFieldData) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveCustomField' });
 		}
 

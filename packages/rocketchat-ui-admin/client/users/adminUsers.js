@@ -3,11 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
+import { SideNav, TabBar, RocketChatTabBar } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import s from 'underscore.string';
-
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 Template.adminUsers.helpers({
 	searchText() {

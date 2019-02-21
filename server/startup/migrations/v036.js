@@ -1,11 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings } from 'meteor/rocketchat:models';
+import { RocketChatAssets } from 'meteor/rocketchat:assets';
 import url from 'url';
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 36,
 	up() {
-		const loginHeader = RocketChat.models.Settings.findOne({
+		const loginHeader = Settings.findOne({
 			_id: 'Layout_Login_Header',
 		});
 
@@ -30,7 +33,7 @@ RocketChat.Migrations.add({
 							},
 						});
 						if (result.statusCode === 200) {
-							return RocketChat.Assets.setAsset(result.content, result.headers['content-type'], 'logo');
+							return RocketChatAssets.setAsset(result.content, result.headers['content-type'], 'logo');
 						}
 					}, 30000);
 				});
@@ -39,7 +42,7 @@ RocketChat.Migrations.add({
 			}
 		}
 
-		return RocketChat.models.Settings.remove({
+		return Settings.remove({
 			_id: 'Layout_Login_Header',
 		});
 	},

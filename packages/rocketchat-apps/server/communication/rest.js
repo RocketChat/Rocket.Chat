@@ -1,21 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { API } from 'meteor/rocketchat:api';
 import Busboy from 'busboy';
+
+let _API;
 
 export class AppsRestApi {
 	constructor(orch, manager) {
 		this._orch = orch;
 		this._manager = manager;
-		this.api = new API.ApiClass({
-			version: 'apps',
-			useDefaultAuth: true,
-			prettyJson: false,
-			enableCors: false,
-			auth: API.getUserAuth(),
-		});
-
-		this.addManagementRoutes();
+		this.loadAPI();
 	}
 
 	_handleFile(request, fileField) {
@@ -39,6 +32,19 @@ export class AppsRestApi {
 		})();
 	}
 
+	async loadAPI() {
+		const { API } = await import('meteor/rocketchat:api');
+		_API = API;
+		this.api = new API.ApiClass({
+			version: 'apps',
+			useDefaultAuth: true,
+			prettyJson: false,
+			enableCors: false,
+			auth: API.getUserAuth(),
+		});
+		this.addManagementRoutes();
+	}
+
 	addManagementRoutes() {
 		const orchestrator = this._orch;
 		const manager = this._manager;
@@ -54,7 +60,7 @@ export class AppsRestApi {
 					return info;
 				});
 
-				return API.v1.success({ apps });
+				return _API.v1.success({ apps });
 			},
 			post() {
 				let buff;
@@ -63,7 +69,7 @@ export class AppsRestApi {
 					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
-						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+						return _API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
 					buff = Buffer.from(result.content, 'base64');
@@ -72,7 +78,7 @@ export class AppsRestApi {
 				}
 
 				if (!buff) {
-					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
+					return _API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
 				const aff = Promise.await(manager.add(buff.toString('base64'), false));
@@ -85,7 +91,7 @@ export class AppsRestApi {
 					info.status = 'compiler_error';
 				}
 
-				return API.v1.success({
+				return _API.v1.success({
 					app: info,
 					implemented: aff.getImplementedInferfaces(),
 					compilerErrors: aff.getCompilerErrors(),
@@ -100,7 +106,7 @@ export class AppsRestApi {
 					languages: prl.getStorageItem().languageContent,
 				}));
 
-				return API.v1.success({ apps });
+				return _API.v1.success({ apps });
 			},
 		});
 
@@ -113,9 +119,9 @@ export class AppsRestApi {
 					const info = prl.getInfo();
 					info.status = prl.getStatus();
 
-					return API.v1.success({ app: info });
+					return _API.v1.success({ app: info });
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 			post() {
@@ -128,7 +134,7 @@ export class AppsRestApi {
 					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
-						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+						return _API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
 					buff = Buffer.from(result.content, 'base64');
@@ -137,7 +143,7 @@ export class AppsRestApi {
 				}
 
 				if (!buff) {
-					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
+					return _API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
 				const aff = Promise.await(manager.update(buff.toString('base64')));
@@ -150,7 +156,7 @@ export class AppsRestApi {
 					info.status = 'compiler_error';
 				}
 
-				return API.v1.success({
+				return _API.v1.success({
 					app: info,
 					implemented: aff.getImplementedInferfaces(),
 					compilerErrors: aff.getCompilerErrors(),
@@ -166,9 +172,9 @@ export class AppsRestApi {
 					const info = prl.getInfo();
 					info.status = prl.getStatus();
 
-					return API.v1.success({ app: info });
+					return _API.v1.success({ app: info });
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 		});
@@ -181,9 +187,9 @@ export class AppsRestApi {
 				if (prl) {
 					const info = prl.getInfo();
 
-					return API.v1.success({ iconFileContent: info.iconFileContent });
+					return _API.v1.success({ iconFileContent: info.iconFileContent });
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 		});
@@ -196,9 +202,9 @@ export class AppsRestApi {
 				if (prl) {
 					const languages = prl.getStorageItem().languageContent || {};
 
-					return API.v1.success({ languages });
+					return _API.v1.success({ languages });
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 		});
@@ -222,9 +228,9 @@ export class AppsRestApi {
 
 					const logs = Promise.await(orchestrator.getLogStorage().find(ourQuery, options));
 
-					return API.v1.success({ logs });
+					return _API.v1.success({ logs });
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 		});
@@ -243,21 +249,21 @@ export class AppsRestApi {
 						}
 					});
 
-					return API.v1.success({ settings });
+					return _API.v1.success({ settings });
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 			post() {
 				console.log(`Updating ${ this.urlParams.id }'s settings..`);
 				if (!this.bodyParams || !this.bodyParams.settings) {
-					return API.v1.failure('The settings to update must be present.');
+					return _API.v1.failure('The settings to update must be present.');
 				}
 
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (!prl) {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
 				const { settings } = prl.getStorageItem();
@@ -271,7 +277,7 @@ export class AppsRestApi {
 					}
 				});
 
-				return API.v1.success({ updated });
+				return _API.v1.success({ updated });
 			},
 		});
 
@@ -282,14 +288,14 @@ export class AppsRestApi {
 				try {
 					const setting = manager.getSettingsManager().getAppSetting(this.urlParams.id, this.urlParams.settingId);
 
-					API.v1.success({ setting });
+					_API.v1.success({ setting });
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
-						return API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
+						return _API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
 					} else if (e.message.includes('No App found')) {
-						return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+						return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 					} else {
-						return API.v1.failure(e.message);
+						return _API.v1.failure(e.message);
 					}
 				}
 			},
@@ -297,20 +303,20 @@ export class AppsRestApi {
 				console.log(`Updating the App ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
 
 				if (!this.bodyParams.setting) {
-					return API.v1.failure('Setting to update to must be present on the posted body.');
+					return _API.v1.failure('Setting to update to must be present on the posted body.');
 				}
 
 				try {
 					Promise.await(manager.getSettingsManager().updateAppSetting(this.urlParams.id, this.bodyParams.setting));
 
-					return API.v1.success();
+					return _API.v1.success();
 				} catch (e) {
 					if (e.message.includes('No setting found')) {
-						return API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
+						return _API.v1.notFound(`No Setting found on the App by the id of: "${ this.urlParams.settingId }"`);
 					} else if (e.message.includes('No App found')) {
-						return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+						return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 					} else {
-						return API.v1.failure(e.message);
+						return _API.v1.failure(e.message);
 					}
 				}
 			},
@@ -322,11 +328,11 @@ export class AppsRestApi {
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
-					return API.v1.success({
+					return _API.v1.success({
 						apis: manager.apiManager.listApis(this.urlParams.id),
 					});
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 		});
@@ -337,14 +343,14 @@ export class AppsRestApi {
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
-					return API.v1.success({ status: prl.getStatus() });
+					return _API.v1.success({ status: prl.getStatus() });
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 			post() {
 				if (!this.bodyParams.status || typeof this.bodyParams.status !== 'string') {
-					return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
+					return _API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 				}
 
 				console.log(`Updating ${ this.urlParams.id }'s status...`, this.bodyParams.status);
@@ -353,9 +359,9 @@ export class AppsRestApi {
 				if (prl) {
 					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
 
-					return API.v1.success({ status: result.getStatus() });
+					return _API.v1.success({ status: result.getStatus() });
 				} else {
-					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+					return _API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 			},
 		});
