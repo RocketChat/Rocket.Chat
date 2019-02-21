@@ -919,11 +919,12 @@ export const Livechat = {
 		return true;
 	},
 
-	notifyAgentStatusChanged(userId, status) {
-		Rooms.findOpenByAgent(userId).forEach((room) => {
+	notifyAgentStatusChanged(user, status) {
+		Rooms.findOpenByAgent(user._id).forEach((room) => {
 			Livechat.stream.emit(room._id, {
 				type: 'agentStatus',
 				status,
+				username: user.username,
 			});
 		});
 	},
