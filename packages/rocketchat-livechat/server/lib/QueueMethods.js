@@ -90,7 +90,7 @@ RocketChat.QueueMethods = {
 	'Guest_Pool'(guest, message, roomInfo) {
 		let agents = RocketChat.Livechat.getOnlineAgents(guest.department);
 
-		if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
+		if ((!agents || agents.count() === 0) && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
 			agents = RocketChat.Livechat.getAgents(guest.department);
 		}
 

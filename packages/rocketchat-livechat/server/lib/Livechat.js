@@ -81,8 +81,8 @@ RocketChat.Livechat = {
 			if (!onlineRequired) {
 				return true;
 			}
-			const onlineAgents = RocketChat.models.LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			return onlineAgents.count() > 0;
+
+			return RocketChat.models.LivechatDepartmentAgents.departmentIsOnline(dept._id);
 		});
 	},
 	getRoom(guest, message, roomInfo, agent) {
@@ -531,7 +531,7 @@ RocketChat.Livechat = {
 		if (departmentId) {
 			let agents = RocketChat.Livechat.getOnlineAgents(departmentId);
 
-			if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
+			if ((!agents || agents.count() === 0) && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
 				agents = RocketChat.Livechat.getAgents(departmentId);
 			}
 
