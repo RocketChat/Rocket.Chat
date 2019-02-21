@@ -427,6 +427,13 @@
 	{{/if}}
 </template>
 <template name="customGroupNotifs">
+	<ul class="room-roles">
+		{{#each role in roles}}
+			<li>
+				{{role}}
+			</li>
+		{{/each}}
+	</ul>
 	<div class="rc-user-info__row">
 			<div class="rc-input">
 				<label class="rc-input__label">
@@ -435,6 +442,9 @@
 						<input type="text" name="role" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
 					</div>
 				</label>
+			</div>
+			<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">
+				<button class="rc-button rc-button--primary js-save" {{modified 'disabled'}} title="{{_ 'Save'}}">{{_ 'Save'}}</button>
 			</div>
 	</div>
 </template>

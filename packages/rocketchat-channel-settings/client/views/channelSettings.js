@@ -132,6 +132,32 @@ const fixRoomName = (old) => {
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
+Template.customGroupNotifs.onCreated({ function() {
+	this.room = ChatRoom.findOne(this.data && this.data.rid);
+	this.role = new ReactiveVar('');
+},
+});
+Template.customGroupNotifs.helpers({
+	roles() {
+		const { room } = Template.instance();
+		return Object.keys(room.roles);
+	},
+});
+Template.customGroupNotifs.events({
+	'input [name="role"]'(e) {
+		const input = e.currentTarget;
+		if (input !== '') {
+			this.role = input;
+		}
+	},
+	'click js-save'(e, t) {
+		const { room } = Template.instance();
+		const { role } = Template.instance();
+		return call('saveRoomRole', room._id, role).then(function() {
+			return toastr.success(t('Role_added_successfully'));
+		});
+	},
+});
 Template.channelSettingsEditing.events({
 	'click .js-custom-group-notifs'(e, t) {
 		t.settingcustomGroupNotifs.set(true);
@@ -245,11 +271,6 @@ Template.channelSettingsEditing.onCreated(function() {
 					}
 				}
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.NAME, value).then(function() {
-					RocketChat.callbacks.run('roomNameChanged', {
-						_id: room._id,
-						name: value,
-					});
-
 					return toastr.success(t('Room_name_changed_successfully'));
 				});
 			},
