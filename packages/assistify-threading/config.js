@@ -47,13 +47,13 @@ Meteor.startup(() => {
 		value: true,
 	};
 
-	settings.add('RetentionPolicy_ExcludeThreads', false, {
+	settings.add('RetentionPolicy_DoNotExcludeThreads', true, {
 		group: 'RetentionPolicy',
 		section: 'Global Policy',
 		type: 'boolean',
 		public: true,
-		i18nLabel: 'RetentionPolicy_ExcludeThreads',
-		i18nDescription: 'RetentionPolicy_ExcludeThreads_Description',
+		i18nLabel: 'RetentionPolicy_DoNotExcludeThreads',
+		i18nDescription: 'RetentionPolicy_DoNotExcludeThreads_Description',
 		enableQuery: globalQuery,
 	});
 });

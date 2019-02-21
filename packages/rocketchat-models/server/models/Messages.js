@@ -156,7 +156,7 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, excludeThreads, ts, users = [], options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreThreads = true, ts, users = [], options = {}) {
 		const query = {
 			rid,
 			ts,
@@ -167,7 +167,7 @@ export class Messages extends Base {
 			query.pinned = { $ne: true };
 		}
 
-		if (excludeThreads) {
+		if (!ignoreThreads) {
 			query.t_rid = { $exists: 0 };
 		}
 
@@ -830,7 +830,7 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampAndUsers(rid, pinned, ignoreThreads, ts, users = []) {
+	removeByIdPinnedTimestampAndUsers(rid, pinned, ignoreThreads = true, ts, users = []) {
 		const query = {
 			rid,
 			ts,
@@ -839,7 +839,7 @@ export class Messages extends Base {
 		if (pinned) {
 			query.pinned = { $ne: true };
 		}
-		if (ignoreThreads) {
+		if (!ignoreThreads) {
 			query.t_rid = { $exists: 0 };
 		}
 		if (users.length) {
@@ -849,7 +849,7 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreThreads, ts, limit, users = []) {
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreThreads = true, ts, limit, users = []) {
 		const query = {
 			rid,
 			ts,
@@ -859,7 +859,7 @@ export class Messages extends Base {
 			query.pinned = { $ne: true };
 		}
 
-		if (ignoreThreads) {
+		if (!ignoreThreads) {
 			query.t_rid = { $exists: 0 };
 		}
 

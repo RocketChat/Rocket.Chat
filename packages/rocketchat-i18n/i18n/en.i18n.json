@@ -2362,6 +2362,7 @@
   "Retail": "Retail",
   "Retention_setting_changed_successfully": "Retention policy setting changed successfully",
   "RetentionPolicy": "Retention Policy",
+  "RetentionPolicy_DoNotExcludeThreads": "Do not exclude thread messages",
   "RetentionPolicy_RoomWarning": "Messages older than __time__ are automatically pruned here",
   "RetentionPolicy_RoomWarning_Unpinned": "Unpinned messages older than __time__ are automatically pruned here",
   "RetentionPolicy_RoomWarning_FilesOnly": "Files older than __time__ are automatically pruned here (messages stay intact)",
