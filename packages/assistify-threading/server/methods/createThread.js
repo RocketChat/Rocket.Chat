@@ -5,12 +5,12 @@ import { Meteor } from 'meteor/meteor';
 // import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 import { hasAtLeastOnePermission, canAccessRoom } from 'meteor/rocketchat:authorization';
 import { Messages, Rooms } from 'meteor/rocketchat:models';
-import { createRoom, addUserToRoom, sendMessage } from 'meteor/rocketchat:lib';
+import { createRoom, addUserToRoom, sendMessage, attachMessage } from 'meteor/rocketchat:lib';
 /*
- * When a repostedMessage is eligible to be replyed as a independent question then it can be threaded into a new channel.
- * When threading, the question is re-posted into a new room. To leave origin traces between the messages we update
- * the original repostedMessage with system repostedMessage to allow user to navigate to the repostedMessage created in the new Room and vice verse.
- */
+* When a repostedMessage is eligible to be replyed as a independent question then it can be threaded into a new channel.
+* When threading, the question is re-posted into a new room. To leave origin traces between the messages we update
+* the original repostedMessage with system repostedMessage to allow user to navigate to the repostedMessage created in the new Room and vice verse.
+*/
 // export class ThreadBuilder {
 // 	constructor(parentRoomId, openingMessage) {
 // 		// this._openingMessage = openingMessage;
@@ -215,11 +215,47 @@ import { createRoom, addUserToRoom, sendMessage } from 'meteor/rocketchat:lib';
 export const getName = ({ t_name /* message, p_name*/ }) => t_name;
 
 
+const fields = [
+	{
+		type: 'messageCounter',
+		count: 0,
+	},
+	{
+		type: 'lastMessageAge',
+		lm: null,
+	},
+];
+
+
+export const createThreadMessage = (rid, user, t_rid, msg, message_embedded) => {
+	const welcomeMessage = {
+		msg,
+		rid,
+		t_rid,
+		attachments: [{
+			fields,
+		}, message_embedded].filter((e) => e),
+	};
+	return Messages.createWithTypeRoomIdMessageAndUser('thread-created', t_rid, '', user, welcomeMessage);
+};
+
+
+
+export const metionThreadMessage = (rid, user, msg, message_embedded) => {
+	const welcomeMessage = {
+		msg,
+		rid,
+		attachments: [message_embedded].filter((e) => e),
+	};
+	return Messages.createWithTypeRoomIdMessageAndUser('thread-created', rid, '', user, welcomeMessage);
+};
+
+
 const cloneMessage = ({ _id, ...msg }) => ({ ...msg });
 
-export const create = ({ uid, prid, pmid, t_name, reply, users }) => {
+export const create = ({ prid, pmid, t_name, reply, users }) => {
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
-	let message = {};
+	let message = false;
 	if (pmid) {
 		message = Messages.findOne({ _id: pmid });
 		if (prid) {
@@ -234,28 +270,29 @@ export const create = ({ uid, prid, pmid, t_name, reply, users }) => {
 	if (!prid) {
 		throw new Meteor.Error('error-invalid-arguments', { method: 'ThreadCreation' });
 	}
+	const p_room = Rooms.findOne(prid);
+	const user = Meteor.user();
 
-	if (!canAccessRoom(prid, uid)) {
+	if (!canAccessRoom(p_room, user)) {
 		throw new Meteor.Error('error-not-allowed', { method: 'ThreadCreation' });
 	}
 
-	const p_room = Rooms.findOne(prid);
-
-	const user = Meteor.user();
-
 	const t_type = p_room.t;
 
-	const threadAlreadyExists = Rooms.findOne({
-		prid,
-		pmid,
-	}, {
-		fields: { _id: 1 },
-	});
 
-	if (threadAlreadyExists) { // do not allow multiple threads to the same message
-		addUserToRoom(threadAlreadyExists._id, user);
-		return threadAlreadyExists;
+	if (pmid) {
+		const threadAlreadyExists = Rooms.findOne({
+			prid,
+			pmid,
+		}, {
+			fields: { _id: 1 },
+		});
+		if (threadAlreadyExists) { // do not allow multiple threads to the same message'\
+			addUserToRoom(threadAlreadyExists._id, user);
+			return threadAlreadyExists;
+		}
 	}
+
 
 	const name = getName({ t_name, p_name: p_room.name, message: message.msg });
 
@@ -263,57 +300,47 @@ export const create = ({ uid, prid, pmid, t_name, reply, users }) => {
 		description: message.msg, // TODO threads remove
 		topic: p_room.name, // TODO threads remove
 		prid,
-		pmid,
 	});
 
-	const message_cloned = cloneMessage(message);
+	if (pmid) {
+		const message_cloned = cloneMessage(message);
 
-	// const { attachments = [] } = message_cloned;
+		Messages.update({
+			_id: message._id,
+		}, {
+			...message_cloned,
+			attachments: [{
+				fields,
+			}, ...(message_cloned.attachments || [])],
+			t_rid: thread._id,
+		});
 
-	// attachments.unshift({});
 
-	// message_cloned.attachments = attachments;
+		metionThreadMessage(thread._id, user, reply, attachMessage(message_cloned, p_room));
 
-	Messages.update({
-		_id: message._id,
-	}, {
-		...message_cloned,
-		attachments: [{
-			fields: [{
-				type: 'messageCounter',
-				count: 0,
-			},
-			{
-				type: 'lastMessageAge',
-				lm: null,
-			},
-			],
-		}, ...(message_cloned.attachments || [])],
-		t_rid: thread._id,
-	});
-
-	Messages.insert({
-		...message_cloned,
-		rid: thread._id,
-	});
-
-	if (reply) {
-		sendMessage(user, { msg: reply }, thread);
+		// Messages.insert({
+		// 	...message_cloned,
+		// 	rid: thread._id,
+		// });
+	} else {
+		createThreadMessage(prid, user, thread._id, reply);
+		if (reply) {
+			sendMessage(user, { msg: reply }, thread);
+		}
 	}
-
 	return thread;
 };
 
 Meteor.methods({
 	/**
-	 * Create thread by room or message
-	 * @constructor
-	 * @param {string} prid - Parent Room Id - The room id, optional if you send pmid.
-	 * @param {string} pmid - Parent Message Id - Create the thread by a message, optional.
-	 * @param {string} reply - The reply, optional
-	 * @param {string} t_name - thread name
-	 * @param {string[]} users - users to be added
-	 */
+	* Create thread by room or message
+	* @constructor
+	* @param {string} prid - Parent Room Id - The room id, optional if you send pmid.
+	* @param {string} pmid - Parent Message Id - Create the thread by a message, optional.
+	* @param {string} reply - The reply, optional
+	* @param {string} t_name - thread name
+	* @param {string[]} users - users to be added
+	*/
 	createThread({ prid, pmid, t_name, reply, users }) {
 
 		const uid = Meteor.userId();

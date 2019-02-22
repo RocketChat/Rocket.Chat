@@ -22,7 +22,8 @@ Template.MessageCounter.helpers({
 const events = {
 	'click .js-navigate-to-thread'(event) {
 		event.preventDefault();
-		FlowRouter.goToRoomById(event.target.dataset.rid);
+		const [, { t_rid }] = this._arguments;
+		FlowRouter.goToRoomById(t_rid);
 	},
 };
 

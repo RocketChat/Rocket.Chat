@@ -2779,7 +2779,7 @@
   "Thread_target_channel_prefix": "You are creating a thread in",
   "Thread_target_channel_suffix": "- select a different parent channel",
   "Thread_target_channel": "Parent channel or group",
-  "thread-created" : "I started a new __channelLink__",
+  "thread-created" : "Started a new thread: \"__message__\"",
   "thread-welcome" : "Thanks __username__ for creating a thread! I invited some members from __parentChannel__ who shall be able to help you. Hint: You can poke them with \"@all\", in case there's nothing happening for a longer time ;)",
   "thread": "thread",
   "Threading_context_menu_button": "Dedicated button",

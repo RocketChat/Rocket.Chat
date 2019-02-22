@@ -7,9 +7,11 @@ import { Messages, Rooms } from 'meteor/rocketchat:models';
  * to race conditions: If multiple updates occur, the current state will be updated
  * only if the new state of the thread room is really newer.
  */
+
+//  TODO creaate sparse index for t_rid
 Object.assign(Messages, {
-	refreshThreadMetadata({ rid, pmid }) {
-		if (!rid || !pmid) {
+	refreshThreadMetadata({ rid }) {
+		if (!rid) {
 			return false;
 		}
 		const { lm, msgs: count } = Rooms.findOneById(rid, {
@@ -20,12 +22,11 @@ Object.assign(Messages, {
 		});
 
 		const query = {
-			_id: pmid,
+			t_rid: rid,
 		};
 
 		return this.update(query, {
 			$set: {
-				t_rid: rid,
 				'attachments.0.fields': [
 					{
 						type: 'messageCounter',
@@ -36,6 +37,6 @@ Object.assign(Messages, {
 						lm,
 					}],
 			},
-		});
+		}, { multi: 1 });
 	},
 });

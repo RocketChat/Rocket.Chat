@@ -863,11 +863,6 @@ Template.room.events({
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
-	'click .js-navigate-to-thread'(event) {
-		event.preventDefault();
-		const [, { t_rid }] = this._arguments;
-		FlowRouter.goToRoomById(t_rid);
-	},
 });
 
 
@@ -1144,10 +1139,17 @@ Template.room.onRendered(function() {
 			newMessage.classList.remove('not');
 		}
 	});
-	Tracker.autorun(function() {
+
+	this.autorun(function() {
+
+		if (template.data._id !== RoomManager.openedRoom) {
+			return;
+		}
+
 		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
 			FlowRouter.go('home');
 		}
 	});
+
 });
