@@ -24,7 +24,7 @@ Template.chatRoomItem.helpers({
 		// 	unread = this.unread;
 		// }
 
-		const active = [this.rid, this._id].includes((id) => id === openedRoom);
+		const active = [this.rid, this._id].includes(openedRoom);
 
 		const archivedClass = this.archived ? 'archived' : false;
 
