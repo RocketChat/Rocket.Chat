@@ -92,7 +92,7 @@ export const sendNoWrap = ({ to, from, subject, html, headers }) => {
 	return true;
 };
 
-export const send = ({ to, from, subject, html, data, headers, lng = undefined }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data, lng), headers });
+export const send = ({ to, from, subject, html, data, headers, lng = undefined }) => sendNoWrap({ to, from, subject: replace(subject, data, lng), html: wrap(html, data, lng), headers });
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {
