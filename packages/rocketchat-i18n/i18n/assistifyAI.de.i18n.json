@@ -40,5 +40,12 @@
     "Widget_loading": "Die Wissensbasis lädt gerade - und zwar schon ungewöhnlich lange. Da scheint etwas nicht zu stimmen...",
     "Reload_Settings": "Einstellungen neu laden",
     "settings-reloaded-successfully": "Einstellung wurden erfolgreich neu geladen",
-    "error-unreachable-url": "URL nicht erreichbar"
+    "error-unreachable-url": "URL nicht erreichbar",
+    "Assistify_AI_Google_CS": "Google Custom Search (GCS)",
+    "Assistify_AI_Google_CS_URL": "Google Custom Search JSON API URI",
+    "Assistify_AI_Google_CS_URL_Description": "e.g. https://www.googleapis.com/customsearch/v1",
+    "Assistify_AI_Google_CS_KEY": "API key",
+    "Assistify_AI_Google_CS_KEY_Description": "Verwenden Sie den Key, um Ihre Anwendung zu identifizieren.",
+    "Assistify_AI_Google_CS_ID": "Custom search engine ID",
+    "Assistify_AI_Google_CS_ID_Description": "Verwenden Sie cx, um die benutzerdefinierte Suchmaschine anzugeben, die Sie für diese Suche verwenden möchten. Die Suchmaschine muss mit dem Control Panel erstellt werden."
 }

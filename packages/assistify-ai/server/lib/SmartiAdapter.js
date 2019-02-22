@@ -394,6 +394,11 @@ export class SmartiAdapter {
 		Meteor.defer(() => SmartiAdapter._tryResync(rid, ignoreSyncFlag));
 	}
 
+	static getGoogleResult(params) {
+		SystemLogger.info('getGoogleResult with params: ', params);
+		return SmartiProxy.propagateToGoogle(verbs.get, params);
+	}
+
 	/**
 	 * Performs the synchronization for a single room/conversation.
 	 *

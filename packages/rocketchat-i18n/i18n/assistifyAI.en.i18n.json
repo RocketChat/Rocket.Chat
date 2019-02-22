@@ -40,5 +40,12 @@
     "Widget_loading": "Knowledge-base has been loading for a while now. Something seems to be wrong here...",
     "Reload_Settings": "Reload settings",
     "settings-reloaded-successfully": "Settings have been successfully reloaded",
-    "error-unreachable-url": "URL not reachable"
+    "error-unreachable-url": "URL not reachable",
+    "Assistify_AI_Google_CS": "Google Custom Search (GCS)",
+    "Assistify_AI_Google_CS_URL": "Google Custom Search JSON API URI",
+    "Assistify_AI_Google_CS_URL_Description": "e.g. https://www.googleapis.com/customsearch/v1",
+    "Assistify_AI_Google_CS_KEY": "API key",
+    "Assistify_AI_Google_CS_KEY_Description": "Use the key query parameter to identify your application.",
+    "Assistify_AI_Google_CS_ID": "Custom search engine ID",
+    "Assistify_AI_Google_CS_ID_Description": "Use cx to specify the custom search engine you want to use to perform this search. The search engine must be created with the Control Panel."
 }
