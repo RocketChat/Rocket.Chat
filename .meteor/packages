@@ -4,6 +4,7 @@
 # but you can also edit it by hand.
 
 rocketchat:cors
+rocketchat:mongo-config
 
 accounts-facebook@1.3.2
 accounts-github@1.4.2
