@@ -8,7 +8,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'underscore',
 		'rocketchat:api',
 		'rocketchat:lib',
 		'rocketchat:reactions',
@@ -30,9 +29,12 @@ Package.onUse(function(api) {
 	// Add core files
 	api.addFiles('server/federation.js', 'server');
 	api.addFiles('server/federation-settings.js', 'server');
+
+	api.mainModule('server/index.js', 'server');
 });
 
 Npm.depends({
 	'queue-fifo': '0.2.5',
 	'node-rsa': '1.0.2',
+	uuid: '3.3.2',
 });

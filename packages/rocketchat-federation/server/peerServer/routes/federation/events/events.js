@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { API } from 'meteor/rocketchat:api';
+import { Federation } from 'meteor/rocketchat:federation';
 
 import { FederationKeys } from '../../../../models/FederationKeys';
 
@@ -8,6 +8,10 @@ export default function eventsRoutes() {
 
 	API.v1.addRoute('federation.events', { authRequired: false }, {
 		post() {
+			if (!self.enabled) {
+				return API.v1.failure('Not found');
+			}
+
 			if (!this.bodyParams.payload) {
 				return API.v1.failure('Payload was not sent');
 			}
@@ -18,7 +22,7 @@ export default function eventsRoutes() {
 
 			const remotePeerDomain = this.request.headers['x-federation-domain'];
 
-			const peer = Meteor.federationPeerDNS.searchPeer(remotePeerDomain);
+			const peer = Federation.peerDNS.searchPeer(remotePeerDomain);
 
 			if (!peer) {
 				return API.v1.failure('Could not find valid peer');
@@ -30,7 +34,7 @@ export default function eventsRoutes() {
 			let payload = FederationKeys.loadKey(peer.public_key, 'public').decryptPublic(payloadBuffer);
 
 			// Decrypt with the local private key
-			payload = Meteor.federationPrivateKey.decrypt(payload);
+			payload = Federation.privateKey.decrypt(payload);
 
 			// Get the event
 			const { event: e } = JSON.parse(payload.toString());

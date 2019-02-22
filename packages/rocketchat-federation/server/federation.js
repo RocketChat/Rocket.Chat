@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { _ } from 'meteor/underscore';
 import { settings } from 'meteor/rocketchat:settings';
+
+import { Federation } from 'meteor/rocketchat:federation';
 
 import { logger } from './logger.js';
 import PeerClient from './peerClient';
@@ -7,62 +10,48 @@ import PeerDNS from './peerDNS';
 import PeerHTTP from './peerHTTP';
 import PeerServer from './peerServer';
 import { FederationKeys } from './models/FederationKeys';
-import { FederationDNSCache } from './models/FederationDNSCache';
 
 (function generateFederationKeys() {
+	// Create unique id if needed
+	if (!FederationKeys.getUniqueId()) {
+		FederationKeys.generateUniqueId();
+	}
+
 	// Create key pair if needed
 	if (!FederationKeys.getPublicKey()) {
 		FederationKeys.generateKeys();
 	}
 }());
 
-function setupFederation() {
-	const _enabled = settings.get('FEDERATION_Enabled');
+// Initializations
+// DNS
+Federation.peerDNS = new PeerDNS();
+// HTTP
+Federation.peerHTTP = new PeerHTTP();
+// Client
+Federation.peerClient = new PeerClient();
+// Start the client, setting up all the callbacks
+Federation.peerClient.start();
+// Server
+Federation.peerServer = new PeerServer();
+// Start the server, setting up all the endpoints
+Federation.peerServer.start();
+
+const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
+	// If it is enabled, check if the settings are there
+	const _uniqueId = settings.get('FEDERATION_Unique_Id');
 	const _domain = settings.get('FEDERATION_Domain');
 	const _discoveryMethod = settings.get('FEDERATION_Discovery_Method');
 	const _hubUrl = settings.get('FEDERATION_Hub_URL');
+	const _peerUrl = settings.get('Site_Url');
 
-	// Ignore if one of the values is not set, or federation is not enabled
-	if (!_enabled || !_domain || !_discoveryMethod || !_hubUrl) { return; }
-
-	logger.info(`[federation] ${ Meteor.federationEnabled ? 'Updating settings' : 'Booting' }...`);
-
-	const peerUrl = settings.get('Site_Url');
-	let domain = _domain.replace('@', '').trim();
-
-	// Ensure domain never changes
-	const localPeerDNSEntry = FederationDNSCache.findOne({ local: true });
-	if (!localPeerDNSEntry) {
-		FederationDNSCache.insert({ local: true, domain });
-	} else if (localPeerDNSEntry.domain !== domain) {
-		logger.info(`[federation] User tried to change the current domain from ${ localPeerDNSEntry.domain } to ${ domain }, currently not supported.`);
-
-		// settings.set('FEDERATION_Domain', localPeerDNSEntry.domain);
-
-		domain = localPeerDNSEntry.domain;
-	}
-
-	if (!domain) {
-		logger.info('[federation] Configuration is not correct, federation is NOT running.');
-		logger.info(`[federation] domain:${ domain }`);
-
-		// settings.set('FEDERATION_Enabled', false);
+	if (!_domain || !_discoveryMethod || !_hubUrl || !_peerUrl) {
+		logger.error('Could not enable Federation, settings are not fully set');
 
 		return;
 	}
 
-	if (_discoveryMethod === 'hub' && !_hubUrl) {
-		logger.info('[federation] Configuration is not correct, federation is NOT running.');
-		logger.info(`[federation] domain:${ domain } | hub:${ _hubUrl }`);
-
-		// settings.set('FEDERATION_Enabled', false);
-
-		return;
-	}
-
-	// Get the key pair
-	Meteor.federationPrivateKey = FederationKeys.getPrivateKey();
-	Meteor.federationPublicKey = FederationKeys.getPublicKey();
+	logger.info('Updating settings...');
 
 	// Normalize the config values
 	const config = {
@@ -71,43 +60,70 @@ function setupFederation() {
 			url: _hubUrl.replace(/\/+$/, ''),
 		},
 		peer: {
-			domain: domain.replace('@', '').trim(),
-			url: peerUrl.replace(/\/+$/, ''),
+			uniqueId: _uniqueId,
+			domain: _domain.replace('@', '').trim(),
+			url: _peerUrl.replace(/\/+$/, ''),
 			public_key: FederationKeys.getPublicKeyString(),
 		},
 	};
 
-	// Update configuration
-	if (Meteor.federationEnabled) {
-		Meteor.federationPeerDNS.updateConfig(config);
-		Meteor.federationPeerHTTP.updateConfig(config);
-		Meteor.federationPeerClient.updateConfig(config);
-		Meteor.federationPeerServer.updateConfig(config);
+	// If the settings are correctly set, let's update the configuration
 
-		// This means we need to register again
-		if (Meteor.federationUsingHub !== (_discoveryMethod === 'hub')) {
-			Meteor.federationUsingHub = _discoveryMethod === 'hub';
+	// Get the key pair
+	Federation.privateKey = FederationKeys.getPrivateKey();
+	Federation.publicKey = FederationKeys.getPublicKey();
 
-			Meteor.federationPeerClient.register();
-		}
-	} else {
-		// Add global information
-		Meteor.federationEnabled = true;
-		Meteor.federationUsingHub = _discoveryMethod === 'hub';
-		Meteor.federationLocalIdentifier = config.peer.domain;
-		Meteor.federationPeerDNS = new PeerDNS(config);
-		Meteor.federationPeerHTTP = new PeerHTTP(config);
-		Meteor.federationPeerClient = new PeerClient(config);
-		Meteor.federationPeerServer = new PeerServer(config);
+	// Set important information
+	Federation.enabled = true;
+	Federation.usingHub = config.hub.active;
+	Federation.uniqueId = config.peer.uniqueId;
+	Federation.localIdentifier = config.peer.domain;
 
-		Meteor.federationPeerServer.start();
+	// Set DNS
+	Federation.peerDNS.setConfig(config);
 
-		Meteor.federationPeerClient.register();
+	// Set HTTP
+	Federation.peerHTTP.setConfig(config);
+
+	// Set Client
+	Federation.peerClient.setConfig(config);
+	Federation.peerClient.enable();
+
+	// Register the client
+	Federation.peerClient.register();
+
+	// Set server
+	Federation.peerServer.setConfig(config);
+	Federation.peerServer.enable();
+}), 150);
+
+function enableOrDisable() {
+	const _enabled = settings.get('FEDERATION_Enabled');
+
+	// If it was enabled, and was disabled now,
+	// make sure we disable everything: callbacks and endpoints
+	if (Federation.enabled && !_enabled) {
+		Federation.peerClient.disable();
+		Federation.peerServer.disable();
+
+		// Disable federation
+		Federation.enabled = false;
+
+		logger.info('Shutting down...');
+
+		return;
 	}
+
+	// If not enabled, skip
+	if (!_enabled) { return; }
+
+	logger.info('Booting...');
+
+	updateSettings();
 }
 
-// Start Federation
-settings.get('FEDERATION_Enabled', setupFederation);
-settings.get('FEDERATION_Domain', setupFederation);
-settings.get('FEDERATION_Discovery_Method', setupFederation);
-settings.get('FEDERATION_Hub_URL', setupFederation);
+// Add settings listeners
+settings.get('FEDERATION_Enabled', enableOrDisable);
+settings.get('FEDERATION_Domain', updateSettings);
+settings.get('FEDERATION_Discovery_Method', updateSettings);
+settings.get('FEDERATION_Hub_URL', updateSettings);

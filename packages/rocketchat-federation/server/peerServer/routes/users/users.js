@@ -8,6 +8,10 @@ export default function usersRoutes() {
 
 	API.v1.addRoute('federation.users', { authRequired: false }, {
 		get() {
+			if (!self.enabled) {
+				return API.v1.failure('Not found');
+			}
+
 			const { peer: { domain: localPeerDomain } } = self.config;
 
 			const { username, email } = this.requestParams();

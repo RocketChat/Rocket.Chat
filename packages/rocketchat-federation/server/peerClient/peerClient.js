@@ -4,6 +4,8 @@ import { callbacks } from 'meteor/rocketchat:callbacks';
 import { settings } from 'meteor/rocketchat:settings';
 import { Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 
+import { Federation } from 'meteor/rocketchat:federation';
+
 import { logger } from '../logger.js';
 import FederatedMessage from '../federatedResources/FederatedMessage';
 import FederatedRoom from '../federatedResources/FederatedRoom';
@@ -12,14 +14,16 @@ import { FederationEvents } from '../models/FederationEvents';
 import { FederationKeys } from '../models/FederationKeys';
 
 class PeerClient {
-	constructor(config) {
+	constructor() {
+		this.config = {};
+
+		this.enabled = false;
+
 		// Keep resources we should skip callbacks
 		this.callbacksToSkip = {};
-
-		this.updateConfig(config);
 	}
 
-	updateConfig(config) {
+	setConfig(config) {
 		// General
 		this.config = config;
 
@@ -28,10 +32,33 @@ class PeerClient {
 
 		// Remove trailing slash
 		this.HubPeer = { url };
+
+		// Set the local peer
+		this.peer = {
+			domain: this.config.peer.domain,
+			url: this.config.peer.url,
+			public_key: this.config.peer.public_key,
+		};
 	}
 
 	log(message) {
-		logger.info(`[federation-client] ${ message }`);
+		logger.info(`[client] ${ message }`);
+	}
+
+	disable() {
+		this.log('Disabling...');
+
+		this.enabled = false;
+	}
+
+	enable() {
+		this.log('Enabling...');
+
+		this.enabled = true;
+	}
+
+	start() {
+		this.setupCallbacks();
 	}
 
 	// ###########
@@ -40,16 +67,7 @@ class PeerClient {
 	//
 	// ###########
 	register() {
-		this.peer = {
-			domain: this.config.peer.domain,
-			url: this.config.peer.url,
-			public_key: this.config.peer.public_key,
-		};
-
-		if (this.config.hub.active && !Meteor.federationPeerDNS.register(this.peer)) { return false; }
-
-		// Setup callbacks only if it correctly registered
-		this.setupCallbacks();
+		if (this.config.hub.active && !Federation.peerDNS.register(this.peer)) { return false; }
 
 		return true;
 	}
@@ -81,25 +99,33 @@ class PeerClient {
 		return skipCallback;
 	}
 
+	wrapEnabled(callbackHandler) {
+		return function(...parameters) {
+			if (!this.enabled) { return; }
+
+			callbackHandler.apply(this, parameters);
+		}.bind(this);
+	}
+
 	setupCallbacks() {
 		// Accounts.onLogin(onLoginCallbackHandler.bind(this));
 		// Accounts.onLogout(onLogoutCallbackHandler.bind(this));
 
-		FederationEvents.on('createEvent', this.onCreateEvent.bind(this));
+		FederationEvents.on('createEvent', this.wrapEnabled(this.onCreateEvent.bind(this)));
 
-		callbacks.add('afterCreateDirectRoom', this.afterCreateDirectRoom.bind(this), callbacks.priority.LOW, 'federation-create-direct-room');
-		callbacks.add('afterCreateRoom', this.afterCreateRoom.bind(this), callbacks.priority.LOW, 'federation-join-room');
-		callbacks.add('afterSaveRoomSettings', this.afterSaveRoomSettings.bind(this), callbacks.priority.LOW, 'federation-after-save-room-settings');
-		callbacks.add('afterAddedToRoom', this.afterAddedToRoom.bind(this), callbacks.priority.LOW, 'federation-join-room');
-		callbacks.add('beforeLeaveRoom', this.beforeLeaveRoom.bind(this), callbacks.priority.LOW, 'federation-leave-room');
-		callbacks.add('beforeRemoveFromRoom', this.beforeRemoveFromRoom.bind(this), callbacks.priority.LOW, 'federation-leave-room');
-		callbacks.add('afterSaveMessage', this.afterSaveMessage.bind(this), callbacks.priority.LOW, 'federation-save-message');
-		callbacks.add('afterDeleteMessage', this.afterDeleteMessage.bind(this), callbacks.priority.LOW, 'federation-delete-message');
-		callbacks.add('afterReadMessages', this.afterReadMessages.bind(this), callbacks.priority.LOW, 'federation-read-messages');
-		callbacks.add('afterSetReaction', this.afterSetReaction.bind(this), callbacks.priority.LOW, 'federation-after-set-reaction');
-		callbacks.add('afterUnsetReaction', this.afterUnsetReaction.bind(this), callbacks.priority.LOW, 'federation-after-unset-reaction');
-		callbacks.add('afterMuteUser', this.afterMuteUser.bind(this), callbacks.priority.LOW, 'federation-mute-user');
-		callbacks.add('afterUnmuteUser', this.afterUnmuteUser.bind(this), callbacks.priority.LOW, 'federation-unmute-user');
+		callbacks.add('afterCreateDirectRoom', this.wrapEnabled(this.afterCreateDirectRoom.bind(this)), callbacks.priority.LOW, 'federation-create-direct-room');
+		callbacks.add('afterCreateRoom', this.wrapEnabled(this.afterCreateRoom.bind(this)), callbacks.priority.LOW, 'federation-join-room');
+		callbacks.add('afterSaveRoomSettings', this.wrapEnabled(this.afterSaveRoomSettings.bind(this)), callbacks.priority.LOW, 'federation-after-save-room-settings');
+		callbacks.add('afterAddedToRoom', this.wrapEnabled(this.afterAddedToRoom.bind(this)), callbacks.priority.LOW, 'federation-join-room');
+		callbacks.add('beforeLeaveRoom', this.wrapEnabled(this.beforeLeaveRoom.bind(this)), callbacks.priority.LOW, 'federation-leave-room');
+		callbacks.add('beforeRemoveFromRoom', this.wrapEnabled(this.beforeRemoveFromRoom.bind(this)), callbacks.priority.LOW, 'federation-leave-room');
+		callbacks.add('afterSaveMessage', this.wrapEnabled(this.afterSaveMessage.bind(this)), callbacks.priority.LOW, 'federation-save-message');
+		callbacks.add('afterDeleteMessage', this.wrapEnabled(this.afterDeleteMessage.bind(this)), callbacks.priority.LOW, 'federation-delete-message');
+		callbacks.add('afterReadMessages', this.wrapEnabled(this.afterReadMessages.bind(this)), callbacks.priority.LOW, 'federation-read-messages');
+		callbacks.add('afterSetReaction', this.wrapEnabled(this.afterSetReaction.bind(this)), callbacks.priority.LOW, 'federation-after-set-reaction');
+		callbacks.add('afterUnsetReaction', this.wrapEnabled(this.afterUnsetReaction.bind(this)), callbacks.priority.LOW, 'federation-after-unset-reaction');
+		callbacks.add('afterMuteUser', this.wrapEnabled(this.afterMuteUser.bind(this)), callbacks.priority.LOW, 'federation-mute-user');
+		callbacks.add('afterUnmuteUser', this.wrapEnabled(this.afterUnmuteUser.bind(this)), callbacks.priority.LOW, 'federation-unmute-user');
 
 		this.log('Callbacks set');
 	}
@@ -114,7 +140,7 @@ class PeerClient {
 
 		const { peer: domain } = e;
 
-		const peer = Meteor.federationPeerDNS.searchPeer(domain);
+		const peer = Federation.peerDNS.searchPeer(domain);
 
 		if (!peer || !peer.public_key) {
 			this.log(`Could not find valid peer:${ domain }`);
@@ -128,9 +154,9 @@ class PeerClient {
 				let payload = FederationKeys.loadKey(peer.public_key, 'public').encrypt(stringPayload);
 
 				// Encrypt with the local private key
-				payload = Meteor.federationPrivateKey.encryptPrivate(payload);
+				payload = Federation.privateKey.encryptPrivate(payload);
 
-				Meteor.federationPeerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, 5);
+				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, 5);
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
@@ -192,21 +218,21 @@ class PeerClient {
 		let peer = null;
 
 		try {
-			peer = Meteor.federationPeerDNS.searchPeer(domain);
+			peer = Federation.peerDNS.searchPeer(domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
 		try {
-			const { data: { federatedUser: { user } } } = Meteor.federationPeerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, email }) }`);
+			const { data: { federatedUser: { user } } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, email }) }`);
 
 			const federatedUser = new FederatedUser(localPeerDomain, user);
 
 			return federatedUser;
 		} catch (err) {
 			this.log(`Could not find user:${ email || username }@${ domain } at ${ peer.domain }`);
-			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ email || username }@${ domain } at ${ peer.domain }`);
+			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ email || username } at ${ peer.domain }`);
 		}
 	}
 
@@ -221,13 +247,13 @@ class PeerClient {
 		let peer = null;
 
 		try {
-			peer = Meteor.federationPeerDNS.searchPeer(domain);
+			peer = Federation.peerDNS.searchPeer(domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
-		const { data: { upload, buffer } } = Meteor.federationPeerHTTP.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
+		const { data: { upload, buffer } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
 
 		return { upload, buffer: Buffer.from(buffer) };
 	}

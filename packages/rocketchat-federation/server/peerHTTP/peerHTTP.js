@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { Federation } from 'meteor/rocketchat:federation';
+
 import { logger } from '../logger.js';
 
 function handleRequestError(peer, err) {
@@ -16,7 +18,7 @@ function handleRequestError(peer, err) {
 		this.log(`Trying to update local DNS cache for peer:${ peer.domain }`);
 
 		// If there is an error, try to update the cache and do it again
-		return Meteor.federationPeerDNS.updatePeerDNS(peer.domain);
+		return Federation.peerDNS.updatePeerDNS(peer.domain);
 	}
 }
 
@@ -37,31 +39,34 @@ function doRequest(peer, method, uri, body, totalTries = 1, currentTries = 0, DN
 
 			return this.doRequest(newPeer, method, uri, body, totalTries, currentTries, true);
 		} catch (err) {
+			if (currentTries >= totalTries) {
+				throw err;
+			}
+
 			// In here, the error was different than ENOTFOUND or the DNS was already updated,
 			// which means we need to start retrying
 			const milli = Math.pow(10, currentTries + 2);
 
 			Meteor.setTimeout(function() {
 				this.log(`Retrying ${ currentTries + 1 }/${ totalTries }: ${ method } - ${ uri }`);
-				doRequest.call(this, peer, method, uri, body, totalTries, currentTries + 1);
+				doRequest.call(this, peer, method, uri, body, totalTries, currentTries + 1, DNSUpdated);
 			}.bind(this), milli);
 		}
 	}
 }
 
 class PeerHTTP {
-
-	constructor(config) {
-		this.updateConfig(config);
+	constructor() {
+		this.config = {};
 	}
 
-	updateConfig(config) {
+	setConfig(config) {
 		// General
 		this.config = config;
 	}
 
 	log(message) {
-		logger.info(`[federation-http] ${ message }`);
+		logger.info(`[http] ${ message }`);
 	}
 
 	//
@@ -85,7 +90,7 @@ class PeerHTTP {
 	//
 	// Request trying to find DNS entries
 	request(peer, method, uri, body, totalTries = 1) {
-		doRequest.call(this, peer, method, uri, body, totalTries);
+		return doRequest.call(this, peer, method, uri, body, totalTries);
 	}
 }
 

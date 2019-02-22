@@ -4,6 +4,8 @@ import { hasPermission } from 'meteor/rocketchat:authorization';
 import { Rooms, Users } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
+import { Federation } from 'meteor/rocketchat:federation';
+
 const sortChannels = function(field, direction) {
 	switch (field) {
 		case 'createdAt':
@@ -95,7 +97,7 @@ Meteor.methods({
 			const nonFederatedUsers = Users.find({
 				$or: [
 					{ federation: { $exists: false } },
-					{ 'federation.peer': Meteor.federationLocalIdentifier },
+					{ 'federation.peer': Federation.localIdentifier },
 				],
 			}, { fields: { username: 1 } }).map((u) => u.username);
 
@@ -104,7 +106,7 @@ Meteor.methods({
 			const federatedUsers = Users.find({
 				$and: [
 					{ federation: { $exists: true } },
-					{ 'federation.peer': { $ne: Meteor.federationLocalIdentifier } },
+					{ 'federation.peer': { $ne: Federation.localIdentifier } },
 				],
 			}, { fields: { username: 1 } }).map((u) => u.username);
 

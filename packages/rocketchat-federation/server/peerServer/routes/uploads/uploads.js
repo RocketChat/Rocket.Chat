@@ -4,8 +4,14 @@ import { Uploads } from 'meteor/rocketchat:models';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 export default function uploadsRoutes() {
+	const self = this;
+
 	API.v1.addRoute('federation.uploads', { authRequired: false }, {
 		get() {
+			if (!self.enabled) {
+				return API.v1.failure('Not found');
+			}
+
 			const { upload_id } = this.requestParams();
 
 			const upload = Uploads.findOneById(upload_id);

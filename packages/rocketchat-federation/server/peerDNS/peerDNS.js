@@ -1,4 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+
+import { Federation } from 'meteor/rocketchat:federation';
+
 import { logger } from '../logger.js';
 import { FederationDNSCache } from '../models/FederationDNSCache';
 
@@ -8,11 +11,11 @@ const dnsResolveSRV = Meteor.wrapAsync(dns.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dns.resolveTxt);
 
 class PeerDNS {
-	constructor(config) {
-		this.updateConfig(config);
+	constructor() {
+		this.config = {};
 	}
 
-	updateConfig(config) {
+	setConfig(config) {
 		// General
 		this.config = config;
 
@@ -22,7 +25,7 @@ class PeerDNS {
 	}
 
 	log(message) {
-		logger.info(`[federation-dns] ${ message }`);
+		logger.info(`[dns] ${ message }`);
 	}
 
 	// ########
@@ -31,13 +34,13 @@ class PeerDNS {
 	//
 	// ########
 	register(peerConfig) {
-		const { domain, url, public_key } = peerConfig;
+		const { uniqueId, domain, url, public_key } = peerConfig;
 
 		this.log(`Registering peer with domain ${ domain }...`);
 
 		// Attempt to register peer
 		try {
-			Meteor.federationPeerHTTP.simpleRequest(this.HubPeer, 'POST', '/api/v1/peers', { domain, url, public_key });
+			Federation.peerHTTP.simpleRequest(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key });
 
 			this.log('Peer registered!');
 
@@ -111,7 +114,7 @@ class PeerDNS {
 		this.log(`getPeerUsingHub: ${ domain }`);
 
 		// If there is no DNS entry for that, get from the Hub
-		const { data: { peer } } = Meteor.federationPeerHTTP.simpleRequest(this.HubPeer, 'GET', `/api/v1/peers?search=${ domain }`);
+		const { data: { peer } } = Federation.peerHTTP.simpleRequest(this.HubPeer, 'GET', `/api/v1/peers?search=${ domain }`);
 
 		return peer;
 	}

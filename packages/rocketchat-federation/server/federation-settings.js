@@ -5,6 +5,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { FederationKeys } from './models/FederationKeys';
 
 Meteor.startup(function() {
+	const federationUniqueId = FederationKeys.getUniqueId();
 	const federationPublicKey = FederationKeys.getPublicKeyString();
 
 	settings.addGroup('Federation', function() {
@@ -14,6 +15,14 @@ Meteor.startup(function() {
 			i18nDescription: 'FEDERATION_Enabled',
 			alert: 'FEDERATION_Enabled_Alert',
 			public: true,
+		});
+
+		this.add('FEDERATION_Unique_Id', federationUniqueId, {
+			group: 'Peer',
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'FEDERATION_Unique_Id',
+			i18nDescription: 'FEDERATION_Unique_Id_Description',
 		});
 
 		this.add('FEDERATION_Domain', '', {
