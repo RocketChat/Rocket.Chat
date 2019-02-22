@@ -15,7 +15,7 @@ Meteor.methods({
 		},
 		{
 			$set: {
-				'room.roles': room.roles,
+				roles: room.roles,
 			},
 		}
 		);

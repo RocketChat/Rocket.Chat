@@ -9,6 +9,7 @@ import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/r
 import { modal, ChatRoom, popover } from 'meteor/rocketchat:ui';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { t } from 'meteor/rocketchat:utils';
+import { Session } from 'meteor/session';
 
 const common = {
 	canLeaveRoom() {
@@ -132,28 +133,42 @@ const fixRoomName = (old) => {
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
-Template.customGroupNotifs.onCreated({ function() {
+Template.customGroupNotifs.onCreated(function() {
+	console.log(this.data);
 	this.room = ChatRoom.findOne(this.data && this.data.rid);
 	this.role = new ReactiveVar('');
-},
 });
+
 Template.customGroupNotifs.helpers({
 	roles() {
 		const { room } = Template.instance();
-		return Object.keys(room.roles);
+		console.log(room.roles);
+		if (!room.roles) {
+			room.roles = {};
+		}
+		return Object.keys(Session.get('roles'));
 	},
 });
+
 Template.customGroupNotifs.events({
 	'input [name="role"]'(e) {
 		const input = e.currentTarget;
-		if (input !== '') {
-			this.role = input;
+		if (input.value !== '') {
+			this.role = input.value;
 		}
+		console.log('role is ', this.role);
 	},
-	'click js-save'(e, t) {
+	'click .js-save'() {
 		const { room } = Template.instance();
-		const { role } = Template.instance();
-		return call('saveRoomRole', room._id, role).then(function() {
+		console.log('this is room and role', room, this.role);
+		if (!room.roles) {
+			room.roles = {};
+		}
+		if (!room.roles[this.role]) {
+			room.roles[this.role] = [];
+		}
+		Session.set('roles', room.roles);
+		return call('saveRoomRole', room._id, this.role).then(function() {
 			return toastr.success(t('Role_added_successfully'));
 		});
 	},
@@ -233,7 +248,9 @@ Template.channelSettingsEditing.events({
 });
 
 Template.channelSettingsEditing.onCreated(function() {
+	console.log('this.data is ', this.data);
 	const room = this.room = ChatRoom.findOne(this.data && this.data.rid);
+	console.log(room);
 	this.settingcustomGroupNotifs = new ReactiveVar(false);
 	this.settings = {
 		name: {

@@ -11,3 +11,4 @@ import './functions/saveRoomSystemMessages';
 import './functions/saveRoomTopic';
 import './functions/saveRoomType';
 import './methods/saveRoomSettings';
+import './methods/saveRoomRole';
