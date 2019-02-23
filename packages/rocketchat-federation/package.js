@@ -18,18 +18,6 @@ Package.onUse(function(api) {
 	api.use('accounts-base', 'server');
 	api.use('accounts-password', 'server');
 
-	// Add models
-	api.addFiles('server/models/FederationDNSCache.js', 'server');
-	api.addFiles('server/models/FederationEvents.js', 'server');
-	api.addFiles('server/models/FederationKeys.js', 'server');
-
-	// Add methods
-	api.addFiles('server/methods/index.js', 'server');
-
-	// Add core files
-	api.addFiles('server/federation.js', 'server');
-	api.addFiles('server/federation-settings.js', 'server');
-
 	api.mainModule('server/index.js', 'server');
 });
 

@@ -7,7 +7,7 @@ import FederatedRoom from './FederatedRoom';
 import FederatedUser from './FederatedUser';
 
 import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { Federation } from 'meteor/rocketchat:federation';
+import { Federation } from '../index';
 
 class FederatedMessage extends FederatedResource {
 	constructor(localPeerIdentifier, message) {

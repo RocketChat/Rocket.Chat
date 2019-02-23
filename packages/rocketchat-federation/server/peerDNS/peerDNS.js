@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Federation } from 'meteor/rocketchat:federation';
+import { Federation } from '../index';
 
 import { logger } from '../logger.js';
 import { FederationDNSCache } from '../models/FederationDNSCache';

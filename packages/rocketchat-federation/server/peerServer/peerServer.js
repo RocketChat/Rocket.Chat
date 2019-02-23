@@ -3,7 +3,7 @@ import { setReaction } from 'meteor/rocketchat:reactions';
 import { addUserToRoom, removeUserFromRoom, deleteMessage } from 'meteor/rocketchat:lib';
 import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
 
-import { Federation } from 'meteor/rocketchat:federation';
+import { Federation } from '../index';
 
 import { logger } from '../logger.js';
 

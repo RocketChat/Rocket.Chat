@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { settings } from 'meteor/rocketchat:settings';
+import { MessageTypes } from 'meteor/rocketchat:ui-utils';
 
-import { Federation } from 'meteor/rocketchat:federation';
+import { Federation } from './index';
 
 import { logger } from './logger.js';
 import PeerClient from './peerClient';
@@ -24,6 +25,17 @@ import { FederationKeys } from './models/FederationKeys';
 }());
 
 // Initializations
+// Register message types
+MessageTypes.registerType({
+	id: 'rejected-message-by-peer',
+	system: true,
+	message: 'This_message_was_rejected_by__peer__peer',
+	data(message) {
+		return {
+			peer: message.peer,
+		};
+	},
+});
 // DNS
 Federation.peerDNS = new PeerDNS();
 // HTTP

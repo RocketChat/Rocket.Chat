@@ -1,5 +1,5 @@
 // Federation export
-const Federation = {
+export const Federation = {
 	enabled: false,
 	privateKey: null,
 	publicKey: null,
@@ -10,8 +10,4 @@ const Federation = {
 	peerHTTP: null,
 	peerClient: null,
 	peerServer: null,
-};
-
-export {
-	Federation,
 };

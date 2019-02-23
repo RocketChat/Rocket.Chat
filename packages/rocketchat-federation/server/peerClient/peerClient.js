@@ -4,7 +4,7 @@ import { callbacks } from 'meteor/rocketchat:callbacks';
 import { settings } from 'meteor/rocketchat:settings';
 import { Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 
-import { Federation } from 'meteor/rocketchat:federation';
+import { Federation } from '../index';
 
 import { logger } from '../logger.js';
 import FederatedMessage from '../federatedResources/FederatedMessage';

@@ -3,9 +3,9 @@
 		{{> header sectionName="Directory" hideHelp=true fullpage=true}}
 		<div class="rc-table-content">
 			{{>tabs tabs=tabsData}}
-			
+
 			<div class="rc-directory-fields">
-			{{#if $eq searchType 'users'}}
+				{{#if $eq searchType 'users'}}
 					{{#if federationEnabled}}
 						<div class="rc-input rc-input--size-one rc-input--small rc-directory-search">
 							<label class="rc-input__label--inline-block">
@@ -19,7 +19,7 @@
 							</label>
 						</div>
 					{{/if}}
-					
+
 					<div class="rc-input rc-input--size-six rc-input--small rc-directory-search">
 						<label class="rc-input__label--inline-block">
 							<div>
@@ -27,7 +27,7 @@
 								<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
 							</div>
 						</label>
-					</div>	
+					</div>
 			{{else}}
 				<div class="rc-input rc-input--small rc-directory-search">
 					<label class="rc-input__label">
