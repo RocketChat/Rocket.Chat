@@ -1,7 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { LivechatCustomField } from '../../collections/LivechatCustomField';
+
 Template.livechatCustomFields.helpers({
 	customFields() {
 		return LivechatCustomField.find();
-	}
+	},
 });
 
 Template.livechatCustomFields.events({
@@ -17,9 +24,9 @@ Template.livechatCustomFields.events({
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, () => {
-			Meteor.call('livechat:removeCustomField', this._id, function(error/*, result*/) {
+			Meteor.call('livechat:removeCustomField', this._id, function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -28,16 +35,16 @@ Template.livechatCustomFields.events({
 					text: t('Field_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 			});
 		});
 	},
 
-	'click .custom-field-info'(e/*, instance*/) {
+	'click .custom-field-info'(e/* , instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-customfield-edit', { _id: this._id });
-	}
+	},
 });
 
 Template.livechatCustomFields.onCreated(function() {

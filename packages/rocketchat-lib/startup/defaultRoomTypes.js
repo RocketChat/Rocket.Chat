@@ -1,3 +1,4 @@
+import { roomTypes } from 'meteor/rocketchat:utils';
 import {
 	ConversationRoomType,
 	DirectMessageRoomType,
@@ -5,13 +6,13 @@ import {
 	PrivateRoomType,
 	PublicRoomType,
 	UnreadRoomType,
-	GroupChatRoomType
+	GroupChatRoomType,
 } from '../lib/roomTypes';
 
-RocketChat.roomTypes.add(new UnreadRoomType());
-RocketChat.roomTypes.add(new FavoriteRoomType());
-RocketChat.roomTypes.add(new ConversationRoomType());
-RocketChat.roomTypes.add(new PublicRoomType());
-RocketChat.roomTypes.add(new PrivateRoomType());
-RocketChat.roomTypes.add(new DirectMessageRoomType());
-RocketChat.roomTypes.add(new GroupChatRoomType());
+roomTypes.add(new UnreadRoomType());
+roomTypes.add(new FavoriteRoomType());
+roomTypes.add(new ConversationRoomType());
+roomTypes.add(new PublicRoomType());
+roomTypes.add(new PrivateRoomType());
+roomTypes.add(new DirectMessageRoomType());
+roomTypes.add(new GroupChatRoomType());

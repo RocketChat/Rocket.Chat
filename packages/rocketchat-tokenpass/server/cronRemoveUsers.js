@@ -1,31 +1,37 @@
-/* globals SyncedCron */
-function removeUsersFromTokenChannels() {
-	const rooms = {};
+import { Meteor } from 'meteor/meteor';
+import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
+import { Tokenpass } from './Tokenpass';
 
-	RocketChat.models.Rooms.findAllTokenChannels().forEach(room => {
+async function removeUsersFromTokenChannels() {
+	const rooms = {};
+	const { removeUserFromRoom } = await import('meteor/rocketchat:lib');
+
+	Rooms.findAllTokenChannels().forEach((room) => {
 		rooms[room._id] = room.tokenpass;
 	});
 
 	const users = {};
 
-	RocketChat.models.Subscriptions.findByRoomIds(Object.keys(rooms)).forEach(sub => {
+	Subscriptions.findByRoomIds(Object.keys(rooms)).forEach((sub) => {
 		if (!users[sub.u._id]) {
 			users[sub.u._id] = [];
 		}
 		users[sub.u._id].push(sub.rid);
 	});
 
-	Object.keys(users).forEach(user => {
-		const userInfo = RocketChat.models.Users.findOneById(user);
+	Object.keys(users).forEach((user) => {
+		const userInfo = Users.findOneById(user);
 
 		if (userInfo && userInfo.services && userInfo.services.tokenpass) {
-			const balances = RocketChat.updateUserTokenpassBalances(userInfo);
+			const balances = updateUserTokenpassBalances(userInfo);
 
-			users[user].forEach(roomId => {
-				const valid = RocketChat.Tokenpass.validateAccess(rooms[roomId], balances);
+			users[user].forEach((roomId) => {
+				const valid = Tokenpass.validateAccess(rooms[roomId], balances);
 
 				if (!valid) {
-					RocketChat.removeUserFromRoom(roomId, userInfo);
+					removeUserFromRoom(roomId, userInfo);
 				}
 			});
 		}
@@ -33,13 +39,13 @@ function removeUsersFromTokenChannels() {
 }
 
 Meteor.startup(function() {
-	Meteor.defer(function() {
-		removeUsersFromTokenChannels();
+	Meteor.defer(async function() {
+		await removeUsersFromTokenChannels();
 
 		SyncedCron.add({
 			name: 'Remove users from Token Channels',
 			schedule: (parser) => parser.cron('0 * * * *'),
-			job: removeUsersFromTokenChannels
+			job: removeUsersFromTokenChannels,
 		});
 	});
 });

@@ -1,9 +1,13 @@
 /*
- * Hilights is a named function that will process Highlights
+ * Highlights is a named function that will process Highlights
  * @param {Object} message - The message object
  */
+import { Meteor } from 'meteor/meteor';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { getUserPreference } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { highlightWords } from './helper';
 
 function HighlightWordsClient(message) {
 	let msg = message;
@@ -15,17 +19,11 @@ function HighlightWordsClient(message) {
 		}
 	}
 
-	const to_highlight = RocketChat.getUserPreference(Meteor.user(), 'highlights');
-	if (Array.isArray(to_highlight)) {
-		to_highlight.forEach((highlight) => {
-			if (!s.isBlank(highlight)) {
-				return msg = msg.replace(new RegExp(`(^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${ s.escapeRegExp(highlight) })($|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(?![^<]*>|[^<>]*<\\/)`, 'gmi'), '$1<span class="highlight-text">$2</span>$3');
-			}
-		});
-	}
+	const to_highlight = getUserPreference(Meteor.user(), 'highlights');
+	msg = highlightWords(msg, to_highlight);
 
 	message.html = msg;
 	return message;
 }
 
-RocketChat.callbacks.add('renderMessage', HighlightWordsClient, RocketChat.callbacks.priority.MEDIUM + 1, 'highlight-words');
+callbacks.add('renderMessage', HighlightWordsClient, callbacks.priority.MEDIUM + 1, 'highlight-words');

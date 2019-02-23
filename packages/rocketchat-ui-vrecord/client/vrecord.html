@@ -4,17 +4,13 @@
 			<video width="320" height="240" src=""></video>
 		</div>
 		<div class="buttons">
-			<ul>
-				<li class="left-aligned border-secondary-background-color">
-					<button class="button primary record {{recordDisabled}}" {{recordDisabled}}>
-						<i class="{{recordIcon}}"></i>
-					</button>
-				</li>
-				<li class="right-aligned border-secondary-background-color">
-					<button class="button cancel">{{_ "Cancel"}}</button>
-					<button class="button primary ok {{okDisabled}}" {{okDisabled}}>{{_ "Ok"}}</button>
-				</li>
-			</ul>
+			<button class="rc-button rc-button--primary record rc-button--small {{recordDisabled}}" {{recordDisabled}}>
+				<i class="{{recordIcon}}"></i>
+			</button>
+			<span class="buttons__wrapper">
+				<button class="rc-button rc-button--nude rc-button--small cancel">{{_ "Cancel"}}</button>
+				<button class="rc-button rc-button--primary rc-button--small ok {{okDisabled}}" {{okDisabled}}>{{_ "Ok"}}</button>
+			</span>
 		</div>
 	</div>
 </template>

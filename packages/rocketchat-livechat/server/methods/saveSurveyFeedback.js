@@ -1,5 +1,6 @@
-/* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding"]}] */
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -9,7 +10,7 @@ Meteor.methods({
 		check(formData, [Match.ObjectIncluding({ name: String, value: String })]);
 
 		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
-		const room = RocketChat.models.Rooms.findOneById(visitorRoom);
+		const room = Rooms.findOneById(visitorRoom);
 
 		if (visitor !== undefined && room !== undefined && room.v !== undefined && room.v.token === visitor.token) {
 			const updateData = {};
@@ -21,8 +22,8 @@ Meteor.methods({
 				}
 			}
 			if (!_.isEmpty(updateData)) {
-				return RocketChat.models.Rooms.updateSurveyFeedbackById(room._id, updateData);
+				return Rooms.updateSurveyFeedbackById(room._id, updateData);
 			}
 		}
-	}
+	},
 });

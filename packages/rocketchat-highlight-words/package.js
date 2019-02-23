@@ -7,14 +7,14 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: ''
+	documentation: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib'
+		'rocketchat:callbacks',
+		'rocketchat:utils',
 	]);
-
-	api.addFiles('client/client.js', 'client');
+	api.mainModule('client/index.js', 'client');
 });

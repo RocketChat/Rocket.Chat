@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 
 function reportError(error, callback) {
@@ -11,9 +15,9 @@ function reportError(error, callback) {
 Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 	if (typeof selector === 'string') {
 		if (selector.indexOf('@') === -1) {
-			selector = {username: selector};
+			selector = { username: selector };
 		} else {
-			selector = {email: selector};
+			selector = { email: selector };
 		}
 	}
 
@@ -22,10 +26,10 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 			totp: {
 				login: {
 					user: selector,
-					password: Accounts._hashPassword(password)
+					password: Accounts._hashPassword(password),
 				},
-				code
-			}
+				code,
+			},
 		}],
 		userCallback(error) {
 			if (error) {
@@ -33,11 +37,11 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 			} else {
 				callback && callback();
 			}
-		}
+		},
 	});
 };
 
-const loginWithPassword = Meteor.loginWithPassword;
+const { loginWithPassword } = Meteor;
 
 Meteor.loginWithPassword = function(email, password, cb) {
 	loginWithPassword(email, password, (error) => {
@@ -53,7 +57,7 @@ Meteor.loginWithPassword = function(email, password, cb) {
 			showCancelButton: true,
 			closeOnConfirm: true,
 			confirmButtonText: t('Verify'),
-			cancelButtonText: t('Cancel')
+			cancelButtonText: t('Cancel'),
 		}, (code) => {
 			if (code === false) {
 				return cb();

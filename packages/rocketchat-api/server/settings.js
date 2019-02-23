@@ -1,4 +1,6 @@
-RocketChat.settings.addGroup('General', function() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('General', function() {
 	this.section('REST API', function() {
 		this.add('API_Upper_Count_Limit', 100, { type: 'int', public: false });
 		this.add('API_Default_Count', 50, { type: 'int', public: false });

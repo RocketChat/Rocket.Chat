@@ -1,4 +1,8 @@
-RocketChat.Migrations.add({
+import { ServiceConfiguration } from 'meteor/service-configuration';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 18,
 	up() {
 		const changes = {
@@ -22,27 +26,27 @@ RocketChat.Migrations.add({
 			Accounts_Meteor_secret: 'Accounts_OAuth_Meteor_secret',
 			Accounts_Twitter: 'Accounts_OAuth_Twitter',
 			Accounts_Twitter_id: 'Accounts_OAuth_Twitter_id',
-			Accounts_Twitter_secret: 'Accounts_OAuth_Twitter_secret'
+			Accounts_Twitter_secret: 'Accounts_OAuth_Twitter_secret',
 		};
 
 		for (const from of Object.keys(changes)) {
 			const to = changes[from];
-			const record = RocketChat.models.Settings.findOne({
-				_id: from
+			const record = Settings.findOne({
+				_id: from,
 			});
 
 			if (record) {
 				delete record._id;
-				RocketChat.models.Settings.upsert({
-					_id: to
+				Settings.upsert({
+					_id: to,
 				}, record);
 			}
 
-			RocketChat.models.Settings.remove({
-				_id: from
+			Settings.remove({
+				_id: from,
 			});
 		}
 
 		return ServiceConfiguration.configurations.remove({});
-	}
+	},
 });

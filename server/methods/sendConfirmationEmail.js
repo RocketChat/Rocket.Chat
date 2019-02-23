@@ -1,36 +1,50 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import * as Mailer from 'meteor/rocketchat:mailer';
+import { Users } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+
+let subject = '';
+let html = '';
+
+Meteor.startup(() => {
+	settings.get('Verification_Email_Subject', function(key, value) {
+		subject = Mailer.replace(value || '');
+	});
+
+	Mailer.getTemplateWrapped('Verification_Email', function(value) {
+		html = value;
+	});
+});
+
 Meteor.methods({
-	sendConfirmationEmail(email) {
-		check(email, String);
-		email = email.trim();
+	sendConfirmationEmail(to) {
+		check(to, String);
+		const email = to.trim();
 
-		const user = RocketChat.models.Users.findOneByEmailAddress(email);
+		const user = Users.findOneByEmailAddress(email);
 
-		if (user) {
-			if (RocketChat.settings.get('Verification_Customized')) {
-				const subject = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email_Subject') || '');
-				const html = RocketChat.placeholders.replace(RocketChat.settings.get('Verification_Email') || '');
-
-				Accounts.emailTemplates.verifyEmail.subject = function(/*userModel*/) {
-					return subject;
-				};
-
-				Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
-					return html.replace(/\[Verification_Url]/g, url);
-				};
-			}
-
-			try {
-				Accounts.sendVerificationEmail(user._id, email);
-			} catch (error) {
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-					method: 'registerUser',
-					message: error.message
-				});
-			}
-
-			return true;
+		if (!user) {
+			return false;
 		}
 
-		return false;
-	}
+		Accounts.emailTemplates.verifyEmail.subject = function(/* userModel*/) {
+			return subject;
+		};
+
+		Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
+			return Mailer.replace(html, { Verification_Url:url, name: user.name });
+		};
+
+		try {
+			return Accounts.sendVerificationEmail(user._id, email);
+		} catch (error) {
+			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
+				method: 'registerUser',
+				message: error.message,
+			});
+		}
+
+	},
 });

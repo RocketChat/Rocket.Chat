@@ -13,5 +13,5 @@ export {
 	PrivateRoomType,
 	PublicRoomType,
 	UnreadRoomType,
-	GroupChatRoomType
+	GroupChatRoomType,
 };

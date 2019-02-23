@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+import { Button } from 'meteor/rocketchat:ui';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import _ from 'underscore';
+
 Template.username.onCreated(function() {
 	const self = this;
 	self.username = new ReactiveVar;
@@ -5,7 +13,7 @@ Template.username.onCreated(function() {
 	return Meteor.call('getUsernameSuggestion', function(error, username) {
 		self.username.set({
 			ready: true,
-			username
+			username,
 		});
 		return Meteor.defer(() => self.find('input').focus());
 	});
@@ -14,7 +22,15 @@ Template.username.onCreated(function() {
 Template.username.helpers({
 	username() {
 		return Template.instance().username.get();
-	}
+	},
+
+	backgroundUrl() {
+		const asset = settings.get('Assets_background');
+		const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+		if (asset && (asset.url || asset.defaultUrl)) {
+			return `${ prefix }/${ asset.url || asset.defaultUrl }`;
+		}
+	},
 });
 
 Template.username.events({
@@ -38,13 +54,13 @@ Template.username.events({
 		instance.username.set(username);
 
 		const button = $(event.target).find('button.login');
-		RocketChat.Button.loading(button);
+		Button.loading(button);
 
 		const value = $('#username').val().trim();
 		if (value === '') {
 			username.empty = true;
 			instance.username.set(username);
-			RocketChat.Button.reset(button);
+			Button.reset(button);
 			return;
 		}
 
@@ -57,11 +73,12 @@ Template.username.events({
 					username.error = true;
 				}
 				username.username = value;
+				username.escaped = _.escape(value);
 			}
 
-			RocketChat.Button.reset(button);
+			Button.reset(button);
 			instance.username.set(username);
-			return RocketChat.callbacks.run('usernameSet');
+			return callbacks.run('usernameSet');
 		});
-	}
+	},
 });

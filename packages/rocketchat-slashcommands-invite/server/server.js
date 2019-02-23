@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { Subscriptions } from 'meteor/rocketchat:models';
 
 /*
 * Invite is a named function that will replace /invite commands
@@ -10,74 +17,74 @@ function Invite(command, params, item) {
 	if (command !== 'invite' || !Match.test(params, String)) {
 		return;
 	}
-	let usernames = params.replace(/@/g, '').split(/[\s,]/).filter((a) => a !== '');
+	const usernames = params.split(/[\s,]/).map((username) => username.replace(/^@/, '')).filter((a) => a !== '');
 	if (usernames.length === 0) {
 		return;
 	}
-	const users = Meteor.users.find({
+	let users = Meteor.users.find({
 		username: {
-			$in: usernames
-		}
+			$in: usernames,
+		},
 	});
-	const currentUser = Meteor.users.findOne(Meteor.userId());
+	const userId = Meteor.userId();
+	const currentUser = Meteor.users.findOne(userId);
 	if (users.count() === 0) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
 			msg: TAPi18n.__('User_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [usernames.join(' @')]
-			}, currentUser.language)
+				sprintf: [usernames.join(' @')],
+			}, currentUser.language),
 		});
 		return;
 	}
-	usernames = usernames.filter(function(username) {
-		if (RocketChat.models.Rooms.findOneByIdContainingUsername(item.rid, username) == null) {
+	users = users.fetch().filter(function(user) {
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, { fields: { _id: 1 } });
+		if (subscription == null) {
 			return true;
 		}
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
 			msg: TAPi18n.__('Username_is_already_in_here', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, currentUser.language)
+				sprintf: [user.username],
+			}, currentUser.language),
 		});
 		return false;
 	});
-	if (usernames.length === 0) {
-		return;
-	}
+
 	users.forEach(function(user) {
 
 		try {
 			return Meteor.call('addUserToRoom', {
 				rid: item.rid,
-				username: user.username
+				username: user.username,
 			});
-		} catch ({error}) {
+		} catch ({ error }) {
 			if (error === 'cant-invite-for-direct-room') {
-				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date,
-					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language)
+					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language),
 				});
 			} else {
-				RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
 					ts: new Date,
-					msg: TAPi18n.__(error, null, currentUser.language)
+					msg: TAPi18n.__(error, null, currentUser.language),
 				});
 			}
 		}
 	});
 }
 
-RocketChat.slashCommands.add('invite', Invite, {
+slashCommands.add('invite', Invite, {
 	description: 'Invite_user_to_join_channel',
-	params: '@username'
+	params: '@username',
 });

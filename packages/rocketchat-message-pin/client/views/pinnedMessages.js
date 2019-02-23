@@ -1,31 +1,33 @@
-/* globals PinnedMessage */
 import _ from 'underscore';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { PinnedMessage } from '../lib/PinnedMessage';
 
 Template.pinnedMessages.helpers({
 	hasMessages() {
 		return PinnedMessage.find({
-			rid: this.rid
+			rid: this.rid,
 		}, {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		}).count() > 0;
 	},
 	messages() {
 		return PinnedMessage.find({
-			rid: this.rid
+			rid: this.rid,
 		}, {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		});
 	},
 	message() {
-		return _.extend(this, { customClass: 'pinned', actionContext: 'pinned'});
+		return _.extend(this, { customClass: 'pinned', actionContext: 'pinned' });
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
-	}
+	},
 });
 
 Template.pinnedMessages.onCreated(function() {
@@ -35,7 +37,7 @@ Template.pinnedMessages.onCreated(function() {
 		const data = Template.currentData();
 		return this.subscribe('pinnedMessages', data.rid, this.limit.get(), () => {
 			if (PinnedMessage.find({
-				rid: data.rid
+				rid: data.rid,
 			}).count() < this.limit.get()) {
 				return this.hasMore.set(false);
 			}
@@ -48,5 +50,5 @@ Template.pinnedMessages.events({
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}
-	}, 200)
+	}, 200),
 });

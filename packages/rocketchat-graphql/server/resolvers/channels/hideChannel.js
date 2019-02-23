@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/hideChannel.graphqls';
@@ -7,16 +7,16 @@ import schema from '../../schemas/channels/hideChannel.graphqls';
 const resolver = {
 	Mutation: {
 		hideChannel: authenticated((root, args, { user }) => {
-			const channel = RocketChat.models.Rooms.findOne({
+			const channel = Rooms.findOne({
 				_id: args.channelId,
-				t: 'c'
+				t: 'c',
 			});
 
 			if (!channel) {
 				throw new Error('error-room-not-found', 'The required "channelId" param provided does not match any channel');
 			}
 
-			const sub = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(channel._id, user._id);
+			const sub = Subscriptions.findOneByRoomIdAndUserId(channel._id, user._id);
 
 			if (!sub) {
 				throw new Error(`The user/callee is not in the channel "${ channel.name }.`);
@@ -31,11 +31,11 @@ const resolver = {
 			});
 
 			return true;
-		})
-	}
+		}),
+	},
 };
 
 export {
 	schema,
-	resolver
+	resolver,
 };

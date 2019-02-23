@@ -1,9 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { LivechatDepartmentAgents } from 'meteor/rocketchat:models';
+
 Meteor.publish('livechat:queue', function() {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:queue' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-l-room')) {
+	if (!hasPermission(this.userId, 'view-l-room')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:queue' }));
 	}
 
@@ -26,7 +30,7 @@ Meteor.publish('livechat:queue', function() {
 
 	const self = this;
 
-	const handleDepts = RocketChat.models.LivechatDepartmentAgents.findUsersInQueue().observeChanges({
+	const handleDepts = LivechatDepartmentAgents.findUsersInQueue().observeChanges({
 		added(id, fields) {
 			self.added('livechatQueueUser', id, fields);
 		},
@@ -35,7 +39,7 @@ Meteor.publish('livechat:queue', function() {
 		},
 		removed(id) {
 			self.removed('livechatQueueUser', id);
-		}
+		},
 	});
 
 	this.ready();

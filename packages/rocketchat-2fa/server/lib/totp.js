@@ -1,6 +1,10 @@
+import { SHA256 } from 'meteor/sha';
+import { Random } from 'meteor/random';
+import { Users } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import speakeasy from 'speakeasy';
 
-RocketChat.TOTP = {
+export const TOTP = {
 	generateSecret() {
 		return speakeasy.generateSecret();
 	},
@@ -8,7 +12,7 @@ RocketChat.TOTP = {
 	generateOtpauthURL(secret, username) {
 		return speakeasy.otpauthURL({
 			secret: secret.ascii,
-			label: `Rocket.Chat:${ username }`
+			label: `Rocket.Chat:${ username }`,
 		});
 	},
 
@@ -22,20 +26,20 @@ RocketChat.TOTP = {
 				backupTokens.splice(usedCode, 1);
 
 				// mark the code as used (remove it from the list)
-				RocketChat.models.Users.update2FABackupCodesByUserId(userId, backupTokens);
+				Users.update2FABackupCodesByUserId(userId, backupTokens);
 				return true;
 			}
 
 			return false;
 		}
 
-		const maxDelta = RocketChat.settings.get('Accounts_TwoFactorAuthentication_MaxDelta');
+		const maxDelta = settings.get('Accounts_TwoFactorAuthentication_MaxDelta');
 		if (maxDelta) {
 			const verifiedDelta = speakeasy.totp.verifyDelta({
 				secret,
 				encoding: 'base32',
 				token,
-				window: maxDelta
+				window: maxDelta,
 			});
 
 			return verifiedDelta !== undefined;
@@ -44,7 +48,7 @@ RocketChat.TOTP = {
 		return speakeasy.totp.verify({
 			secret,
 			encoding: 'base32',
-			token
+			token,
 		});
 	},
 
@@ -59,5 +63,5 @@ RocketChat.TOTP = {
 		}
 
 		return { codes, hashedCodes };
-	}
+	},
 };

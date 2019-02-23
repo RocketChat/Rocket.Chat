@@ -41,17 +41,27 @@
 						<th width="25%">{{_ "Served_By"}}</th>
 						<th width="15%">{{_ "Started_At"}}</th>
 						<th width="15%">{{_ "Last_Message_At"}}</th>
-						<th width="10%">{{_ "Status"}}</th>
+						<th width="20%">{{_ "Status"}}</th>
+						<th>&nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>
 					{{#each livechatRoom}}
 						<tr class="row-link">
-							<td>{{label}}</td>
+							<td>{{fname}}</td>
 							<td>{{servedBy}}</td>
 							<td>{{startedAt}}</td>
 							<td>{{lastMessage}}</td>
 							<td>{{status}}</td>
+							{{#requiresPermission 'remove-closed-livechat-rooms'}}
+								{{#if isClosed}}
+									<td><a href="#remove" class="remove-livechat-room"><i class="icon-trash"></i></a></td>
+								{{else}}
+									<td>&nbsp;</td>	
+								{{/if}}	
+							{{else}}						
+								<td>&nbsp;</td>
+							{{/requiresPermission}}									
 						</tr>
 					{{/each}}
 				</tbody>

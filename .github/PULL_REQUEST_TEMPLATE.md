@@ -3,9 +3,6 @@
 <!-- [FIX] For bug fixes -->
 <!-- [BREAK] For pull requests including breaking changes -->
 
-<!-- INSTRUCTION: Keep the line below to notify all core developers about this new PR -->
-@RocketChat/core 
-
 <!-- INSTRUCTION: Inform the issue number that this PR closes, or remove the line below -->
 Closes #ISSUE_NUMBER
 

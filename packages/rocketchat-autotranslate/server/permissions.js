@@ -1,7 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { Permissions } from 'meteor/rocketchat:models';
+
 Meteor.startup(() => {
-	if (RocketChat.models && RocketChat.models.Permissions) {
-		if (!RocketChat.models.Permissions.findOne({ _id: 'auto-translate' })) {
-			RocketChat.models.Permissions.insert({ _id: 'auto-translate', roles: ['admin'] });
+	if (Permissions) {
+		if (!Permissions.findOne({ _id: 'auto-translate' })) {
+			Permissions.insert({ _id: 'auto-translate', roles: ['admin'] });
 		}
 	}
 });

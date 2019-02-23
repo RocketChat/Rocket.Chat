@@ -1,16 +1,13 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 
-//test data imports
-import {checkIfUserIsValid} from '../../data/checks';
-import {username, email, password} from '../../data/user.js';
+// test data imports
+import { checkIfUserIsValid } from '../../data/checks';
+import { username, email, password } from '../../data/user.js';
 
 describe('[Main Elements Render]', function() {
-	before(()=>{
+	before(() => {
 		checkIfUserIsValid(username, email, password);
 		sideNav.sidebarHeader.waitForVisible(10000);
 		sideNav.spotlightSearchIcon.click();
@@ -115,7 +112,7 @@ describe('[Main Elements Render]', function() {
 
 	describe('[Main Content]', () => {
 		describe('render:', () => {
-			before(()=> {
+			before(() => {
 				sideNav.logout.waitForVisible(5000, true);
 				sideNav.getChannelFromList('general').waitForVisible(5000);
 				sideNav.openChannel('general');
@@ -137,7 +134,7 @@ describe('[Main Elements Render]', function() {
 				mainContent.favoriteStar.isVisible().should.be.true;
 			});
 
-			it('it should click the star', () => {
+			it.skip('it should click the star', () => {
 				mainContent.favoriteStar.click();
 			});
 
@@ -149,7 +146,7 @@ describe('[Main Elements Render]', function() {
 				mainContent.messageBoxActions.isVisible().should.be.true;
 			});
 
-			//issues with the new message box action button and the no animations on tests
+			// issues with the new message box action button and the no animations on tests
 
 			it.skip('it should show the audio recording button', () => {
 				mainContent.recordBtn.isVisible().should.be.true;
@@ -179,20 +176,20 @@ describe('[Main Elements Render]', function() {
 
 	describe('[Flextab]', () => {
 		describe('[Render]', () => {
-			before(()=> {
+			before(() => {
 				sideNav.getChannelFromList('general').waitForVisible(5000);
 				sideNav.openChannel('general');
 			});
 
-			after(()=> {
+			after(() => {
 				flexTab.operateFlexTab('info', false);
 			});
 			describe('Room Info Tab:', () => {
-				before(()=> {
+				before(() => {
 					flexTab.operateFlexTab('info', true);
 				});
 
-				after(()=> {
+				after(() => {
 					flexTab.operateFlexTab('info', false);
 				});
 
@@ -205,7 +202,7 @@ describe('[Main Elements Render]', function() {
 					flexTab.channelSettings.isVisible().should.be.true;
 				});
 
-				it('it should show the room name', ()=> {
+				it('it should show the room name', () => {
 					flexTab.channelSettingName.waitForVisible();
 					flexTab.channelSettingName.getAttribute('title').should.equal('general');
 				});
@@ -213,11 +210,11 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Search Tab:', () => {
-				before(()=> {
+				before(() => {
 					flexTab.operateFlexTab('search', true);
 				});
 
-				after(()=> {
+				after(() => {
 					flexTab.operateFlexTab('search', false);
 				});
 
@@ -231,11 +228,11 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe.skip('Members Tab:', () => {
-				before(()=> {
+				before(() => {
 					flexTab.operateFlexTab('members', true);
 				});
 
-				after(()=> {
+				after(() => {
 					flexTab.operateFlexTab('members', false);
 				});
 
@@ -255,12 +252,12 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Notifications Tab:', () => {
-				before(()=> {
+				before(() => {
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('notifications', true);
 				});
 
-				after(()=> {
+				after(() => {
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('notifications', false);
 				});
@@ -275,12 +272,20 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Files Tab:', () => {
-				before(()=> {
+				before(() => {
+					if (flexTab.filesTab.isVisible()) {
+						this.shouldClose = undefined;
+						return flexTab.filesTab.click();
+					}
+					this.shouldClose = true;
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('files', true);
 				});
 
-				after(()=> {
+				after(() => {
+					if (!this.shouldClose) {
+						return;
+					}
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('files', false);
 				});
@@ -292,12 +297,21 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Mentions Tab:', () => {
-				before(()=> {
+
+				before(() => {
+					if (flexTab.mentionsTab.isVisible()) {
+						this.shouldClose = undefined;
+						return flexTab.mentionsTab.click();
+					}
+					this.shouldClose = true;
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('mentions', true);
 				});
 
-				after(()=> {
+				after(() => {
+					if (!this.shouldClose) {
+						return;
+					}
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('mentions', false);
 				});
@@ -308,12 +322,20 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Starred Messages Tab:', () => {
-				before(()=> {
+				before(() => {
+					if (flexTab.starredTab.isVisible()) {
+						this.shouldClose = undefined;
+						return flexTab.starredTab.click();
+					}
+					this.shouldClose = true;
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('starred', true);
 				});
 
-				after(()=> {
+				after(() => {
+					if (!this.shouldClose) {
+						return;
+					}
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('starred', false);
 				});
@@ -324,12 +346,20 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Pinned Messages Tab:', () => {
-				before(()=> {
+				before(() => {
+					if (flexTab.pinnedTab.isVisible()) {
+						this.shouldClose = undefined;
+						return flexTab.pinnedTab.click();
+					}
+					this.shouldClose = true;
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('pinned', true);
 				});
 
-				after(()=> {
+				after(() => {
+					if (!this.shouldClose) {
+						return;
+					}
 					flexTab.moreActions.click();
 					flexTab.operateFlexTab('pinned', false);
 				});

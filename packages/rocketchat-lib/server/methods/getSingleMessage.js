@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Messages } from 'meteor/rocketchat:models';
+
 Meteor.methods({
 	getSingleMessage(msgId) {
 		check(msgId, String);
@@ -6,14 +10,16 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getSingleMessage' });
 		}
 
-		const msg = RocketChat.models.Messages.findOneById(msgId);
+		const msg = Messages.findOneById(msgId);
 
-		if (!msg && !msg.rid) {
+		if (!msg || !msg.rid) {
 			return undefined;
 		}
 
-		Meteor.call('canAccessRoom', msg.rid, Meteor.userId());
+		if (!Meteor.call('canAccessRoom', msg.rid, Meteor.userId())) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
+		}
 
 		return msg;
-	}
+	},
 });

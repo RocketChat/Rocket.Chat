@@ -1,15 +1,24 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { Uploads, Settings, Users, Messages } from 'meteor/rocketchat:models';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+
 class GoogleVision {
 	constructor() {
 		this.storage = require('@google-cloud/storage');
 		this.vision = require('@google-cloud/vision');
 		this.storageClient = {};
 		this.visionClient = {};
-		this.enabled = RocketChat.settings.get('GoogleVision_Enable');
+		this.enabled = settings.get('GoogleVision_Enable');
 		this.serviceAccount = {};
-		RocketChat.settings.get('GoogleVision_Enable', (key, value) => {
+		settings.get('GoogleVision_Enable', (key, value) => {
 			this.enabled = value;
 		});
-		RocketChat.settings.get('GoogleVision_ServiceAccount', (key, value) => {
+		settings.get('GoogleVision_ServiceAccount', (key, value) => {
 			try {
 				this.serviceAccount = JSON.parse(value);
 				this.storageClient = this.storage({ credentials: this.serviceAccount });
@@ -18,50 +27,50 @@ class GoogleVision {
 				this.serviceAccount = {};
 			}
 		});
-		RocketChat.settings.get('GoogleVision_Block_Adult_Images', (key, value) => {
+		settings.get('GoogleVision_Block_Adult_Images', (key, value) => {
 			if (value) {
-				RocketChat.callbacks.add('beforeSaveMessage', this.blockUnsafeImages.bind(this), RocketChat.callbacks.priority.MEDIUM, 'googlevision-blockunsafe');
+				callbacks.add('beforeSaveMessage', this.blockUnsafeImages.bind(this), callbacks.priority.MEDIUM, 'googlevision-blockunsafe');
 			} else {
-				RocketChat.callbacks.remove('beforeSaveMessage', 'googlevision-blockunsafe');
+				callbacks.remove('beforeSaveMessage', 'googlevision-blockunsafe');
 			}
 		});
-		RocketChat.callbacks.add('afterFileUpload', this.annotate.bind(this));
+		callbacks.add('afterFileUpload', this.annotate.bind(this));
 	}
 
 	incCallCount(count) {
 		const currentMonth = new Date().getMonth();
-		const maxMonthlyCalls = RocketChat.settings.get('GoogleVision_Max_Monthly_Calls') || 0;
+		const maxMonthlyCalls = settings.get('GoogleVision_Max_Monthly_Calls') || 0;
 		if (maxMonthlyCalls > 0) {
-			if (RocketChat.settings.get('GoogleVision_Current_Month') !== currentMonth) {
-				RocketChat.settings.set('GoogleVision_Current_Month', currentMonth);
+			if (settings.get('GoogleVision_Current_Month') !== currentMonth) {
+				settings.set('GoogleVision_Current_Month', currentMonth);
 				if (count > maxMonthlyCalls) {
 					return false;
 				}
-			} else if (count + (RocketChat.settings.get('GoogleVision_Current_Month_Calls') || 0) > maxMonthlyCalls) {
+			} else if (count + (settings.get('GoogleVision_Current_Month_Calls') || 0) > maxMonthlyCalls) {
 				return false;
 			}
 		}
-		RocketChat.models.Settings.update({ _id: 'GoogleVision_Current_Month_Calls' }, { $inc: { value: count } });
+		Settings.update({ _id: 'GoogleVision_Current_Month_Calls' }, { $inc: { value: count } });
 		return true;
 	}
 
 	blockUnsafeImages(message) {
 		if (this.enabled && this.serviceAccount && message && message.file && message.file._id) {
-			const file = RocketChat.models.Uploads.findOne({ _id: message.file._id });
+			const file = Uploads.findOne({ _id: message.file._id });
 			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'GoogleCloudStorage:Uploads' && file.GoogleStorage) {
 				if (this.incCallCount(1)) {
-					const bucket = this.storageClient.bucket(RocketChat.settings.get('FileUpload_GoogleStorage_Bucket'));
+					const bucket = this.storageClient.bucket(settings.get('FileUpload_GoogleStorage_Bucket'));
 					const bucketFile = bucket.file(file.GoogleStorage.path);
 					const results = Meteor.wrapAsync(this.visionClient.detectSafeSearch, this.visionClient)(bucketFile);
 					if (results && results.adult === true) {
 						FileUpload.getStore('Uploads').deleteById(file._id);
-						const user = RocketChat.models.Users.findOneById(message.u && message.u._id);
+						const user = Users.findOneById(message.u && message.u._id);
 						if (user) {
-							RocketChat.Notifications.notifyUser(user._id, 'message', {
+							Notifications.notifyUser(user._id, 'message', {
 								_id: Random.id(),
 								rid: message.rid,
 								ts: new Date,
-								msg: TAPi18n.__('Adult_images_are_not_allowed', {}, user.language)
+								msg: TAPi18n.__('Adult_images_are_not_allowed', {}, user.language),
 							});
 						}
 						throw new Meteor.Error('GoogleVisionError: Image blocked');
@@ -76,39 +85,39 @@ class GoogleVision {
 
 	annotate({ message }) {
 		const visionTypes = [];
-		if (RocketChat.settings.get('GoogleVision_Type_Document')) {
+		if (settings.get('GoogleVision_Type_Document')) {
 			visionTypes.push('document');
 		}
-		if (RocketChat.settings.get('GoogleVision_Type_Faces')) {
+		if (settings.get('GoogleVision_Type_Faces')) {
 			visionTypes.push('faces');
 		}
-		if (RocketChat.settings.get('GoogleVision_Type_Landmarks')) {
+		if (settings.get('GoogleVision_Type_Landmarks')) {
 			visionTypes.push('landmarks');
 		}
-		if (RocketChat.settings.get('GoogleVision_Type_Labels')) {
+		if (settings.get('GoogleVision_Type_Labels')) {
 			visionTypes.push('labels');
 		}
-		if (RocketChat.settings.get('GoogleVision_Type_Logos')) {
+		if (settings.get('GoogleVision_Type_Logos')) {
 			visionTypes.push('logos');
 		}
-		if (RocketChat.settings.get('GoogleVision_Type_Properties')) {
+		if (settings.get('GoogleVision_Type_Properties')) {
 			visionTypes.push('properties');
 		}
-		if (RocketChat.settings.get('GoogleVision_Type_SafeSearch')) {
+		if (settings.get('GoogleVision_Type_SafeSearch')) {
 			visionTypes.push('safeSearch');
 		}
-		if (RocketChat.settings.get('GoogleVision_Type_Similar')) {
+		if (settings.get('GoogleVision_Type_Similar')) {
 			visionTypes.push('similar');
 		}
 		if (this.enabled && this.serviceAccount && visionTypes.length > 0 && message.file && message.file._id) {
-			const file = RocketChat.models.Uploads.findOne({ _id: message.file._id });
+			const file = Uploads.findOne({ _id: message.file._id });
 			if (file && file.type && file.type.indexOf('image') !== -1 && file.store === 'GoogleCloudStorage:Uploads' && file.GoogleStorage) {
 				if (this.incCallCount(visionTypes.length)) {
-					const bucket = this.storageClient.bucket(RocketChat.settings.get('FileUpload_GoogleStorage_Bucket'));
+					const bucket = this.storageClient.bucket(settings.get('FileUpload_GoogleStorage_Bucket'));
 					const bucketFile = bucket.file(file.GoogleStorage.path);
 					this.visionClient.detect(bucketFile, visionTypes, Meteor.bindEnvironment((error, results) => {
 						if (!error) {
-							RocketChat.models.Messages.setGoogleVisionData(message._id, this.getAnnotations(visionTypes, results));
+							Messages.setGoogleVisionData(message._id, this.getAnnotations(visionTypes, results));
 						} else {
 							console.trace('GoogleVision error: ', error.stack);
 						}
@@ -138,10 +147,10 @@ class GoogleVision {
 						results[index] = (results[index] || []).concat(visionData[index] || []);
 						break;
 					case 'safeSearch':
-						results['safeSearch'] = visionData['safeSearch'];
+						results.safeSearch = visionData.safeSearch;
 						break;
 					case 'properties':
-						results['colors'] = visionData[index]['colors'];
+						results.colors = visionData[index].colors;
 						break;
 				}
 			}
@@ -150,4 +159,4 @@ class GoogleVision {
 	}
 }
 
-RocketChat.GoogleVision = new GoogleVision;
+export default new GoogleVision;

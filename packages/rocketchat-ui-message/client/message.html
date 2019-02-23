@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{isSequential}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
@@ -24,10 +24,10 @@
 		<button type="button" class="user user-card-message color-primary-font-color" data-username="{{u.username}}" tabindex="1">{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{u.username}}</span>{{/if}}</button>
 		<span class="info border-component-color color-info-font-color">
 			{{#each roleTags}}
-				<span class="role-tag background-info-font-color" data-role="{{description}}">{{description}}</span>
+				<span class="role-tag color-secondary-color border-component-color" data-role="{{description}}">{{description}}</span>
 			{{/each}}
 			{{#if isBot}}
-				<span class="is-bot background-info-font-color">BOT</span>
+				<span class="is-bot color-secondary-color border-component-color">Bot</span>
 			{{/if}}
 			<span class="time" title='{{date}} {{time}}'>{{time}}</span>
 			{{#if showTranslated}}
@@ -55,11 +55,18 @@
 				{{>icon icon=roomIcon}}{{channelName}}
 			</span>
 		{{/if}}
+		{{#if isIgnored}}
+			<span class="toggle-hidden icon-right-dir" data-message="{{_id}}"> {{_ "Message_Ignored"}} </span>
+		{{/if}}
 		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 			{{#if isSnippet}}
 				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 			{{/if}}
-			{{{body}}}
+			{{#if isDecrypting}}
+				<span>******</span>
+			{{else}}
+				{{{body}}}
+			{{/if}}
 			{{#if hasOembed}}
 				{{#each urls}}
 					{{injectIndex . @index}} {{> oembedBaseWidget}}
@@ -108,6 +115,11 @@
 				</li>
 			{{/each}}
 		</ul>
+		{{# if broadcast}}
+			{{#with u}}
+				<button type="button" class="rc-button rc-button--outline rc-button--primary rc-button-broadcast js-reply-broadcast" name="button">{{> icon block="rc-button-broadcast__icon" icon="reply"}} {{_'Reply'}} </button>
+			{{/with}}
+		{{/if}}
 		<ul class="reactions {{hideReactions}}">
 			{{#each reaction in reactions}}
 				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>

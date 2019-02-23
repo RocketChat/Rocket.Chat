@@ -11,8 +11,8 @@ function getIdentity(accessToken, fields) {
 				headers: { 'User-Agent': userAgent },
 				params: {
 					access_token: accessToken,
-					fields: fields.join(',')
-				}
+					fields: fields.join(','),
+				},
 			}).data;
 	} catch (err) {
 		throw new GrantError(`Failed to fetch identity from Facebook. ${ err.message }`);
@@ -29,8 +29,8 @@ function getPicture(accessToken) {
 					height: 200,
 					width: 200,
 					type: 'normal',
-					access_token: accessToken
-				}
+					access_token: accessToken,
+				},
 			}).data;
 	} catch (err) {
 		throw new GrantError(`Failed to fetch profile picture from Facebook. ${ err.message }`);
@@ -48,7 +48,7 @@ export function getUser(accessToken) {
 		email: identity.email,
 		username,
 		name: `${ identity.first_name } ${ identity.last_name }`,
-		avatar: avatar.data.url
+		avatar: avatar.data.url,
 	};
 }
 

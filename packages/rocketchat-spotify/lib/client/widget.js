@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.registerHelper('replace', function(source, find, replace, option) {
 	if (option.hash.regex === true) {
 		find = new RegExp(find);

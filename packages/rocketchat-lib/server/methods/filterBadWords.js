@@ -1,15 +1,17 @@
 import Filter from 'bad-words';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
-RocketChat.callbacks.add('beforeSaveMessage', function(message) {
+callbacks.add('beforeSaveMessage', function(message) {
 
-	if (RocketChat.settings.get('Message_AllowBadWordsFilter')) {
-		const badWordsList = RocketChat.settings.get('Message_BadWordsFilterList');
+	if (settings.get('Message_AllowBadWordsFilter')) {
+		const badWordsList = settings.get('Message_BadWordsFilterList');
 		let options;
 
 		// Add words to the blacklist
 		if (!!badWordsList && badWordsList.length) {
 			options = {
-				list: badWordsList.split(',')
+				list: badWordsList.split(','),
 			};
 		}
 		const filter = new Filter(options);

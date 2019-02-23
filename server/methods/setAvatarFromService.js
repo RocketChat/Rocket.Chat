@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { settings } from 'meteor/rocketchat:settings';
+import { setUserAvatar } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	setAvatarFromService(dataURI, contentType, service) {
 		check(dataURI, String);
@@ -6,20 +12,20 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'setAvatarFromService'
+				method: 'setAvatarFromService',
 			});
 		}
 
-		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'setAvatarFromService'
+				method: 'setAvatarFromService',
 			});
 		}
 
 		const user = Meteor.user();
 
-		return RocketChat.setUserAvatar(user, dataURI, contentType, service);
-	}
+		return setUserAvatar(user, dataURI, contentType, service);
+	},
 });
 
 DDPRateLimiter.addRule({
@@ -27,5 +33,5 @@ DDPRateLimiter.addRule({
 	name: 'setAvatarFromService',
 	userId() {
 		return true;
-	}
+	},
 }, 1, 5000);

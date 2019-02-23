@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { getUserPreference } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -12,18 +18,18 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'channelsList'
+				method: 'channelsList',
 			});
 		}
 
 		const options = {
 			fields: {
 				name: 1,
-				t: 1
+				t: 1,
 			},
 			sort: {
-				msgs: -1
-			}
+				msgs: -1,
+			},
 		};
 
 		if (_.isNumber(limit)) {
@@ -34,60 +40,60 @@ Meteor.methods({
 			switch (sort) {
 				case 'name':
 					options.sort = {
-						name: 1
+						name: 1,
 					};
 					break;
 				case 'msgs':
 					options.sort = {
-						msgs: -1
+						msgs: -1,
 					};
 			}
 		}
 
-		const roomTypes = [];
+		let channels = [];
+
+		const userId = Meteor.userId();
 
 		if (channelType !== 'private') {
-			if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-c-room')) {
-				roomTypes.push({
-					type: 'c'
-				});
-			} else if (RocketChat.authz.hasPermission(Meteor.userId(), 'view-joined-room')) {
-				const roomIds = _.pluck(RocketChat.models.Subscriptions.findByTypeAndUserId('c', Meteor.userId()).fetch(), 'rid');
-				roomTypes.push({
-					type: 'c',
-					ids: roomIds
-				});
+			if (hasPermission(userId, 'view-c-room')) {
+				if (filter) {
+					channels = channels.concat(Rooms.findByType('c', options).fetch());
+				} else {
+					channels = channels.concat(Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
+				}
+			} else if (hasPermission(userId, 'view-joined-room')) {
+				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+				if (filter) {
+					channels = channels.concat(Rooms.findByTypeInIds('c', roomIds, options).fetch());
+				} else {
+					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).fetch());
+				}
 			}
 		}
 
-		if (channelType !== 'public' && RocketChat.authz.hasPermission(Meteor.userId(), 'view-p-room')) {
-			const user = Meteor.user();
-			const userPref = RocketChat.getUserPreference(user, 'mergeChannels') && RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category';
-			const globalPref = RocketChat.settings.get('UI_Merge_Channels_Groups');
-			const mergeChannels = userPref !== undefined ? userPref : globalPref;
+		if (channelType !== 'public' && hasPermission(userId, 'view-p-room')) {
+			const user = Users.findOne(userId, {
+				fields: {
+					username: 1,
+					'settings.preferences.sidebarGroupByType': 1,
+				},
+			});
+			const userPref = getUserPreference(user, 'sidebarGroupByType');
+			// needs to negate globalPref because userPref represents its opposite
+			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');
 
-			if (mergeChannels) {
-				roomTypes.push({
-					type: 'p',
-					username: user.username
-				});
+			if (!groupByType) {
+				const roomIds = Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+				if (filter) {
+					channels = channels.concat(Rooms.findByTypeInIds('p', roomIds, options).fetch());
+				} else {
+					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).fetch());
+				}
 			}
-		}
-
-		if (roomTypes.length) {
-			if (filter) {
-				return {
-					channels: RocketChat.models.Rooms.findByNameContainingTypesWithUsername(filter, roomTypes, options).fetch()
-				};
-			}
-
-			return {
-				channels: RocketChat.models.Rooms.findContainingTypesWithUsername(roomTypes, options).fetch()
-			};
 		}
 
 		return {
-			channels: []
+			channels,
 		};
-	}
+	},
 });

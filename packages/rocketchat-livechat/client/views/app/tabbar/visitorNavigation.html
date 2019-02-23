@@ -8,8 +8,8 @@
 				{{else}}
 					<div class="visitor-scroll">
 						<ul>
-							{{#each pageVisited}}
-								<li><a href="{{page.location.href}}" target="_blank" title="{{accessDateTime}}">{{pageTitle}}</a></li>
+							{{#each pages}}
+								<li><a href="{{navigation.page.location.href}}" target="_blank" title="{{accessDateTime}}">{{pageTitle}}</a></li>
 							{{/each}}
 						</ul>
 					</div>

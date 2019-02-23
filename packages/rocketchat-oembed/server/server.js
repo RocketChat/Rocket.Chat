@@ -1,4 +1,9 @@
-/*globals HTTPInternals, changeCase */
+import { Meteor } from 'meteor/meteor';
+import { HTTPInternals } from 'meteor/http';
+import { changeCase } from 'meteor/konecty:change-case';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { OEmbedCache, Messages } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 import URL from 'url';
 import querystring from 'querystring';
@@ -59,19 +64,19 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	}
 
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
-	const ignoredHosts = RocketChat.settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
+	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
 	if (ignoredHosts.includes(parsedUrl.hostname) || ipRangeCheck(parsedUrl.hostname, ignoredHosts)) {
 		return callback();
 	}
 
-	const safePorts = RocketChat.settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
+	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
 	if (parsedUrl.port && safePorts.length > 0 && (!safePorts.includes(parsedUrl.port))) {
 		return callback();
 	}
 
-	const data = RocketChat.callbacks.run('oembed:beforeGetUrlContent', {
+	const data = callbacks.run('oembed:beforeGetUrlContent', {
 		urlObj,
-		parsedUrl
+		parsedUrl,
 	});
 	if (data.attachments != null) {
 		return callback(null, data);
@@ -79,12 +84,12 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	const url = URL.format(data.urlObj);
 	const opts = {
 		url,
-		strictSSL: !RocketChat.settings.get('Allow_Invalid_SelfSigned_Certs'),
+		strictSSL: !settings.get('Allow_Invalid_SelfSigned_Certs'),
 		gzip: true,
 		maxRedirects: redirectCount,
 		headers: {
-			'User-Agent': RocketChat.settings.get('API_Embed_UserAgent')
-		}
+			'User-Agent': settings.get('API_Embed_UserAgent'),
+		},
 	};
 	let headers = null;
 	let statusCode = null;
@@ -110,7 +115,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		if (error != null) {
 			return callback(null, {
 				error,
-				parsedUrl
+				parsedUrl,
 			});
 		}
 		const buffer = Buffer.concat(chunks);
@@ -118,7 +123,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 			headers,
 			body: toUtf8(headers['content-type'], buffer),
 			parsedUrl,
-			statusCode
+			statusCode,
 		});
 	}));
 	return stream.on('error', function(err) {
@@ -186,24 +191,24 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 	if (content && content.statusCode !== 200) {
 		return data;
 	}
-	data = RocketChat.callbacks.run('oembed:afterParseContent', {
+	data = callbacks.run('oembed:afterParseContent', {
 		meta: metas,
 		headers,
 		parsedUrl: content.parsedUrl,
-		content
+		content,
 	});
 	return data;
 };
 
 OEmbed.getUrlMetaWithCache = function(url, withFragment) {
-	const cache = RocketChat.models.OEmbedCache.findOneById(url);
+	const cache = OEmbedCache.findOneById(url);
 	if (cache != null) {
 		return cache.data;
 	}
 	const data = OEmbed.getUrlMeta(url, withFragment);
 	if (data != null) {
 		try {
-			RocketChat.models.OEmbedCache.createWithIdAndData(url, data);
+			OEmbedCache.createWithIdAndData(url, data);
 		} catch (_error) {
 			console.error('OEmbed duplicated record', url);
 		}
@@ -252,8 +257,8 @@ OEmbed.rocketUrlParser = function(message) {
 				changed = true;
 				item.meta = {
 					sandstorm: {
-						grain: item.sandstormViewInfo
-					}
+						grain: item.sandstormViewInfo,
+					},
 				};
 				return;
 			}
@@ -277,19 +282,21 @@ OEmbed.rocketUrlParser = function(message) {
 			}
 		});
 		if (attachments.length) {
-			RocketChat.models.Messages.setMessageAttachments(message._id, attachments);
+			Messages.setMessageAttachments(message._id, attachments);
 		}
 		if (changed === true) {
-			RocketChat.models.Messages.setUrlsById(message._id, message.urls);
+			Messages.setUrlsById(message._id, message.urls);
 		}
 	}
 	return message;
 };
 
-RocketChat.settings.get('API_Embed', function(key, value) {
+settings.get('API_Embed', function(key, value) {
 	if (value) {
-		return RocketChat.callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, RocketChat.callbacks.priority.LOW, 'API_Embed');
+		return callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
 	} else {
-		return RocketChat.callbacks.remove('afterSaveMessage', 'API_Embed');
+		return callbacks.remove('afterSaveMessage', 'API_Embed');
 	}
 });
+
+export { OEmbed };

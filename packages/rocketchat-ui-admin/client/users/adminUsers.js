@@ -1,9 +1,17 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { SideNav, TabBar, RocketChatTabBar } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
-
 Template.adminUsers.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		const instance = Template.instance();
 		return instance.ready && instance.ready.get();
@@ -30,9 +38,29 @@ Template.adminUsers.helpers({
 	flexData() {
 		return {
 			tabBar: Template.instance().tabBar,
-			data: Template.instance().tabBarData.get()
+			data: Template.instance().tabBarData.get(),
 		};
-	}
+	},
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
+				return instance.limit.set(instance.limit.get() + 50);
+			}
+		};
+	},
+	// onTableItemClick() {
+	// 	const instance = Template.instance();
+	// 	return function(item) {
+	// 		Session.set('adminRoomsSelected', {
+	// 			rid: item._id,
+	// 		});
+	// 		instance.tabBar.open('admin-room');
+	// 	};
+	// },
 });
 
 Template.adminUsers.onCreated(function() {
@@ -43,29 +71,29 @@ Template.adminUsers.onCreated(function() {
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar;
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'invite-user',
 		i18nTitle: 'Invite_Users',
 		icon: 'send',
 		template: 'adminInviteUser',
-		order: 1
+		order: 1,
 	});
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'add-user',
 		i18nTitle: 'Add_User',
 		icon: 'plus',
 		template: 'adminUserEdit',
-		order: 2
+		order: 2,
 	});
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'admin-user-info',
 		i18nTitle: 'User_Info',
 		icon: 'user',
 		template: 'adminUserInfo',
-		order: 3
+		order: 3,
 	});
 	this.autorun(function() {
 		const filter = instance.filter.get();
@@ -83,12 +111,12 @@ Template.adminUsers.onCreated(function() {
 
 		if (filter) {
 			const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-			query = {$or: [{ username: filterReg }, { name: filterReg}, { 'emails.address': filterReg }]};
+			query = { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] };
 		} else {
 			query = {};
 		}
 		query.type = {
-			$in: ['user', 'bot']
+			$in: ['user', 'bot'],
 		};
 
 		const limit = instance.limit && instance.limit.get();
@@ -103,6 +131,8 @@ Template.adminUsers.onRendered(function() {
 	});
 });
 
+const DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS = 300;
+
 Template.adminUsers.events({
 	'keydown #users-filter'(e) {
 		if (e.which === 13) {
@@ -110,11 +140,11 @@ Template.adminUsers.events({
 			e.preventDefault();
 		}
 	},
-	'keyup #users-filter'(e, t) {
+	'keyup #users-filter': _.debounce((e, t) => {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	},
+	}, DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS),
 	'click .user-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(Meteor.users.findOne(this._id));
@@ -131,5 +161,5 @@ Template.adminUsers.events({
 		e.preventDefault();
 		e.stopPropagation();
 		t.limit.set(t.limit.get() + 50);
-	}
+	},
 });

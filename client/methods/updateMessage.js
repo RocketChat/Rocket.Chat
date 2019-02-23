@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { TimeSync } from 'meteor/mizzao:timesync';
+import { t } from 'meteor/rocketchat:utils';
+import { ChatMessage } from 'meteor/rocketchat:models';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -10,9 +18,12 @@ Meteor.methods({
 
 		const originalMessage = ChatMessage.findOne(message._id);
 
-		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid);
-		const editAllowed = RocketChat.settings.get('Message_AllowEditing');
+		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+		const editAllowed = settings.get('Message_AllowEditing');
 		let editOwn = false;
+		if (originalMessage.msg === message.msg) {
+			return;
+		}
 		if (originalMessage && originalMessage.u && originalMessage.u._id) {
 			editOwn = originalMessage.u._id === Meteor.userId();
 		}
@@ -24,7 +35,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
+		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (_.isNumber(blockEditInMinutes) && blockEditInMinutes !== 0) {
 			if (originalMessage.ts) {
 				const msgTs = moment(originalMessage.ts);
@@ -48,11 +59,11 @@ Meteor.methods({
 
 			message.editedBy = {
 				_id: Meteor.userId(),
-				username: me.username
+				username: me.username,
 			};
 
-			message = RocketChat.callbacks.run('beforeSaveMessage', message);
-			const messageObject = {'editedAt': message.editedAt, 'editedBy': message.editedBy, msg: message.msg};
+			message = callbacks.run('beforeSaveMessage', message);
+			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg };
 
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {
@@ -61,8 +72,8 @@ Meteor.methods({
 			}
 			ChatMessage.update({
 				_id: message._id,
-				'u._id': Meteor.userId()
-			}, {$set : messageObject});
+				'u._id': Meteor.userId(),
+			}, { $set : messageObject });
 		});
-	}
+	},
 });

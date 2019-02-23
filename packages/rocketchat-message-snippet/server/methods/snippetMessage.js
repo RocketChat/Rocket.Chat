@@ -1,42 +1,53 @@
+import { Meteor } from 'meteor/meteor';
+import { Subscriptions, Messages, Users, Rooms } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { isTheLastMessage } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	snippetMessage(message, filename) {
-		if ((typeof Meteor.userId() === 'undefined') || (Meteor.userId() === null)) {
-			//noinspection JSUnresolvedFunction
+		if (Meteor.userId() == null) {
+			// noinspection JSUnresolvedFunction
 			throw new Meteor.Error('error-invalid-user', 'Invalid user',
-				{method: 'snippetMessage'});
+				{ method: 'snippetMessage' });
 		}
 
-		const room = RocketChat.models.Rooms.findOne({ _id: message.rid });
+		const room = Rooms.findOne({ _id: message.rid });
 
 		if ((typeof room === 'undefined') || (room === null)) {
 			return false;
 		}
 
-		if (Array.isArray(room.usernames) && (room.usernames.indexOf(Meteor.user().username) === -1)) {
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		if (!subscription) {
 			return false;
 		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (RocketChat.settings.get('Message_KeepHistory')) {
-			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
+		if (settings.get('Message_KeepHistory')) {
+			Messages.cloneAndSaveAsHistoryById(message._id);
 		}
 
-		const me = RocketChat.models.Users.findOneById(Meteor.userId());
+		const me = Users.findOneById(Meteor.userId());
 
 		message.snippeted = true;
 		message.snippetedAt = Date.now;
 		message.snippetedBy = {
 			_id: Meteor.userId(),
-			username: me.username
+			username: me.username,
 		};
 
-		message = RocketChat.callbacks.run('beforeSaveMessage', message);
+		message = callbacks.run('beforeSaveMessage', message);
 
 		// Create the SnippetMessage
-		RocketChat.models.Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy,
+		Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy,
 			message.snippeted, Date.now, filename);
+		if (isTheLastMessage(room, message)) {
+			Rooms.setLastMessageSnippeted(room._id, message, filename, message.snippetedBy,
+				message.snippeted, Date.now, filename);
+		}
 
-		RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
-			'message_snippeted', message.rid, '', me, {	'snippetId': message._id, 'snippetName': filename });
-	}
+		Messages.createWithTypeRoomIdMessageAndUser(
+			'message_snippeted', message.rid, '', me, {	snippetId: message._id, snippetName: filename });
+	},
 });

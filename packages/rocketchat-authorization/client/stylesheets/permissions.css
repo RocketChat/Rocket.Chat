@@ -10,13 +10,20 @@
 	}
 
 	& .permission-grid {
+		& table {
+			display: block;
+			overflow-x: auto;
+
+			white-space: nowrap;
+		}
+
 		& th {
 			position: relative;
 
-			padding-top: 20px;
+			padding: 20px;
 
 			text-align: center;
-			white-space: normal;
+			white-space: nowrap;
 		}
 
 		& td {
@@ -39,6 +46,7 @@
 
 		& .permission-name {
 			cursor: default;
+			white-space: nowrap;
 		}
 	}
 

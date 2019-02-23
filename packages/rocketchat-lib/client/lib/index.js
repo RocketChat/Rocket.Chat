@@ -5,20 +5,6 @@
 	for the *client* pieces of code which does include the shared
 	library files.
 */
-
-import { RocketChatTabBar } from './RocketChatTabBar';
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../lib/RoomTypeConfig';
-import { hide, leave, erase } from './ChannelActions';
-import { call } from './callMethod';
-
-export {
-	call,
-	erase,
-	hide,
-	leave,
-	RocketChatTabBar,
-	RoomSettingsEnum,
-	RoomTypeConfig,
-	RoomTypeRouteConfig,
-	UiTextContext
-};
+export { RocketChatAnnouncement } from './RocketChatAnnouncement';
+export { LoginPresence } from './LoginPresence';
+export * as DateFormat from './formatDate';

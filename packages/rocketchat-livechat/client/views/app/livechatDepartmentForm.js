@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { AgentUsers } from '../../collections/AgentUsers';
+import { LivechatDepartment } from '../../collections/LivechatDepartment';
+import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';
 import _ from 'underscore';
 import toastr from 'toastr';
 
@@ -13,12 +21,12 @@ Template.livechatDepartmentForm.helpers({
 	},
 	availableAgents() {
 		const selected = _.pluck(Template.instance().selectedAgents.get(), 'username');
-		return AgentUsers.find({ username: { $nin: selected }}, { sort: { username: 1 } });
+		return AgentUsers.find({ username: { $nin: selected } }, { sort: { username: 1 } });
 	},
 	showOnRegistration(value) {
 		const department = Template.instance().department.get();
 		return department.showOnRegistration === value || (department.showOnRegistration === undefined && value === true);
-	}
+	},
 });
 
 Template.livechatDepartmentForm.events({
@@ -44,10 +52,10 @@ Template.livechatDepartmentForm.events({
 		$btn.html(t('Saving'));
 
 		const departmentData = {
-			enabled: enabled === '1' ? true : false,
+			enabled: enabled === '1',
 			name: name.trim(),
 			description: description.trim(),
-			showOnRegistration: showOnRegistration === '1' ? true : false
+			showOnRegistration: showOnRegistration === '1',
 		};
 
 		const departmentAgents = [];
@@ -59,7 +67,7 @@ Template.livechatDepartmentForm.events({
 			departmentAgents.push(agent);
 		});
 
-		Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, function(error/*, result*/) {
+		Meteor.call('livechat:saveDepartment', _id, departmentData, departmentAgents, function(error/* , result*/) {
 			$btn.html(oldBtnValue);
 			if (error) {
 				return handleError(error);
@@ -70,7 +78,7 @@ Template.livechatDepartmentForm.events({
 		});
 	},
 
-	'click button.back'(e/*, instance*/) {
+	'click button.back'(e/* , instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-departments');
 	},
@@ -79,7 +87,7 @@ Template.livechatDepartmentForm.events({
 		e.preventDefault();
 
 		let selectedAgents = instance.selectedAgents.get();
-		selectedAgents = _.reject(selectedAgents, (agent) => { return agent._id === this._id; });
+		selectedAgents = _.reject(selectedAgents, (agent) => agent._id === this._id);
 		instance.selectedAgents.set(selectedAgents);
 	},
 
@@ -90,7 +98,7 @@ Template.livechatDepartmentForm.events({
 		delete agent._id;
 		selectedAgents.push(agent);
 		instance.selectedAgents.set(selectedAgents);
-	}
+	},
 });
 
 Template.livechatDepartmentForm.onCreated(function() {

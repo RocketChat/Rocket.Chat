@@ -1,4 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
+import { Button } from 'meteor/rocketchat:ui';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import toastr from 'toastr';
+
 Template.resetPassword.helpers({
 	requirePasswordChange() {
 		const user = Meteor.user();
@@ -11,7 +20,7 @@ Template.resetPassword.helpers({
 		if (user) {
 			return user.requirePasswordChangeReason;
 		}
-	}
+	},
 });
 
 Template.resetPassword.events({
@@ -27,41 +36,41 @@ Template.resetPassword.events({
 		event.preventDefault();
 
 		const button = instance.$('button.resetpass');
-		RocketChat.Button.loading(button);
+		Button.loading(button);
 
-		if (Meteor.userId()) {
+		if (Meteor.userId() && !FlowRouter.getParam('token')) {
 			Meteor.call('setUserPassword', instance.find('[name=newPassword]').value, function(error) {
 				if (error) {
 					console.log(error);
 					modal.open({
 						title: t('Error_changing_password'),
-						type: 'error'
+						type: 'error',
 					});
 				}
 			});
 		} else {
 			Accounts.resetPassword(FlowRouter.getParam('token'), instance.find('[name=newPassword]').value, function(error) {
-				RocketChat.Button.reset(button);
+				Button.reset(button);
 				if (error) {
 					console.log(error);
 					if (error.error === 'totp-required') {
 						toastr.success(t('Password_changed_successfully'));
-						RocketChat.callbacks.run('userPasswordReset');
+						callbacks.run('userPasswordReset');
 						FlowRouter.go('login');
 					} else {
 						modal.open({
 							title: t('Error_changing_password'),
-							type: 'error'
+							type: 'error',
 						});
 					}
 				} else {
 					FlowRouter.go('home');
 					toastr.success(t('Password_changed_successfully'));
-					RocketChat.callbacks.run('userPasswordReset');
+					callbacks.run('userPasswordReset');
 				}
 			});
 		}
-	}
+	},
 });
 
 Template.resetPassword.onRendered(function() {

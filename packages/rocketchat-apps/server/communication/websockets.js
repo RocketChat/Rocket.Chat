@@ -1,4 +1,5 @@
-import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-ts-definition/AppStatus';
+import { Meteor } from 'meteor/meteor';
+import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -9,66 +10,78 @@ export const AppEvents = Object.freeze({
 	COMMAND_ADDED: 'command/added',
 	COMMAND_DISABLED: 'command/disabled',
 	COMMAND_UPDATED: 'command/updated',
-	COMMAND_REMOVED: 'command/removed'
+	COMMAND_REMOVED: 'command/removed',
 });
 
 export class AppServerListener {
-	constructor(orch, engineStreamer, clientStreamer, recieved) {
+	constructor(orch, engineStreamer, clientStreamer, received) {
 		this.orch = orch;
 		this.engineStreamer = engineStreamer;
 		this.clientStreamer = clientStreamer;
-		this.recieved = recieved;
+		this.received = received;
 
 		this.engineStreamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
 		this.engineStreamer.on(AppEvents.APP_STATUS_CHANGE, this.onAppStatusUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_SETTING_UPDATED, this.onAppSettingUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
+		this.engineStreamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_ADDED, this.onCommandAdded.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_DISABLED, this.onCommandDisabled.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_UPDATED, this.onCommandUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.COMMAND_REMOVED, this.onCommandRemoved.bind(this));
 	}
 
-	onAppAdded(appId) {
-		this.orch.getManager().loadOne(appId).then(() => this.clientStreamer.emit(AppEvents.APP_ADDED, appId));
+	async onAppAdded(appId) {
+		await this.orch.getManager().loadOne(appId);
+		this.clientStreamer.emit(AppEvents.APP_ADDED, appId);
 	}
 
-	onAppStatusUpdated({ appId, status }) {
-		this.recieved.set(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`, { appId, status, when: new Date() });
+	async onAppStatusUpdated({ appId, status }) {
+		this.received.set(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`, { appId, status, when: new Date() });
 
 		if (AppStatusUtils.isEnabled(status)) {
-			this.orch.getManager().enable(appId)
-				.then(() => this.clientStreamer.emit(AppEvents.APP_STATUS_CHANGE, { appId, status }));
+			await this.orch.getManager().enable(appId);
+			this.clientStreamer.emit(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		} else if (AppStatusUtils.isDisabled(status)) {
-			this.orch.getManager().disable(appId, AppStatus.MANUALLY_DISABLED === status)
-				.then(() => this.clientStreamer.emit(AppEvents.APP_STATUS_CHANGE, { appId, status }));
+			await this.orch.getManager().disable(appId, AppStatus.MANUALLY_DISABLED === status);
+			this.clientStreamer.emit(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		}
 	}
 
-	onAppSettingUpdated({ appId, setting }) {
-		this.recieved.set(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`, { appId, setting, when: new Date() });
+	async onAppSettingUpdated({ appId, setting }) {
+		this.received.set(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`, { appId, setting, when: new Date() });
 
-		this.orch.getManager().getSettingsManager().updateAppSetting(appId, setting)
-			.then(() => this.clientStreamer.emit(AppEvents.APP_SETTING_UPDATED, { appId }));
+		await this.orch.getManager().getSettingsManager().updateAppSetting(appId, setting);
+		this.clientStreamer.emit(AppEvents.APP_SETTING_UPDATED, { appId });
 	}
 
-	onAppRemoved(appId) {
-		this.orch.getManager().remove(appId).then(() => this.clientStreamer.emit(AppEvents.APP_REMOVED, appId));
+	async onAppUpdated(appId) {
+		this.received.set(`${ AppEvents.APP_UPDATED }_${ appId }`, { appId, when: new Date() });
+
+		const storageItem = await this.orch.getStorage().retrieveOne(appId);
+
+		await this.orch.getManager().update(storageItem.zip);
+		this.clientStreamer.emit(AppEvents.APP_UPDATED, appId);
 	}
 
-	onCommandAdded(command) {
+	async onAppRemoved(appId) {
+		await this.orch.getManager().remove(appId);
+		this.clientStreamer.emit(AppEvents.APP_REMOVED, appId);
+	}
+
+	async onCommandAdded(command) {
 		this.clientStreamer.emit(AppEvents.COMMAND_ADDED, command);
 	}
 
-	onCommandDisabled(command) {
+	async onCommandDisabled(command) {
 		this.clientStreamer.emit(AppEvents.COMMAND_DISABLED, command);
 	}
 
-	onCommandUpdated(command) {
+	async onCommandUpdated(command) {
 		this.clientStreamer.emit(AppEvents.COMMAND_UPDATED, command);
 	}
 
-	onCommandRemoved(command) {
+	async onCommandRemoved(command) {
 		this.clientStreamer.emit(AppEvents.COMMAND_REMOVED, command);
 	}
 }
@@ -88,30 +101,35 @@ export class AppServerNotifier {
 		this.clientStreamer.allowEmit('all');
 		this.clientStreamer.allowWrite('none');
 
-		this.recieved = new Map();
-		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.recieved);
+		this.received = new Map();
+		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.received);
 	}
 
-	appAdded(appId) {
+	async appAdded(appId) {
 		this.engineStreamer.emit(AppEvents.APP_ADDED, appId);
 		this.clientStreamer.emit(AppEvents.APP_ADDED, appId);
 	}
 
-	appRemoved(appId) {
+	async appRemoved(appId) {
 		this.engineStreamer.emit(AppEvents.APP_REMOVED, appId);
 		this.clientStreamer.emit(AppEvents.APP_REMOVED, appId);
 	}
 
-	appUpdated(appId) {
+	async appUpdated(appId) {
+		if (this.received.has(`${ AppEvents.APP_UPDATED }_${ appId }`)) {
+			this.received.delete(`${ AppEvents.APP_UPDATED }_${ appId }`);
+			return;
+		}
+
 		this.engineStreamer.emit(AppEvents.APP_UPDATED, appId);
 		this.clientStreamer.emit(AppEvents.APP_UPDATED, appId);
 	}
 
-	appStatusUpdated(appId, status) {
-		if (this.recieved.has(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`)) {
-			const details = this.recieved.get(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
+	async appStatusUpdated(appId, status) {
+		if (this.received.has(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`)) {
+			const details = this.received.get(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
 			if (details.status === status) {
-				this.recieved.delete(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
+				this.received.delete(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`);
 				return;
 			}
 		}
@@ -120,9 +138,9 @@ export class AppServerNotifier {
 		this.clientStreamer.emit(AppEvents.APP_STATUS_CHANGE, { appId, status });
 	}
 
-	appSettingsChange(appId, setting) {
-		if (this.recieved.has(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`)) {
-			this.recieved.delete(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`);
+	async appSettingsChange(appId, setting) {
+		if (this.received.has(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`)) {
+			this.received.delete(`${ AppEvents.APP_SETTING_UPDATED }_${ appId }_${ setting.id }`);
 			return;
 		}
 
@@ -130,22 +148,22 @@ export class AppServerNotifier {
 		this.clientStreamer.emit(AppEvents.APP_SETTING_UPDATED, { appId });
 	}
 
-	commandAdded(command) {
+	async commandAdded(command) {
 		this.engineStreamer.emit(AppEvents.COMMAND_ADDED, command);
 		this.clientStreamer.emit(AppEvents.COMMAND_ADDED, command);
 	}
 
-	commandDisabled(command) {
+	async commandDisabled(command) {
 		this.engineStreamer.emit(AppEvents.COMMAND_DISABLED, command);
 		this.clientStreamer.emit(AppEvents.COMMAND_DISABLED, command);
 	}
 
-	commandUpdated(command) {
+	async commandUpdated(command) {
 		this.engineStreamer.emit(AppEvents.COMMAND_UPDATED, command);
 		this.clientStreamer.emit(AppEvents.COMMAND_UPDATED, command);
 	}
 
-	commandRemoved(command) {
+	async commandRemoved(command) {
 		this.engineStreamer.emit(AppEvents.COMMAND_REMOVED, command);
 		this.clientStreamer.emit(AppEvents.COMMAND_REMOVED, command);
 	}

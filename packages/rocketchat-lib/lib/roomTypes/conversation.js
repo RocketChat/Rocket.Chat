@@ -1,16 +1,17 @@
-import { RoomTypeConfig } from '../RoomTypeConfig';
+import { Meteor } from 'meteor/meteor';
+import { getUserPreference, RoomTypeConfig } from 'meteor/rocketchat:utils';
 
 export class ConversationRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'merged',
 			order: 30,
-			label: 'Conversations'
+			label: 'Conversations',
 		});
 	}
 
 	condition() {
-		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'mergeChannels');
+		// returns true only if sidebarGroupByType is not set
+		return !getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 	}
 }

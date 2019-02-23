@@ -1,73 +1,98 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { Settings } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
-		this.unblock();
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true && record['public'] === true;
-		});
+		const records = Settings.findNotHiddenPublic().fetch();
+
 		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {
 					return record._updatedAt > updatedAt;
 				}),
-				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {
+				remove: Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
-						$ne: true
+						$ne: true,
 					},
-					'public': true
+					public: true,
 				}, {
 					fields: {
 						_id: 1,
-						_deletedAt: 1
-					}
-				}).fetch()
+						_deletedAt: 1,
+					},
+				}).fetch(),
 			};
 		}
 		return records;
 	},
-	'private-settings/get'(updatedAt) {
+	'private-settings/get'(updatedAfter) {
 		if (!Meteor.userId()) {
 			return [];
 		}
-		this.unblock();
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-privileged-setting')) {
+		if (!hasPermission(Meteor.userId(), 'view-privileged-setting')) {
 			return [];
 		}
-		const records = RocketChat.models.Settings.find().fetch().filter(function(record) {
-			return record.hidden !== true;
-		});
-		if (updatedAt instanceof Date) {
-			return {
-				update: records.filter(function(record) {
-					return record._updatedAt > updatedAt;
-				}),
-				remove: RocketChat.models.Settings.trashFindDeletedAfter(updatedAt, {
-					hidden: {
-						$ne: true
-					}
-				}, {
-					fields: {
-						_id: 1,
-						_deletedAt: 1
-					}
-				}).fetch()
-			};
+
+		if (!(updatedAfter instanceof Date)) {
+			return Settings.findNotHidden().fetch();
 		}
-		return records;
+
+		const records = Settings.findNotHidden({ updatedAfter }).fetch();
+		return {
+			update: records,
+			remove: Settings.trashFindDeletedAfter(updatedAfter, {
+				hidden: {
+					$ne: true,
+				},
+			}, {
+				fields: {
+					_id: 1,
+					_deletedAt: 1,
+				},
+			}).fetch(),
+		};
+	},
+});
+
+Settings.on('change', ({ clientAction, id, data, diff }) => {
+	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
+		return;
+	}
+	switch (clientAction) {
+		case 'updated':
+		case 'inserted': {
+			const setting = data || Settings.findOneById(id);
+			const value = {
+				_id: setting._id,
+				value: setting.value,
+				editor: setting.editor,
+				properties: setting.properties,
+			};
+
+			if (setting.public === true) {
+				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
+			}
+			Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, setting);
+			break;
+		}
+
+		case 'removed': {
+			const setting = data || Settings.findOneById(id, { fields: { public: 1 } });
+
+			if (setting.public === true) {
+				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
+			}
+			Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });
+			break;
+		}
 	}
 });
 
-RocketChat.models.Settings.cache.on('changed', function(type, setting) {
-	if (setting['public'] === true) {
-		RocketChat.Notifications.notifyAllInThisInstance('public-settings-changed', type, _.pick(setting, '_id', 'value', 'editor', 'properties'));
-	}
-	return RocketChat.Notifications.notifyLoggedInThisInstance('private-settings-changed', type, setting);
-});
-
-RocketChat.Notifications.streamAll.allowRead('private-settings-changed', function() {
+Notifications.streamAll.allowRead('private-settings-changed', function() {
 	if (this.userId == null) {
 		return false;
 	}
-	return RocketChat.authz.hasPermission(this.userId, 'view-privileged-setting');
+	return hasPermission(this.userId, 'view-privileged-setting');
 });

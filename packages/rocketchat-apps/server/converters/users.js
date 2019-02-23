@@ -1,4 +1,5 @@
-import { UserStatusConnection, UserType } from '@rocket.chat/apps-ts-definition/users';
+import { Users } from 'meteor/rocketchat:models';
+import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 
 export class AppUsersConverter {
 	constructor(orch) {
@@ -6,25 +7,24 @@ export class AppUsersConverter {
 	}
 
 	convertById(userId) {
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
-		return this._convertToApp(user);
+		return this.convertToApp(user);
 	}
 
 	convertByUsername(username) {
-		const user = RocketChat.models.Users.findOneByUsername(username);
+		const user = Users.findOneByUsername(username);
 
-		return this._convertToApp(user);
+		return this.convertToApp(user);
 	}
 
-	_convertToApp(user) {
+	convertToApp(user) {
 		if (!user) {
 			return undefined;
 		}
 
 		const type = this._convertUserTypeToEnum(user.type);
-		const status = this._convertStatusConnectionToEnum(user.status);
-		const statusConnection = this._convertStatusConnectionToEnum(user.statusConnection);
+		const statusConnection = this._convertStatusConnectionToEnum(user.username, user._id, user.statusConnection);
 
 		return {
 			id: user._id,
@@ -34,12 +34,12 @@ export class AppUsersConverter {
 			isEnabled: user.active,
 			name: user.name,
 			roles: user.roles,
-			status,
+			status: user.status,
 			statusConnection,
 			utcOffset: user.utcOffset,
 			createdAt: user.createdAt,
 			updatedAt: user._updatedAt,
-			lastLoginAt: user.lastLogin
+			lastLoginAt: user.lastLogin,
 		};
 	}
 
@@ -49,12 +49,16 @@ export class AppUsersConverter {
 				return UserType.USER;
 			case 'bot':
 				return UserType.BOT;
+			case '':
+			case undefined:
+				return UserType.UNKNOWN;
 			default:
-				throw new Error('Unknown user type of:', type);
+				console.warn(`A new user type has been added that the Apps don't know about? "${ type }"`);
+				return type.toUpperCase();
 		}
 	}
 
-	_convertStatusConnectionToEnum(status) {
+	_convertStatusConnectionToEnum(username, userId, status) {
 		switch (status) {
 			case 'offline':
 				return UserStatusConnection.OFFLINE;
@@ -64,8 +68,12 @@ export class AppUsersConverter {
 				return UserStatusConnection.AWAY;
 			case 'busy':
 				return UserStatusConnection.BUSY;
+			case undefined:
+				// This is needed for Livechat guests and Rocket.Cat user.
+				return UserStatusConnection.UNDEFINED;
 			default:
-				throw new Error('Unknown status type of:', status);
+				console.warn(`The user ${ username } (${ userId }) does not have a valid status (offline, online, away, or busy). It is currently: "${ status }"`);
+				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
 		}
 	}
 }

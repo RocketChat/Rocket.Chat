@@ -11,8 +11,8 @@
 	</div>
 </template>
 <template name="accountProfile">
-	<section class="preferences-page">
-		{{#header sectionName="Profile" buttons=true}}
+	<section class="preferences-page preferences-page--new">
+		{{#header sectionName="Profile" buttons=true fullpage=true}}
 			<div class="rc-header__section-button">
 				<button class="rc-button rc-button--primary" name="send" type="submit" data-button="create" form="profile" {{canSave 'disabled'}}>{{_ "Save_changes"}}</button>
 			</div>
@@ -33,40 +33,40 @@
 									{{/unless}}
 								</div>
 									{{#if allowAvatarChange}}
-										{{#if suggestions.ready}}
-											<div class="rc-select-avatar__list">
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
-													{{> avatar username=initialsUsername }}
-												</div>
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_user_avatar" }}">
-													<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
-														{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
-													</label>
-													<input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg">
-												</div>
-												<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectUrl}}"  aria-label="{{_ "Use_url_for_avatar" }}">
-													<label class="rc-select-avatar__upload-label avatar">
-														{{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
-													</label>
-												</div>
+										<div class="rc-select-avatar__list">
+											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
+												{{> avatar username=initialsUsername }}
+											</div>
+											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_user_avatar" }}">
+												<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
+													{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
+												</label>
+												<input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg">
+											</div>
+											<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectUrl}}"	aria-label="{{_ "Use_url_for_avatar" }}">
+												<label class="rc-select-avatar__upload-label avatar">
+													{{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
+												</label>
+											</div>
+											{{#if suggestions.ready}}
 												{{#each service in services}}
 													{{ > avatarService service}}
 												{{/each}}
-												<div class="rc-input">
-
-													<label class="rc-input__label">
-														<div class="rc-input__title">{{_ "Use_url_for_avatar"}}</div>
-														<div class="rc-input__wrapper">
-															<input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
-														</div>
-													</label>
+											{{else}}
+												<div class="rc-select-avatar__loading">
+													{{_ "Loading_suggestion"}}
 												</div>
+											{{/if}}
+											<div class="rc-input">
+
+												<label class="rc-input__label">
+													<div class="rc-input__title">{{_ "Use_url_for_avatar"}}</div>
+													<div class="rc-input__wrapper">
+														<input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
+													</div>
+												</label>
 											</div>
-										{{else}}
-											<div class="rc-select-avatar__loading">
-												{{_ "Loading_suggestion"}}
-											</div>
-										{{/if}}
+										</div>
 									{{/if}}
 							</div>
 						</div>
@@ -118,7 +118,7 @@
 										<input name="email" type="text" class="rc-input__element" placeholder="{{_ "Email_Placeholder" }}" value="{{email}}" autocomplete="false" {{ifThenElse canChange '' 'disabled'}}>
 										{{#unless emailVerified}}
 											<div class="rc-input__icon rc-input__icon--right">
-												{{> icon block="rc-input__icon-svg" icon="cross-circled"}}
+												{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
 											</div>
 										{{else}}
 											<div class="rc-input__icon rc-input__icon--right">
@@ -137,7 +137,7 @@
 								{{/unless}}
 							</div>
 							{{/with}}
-							<div class="rc-input rc-w50 padded">
+							<div class="rc-input{{#if confirmationPasswordInvalid}} rc-input--error{{/if}} rc-w50 padded">
 								{{#with canChange=allowPasswordChange}}
 									<label class="rc-input__label">
 										<div class="rc-input__title">{{_ "New_password"}}</div>
@@ -145,6 +145,14 @@
 											<input name="password" type="password" class="rc-input__element" placeholder="{{_ "New_Password_Placeholder"}}"  autocomplete="new-password" {{ifThenElse canChange '' 'disabled'}}>
 										</div>
 									</label>
+									{{#if canConfirmNewPassword}}
+									<label class="rc-input__label">
+										<div class="rc-input__title">{{_ "Confirm_new_password"}}</div>
+										<div class="rc-input__wrapper">
+											<input name="confirmation-password" type="password" class="rc-input__element" placeholder="{{_ "Confirm_New_Password_Placeholder"}}" autocomplete="confirm-new-password">
+										</div>
+									</label>
+									{{/if}}
 									{{# unless canChange}}
 										<div class="rc-input__description">{{_ 'Password_Change_Disabled'}}</div>
 									{{/unless}}

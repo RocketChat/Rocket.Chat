@@ -1,4 +1,8 @@
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+import { Meteor } from 'meteor/meteor';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Rooms } from 'meteor/rocketchat:models';
+
+callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (!message || message.editedAt) {
 		return message;
@@ -15,16 +19,13 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	Meteor.defer(() => {
-		const now = new Date();
-		RocketChat.models.Rooms.setResponseByRoomId(room._id, {
+		Rooms.setResponseByRoomId(room._id, {
 			user: {
 				_id: message.u._id,
-				username: message.u.username
+				username: message.u.username,
 			},
-			responseDate: now,
-			responseTime: (now.getTime() - room.ts) / 1000
 		});
 	});
 
 	return message;
-}, RocketChat.callbacks.priority.LOW, 'markRoomResponded');
+}, callbacks.priority.LOW, 'markRoomResponded');

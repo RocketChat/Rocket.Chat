@@ -1,23 +1,27 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.checkUsernameAvailability = function(username) {
-	return RocketChat.settings.get('Accounts_BlockedUsernameList', function(key, value) {
-		const usernameBlackList = _.map(value.split(','), function(username) {
-			return username.trim();
-		});
-		if (usernameBlackList.length !== 0) {
-			if (usernameBlackList.every(restrictedUsername => {
-				const regex = new RegExp(`^${ s.escapeRegExp(restrictedUsername) }$`, 'i');
-				return !regex.test(s.trim(s.escapeRegExp(username)));
-			})) {
-				return !Meteor.users.findOne({
-					username: {
-						$regex: new RegExp(`^${ s.trim(s.escapeRegExp(username)) }$`, 'i')
-					}
-				});
-			}
-			return false;
-		}
-	});
+let usernameBlackList = [];
+
+const toRegExp = (username) => new RegExp(`^${ s.escapeRegExp(username).trim() }$`, 'i');
+
+settings.get('Accounts_BlockedUsernameList', (key, value) => {
+	usernameBlackList = value.split(',').map(toRegExp);
+});
+
+const usernameIsBlocked = (username, usernameBlackList) => usernameBlackList.length
+	&& usernameBlackList.some((restrictedUsername) => restrictedUsername.test(s.trim(s.escapeRegExp(username))));
+
+export const checkUsernameAvailability = function(username) {
+
+	if (usernameIsBlocked(username, usernameBlackList)) {
+		return false;
+	}
+
+	return !Meteor.users.findOne({
+		username: {
+			$regex: toRegExp(username),
+		},
+	}, { fields: { _id: 1 } });
 };

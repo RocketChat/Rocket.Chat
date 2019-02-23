@@ -1,34 +1,37 @@
-/* globals popover */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { popover } from 'meteor/rocketchat:ui-utils';
+import { getUserPreference } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
 
 const checked = function(prop, field) {
-	const user = Meteor.user();
+	const userId = Meteor.userId();
 	if (prop === 'sidebarShowFavorites') {
-		return RocketChat.getUserPreference(user, 'sidebarShowFavorites');
+		return getUserPreference(userId, 'sidebarShowFavorites');
 	}
-	if (prop === 'mergeChannels') {
-		// TODO change mergeChannels to GroupByType
-		return !RocketChat.getUserPreference(user, 'mergeChannels');
+	if (prop === 'sidebarGroupByType') {
+		return getUserPreference(userId, 'sidebarGroupByType');
 	}
 	if (prop === 'sidebarShowUnread') {
-		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
+		return getUserPreference(userId, 'sidebarShowUnread');
 	}
 	if (prop === 'sidebarSortby') {
-		return (RocketChat.getUserPreference(user, 'sidebarSortby') || 'activity') === field;
+		return (getUserPreference(userId, 'sidebarSortby') || 'alphabetical') === field;
 	}
 };
 
 Template.sortlist.helpers({
 	favorite() {
-		return RocketChat.settings.get('Favorite_Rooms');
+		return settings.get('Favorite_Rooms');
 	},
 	checked,
 	bold(...props) {
 		return checked(...props) ? 'rc-popover__item--bold' : '';
-	}
+	},
 });
 
 Template.sortlist.events({
-	'change input'({currentTarget}) {
+	'change input'({ currentTarget }) {
 		const name = currentTarget.getAttribute('name');
 		let value = currentTarget.getAttribute('type') === 'checkbox' ? currentTarget.checked : currentTarget.value;
 
@@ -37,12 +40,8 @@ Template.sortlist.events({
 			value = !value;
 		}
 		Meteor.call('saveUserPreferences', {
-			[name] : value
+			[name] : value,
 		});
 		popover.close();
-	}
-});
-
-Template.sortlist.onRendered(function() {
-
+	},
 });

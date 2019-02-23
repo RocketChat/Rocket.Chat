@@ -2,27 +2,23 @@ Package.describe({
 	name: 'rocketchat:livestream',
 	version: '0.0.5',
 	summary: 'Embed livestream to Rocket.Chat channels',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
-	api.use('templating', 'client');
 	api.use([
 		'ecmascript',
-		'rocketchat:lib'
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:authorization',
+		'rocketchat:lib',
+		'rocketchat:api',
+		'templating',
 	]);
-	api.addFiles([
-		'client/views/liveStreamTab.html',
-		'client/views/liveStreamTab.js',
-		'client/styles/liveStreamTab.css',
-		'client/views/liveStreamView.html',
-		'client/views/liveStreamView.js',
-		'client/tabBar.js'
-	], 'client');
-
-	api.addFiles([
-		'server/models/Rooms.js',
-		'server/functions/saveStreamingOptions.js',
-		'server/settings.js'
-	], 'server');
+	api.addFiles('client/styles/liveStreamTab.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

@@ -1,8 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
+
 Template.avatar.helpers({
-	imageUrl() {
-		let {url} = Template.instance().data;
+	src() {
+		let { url } = Template.instance().data;
 		if (!url) {
-			let username = this.username;
+			let { username } = this;
 			if (username == null && this.userId != null) {
 				const user = Meteor.users.findOne(this.userId);
 				username = user && user.username;
@@ -18,6 +23,6 @@ Template.avatar.helpers({
 
 			url = getAvatarUrlFromUsername(username);
 		}
-		return `background-image:url(${ url });`;
-	}
+		return url;
+	},
 });

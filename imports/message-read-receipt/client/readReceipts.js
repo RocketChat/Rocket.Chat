@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
 import moment from 'moment';
 
 import './readReceipts.css';
@@ -9,14 +12,14 @@ Template.readReceipts.helpers({
 		return Template.instance().readReceipts.get();
 	},
 	displayName() {
-		return (RocketChat.settings.get('UI_Use_Real_Name') && this.user.name) || this.user.username;
+		return (settings.get('UI_Use_Real_Name') && this.user.name) || this.user.username;
 	},
 	time() {
 		return moment(this.ts).format('L LTS');
 	},
 	isLoading() {
 		return Template.instance().loading.get();
-	}
+	},
 });
 
 Template.readReceipts.onCreated(function readReceiptsOnCreated() {

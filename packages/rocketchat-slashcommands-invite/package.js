@@ -2,18 +2,18 @@ Package.describe({
 	name: 'rocketchat:slashcommands-invite',
 	version: '0.0.1',
 	summary: 'Message pre-processor that will translate /me commands',
-	git: ''
+	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'check',
-		'rocketchat:lib'
+		'rocketchat:utils',
+		'rocketchat:models',
+		'rocketchat:notifications',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles('client/client.js', 'client');
-	api.addFiles('server/server.js', 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

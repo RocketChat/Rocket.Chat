@@ -1,19 +1,30 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users, Rooms } from 'meteor/rocketchat:models';
+import { sendMessage } from 'meteor/rocketchat:lib';
+
 class ErrorHandler {
 	constructor() {
 		this.reporting = false;
 		this.rid = null;
 		this.lastError = null;
 
-		this.registerHandlers();
+		Meteor.startup(() => {
+			this.registerHandlers();
 
-		RocketChat.settings.get('Log_Exceptions_to_Channel', (key, value) => {
-			if (value.trim()) {
-				this.reporting = true;
-				this.rid = this.getRoomId(value);
-			} else {
-				this.reporting = false;
-				this.rid = '';
-			}
+			settings.get('Log_Exceptions_to_Channel', (key, value) => {
+				this.rid = null;
+				const roomName = value.trim();
+				if (roomName) {
+					this.rid = this.getRoomId(roomName);
+				}
+
+				if (this.rid) {
+					this.reporting = true;
+				} else {
+					this.reporting = false;
+				}
+			});
 		});
 	}
 
@@ -27,37 +38,37 @@ class ErrorHandler {
 
 		const self = this;
 		const originalMeteorDebug = Meteor._debug;
-		Meteor._debug = function(message, stack) {
+		Meteor._debug = function(message, stack, ...args) {
 			if (!self.reporting) {
 				return originalMeteorDebug.call(this, message, stack);
 			}
 			self.trackError(message, stack);
-			return originalMeteorDebug.apply(this, arguments);
+			return originalMeteorDebug.apply(this, [message, stack, ...args]);
 		};
 	}
 
 	getRoomId(roomName) {
 		roomName = roomName.replace('#');
-		const room = RocketChat.models.Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
-		if (room && (room.t === 'c' || room.t === 'p')) {
-			return room._id;
-		} else {
-			this.reporting = false;
+		const room = Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
+		if (!room || (room.t !== 'c' && room.t !== 'p')) {
+			return;
 		}
+		return room._id;
 	}
 
 	trackError(message, stack) {
-		if (this.reporting && this.rid && this.lastError !== message) {
-			this.lastError = message;
-			const user = RocketChat.models.Users.findOneById('rocket.cat');
-
-			if (stack) {
-				message = `${ message }\n\`\`\`\n${ stack }\n\`\`\``;
-			}
-
-			RocketChat.sendMessage(user, { msg: message }, { _id: this.rid });
+		if (!this.reporting || !this.rid || this.lastError === message) {
+			return;
 		}
+		this.lastError = message;
+		const user = Users.findOneById('rocket.cat');
+
+		if (stack) {
+			message = `${ message }\n\`\`\`\n${ stack }\n\`\`\``;
+		}
+
+		sendMessage(user, { msg: message }, { _id: this.rid });
 	}
 }
 
-RocketChat.ErrorHandler = new ErrorHandler;
+export default new ErrorHandler;

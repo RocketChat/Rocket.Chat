@@ -1,9 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { Users, Subscriptions } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 /*
 * Mute is a named function that will replace /mute commands
 */
 
-RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
+slashCommands.add('mute', function Mute(command, params, item) {
 	if (command !== 'mute' || !Match.test(params, String)) {
 		return;
 	}
@@ -11,38 +18,40 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 	if (username === '') {
 		return;
 	}
-	const user = Meteor.users.findOne(Meteor.userId());
-	const mutedUser = RocketChat.models.Users.findOneByUsername(username);
-	const room = RocketChat.models.Rooms.findOneById(item.rid);
+	const userId = Meteor.userId();
+	const user = Meteor.users.findOne(userId);
+	const mutedUser = Users.findOneByUsername(username);
 	if (mutedUser == null) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, user.language)
+				sprintf: [username],
+			}, user.language),
 		});
 		return;
 	}
-	if ((room.usernames || []).includes(username) === false) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, mutedUser._id, { fields: { _id: 1 } });
+	if (!subscription) {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
 			msg: TAPi18n.__('Username_is_not_in_this_room', {
 				postProcess: 'sprintf',
-				sprintf: [username]
-			}, user.language)
+				sprintf: [username],
+			}, user.language),
 		});
 		return;
 	}
 	Meteor.call('muteUserInRoom', {
 		rid: item.rid,
-		username
+		username,
 	});
 }, {
 	description: 'Mute_someone_in_room',
-	params: '@username'
+	params: '@username',
 });

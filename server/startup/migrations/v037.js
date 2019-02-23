@@ -1,15 +1,18 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Permissions } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 37,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Permissions) {
+		if (Permissions) {
 
 			// Find permission add-user (changed it to create-user)
-			const addUserPermission = RocketChat.models.Permissions.findOne('add-user');
+			const addUserPermission = Permissions.findOne('add-user');
 
 			if (addUserPermission) {
-				RocketChat.models.Permissions.upsert({ _id: 'create-user' }, { $set: { roles: addUserPermission.roles } });
-				RocketChat.models.Permissions.remove({ _id: 'add-user' });
+				Permissions.upsert({ _id: 'create-user' }, { $set: { roles: addUserPermission.roles } });
+				Permissions.remove({ _id: 'add-user' });
 			}
 		}
-	}
+	},
 });

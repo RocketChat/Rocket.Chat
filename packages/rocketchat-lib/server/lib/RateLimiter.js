@@ -1,7 +1,9 @@
-/* globals RateLimiter */
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-RocketChat.RateLimiter = new class {
+export const RateLimiterClass = new class {
 	limitFunction(fn, numRequests, timeInterval, matchers) {
 		if (process.env.TEST_MODE === 'true') {
 			return fn;
@@ -16,11 +18,11 @@ RocketChat.RateLimiter = new class {
 			rateLimiter.increment(match);
 			const rateLimitResult = rateLimiter.check(match);
 			if (rateLimitResult.allowed) {
-				return fn.apply(null, arguments);
+				return fn.apply(null, args);
 			} else {
 				throw new Meteor.Error('error-too-many-requests', `Error, too many requests. Please slow down. You must wait ${ Math.ceil(rateLimitResult.timeToReset / 1000) } seconds before trying again.`, {
 					timeToReset: rateLimitResult.timeToReset,
-					seconds: Math.ceil(rateLimitResult.timeToReset / 1000)
+					seconds: Math.ceil(rateLimitResult.timeToReset / 1000),
 				});
 			}
 		};
@@ -32,7 +34,7 @@ RocketChat.RateLimiter = new class {
 		}
 		const match = {
 			type: 'method',
-			name: methodName
+			name: methodName,
 		};
 		_.each(matchers, function(matcher, key) {
 			return match[key] = matchers[key];

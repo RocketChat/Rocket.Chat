@@ -1,14 +1,17 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Messages } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 26,
 	up() {
-		return RocketChat.models.Messages.update({
-			t: 'rm'
+		return Messages.update({
+			t: 'rm',
 		}, {
 			$set: {
-				mentions: []
-			}
+				mentions: [],
+			},
 		}, {
-			multi: true
+			multi: true,
 		});
-	}
+	},
 });

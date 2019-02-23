@@ -7,5 +7,5 @@ export {
 	AppMessagesConverter,
 	AppRoomsConverter,
 	AppSettingsConverter,
-	AppUsersConverter
+	AppUsersConverter,
 };

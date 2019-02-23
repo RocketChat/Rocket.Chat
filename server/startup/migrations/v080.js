@@ -1,25 +1,28 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Integrations } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 80,
 	up() {
 		const query = {
 			type: 'webhook-outgoing',
 			$or: [{
-				channel: []
+				channel: [],
 			}, {
-				channel: ''
+				channel: '',
 			}, {
 				channel: {
-					$exists: false
-				}
-			}]
+					$exists: false,
+				},
+			}],
 		};
 
 		const update = {
 			$set: {
-				channel: ['all_public_channels']
-			}
+				channel: ['all_public_channels'],
+			},
 		};
 
-		RocketChat.models.Integrations.update(query, update, {multi: true});
-	}
+		Integrations.update(query, update, { multi: true });
+	},
 });

@@ -1,34 +1,40 @@
-/* globals Recorder */
-this.AudioRecorder = new class {
+// TODO: embed Recorder class here
+// TODO: create the worker for mp3 encoding on-the-fly
+export const AudioRecorder = new (class AudioRecorder {
 	start(cb) {
-		window.AudioContext = window.AudioContext || window.webkitAudioContext;
+		window.audioContext = new (window.AudioContext || window.webkitAudioContext);
 
-		navigator.getUserMedia = navigator.getUserMedia ||
-			navigator.webkitGetUserMedia ||
-			navigator.mozGetUserMedia ||
-			navigator.msGetUserMedia;
-
-		window.URL = window.URL || window.webkitURL;
-		window.audioContext = new AudioContext;
-
-		const ok = stream => {
+		const handleSuccess = (stream) => {
 			this.startUserMedia(stream);
-			return (cb != null ? cb.call(this) : undefined);
+			cb && cb.call(this, true);
 		};
 
-		if ((navigator.getUserMedia == null)) {
-			return cb(false);
+		const handleError = (error) => {
+			console.error(error);
+			cb && cb.call(this, false);
+		};
+
+		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia ||
+			navigator.msGetUserMedia;
+
+		if (navigator.mediaDevices) {
+			navigator.mediaDevices.getUserMedia({ audio: true })
+				.then(handleSuccess, handleError);
+			return;
+		} else if (oldGetUserMedia) {
+			oldGetUserMedia.call(navigator, { audio: true }, handleSuccess, handleError);
+			return;
 		}
 
-		return navigator.getUserMedia({audio: true}, ok, e => console.log(`No live audio input: ${ e }`));
+		cb && cb.call(this, false);
 	}
 
 	startUserMedia(stream) {
 		this.stream = stream;
 		const input = window.audioContext.createMediaStreamSource(stream);
-		this.recorder = new Recorder(input, {
+		this.recorder = new window.Recorder(input, {
 			workerPath: 'mp3-realtime-worker.js',
-			numChannels: 1
+			numChannels: 1,
 		});
 		return this.recorder.record();
 	}
@@ -36,19 +42,14 @@ this.AudioRecorder = new class {
 	stop(cb) {
 		this.recorder.stop();
 
-		if (cb != null) {
-			this.getBlob(cb);
-		}
+		cb && this.recorder.exportMP3(cb);
 
 		this.stream.getAudioTracks()[0].stop();
 
 		window.audioContext.close();
+
 		delete window.audioContext;
 		delete this.recorder;
-		return delete this.stream;
+		delete this.stream;
 	}
-
-	getBlob(cb) {
-		return this.recorder.exportMP3(cb);
-	}
-};
+});

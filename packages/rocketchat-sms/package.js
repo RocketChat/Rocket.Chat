@@ -3,14 +3,13 @@ Package.describe({
 	version: '0.0.1',
 	summary: '',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('rocketchat:lib');
-
-	api.addFiles('settings.js', 'server');
-	api.addFiles('SMS.js', 'server');
-	api.addFiles('services/twilio.js', 'server');
+	api.use([
+		'ecmascript',
+		'rocketchat:settings',
+	]);
+	api.mainModule('server/index.js', 'server');
 });

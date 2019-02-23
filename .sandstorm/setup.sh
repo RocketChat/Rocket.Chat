@@ -8,7 +8,7 @@ apt-get install build-essential git -y
 cd /opt/
 
 NODE_ENV=production
-PACKAGE=meteor-spk-0.4.0
+PACKAGE=meteor-spk-0.4.1
 PACKAGE_FILENAME="$PACKAGE.tar.xz"
 CACHE_TARGET="/host-dot-sandstorm/caches/${PACKAGE_FILENAME}"
 
@@ -23,16 +23,30 @@ tar xf "$CACHE_TARGET"
 # Create symlink so we can rely on the path /opt/meteor-spk
 ln -s "${PACKAGE}" meteor-spk
 
+#This will install capnp, the Cap’n Proto command-line tool.
+#It will also install libcapnp, libcapnpc, and libkj in /usr/local/lib and headers in /usr/local/include/capnp and /usr/local/include/kj.
+curl -O https://capnproto.org/capnproto-c++-0.6.1.tar.gz
+tar zxf capnproto-c++-0.6.1.tar.gz
+cd capnproto-c++-0.6.1
+./configure
+make -j6 check
+sudo make install
+# inlcude libcapnp and libkj library to dependencies.
+cp .libs/* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+
 # Add bash, and its dependencies, so they get mapped into the image.
 # Bash runs the launcher script.
 cp -a /bin/bash /opt/meteor-spk/meteor-spk.deps/bin/
 cp -a /lib/x86_64-linux-gnu/libncurses.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
 cp -a /lib/x86_64-linux-gnu/libtinfo.so.* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+# for npm in package.json sharp.
+cp -a /lib/x86_64-linux-gnu/libresolv* /opt/meteor-spk/meteor-spk.deps/lib/x86_64-linux-gnu/
+
 
 # Unfortunately, Meteor does not explicitly make it easy to cache packages, but
 # we know experimentally that the package is mostly directly extractable to a
 # user's $HOME/.meteor directory.
-METEOR_RELEASE=1.6.0.1
+METEOR_RELEASE=1.6.1.1
 METEOR_PLATFORM=os.linux.x86_64
 METEOR_TARBALL_FILENAME="meteor-bootstrap-${METEOR_PLATFORM}.tar.gz"
 METEOR_TARBALL_URL="https://d3sqy0vbqsdhku.cloudfront.net/packages-bootstrap/${METEOR_RELEASE}/${METEOR_TARBALL_FILENAME}"

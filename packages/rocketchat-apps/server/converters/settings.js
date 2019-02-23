@@ -1,4 +1,5 @@
-import { SettingType } from '@rocket.chat/apps-ts-definition/settings';
+import { Settings } from 'meteor/rocketchat:models';
+import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 
 export class AppSettingsConverter {
 	constructor(orch) {
@@ -6,7 +7,7 @@ export class AppSettingsConverter {
 	}
 
 	convertById(settingId) {
-		const setting = RocketChat.models.Settings.findOneById(settingId);
+		const setting = Settings.findOneNotHiddenById(settingId);
 
 		return this.convertToApp(setting);
 	}
@@ -24,7 +25,7 @@ export class AppSettingsConverter {
 			i18nLabel: setting.i18nLabel,
 			i18nDescription: setting.i18nDescription,
 			createdAt: setting.ts,
-			updatedAt: setting._updatedAt
+			updatedAt: setting._updatedAt,
 		};
 	}
 

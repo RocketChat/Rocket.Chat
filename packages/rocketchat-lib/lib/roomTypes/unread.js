@@ -1,18 +1,18 @@
-import { RoomTypeConfig } from '../RoomTypeConfig';
+import { Meteor } from 'meteor/meteor';
+import { getUserPreference, RoomTypeConfig } from 'meteor/rocketchat:utils';
 
 export class UnreadRoomType extends RoomTypeConfig {
 	constructor() {
 		super({
 			identifier: 'unread',
 			order: 10,
-			label: 'Unread'
+			label: 'Unread',
 		});
 
 		this.unread = true;
 	}
 
 	condition() {
-		const user = Meteor.user();
-		return RocketChat.getUserPreference(user, 'sidebarShowUnread');
+		return getUserPreference(Meteor.userId(), 'sidebarShowUnread');
 	}
 }

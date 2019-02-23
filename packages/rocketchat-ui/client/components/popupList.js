@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+
 Template.popupList.helpers({
 	config() {
 		return {
@@ -7,14 +10,14 @@ Template.popupList.helpers({
 				template_item :this.data.template_item || 'popupList_item_default',
 				items: this.items,
 				onClick: this.data.onClick || function() {},
-				modifier: this.data.modifier || function(text) { return text; }
-			}
+				modifier: this.data.modifier || function(text) { return text; },
+			},
 		};
 	},
 	open() {
 		const instance = Template.instance();
 		return instance.data.items.length > 0;
-	}
+	},
 });
 
 Template.popupList_default.helpers({
@@ -24,8 +27,14 @@ Template.popupList_default.helpers({
 			data: {
 				item,
 				onClick: this.onClick,
-				modifier: this.modifier
-			}
+				modifier: this.modifier,
+			},
 		};
-	}
+	},
+});
+
+Template.popupList_item_default.helpers({
+	showRealNames() {
+		return settings.get('UI_Use_Real_Name');
+	},
 });

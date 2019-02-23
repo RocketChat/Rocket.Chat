@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
+import { Rooms, Messages, Users, SmarshHistory } from 'meteor/rocketchat:models';
+import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { smarsh } from '../lib/rocketchat';
 import _ from 'underscore';
 import moment from 'moment';
 import 'moment-timezone';
@@ -20,13 +26,13 @@ function _getLink(attachment) {
 	}
 }
 
-RocketChat.smarsh.generateEml = () => {
+smarsh.generateEml = () => {
 	Meteor.defer(() => {
-		const smarshMissingEmail = RocketChat.settings.get('Smarsh_MissingEmail_Email');
-		const timeZone = RocketChat.settings.get('Smarsh_Timezone');
+		const smarshMissingEmail = settings.get('Smarsh_MissingEmail_Email');
+		const timeZone = settings.get('Smarsh_Timezone');
 
-		RocketChat.models.Rooms.find().forEach((room) => {
-			const smarshHistory = RocketChat.smarsh.History.findOne({ _id: room._id });
+		Rooms.find().forEach((room) => {
+			const smarshHistory = SmarshHistory.findOne({ _id: room._id });
 			const query = { rid: room._id };
 
 			if (smarshHistory) {
@@ -40,25 +46,25 @@ RocketChat.smarsh.generateEml = () => {
 				msgs: 0,
 				files: [],
 				time: smarshHistory ? moment(date).diff(moment(smarshHistory.lastRan), 'minutes') : moment(date).diff(moment(room.ts), 'minutes'),
-				room: room.name ? `#${ room.name }` : `Direct Message Between: ${ room.usernames.join(' & ') }`
+				room: room.name ? `#${ room.name }` : `Direct Message Between: ${ room.usernames.join(' & ') }`,
 			};
 
-			RocketChat.models.Messages.find(query).forEach((message) => {
+			Messages.find(query).forEach((message) => {
 				rows.push(opentr);
 
-				//The timestamp
+				// The timestamp
 				rows.push(open20td);
 				rows.push(moment(message.ts).tz(timeZone).format('YYYY-MM-DD HH-mm-ss z'));
 				rows.push(closetd);
 
-				//The sender
+				// The sender
 				rows.push(open20td);
-				const sender = RocketChat.models.Users.findOne({ _id: message.u._id });
+				const sender = Users.findOne({ _id: message.u._id });
 				if (data.users.indexOf(sender._id) === -1) {
 					data.users.push(sender._id);
 				}
 
-				//Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
+				// Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
 				if (sender.emails && sender.emails[0] && sender.emails[0].address) {
 					rows.push(`${ sender.name } &lt;${ sender.emails[0].address }&gt;`);
 				} else {
@@ -66,11 +72,11 @@ RocketChat.smarsh.generateEml = () => {
 				}
 				rows.push(closetd);
 
-				//The message
+				// The message
 				rows.push(open60td);
 				data.msgs++;
 				if (message.t) {
-					const messageType = RocketChat.MessageTypes.getType(message);
+					const messageType = MessageTypes.getType(message);
 					if (messageType) {
 						rows.push(TAPi18n.__(messageType.message, messageType.data ? messageType.data(message) : '', 'en'));
 					} else {
@@ -85,7 +91,7 @@ RocketChat.smarsh.generateEml = () => {
 						if (a.image_url) {
 							attaches.push(a.image_url);
 						}
-						//TODO: Verify other type of attachments which need to be handled that aren't file uploads and image urls
+						// TODO: Verify other type of attachments which need to be handled that aren't file uploads and image urls
 						// } else {
 						// 	console.log(a);
 						// }
@@ -103,16 +109,16 @@ RocketChat.smarsh.generateEml = () => {
 			if (rows.length !== 0) {
 				const result = start + rows.join('') + end;
 
-				RocketChat.smarsh.History.upsert({ _id: room._id }, {
+				SmarshHistory.upsert({ _id: room._id }, {
 					_id: room._id,
 					lastRan: date,
-					lastResult: result
+					lastResult: result,
 				});
 
-				RocketChat.smarsh.sendEmail({
+				smarsh.sendEmail({
 					body: result,
 					subject: `Rocket.Chat, ${ data.users.length } Users, ${ data.msgs } Messages, ${ data.files.length } Files, ${ data.time } Minutes, in ${ data.room }`,
-					files: data.files
+					files: data.files,
 				});
 			}
 		});

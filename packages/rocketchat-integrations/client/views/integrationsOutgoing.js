@@ -1,5 +1,14 @@
-/* global ChatIntegrations */
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { hasAllPermission, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { ChatIntegrations } from '../collections';
+import { integrations } from '../../lib/rocketchat';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
 
@@ -10,7 +19,7 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 		retryFailedCalls: true,
 		retryCount: 6,
 		retryDelay: 'powers-of-ten',
-		runOnEdits: true
+		runOnEdits: true,
 	});
 
 	this.updateRecord = () => {
@@ -21,7 +30,7 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			alias: $('[name=alias]').val().trim(),
 			emoji: $('[name=emoji]').val().trim(),
 			avatar: $('[name=avatar]').val().trim(),
-			channel: $('[name=channel]').val()? $('[name=channel]').val().trim() : undefined,
+			channel: $('[name=channel]').val() ? $('[name=channel]').val().trim() : undefined,
 			username: $('[name=username]').val().trim(),
 			triggerWords: $('[name=triggerWords]').val() ? $('[name=triggerWords]').val().trim() : undefined,
 			urls: $('[name=urls]').val().trim(),
@@ -33,7 +42,7 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			retryFailedCalls: $('[name=retryFailedCalls]:checked').val().trim() === '1',
 			retryCount: $('[name=retryCount]').val() ? $('[name=retryCount]').val().trim() : 6,
 			retryDelay: $('[name=retryDelay]').val() ? $('[name=retryDelay]').val().trim() : 'powers-of-ten',
-			runOnEdits: $('[name=runOnEdits]:checked').val().trim() === '1'
+			runOnEdits: $('[name=runOnEdits]:checked').val().trim() === '1',
 		});
 	};
 
@@ -45,9 +54,9 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			if (sub.ready()) {
 				let intRecord;
 
-				if (RocketChat.authz.hasAllPermission('manage-integrations')) {
+				if (hasAllPermission('manage-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id });
-				} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
+				} else if (hasAllPermission('manage-own-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
 				}
 
@@ -76,7 +85,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	hasPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
 	},
 
 	data() {
@@ -88,7 +97,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	eventTypes() {
-		return Object.values(RocketChat.integrations.outgoingEvents);
+		return Object.values(integrations.outgoingEvents);
 	},
 
 	hasTypeSelected() {
@@ -100,19 +109,19 @@ Template.integrationsOutgoing.helpers({
 	shouldDisplayChannel() {
 		const record = Template.instance().record.get();
 
-		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.channel;
+		return typeof record.event === 'string' && integrations.outgoingEvents[record.event].use.channel;
 	},
 
 	shouldDisplayTriggerWords() {
 		const record = Template.instance().record.get();
 
-		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.triggerWords;
+		return typeof record.event === 'string' && integrations.outgoingEvents[record.event].use.triggerWords;
 	},
 
 	shouldDisplayTargetRoom() {
 		const record = Template.instance().record.get();
 
-		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.targetRoom;
+		return typeof record.event === 'string' && integrations.outgoingEvents[record.event].use.targetRoom;
 	},
 
 	example() {
@@ -125,21 +134,21 @@ Template.integrationsOutgoing.helpers({
 			avatar: record.avatar,
 			msg: 'Response text',
 			bot: {
-				i: Random.id()
+				i: Random.id(),
 			},
 			groupable: false,
 			attachments: [{
 				title: 'Rocket.Chat',
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
-				image_url: 'https://rocket.chat/images/mockup.png',
-				color: '#764FA5'
+				image_url: '/images/integration-attachment-example.png',
+				color: '#764FA5',
 			}],
 			ts: new Date(),
 			u: {
 				_id: Random.id(),
-				username: record.username
-			}
+				username: record.username,
+			},
 		};
 	},
 
@@ -154,9 +163,9 @@ Template.integrationsOutgoing.helpers({
 				title: 'Rocket.Chat',
 				title_link: 'https://rocket.chat',
 				text: 'Rocket.Chat, the best open source chat',
-				image_url: 'https://rocket.chat/images/mockup.png',
-				color: '#764FA5'
-			}]
+				image_url: '/images/integration-attachment-example.png',
+				color: '#764FA5',
+			}],
 		};
 
 		const invalidData = [null, ''];
@@ -176,7 +185,7 @@ Template.integrationsOutgoing.helpers({
 			gutters: [
 				// "CodeMirror-lint-markers",
 				'CodeMirror-linenumbers',
-				'CodeMirror-foldgutter'
+				'CodeMirror-foldgutter',
 			],
 			// lint: true,
 			foldGutter: true,
@@ -185,9 +194,9 @@ Template.integrationsOutgoing.helpers({
 			autoCloseBrackets: true,
 			matchTags: true,
 			showTrailingSpace: true,
-			highlightSelectionMatches: true
+			highlightSelectionMatches: true,
 		};
-	}
+	},
 });
 
 Template.integrationsOutgoing.events({
@@ -233,7 +242,7 @@ Template.integrationsOutgoing.events({
 			confirmButtonText: t('Yes_delete_it'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, () => {
 			Meteor.call('deleteOutgoingIntegration', params.id, (err) => {
 				if (err) {
@@ -244,7 +253,7 @@ Template.integrationsOutgoing.events({
 						text: t('Your_entry_has_been_deleted'),
 						type: 'success',
 						timer: 1000,
-						showConfirmButton: false
+						showConfirmButton: false,
 					});
 
 					FlowRouter.go('admin-integrations');
@@ -290,7 +299,7 @@ Template.integrationsOutgoing.events({
 		let triggerWords;
 		let triggerWordAnywhere;
 		let runOnEdits;
-		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
+		if (integrations.outgoingEvents[event].use.triggerWords) {
 			triggerWords = $('[name=triggerWords]').val().trim();
 			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
 
@@ -299,7 +308,7 @@ Template.integrationsOutgoing.events({
 		}
 
 		let channel;
-		if (RocketChat.integrations.outgoingEvents[event].use.channel) {
+		if (integrations.outgoingEvents[event].use.channel) {
 			channel = $('[name=channel]').val().trim();
 
 			if (!channel || channel.trim() === '') {
@@ -308,7 +317,7 @@ Template.integrationsOutgoing.events({
 		}
 
 		let targetRoom;
-		if (RocketChat.integrations.outgoingEvents[event].use.targetRoom) {
+		if (integrations.outgoingEvents[event].use.targetRoom) {
 			targetRoom = $('[name=targetRoom]').val().trim();
 
 			if (!targetRoom || targetRoom.trim() === '') {
@@ -343,10 +352,10 @@ Template.integrationsOutgoing.events({
 			retryCount: retryCount ? retryCount : 6,
 			retryDelay: retryDelay ? retryDelay : 'powers-of-ten',
 			triggerWordAnywhere: triggerWordAnywhere === '1',
-			runOnEdits: runOnEdits === '1'
+			runOnEdits: runOnEdits === '1',
 		};
 
-		const params = Template.instance().data.params? Template.instance().data.params() : undefined;
+		const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
 		if (params && params.id) {
 			Meteor.call('updateOutgoingIntegration', params.id, integration, (err) => {
 				if (err) {
@@ -365,5 +374,5 @@ Template.integrationsOutgoing.events({
 				FlowRouter.go('admin-integrations-outgoing', { id: data._id });
 			});
 		}
-	}
+	},
 });

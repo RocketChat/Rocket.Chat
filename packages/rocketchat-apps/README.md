@@ -8,4 +8,4 @@ An orchestrator is the file/class which is responsible for orchestrating (starti
 A bridge is a file/class which is responsible for bridging the Rocket.Chat system's data and the App system's data. They are implementations of the interfaces inside of the Rocket.Chat Apps-engine project `src/server/bridges`. They allow the two systems to talk to each other (hince the name bridge, as they "bridge the gap").
 
 ## What is a "Converter"?
-A converter does what the name implies, it handles converting from one system's data type into the other's.
+A converter does what the name implies, it handles converting from one system's data type into the other's. **Note**: This causes a schema to be forced on the rooms and messages.

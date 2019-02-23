@@ -1,15 +1,16 @@
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'livechat:loginByToken'(token) {
-		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
 
-		if (!user) {
+		if (!visitor) {
 			return;
 		}
 
 		return {
-			_id: user._id
+			_id: visitor._id,
 		};
-	}
+	},
 });

@@ -1,7 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+
 Meteor.startup(function() {
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'jitsi_call_started',
 		system: true,
-		message: TAPi18n.__('Started_a_video_call')
+		message: TAPi18n.__('Started_a_video_call'),
 	});
 });

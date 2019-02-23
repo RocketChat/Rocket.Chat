@@ -1,17 +1,21 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { settings } from 'meteor/rocketchat:settings';
+
 let userAgent = 'Meteor';
 if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
 
-RocketChat.getPublicTokenpassBalances = function(accessToken) {
+export const getPublicTokenpassBalances = function(accessToken) {
 	try {
 		return HTTP.get(
-			`${ RocketChat.settings.get('API_Tokenpass_URL') }/api/v1/tca/public/balances`, {
+			`${ settings.get('API_Tokenpass_URL') }/api/v1/tca/public/balances`, {
 				headers: {
 					Accept: 'application/json',
-					'User-Agent': userAgent
+					'User-Agent': userAgent,
 				},
 				params: {
-					oauth_token: accessToken
-				}
+					oauth_token: accessToken,
+				},
 			}).data;
 	} catch (error) {
 		throw new Error(`Failed to fetch public tokenpass balances from Tokenpass. ${ error.message }`);

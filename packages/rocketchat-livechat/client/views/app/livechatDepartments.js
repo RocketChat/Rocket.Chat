@@ -1,11 +1,18 @@
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { LivechatDepartment } from '../../collections/LivechatDepartment';
+
 Template.livechatDepartments.helpers({
 	departments() {
 		return LivechatDepartment.find();
-	}
+	},
 });
 
 Template.livechatDepartments.events({
-	'click .remove-department'(e/*, instance*/) {
+	'click .remove-department'(e/* , instance*/) {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -17,9 +24,9 @@ Template.livechatDepartments.events({
 			confirmButtonText: t('Yes'),
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
-			html: false
+			html: false,
 		}, () => {
-			Meteor.call('livechat:removeDepartment', this._id, function(error/*, result*/) {
+			Meteor.call('livechat:removeDepartment', this._id, function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -28,16 +35,16 @@ Template.livechatDepartments.events({
 					text: t('Department_removed'),
 					type: 'success',
 					timer: 1000,
-					showConfirmButton: false
+					showConfirmButton: false,
 				});
 			});
 		});
 	},
 
-	'click .department-info'(e/*, instance*/) {
+	'click .department-info'(e/* , instance*/) {
 		e.preventDefault();
 		FlowRouter.go('livechat-department-edit', { _id: this._id });
-	}
+	},
 });
 
 Template.livechatDepartments.onCreated(function() {

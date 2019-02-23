@@ -1,12 +1,14 @@
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from 'meteor/rocketchat:settings';
 import OmniChannel from '../lib/OmniChannel';
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
 	}
 
-	if (!RocketChat.settings.get('Livechat_Facebook_Enabled') || !RocketChat.settings.get('Livechat_Facebook_API_Key')) {
+	if (!settings.get('Livechat_Facebook_Enabled') || !settings.get('Livechat_Facebook_API_Key')) {
 		return message;
 	}
 
@@ -28,9 +30,9 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	OmniChannel.reply({
 		page: room.facebook.page.id,
 		token: room.v.token,
-		text: message.msg
+		text: message.msg,
 	});
 
 	return message;
 
-}, RocketChat.callbacks.priority.LOW, 'sendMessageToFacebook');
+}, callbacks.priority.LOW, 'sendMessageToFacebook');

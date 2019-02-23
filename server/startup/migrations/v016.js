@@ -1,8 +1,11 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Messages } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 16,
 	up() {
-		return RocketChat.models.Messages.tryDropIndex({
-			_hidden: 1
+		return Messages.tryDropIndex({
+			_hidden: 1,
 		});
-	}
+	},
 });

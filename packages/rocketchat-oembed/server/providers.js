@@ -1,4 +1,5 @@
-/*globals changeCase */
+import { changeCase } from 'meteor/konecty:change-case';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';
@@ -10,7 +11,7 @@ class Providers {
 
 	static getConsumerUrl(provider, url) {
 		const urlObj = URL.parse(provider.endPoint, true);
-		urlObj.query['url'] = url;
+		urlObj.query.url = url;
 		delete urlObj.search;
 		return URL.format(urlObj);
 	}
@@ -37,39 +38,39 @@ const providers = new Providers();
 
 providers.registerProvider({
 	urls: [new RegExp('https?://soundcloud.com/\\S+')],
-	endPoint: 'https://soundcloud.com/oembed?format=json&maxheight=150'
+	endPoint: 'https://soundcloud.com/oembed?format=json&maxheight=150',
 });
 
 providers.registerProvider({
 	urls: [new RegExp('https?://vimeo.com/[^/]+'), new RegExp('https?://vimeo.com/channels/[^/]+/[^/]+'), new RegExp('https://vimeo.com/groups/[^/]+/videos/[^/]+')],
-	endPoint: 'https://vimeo.com/api/oembed.json?maxheight=200'
+	endPoint: 'https://vimeo.com/api/oembed.json?maxheight=200',
 });
 
 providers.registerProvider({
 	urls: [new RegExp('https?://www.youtube.com/\\S+'), new RegExp('https?://youtu.be/\\S+')],
-	endPoint: 'https://www.youtube.com/oembed?maxheight=200'
+	endPoint: 'https://www.youtube.com/oembed?maxheight=200',
 });
 
 providers.registerProvider({
 	urls: [new RegExp('https?://www.rdio.com/\\S+'), new RegExp('https?://rd.io/\\S+')],
-	endPoint: 'https://www.rdio.com/api/oembed/?format=json&maxheight=150'
+	endPoint: 'https://www.rdio.com/api/oembed/?format=json&maxheight=150',
 });
 
 providers.registerProvider({
 	urls: [new RegExp('https?://www.slideshare.net/[^/]+/[^/]+')],
-	endPoint: 'https://www.slideshare.net/api/oembed/2?format=json&maxheight=200'
+	endPoint: 'https://www.slideshare.net/api/oembed/2?format=json&maxheight=200',
 });
 
 providers.registerProvider({
 	urls: [new RegExp('https?://www.dailymotion.com/video/\\S+')],
-	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200'
+	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200',
 });
 
-RocketChat.oembed = {};
+export const oembed = {};
 
-RocketChat.oembed.providers = providers;
+oembed.providers = providers;
 
-RocketChat.callbacks.add('oembed:beforeGetUrlContent', function(data) {
+callbacks.add('oembed:beforeGetUrlContent', function(data) {
 	if (data.parsedUrl != null) {
 		const url = URL.format(data.parsedUrl);
 		const provider = providers.getProviderForUrl(url);
@@ -86,16 +87,16 @@ RocketChat.callbacks.add('oembed:beforeGetUrlContent', function(data) {
 		}
 	}
 	return data;
-}, RocketChat.callbacks.priority.MEDIUM, 'oembed-providers-before');
+}, callbacks.priority.MEDIUM, 'oembed-providers-before');
 
-RocketChat.callbacks.add('oembed:afterParseContent', function(data) {
+callbacks.add('oembed:afterParseContent', function(data) {
 	if (data.parsedUrl && data.parsedUrl.query) {
 		let queryString = data.parsedUrl.query;
 		if (_.isString(data.parsedUrl.query)) {
 			queryString = QueryString.parse(data.parsedUrl.query);
 		}
 		if (queryString.url != null) {
-			const url = queryString.url;
+			const { url } = queryString;
 			const provider = providers.getProviderForUrl(url);
 			if (provider != null) {
 				if (data.content && data.content.body) {
@@ -106,7 +107,7 @@ RocketChat.callbacks.add('oembed:afterParseContent', function(data) {
 								return data.meta[changeCase.camelCase(`oembed_${ key }`)] = value;
 							}
 						});
-						data.meta['oembedUrl'] = url;
+						data.meta.oembedUrl = url;
 					} catch (error) {
 						console.log(error);
 					}
@@ -115,4 +116,4 @@ RocketChat.callbacks.add('oembed:afterParseContent', function(data) {
 		}
 	}
 	return data;
-}, RocketChat.callbacks.priority.MEDIUM, 'oembed-providers-after');
+}, callbacks.priority.MEDIUM, 'oembed-providers-after');

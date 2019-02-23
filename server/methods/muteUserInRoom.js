@@ -1,58 +1,64 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Rooms, Subscriptions, Users, Messages } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+
 Meteor.methods({
 	muteUserInRoom(data) {
 		check(data, Match.ObjectIncluding({
 			rid: String,
-			username: String
+			username: String,
 		}));
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'muteUserInRoom'
+				method: 'muteUserInRoom',
 			});
 		}
 
 		const fromId = Meteor.userId();
 
-		if (!RocketChat.authz.hasPermission(fromId, 'mute-user', data.rid)) {
+		if (!hasPermission(fromId, 'mute-user', data.rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'muteUserInRoom'
+				method: 'muteUserInRoom',
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(data.rid);
+		const room = Rooms.findOneById(data.rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'muteUserInRoom'
+				method: 'muteUserInRoom',
 			});
 		}
 
 		if (['c', 'p'].includes(room.t) === false) {
 			throw new Meteor.Error('error-invalid-room-type', `${ room.t } is not a valid room type`, {
 				method: 'muteUserInRoom',
-				type: room.t
+				type: room.t,
 			});
 		}
 
-		if (Array.isArray(room.usernames) === false || room.usernames.includes(data.username) === false) {
+		const subscription = Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, { fields: { _id: 1 } });
+		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'muteUserInRoom'
+				method: 'muteUserInRoom',
 			});
 		}
 
-		const mutedUser = RocketChat.models.Users.findOneByUsername(data.username);
+		const mutedUser = Users.findOneByUsername(data.username);
 
-		RocketChat.models.Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
+		Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
 
-		const fromUser = RocketChat.models.Users.findOneById(fromId);
+		const fromUser = Users.findOneById(fromId);
 
-		RocketChat.models.Messages.createUserMutedWithRoomIdAndUser(data.rid, mutedUser, {
+		Messages.createUserMutedWithRoomIdAndUser(data.rid, mutedUser, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
-			}
+				username: fromUser.username,
+			},
 		});
 
 		return true;
-	}
+	},
 });

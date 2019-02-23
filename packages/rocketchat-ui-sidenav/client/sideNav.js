@@ -1,4 +1,12 @@
-/* globals menu*/
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { SideNav, menu } from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
+import { Users } from 'meteor/rocketchat:models';
 
 Template.sideNav.helpers({
 	flexTemplate() {
@@ -10,21 +18,19 @@ Template.sideNav.helpers({
 	},
 
 	footer() {
-		return RocketChat.settings.get('Layout_Sidenav_Footer');
+		return String(settings.get('Layout_Sidenav_Footer')).trim();
 	},
 
 	roomType() {
-		return RocketChat.roomTypes.getTypes().map((roomType) => {
-			return {
-				template: roomType.customTemplate || 'roomList',
-				data: {
-					header: roomType.header,
-					identifier: roomType.identifier,
-					isCombined: roomType.isCombined,
-					label: roomType.label
-				}
-			};
-		});
+		return roomTypes.getTypes().map((roomType) => ({
+			template: roomType.customTemplate || 'roomList',
+			data: {
+				header: roomType.header,
+				identifier: roomType.identifier,
+				isCombined: roomType.isCombined,
+				label: roomType.label,
+			},
+		}));
 	},
 
 	loggedInUser() {
@@ -32,13 +38,13 @@ Template.sideNav.helpers({
 	},
 
 	sidebarViewMode() {
-		const viewMode = RocketChat.getUserPreference(Meteor.user(), 'sidebarViewMode');
+		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
 		return viewMode ? viewMode : 'condensed';
 	},
 
 	sidebarHideAvatar() {
-		return RocketChat.getUserPreference(Meteor.user(), 'sidebarHideAvatar');
-	}
+		return getUserPreference(Meteor.userId(), 'sidebarHideAvatar');
+	},
 });
 
 Template.sideNav.events({
@@ -51,20 +57,35 @@ Template.sideNav.events({
 	},
 
 	'scroll .rooms-list'() {
+		lazyloadtick();
 		return menu.updateUnreadBars();
 	},
 
 	'dropped .sidebar'(e) {
 		return e.preventDefault();
-	}
+	},
+
+	'mouseenter .sidebar-item__link'(e) {
+		const element = e.currentTarget;
+		setTimeout(() => {
+			const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
+			const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
+
+			if (isTextEllipsed) {
+				element.setAttribute('title', element.getAttribute('aria-label'));
+			} else {
+				element.removeAttribute('title');
+			}
+		}, 0);
+	},
 });
 
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-
-	const first_channel_login = RocketChat.settings.get('First_Channel_After_Login');
-	const room = RocketChat.roomTypes.findRoom('c', first_channel_login, Meteor.userId());
+	lazyloadtick();
+	const first_channel_login = settings.get('First_Channel_After_Login');
+	const room = roomTypes.findRoom('c', first_channel_login, Meteor.userId());
 	if (room !== undefined && room._id !== '') {
 		FlowRouter.go(`/channel/${ first_channel_login }`);
 	}
@@ -73,16 +94,15 @@ Template.sideNav.onRendered(function() {
 });
 
 Template.sideNav.onCreated(function() {
-	this.mergedChannels = new ReactiveVar(false);
+	this.groupedByType = new ReactiveVar(false);
 
 	this.autorun(() => {
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+		const user = Users.findOne(Meteor.userId(), {
 			fields: {
-				'settings.preferences.roomsListExhibitionMode': 1,
-				'settings.preferences.mergeChannels': 1
-			}
+				'settings.preferences.sidebarGroupByType': 1,
+			},
 		});
-		const userPref = RocketChat.getUserPreference(user, 'roomsListExhibitionMode') === 'category' && RocketChat.getUserPreference(user, 'mergeChannels');
-		this.mergedChannels.set(userPref ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
+		const userPref = getUserPreference(user, 'sidebarGroupByType');
+		this.groupedByType.set(userPref ? userPref : settings.get('UI_Group_Channels_By_Type'));
 	});
 });

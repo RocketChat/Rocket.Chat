@@ -1,32 +1,37 @@
+import { Meteor } from 'meteor/meteor';
+import { Roles } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { hasPermission } from '../functions/hasPermission';
 import _ from 'underscore';
 
 Meteor.methods({
 	'authorization:removeUserFromRole'(roleName, username, scope) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'access-permissions')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
 				method: 'authorization:removeUserFromRole',
-				action: 'Accessing_permissions'
+				action: 'Accessing_permissions',
 			});
 		}
 
 		if (!roleName || !_.isString(roleName) || !username || !_.isString(username)) {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
-				method: 'authorization:removeUserFromRole'
+				method: 'authorization:removeUserFromRole',
 			});
 		}
 
 		const user = Meteor.users.findOne({
-			username
+			username,
 		}, {
 			fields: {
 				_id: 1,
-				roles: 1
-			}
+				roles: 1,
+			},
 		});
 
 		if (!user || !user._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'authorization:removeUserFromRole'
+				method: 'authorization:removeUserFromRole',
 			});
 		}
 
@@ -34,32 +39,32 @@ Meteor.methods({
 		if (roleName === 'admin') {
 			const adminCount = Meteor.users.find({
 				roles: {
-					$in: ['admin']
-				}
+					$in: ['admin'],
+				},
 			}).count();
 
 			const userIsAdmin = user.roles.indexOf('admin') > -1;
 			if (adminCount === 1 && userIsAdmin) {
 				throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
 					method: 'removeUserFromRole',
-					action: 'Remove_last_admin'
+					action: 'Remove_last_admin',
 				});
 			}
 		}
 
-		const remove = RocketChat.models.Roles.removeUserRoles(user._id, roleName, scope);
-		if (RocketChat.settings.get('UI_DisplayRoles')) {
-			RocketChat.Notifications.notifyLogged('roles-change', {
+		const remove = Roles.removeUserRoles(user._id, roleName, scope);
+		if (settings.get('UI_DisplayRoles')) {
+			Notifications.notifyLogged('roles-change', {
 				type: 'removed',
 				_id: roleName,
 				u: {
 					_id: user._id,
-					username
+					username,
 				},
-				scope
+				scope,
 			});
 		}
 
 		return remove;
-	}
+	},
 });

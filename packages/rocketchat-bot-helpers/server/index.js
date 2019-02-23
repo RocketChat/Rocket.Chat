@@ -1,3 +1,8 @@
+import './settings';
+import { Meteor } from 'meteor/meteor';
+import { Users, Rooms } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 
 /**
@@ -8,8 +13,8 @@ import _ from 'underscore';
 class BotHelpers {
 	constructor() {
 		this.queries = {
-			online: { 'status': { $ne: 'offline' } },
-			users: { 'roles': { $not: { $all: ['bot'] } } }
+			online: { status: { $ne: 'offline' } },
+			users: { roles: { $not: { $all: ['bot'] } } },
 		};
 	}
 
@@ -22,8 +27,8 @@ class BotHelpers {
 		fieldsSetting.forEach((n) => {
 			this.userFields[n.trim()] = 1;
 		});
-		this._allUsers = RocketChat.models.Users.find(this.queries.users, { fields: this.userFields });
-		this._onlineUsers = RocketChat.models.Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
+		this._allUsers = Users.find(this.queries.users, { fields: this.userFields });
+		this._onlineUsers = Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
 	}
 
 	// request methods or props as arguments to Meteor.call
@@ -46,7 +51,7 @@ class BotHelpers {
 	}
 
 	addUserToRoom(userName, room) {
-		const foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
+		const foundRoom = Rooms.findOneByIdOrName(room);
 
 		if (!_.isObject(foundRoom)) {
 			throw new Meteor.Error('invalid-channel');
@@ -59,7 +64,7 @@ class BotHelpers {
 	}
 
 	removeUserFromRoom(userName, room) {
-		const foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
+		const foundRoom = Rooms.findOneByIdOrName(room);
 
 		if (!_.isObject(foundRoom)) {
 			throw new Meteor.Error('invalid-channel');
@@ -130,9 +135,7 @@ class BotHelpers {
 			this.requestError();
 			return false;
 		} else {
-			return this._allUsers.fetch().map((user) => {
-				return { 'id': user._id, 'name': user.username };
-			});
+			return this._allUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 		}
 	}
 	get onlineIDs() {
@@ -140,9 +143,7 @@ class BotHelpers {
 			this.requestError();
 			return false;
 		} else {
-			return this._onlineUsers.fetch().map((user) => {
-				return { 'id': user._id, 'name': user.username };
-			});
+			return this._onlineUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 		}
 	}
 }
@@ -151,17 +152,17 @@ class BotHelpers {
 const botHelpers = new BotHelpers();
 
 // init cursors with fields setting and update on setting change
-RocketChat.settings.get('BotHelpers_userFields', function(settingKey, settingValue) {
+settings.get('BotHelpers_userFields', function(settingKey, settingValue) {
 	botHelpers.setupCursors(settingValue);
 });
 
 Meteor.methods({
 	botRequest: (...args) => {
 		const userID = Meteor.userId();
-		if (userID && RocketChat.authz.hasRole(userID, 'bot')) {
+		if (userID && hasRole(userID, 'bot')) {
 			return botHelpers.request(...args);
 		} else {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
 		}
-	}
+	},
 });

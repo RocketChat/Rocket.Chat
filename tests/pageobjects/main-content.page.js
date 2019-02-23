@@ -9,7 +9,7 @@ class MainContent extends Page {
 	get favoriteStar() { return browser.element('.rc-header__toggle-favorite.favorite-room'); }
 	get channelTitle() { return browser.element('.rc-header__name'); }
 
-	//Main Content Footer (Message Input Area)
+	// Main Content Footer (Message Input Area)
 	get messageInput() { return browser.element('.js-input-message'); }
 	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
@@ -91,7 +91,7 @@ class MainContent extends Page {
 		this.messageInput.addValue(text);
 	}
 
-	//uploads a file in the given filepath (url).
+	// uploads a file in the given filepath (url).
 	fileUpload(filePath) {
 		this.sendMessage('Prepare for the file');
 		this.fileAttachment.chooseFile(filePath);

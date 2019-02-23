@@ -1,13 +1,29 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Rooms, Messages, LivechatVisitors } from 'meteor/rocketchat:models';
+import { Livechat } from '../lib/Livechat';
+
 Meteor.methods({
-	'livechat:setDepartmentForVisitor'({ token, department } = {}) {
-		RocketChat.Livechat.setDepartmentForGuest.call(this, {
-			token,
-			department
-		});
+	'livechat:setDepartmentForVisitor'({ roomId, visitorToken, departmentId } = {}) {
+		check(roomId, String);
+		check(visitorToken, String);
+		check(departmentId, String);
+
+		const room = Rooms.findOneById(roomId);
+		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
+
+		if (!room || room.t !== 'l' || !room.v || room.v.token !== visitor.token) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
 
 		// update visited page history to not expire
-		RocketChat.models.LivechatPageVisited.keepHistoryForToken(token);
+		Messages.keepHistoryForToken(visitorToken);
 
-		return true;
-	}
+		const transferData = {
+			roomId,
+			departmentId,
+		};
+
+		return Livechat.transfer(room, visitor, transferData);
+	},
 });

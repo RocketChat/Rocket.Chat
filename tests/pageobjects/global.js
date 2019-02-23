@@ -22,7 +22,7 @@ class Global {
 	setWindowSize(width, height) {
 		browser.windowHandleSize({
 			width,
-			height
+			height,
 		});
 	}
 

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+curl -SLf "https://releases.rocket.chat/#{RC_VERSION}/download/" -o rocket.chat.tgz
+
+tar xf rocket.chat.tgz --strip 1
+
+cd programs/server
+rm -rf npm/node_modules/meteor/emojione_emojione/node_modules/grunt-contrib-qunit
+
+if [[ $(uname -m) == *armv6l* ]] || [[ $(uname -m) == *armv7l* ]]
+then
+  rm -rf npm/node_modules/sharp/vendor
+fi
+
+export NODE_ENV=production
+npm i
+
+# Ideally this will go away.  For some reason on install its installing node-v57-linux-x64-glibc but when actually running it is looking for node-v57-linux-x64-unknown
+if [[ $(uname -m) == "x86_64" ]]
+then
+  cp -r npm/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-glibc npm/node_modules/grpc/src/node/extension_binary/node-v57-linux-x64-unknown
+  rm npm/node_modules/grpc/node_modules/tar/lib/.unpack.js.swp
+fi
+
+# sharp needs execution stack removed - https://forum.snapcraft.io/t/snap-and-executable-stacks/1812
+ls -l npm/node_modules/sharp/vendor
+execstack --clear-execstack npm/node_modules/sharp/vendor/lib/librsvg-2.so*
+
+# Having to manually remove because of latest warning
+rm -rf npm/node_modules/meteor/konecty_user-presence/node_modules/colors/lib/.colors.js.swp

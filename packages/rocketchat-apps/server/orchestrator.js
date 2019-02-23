@@ -1,14 +1,18 @@
+import { Meteor } from 'meteor/meteor';
+import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel, AppRealStorage, AppRealLogsStorage } from './storage';
-
+import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+
+export let Apps;
 
 class AppServerOrchestrator {
 	constructor() {
-		if (RocketChat.models && RocketChat.models.Permissions) {
-			RocketChat.models.Permissions.createOrUpdate('manage-apps', ['admin']);
+		if (Permissions) {
+			Permissions.createOrUpdate('manage-apps', ['admin']);
 		}
 
 		this._model = new AppsModel();
@@ -28,7 +32,7 @@ class AppServerOrchestrator {
 		this._manager = new AppManager(this._storage, this._logStorage, this._bridges);
 
 		this._communicators = new Map();
-		this._communicators.set('methods', new AppMethods(this._manager));
+		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
 	}
@@ -66,25 +70,64 @@ class AppServerOrchestrator {
 	}
 
 	isEnabled() {
-		return true;
+		return settings.get('Apps_Framework_enabled');
 	}
 
 	isLoaded() {
 		return this.getManager().areAppsLoaded();
 	}
+
+	load() {
+		// Don't try to load it again if it has
+		// already been loaded
+		if (this.isLoaded()) {
+			return;
+		}
+
+		this._manager.load()
+			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${ affs.length } Apps!`))
+			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err));
+	}
+
+	unload() {
+		// Don't try to unload it if it's already been
+		// unlaoded or wasn't unloaded to start with
+		if (!this.isLoaded()) {
+			return;
+		}
+
+		this._manager.unload()
+			.then(() => console.log('Unloaded the Apps Framework.'))
+			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
+	}
 }
 
-Meteor.startup(function _appServerOrchestrator() {
-	// Ensure that everything is setup
-	if (process.env[AppManager.ENV_VAR_NAME_FOR_ENABLING] !== 'true' && process.env[AppManager.SUPER_FUN_ENV_ENABLEMENT_NAME] !== 'true') {
-		global.Apps = new AppMethods();
+settings.addGroup('General', function() {
+	this.section('Apps', function() {
+		this.add('Apps_Framework_enabled', true, {
+			type: 'boolean',
+			hidden: false,
+		});
+	});
+});
+
+settings.get('Apps_Framework_enabled', (key, isEnabled) => {
+	// In case this gets called before `Meteor.startup`
+	if (!Apps) {
 		return;
 	}
 
-	console.log('Orchestrating the app piece...');
-	global.Apps = new AppServerOrchestrator();
+	if (isEnabled) {
+		Apps.load();
+	} else {
+		Apps.unload();
+	}
+});
 
-	global.Apps.getManager().load()
-		.then(() => console.log('...done! :)'))
-		.catch((err) => console.warn('...failed!', err));
+Meteor.startup(function _appServerOrchestrator() {
+	Apps = new AppServerOrchestrator();
+
+	if (Apps.isEnabled()) {
+		Apps.load();
+	}
 });

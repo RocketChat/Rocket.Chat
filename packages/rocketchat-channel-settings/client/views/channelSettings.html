@@ -65,7 +65,7 @@
 		{{#with settings.t}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
 						{{_ "Public"}}{{equal default value '*'}}
 						<div class="rc-switch-double__description">
 							{{_ "Everyone_can_access_this_channel"}}
@@ -79,7 +79,7 @@
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
 						{{_ "Private"}}
 						<div class="rc-switch-double__description">
 							{{_ "Just_invited_people_can_access_this_channel"}}
@@ -121,8 +121,8 @@
 		{{#with settings.ro}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label  {{equal true value 'disabled'}}">
-						{{_ "Colaborative"}}{{equal default value '*'}}
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+						{{_ "Collaborative"}}{{equal default value '*'}}
 						<div class="rc-switch-double__description">
 							{{_ "All_users_in_the_channel_can_write_new_messages"}}
 						</div>
@@ -135,7 +135,7 @@
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
 						{{_ "Read_only"}}
 						<div class="rc-switch-double__description">
 							{{_ "Only_authorized_users_can_write_new_messages"}}
@@ -145,12 +145,11 @@
 			</div>
 		{{/with}}
 
-
 		{{#with settings.reactWhenReadOnly}}
 			{{#if canView}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-switch-double">
-					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+					<div class="rc-switch-double__label {{equal false value 'disabled'}}">
 						{{_ "React_when_read_only"}}
 						<div class="rc-switch-double__description">
 							{{_ "React_when_read_only"}}
@@ -164,10 +163,10 @@
 							</span>
 						</label>
 					</div>
-					<div class="rc-switch-double__label  {{equal false value 'disabled'}}">
-						{{_ "No_reactions"}}
+					<div class="rc-switch-double__label {{equal true value 'disabled'}}">
+						{{_ "Disallow_reacting"}}
 						<div class="rc-switch-double__description">
-							{{_ "No_reactions"}}
+							{{_ "Disallow_reacting_Description"}}
 						</div>
 					</div>
 				</div>
@@ -191,8 +190,62 @@
 			</div>
 			{{/if}}
 		{{/with}}
-		{{#with settings.joinCode}}
+
+		{{#with settings.sysMes}}
+			{{#if canView}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+				</div>
+			{{/if}}
+		{{/with}}
+
+		{{#with settings.encrypted}}
+			{{#if canView}}
+				<div class="rc-user-info__row">
+					<div class="rc-switch rc-switch--blue">
+						<label class="rc-switch__label">
+							<span class="rc-switch__text">
+								{{_ label}}{{equal default value '*'}}
+							</span>
+							<input type="checkbox" class="rc-switch__input js-input-check" name="encrypted" checked="{{checked}}" disabled="{{./disabled}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+						</label>
+					</div>
+				</div>
+			{{/if}}
+		{{/with}}
+
+		{{#with settings.broadcast}}
+			{{#if canView}}
 			<div class="rc-user-info__row">
+				<div class="rc-switch rc-switch--blue">
+					<label class="rc-switch__label">
+						<span class="rc-switch__text">
+							{{_ label}}{{equal default value '*'}}
+						</span>
+						<input type="checkbox" class="rc-switch__input js-input-check" name="archived" checked="{{checked}}" disabled>
+						<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+					</label>
+				</div>
+			</div>
+			{{/if}}
+		{{/with}}
+		{{#with settings.joinCode}}
+			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-input">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ label}}{{equal default value '*'}}</div>
@@ -203,6 +256,93 @@
 				</div>
 			</div>
 		{{/with}}
+
+		{{#if hasRetentionPermission}}
+			<div class="rc-user-info__config">
+				<div class="rc-user-info__config-header">
+					{{> icon block="rc-user-info__config-icon" icon="trash"}}
+					<span class="rc-user-info__config-label">{{_ "Prune"}}</span>
+				</div>
+				{{#with settings.retentionEnabled}}
+					<div class="rc-user-info__config-content">
+						<div class="rc-user-info__config-name">{{_ label}}:</div>
+						<div class="rc-user-info__config-value">
+							{{subValue value}} {{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+						</div>
+					</div>
+				{{/with}}
+			</div>
+			 {{# if settings.retentionEnabled.value.get }}
+				{{#with settings.retentionOverrideGlobal}}
+					<div class="rc-user-info__row">
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<span class="rc-switch__text">
+									{{_ label}}{{equal default value '*'}}
+								</span>
+								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionOverrideGlobal" checked="{{checked}}" disabled="{{./disabled}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
+					</div>
+				{{/with}}
+			{{/if}}
+			{{# if settings.retentionOverrideGlobal.value.get }}
+				<div class="mail-messages__instructions mail-messages__instructions--warning" style="margin-bottom: 0;">
+					<div class="mail-messages__instructions-wrapper">
+						<div class="mail-messages__instructions-text">
+							<span>
+								{{{_ "RetentionPolicyRoom_ReadTheDocs"}}}
+							</span>
+						</div>
+					</div>
+				</div>
+				{{#with settings.retentionMaxAge}}
+					<div class="rc-user-info__row">
+						<div class="rc-input">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{retentionMaxAgeLabel label}}{{equal default value '*'}}</div>
+								<div class="rc-input__wrapper">
+									<input type="number" name="retentionMaxAge" value="{{value}}" class="rc-input__element js-input" disabled="{{./disabled}}"/>
+								</div>
+							</label>
+						</div>
+					</div>
+				{{/with}}
+				{{#with settings.retentionExcludePinned}}
+					<div class="rc-user-info__row">
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<span class="rc-switch__text">
+									{{_ label}}{{equal default value '*'}}
+								</span>
+								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionExcludePinned" checked="{{checked}}" disabled="{{./disabled}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
+					</div>
+				{{/with}}
+				{{#with settings.retentionFilesOnly}}
+					<div class="rc-user-info__row">
+						<div class="rc-switch rc-switch--blue">
+							<label class="rc-switch__label">
+								<span class="rc-switch__text">
+									{{_ label}}{{equal default value '*'}}
+								</span>
+								<input type="checkbox" class="rc-switch__input js-input-check" name="retentionFilesOnly" checked="{{checked}}" disabled="{{./disabled}}">
+								<span class="rc-switch__button">
+									<span class="rc-switch__button-inside"></span>
+								</span>
+							</label>
+						</div>
+					</div>
+				{{/with}}
+			{{/if}}
+		{{/if}}
 	</div>
 	<div class="rc-user-info__row">
 		<div class="rc-user-info__flex rc-user-info__row rc-user-info__row--separator">
@@ -240,23 +380,49 @@
 				<label class="rc-user-info__label">
 					{{_ "Description"}}
 					<div class="rc-user-info__description">
-						{{unscape description}}
+						{{description}}
 					</div>
 				</label>
 			{{/unless}}
 			<label class="rc-user-info__label">
 				{{_ "Announcement"}}
 				<div class="rc-user-info__description">
-					{{unscape announcement}}
+					{{{RocketChatMarkdown announcement}}}
 				</div>
 			</label>
 			<label class="rc-user-info__label">
 				{{_ "Topic"}}
 				<div class="rc-user-info__description">
-					{{unscape topic}}
+					{{{RocketChatMarkdown topic}}}
 				</div>
 			</label>
-
+			{{#if broadcast}}
+				<label class="rc-user-info__label">
+					<b>{{_ "Broadcast_channel"}}:</b> {{_ "Broadcast_channel_Description"}}
+				</label>
+			{{/if}}
+			{{#if hasPurge}}
+				<div class="mail-messages__instructions mail-messages__instructions--warning">
+					<div class="mail-messages__instructions-wrapper">
+						{{> icon block="mail-messages__instructions-icon" icon="warning"}}
+						<div class="mail-messages__instructions-text">
+							{{#unless filesOnly}}
+								{{#unless excludePinned}}
+									{{_ "RetentionPolicy_RoomWarning" time=purgeTimeout}}
+								{{else}}
+									{{_ "RetentionPolicy_RoomWarning_Unpinned" time=purgeTimeout}}
+								{{/unless}}
+							{{else}}
+								{{#unless excludePinned}}
+									{{_ "RetentionPolicy_RoomWarning_FilesOnly" time=purgeTimeout}}
+								{{else}}
+									{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
+								{{/unless}}
+							{{/unless}}
+						</div>
+					</div>
+				</div>
+			{{/if}}
 		{{/with}}
 		{{#each channelSettings}}
 			<div class="rc-user-info__row">
@@ -273,8 +439,8 @@
 		{{#if canLeaveRoom}}
 		<button class="rc-button rc-button--icon rc-button--outline rc-button--cancel js-leave">{{> icon icon='sign-out'}}{{_ 'Leave'}}</button>
 		{{/if}}
-		<!-- {{#if canDeleteRoom}}
-		<button class="rc-button rc-button-outline rc-button-cancel js-delete" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
-		{{/if}} -->
 	</div>
+	{{#if canDeleteRoom}}
+	<button class="rc-button rc-button-outline rc-button-cancel js-delete rc-button--cancel rc-button--stack" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
+	{{/if}}
 </template>

@@ -1,19 +1,16 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import preferencesMainContent from '../../pageobjects/preferences-main-content.page';
 import admin from '../../pageobjects/administration.page';
 
-import {username, password, email, adminUsername, adminEmail, adminPassword} from '../../data/user.js';
+import { username, password, email, adminUsername, adminEmail, adminPassword } from '../../data/user.js';
 // import {imgURL} from '../../data/interactions.js';
 
-import {checkIfUserIsValid, checkIfUserIsAdmin} from '../../data/checks';
+import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 
 
-describe('[User Preferences]', ()=> {
+describe('[User Preferences]', () => {
 	describe('default', () => {
 		before(() => {
 			checkIfUserIsValid(username, email, password);
@@ -75,7 +72,7 @@ describe('[User Preferences]', ()=> {
 				preferencesMainContent.changeEmail(`EditedUserEmail${ username }@gmail.com`);
 			});
 
-			it.skip('it should put the password in the modal input', ()=> {
+			it.skip('it should put the password in the modal input', () => {
 				preferencesMainContent.acceptPasswordOverlay(password);
 			});
 
@@ -151,15 +148,15 @@ describe('[User Preferences]', ()=> {
 				sideNav.profile.click();
 			});
 
-			it('it should be that the name field is disabled', ()=> {
+			it('it should be that the name field is disabled', () => {
 				preferencesMainContent.realNameTextInputEnabled().should.be.false;
 			});
 
-			it('it should be that the Username field is disabled', ()=> {
+			it('it should be that the Username field is disabled', () => {
 				preferencesMainContent.userNameTextInputEnabled().should.be.false;
 			});
 
-			it('it should close profile', ()=> {
+			it('it should close profile', () => {
 				sideNav.preferencesClose.click();
 			});
 		});

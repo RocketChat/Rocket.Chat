@@ -1,6 +1,5 @@
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
-
-const Template = Package.templating.Template;
 
 Template.log = false;
 
@@ -24,16 +23,16 @@ const wrapHelpersAndEvents = function(original, prefix, color) {
 		const template = this;
 		const fn1 = function(name, fn) {
 			if (fn instanceof Function) {
-				return dict[name] = function() {
+				return dict[name] = function(...args) {
 
-					const result = fn.apply(this, arguments);
+					const result = fn.apply(this, args);
 					if (Template.log === true) {
 						const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
 						if (Template.logMatch.test(completeName)) {
 							console.log(`%c${ completeName }`, `color: ${ color }`, {
-								args: arguments,
+								args,
 								scope: this,
-								result
+								result,
 							});
 						}
 					}
@@ -56,15 +55,15 @@ const wrapLifeCycle = function(original, prefix, color) {
 	return function(fn) {
 		const template = this;
 		if (fn instanceof Function) {
-			const wrap = function() {
-				const result = fn.apply(this, arguments);
+			const wrap = function(...args) {
+				const result = fn.apply(this, args);
 				if (Template.log === true) {
 					const completeName = `${ prefix }:${ template.viewName.replace('Template.', '') }.${ name }`;
 					if (Template.logMatch.test(completeName)) {
 						console.log(`%c${ completeName }`, `color: ${ color }; font-weight: bold`, {
-							args: arguments,
+							args,
 							scope: this,
-							result
+							result,
 						});
 					}
 				}
