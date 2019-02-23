@@ -904,6 +904,7 @@
   "Created_at_s_by_s": "Created at <strong>%s</strong> by <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Created at <strong>%s</strong> by <strong>%s</strong> triggered by <strong>%s</strong>",
   "CRM_Integration": "CRM Integration",
+  "CROWD_Allow_Custom_Username": "Allow custom username in Rocket.Chat",
   "CROWD_Reject_Unauthorized": "Reject Unauthorized",
   "Crowd_sync_interval_Description": "The interval between synchronizations. Example `every 24 hours` or `on the first day of the week`, more examples at [Cron Text Parser](http://bunkat.github.io/later/parsers.html#text)",
   "Current_Chats": "Current Chats",
