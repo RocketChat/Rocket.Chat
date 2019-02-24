@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Federation } from '../index';
+import { Federation } from '../federation';
 
 import { logger } from '../logger.js';
 import { FederationDNSCache } from '../models/FederationDNSCache';

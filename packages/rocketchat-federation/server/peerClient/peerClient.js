@@ -4,7 +4,7 @@ import { callbacks } from 'meteor/rocketchat:callbacks';
 import { settings } from 'meteor/rocketchat:settings';
 import { Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 
-import { Federation } from '../index';
+import { Federation } from '../federation';
 
 import { logger } from '../logger.js';
 import FederatedMessage from '../federatedResources/FederatedMessage';
@@ -156,7 +156,7 @@ class PeerClient {
 				// Encrypt with the local private key
 				payload = Federation.privateKey.encryptPrivate(payload);
 
-				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, 5);
+				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload });
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {

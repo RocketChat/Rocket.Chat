@@ -3,14 +3,25 @@ import { _ } from 'meteor/underscore';
 import { settings } from 'meteor/rocketchat:settings';
 import { MessageTypes } from 'meteor/rocketchat:ui-utils';
 
-import { Federation } from './index';
-
 import { logger } from './logger.js';
 import PeerClient from './peerClient';
 import PeerDNS from './peerDNS';
 import PeerHTTP from './peerHTTP';
 import PeerServer from './peerServer';
 import { FederationKeys } from './models/FederationKeys';
+
+export const Federation = {
+	enabled: false,
+	privateKey: null,
+	publicKey: null,
+	usingHub: null,
+	uniqueId: null,
+	localIdentifier: null,
+	peerDNS: null,
+	peerHTTP: null,
+	peerClient: null,
+	peerServer: null,
+};
 
 (function generateFederationKeys() {
 	// Create unique id if needed

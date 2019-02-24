@@ -18,7 +18,7 @@ Package.onUse(function(api) {
 	api.use('accounts-base', 'server');
 	api.use('accounts-password', 'server');
 
-	api.mainModule('server/index.js', 'server');
+	api.mainModule('server/federation.js', 'server');
 });
 
 Npm.depends({

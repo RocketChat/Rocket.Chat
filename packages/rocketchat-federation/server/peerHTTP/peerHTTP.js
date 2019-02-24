@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Federation } from '../index';
+import { Federation } from '../federation';
 
 import { logger } from '../logger.js';
 
@@ -45,7 +45,7 @@ function doRequest(peer, method, uri, body, totalTries = 1, currentTries = 0, DN
 
 			// In here, the error was different than ENOTFOUND or the DNS was already updated,
 			// which means we need to start retrying
-			const milli = Math.pow(10, currentTries + 2);
+			const milli = Math.pow(5, currentTries + 5);
 
 			Meteor.setTimeout(function() {
 				this.log(`Retrying ${ currentTries + 1 }/${ totalTries }: ${ method } - ${ uri }`);

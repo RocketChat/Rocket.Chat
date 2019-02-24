@@ -1,5 +1,5 @@
 import { API } from 'meteor/rocketchat:api';
-import { Federation } from '../../../../index';
+import { Federation } from '../../../../federation';
 
 import { FederationKeys } from '../../../../models/FederationKeys';
 
