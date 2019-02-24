@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check, Match } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	createGroupChat(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
@@ -17,11 +21,11 @@ Meteor.methods({
 				require: String,
 				tokens: [{
 					token: String,
-					balance: String
-				}]
-			})
+					balance: String,
+				}],
+			}),
 		}));
 
-		return RocketChat.createRoom('g', name, Meteor.user() && Meteor.user().username, members, readOnly, {customFields, ...extraData});
-	}
+		return RocketChat.createRoom('g', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+	},
 });

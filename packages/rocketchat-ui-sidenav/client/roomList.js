@@ -103,7 +103,7 @@ Template.roomList.helpers({
 			return false;
 		}
 
-		return !['unread', 'f'].includes(group.identifier) || (rooms.length || rooms.count && rooms.count());
+		return !['unread', 'f'].includes(group.identifier) || (rooms.length || (rooms.count && rooms.count()));
 	},
 
 	roomType(room) {

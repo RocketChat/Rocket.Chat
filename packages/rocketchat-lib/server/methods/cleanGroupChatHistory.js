@@ -1,5 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
-	cleanGroupChatHistory({roomId}) {
+	cleanGroupChatHistory({ roomId }) {
 		check(roomId, String);
 
 		if (!Meteor.userId()) {
@@ -7,7 +11,7 @@ Meteor.methods({
 		}
 
 		RocketChat.models.Messages.remove({
-			rid: roomId
+			rid: roomId,
 		});
-	}
+	},
 });

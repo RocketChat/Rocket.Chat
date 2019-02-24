@@ -172,8 +172,6 @@ export class CustomOAuth {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
 			const accessToken = self.getAccessToken(query);
-			// console.log 'at:', accessToken
-
 			let identity = self.getIdentity(accessToken);
 
 			if (identity) {

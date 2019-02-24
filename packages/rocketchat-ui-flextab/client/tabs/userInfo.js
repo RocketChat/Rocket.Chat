@@ -242,7 +242,7 @@ Template.userInfo.onCreated(function() {
 			user,
 			hideAdminControls: this.data.hideAdminControls,
 			directActions: this.data.showAll,
-			instance: null
+			instance: null,
 		});
 		this.actions.set(actions);
 	});

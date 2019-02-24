@@ -206,7 +206,7 @@ Template.membersList.events({
 			user: this.user.user,
 			hideAdminControls: roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
 			directActions: roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
-			instance: Template.instance()
+			instance: Template.instance(),
 		})
 			.map((action) => (typeof action === 'function' ? action.call(this) : action))
 			.filter((action) => action && (!action.condition || action.condition.call(this)));

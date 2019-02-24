@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -21,7 +22,7 @@ Template.chatRoomItem.helpers({
 			Meteor.call('getUsersOfRoom', this.rid, true, (error, users) => {
 				this.usernames = users.records.map(function(u) { return u.username; });
 			});
-			const username = this.u.username;
+			const { username } = this.u;
 			name = this.usernames.filter(function(u) { return u !== username; }).join(', ');
 		}
 

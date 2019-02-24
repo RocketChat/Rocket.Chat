@@ -1,11 +1,14 @@
 /* globals openRoom */
-import {RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext} from '../RoomTypeConfig';
+import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../RoomTypeConfig';
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatRoom } from 'meteor/rocketchat:models';
 
 export class GroupChatRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'groupchat',
-			path: '/groupchat/:name'
+			path: '/groupchat/:name',
 		});
 	}
 
@@ -20,14 +23,14 @@ export class GroupChatRoomType extends RoomTypeConfig {
 			identifier: 'g',
 			order: 50,
 			label: 'Direct_Messages',
-			route: new GroupChatRoute()
+			route: new GroupChatRoute(),
 		});
 	}
 
 	findRoom(identifier) {
 		const query = {
 			t: 'g',
-			name: identifier
+			name: identifier,
 		};
 
 		return ChatRoom.findOne(query);
@@ -45,7 +48,7 @@ export class GroupChatRoomType extends RoomTypeConfig {
 		const user = Meteor.user();
 		const roomsListExhibitionMode = RocketChat.getUserPreference(user, 'roomsListExhibitionMode');
 		const mergeChannels = RocketChat.getUserPreference(user, 'mergeChannels');
-		return !roomsListExhibitionMode || ['unread', 'category'].includes(roomsListExhibitionMode) && !mergeChannels && RocketChat.authz.hasAllPermission('view-g-room');
+		return !roomsListExhibitionMode || (['unread', 'category'].includes(roomsListExhibitionMode) && !mergeChannels && RocketChat.authz.hasAllPermission('view-g-room'));
 	}
 
 	isGroupChat() {
