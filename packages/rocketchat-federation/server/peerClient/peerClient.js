@@ -156,7 +156,7 @@ class PeerClient {
 				// Encrypt with the local private key
 				payload = Federation.privateKey.encryptPrivate(payload);
 
-				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload });
+				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, 5);
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
