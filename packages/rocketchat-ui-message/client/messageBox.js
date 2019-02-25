@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { settings } from 'meteor/rocketchat:settings';
 import { Markdown } from 'meteor/rocketchat:markdown';
 import { EmojiPicker } from 'meteor/rocketchat:emoji';
@@ -140,29 +141,34 @@ Template.messageBox.onCreated(function() {
 });
 
 Template.messageBox.onRendered(function() {
-	const input = this.find('.js-input-message');
-	this.input = input;
+	this.autorun(() => {
+		const subscribed = roomTypes.verifyCanSendMessage(this.data._id);
 
-	if (!input) {
-		return;
-	}
+		Tracker.afterFlush(() => {
+			const input = subscribed && this.find('.js-input-message');
 
-	const $input = $(input);
-	$input.on('dataChange', () => { // TODO: remove jQuery event layer dependency
-		const reply = $input.data('reply');
-		this.replyMessageData.set(reply);
-	});
+			if (!input) {
+				return;
+			}
 
-	$input.autogrow({
-		animate: true,
-		onInitialize: true,
-	})
-		.on('autogrow', () => {
-			this.data && this.data.onResize && this.data.onResize();
+			const $input = $(input);
+			$input.on('dataChange', () => { // TODO: remove jQuery event layer dependency
+				const reply = $input.data('reply');
+				this.replyMessageData.set(reply);
+			});
+
+			$input.autogrow({
+				animate: true,
+				onInitialize: true,
+			})
+				.on('autogrow', () => {
+					this.data && this.data.onResize && this.data.onResize();
+				});
+
+			chatMessages[RoomManager.openedRoom] = chatMessages[RoomManager.openedRoom] || new ChatMessages;
+			chatMessages[RoomManager.openedRoom].input = input;
 		});
-
-	chatMessages[RoomManager.openedRoom] = chatMessages[RoomManager.openedRoom] || new ChatMessages;
-	chatMessages[RoomManager.openedRoom].input = input;
+	});
 });
 
 Template.messageBox.helpers({
@@ -205,7 +211,7 @@ Template.messageBox.helpers({
 		};
 	},
 	input() {
-		return Template.instance().input;
+		return Template.instance().find('.js-input-message');
 	},
 	replyMessageData() {
 		return Template.instance().replyMessageData.get();
@@ -287,11 +293,8 @@ Template.messageBox.events({
 			input.selectionEnd = caretPos + emojiValue.length;
 		});
 	},
-	'focus .js-input-message'(event, instance) {
+	'focus .js-input-message'() {
 		KonchatNotification.removeRoomNotification(this._id);
-		if (chatMessages[this._id]) {
-			chatMessages[this._id].input = instance.input;
-		}
 	},
 	'keyup .js-input-message'(event, instance) {
 		chatMessages[this._id].keyup(this._id, event, instance);
@@ -299,7 +302,7 @@ Template.messageBox.events({
 	},
 	'paste .js-input-message'(event, instance) {
 		setTimeout(() => {
-			const { input } = instance;
+			const { input } = chatMessages[RoomManager.openedRoom];
 			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
 		}, 50);
 
@@ -342,7 +345,7 @@ Template.messageBox.events({
 		}
 	},
 	'click .js-send'(event, instance) {
-		const { input } = instance;
+		const { input } = chatMessages[RoomManager.openedRoom];
 		chatMessages[this._id].send(this._id, input, () => {
 			input.updateAutogrow();
 			instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
