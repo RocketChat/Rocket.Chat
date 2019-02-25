@@ -4,7 +4,7 @@ import { WebApp } from 'meteor/webapp';
 
 const apiServer = express();
 
-apiServer.set('x-powered-by', false);
+apiServer.disable('x-powered-by');
 
 WebApp.connectHandlers.use(apiServer);
 
