@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 		'kadira:blaze-layout',
 		'underscore',
 	], 'client');
+	api.addFiles('assets/stylesheets/apps.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
