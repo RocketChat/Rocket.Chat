@@ -18,24 +18,33 @@ import semver from 'semver';
 
 const HOST = 'https://marketplace.rocket.chat'; // TODO move this to inside RocketChat.API
 
-function getApps(instance) {
+async function getApps(instance) {
 	const id = instance.id.get();
+	let remoteApps;
+	let localApp;
+	try {
+		localApp = (await APIClient.get('apps/')).apps.filter((app) => app.id === id)[0];
+		remoteApps = await fetch(`${ HOST }/v1/apps/${ id }?version=${ Info.marketplaceApiVersion }`).then((data) => data.json());
+	} catch (error) {
+		if (!localApp) {
+			instance.hasError.set(true);
+			instance.theError.set(error.message);
+		}
+	} finally {
+		let remoteApp;
+		if (remoteApps && remoteApps.length) {
+			remoteApps = remoteApps.sort((a, b) => {
+				if (semver.gt(a.version, b.version)) {
+					return -1;
+				}
+				if (semver.lt(a.version, b.version)) {
+					return 1;
+				}
+				return 0;
+			});
+			remoteApp = remoteApps[0];
+		}
 
-	return Promise.all([
-		fetch(`${ HOST }/v1/apps/${ id }?version=${ Info.marketplaceApiVersion }`).then((data) => data.json()),
-		APIClient.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
-	]).then(([remoteApps, [localApp]]) => {
-		remoteApps = remoteApps.sort((a, b) => {
-			if (semver.gt(a.version, b.version)) {
-				return -1;
-			}
-			if (semver.lt(a.version, b.version)) {
-				return 1;
-			}
-			return 0;
-		});
-
-		const remoteApp = remoteApps[0];
 		if (localApp) {
 			localApp.installed = true;
 			if (remoteApp) {
@@ -56,10 +65,7 @@ function getApps(instance) {
 		instance.app.set(localApp || remoteApp);
 
 		instance.ready.set(true);
-	}).catch((e) => {
-		instance.hasError.set(true);
-		instance.theError.set(e.message);
-	});
+	}
 }
 
 Template.appManage.onCreated(function() {
