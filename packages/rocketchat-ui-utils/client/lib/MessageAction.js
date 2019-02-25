@@ -10,6 +10,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
+import mem from 'mem';
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err, data) {
@@ -54,6 +55,10 @@ export const MessageAction = new class {
 
 		if (!config.group) {
 			config.group = 'menu';
+		}
+
+		if (config.condition) {
+			config.condition = mem(config.condition);
 		}
 
 		return Tracker.nonreactive(() => {

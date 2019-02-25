@@ -250,6 +250,36 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
+	it('/groups.addLeader', (done) => {
+		request.post(api('groups.addLeader'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/groups.removeLeader', (done) => {
+		request.post(api('groups.removeLeader'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
 	it('/groups.kick', (done) => {
 		request.post(api('groups.kick'))
 			.set(credentials)

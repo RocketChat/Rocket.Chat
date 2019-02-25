@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import { validationService } from '../service/validationService';
 import SearchLogger from '../logger/logger';
@@ -78,7 +78,7 @@ class SearchProviderService {
 		const { providers } = this;
 
 		// add settings for admininistration
-		RocketChat.settings.addGroup('Search', function() {
+		settings.addGroup('Search', function() {
 
 			const self = this;
 
@@ -115,7 +115,7 @@ class SearchProviderService {
 
 		// add listener to react on setting changes
 		const configProvider = _.debounce(Meteor.bindEnvironment(() => {
-			const providerId = RocketChat.settings.get('Search.Provider');
+			const providerId = settings.get('Search.Provider');
 
 			if (providerId) {
 				this.use(providerId);// TODO do something with success and errors
@@ -123,7 +123,7 @@ class SearchProviderService {
 
 		}), 1000);
 
-		RocketChat.settings.get(/^Search\./, configProvider);
+		settings.get(/^Search\./, configProvider);
 	}
 
 }

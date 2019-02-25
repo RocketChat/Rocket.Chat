@@ -6,9 +6,13 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-	api.use('ecmascript');
-
+	api.use([
+		'ecmascript',
+		'rocketchat:settings',
+		'rocketchat:assets',
+		'rocketchat:models',
+		'rocketchat:lib',
+	]);
 	api.mainModule('server/main.js', 'server');
-
 	api.mainModule('client/main.js', 'client');
 });

@@ -1,20 +1,21 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { Rooms } from 'meteor/rocketchat:models';
 import Busboy from 'busboy';
+import { API } from '../api';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
-	const fields = { ...RocketChat.API.v1.defaultFieldsToExclude };
+	const fields = { ...API.v1.defaultFieldsToExclude };
 
 	let room;
 	if (params.roomId) {
-		room = RocketChat.models.Rooms.findOneById(params.roomId, { fields });
+		room = Rooms.findOneById(params.roomId, { fields });
 	} else if (params.roomName) {
-		room = RocketChat.models.Rooms.findOneByName(params.roomName, { fields });
+		room = Rooms.findOneByName(params.roomName, { fields });
 	}
 	if (!room) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
@@ -26,7 +27,7 @@ function findRoomByIdOrName({ params, checkedArchived = true }) {
 	return room;
 }
 
-RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
+API.v1.addRoute('rooms.get', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;
 
@@ -49,19 +50,19 @@ RocketChat.API.v1.addRoute('rooms.get', { authRequired: true }, {
 			};
 		}
 
-		return RocketChat.API.v1.success({
+		return API.v1.success({
 			update: result.update.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 			remove: result.remove.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
 		});
 	},
 });
 
-RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
+API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 	post() {
 		const room = Meteor.call('canAccessRoom', this.urlParams.rid, this.userId);
 
 		if (!room) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		const busboy = new Busboy({ headers: this.request.headers });
@@ -90,11 +91,11 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		})();
 
 		if (files.length === 0) {
-			return RocketChat.API.v1.failure('File required');
+			return API.v1.failure('File required');
 		}
 
 		if (files.length > 1) {
-			return RocketChat.API.v1.failure('Just 1 file is allowed');
+			return API.v1.failure('Just 1 file is allowed');
 		}
 
 		const file = files[0];
@@ -116,14 +117,14 @@ RocketChat.API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 
 			delete fields.description;
 
-			RocketChat.API.v1.success(Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields));
+			API.v1.success(Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields));
 		});
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
 
-RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
+API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 	post() {
 		const saveNotifications = (notifications, roomId) => {
 			Object.keys(notifications).forEach((notificationKey) =>
@@ -135,45 +136,45 @@ RocketChat.API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 		const { roomId, notifications } = this.bodyParams;
 
 		if (!roomId) {
-			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+			return API.v1.failure('The \'roomId\' param is required');
 		}
 
 		if (!notifications || Object.keys(notifications).length === 0) {
-			return RocketChat.API.v1.failure('The \'notifications\' param is required');
+			return API.v1.failure('The \'notifications\' param is required');
 		}
 
 		saveNotifications(notifications, roomId);
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
 
-RocketChat.API.v1.addRoute('rooms.favorite', { authRequired: true }, {
+API.v1.addRoute('rooms.favorite', { authRequired: true }, {
 	post() {
 		const { favorite } = this.bodyParams;
 
 		if (!this.bodyParams.hasOwnProperty('favorite')) {
-			return RocketChat.API.v1.failure('The \'favorite\' param is required');
+			return API.v1.failure('The \'favorite\' param is required');
 		}
 
 		const room = findRoomByIdOrName({ params: this.bodyParams });
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('toggleFavorite', room._id, favorite));
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
 
-RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
+API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 	post() {
 		const findResult = findRoomByIdOrName({ params: this.bodyParams });
 
 		if (!this.bodyParams.latest) {
-			return RocketChat.API.v1.failure('Body parameter "latest" is required.');
+			return API.v1.failure('Body parameter "latest" is required.');
 		}
 
 		if (!this.bodyParams.oldest) {
-			return RocketChat.API.v1.failure('Body parameter "oldest" is required.');
+			return API.v1.failure('Body parameter "oldest" is required.');
 		}
 
 		const latest = new Date(this.bodyParams.latest);
@@ -192,28 +193,28 @@ RocketChat.API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 			fromUsers: this.bodyParams.users,
 		}));
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
 
-RocketChat.API.v1.addRoute('rooms.info', { authRequired: true }, {
+API.v1.addRoute('rooms.info', { authRequired: true }, {
 	get() {
 		const room = findRoomByIdOrName({ params: this.requestParams() });
 		const { fields } = this.parseJsonQuery();
 		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
-			return RocketChat.API.v1.failure('not-allowed', 'Not Allowed');
+			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
-		return RocketChat.API.v1.success({ room: RocketChat.models.Rooms.findOneByIdOrName(room._id, { fields }) });
+		return API.v1.success({ room: Rooms.findOneByIdOrName(room._id, { fields }) });
 	},
 });
 
-RocketChat.API.v1.addRoute('rooms.leave', { authRequired: true }, {
+API.v1.addRoute('rooms.leave', { authRequired: true }, {
 	post() {
 		const room = findRoomByIdOrName({ params: this.bodyParams });
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('leaveRoom', room._id);
 		});
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });

@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Settings } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 25,
 	up() {
-		return RocketChat.models.Settings.update({
+		return Settings.update({
 			_id: /Accounts_OAuth_Custom/,
 		}, {
 			$set: {

@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { Info } from 'meteor/rocketchat:utils';
+import { Roles, Users } from 'meteor/rocketchat:models';
 import semver from 'semver';
 import logger from '../logger';
 import getNewUpdates from './getNewUpdates';
@@ -17,13 +19,13 @@ export default () => {
 		security: false,
 	};
 
-	const lastCheckedVersion = RocketChat.settings.get('Update_LatestAvailableVersion');
+	const lastCheckedVersion = settings.get('Update_LatestAvailableVersion');
 	versions.forEach((version) => {
 		if (semver.lte(version.version, lastCheckedVersion)) {
 			return;
 		}
 
-		if (semver.lte(version.version, RocketChat.Info.version)) {
+		if (semver.lte(version.version, Info.version)) {
 			return;
 		}
 
@@ -36,8 +38,8 @@ export default () => {
 	});
 
 	if (update.exists) {
-		RocketChat.settings.updateById('Update_LatestAvailableVersion', update.lastestVersion.version);
-		RocketChat.models.Roles.findUsersInRole('admin').forEach((adminUser) => {
+		settings.updateById('Update_LatestAvailableVersion', update.lastestVersion.version);
+		Roles.findUsersInRole('admin').forEach((adminUser) => {
 			try {
 				Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
 
@@ -51,7 +53,7 @@ export default () => {
 				console.error(e);
 			}
 
-			RocketChat.models.Users.addBannerById(adminUser._id, {
+			Users.addBannerById(adminUser._id, {
 				id: 'versionUpdate',
 				priority: 10,
 				title: 'Update_your_RocketChat',
@@ -63,12 +65,12 @@ export default () => {
 	}
 
 	if (alerts && alerts.length) {
-		RocketChat.models.Roles.findUsersInRole('admin').forEach((adminUser) => {
+		Roles.findUsersInRole('admin').forEach((adminUser) => {
 			try {
 				Meteor.runAsUser(adminUser._id, () => Meteor.call('createDirectMessage', 'rocket.cat'));
 
 				alerts.forEach((alert) => {
-					if (RocketChat.models.Users.bannerExistsById(adminUser._id, `alert-${ alert.id }`)) {
+					if (Users.bannerExistsById(adminUser._id, `alert-${ alert.id }`)) {
 						return;
 					}
 
@@ -84,7 +86,7 @@ export default () => {
 			}
 
 			alerts.forEach((alert) => {
-				RocketChat.models.Users.addBannerById(adminUser._id, {
+				Users.addBannerById(adminUser._id, {
 					id: `alert-${ alert.id }`,
 					priority: 10,
 					title: alert.title,

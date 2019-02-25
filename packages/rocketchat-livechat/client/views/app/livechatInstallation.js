@@ -1,10 +1,10 @@
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import s from 'underscore.string';
 
 Template.livechatInstallation.helpers({
 	script() {
-		const siteUrl = s.rtrim(RocketChat.settings.get('Site_Url'), '/');
+		const siteUrl = s.rtrim(settings.get('Site_Url'), '/');
 
 		return `<!-- Start of Rocket.Chat Livechat Script -->
 <script type="text/javascript">

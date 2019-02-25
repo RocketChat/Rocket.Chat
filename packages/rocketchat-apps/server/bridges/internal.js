@@ -1,10 +1,12 @@
+import { Subscriptions } from 'meteor/rocketchat:models';
+
 export class AppInternalBridge {
 	constructor(orch) {
 		this.orch = orch;
 	}
 
 	getUsernamesOfRoomById(roomId) {
-		const records = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
+		const records = Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
 			fields: {
 				'u.username': 1,
 			},

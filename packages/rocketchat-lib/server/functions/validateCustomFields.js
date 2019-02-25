@@ -1,16 +1,17 @@
 import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
 import s from 'underscore.string';
 
-RocketChat.validateCustomFields = function(fields) {
+export const validateCustomFields = function(fields) {
 	// Special Case:
 	// If an admin didn't set any custom fields there's nothing to validate against so consider any customFields valid
-	if (s.trim(RocketChat.settings.get('Accounts_CustomFields')) === '') {
+	if (s.trim(settings.get('Accounts_CustomFields')) === '') {
 		return;
 	}
 
 	let customFieldsMeta;
 	try {
-		customFieldsMeta = JSON.parse(RocketChat.settings.get('Accounts_CustomFields'));
+		customFieldsMeta = JSON.parse(settings.get('Accounts_CustomFields'));
 	} catch (e) {
 		throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 	}

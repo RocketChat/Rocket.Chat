@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:returnAsInquiry'(rid, departmentId) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-l-room')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveDepartment' });
 		}
 
-		return RocketChat.Livechat.returnRoomAsInquiry(rid, departmentId);
+		return Livechat.returnRoomAsInquiry(rid, departmentId);
 	},
 });

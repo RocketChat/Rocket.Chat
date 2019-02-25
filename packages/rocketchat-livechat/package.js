@@ -6,7 +6,9 @@ Package.describe({
 
 Package.registerBuildPlugin({
 	name: 'Livechat',
-	use: [],
+	use: [
+		'ecmascript',
+	],
 	sources: [
 		'plugin/build-livechat.js',
 	],
@@ -16,16 +18,17 @@ Package.registerBuildPlugin({
 	},
 });
 
-Npm.depends({
-	'ua-parser-js': '0.7.17',
-});
-
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'webapp',
 		'autoupdate',
 		'rocketchat:utils',
+		'rocketchat:action-links',
+		'rocketchat:ui-utils',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'rocketchat:models',
 		'rocketchat:lib',
 		'rocketchat:authorization',
 		'rocketchat:logger',

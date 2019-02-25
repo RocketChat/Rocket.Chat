@@ -9,7 +9,11 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:utils',
-		'rocketchat:lib',
+		'rocketchat:promises',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:notifications',
+		'rocketchat:ui-utils',
 		'tracker',
 		'reactive-var',
 		'templating',

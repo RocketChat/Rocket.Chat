@@ -2,7 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { Rooms } from 'meteor/rocketchat:models';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
 function Create(command, params, item) {
 	function getParams(str) {
@@ -18,7 +21,7 @@ function Create(command, params, item) {
 		return result;
 	}
 
-	const regexp = new RegExp(RocketChat.settings.get('UTF8_Names_Validation'));
+	const regexp = new RegExp(settings.get('UTF8_Names_Validation'));
 
 	if (command !== 'create' || !Match.test(params, String)) {
 		return;
@@ -30,9 +33,9 @@ function Create(command, params, item) {
 	}
 
 	const user = Meteor.users.findOne(Meteor.userId());
-	const room = RocketChat.models.Rooms.findOneByName(channel);
+	const room = Rooms.findOneByName(channel);
 	if (room != null) {
-		RocketChat.Notifications.notifyUser(Meteor.userId(), 'message', {
+		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date(),
@@ -51,7 +54,7 @@ function Create(command, params, item) {
 	Meteor.call('createChannel', channel, []);
 }
 
-RocketChat.slashCommands.add('create', Create, {
+slashCommands.add('create', Create, {
 	description: 'Create_A_New_Channel',
 	params: '#channel',
 });

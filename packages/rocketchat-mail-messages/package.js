@@ -11,6 +11,9 @@ Package.onUse(function(api) {
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:settings',
+		'rocketchat:models',
 		'rocketchat:authorization',
 		'templating',
 	]);
