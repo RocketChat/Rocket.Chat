@@ -302,7 +302,7 @@ Template.messageBox.events({
 	},
 	'paste .js-input-message'(event, instance) {
 		setTimeout(() => {
-			const { input } = instance;
+			const { input } = chatMessages[RoomManager.openedRoom];
 			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
 		}, 50);
 
@@ -345,7 +345,7 @@ Template.messageBox.events({
 		}
 	},
 	'click .js-send'(event, instance) {
-		const { input } = instance;
+		const { input } = chatMessages[RoomManager.openedRoom];
 		chatMessages[this._id].send(this._id, input, () => {
 			input.updateAutogrow();
 			instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
