@@ -40,7 +40,8 @@ Template.messageBoxNotSubscribed.events({
 		event.stopPropagation();
 		event.preventDefault();
 
-		const joinCode = Template.instance().$('[name=joinCode]').val();
+		const joinCodeInput = Template.instance().find('[name=joinCode]');
+		const joinCode = joinCodeInput && joinCodeInput.value;
 
 		try {
 			await call('joinRoom', this.rid, joinCode);
