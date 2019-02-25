@@ -32,3 +32,12 @@ RocketChat.API.v1.addRoute('smarti.result/:_token', { authRequired: false }, {
 		}
 	},
 });
+/**
+ * Add an incoming webhook '/google.search' to serve google custom search requets.
+ */
+RocketChat.API.v1.addRoute('google.search', { authRequired: true }, {
+
+	get() {
+		return SmartiAdapter.getGoogleResult(this.queryParams);
+	},
+});

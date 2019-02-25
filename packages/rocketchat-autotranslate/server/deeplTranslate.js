@@ -64,31 +64,39 @@ class DeeplAutoTranslate extends AutoTranslate {
 			return this.supportedLanguages[target] = [
 				{
 					language: 'en',
-					name: TAPi18n.__('English', { lng: target }),
+					name: TAPi18n.__('Language_English', { lng: target }),
 				},
 				{
 					language: 'de',
-					name: TAPi18n.__('German', { lng: target }),
+					name: TAPi18n.__('Language_German', { lng: target }),
 				},
 				{
 					language: 'fr',
-					name: TAPi18n.__('French', { lng: target }),
+					name: TAPi18n.__('Language_French', { lng: target }),
 				},
 				{
 					language: 'es',
-					name: TAPi18n.__('Spanish', { lng: target }),
+					name: TAPi18n.__('Language_Spanish', { lng: target }),
 				},
 				{
 					language: 'it',
-					name: TAPi18n.__('Italian', { lng: target }),
+					name: TAPi18n.__('Language_Italian', { lng: target }),
 				},
 				{
 					language: 'nl',
-					name: TAPi18n.__('Dutch', { lng: target }),
+					name: TAPi18n.__('Language_Dutch', { lng: target }),
 				},
 				{
 					language: 'pl',
-					name: TAPi18n.__('Polish', { lng: target }),
+					name: TAPi18n.__('Language_Polish', { lng: target }),
+				},
+				{
+					language: 'pt',
+					name: TAPi18n.__('Language_Portuguese', { lng: target }),
+				},
+				{
+					language: 'ru',
+					name: TAPi18n.__('Language_Russian', { lng: target }),
 				},
 			];
 		}
@@ -122,10 +130,11 @@ class DeeplAutoTranslate extends AutoTranslate {
 
 				if (result.statusCode === 200 && result.data && result.data.translations && Array.isArray(result.data.translations) && result.data.translations.length > 0) {
 					// store translation only when the source and target language are different.
-					if (result.data.translations.map((translation) => translation.detected_source_language).join() !== language) {
-						const txt = result.data.translations.map((translation) => translation.text);
-						translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
-					}
+					// multiple lines might contain different languages => Mix the text between source and detected target if neccessary
+					const translatedText = result.data.translations
+						.map((translation, index) => (translation.detected_source_language !== language ? translation.text : msgs[index]))
+						.join('\n');
+					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);

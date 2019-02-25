@@ -33,6 +33,7 @@ Package.onUse(function(api) {
 		'server/models/Messages.js',
 		'server/models/Settings.js',
 		'server/models/Subscriptions.js',
+		'server/methods/getProviderUiMetadata.js',
 		'server/methods/saveSettings.js',
 		'server/methods/translateMessage.js',
 		'server/methods/getSupportedLanguages.js',

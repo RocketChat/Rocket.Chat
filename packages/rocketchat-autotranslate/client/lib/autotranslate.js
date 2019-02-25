@@ -43,6 +43,10 @@ RocketChat.AutoTranslate = {
 			this.supportedLanguages = languages || [];
 		});
 
+		Meteor.call('autoTranslate.getProviderUiMetadata', (err, metadata) => {
+			this.providersMetadata = metadata;
+		});
+
 		Tracker.autorun(() => {
 			if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
 				RocketChat.callbacks.add('renderMessage', (message) => {

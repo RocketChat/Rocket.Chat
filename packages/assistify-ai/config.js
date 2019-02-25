@@ -97,7 +97,6 @@ Meteor.startup(() => {
 				enableQuery: [{ _id: 'Assistify_AI_Smarti_Inline_Highlighting_Enabled', value: true }],
 			});
 
-
 			this.add('Assistify_AI_Resync', 'triggerResync', {
 				type: 'action',
 				i18nDescription: 'Assistify_AI_Resync_Description',
@@ -137,6 +136,28 @@ Meteor.startup(() => {
 				i18nLabel: 'Assistify_AI_Smarti_Widget_i18n',
 				i18nDescription: 'Assistify_AI_Smarti_Widget_i18n_Description',
 				sorter: 200,
+			});
+		});
+		this.section('Assistify_AI_Google_CS', function() {
+			this.add('Assistify_AI_Google_CS_URL', '', {
+				type: 'string',
+				public: true,
+				i18nLabel: 'Assistify_AI_Google_CS_URL',
+				i18nDescription: 'Assistify_AI_Google_CS_URL_Description',
+			});
+
+			this.add('Assistify_AI_Google_CS_KEY', '', {
+				type: 'string',
+				public: true,
+				i18nLabel: 'Assistify_AI_Google_CS_KEY',
+				i18nDescription: 'Assistify_AI_Google_CS_KEY_Description',
+			});
+
+			this.add('Assistify_AI_Google_CS_ID', '', {
+				type: 'string',
+				public: true,
+				i18nLabel: 'Assistify_AI_Google_CS_ID',
+				i18nDescription: 'Assistify_AI_Google_CS_ID_Description',
 			});
 		});
 	};

@@ -170,6 +170,11 @@ Template.message.helpers({
 			return this.autoTranslateFetching || (subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language]);
 		}
 	},
+	translationProvider() {
+		const instance = Template.instance();
+		const { translationProvider } = instance.data;
+		return translationProvider && RocketChat.AutoTranslate.providersMetadata[translationProvider].displayName;
+	},
 	edited() {
 		return Template.instance().wasEdited;
 	},
