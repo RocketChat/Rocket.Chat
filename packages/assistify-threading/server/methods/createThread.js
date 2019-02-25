@@ -241,7 +241,7 @@ export const createThreadMessage = (rid, user, t_rid, msg, message_embedded) => 
 
 
 
-export const metionThreadMessage = (rid, user, msg, message_embedded) => {
+export const mentionThreadMessage = (rid, user, msg, message_embedded) => {
 	const welcomeMessage = {
 		msg,
 		rid,
@@ -316,7 +316,7 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 		});
 
 
-		metionThreadMessage(thread._id, user, reply, attachMessage(message_cloned, p_room));
+		mentionThreadMessage(thread._id, user, reply, attachMessage(message_cloned, p_room));
 
 		// Messages.insert({
 		// 	...message_cloned,

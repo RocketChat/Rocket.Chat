@@ -204,7 +204,7 @@ Template.CreateThread.events({
 
 		const { pmid } = instance;
 		const t_name = instance.threadName.get();
-		const users = instance.selectedUsers.get().map(({ _id }) => _id);
+		const users = instance.selectedUsers.get().map(({ username }) => username);
 
 		const prid = instance.parentChannelId.get();
 		const reply = instance.reply.get();
