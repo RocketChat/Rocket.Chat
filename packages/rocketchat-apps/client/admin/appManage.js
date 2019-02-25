@@ -30,42 +30,41 @@ async function getApps(instance) {
 			instance.hasError.set(true);
 			instance.theError.set(error.message);
 		}
-	} finally {
-		let remoteApp;
-		if (remoteApps && remoteApps.length) {
-			remoteApps = remoteApps.sort((a, b) => {
-				if (semver.gt(a.version, b.version)) {
-					return -1;
-				}
-				if (semver.lt(a.version, b.version)) {
-					return 1;
-				}
-				return 0;
-			});
-			remoteApp = remoteApps[0];
-		}
-
-		if (localApp) {
-			localApp.installed = true;
-			if (remoteApp) {
-				localApp.categories = remoteApp.categories;
-				if (semver.gt(remoteApp.version, localApp.version)) {
-					localApp.newVersion = remoteApp.version;
-				}
-			}
-
-			instance.onSettingUpdated({ appId: id });
-
-			Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
-			Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-			Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
-		}
-
-		instance.app.set(localApp || remoteApp);
-
-		instance.ready.set(true);
 	}
+	let remoteApp;
+	if (remoteApps && remoteApps.length) {
+		remoteApps = remoteApps.sort((a, b) => {
+			if (semver.gt(a.version, b.version)) {
+				return -1;
+			}
+			if (semver.lt(a.version, b.version)) {
+				return 1;
+			}
+			return 0;
+		});
+		remoteApp = remoteApps[0];
+	}
+
+	if (localApp) {
+		localApp.installed = true;
+		if (remoteApp) {
+			localApp.categories = remoteApp.categories;
+			if (semver.gt(remoteApp.version, localApp.version)) {
+				localApp.newVersion = remoteApp.version;
+			}
+		}
+
+		instance.onSettingUpdated({ appId: id });
+
+		Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+		Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+		Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+		Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+	}
+
+	instance.app.set(localApp || remoteApp);
+
+	instance.ready.set(true);
 }
 
 Template.appManage.onCreated(function() {
