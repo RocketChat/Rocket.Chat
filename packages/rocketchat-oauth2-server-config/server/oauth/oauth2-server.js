@@ -12,6 +12,9 @@ const oauth2server = new OAuth2Server({
 	debug: true,
 });
 
+oauth2server.app.disable('x-powered-by');
+oauth2server.routes.disable('x-powered-by');
+
 WebApp.connectHandlers.use(oauth2server.app);
 
 oauth2server.routes.get('/oauth/userinfo', function(req, res) {
