@@ -1,4 +1,9 @@
-# Assistify 0.9.6
+# Assistify 0.9.8
+
+- Various Auto Translation Fixes
+- Various other minor fixes
+
+# Assistify 0.9.7
 
 - Inline message keywords highlighting for smarti access
 - Additional permissions for Livechat users
