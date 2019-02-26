@@ -11,7 +11,9 @@ Package.onUse(function(api) {
 		'templating',
 		'ecmascript',
 		'konecty:change-case',
-		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
 		'rocketchat:utils',
 	]);
 	api.mainModule('client/index.js', 'client');

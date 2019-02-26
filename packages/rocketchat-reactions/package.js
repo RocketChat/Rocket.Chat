@@ -10,9 +10,13 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
+		'rocketchat:emoji',
+		'rocketchat:models',
+		'rocketchat:callbacks',
 		'rocketchat:theme',
-		'rocketchat:ui',
+		'rocketchat:tooltip',
+		'rocketchat:ui-utils',
+		'rocketchat:lib',
 	]);
 	api.addFiles('client/stylesheets/reaction.css', 'client');
 	api.mainModule('client/index.js', 'client');

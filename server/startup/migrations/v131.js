@@ -1,4 +1,7 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 131,
 	up() {
 		const userOptions = {
@@ -7,7 +10,7 @@ RocketChat.Migrations.add({
 			},
 		};
 
-		const users = RocketChat.models.Users.model.find({}, userOptions).fetch();
+		const users = Users.model.find({}, userOptions).fetch();
 		const userIds = users.map((user) => user._id);
 
 		const subscriptionQuery = {
@@ -24,21 +27,21 @@ RocketChat.Migrations.add({
 			},
 		};
 
-		const subscriptions = RocketChat.models.Subscriptions.find(subscriptionQuery, subscriptionOptions);
+		const subscriptions = Subscriptions.find(subscriptionQuery, subscriptionOptions);
 
 		subscriptions.forEach((subscription) => {
-			const room = RocketChat.models.Rooms.findOneById(subscription.rid);
+			const room = Rooms.findOneById(subscription.rid);
 			if (room) {
 				// Remove direct messages and also non-channel rooms with only 1 user (the one being deleted)
-				if (room.t === 'd' || (room.t !== 'c' && RocketChat.models.Subscriptions.findByRoomId(room._id).count() === 1)) {
-					RocketChat.models.Subscriptions.removeByRoomId(subscription.rid);
-					RocketChat.models.Messages.removeFilesByRoomId(subscription.rid);
-					RocketChat.models.Messages.removeByRoomId(subscription.rid);
-					RocketChat.models.Rooms.removeById(subscription.rid);
+				if (room.t === 'd' || (room.t !== 'c' && Subscriptions.findByRoomId(room._id).count() === 1)) {
+					Subscriptions.removeByRoomId(subscription.rid);
+					Messages.removeFilesByRoomId(subscription.rid);
+					Messages.removeByRoomId(subscription.rid);
+					Rooms.removeById(subscription.rid);
 				}
 			}
 
-			RocketChat.models.Subscriptions.model.remove({ _id: subscription._id.toString() });
+			Subscriptions.model.remove({ _id: subscription._id.toString() });
 		});
 	},
 });

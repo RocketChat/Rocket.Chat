@@ -1,3 +1,7 @@
+import { metrics } from 'meteor/rocketchat:metrics';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+
 export function shouldNotifyAudio({
 	disableAllMessageNotifications,
 	status,
@@ -17,7 +21,7 @@ export function shouldNotifyAudio({
 		return false;
 	}
 
-	if (!audioNotifications && RocketChat.settings.get('Accounts_Default_User_Preferences_audioNotifications') === 'all') {
+	if (!audioNotifications && settings.get('Accounts_Default_User_Preferences_audioNotifications') === 'all') {
 		return true;
 	}
 
@@ -25,8 +29,8 @@ export function shouldNotifyAudio({
 }
 
 export function notifyAudioUser(userId, message, room) {
-	RocketChat.metrics.notificationsSent.inc({ notification_type: 'audio' });
-	RocketChat.Notifications.notifyUser(userId, 'audioNotification', {
+	metrics.notificationsSent.inc({ notification_type: 'audio' });
+	Notifications.notifyUser(userId, 'audioNotification', {
 		payload: {
 			_id: message._id,
 			rid: message.rid,

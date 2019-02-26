@@ -1,13 +1,5 @@
 import './startup';
-import './models/Messages';
-import './models/Rooms';
-import './functions/saveReactWhenReadOnly';
-import './functions/saveRoomAnnouncement';
-import './functions/saveRoomCustomFields';
-import './functions/saveRoomDescription';
-import './functions/saveRoomName';
-import './functions/saveRoomReadOnly';
-import './functions/saveRoomSystemMessages';
-import './functions/saveRoomTopic';
-import './functions/saveRoomType';
+export { saveRoomTopic } from './functions/saveRoomTopic';
+export { saveStreamingOptions } from './functions/saveStreamingOptions';
+export { saveRoomName } from './functions/saveRoomName';
 import './methods/saveRoomSettings';

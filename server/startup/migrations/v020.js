@@ -1,4 +1,7 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Messages, Uploads } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 20,
 	up() {
 		/*
@@ -25,12 +28,12 @@ RocketChat.Migrations.add({
 			},
 		};
 
-		const cursorFileMessages = RocketChat.models.Messages.find(msgQuery, msgOptions);
+		const cursorFileMessages = Messages.find(msgQuery, msgOptions);
 		if (!cursorFileMessages.count()) {
 			return;
 		}
 
-		cursorFileMessages.fetch().forEach((msg) => RocketChat.models.Uploads.update({
+		cursorFileMessages.fetch().forEach((msg) => Uploads.update({
 			_id: msg.file && msg.file._id,
 		}, {
 			$set: {

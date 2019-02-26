@@ -4,9 +4,9 @@ import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { modal } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
+import { hasAtLeastOnePermission, hasAllPermission } from 'meteor/rocketchat:authorization';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import { ChatIntegrations } from '../collections';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
@@ -19,7 +19,7 @@ Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated(
 
 Template.integrationsIncoming.helpers({
 	hasPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
 	},
 
 	data() {
@@ -27,9 +27,9 @@ Template.integrationsIncoming.helpers({
 
 		if (params && params.id) {
 			let data;
-			if (RocketChat.authz.hasAllPermission('manage-integrations')) {
+			if (hasAllPermission('manage-integrations')) {
 				data = ChatIntegrations.findOne({ _id: params.id });
-			} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
+			} else if (hasAllPermission('manage-own-integrations')) {
 				data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
 			}
 

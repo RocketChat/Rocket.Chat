@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
-RocketChat.saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalance) {
+export const saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalance) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomTokensMinimumBalance',
@@ -12,5 +12,5 @@ RocketChat.saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalance
 
 	const minimumTokenBalance = parseFloat(s.escapeHTML(roomTokensMinimumBalance));
 
-	return RocketChat.models.Rooms.setMinimumTokenBalanceById(rid, minimumTokenBalance);
+	return Rooms.setMinimumTokenBalanceById(rid, minimumTokenBalance);
 };

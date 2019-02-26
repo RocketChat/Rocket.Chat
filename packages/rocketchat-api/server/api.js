@@ -2,20 +2,25 @@ import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { Restivus } from 'meteor/nimble:restivus';
 import { Logger } from 'meteor/rocketchat:logger';
+import { settings } from 'meteor/rocketchat:settings';
+import { metrics } from 'meteor/rocketchat:metrics';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import { RateLimiter } from 'meteor/rate-limit';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 
 const logger = new Logger('API', {});
 const rateLimiterDictionary = {};
 const defaultRateLimiterOptions = {
-	numRequestsAllowed: RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
-	intervalTimeInMS: RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
 
-class API extends Restivus {
+export let API = {};
+
+class APIClass extends Restivus {
 	constructor(properties) {
 		super(properties);
 		this.authMethods = [];
@@ -48,15 +53,15 @@ class API extends Restivus {
 	}
 
 	hasHelperMethods() {
-		return RocketChat.API.helperMethods.size !== 0;
+		return API.helperMethods.size !== 0;
 	}
 
 	getHelperMethods() {
-		return RocketChat.API.helperMethods;
+		return API.helperMethods;
 	}
 
 	getHelperMethod(name) {
-		return RocketChat.API.helperMethods.get(name);
+		return API.helperMethods.get(name);
 	}
 
 	addAuthMethod(method) {
@@ -123,6 +128,16 @@ class API extends Restivus {
 		};
 	}
 
+	tooManyRequests(msg) {
+		return {
+			statusCode: 429,
+			body: {
+				success: false,
+				error: msg ? msg : 'Too many requests',
+			},
+		};
+	}
+
 	addRateLimiterRuleForRoutes({ routes, rateLimiterOptions, endpoints, apiVersion }) {
 		if (!rateLimiterOptions.numRequestsAllowed) {
 			throw new Meteor.Error('You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint');
@@ -159,6 +174,17 @@ class API extends Restivus {
 			options = {};
 		}
 
+		let shouldVerifyPermissions;
+
+		if (!_.isArray(options.permissionsRequired)) {
+			logger.warn('Invalid value for permissionsRequired');
+			options.permissionsRequired = undefined;
+			shouldVerifyPermissions = false;
+		} else {
+			shouldVerifyPermissions = !!options.permissionsRequired.length;
+		}
+
+
 		// Allow for more than one route using the same option and endpoints
 		if (!_.isArray(routes)) {
 			routes = [routes];
@@ -182,7 +208,7 @@ class API extends Restivus {
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
 				endpoints[method].action = function _internalRouteActionHandler() {
-					const rocketchatRestApiEnd = RocketChat.metrics.rocketchatRestApi.startTimer({
+					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
 						user_agent: this.request.headers['user-agent'],
@@ -198,8 +224,8 @@ class API extends Restivus {
 					let result;
 					try {
 						const shouldVerifyRateLimit = rateLimiterDictionary.hasOwnProperty(objectForRateLimitMatch.route)
-							&& (!this.userId || !RocketChat.authz.hasPermission(this.userId, 'api-bypass-rate-limit'))
-							&& ((process.env.NODE_ENV === 'development' && RocketChat.settings.get('API_Enable_Rate_Limiter_Dev') === true) || process.env.NODE_ENV !== 'development');
+							&& (!this.userId || !hasPermission(this.userId, 'api-bypass-rate-limit'))
+							&& ((process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') === true) || process.env.NODE_ENV !== 'development');
 						if (shouldVerifyRateLimit) {
 							rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 							const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
@@ -214,12 +240,26 @@ class API extends Restivus {
 								});
 							}
 						}
+
+						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
+							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
+								permissions: options.permissionsRequired,
+							});
+						}
+
 						result = originalAction.apply(this);
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
-						result = RocketChat.API.v1.failure(e.message, e.error);
+
+						const apiMethod = {
+							'error-too-many-requests': 'tooManyRequests',
+							'error-unauthorized': 'unauthorized',
+						}[e.error] || 'failure';
+
+						result = API.v1[apiMethod](e.message, e.error);
 					}
-					result = result || RocketChat.API.v1.success();
+
+					result = result || API.v1.success();
 
 					rocketchatRestApiEnd({
 						status: result.statusCode,
@@ -413,8 +453,8 @@ const getUserAuth = function _getUserAuth(...args) {
 				this.bodyParams = JSON.parse(this.bodyParams.payload);
 			}
 
-			for (let i = 0; i < RocketChat.API.v1.authMethods.length; i++) {
-				const method = RocketChat.API.v1.authMethods[i];
+			for (let i = 0; i < API.v1.authMethods.length; i++) {
+				const method = API.v1.authMethods[i];
 
 				if (typeof method === 'function') {
 					const result = method.apply(this, args);
@@ -437,17 +477,17 @@ const getUserAuth = function _getUserAuth(...args) {
 	};
 };
 
-RocketChat.API = {
+API = {
 	helperMethods: new Map(),
 	getUserAuth,
-	ApiClass: API,
+	ApiClass: APIClass,
 };
 
 const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
-		if (RocketChat.settings.get('API_Enable_CORS') === true) {
+		if (settings.get('API_Enable_CORS') === true) {
 			this.response.writeHead(200, {
-				'Access-Control-Allow-Origin': RocketChat.settings.get('API_CORS_Origin'),
+				'Access-Control-Allow-Origin': settings.get('API_CORS_Origin'),
 				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
 				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
 			});
@@ -462,8 +502,8 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 };
 
 const createApi = function _createApi(enableCors) {
-	if (!RocketChat.API.v1 || RocketChat.API.v1._config.enableCors !== enableCors) {
-		RocketChat.API.v1 = new API({
+	if (!API.v1 || API.v1._config.enableCors !== enableCors) {
+		API.v1 = new APIClass({
 			version: 'v1',
 			useDefaultAuth: true,
 			prettyJson: process.env.NODE_ENV === 'development',
@@ -473,8 +513,8 @@ const createApi = function _createApi(enableCors) {
 		});
 	}
 
-	if (!RocketChat.API.default || RocketChat.API.default._config.enableCors !== enableCors) {
-		RocketChat.API.default = new API({
+	if (!API.default || API.default._config.enableCors !== enableCors) {
+		API.default = new APIClass({
 			useDefaultAuth: true,
 			prettyJson: process.env.NODE_ENV === 'development',
 			enableCors,
@@ -485,19 +525,19 @@ const createApi = function _createApi(enableCors) {
 };
 
 // register the API to be re-created once the CORS-setting changes.
-RocketChat.settings.get('API_Enable_CORS', (key, value) => {
+settings.get('API_Enable_CORS', (key, value) => {
 	createApi(value);
 });
 
-RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
+settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
 	defaultRateLimiterOptions.intervalTimeInMS = value;
 	createApi(value);
 });
 
-RocketChat.settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
+settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	createApi(value);
 });
 
 // also create the API immediately
-createApi(!!RocketChat.settings.get('API_Enable_CORS'));
+createApi(!!settings.get('API_Enable_CORS'));

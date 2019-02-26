@@ -2,17 +2,19 @@ import querystring from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { settings } from 'meteor/rocketchat:settings';
+import { Settings, Users } from 'meteor/rocketchat:models';
 
 import { getRedirectUri } from './getRedirectUri';
 
 export function finishOAuthAuthorization(code, state) {
-	if (RocketChat.settings.get('Cloud_Workspace_Registration_State') !== state) {
+	if (settings.get('Cloud_Workspace_Registration_State') !== state) {
 		throw new Meteor.Error('error-invalid-state', 'Invalid state provided', { method: 'cloud:finishOAuthAuthorization' });
 	}
 
-	const cloudUrl = RocketChat.settings.get('Cloud_Url');
-	const clientId = RocketChat.settings.get('Cloud_Workspace_Client_Id');
-	const clientSecret = RocketChat.settings.get('Cloud_Workspace_Client_Secret');
+	const cloudUrl = settings.get('Cloud_Url');
+	const clientId = settings.get('Cloud_Workspace_Client_Id');
+	const clientSecret = settings.get('Cloud_Workspace_Client_Secret');
 
 	let result;
 	try {
@@ -33,8 +35,8 @@ export function finishOAuthAuthorization(code, state) {
 	const expiresAt = new Date();
 	expiresAt.setSeconds(expiresAt.getSeconds() + result.data.expires_in);
 
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Account_Associated', true);
-	RocketChat.models.Users.update({ _id: Meteor.userId() }, {
+	Settings.updateValueById('Cloud_Workspace_Account_Associated', true);
+	Users.update({ _id: Meteor.userId() }, {
 		$set: {
 			'services.cloud': {
 				accessToken: result.data.access_token,

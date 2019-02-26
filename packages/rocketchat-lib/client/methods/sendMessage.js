@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import { ChatMessage } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { promises } from 'meteor/rocketchat:promises';
 import s from 'underscore.string';
 
 Meteor.methods({
@@ -14,17 +17,17 @@ Meteor.methods({
 			_id: Meteor.userId(),
 			username: user.username,
 		};
-		if (RocketChat.settings.get('UI_Use_Real_Name')) {
+		if (settings.get('UI_Use_Real_Name')) {
 			message.u.name = user.name;
 		}
 		message.temp = true;
-		if (RocketChat.settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.get('Message_Read_Receipt_Enabled')) {
 			message.unread = true;
 		}
-		message = RocketChat.callbacks.run('beforeSaveMessage', message);
-		RocketChat.promises.run('onClientMessageReceived', message).then(function(message) {
+		message = callbacks.run('beforeSaveMessage', message);
+		promises.run('onClientMessageReceived', message).then(function(message) {
 			ChatMessage.insert(message);
-			return RocketChat.callbacks.run('afterSaveMessage', message);
+			return callbacks.run('afterSaveMessage', message);
 		});
 	},
 });

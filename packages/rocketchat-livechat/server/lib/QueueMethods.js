@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import { sendNotification } from 'meteor/rocketchat:lib';
+import { LivechatInquiry } from '../../lib/LivechatInquiry';
+import { Livechat } from './Livechat';
 
-RocketChat.QueueMethods = {
+export const QueueMethods = {
 	/* Least Amount Queuing method:
 	 *
 	 * default method where the agent with the least number
@@ -12,13 +15,13 @@ RocketChat.QueueMethods = {
 	 */
 	'Least_Amount'(guest, message, roomInfo, agent) {
 		if (!agent) {
-			agent = RocketChat.Livechat.getNextAgent(guest.department);
+			agent = Livechat.getNextAgent(guest.department);
 			if (!agent) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 		}
 
-		RocketChat.models.Rooms.updateLivechatRoomCount();
+		Rooms.updateLivechatRoomCount();
 
 		const room = _.extend({
 			_id: message.rid,
@@ -67,13 +70,13 @@ RocketChat.QueueMethods = {
 			room.departmentId = guest.department;
 		}
 
-		RocketChat.models.Rooms.insert(room);
+		Rooms.insert(room);
 
-		RocketChat.models.Subscriptions.insert(subscriptionData);
+		Subscriptions.insert(subscriptionData);
 
-		RocketChat.Livechat.stream.emit(room._id, {
+		Livechat.stream.emit(room._id, {
 			type: 'agentData',
-			data: RocketChat.models.Users.getAgentInfo(agent.agentId),
+			data: Users.getAgentInfo(agent.agentId),
 		});
 
 		return room;
@@ -88,17 +91,17 @@ RocketChat.QueueMethods = {
 	 * only the client until paired with an agent
 	 */
 	'Guest_Pool'(guest, message, roomInfo) {
-		let agents = RocketChat.Livechat.getOnlineAgents(guest.department);
+		let agents = Livechat.getOnlineAgents(guest.department);
 
-		if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
-			agents = RocketChat.Livechat.getAgents(guest.department);
+		if (agents.count() === 0 && settings.get('Livechat_guest_pool_with_no_agents')) {
+			agents = Livechat.getAgents(guest.department);
 		}
 
 		if (agents.count() === 0) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
-		RocketChat.models.Rooms.updateLivechatRoomCount();
+		Rooms.updateLivechatRoomCount();
 
 		const agentIds = [];
 
@@ -151,8 +154,8 @@ RocketChat.QueueMethods = {
 			room.departmentId = guest.department;
 		}
 
-		RocketChat.models.LivechatInquiry.insert(inquiry);
-		RocketChat.models.Rooms.insert(room);
+		LivechatInquiry.insert(inquiry);
+		Rooms.insert(room);
 
 		// Alert the agents of the queued request
 		agentIds.forEach((agentId) => {
