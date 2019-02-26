@@ -22,7 +22,7 @@ class FederationKeysModel extends Base {
 	}
 
 	generateKeys() {
-		logger.info('[federation] Generating key pairs');
+		logger.info('Generating key pairs');
 
 		const key = new NodeRSA({ b: 512 });
 

@@ -27,7 +27,7 @@ class PeerServer {
 	}
 
 	log(message) {
-		logger.info(`[server] ${ message }`);
+		logger.peerServer.info(message);
 	}
 
 	disable() {

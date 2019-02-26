@@ -42,7 +42,7 @@ class PeerClient {
 	}
 
 	log(message) {
-		logger.info(`[client] ${ message }`);
+		logger.peerClient.info(message);
 	}
 
 	disable() {

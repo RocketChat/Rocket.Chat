@@ -66,7 +66,7 @@ class PeerHTTP {
 	}
 
 	log(message) {
-		logger.info(`[http] ${ message }`);
+		logger.http.info(message);
 	}
 
 	//

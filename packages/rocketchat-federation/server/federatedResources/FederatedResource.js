@@ -1,3 +1,5 @@
+import { logger } from '../logger';
+
 class FederatedResource {
 	constructor(name) {
 		this.resourceName = `federated-${ name }`;
@@ -11,7 +13,7 @@ class FederatedResource {
 }
 
 FederatedResource.log = function log(name, message) {
-	console.log(`[${ name }] ${ message }`);
+	logger.resource.info(`[${ name }] ${ message }`);
 };
 
 export default FederatedResource;

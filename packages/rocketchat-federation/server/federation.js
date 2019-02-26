@@ -69,12 +69,12 @@ const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	const _peerUrl = settings.get('Site_Url');
 
 	if (!_domain || !_discoveryMethod || !_hubUrl || !_peerUrl) {
-		logger.error('Could not enable Federation, settings are not fully set');
+		logger.setup.error('Could not enable Federation, settings are not fully set');
 
 		return;
 	}
 
-	logger.info('Updating settings...');
+	logger.setup.info('Updating settings...');
 
 	// Normalize the config values
 	const config = {
@@ -132,7 +132,7 @@ function enableOrDisable() {
 		// Disable federation
 		Federation.enabled = false;
 
-		logger.info('Shutting down...');
+		logger.setup.info('Shutting down...');
 
 		return;
 	}
@@ -140,7 +140,7 @@ function enableOrDisable() {
 	// If not enabled, skip
 	if (!_enabled) { return; }
 
-	logger.info('Booting...');
+	logger.setup.info('Booting...');
 
 	updateSettings();
 }

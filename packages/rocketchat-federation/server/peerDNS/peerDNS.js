@@ -25,7 +25,7 @@ class PeerDNS {
 	}
 
 	log(message) {
-		logger.info(`[dns] ${ message }`);
+		logger.dns.info(message);
 	}
 
 	// ########
