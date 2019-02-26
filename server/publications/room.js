@@ -41,6 +41,7 @@ const fields = {
 	broadcast: 1,
 	encrypted: 1,
 	e2eKeyId: 1,
+	roles:1,
 };
 
 const roomMap = (record) => {

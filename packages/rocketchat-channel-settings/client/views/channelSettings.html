@@ -429,9 +429,11 @@
 <template name="customGroupNotifs">
 	<ul class="room-roles">
 		{{#each role in roles}}
-			<li>
-				{{role}}
-			</li>
+			<div class="background-transparent-dark-hover rc-user-info__row">
+				<li>
+					{{role}}
+				</li>
+			</div>
 		{{/each}}
 	</ul>
 	<div class="rc-user-info__row">

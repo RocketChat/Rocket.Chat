@@ -136,7 +136,9 @@ const fixRoomName = (old) => {
 Template.customGroupNotifs.onCreated(function() {
 	console.log(this.data);
 	this.room = ChatRoom.findOne(this.data && this.data.rid);
+	console.log(this.room);
 	this.role = new ReactiveVar('');
+	Session.set('roles', this.room.roles);
 });
 
 Template.customGroupNotifs.helpers({
