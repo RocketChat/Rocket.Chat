@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Federation } from '../federation';
+import { Federation } from './federation';
 
-import { logger } from '../logger.js';
-import { FederationDNSCache } from '../models/FederationDNSCache';
+import { logger } from './logger.js';
+import { FederationDNSCache } from './models/FederationDNSCache';
 
 import dns from 'dns';
 
