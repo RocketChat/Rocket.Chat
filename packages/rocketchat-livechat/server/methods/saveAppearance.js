@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings as rcSettings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
@@ -32,7 +33,7 @@ Meteor.methods({
 		}
 
 		settings.forEach((setting) => {
-			settings.updateById(setting._id, setting.value);
+			rcSettings.updateById(setting._id, setting.value);
 		});
 
 		return;
