@@ -150,9 +150,7 @@
 	border-bottom: 1px dashed;
 }
 
-.recognized-term::after {
-	content: "\2197";
-	vertical-align: super;
-
-	font-size: 60%;
+.recognized-term .text:hover {
+	color: #006b61;
+	border-style: solid;
 }
