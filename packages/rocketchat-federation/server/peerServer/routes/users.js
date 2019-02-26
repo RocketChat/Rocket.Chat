@@ -1,7 +1,7 @@
 import { API } from 'meteor/rocketchat:api';
 import { Users } from 'meteor/rocketchat:models';
 
-import FederationUser from '../../../federatedResources/FederatedUser';
+import FederationUser from '../../federatedResources/FederatedUser';
 
 export default function usersRoutes() {
 	const self = this;

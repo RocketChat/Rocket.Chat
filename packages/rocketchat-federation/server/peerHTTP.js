@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Federation } from '../federation';
+import { Federation } from './federation';
 
-import { logger } from '../logger.js';
+import { logger } from './logger.js';
 
 function handleRequestError(peer, err) {
 	if (err.code !== 'ENOTFOUND') {
