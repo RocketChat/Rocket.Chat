@@ -41,7 +41,7 @@ Template.visitorInfo.helpers({
 	},
 
 	department() {
-		return Template.instance().department.get();
+		return LivechatDepartment.findOne({ _id: Template.instance().departmentId.get() });
 	},
 
 	joinTags() {
@@ -250,17 +250,16 @@ Template.visitorInfo.onCreated(function() {
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {
-			const room = Rooms.findOne(currentData.rid);
+			const room = Rooms.findOne({ _id: currentData.rid });
 			this.visitorId.set(room && room.v && room.v._id);
 			this.departmentId.set(room && room.departmentId);
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid: currentData.rid });
-		this.subscribe('livechat:departments');
+		this.subscribe('livechat:departments', this.departmentId.get());
 	}
 
 	this.autorun(() => {
 		this.user.set(LivechatVisitor.findOne({ _id: this.visitorId.get() }));
-		this.department.set(LivechatDepartment.findOne({ _id: this.departmentId.get() }));
 	});
 });
