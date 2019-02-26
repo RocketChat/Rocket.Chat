@@ -8,6 +8,7 @@ import PeerClient from './peerClient';
 import PeerDNS from './peerDNS';
 import PeerHTTP from './peerHTTP';
 import PeerServer from './peerServer';
+import SettingsUpdater from './settingsUpdater';
 import { FederationKeys } from './models/FederationKeys';
 
 export const Federation = {
@@ -69,6 +70,8 @@ const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	const _peerUrl = settings.get('Site_Url');
 
 	if (!_domain || !_discoveryMethod || !_hubUrl || !_peerUrl) {
+		SettingsUpdater.updateStatus('Could not enable, settings are not fully set');
+
 		logger.error('Could not enable Federation, settings are not fully set');
 
 		return;
@@ -112,12 +115,17 @@ const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	Federation.peerClient.setConfig(config);
 	Federation.peerClient.enable();
 
-	// Register the client
-	Federation.peerClient.register();
-
 	// Set server
 	Federation.peerServer.setConfig(config);
 	Federation.peerServer.enable();
+
+	// Register the client
+	if (Federation.peerClient.register()) {
+		SettingsUpdater.updateStatus('Running');
+	} else {
+		SettingsUpdater.updateNextStatusTo('Disabled, could not register with Hub');
+		SettingsUpdater.updateEnabled(false);
+	}
 }), 150);
 
 function enableOrDisable() {
@@ -132,15 +140,22 @@ function enableOrDisable() {
 		// Disable federation
 		Federation.enabled = false;
 
+		SettingsUpdater.updateStatus('Disabled');
+
 		logger.info('Shutting down...');
 
 		return;
 	}
 
 	// If not enabled, skip
-	if (!_enabled) { return; }
+	if (!_enabled) {
+		SettingsUpdater.updateStatus('Disabled');
+		return;
+	}
 
 	logger.info('Booting...');
+
+	SettingsUpdater.updateStatus('Booting...');
 
 	updateSettings();
 }

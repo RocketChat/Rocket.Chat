@@ -1281,6 +1281,7 @@
   "FEDERATION_Hub_URL_Description": "Set the hub URL, for example: https://hub.rocket.chat. Ports are accepted as well.",
   "FEDERATION_Unique_Id": "Unique ID",
   "FEDERATION_Unique_Id_Description": "This is your federation unique ID, used to identify your peer on the mesh.",
+  "FEDERATION_Status": "Status",
   "Field": "Field",
   "Field_removed": "Field removed",
   "Field_required": "Field required",

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Federation } from './federation';
+import SettingsUpdater from './settingsUpdater';
 
 import { logger } from './logger.js';
 import { FederationDNSCache } from './models/FederationDNSCache';
@@ -40,14 +41,17 @@ class PeerDNS {
 
 		// Attempt to register peer
 		try {
-			Federation.peerHTTP.simpleRequest(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key });
+			Federation.peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key }, { total: 5, stepSize: 1000, tryToUpdateDNS: false });
 
 			this.log('Peer registered!');
+
+			SettingsUpdater.updateStatus('Running, registered to Hub');
 
 			return true;
 		} catch (err) {
 			this.log(err);
-			this.log('Could not register peer, federation is NOT running.');
+
+			this.log('Could not register peer');
 
 			return false;
 		}
