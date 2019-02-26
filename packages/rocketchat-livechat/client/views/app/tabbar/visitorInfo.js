@@ -238,7 +238,6 @@ Template.visitorInfo.onCreated(function() {
 	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
 	this.departmentId = new ReactiveVar(null);
-	this.department = new ReactiveVar();
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
