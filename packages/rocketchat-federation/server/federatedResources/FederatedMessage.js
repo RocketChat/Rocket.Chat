@@ -150,8 +150,8 @@ class FederatedMessage extends FederatedResource {
 
 			// Normalize mentions
 			for (const mention of localMessage.mentions) {
-				// Ignore if we are dealing with all or here
-				if (['all', 'here'].indexOf(mention.username) !== -1) { continue; }
+				// Ignore if we are dealing with all, here or rocket.cat
+				if (['all', 'here', 'rocket.cat'].indexOf(mention.username) !== -1) { continue; }
 
 				let usernameToReplace = '';
 

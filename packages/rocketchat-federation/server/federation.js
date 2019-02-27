@@ -75,6 +75,10 @@ Federation.peerServer = new PeerServer();
 Federation.peerServer.start();
 
 const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
+	const _enabled = settings.get('FEDERATION_Enabled');
+
+	if (!_enabled) { return; }
+
 	// If it is enabled, check if the settings are there
 	const _uniqueId = settings.get('FEDERATION_Unique_Id');
 	const _domain = settings.get('FEDERATION_Domain');

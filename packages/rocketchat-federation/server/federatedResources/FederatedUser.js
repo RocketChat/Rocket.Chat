@@ -63,7 +63,7 @@ class FederatedUser extends FederatedResource {
 
 		const localUser = Object.assign({}, user);
 
-		if (federation.peer === localPeerIdentifier) {
+		if (federation.peer === localPeerIdentifier || user.username === 'rocket.cat') {
 			localUser.username = user.username.split('@')[0];
 			localUser.name = user.name.split('@')[0];
 		}
