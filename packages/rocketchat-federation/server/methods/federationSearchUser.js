@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import PeerClient from '../peerClient';
+import { Federation } from '../federation';
 
 export function findFederatedUser(email) {
 	const [username, domain] = email.split('@');
@@ -14,7 +14,7 @@ export function findFederatedUser(email) {
 		searchParameters.email = email;
 	}
 
-	return PeerClient.findUser(searchParameters);
+	return Federation.peerClient.findUser(searchParameters);
 }
 
 Meteor.methods({
