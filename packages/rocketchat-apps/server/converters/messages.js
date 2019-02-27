@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+import { Messages, Rooms, Users } from 'meteor/rocketchat:models';
 
 export class AppMessagesConverter {
 	constructor(orch) {
@@ -6,7 +7,7 @@ export class AppMessagesConverter {
 	}
 
 	convertById(msgId) {
-		const msg = RocketChat.models.Messages.findOneById(msgId);
+		const msg = Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
@@ -59,7 +60,7 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(message.room.id);
+		const room = Rooms.findOneById(message.room.id);
 
 		if (!room) {
 			throw new Error('Invalid room provided on the message.');
@@ -67,7 +68,7 @@ export class AppMessagesConverter {
 
 		let u;
 		if (message.sender && message.sender.id) {
-			const user = RocketChat.models.Users.findOneById(message.sender.id);
+			const user = Users.findOneById(message.sender.id);
 
 			if (user) {
 				u = {
@@ -86,7 +87,7 @@ export class AppMessagesConverter {
 
 		let editedBy;
 		if (message.editor) {
-			const editor = RocketChat.models.Users.findOneById(message.editor.id);
+			const editor = Users.findOneById(message.editor.id);
 			editedBy = {
 				_id: editor._id,
 				username: editor.username,

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Messages } from 'meteor/rocketchat:models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/editMessage.graphqls';
@@ -7,7 +7,7 @@ import schema from '../../schemas/messages/editMessage.graphqls';
 const resolver = {
 	Mutation: {
 		editMessage: authenticated((root, { id, content }, { user }) => {
-			const msg = RocketChat.models.Messages.findOneById(id.messageId);
+			const msg = Messages.findOneById(id.messageId);
 
 			// Ensure the message exists
 			if (!msg) {
@@ -23,7 +23,7 @@ const resolver = {
 				Meteor.call('updateMessage', { _id: msg._id, msg: content, rid: msg.rid });
 			});
 
-			return RocketChat.models.Messages.findOneById(msg._id);
+			return Messages.findOneById(msg._id);
 		}),
 	},
 };

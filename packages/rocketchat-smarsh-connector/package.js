@@ -8,8 +8,12 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'jalik:ufs',
+		'littledata:synced-cron',
+		'rocketchat:mailer',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
+		'rocketchat:settings',
 	]);
-	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
