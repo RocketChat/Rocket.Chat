@@ -1,4 +1,4 @@
-import { Base } from 'meteor/rocketchat:models';
+import { Base } from './_Base';
 
 class FederationDNSCacheModel extends Base {
 	constructor() {

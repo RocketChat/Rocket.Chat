@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { FederationDNSCache } from 'meteor/rocketchat:models';
 
 import { Federation } from './federation';
 import SettingsUpdater from './settingsUpdater';
 
 import { logger } from './logger';
-import { FederationDNSCache } from './models/FederationDNSCache';
 
 import dns from 'dns';
 

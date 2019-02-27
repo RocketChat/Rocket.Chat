@@ -1,7 +1,7 @@
 import { API } from 'meteor/rocketchat:api';
-import { Federation } from '../../../federation';
+import { FederationKeys } from 'meteor/rocketchat:models';
 
-import { FederationKeys } from '../../../models/FederationKeys';
+import { Federation } from '../../../federation';
 
 export default function eventsRoutes() {
 	const self = this;

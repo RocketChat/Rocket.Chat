@@ -20,9 +20,3 @@ Package.onUse(function(api) {
 
 	api.mainModule('server/federation.js', 'server');
 });
-
-Npm.depends({
-	'queue-fifo': '0.2.5',
-	'node-rsa': '1.0.2',
-	uuid: '3.3.2',
-});

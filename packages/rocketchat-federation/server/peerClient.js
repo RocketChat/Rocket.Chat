@@ -2,7 +2,7 @@ import qs from 'querystring';
 import { Meteor } from 'meteor/meteor';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { settings } from 'meteor/rocketchat:settings';
-import { Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 
 import { Federation } from './federation';
 import SettingsUpdater from './settingsUpdater';
@@ -11,8 +11,6 @@ import { logger } from './logger';
 import FederatedMessage from './federatedResources/FederatedMessage';
 import FederatedRoom from './federatedResources/FederatedRoom';
 import FederatedUser from './federatedResources/FederatedUser';
-import { FederationEvents } from './models/FederationEvents';
-import { FederationKeys } from './models/FederationKeys';
 
 class PeerClient {
 	constructor() {

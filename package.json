@@ -180,6 +180,7 @@
 		"moment": "^2.22.2",
 		"moment-timezone": "^0.5.23",
 		"node-dogstatsd": "^0.0.7",
+		"node-rsa": "^1.0.3",
 		"object-path": "^0.11.4",
 		"pdfjs-dist": "^2.0.943",
 		"photoswipe": "^4.1.2",

@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { settings } from 'meteor/rocketchat:settings';
 import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { FederationKeys } from 'meteor/rocketchat:models';
 
 import './methods';
 import { logger } from './logger';
@@ -12,7 +13,6 @@ import PeerDNS from './peerDNS';
 import PeerHTTP from './peerHTTP';
 import PeerServer from './peerServer';
 import SettingsUpdater from './settingsUpdater';
-import { FederationKeys } from './models/FederationKeys';
 
 export const Federation = {
 	enabled: false,

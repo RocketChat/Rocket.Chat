@@ -1,8 +1,7 @@
 import NodeRSA from 'node-rsa';
 import uuid from 'uuid/v4';
-import { Base } from 'meteor/rocketchat:models';
 
-import { logger } from '../logger.js';
+import { Base } from './_Base';
 
 class FederationKeysModel extends Base {
 	constructor() {
@@ -22,8 +21,6 @@ class FederationKeysModel extends Base {
 	}
 
 	generateKeys() {
-		logger.info('Generating key pairs');
-
 		const key = new NodeRSA({ b: 512 });
 
 		key.generateKeyPair();
