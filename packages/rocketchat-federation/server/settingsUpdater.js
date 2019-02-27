@@ -4,17 +4,17 @@ class SettingsUpdater {
 }
 
 SettingsUpdater.updateStatus = function updateStatus(status) {
-  Settings.updateValueById('FEDERATION_Status', Settings.updateNextStatusTo || status);
+	Settings.updateValueById('FEDERATION_Status', Settings.updateNextStatusTo || status);
 
-  Settings.updateNextStatusTo = null;
-}
+	Settings.updateNextStatusTo = null;
+};
 
 SettingsUpdater.updateNextStatusTo = function updateNextStatusTo(status) {
-  Settings.updateNextStatusTo = status;
-}
+	Settings.updateNextStatusTo = status;
+};
 
 SettingsUpdater.updateEnabled = function updateEnabled(enabled) {
-  Settings.updateValueById('FEDERATION_Enabled', enabled);
-}
+	Settings.updateValueById('FEDERATION_Enabled', enabled);
+};
 
 export default SettingsUpdater;

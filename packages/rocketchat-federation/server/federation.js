@@ -48,6 +48,16 @@ MessageTypes.registerType({
 		};
 	},
 });
+MessageTypes.registerType({
+	id: 'peer-does-not-exist',
+	system: true,
+	message: 'The_peer__peer__does_not_exist',
+	data(message) {
+		return {
+			peer: message.peer,
+		};
+	},
+});
 // DNS
 Federation.peerDNS = new PeerDNS();
 // HTTP

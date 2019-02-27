@@ -2702,6 +2702,7 @@
   "The_emails_are_being_sent": "The emails are being sent.",
   "The_field_is_required": "The field %s is required.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "The image resize will not work because we can not detect ImageMagick or GraphicsMagick installed on your server.",
+  "The_peer__peer__does_not_exist": "The peer <em>__peer__</em> does not exist.",
   "The_redirectUri_is_required": "The redirectUri is required",
   "The_server_will_restart_in_s_seconds": "The server will restart in %s seconds",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "The setting <strong>%s</strong> is configured to <strong>%s</strong> and you are accessing from <strong>%s</strong>!",
