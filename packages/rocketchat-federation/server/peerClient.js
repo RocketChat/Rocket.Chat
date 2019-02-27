@@ -7,7 +7,7 @@ import { Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models'
 import { Federation } from './federation';
 import SettingsUpdater from './settingsUpdater';
 
-import { logger } from './logger.js';
+import { logger } from './logger';
 import FederatedMessage from './federatedResources/FederatedMessage';
 import FederatedRoom from './federatedResources/FederatedRoom';
 import FederatedUser from './federatedResources/FederatedUser';

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Federation } from './federation';
 
-import { logger } from './logger.js';
+import { logger } from './logger';
 
 // Should skip the retry if the error is one of the below?
 const errorsToSkipRetrying = [

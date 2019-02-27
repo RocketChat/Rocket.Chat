@@ -3,7 +3,7 @@ import { _ } from 'meteor/underscore';
 import { settings } from 'meteor/rocketchat:settings';
 import { MessageTypes } from 'meteor/rocketchat:ui-utils';
 
-import { logger } from './logger.js';
+import { logger } from './logger';
 import PeerClient from './peerClient';
 import PeerDNS from './peerDNS';
 import PeerHTTP from './peerHTTP';
@@ -24,17 +24,17 @@ export const Federation = {
 	peerServer: null,
 };
 
-(function generateFederationKeys() {
-	// Create unique id if needed
-	if (!FederationKeys.getUniqueId()) {
-		FederationKeys.generateUniqueId();
-	}
+// Generate keys
 
-	// Create key pair if needed
-	if (!FederationKeys.getPublicKey()) {
-		FederationKeys.generateKeys();
-	}
-}());
+// Create unique id if needed
+if (!FederationKeys.getUniqueId()) {
+	FederationKeys.generateUniqueId();
+}
+
+// Create key pair if needed
+if (!FederationKeys.getPublicKey()) {
+	FederationKeys.generateKeys();
+}
 
 // Initializations
 // Register message types
