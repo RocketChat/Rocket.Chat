@@ -1,3 +1,7 @@
+# Assistify 0.9.9
+
+- Minor fixes
+
 # Assistify 0.9.8
 
 - Various Auto Translation Fixes
