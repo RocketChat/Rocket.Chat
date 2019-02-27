@@ -1,3 +1,5 @@
+import './federation-settings';
+
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { settings } from 'meteor/rocketchat:settings';
