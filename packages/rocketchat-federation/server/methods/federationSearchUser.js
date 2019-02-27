@@ -1,13 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import PeerClient from '../peerClient';
 
 export function findFederatedUser(email) {
 	const [username, domain] = email.split('@');
-
-	const { federationPeerClient } = Meteor;
-
-	if (!federationPeerClient) {
-		throw new Meteor.Error('federation-not-registered', 'Looks like this server is not registered to the DNS server');
-	}
 
 	const searchParameters = { domain };
 
@@ -19,7 +14,7 @@ export function findFederatedUser(email) {
 		searchParameters.email = email;
 	}
 
-	return federationPeerClient.findUser(searchParameters);
+	return PeerClient.findUser(searchParameters);
 }
 
 Meteor.methods({

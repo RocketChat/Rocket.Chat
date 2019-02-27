@@ -5,6 +5,7 @@ import { _ } from 'meteor/underscore';
 import { settings } from 'meteor/rocketchat:settings';
 import { MessageTypes } from 'meteor/rocketchat:ui-utils';
 
+import './methods';
 import { logger } from './logger';
 import PeerClient from './peerClient';
 import PeerDNS from './peerDNS';
