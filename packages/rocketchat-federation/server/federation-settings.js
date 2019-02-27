@@ -5,7 +5,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { FederationKeys } from './models/FederationKeys';
 
 Meteor.startup(function() {
-	const federationUniqueId = FederationKeys.getUniqueId();
+	// const federationUniqueId = FederationKeys.getUniqueId();
 	const federationPublicKey = FederationKeys.getPublicKeyString();
 
 	settings.addGroup('Federation', function() {
@@ -18,22 +18,19 @@ Meteor.startup(function() {
 		});
 
 		this.add('FEDERATION_Status', '-', {
-			group: 'Peer',
 			readonly: true,
 			type: 'string',
 			i18nLabel: 'FEDERATION_Status',
 		});
 
-		this.add('FEDERATION_Unique_Id', federationUniqueId, {
-			group: 'Peer',
-			readonly: true,
-			type: 'string',
-			i18nLabel: 'FEDERATION_Unique_Id',
-			i18nDescription: 'FEDERATION_Unique_Id_Description',
-		});
+		// this.add('FEDERATION_Unique_Id', federationUniqueId, {
+		// 	readonly: true,
+		// 	type: 'string',
+		// 	i18nLabel: 'FEDERATION_Unique_Id',
+		// 	i18nDescription: 'FEDERATION_Unique_Id_Description',
+		// });
 
 		this.add('FEDERATION_Domain', '', {
-			group: 'Peer',
 			type: 'string',
 			i18nLabel: 'FEDERATION_Domain',
 			i18nDescription: 'FEDERATION_Domain_Description',
@@ -41,7 +38,6 @@ Meteor.startup(function() {
 		});
 
 		this.add('FEDERATION_Public_Key', federationPublicKey, {
-			group: 'Peer',
 			readonly: true,
 			type: 'string',
 			multiline: true,
