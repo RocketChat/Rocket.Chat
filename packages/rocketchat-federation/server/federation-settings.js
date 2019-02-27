@@ -17,6 +17,13 @@ Meteor.startup(function() {
 			public: true,
 		});
 
+		this.add('FEDERATION_Status', '-', {
+			group: 'Peer',
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'FEDERATION_Status',
+		});
+
 		this.add('FEDERATION_Unique_Id', federationUniqueId, {
 			group: 'Peer',
 			readonly: true,

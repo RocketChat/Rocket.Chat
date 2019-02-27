@@ -5,6 +5,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 
 import { Federation } from './federation';
+import SettingsUpdater from './settingsUpdater';
 
 import { logger } from './logger.js';
 import FederatedMessage from './federatedResources/FederatedMessage';
@@ -67,7 +68,11 @@ class PeerClient {
 	//
 	// ###########
 	register() {
-		if (this.config.hub.active && !Federation.peerDNS.register(this.peer)) { return false; }
+		if (this.config.hub.active) {
+			SettingsUpdater.updateStatus('Registering with Hub...');
+
+			return Federation.peerDNS.register(this.peer);
+		}
 
 		return true;
 	}
@@ -156,13 +161,38 @@ class PeerClient {
 				// Encrypt with the local private key
 				payload = Federation.privateKey.encryptPrivate(payload);
 
-				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, 5);
+				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
-				this.log(`[${ e.t }] Event was refused by peer:${ domain }`);
+				this.log(`[${ e.t }] Event could not be sent to peer:${ domain }`);
 
-				if (err.errorType === 'error-app-prevented-sending') {
+				if (err.error === 'federation-peer-does-not-exist') {
+					const { payload: {
+						message: {
+							rid: roomId,
+							u: {
+								username,
+								federation: { _id: userId },
+							},
+						},
+					} } = e;
+
+					const localUsername = username.split('@')[0];
+
+					// Create system message
+					Messages.createPeerDoesNotExist(roomId, localUsername, {
+						u: {
+							_id: userId,
+							username: localUsername,
+						},
+						peer: domain,
+					});
+
+					return FederationEvents.setEventAsErrored(e, err.error, true);
+				}
+
+				if (err.error === 'error-app-prevented-sending') {
 					const { payload: {
 						message: {
 							rid: roomId,
