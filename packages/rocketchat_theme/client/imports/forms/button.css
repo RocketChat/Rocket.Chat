@@ -6,13 +6,15 @@
 	&--icon > svg {
 		margin: 0 5px 0 -5px;
 
+		font-size: 20px;
+		fill: currentColor;
+
 		.rtl & {
 			margin: 0 -5px 0 5px;
 		}
-
-		font-size: 20px;
-		fill: currentColor;
 	}
+
+	position: relative;
 
 	display: flex;
 
@@ -37,6 +39,32 @@
 
 	align-items: center;
 	justify-content: center;
+
+	&:active,
+	&:focus:hover {
+		outline: none;
+	}
+
+	&:active {
+		transform: translateY(2px);
+
+		opacity: 0.9;
+	}
+
+	&:active::before {
+		top: -2px;
+	}
+
+	&::before {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+
+		content: "";
+		cursor: pointer;
+	}
 
 	&:disabled {
 		cursor: default;
@@ -147,6 +175,30 @@
 
 		&__icon {
 			margin: 0 5px;
+		}
+	}
+
+	&__group {
+		display: flex;
+
+		flex-direction: row;
+
+		margin: 10px -5px;
+
+		& > .rc-button {
+			margin: 0 5px;
+		}
+
+		&--stretch {
+			justify-content: stretch;
+
+			& > .rc-button {
+				flex: 1 1;
+			}
+		}
+
+		&--vertical {
+			flex-direction: column;
 		}
 	}
 }
