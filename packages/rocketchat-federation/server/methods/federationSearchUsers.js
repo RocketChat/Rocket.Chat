@@ -1,9 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Federation } from '../federation';
-
-export function findFederatedUsers(email, options = {}) {
-	return Federation.peerClient.findUsers(email, options);
-}
+import peerClient from '../peerClient';
 
 Meteor.methods({
 	federationSearchUsers(email) {
@@ -11,7 +7,7 @@ Meteor.methods({
 			return [];
 		}
 
-		const federatedUsers = findFederatedUsers(email);
+		const federatedUsers = peerClient.findUsers(email);
 
 		if (!federatedUsers.length) {
 			throw new Meteor.Error('federation-user-not-found', `Could not find federated users using "${ email }"`);

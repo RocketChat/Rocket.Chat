@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Federation } from './federation';
 
 import { logger } from './logger';
+import peerDNS from './peerDNS';
 
 // Should skip the retry if the error is one of the below?
 const errorsToSkipRetrying = [
@@ -62,7 +62,7 @@ function doRequest(peer, method, uri, body, retryInfo = {}) {
 
 					this.log(`Trying to update local DNS cache for peer:${ peer.domain }`);
 
-					peer = Federation.peerDNS.updatePeerDNS(peer.domain);
+					peer = peerDNS.updatePeerDNS(peer.domain);
 
 					continue;
 				}
@@ -123,4 +123,4 @@ class PeerHTTP {
 	}
 }
 
-export default PeerHTTP;
+export default new PeerHTTP();

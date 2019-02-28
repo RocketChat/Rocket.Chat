@@ -1,20 +1,17 @@
 import { Settings } from 'meteor/rocketchat:models';
 
-class SettingsUpdater {
+let nextStatus;
+
+export function updateStatus(status) {
+	Settings.updateValueById('FEDERATION_Status', nextStatus || status);
+
+	nextStatus = null;
 }
 
-SettingsUpdater.updateStatus = function updateStatus(status) {
-	Settings.updateValueById('FEDERATION_Status', Settings.updateNextStatusTo || status);
+export function updateNextStatusTo(status) {
+	nextStatus = status;
+}
 
-	Settings.updateNextStatusTo = null;
-};
-
-SettingsUpdater.updateNextStatusTo = function updateNextStatusTo(status) {
-	Settings.updateNextStatusTo = status;
-};
-
-SettingsUpdater.updateEnabled = function updateEnabled(enabled) {
+export function updateEnabled(enabled) {
 	Settings.updateValueById('FEDERATION_Enabled', enabled);
-};
-
-export default SettingsUpdater;
+}

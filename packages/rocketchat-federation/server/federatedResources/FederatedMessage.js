@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { sendMessage, updateMessage } from 'meteor/rocketchat:lib';
 import { Messages, Rooms, Users } from 'meteor/rocketchat:models';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 import FederatedResource from './FederatedResource';
 import FederatedRoom from './FederatedRoom';
 import FederatedUser from './FederatedUser';
-
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { Federation } from '../federation';
+import peerClient from '../peerClient';
 
 class FederatedMessage extends FederatedResource {
 	constructor(localPeerIdentifier, message) {
@@ -179,7 +178,7 @@ class FederatedMessage extends FederatedResource {
 
 				const { federation: { peer: identifier } } = localMessage;
 
-				const { upload, buffer } = Federation.peerClient.getUpload({ identifier, localMessage });
+				const { upload, buffer } = peerClient.getUpload({ identifier, localMessage });
 
 				const oldUploadId = upload._id;
 

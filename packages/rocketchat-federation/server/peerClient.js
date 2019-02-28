@@ -4,9 +4,10 @@ import { callbacks } from 'meteor/rocketchat:callbacks';
 import { settings } from 'meteor/rocketchat:settings';
 import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 
-import { Federation } from './federation';
-import SettingsUpdater from './settingsUpdater';
-
+import { Federation } from './main';
+import peerDNS from './peerDNS';
+import peerHTTP from './peerHTTP';
+import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
 import FederatedMessage from './federatedResources/FederatedMessage';
 import FederatedRoom from './federatedResources/FederatedRoom';
@@ -67,9 +68,9 @@ class PeerClient {
 	// ###########
 	register() {
 		if (this.config.hub.active) {
-			SettingsUpdater.updateStatus('Registering with Hub...');
+			updateStatus('Registering with Hub...');
 
-			return Federation.peerDNS.register(this.peer);
+			return peerDNS.register(this.peer);
 		}
 
 		return true;
@@ -143,7 +144,7 @@ class PeerClient {
 
 		const { peer: domain } = e;
 
-		const peer = Federation.peerDNS.searchPeer(domain);
+		const peer = peerDNS.searchPeer(domain);
 
 		if (!peer || !peer.public_key) {
 			this.log(`Could not find valid peer:${ domain }`);
@@ -159,7 +160,7 @@ class PeerClient {
 				// Encrypt with the local private key
 				payload = Federation.privateKey.encryptPrivate(payload);
 
-				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
+				peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
@@ -246,14 +247,14 @@ class PeerClient {
 		let peer = null;
 
 		try {
-			peer = Federation.peerDNS.searchPeer(options.domainOverride || domain);
+			peer = peerDNS.searchPeer(options.domainOverride || domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
 		try {
-			const { data: { federatedUsers: remoteFederatedUsers } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, emailOnly: options.emailOnly }) }`);
+			const { data: { federatedUsers: remoteFederatedUsers } } = peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, emailOnly: options.emailOnly }) }`);
 
 			const federatedUsers = [];
 
@@ -279,13 +280,13 @@ class PeerClient {
 		let peer = null;
 
 		try {
-			peer = Federation.peerDNS.searchPeer(domain);
+			peer = peerDNS.searchPeer(domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
-		const { data: { upload, buffer } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
+		const { data: { upload, buffer } } = peerHTTP.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
 
 		return { upload, buffer: Buffer.from(buffer) };
 	}
@@ -608,4 +609,4 @@ class PeerClient {
 	}
 }
 
-export default PeerClient;
+export default new PeerClient();

@@ -1,18 +1,18 @@
-import './federation-settings';
-
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { settings } from 'meteor/rocketchat:settings';
 import { MessageTypes } from 'meteor/rocketchat:ui-utils';
 import { FederationKeys } from 'meteor/rocketchat:models';
 
+import './federation-settings';
 import './methods';
+
 import { logger } from './logger';
-import PeerClient from './peerClient';
-import PeerDNS from './peerDNS';
-import PeerHTTP from './peerHTTP';
-import PeerServer from './peerServer';
-import SettingsUpdater from './settingsUpdater';
+import peerClient from './peerClient';
+import peerServer from './peerServer';
+import peerDNS from './peerDNS';
+import peerHTTP from './peerHTTP';
+import * as SettingsUpdater from './settingsUpdater';
 
 export const Federation = {
 	enabled: false,
@@ -21,10 +21,6 @@ export const Federation = {
 	usingHub: null,
 	uniqueId: null,
 	localIdentifier: null,
-	peerDNS: null,
-	peerHTTP: null,
-	peerClient: null,
-	peerServer: null,
 };
 
 // Generate keys
@@ -61,18 +57,12 @@ MessageTypes.registerType({
 		};
 	},
 });
-// DNS
-Federation.peerDNS = new PeerDNS();
-// HTTP
-Federation.peerHTTP = new PeerHTTP();
-// Client
-Federation.peerClient = new PeerClient();
+
 // Start the client, setting up all the callbacks
-Federation.peerClient.start();
-// Server
-Federation.peerServer = new PeerServer();
+peerClient.start();
+
 // Start the server, setting up all the endpoints
-Federation.peerServer.start();
+peerServer.start();
 
 const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	const _enabled = settings.get('FEDERATION_Enabled');
@@ -123,21 +113,21 @@ const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	Federation.localIdentifier = config.peer.domain;
 
 	// Set DNS
-	Federation.peerDNS.setConfig(config);
+	peerDNS.setConfig(config);
 
 	// Set HTTP
-	Federation.peerHTTP.setConfig(config);
+	peerHTTP.setConfig(config);
 
 	// Set Client
-	Federation.peerClient.setConfig(config);
-	Federation.peerClient.enable();
+	peerClient.setConfig(config);
+	peerClient.enable();
 
 	// Set server
-	Federation.peerServer.setConfig(config);
-	Federation.peerServer.enable();
+	peerServer.setConfig(config);
+	peerServer.enable();
 
 	// Register the client
-	if (Federation.peerClient.register()) {
+	if (peerClient.register()) {
 		SettingsUpdater.updateStatus('Running');
 	} else {
 		SettingsUpdater.updateNextStatusTo('Disabled, could not register with Hub');
@@ -151,8 +141,8 @@ function enableOrDisable() {
 	// If it was enabled, and was disabled now,
 	// make sure we disable everything: callbacks and endpoints
 	if (Federation.enabled && !_enabled) {
-		Federation.peerClient.disable();
-		Federation.peerServer.disable();
+		peerClient.disable();
+		peerServer.disable();
 
 		// Disable federation
 		Federation.enabled = false;

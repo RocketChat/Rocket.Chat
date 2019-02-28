@@ -1,12 +1,10 @@
+import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
 import { FederationDNSCache } from 'meteor/rocketchat:models';
 
-import { Federation } from './federation';
-import SettingsUpdater from './settingsUpdater';
-
 import { logger } from './logger';
-
-import dns from 'dns';
+import peerHTTP from './peerHTTP';
+import { updateStatus } from './settingsUpdater';
 
 const dnsResolveSRV = Meteor.wrapAsync(dns.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dns.resolveTxt);
@@ -41,11 +39,11 @@ class PeerDNS {
 
 		// Attempt to register peer
 		try {
-			Federation.peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key }, { total: 5, stepSize: 1000, tryToUpdateDNS: false });
+			peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key }, { total: 5, stepSize: 1000, tryToUpdateDNS: false });
 
 			this.log('Peer registered!');
 
-			SettingsUpdater.updateStatus('Running, registered to Hub');
+			updateStatus('Running, registered to Hub');
 
 			return true;
 		} catch (err) {
@@ -118,7 +116,7 @@ class PeerDNS {
 		this.log(`getPeerUsingHub: ${ domain }`);
 
 		// If there is no DNS entry for that, get from the Hub
-		const { data: { peer } } = Federation.peerHTTP.simpleRequest(this.HubPeer, 'GET', `/api/v1/peers?search=${ domain }`);
+		const { data: { peer } } = peerHTTP.simpleRequest(this.HubPeer, 'GET', `/api/v1/peers?search=${ domain }`);
 
 		return peer;
 	}
@@ -174,4 +172,4 @@ class PeerDNS {
 	}
 }
 
-export default PeerDNS;
+export default new PeerDNS();
