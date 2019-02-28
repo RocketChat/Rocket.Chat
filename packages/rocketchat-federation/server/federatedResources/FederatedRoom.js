@@ -218,7 +218,8 @@ class FederatedRoom extends FederatedResource {
 			}
 
 			// Create the room
-			const { rid } = createRoom(type, name, ownerUsername, members, false, extraData, createRoomOptions);
+			// !!!! Forcing direct or private only, no public rooms for now
+			const { rid } = createRoom(type === 'd' ? type : 'p', name, ownerUsername, members, false, extraData, createRoomOptions);
 
 			localRoom._id = rid;
 		}
