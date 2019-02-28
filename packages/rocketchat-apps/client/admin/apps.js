@@ -34,25 +34,40 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 };
 
 const getApps = (instance) => {
-	instance.isLoading.set(true);
+	if (instance.searchType.get() === 'marketplace') {
+		instance.isLoading.set(true);
+		instance.ready.set(false);
+	}
 
 	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
 		.then((response) => response.json())
 		.then((data) => {
 			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
+			instance.marketplaceApps.set(tagged);
 
-			instance.isLoading.set(false);
-			instance.apps.set(tagged);
-			instance.ready.set(true);
+			if (instance.searchType.get() === 'marketplace') {
+				instance.apps.set(tagged);
+				instance.isLoading.set(false);
+				instance.ready.set(true);
+			}
 		});
 };
 
 const getInstalledApps = (instance) => {
+	if (instance.searchType.get() === 'marketplace') {
+		instance.isLoading.set(true);
+		instance.ready.set(false);
+	}
 
 	APIClient.get('apps').then((data) => {
 		const apps = data.apps.map((app) => ({ latest: app }));
-
 		instance.installedApps.set(apps);
+
+		if (instance.searchType.get() === 'installed') {
+			instance.apps.set(apps);
+			instance.isLoading.set(false);
+			instance.ready.set(true);
+		}
 	});
 };
 
@@ -60,6 +75,7 @@ Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
+	this.marketplaceApps = new ReactiveVar([]);
 	this.installedApps = new ReactiveVar([]);
 	this.categories = new ReactiveVar([]);
 	this.searchText = new ReactiveVar('');
@@ -70,6 +86,13 @@ Template.apps.onCreated(function() {
 	this.end = new ReactiveVar(false);
 	this.isLoading = new ReactiveVar(false);
 	this.searchType = new ReactiveVar('marketplace');
+
+	const queryTab = FlowRouter.getQueryParam('tab');
+	if (queryTab) {
+		if (queryTab.toLowerCase() === 'installed') {
+			this.searchType.set('installed');
+		}
+	}
 
 	getApps(instance);
 	getInstalledApps(instance);
@@ -203,9 +226,7 @@ Template.apps.helpers({
 	tabsData() {
 		const instance = Template.instance();
 
-		const {
-			searchType,
-		} = instance;
+		const { searchType } = instance;
 
 		return {
 			tabs: [
@@ -215,7 +236,7 @@ Template.apps.helpers({
 					condition() {
 						return true;
 					},
-					active: true,
+					active: searchType.get() === 'marketplace',
 				},
 				{
 					label: t('Installed'),
@@ -223,9 +244,11 @@ Template.apps.helpers({
 					condition() {
 						return true;
 					},
+					active: searchType.get() === 'installed',
 				},
 			],
 			onChange(value) {
+				instance.apps.set([]);
 				searchType.set(value);
 
 				if (value === 'marketplace') {
