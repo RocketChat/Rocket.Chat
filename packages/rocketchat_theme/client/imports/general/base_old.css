@@ -4176,17 +4176,6 @@ body:not(.is-cordova) {
 		font-size: 10px;
 	}
 
-	& .submit,
-	& .register,
-	& .forgot-password,
-	& .back-to-login {
-		margin-top: 12px;
-
-		& button {
-			margin: 0 auto;
-		}
-	}
-
 	& .input-line {
 		position: relative;
 

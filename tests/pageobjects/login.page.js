@@ -3,9 +3,9 @@ import mainContent from './main-content.page';
 
 class LoginPage extends Page {
 	get registerButton() { return browser.element('button.register'); }
-	get forgotPasswordButton() { return browser.element('button.forgot-password'); }
-	get backToLoginButton() { return browser.element('button.back-to-login'); }
-	get submitButton() { return browser.element('.submit > button'); }
+	get forgotPasswordButton() { return browser.element('.forgot-password'); }
+	get backToLoginButton() { return browser.element('.back-to-login'); }
+	get submitButton() { return browser.element('.login'); }
 
 	get emailOrUsernameField() { return browser.element('[name=emailOrUsername]'); }
 	get nameField() { return browser.element('[name=name]'); }
