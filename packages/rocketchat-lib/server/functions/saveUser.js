@@ -36,6 +36,13 @@ function validateUserData(userId, userData) {
 		});
 	}
 
+	if (userData.roles && !hasPermission(userId, 'edit-roles')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit roles is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Assign_role',
+		});
+	}
+
 	if (userData.roles && _.difference(userData.roles, existingRoles).length > 0) {
 		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role name', {
 			method: 'insertOrUpdateUser',

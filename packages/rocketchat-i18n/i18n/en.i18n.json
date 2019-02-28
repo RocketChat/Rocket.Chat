@@ -1075,6 +1075,7 @@
   "edit-other-user-password_description": "Permission to modify other user's passwords. Requires edit-other-user-info permission.",
   "edit-privileged-setting": "Edit privileged Setting",
   "edit-privileged-setting_description": "Permission to edit settings",
+  "edit-roles": "Edit Roles",
   "edit-room": "Edit Room",
   "edit-room_description": "Permission to edit a room's name, topic, type (private or public status) and status (active or archived)",
   "edit-room-retention-policy": "Edit Room's Retention Policy",
