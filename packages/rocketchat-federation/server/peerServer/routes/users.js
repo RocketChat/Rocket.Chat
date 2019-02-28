@@ -14,29 +14,39 @@ export default function usersRoutes() {
 
 			const { peer: { domain: localPeerDomain } } = self.config;
 
-			const { username, email } = this.requestParams();
+			const { username, domain, emailOnly } = this.requestParams();
 
-			const options = { fields: { services: 0, roles: 0 } };
+			const email = `${ username }@${ domain }`;
 
-			let user = null;
+			self.log(`[users] Trying to find user by username:${ username } and email:${ email }`);
 
-			if (username) {
-				self.log(`[users] Trying to find user by username:${ username }`);
+			const query = {
+				type: 'user',
+			};
 
-				user = Users.findOneByUsername(username, options);
+			if (emailOnly === 'true') {
+				query['emails.address'] = email;
 			} else {
-				self.log(`[users] Trying to find user by email:${ email }`);
-
-				user = Users.findOneByEmailAddress(email, options);
+				query.$or = [
+					{ name: username },
+					{ username },
+					{ 'emails.address': email },
+				];
 			}
 
-			if (!user) {
+			const users = Users.find(query, { fields: { services: 0, roles: 0 } }).fetch();
+
+			if (!users.length) {
 				return API.v1.failure('There is no such user in this server');
 			}
 
-			const federatedUser = new FederationUser(localPeerDomain, user);
+			const federatedUsers = [];
 
-			return API.v1.success({ federatedUser });
+			for (const user of users) {
+				federatedUsers.push(new FederationUser(localPeerDomain, user));
+			}
+
+			return API.v1.success({ federatedUsers });
 		},
 	});
 }

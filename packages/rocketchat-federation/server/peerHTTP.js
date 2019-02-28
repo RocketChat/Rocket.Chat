@@ -50,15 +50,14 @@ function doRequest(peer, method, uri, body, retryInfo = {}) {
 		DNSUpdated: false,
 	};
 
-	// Should we try one extra time, due to DNS update?
-	retryInfo.oneExtra = retryInfo.tryToUpdateDNS ? 0 : 1;
-
-	for (let i = 0; i < retryInfo.total; i++) {
+	for (let i = 0; i <= retryInfo.total; i++) {
 		try {
 			return doSimpleRequest.call(this, peer, method, uri, body);
 		} catch (err) {
 			try {
 				if (retryInfo.tryToUpdateDNS && !retryInfo.DNSUpdated) {
+					i--;
+
 					retryInfo.DNSUpdated = true;
 
 					this.log(`Trying to update local DNS cache for peer:${ peer.domain }`);
@@ -80,21 +79,21 @@ function doRequest(peer, method, uri, body, retryInfo = {}) {
 				throw err;
 			}
 
-			// If this is the last try, throw the error
-			if (i === retryInfo.total - retryInfo.oneExtra) {
+			if (i === retryInfo.total - 1) {
+				// Throw the error, as we could not fulfill the request
 				this.log('Retry: could not fulfill the request');
 
 				throw err;
 			}
 
-			this.log(`Retrying ${ i + retryInfo.oneExtra }/${ retryInfo.total }: ${ method } - ${ uri }`);
+			const timeToRetry = retryInfo.stepSize * (i + 1) * retryInfo.stepMultiplier;
+
+			this.log(`Trying again in ${ timeToRetry / 1000 }s: ${ method } - ${ uri }`);
 
 			// Otherwise, wait and try again
-			delay(retryInfo.stepSize * (i + 1) * retryInfo.stepMultiplier);
+			delay(timeToRetry);
 		}
 	}
-
-	return null;
 }
 
 class PeerHTTP {

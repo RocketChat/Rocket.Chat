@@ -2,15 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Users } from 'meteor/rocketchat:models';
 
 import { logger } from '../logger.js';
-import { findFederatedUser } from './federationSearchUser';
+import { findFederatedUsers } from './federationSearchUsers';
 
 Meteor.methods({
-	federationAddUser(emailAddress) {
-		// Make sure the federated user still exists
-		const federatedUser = findFederatedUser(emailAddress);
+	federationAddUser(emailAddress, domainOverride) {
+		// Make sure the federated user still exists, and get the unique one, by email address
+		const [federatedUser] = findFederatedUsers(emailAddress, { domainOverride, emailOnly: true });
 
 		if (!federatedUser) {
-			throw new Meteor.Error('federation-invalid-user', 'Federated user is not valid.');
+			throw new Meteor.Error('federation-invalid-user', 'There is no user to add.');
 		}
 
 		let user = null;
@@ -26,7 +26,7 @@ Meteor.methods({
 		} catch (err) {
 			// If the user already exists, return the existing user
 			if (err.code === 11000) {
-				return Users.findOne({ 'federation._id': localUser.federation._id });
+				user = Users.findOne({ 'federation._id': localUser.federation._id });
 			}
 
 			logger.error(err);

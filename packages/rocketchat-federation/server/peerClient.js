@@ -238,29 +238,33 @@ class PeerClient {
 	// Users
 	//
 	// #####
-	findUser(options) {
-		const { peer: { domain: localPeerDomain } } = this;
+	findUsers(email, options = {}) {
+		const [username, domain] = email.split('@');
 
-		const { domain, username, email } = options;
+		const { peer: { domain: localPeerDomain } } = this;
 
 		let peer = null;
 
 		try {
-			peer = Federation.peerDNS.searchPeer(domain);
+			peer = Federation.peerDNS.searchPeer(options.domainOverride || domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
 		try {
-			const { data: { federatedUser: { user } } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, email }) }`);
+			const { data: { federatedUsers: remoteFederatedUsers } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, emailOnly: options.emailOnly }) }`);
 
-			const federatedUser = new FederatedUser(localPeerDomain, user);
+			const federatedUsers = [];
 
-			return federatedUser;
+			for (const federatedUser of remoteFederatedUsers) {
+				federatedUsers.push(new FederatedUser(localPeerDomain, federatedUser.user));
+			}
+
+			return federatedUsers;
 		} catch (err) {
-			this.log(`Could not find user:${ email || username }@${ domain } at ${ peer.domain }`);
-			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ email || username } at ${ peer.domain }`);
+			this.log(`Could not find user:${ username } at ${ peer.domain }`);
+			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ email } at ${ peer.domain }`);
 		}
 	}
 

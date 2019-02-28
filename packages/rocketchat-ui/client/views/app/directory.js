@@ -126,12 +126,12 @@ Template.directory.helpers({
 		return function(item) {
 			// This means we need to add this user locally first
 			if (item.remoteOnly) {
-				Meteor.call('federationAddUser', item.email, (error, federatedUser) => {
+				Meteor.call('federationAddUser', item.email, item.domain, (error, federatedUser) => {
 					if (!federatedUser) { return; }
 
 					// Reload
 					instance.end.set(false);
-					directorySearch.call(instance);
+					// directorySearch.call(instance);
 
 					roomTypes.openRouteLink('d', { name: item.username });
 				});
@@ -243,23 +243,31 @@ Template.directory.onRendered(function() {
 
 			// If there is no result, searching every workspace and
 			// the search text is an email address, try to find a federated user
-			if (!result && this.searchWorkspace.get() === 'all' && this.searchText.get().indexOf('@') !== -1) {
+			if (this.searchWorkspace.get() === 'all' && this.searchText.get().indexOf('@') !== -1) {
 				const email = this.searchText.get();
 
-				Meteor.call('federationSearchUser', email, (error, federatedUser) => {
-					if (!federatedUser) { return; }
+				Meteor.call('federationSearchUsers', email, (error, federatedUsers) => {
+					if (!federatedUsers) { return; }
 
-					const { user } = federatedUser;
+					result = result || [];
 
-					// Add the federated user to the results
-					result = [{
-						remoteOnly: true,
-						name: user.name,
-						username: user.username,
-						email: (user.emails && user.emails[0] && user.emails[0].address) || user.username,
-						createdAt: timeAgo(user.createdAt, t),
-						domain: user.federation.peer,
-					}];
+					for (const federatedUser of federatedUsers) {
+						const { user } = federatedUser;
+
+						const exists = result.findIndex((e) => e.domain === user.federation.peer && e.username === user.username) !== -1;
+
+						if (exists) { continue; }
+
+						// Add the federated user to the results
+						result.unshift({
+							remoteOnly: true,
+							name: user.name,
+							username: user.username,
+							email: user.emails && user.emails[0] && user.emails[0].address,
+							createdAt: timeAgo(user.createdAt, t),
+							domain: user.federation.peer,
+						});
+					}
 
 					setResults.call(this, result);
 				});

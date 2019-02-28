@@ -146,6 +146,8 @@ class PeerDNS {
 		}
 
 		this.updateDNSCache.call(this, peer);
+
+		return peer;
 	}
 
 	updateDNSEntry(peer) {

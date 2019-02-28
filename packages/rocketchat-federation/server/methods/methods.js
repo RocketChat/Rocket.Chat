@@ -1,2 +1,2 @@
-require('./federationSearchUser');
+require('./federationSearchUsers');
 require('./federationAddUser');
