@@ -1,4 +1,4 @@
-import slug from 'limax';
+import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
@@ -968,7 +968,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 	_importChannel(channelToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			const existingRoom = Rooms.findOneByName(slug(channelToImport.name));
+			const existingRoom = Rooms.findOneByName(limax(channelToImport.name));
 			// If the room exists or the name of it is 'general', then we don't need to create it again
 			if (existingRoom || channelToImport.name.toUpperCase() === 'GENERAL') {
 				channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;

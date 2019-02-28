@@ -1,4 +1,4 @@
-import slug from 'limax';
+import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import {
@@ -48,11 +48,11 @@ export class HipChatImporter extends Base {
 					super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 					tempRooms = JSON.parse(entry.getData().toString()).rooms;
 					tempRooms.forEach((room) => {
-						room.name = slug(room.name);
+						room.name = limax(room.name);
 					});
 				} else if (roomName.indexOf('/') > -1) {
 					const item = roomName.split('/');
-					roomName = slug(item[0]);
+					roomName = limax(item[0]);
 					const msgGroupData = item[1].split('.')[0];
 					if (!tempMessages[roomName]) {
 						tempMessages[roomName] = {};
