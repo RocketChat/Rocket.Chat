@@ -23,8 +23,6 @@ Package.onUse(function(api) {
 		'rocketchat:ui-sidenav',
 		'meteorhacks:inject-initial',
 	]);
-	api.addFiles('client/main.html', 'client');
-	api.addFiles('client/main.js', 'client');
 
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
