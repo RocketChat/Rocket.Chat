@@ -30,7 +30,3 @@ Package.onUse(function(api) {
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
-
-Npm.depends({
-	'stream-buffers': '3.0.2',
-});

@@ -15,7 +15,3 @@ Package.onUse(function(api) {
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
-
-Npm.depends({
-	'node-rsa': '1.0.2',
-});

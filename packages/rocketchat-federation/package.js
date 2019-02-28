@@ -20,7 +20,3 @@ Package.onUse(function(api) {
 
 	api.mainModule('server/federation.js', 'server');
 });
-
-Npm.depends({
-	uuid: '3.3.2',
-});

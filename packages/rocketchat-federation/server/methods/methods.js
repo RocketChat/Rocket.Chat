@@ -1,2 +1,0 @@
-require('./federationSearchUsers');
-require('./federationAddUser');

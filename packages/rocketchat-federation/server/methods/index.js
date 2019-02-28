@@ -1,2 +1,2 @@
-import methods from './methods';
-export default methods;
+import './federationSearchUsers';
+import './federationAddUser';
