@@ -12,22 +12,23 @@
 
 		height: 89px;
 		padding: 10px 0;
+
+		margin-left: -5px;
+		margin-right: -5px;
 	}
 
 	&-dropdown {
 		height: 48px;
-		margin-right: 10px;
 	}
 
 	&-search {
 		height: 48px;
 
+		margin-left: 5px;
+		margin-right: 5px;
+
 		& .rc-icon {
 			width: 0.875rem;
-		}
-
-		&-wide {
-			width: 100%;
 		}
 	}
 

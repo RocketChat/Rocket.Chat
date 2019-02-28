@@ -7,37 +7,19 @@
 			<div class="rc-directory-fields">
 				{{#if $eq searchType 'users'}}
 					{{#if federationEnabled}}
-						<div class="rc-input rc-input--size-one rc-input--small rc-directory-search">
-							<label class="rc-input__label--inline-block">
-								<div class="rc-select rc-input--small rc-directory-dropdown">
-									<select class="rc-select__element js-setting-data js-workspace" name="search-type">
-										<option class="rc-select__option" value="local" selected="true">Local Workspace</option>
-										<option class="rc-select__option" value="all">Every Workspace</option>
-									</select>
-									{{> icon block="rc-select__arrow" icon="arrow-down" }}
-								</div>
-							</label>
-						</div>
-					{{/if}}
-
-					<div class="rc-input rc-input--size-six rc-input--small rc-directory-search">
-						<label class="rc-input__label--inline-block">
-							<div>
-								{{> icon icon="magnifier" block="rc-input__icon" }}
-								<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
-							</div>
+						<label class="rc-select rc-directory-dropdown rc-directory-search">
+							<select class="rc-select__element js-setting-data js-workspace" name="search-type">
+								<option class="rc-select__option" value="local" selected="true">Local Workspace</option>
+								<option class="rc-select__option" value="all">Every Workspace</option>
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
 						</label>
-					</div>
-			{{else}}
+					{{/if}}
+				{{/if}}
 				<div class="rc-input rc-input--small rc-directory-search">
-					<label class="rc-input__label">
-						<div class="rc-input__wrapper--no-padding">
-							{{> icon icon="magnifier" block="rc-input__icon" }}
-							<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
-						</div>
-					</label>
+					{{> icon icon="magnifier" block="rc-input__icon" }}
+					<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
 				</div>
-			{{/if}}
 			</div>
 
 			{{#if $eq searchType 'channels'}}
