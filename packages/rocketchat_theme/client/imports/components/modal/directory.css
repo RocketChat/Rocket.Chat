@@ -11,10 +11,11 @@
 		flex-direction: row;
 
 		height: 89px;
-		padding: 10px 0;
 
-		margin-left: -5px;
 		margin-right: -5px;
+		margin-left: -5px;
+
+		padding: 10px 0;
 	}
 
 	&-dropdown {
@@ -24,8 +25,8 @@
 	&-search {
 		height: 48px;
 
-		margin-left: 5px;
 		margin-right: 5px;
+		margin-left: 5px;
 
 		& .rc-icon {
 			width: 0.875rem;
