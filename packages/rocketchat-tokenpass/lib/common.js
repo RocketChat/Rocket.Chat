@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
 
 const config = {
@@ -22,7 +22,7 @@ const Tokenpass = new CustomOAuth('tokenpass', config);
 
 if (Meteor.isServer) {
 	Meteor.startup(function() {
-		RocketChat.settings.get('API_Tokenpass_URL', function(key, value) {
+		settings.get('API_Tokenpass_URL', function(key, value) {
 			config.serverURL = value;
 			Tokenpass.configure(config);
 		});
@@ -30,8 +30,8 @@ if (Meteor.isServer) {
 } else {
 	Meteor.startup(function() {
 		Tracker.autorun(function() {
-			if (RocketChat.settings.get('API_Tokenpass_URL')) {
-				config.serverURL = RocketChat.settings.get('API_Tokenpass_URL');
+			if (settings.get('API_Tokenpass_URL')) {
+				config.serverURL = settings.get('API_Tokenpass_URL');
 				Tokenpass.configure(config);
 			}
 		});

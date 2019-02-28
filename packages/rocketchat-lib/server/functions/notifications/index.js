@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
 import s from 'underscore.string';
 
 /**
@@ -9,13 +10,13 @@ import s from 'underscore.string';
 */
 export function parseMessageTextPerUser(messageText, message, receiver) {
 	if (!message.msg && message.attachments && message.attachments[0]) {
-		const lng = receiver.language || RocketChat.settings.get('language') || 'en';
+		const lng = receiver.language || settings.get('Language') || 'en';
 
 		return message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', { lng }) : TAPi18n.__('User_uploaded_file', { lng });
 	}
 
 	if (message.msg && message.t === 'e2e') {
-		const lng = receiver.language || RocketChat.settings.get('language') || 'en';
+		const lng = receiver.language || settings.get('Language') || 'en';
 
 		return TAPi18n.__('Encrypted_message', { lng });
 	}

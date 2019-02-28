@@ -1,10 +1,23 @@
 <template name="adminImport">
 	<section class="page-container page-home page-static page-settings">
-		{{> header sectionName="Import"}}
+		{{> header sectionName="Import" fullpage="true"}}
 		<div class="content">
 			{{#unless isAdmin}}
 				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 			{{else}}
+
+				<div class="section">
+					<h1>{{_ "Import History" }}</h1>
+
+					<div class="section-content">
+						<div>{{_ "View the status of all import operations." }}</div>
+						<br/>
+						<button class="rc-button rc-button--primary import-history">{{_ "View History"}}</button>
+
+					</div>
+
+				</div>
+
 				<div class="rocket-form">
 					<fieldset>
 						{{#each importers}}
@@ -13,7 +26,7 @@
 								<div class="section-content">
 									<div>{{getDescription .}}</div>
 									<br/>
-									<button class="button primary start-import">{{_ "Start"}}</button>
+									<button class="rc-button rc-button--primary start-import">{{_ "Start"}}</button>
 								</div>
 							</div>
 						{{/each}}

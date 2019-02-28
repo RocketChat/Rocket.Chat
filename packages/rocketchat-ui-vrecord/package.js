@@ -11,7 +11,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'tracker',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:ui',
 	]);
 	api.addFiles('client/vrecord.css', 'client');
 	api.mainModule('server/index.js', 'server');

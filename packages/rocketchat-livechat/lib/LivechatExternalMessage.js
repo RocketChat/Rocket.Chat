@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Base } from 'meteor/rocketchat:models';
 
-class LivechatExternalMessage extends RocketChat.models._Base {
+class LivechatExternalMessageClass extends Base {
 	constructor() {
 		super('livechat_external_message');
 
@@ -18,4 +18,4 @@ class LivechatExternalMessage extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.LivechatExternalMessage = new LivechatExternalMessage();
+export const LivechatExternalMessage = new LivechatExternalMessageClass();

@@ -1,5 +1,7 @@
 import _ from 'underscore';
+import { settings } from 'meteor/rocketchat:settings';
 import { FileUploadClass } from '../lib/FileUpload';
+import { FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';
 import http from 'http';
 import https from 'https';
@@ -9,7 +11,7 @@ const get = function(file, req, res) {
 
 	if (fileUrl) {
 		const storeType = file.store.split(':').pop();
-		if (RocketChat.settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
+		if (settings.get(`FileUpload_S3_Proxy_${ storeType }`)) {
 			const request = /^https:/.test(fileUrl) ? https : http;
 			request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 		} else {
@@ -56,16 +58,16 @@ const AmazonS3UserDataFiles = new FileUploadClass({
 });
 
 const configure = _.debounce(function() {
-	const Bucket = RocketChat.settings.get('FileUpload_S3_Bucket');
-	const Acl = RocketChat.settings.get('FileUpload_S3_Acl');
-	const AWSAccessKeyId = RocketChat.settings.get('FileUpload_S3_AWSAccessKeyId');
-	const AWSSecretAccessKey = RocketChat.settings.get('FileUpload_S3_AWSSecretAccessKey');
-	const URLExpiryTimeSpan = RocketChat.settings.get('FileUpload_S3_URLExpiryTimeSpan');
-	const Region = RocketChat.settings.get('FileUpload_S3_Region');
-	const SignatureVersion = RocketChat.settings.get('FileUpload_S3_SignatureVersion');
-	const ForcePathStyle = RocketChat.settings.get('FileUpload_S3_ForcePathStyle');
+	const Bucket = settings.get('FileUpload_S3_Bucket');
+	const Acl = settings.get('FileUpload_S3_Acl');
+	const AWSAccessKeyId = settings.get('FileUpload_S3_AWSAccessKeyId');
+	const AWSSecretAccessKey = settings.get('FileUpload_S3_AWSSecretAccessKey');
+	const URLExpiryTimeSpan = settings.get('FileUpload_S3_URLExpiryTimeSpan');
+	const Region = settings.get('FileUpload_S3_Region');
+	const SignatureVersion = settings.get('FileUpload_S3_SignatureVersion');
+	const ForcePathStyle = settings.get('FileUpload_S3_ForcePathStyle');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
-	const BucketURL = RocketChat.settings.get('FileUpload_S3_BucketURL');
+	const BucketURL = settings.get('FileUpload_S3_BucketURL');
 
 	if (!Bucket) {
 		return;
@@ -101,4 +103,4 @@ const configure = _.debounce(function() {
 	AmazonS3UserDataFiles.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3UserDataFiles.name, config);
 }, 500);
 
-RocketChat.settings.get(/^FileUpload_S3_/, configure);
+settings.get(/^FileUpload_S3_/, configure);

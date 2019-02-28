@@ -1,4 +1,4 @@
-RocketChat.Login = (function() {
+export const Login = (function() {
 	function onClick(el) {
 		const $el = $(el);
 		if ($el.length) {
@@ -29,7 +29,7 @@ RocketChat.Login = (function() {
 	return { check, onClick, onBlur	};
 }());
 
-RocketChat.Button = (function() {
+export const Button = (function() {
 	let time = undefined;
 	const loading = function(el) {
 		const next = el.attr('data-loading-text');
@@ -50,7 +50,7 @@ RocketChat.Button = (function() {
 	return { done, loading, reset };
 }());
 
-RocketChat.animationSupport = function() {
+export const animationSupport = function() {
 	const animeEnd = {
 		WebkitAnimation: 'webkitAnimationEnd',
 		OAnimation: 'oAnimationEnd',
@@ -65,9 +65,9 @@ RocketChat.animationSupport = function() {
 		msTransition: 'MSTransitionEnd',
 		transition: 'transitionend',
 	};
-	const prefixB = transEndEventNames[Modernizr.prefixed('transition')];
-	const prefixA = animeEnd[Modernizr.prefixed('animation')];
-	const support = Modernizr.cssanimations;
+	const prefixB = transEndEventNames[window.Modernizr.prefixed('transition')];
+	const prefixA = animeEnd[window.Modernizr.prefixed('animation')];
+	const support = window.Modernizr.cssanimations;
 	return {
 		support,
 		animation: prefixA,
@@ -75,13 +75,13 @@ RocketChat.animationSupport = function() {
 	};
 };
 
-RocketChat.animeBack = function(e, callback, type) {
+export const animeBack = function(e, callback, type) {
 	const el = $(e);
 	if (!el.length > 0) {
 		if (callback) { callback(el); }
 		return;
 	}
-	const s = RocketChat.animationSupport();
+	const s = animationSupport();
 	const p = ((type ? s.animation : s.transition));
 	el.one(p, function(e) {
 
@@ -91,7 +91,7 @@ RocketChat.animeBack = function(e, callback, type) {
 
 };
 
-RocketChat.preLoadImgs = function(urls, callback) {
+export const preLoadImgs = function(urls, callback) {
 	const preLoader = $('<div/>').attr({ id: 'perverter-preloader' });
 	let ended = undefined;
 	const l_ = function(x) {

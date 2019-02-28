@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { modal } from 'meteor/rocketchat:ui';
 import { t } from 'meteor/rocketchat:utils';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { messageBox, modal } from 'meteor/rocketchat:ui-utils';
+import { WebdavAccounts } from 'meteor/rocketchat:models';
 
-RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
+messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',
 	icon: 'plus',
-	condition: () => RocketChat.settings.get('Webdav_Integration_Enabled'),
+	condition: () => settings.get('Webdav_Integration_Enabled'),
 	action() {
 		modal.open({
 			title: t('Webdav_add_new_account'),
@@ -24,11 +25,11 @@ RocketChat.messageBox.actions.add('WebDAV', 'Add Server', {
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
-		const accounts = RocketChat.models.WebdavAccounts.find();
+		const accounts = WebdavAccounts.find();
 
 
 		if (accounts.count() === 0) {
-			return RocketChat.messageBox.actions.remove(/webdav-upload-/ig);
+			return messageBox.actions.remove(/webdav-upload-/ig);
 		}
 
 		accounts.forEach((account) => {
@@ -36,10 +37,10 @@ Meteor.startup(function() {
 			const title = t('Upload_From', {
 				name,
 			});
-			RocketChat.messageBox.actions.add('WebDAV', name, {
+			messageBox.actions.add('WebDAV', name, {
 				id: `webdav-upload-${ account._id.toLowerCase() }`,
 				icon: 'cloud-plus',
-				condition: () => RocketChat.settings.get('Webdav_Integration_Enabled'),
+				condition: () => settings.get('Webdav_Integration_Enabled'),
 				action() {
 					modal.open({
 						data: {

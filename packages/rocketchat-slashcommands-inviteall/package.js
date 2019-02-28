@@ -9,7 +9,10 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'check',
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:models',
+		'rocketchat:notifications',
+		'rocketchat:settings',
 		'templating',
 	]);
 	api.mainModule('client/index.js', 'client');

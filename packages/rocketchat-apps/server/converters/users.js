@@ -1,3 +1,4 @@
+import { Users } from 'meteor/rocketchat:models';
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 
 export class AppUsersConverter {
@@ -6,13 +7,13 @@ export class AppUsersConverter {
 	}
 
 	convertById(userId) {
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		return this.convertToApp(user);
 	}
 
 	convertByUsername(username) {
-		const user = RocketChat.models.Users.findOneByUsername(username);
+		const user = Users.findOneByUsername(username);
 
 		return this.convertToApp(user);
 	}

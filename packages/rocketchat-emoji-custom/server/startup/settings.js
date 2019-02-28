@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.addGroup('EmojiCustomFilesystem', function() {
+settings.addGroup('EmojiCustomFilesystem', function() {
 	this.add('EmojiUpload_Storage_Type', 'GridFS', {
 		type: 'select',
 		values: [{

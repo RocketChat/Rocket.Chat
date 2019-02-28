@@ -15,8 +15,3 @@ Package.onUse(function(api) {
 
 	api.mainModule('server/index.js', 'server');
 });
-
-Npm.depends({
-	'@accounts/server': '0.0.18',
-	'@accounts/mongo': '0.0.12',
-});

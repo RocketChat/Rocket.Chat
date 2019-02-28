@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
@@ -24,6 +23,107 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
+		this.loadSettings();
+	}
+
+	loadSettings() {
+		Meteor.startup(async() => {
+			const { settings } = await import('meteor/rocketchat:settings');
+			this.settings = settings;
+		});
+	}
+
+	setReactions(messageId, reactions) {
+		return this.update({ _id: messageId }, { $set: { reactions } });
+	}
+
+	keepHistoryForToken(token) {
+		return this.update({
+			'navigation.token': token,
+			expireAt: {
+				$exists: true,
+			},
+		}, {
+			$unset: {
+				expireAt: 1,
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	setRoomIdByToken(token, rid) {
+		return this.update({
+			'navigation.token': token,
+			rid: null,
+		}, {
+			$set: {
+				rid,
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	createRoomArchivedByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
+	}
+
+	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
+	}
+
+	unsetReactions(messageId) {
+		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
+	}
+
+	deleteOldOTRMessages(roomId, ts) {
+		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
+		return this.remove(query);
+	}
+
+	updateOTRAck(_id, otrAck) {
+		const query = { _id };
+		const update = { $set: { otrAck } };
+		return this.update(query, update);
+	}
+
+	setGoogleVisionData(messageId, visionData) {
+		const updateObj = {};
+		for (const index in visionData) {
+			if (visionData.hasOwnProperty(index)) {
+				updateObj[`attachments.0.${ index }`] = visionData[index];
+			}
+		}
+
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
+	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
+	}
+
+	createRoomRenamedWithRoomIdRoomNameAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
+	}
+
+	addTranslations(messageId, translations) {
+		const updateObj = {};
+		Object.keys(translations).forEach((key) => {
+			const translation = translations[key];
+			updateObj[`translations.${ key }`] = translation;
+		});
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
+	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
+		const updateObj = {};
+		Object.keys(translations).forEach((key) => {
+			const translation = translations[key];
+			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
+		});
+		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -600,7 +700,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (this.settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -629,7 +729,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (this.settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -777,7 +877,11 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeFilesByRoomId(roomId) {
+	async removeFilesByRoomId(roomId) {
+		if (!this.FileUpload) {
+			const { FileUpload } = await import('meteor/rocketchat:file-upload');
+			this.FileUpload = FileUpload;
+		}
 		this.find({
 			rid: roomId,
 			'file._id': {
@@ -787,7 +891,7 @@ export class Messages extends Base {
 			fields: {
 				'file._id': 1,
 			},
-		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
+		}).fetch().forEach((document) => this.FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { BaseDb } from './_BaseDb';
 import objectPath from 'object-path';
@@ -18,6 +19,52 @@ export class Base {
 
 	get origin() {
 		return '_db';
+	}
+
+	roleBaseQuery() {
+		return;
+	}
+
+	findRolesByUserId(userId) {
+		const query = this.roleBaseQuery(userId);
+		return this.find(query, { fields: { roles: 1 } });
+	}
+
+	isUserInRole(userId, roleName, scope) {
+		const query = this.roleBaseQuery(userId, scope);
+
+		if (query == null) {
+			return false;
+		}
+
+		query.roles = roleName;
+		return !_.isUndefined(this.findOne(query, { fields: { roles: 1 } }));
+	}
+
+	addRolesByUserId(userId, roles, scope) {
+		roles = [].concat(roles);
+		const query = this.roleBaseQuery(userId, scope);
+		const update = {
+			$addToSet: {
+				roles: { $each: roles },
+			},
+		};
+		return this.update(query, update);
+	}
+
+	removeRolesByUserId(userId, roles, scope) {
+		roles = [].concat(roles);
+		const query = this.roleBaseQuery(userId, scope);
+		const update = {
+			$pullAll: {
+				roles,
+			},
+		};
+		return this.update(query, update);
+	}
+
+	findUsersInRoles() {
+		throw new Meteor.Error('overwrite-function', 'You must overwrite this function in the extended classes');
 	}
 
 	arrayToCursor(data) {

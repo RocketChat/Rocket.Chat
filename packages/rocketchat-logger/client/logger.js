@@ -1,6 +1,5 @@
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
-
-const { Template } = Package.templating;
 
 Template.log = false;
 

@@ -1,19 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { popout } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { Rooms } from 'meteor/rocketchat:models';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { popout } from 'meteor/rocketchat:ui-utils';
 
 Template.videoFlexTabBbb.helpers({
 	openInNewWindow() {
-		if (Meteor.isCordova) {
-			return true;
-		} else {
-			return RocketChat.settings.get('Jitsi_Open_New_Window');
-		}
+		return settings.get('Jitsi_Open_New_Window');
 	},
 
 	live() {
-		const isLive = RocketChat.models.Rooms.findOne({ _id: this.rid, 'streamingOptions.type': 'call' }, { fields: { streamingOptions: 1 } }) != null;
+		const isLive = Rooms.findOne({ _id: this.rid, 'streamingOptions.type': 'call' }, { fields: { streamingOptions: 1 } }) != null;
 
 		if (isLive === false && popout.context) {
 			popout.close();
@@ -23,8 +21,8 @@ Template.videoFlexTabBbb.helpers({
 	},
 
 	callManagement() {
-		const type = RocketChat.models.Rooms.findOne({ _id: this.rid }).t;
-		return type === 'd' || RocketChat.authz.hasAllPermission('call-management') || RocketChat.authz.hasAllPermission('call-management', this.rid);
+		const type = Rooms.findOne({ _id: this.rid }).t;
+		return type === 'd' || hasAllPermission('call-management') || hasAllPermission('call-management', this.rid);
 	},
 });
 

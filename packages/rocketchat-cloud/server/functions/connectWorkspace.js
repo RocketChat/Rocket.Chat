@@ -1,5 +1,8 @@
 import querystring from 'querystring';
+
 import { HTTP } from 'meteor/http';
+import { settings } from 'meteor/rocketchat:settings';
+import { Settings } from 'meteor/rocketchat:models';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
@@ -13,12 +16,12 @@ export function connectWorkspace(token) {
 	const redirectUri = getRedirectUri();
 
 	const regInfo = {
-		email: RocketChat.settings.get('Organization_Email'),
-		client_name: RocketChat.settings.get('Site_Name'),
+		email: settings.get('Organization_Email'),
+		client_name: settings.get('Site_Name'),
 		redirect_uris: [redirectUri],
 	};
 
-	const cloudUrl = RocketChat.settings.get('Cloud_Url');
+	const cloudUrl = settings.get('Cloud_Url');
 	let result;
 	try {
 		result = HTTP.post(`${ cloudUrl }/api/oauth/clients`, {
@@ -37,12 +40,12 @@ export function connectWorkspace(token) {
 		return false;
 	}
 
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Id', data.workspaceId);
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Name', data.client_name);
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Client_Id', data.client_id);
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Client_Secret', data.client_secret);
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', data.client_secret_expires_at);
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
+	Settings.updateValueById('Cloud_Workspace_Id', data.workspaceId);
+	Settings.updateValueById('Cloud_Workspace_Name', data.client_name);
+	Settings.updateValueById('Cloud_Workspace_Client_Id', data.client_id);
+	Settings.updateValueById('Cloud_Workspace_Client_Secret', data.client_secret);
+	Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', data.client_secret_expires_at);
+	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
 
 	// Now that we have the client id and secret, let's get the access token
 	let authTokenResult;
@@ -63,8 +66,8 @@ export function connectWorkspace(token) {
 	const expiresAt = new Date();
 	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
 
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
-	RocketChat.models.Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
+	Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
+	Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
 
 	return true;
 }
