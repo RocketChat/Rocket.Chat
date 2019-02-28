@@ -205,6 +205,7 @@
 		"semver": "^5.6.0",
 		"sharp": "^0.21.0",
 		"speakeasy": "^2.0.0",
+		"stream-buffers": "^3.0.2",
 		"subscriptions-transport-ws": "^0.9.11",
 		"tar-stream": "^1.6.2",
 		"toastr": "^2.1.4",
