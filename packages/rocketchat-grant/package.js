@@ -11,15 +11,10 @@ Package.onUse(function(api) {
 		'mongo',
 		'check',
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:utils',
 		'rocketchat:accounts',
+		'rocketchat:models',
 	]);
 
 	api.mainModule('server/index.js', 'server');
-});
-
-Npm.depends({
-	express: '4.15.3',
-	'express-session': '1.15.4',
-	'grant-express': '3.8.0',
 });

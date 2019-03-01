@@ -1,5 +1,9 @@
-/* globals openRoom */
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../RoomTypeConfig';
+import { Meteor } from 'meteor/meteor';
+import { ChatRoom } from 'meteor/rocketchat:models';
+import { openRoom } from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAtLeastOnePermission, hasPermission } from 'meteor/rocketchat:authorization';
+import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from 'meteor/rocketchat:utils';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -35,7 +39,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+		if (settings.get('UI_Allow_room_names_with_special_chars')) {
 			return roomData.fname || roomData.name;
 		}
 
@@ -43,8 +47,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && RocketChat.authz.hasAllPermission('view-p-room');
+		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		return groupByType && hasPermission('view-p-room');
 	}
 
 	isGroupChat() {
@@ -52,7 +56,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	canAddUser(room) {
-		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
+		return hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
 	}
 
 	allowRoomSettingChange(room, setting) {
@@ -67,7 +71,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 				return !room.broadcast && room.ro;
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			case RoomSettingsEnum.E2E:
-				return RocketChat.settings.get('E2E_Enable') === true;
+				return settings.get('E2E_Enable') === true;
 			default:
 				return true;
 		}

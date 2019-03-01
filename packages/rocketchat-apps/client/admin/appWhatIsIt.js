@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { Apps } from '../orchestrator';
+
 Template.appWhatIsIt.onCreated(function() {
 	this.isLoading = new ReactiveVar(false);
 	this.hasError = new ReactiveVar(false);
@@ -31,7 +37,7 @@ Template.appWhatIsIt.events({
 				return;
 			}
 
-			window.Apps.load(true);
+			Apps.load(true);
 
 			FlowRouter.go('/admin/apps');
 		});

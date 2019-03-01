@@ -1,5 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { LivechatOfficeHour } from '../../collections/livechatOfficeHour';
 import toastr from 'toastr';
-/* globals LivechatOfficeHour */
 import moment from 'moment';
 
 Template.livechatOfficeHours.helpers({
@@ -90,7 +96,7 @@ Template.livechatOfficeHours.events({
 			}
 		}
 
-		RocketChat.settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get(), (err/* , success*/) => {
+		settings.set('Livechat_enable_office_hours', instance.enableOfficeHours.get(), (err/* , success*/) => {
 			if (err) {
 				return handleError(err);
 			}
@@ -153,6 +159,6 @@ Template.livechatOfficeHours.onCreated(function() {
 	this.enableOfficeHours = new ReactiveVar(null);
 
 	this.autorun(() => {
-		this.enableOfficeHours.set(RocketChat.settings.get('Livechat_enable_office_hours'));
+		this.enableOfficeHours.set(settings.get('Livechat_enable_office_hours'));
 	});
 });

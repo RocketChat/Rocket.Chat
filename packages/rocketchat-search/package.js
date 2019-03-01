@@ -9,19 +9,14 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:settings',
 		'rocketchat:logger',
 		'kadira:flow-router',
 	]);
-
-	api.addFiles([
-		'client/search/search.html',
-		'client/search/search.js',
-		'client/provider/suggestion.html',
-		'client/provider/result.html',
-		'client/provider/result.js',
-		'client/style/style.css',
-	], 'client');
-
+	api.addFiles('client/style/style.css', 'client');
+	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

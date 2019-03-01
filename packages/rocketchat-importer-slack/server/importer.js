@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import {
 	Base,
 	ProgressStep,
@@ -5,6 +7,10 @@ import {
 	SelectionChannel,
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
+import { Users, Rooms, Messages } from 'meteor/rocketchat:models';
+import { sendMessage } from 'meteor/rocketchat:lib';
 
 import _ from 'underscore';
 
@@ -157,10 +163,10 @@ export class SlackImporter extends Base {
 					}
 
 					Meteor.runAsUser(startedByUserId, () => {
-						const existantUser = RocketChat.models.Users.findOneByEmailAddress(user.profile.email) || RocketChat.models.Users.findOneByUsername(user.name);
+						const existantUser = Users.findOneByEmailAddress(user.profile.email) || Users.findOneByUsername(user.name);
 						if (existantUser) {
 							user.rocketId = existantUser._id;
-							RocketChat.models.Users.update({ _id: user.rocketId }, { $addToSet: { importIds: user.id } });
+							Users.update({ _id: user.rocketId }, { $addToSet: { importIds: user.id } });
 							this.userTags.push({
 								slack: `<@${ user.id }>`,
 								slackLong: `<@${ user.id }|${ user.name }>`,
@@ -185,10 +191,10 @@ export class SlackImporter extends Base {
 								}
 							});
 
-							RocketChat.models.Users.update({ _id: userId }, { $addToSet: { importIds: user.id } });
+							Users.update({ _id: userId }, { $addToSet: { importIds: user.id } });
 
 							if (user.profile.real_name) {
-								RocketChat.models.Users.setName(userId, user.profile.real_name);
+								Users.setName(userId, user.profile.real_name);
 							}
 
 							// Deleted users are 'inactive' users in Rocket.Chat
@@ -216,14 +222,14 @@ export class SlackImporter extends Base {
 					}
 
 					Meteor.runAsUser (startedByUserId, () => {
-						const existantRoom = RocketChat.models.Rooms.findOneByName(channel.name);
+						const existantRoom = Rooms.findOneByName(channel.name);
 						if (existantRoom || channel.is_general) {
 							if (channel.is_general && existantRoom && channel.name !== existantRoom.name) {
 								Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', channel.name);
 							}
 
 							channel.rocketId = channel.is_general ? 'GENERAL' : existantRoom._id;
-							RocketChat.models.Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
+							Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
 						} else {
 							const users = channel.members
 								.reduce((ret, member) => {
@@ -256,7 +262,7 @@ export class SlackImporter extends Base {
 							if (!_.isEmpty(channel.purpose && channel.purpose.value)) {
 								roomUpdate.description = channel.purpose.value;
 							}
-							RocketChat.models.Rooms.update({ _id: channel.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channel.id } });
+							Rooms.update({ _id: channel.rocketId }, { $set: roomUpdate, $addToSet: { importIds: channel.id } });
 						}
 						this.addCountCompleted(1);
 					});
@@ -272,7 +278,7 @@ export class SlackImporter extends Base {
 					Meteor.runAsUser(startedByUserId, () => {
 						const slackChannel = this.getSlackChannelFromName(channel);
 						if (!slackChannel || !slackChannel.do_import) { return; }
-						const room = RocketChat.models.Rooms.findOneById(slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
+						const room = Rooms.findOneById(slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
 						Object.keys(messagesObj).forEach((date) => {
 							const msgs = messagesObj[date];
 							msgs.messages.forEach((message) => {
@@ -309,25 +315,25 @@ export class SlackImporter extends Base {
 											...msgDataDefaults,
 											msg: this.convertSlackMessageToRocketChat(message.files[0].url_private_download),
 										};
-										RocketChat.sendMessage(this.getRocketUser(message.user), msgObj, room, true);
+										sendMessage(this.getRocketUser(message.user), msgObj, room, true);
 									}
 									if (message.subtype) {
 										if (message.subtype === 'channel_join') {
 											if (this.getRocketUser(message.user)) {
-												RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
+												Messages.createUserJoinWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
 											}
 										} else if (message.subtype === 'channel_leave') {
 											if (this.getRocketUser(message.user)) {
-												RocketChat.models.Messages.createUserLeaveWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
+												Messages.createUserLeaveWithRoomIdAndUser(room._id, this.getRocketUser(message.user), msgDataDefaults);
 											}
 										} else if (message.subtype === 'me_message') {
 											const msgObj = {
 												...msgDataDefaults,
 												msg: `_${ this.convertSlackMessageToRocketChat(message.text) }_`,
 											};
-											RocketChat.sendMessage(this.getRocketUser(message.user), msgObj, room, true);
+											sendMessage(this.getRocketUser(message.user), msgObj, room, true);
 										} else if (message.subtype === 'bot_message' || message.subtype === 'slackbot_response') {
-											const botUser = RocketChat.models.Users.findOneById('rocket.cat', { fields: { username: 1 } });
+											const botUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
 											const botUsername = this.bots[message.bot_id] ? this.bots[message.bot_id].name : message.username;
 											const msgObj = {
 												...msgDataDefaults,
@@ -352,18 +358,18 @@ export class SlackImporter extends Base {
 											if (message.icons) {
 												msgObj.emoji = message.icons.emoji;
 											}
-											RocketChat.sendMessage(botUser, msgObj, room, true);
+											sendMessage(botUser, msgObj, room, true);
 										} else if (message.subtype === 'channel_purpose') {
 											if (this.getRocketUser(message.user)) {
-												RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', room._id, message.purpose, this.getRocketUser(message.user), msgDataDefaults);
+												Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', room._id, message.purpose, this.getRocketUser(message.user), msgDataDefaults);
 											}
 										} else if (message.subtype === 'channel_topic') {
 											if (this.getRocketUser(message.user)) {
-												RocketChat.models.Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, this.getRocketUser(message.user), msgDataDefaults);
+												Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, message.topic, this.getRocketUser(message.user), msgDataDefaults);
 											}
 										} else if (message.subtype === 'channel_name') {
 											if (this.getRocketUser(message.user)) {
-												RocketChat.models.Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, this.getRocketUser(message.user), msgDataDefaults);
+												Messages.createRoomRenamedWithRoomIdRoomNameAndUser(room._id, message.name, this.getRocketUser(message.user), msgDataDefaults);
 											}
 										} else if (message.subtype === 'pinned_item') {
 											if (message.attachments) {
@@ -375,7 +381,7 @@ export class SlackImporter extends Base {
 														author_icon : getAvatarUrlFromUsername(message.attachments[0].author_subname),
 													}],
 												};
-												RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', this.getRocketUser(message.user), msgObj);
+												Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', this.getRocketUser(message.user), msgObj);
 											} else {
 												// TODO: make this better
 												this.logger.debug('Pinned item with no attachment, needs work.');
@@ -420,7 +426,7 @@ export class SlackImporter extends Base {
 											}
 
 											try {
-												RocketChat.sendMessage(this.getRocketUser(message.user), msgObj, room, true);
+												sendMessage(this.getRocketUser(message.user), msgObj, room, true);
 											} catch (e) {
 												this.logger.warn(`Failed to import the message: ${ msgDataDefaults._id }`);
 											}
@@ -467,7 +473,7 @@ export class SlackImporter extends Base {
 		const user = this.users.users.find((user) => user.id === slackId);
 
 		if (user) {
-			return RocketChat.models.Users.findOneById(user.rocketId, { fields: { username: 1, name: 1 } });
+			return Users.findOneById(user.rocketId, { fields: { username: 1, name: 1 } });
 		}
 	}
 

@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
+import { Messages } from 'meteor/rocketchat:models';
+
 Meteor.publish('messages', function(rid/* , start*/) {
 	if (!this.userId) {
 		return this.ready();
@@ -13,7 +18,7 @@ Meteor.publish('messages', function(rid/* , start*/) {
 		return this.ready();
 	}
 
-	const cursor = RocketChat.models.Messages.findVisibleByRoomId(rid, {
+	const cursor = Messages.findVisibleByRoomId(rid, {
 		sort: {
 			ts: -1,
 		},
@@ -22,14 +27,14 @@ Meteor.publish('messages', function(rid/* , start*/) {
 
 	const cursorHandle = cursor.observeChanges({
 		added(_id, record) {
-			return publication.added('rocketchat_message', _id, RocketChat.composeMessageObjectWithUser(record, publication.userId));
+			return publication.added('rocketchat_message', _id, composeMessageObjectWithUser(record, publication.userId));
 		},
 		changed(_id, record) {
-			return publication.changed('rocketchat_message', _id, RocketChat.composeMessageObjectWithUser(record, publication.userId));
+			return publication.changed('rocketchat_message', _id, composeMessageObjectWithUser(record, publication.userId));
 		},
 	});
 
-	const cursorDelete = RocketChat.models.Messages.findInvisibleByRoomId(rid, {
+	const cursorDelete = Messages.findInvisibleByRoomId(rid, {
 		fields: {
 			_id: 1,
 		},
@@ -82,8 +87,8 @@ Meteor.methods({
 
 		if (lastUpdate instanceof Date) {
 			return {
-				updated: RocketChat.models.Messages.findForUpdates(rid, lastUpdate, options).fetch(),
-				deleted: RocketChat.models.Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				updated: Messages.findForUpdates(rid, lastUpdate, options).fetch(),
+				deleted: Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 

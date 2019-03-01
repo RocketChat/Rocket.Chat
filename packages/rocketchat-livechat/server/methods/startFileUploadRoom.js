@@ -1,4 +1,7 @@
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:startFileUploadRoom'(roomId, token) {
@@ -12,6 +15,6 @@ Meteor.methods({
 			token: guest.token,
 		};
 
-		return RocketChat.Livechat.getRoom(guest, message);
+		return Livechat.getRoom(guest, message);
 	},
 });

@@ -16,17 +16,17 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'reactive-var',
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:tooltip',
+		'rocketchat:settings',
+		'rocketchat:ui-utils',
+		'rocketchat:ui-sidenav',
 		'meteorhacks:inject-initial',
 	]);
 
-	api.addFiles('client/main.html', 'client');
-	api.addFiles('client/loading.html', 'client');
-	api.addFiles('client/error.html', 'client');
-	api.addFiles('client/logoLayout.html', 'client');
-	api.addFiles('client/main.js', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 
-	api.addFiles('server/inject.js', 'server');
 	api.addAssets('server/dynamic-css.js', 'server');
 	api.addAssets('public/icons.svg', 'server');
 });

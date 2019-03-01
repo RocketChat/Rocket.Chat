@@ -1,15 +1,16 @@
+import { Random } from 'meteor/random';
+import { settings } from 'meteor/rocketchat:settings';
 import './email';
 
 // Insert server unique id if it doesn't exist
-RocketChat.settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
+settings.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
-	hidden: true,
 });
 
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
-RocketChat.settings.addGroup('Accounts', function() {
+settings.addGroup('Accounts', function() {
 	this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
 		public: true,
@@ -105,6 +106,12 @@ RocketChat.settings.addGroup('Accounts', function() {
 		public: true,
 	});
 	this.section('Registration', function() {
+		this.add('Accounts_Send_Email_When_Activating', true, {
+			type: 'boolean',
+		});
+		this.add('Accounts_Send_Email_When_Deactivating', true, {
+			type: 'boolean',
+		});
 		this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 			type: 'string',
 		});
@@ -462,6 +469,12 @@ RocketChat.settings.addGroup('Accounts', function() {
 				value: true,
 			},
 		});
+
+		this.add('Accounts_AvatarExternalProviderUrl', '', {
+			type: 'string',
+			public: true,
+		});
+
 		this.add('Accounts_AvatarCacheTime', 3600, {
 			type: 'int',
 			i18nDescription: 'Accounts_AvatarCacheTime_description',
@@ -528,7 +541,7 @@ RocketChat.settings.addGroup('Accounts', function() {
 	});
 });
 
-RocketChat.settings.addGroup('OAuth', function() {
+settings.addGroup('OAuth', function() {
 	this.section('Facebook', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Facebook',
@@ -685,7 +698,7 @@ RocketChat.settings.addGroup('OAuth', function() {
 	});
 });
 
-RocketChat.settings.addGroup('General', function() {
+settings.addGroup('General', function() {
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
@@ -811,6 +824,11 @@ RocketChat.settings.addGroup('General', function() {
 		public: true,
 		i18nDescription: 'Store_Last_Message_Sent_per_Room',
 	});
+	this.add('Robot_Instructions_File_Content', 'User-agent: *\nDisallow: /', {
+		type: 'string',
+		public: true,
+		multiline: true,
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
@@ -886,7 +904,7 @@ RocketChat.settings.addGroup('General', function() {
 	});
 });
 
-RocketChat.settings.addGroup('Message', function() {
+settings.addGroup('Message', function() {
 	this.section('Message_Attachments', function() {
 		this.add('Message_Attachments_GroupAttach', false, {
 			type: 'boolean',
@@ -1064,7 +1082,7 @@ RocketChat.settings.addGroup('Message', function() {
 	});
 });
 
-RocketChat.settings.addGroup('Meta', function() {
+settings.addGroup('Meta', function() {
 	this.add('Meta_language', '', {
 		type: 'string',
 	});
@@ -1087,7 +1105,7 @@ RocketChat.settings.addGroup('Meta', function() {
 	});
 });
 
-RocketChat.settings.addGroup('Push', function() {
+settings.addGroup('Push', function() {
 	this.add('Push_enable', true, {
 		type: 'boolean',
 		public: true,
@@ -1188,19 +1206,19 @@ RocketChat.settings.addGroup('Push', function() {
 	});
 });
 
-RocketChat.settings.addGroup('Layout', function() {
+settings.addGroup('Layout', function() {
 	this.section('Content', function() {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
 			public: true,
 		});
-		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat+,\n  for Android and iOS is available from <a title="Rocket.Chat+ on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat+ on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> -> <strong>Layout</strong> -> <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
+		this.add('Layout_Home_Body', '<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat+,\n  for Android and iOS is available from <a title="Rocket.Chat+ on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat+ on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS -> Layout to customize this page.', {
+		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -1211,7 +1229,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS -> Layout to customize this page.', {
+		this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -1283,7 +1301,7 @@ RocketChat.settings.addGroup('Layout', function() {
 	});
 });
 
-RocketChat.settings.addGroup('Logs', function() {
+settings.addGroup('Logs', function() {
 	this.add('Log_Level', '0', {
 		type: 'select',
 		values: [
@@ -1349,7 +1367,7 @@ RocketChat.settings.addGroup('Logs', function() {
 	});
 });
 
-RocketChat.settings.addGroup('Setup_Wizard', function() {
+settings.addGroup('Setup_Wizard', function() {
 	this.section('Organization_Info', function() {
 		this.add('Organization_Type', '', {
 			type: 'select',
@@ -2529,7 +2547,165 @@ RocketChat.settings.addGroup('Setup_Wizard', function() {
 		this.add('Allow_Marketing_Emails', true, {
 			type: 'boolean',
 		});
+		this.add('Register_Server', true, {
+			type: 'boolean',
+		});
+		this.add('Organization_Email', '', {
+			type: 'string',
+		});
+	});
+
+	this.section('Cloud_Info', function() {
+		this.add('Cloud_Url', 'https://cloud.rocket.chat', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Id', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Name', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Id', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Secret', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Client_Secret_Expires_At', '', {
+			type: 'int',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Registration_Client_Uri', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_License', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Access_Token', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(), {
+			type: 'date',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Registration_State', '', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
+
+		this.add('Cloud_Workspace_Account_Associated', false, {
+			type: 'boolean',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+		});
 	});
 });
 
-RocketChat.settings.init();
+settings.addGroup('Rate Limiter', function() {
+	this.section('DDP Rate Limiter', function() {
+		this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_IP_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
+
+		this.add('DDP_Rate_Limit_User_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_User_Requests_Allowed', 1200, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_User_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_Enabled', value: true } });
+
+		this.add('DDP_Rate_Limit_Connection_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_Connection_Requests_Allowed', 600, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_Connection_Interval_Time', 60000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_Enabled', value: true } });
+
+		this.add('DDP_Rate_Limit_User_By_Method_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_User_By_Method_Requests_Allowed', 20, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_By_Method_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_User_By_Method_Interval_Time', 10000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_User_By_Method_Enabled', value: true } });
+
+		this.add('DDP_Rate_Limit_Connection_By_Method_Enabled', true, { type: 'boolean' });
+		this.add('DDP_Rate_Limit_Connection_By_Method_Requests_Allowed', 10, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true } });
+		this.add('DDP_Rate_Limit_Connection_By_Method_Interval_Time', 10000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_Connection_By_Method_Enabled', value: true } });
+	});
+
+	this.section('API Rate Limiter', function() {
+		this.add('API_Enable_Rate_Limiter_Dev', true, { type: 'boolean' });
+		this.add('API_Enable_Rate_Limiter_Limit_Calls_Default', 10, { type: 'int' });
+		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int' });
+	});
+});
+
+settings.init();

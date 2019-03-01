@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import toastr from 'toastr';
 
 Template.ChatpalAdmin.onCreated(function() {
@@ -8,7 +14,7 @@ Template.ChatpalAdmin.onCreated(function() {
 
 	this.apiKey = new ReactiveVar();
 
-	const lang = RocketChat.settings.get('Language');
+	const lang = settings.get('Language');
 
 	this.lang = (lang === 'de' || lang === 'en') ? lang : 'en';
 
@@ -53,7 +59,7 @@ Template.ChatpalAdmin.helpers({
 		return Template.instance().apiKey.get();
 	},
 	isAdmin() {
-		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+		return hasRole(Meteor.userId(), 'admin');
 	},
 	tac() {
 		return Template.instance().tac.get();

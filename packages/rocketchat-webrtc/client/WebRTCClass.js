@@ -1,10 +1,21 @@
-/* globals chrome, ChromeScreenShare */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { TAPi18n } from 'meteor/tap:i18n';
+import { t } from 'meteor/rocketchat:utils';
+import { ChromeScreenShare } from './screenShare';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { settings } from 'meteor/rocketchat:settings';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+
 class WebRTCTransportClass {
 	constructor(webrtcInstance) {
 		this.debug = false;
 		this.webrtcInstance = webrtcInstance;
 		this.callbacks = {};
-		RocketChat.Notifications.onRoom(this.webrtcInstance.room, 'webrtc', (type, data) => {
+		Notifications.onRoom(this.webrtcInstance.room, 'webrtc', (type, data) => {
 			const { onRemoteStatus } = this.callbacks;
 			this.log('WebRTCTransportClass - onRoom', type, data);
 			switch (type) {
@@ -54,7 +65,7 @@ class WebRTCTransportClass {
 
 	startCall(data) {
 		this.log('WebRTCTransportClass - startCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
-		RocketChat.Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'call', {
+		Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'call', {
 			from: this.webrtcInstance.selfId,
 			room: this.webrtcInstance.room,
 			media: data.media,
@@ -65,14 +76,14 @@ class WebRTCTransportClass {
 	joinCall(data) {
 		this.log('WebRTCTransportClass - joinCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
 		if (data.monitor === true) {
-			RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'join', {
+			Notifications.notifyUser(data.to, 'webrtc', 'join', {
 				from: this.webrtcInstance.selfId,
 				room: this.webrtcInstance.room,
 				media: data.media,
 				monitor: data.monitor,
 			});
 		} else {
-			RocketChat.Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'join', {
+			Notifications.notifyUsersOfRoom(this.webrtcInstance.room, 'webrtc', 'join', {
 				from: this.webrtcInstance.selfId,
 				room: this.webrtcInstance.room,
 				media: data.media,
@@ -85,20 +96,20 @@ class WebRTCTransportClass {
 		data.from = this.webrtcInstance.selfId;
 		data.room = this.webrtcInstance.room;
 		this.log('WebRTCTransportClass - sendCandidate', data);
-		RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'candidate', data);
+		Notifications.notifyUser(data.to, 'webrtc', 'candidate', data);
 	}
 
 	sendDescription(data) {
 		data.from = this.webrtcInstance.selfId;
 		data.room = this.webrtcInstance.room;
 		this.log('WebRTCTransportClass - sendDescription', data);
-		RocketChat.Notifications.notifyUser(data.to, 'webrtc', 'description', data);
+		Notifications.notifyUser(data.to, 'webrtc', 'description', data);
 	}
 
 	sendStatus(data) {
 		this.log('WebRTCTransportClass - sendStatus', data, this.webrtcInstance.room);
 		data.from = this.webrtcInstance.selfId;
-		RocketChat.Notifications.notifyRoom(this.webrtcInstance.room, 'webrtc', 'status', data);
+		Notifications.notifyRoom(this.webrtcInstance.room, 'webrtc', 'status', data);
 	}
 
 	onRemoteCall(fn) {
@@ -158,7 +169,7 @@ class WebRTCClass {
 		this.TransportClass = WebRTCTransportClass;
 		this.selfId = selfId;
 		this.room = room;
-		let servers = RocketChat.settings.get('WebRTC_Servers');
+		let servers = settings.get('WebRTC_Servers');
 		if (servers && servers.trim() !== '') {
 			servers = servers.replace(/\s/g, '');
 			servers = servers.split(',');
@@ -959,13 +970,13 @@ const WebRTC = new class {
 		let enabled = false;
 		switch (subscription.t) {
 			case 'd':
-				enabled = RocketChat.settings.get('WebRTC_Enable_Direct');
+				enabled = settings.get('WebRTC_Enable_Direct');
 				break;
 			case 'p':
-				enabled = RocketChat.settings.get('WebRTC_Enable_Private');
+				enabled = settings.get('WebRTC_Enable_Private');
 				break;
 			case 'c':
-				enabled = RocketChat.settings.get('WebRTC_Enable_Channel');
+				enabled = settings.get('WebRTC_Enable_Channel');
 		}
 		if (enabled === false) {
 			return;
@@ -980,7 +991,7 @@ const WebRTC = new class {
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			RocketChat.Notifications.onUser('webrtc', (type, data) => {
+			Notifications.onUser('webrtc', (type, data) => {
 				if (data.room == null) {
 					return;
 				}

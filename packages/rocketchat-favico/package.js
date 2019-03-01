@@ -5,5 +5,8 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.addFiles('client/favico.js', 'client');
+	api.use([
+		'ecmascript',
+	]);
+	api.mainModule('client/index.js', 'client');
 });

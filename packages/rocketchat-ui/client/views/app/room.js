@@ -1,31 +1,55 @@
-/* globals chatMessages, fileUpload , fireGlobalEvent , cordova , readMessage , RoomRoles, popover , device */
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { t, roomTypes, getUserPreference, handleError } from 'meteor/rocketchat:utils';
+import { WebRTC } from 'meteor/rocketchat:webrtc';
+import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import {
+	fireGlobalEvent,
+	RoomHistoryManager,
+	RoomManager,
+	readMessage,
+	popover,
+	modal,
+	Layout,
+	MessageAction,
+	RocketChatTabBar,
+} from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { promises } from 'meteor/rocketchat:promises';
+import { hasAllPermission, hasRole } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
-
 import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+import { ChatMessages } from '../../lib/chatMessages';
+import { fileUpload } from '../../lib/fileUpload';
 
-window.chatMessages = window.chatMessages || {};
+export const chatMessages = {};
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
-const favoritesEnabled = () => RocketChat.settings.get('Favorite_Rooms');
+const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
-const userCanDrop = (_id) => !RocketChat.roomTypes.readOnly(_id, Meteor.user());
+const userCanDrop = (_id) => !roomTypes.readOnly(_id, Meteor.user());
 
 const openProfileTab = (e, instance, username) => {
 	const roomData = Session.get(`roomData${ Session.get('openedRoom') }`);
 
-	if (RocketChat.Layout.isEmbedded()) {
+	if (Layout.isEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
 		e.stopPropagation();
 		return;
 	}
 
-	if (RocketChat.roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
+	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
 		instance.setUserDetail(username);
 	}
 
@@ -34,7 +58,7 @@ const openProfileTab = (e, instance, username) => {
 };
 
 const openProfileTabOrOpenDM = (e, instance, username) => {
-	if (RocketChat.settings.get('UI_Click_Direct_Message')) {
+	if (settings.get('UI_Click_Direct_Message')) {
 		Meteor.call('createDirectMessage', username, (error, result) => {
 			if (error) {
 				if (error.isClientSafe) {
@@ -51,6 +75,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 	} else {
 		openProfileTab(e, instance, username);
 	}
+	e.stopPropagation();
 };
 
 const mountPopover = (e, i, outerContext) => {
@@ -61,7 +86,7 @@ const mountPopover = (e, i, outerContext) => {
 
 	const [, message] = outerContext._arguments;
 
-	let menuItems = RocketChat.MessageAction.getButtons(message, context, 'menu').map((item) => ({
+	let menuItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
 		icon: item.icon,
 		name: t(item.label),
 		type: 'message-action',
@@ -70,7 +95,7 @@ const mountPopover = (e, i, outerContext) => {
 	}));
 
 	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = RocketChat.MessageAction.getButtons(message, context, 'message').map((item) => ({
+		const messageItems = MessageAction.getButtons(message, context, 'message').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
 			type: 'message-action',
@@ -86,20 +111,6 @@ const mountPopover = (e, i, outerContext) => {
 
 	if (deleteItem.length) {
 		groups.push({ items: deleteItem });
-	}
-
-	if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
-		groups.push({
-			items: [
-				{
-					icon: 'warning',
-					name: t('Report_Abuse'),
-					type: 'message-action',
-					id: 'report-abuse',
-					modifier: 'alert',
-				},
-			],
-		});
 	}
 
 	const config = {
@@ -127,23 +138,23 @@ const wipeFailedUploads = () => {
 };
 
 function roomHasGlobalPurge(room) {
-	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+	if (!settings.get('RetentionPolicy_Enabled')) {
 		return false;
 	}
 
 	switch (room.t) {
 		case 'c':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
+			return settings.get('RetentionPolicy_AppliesToChannels');
 		case 'p':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToGroups');
+			return settings.get('RetentionPolicy_AppliesToGroups');
 		case 'd':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToDMs');
+			return settings.get('RetentionPolicy_AppliesToDMs');
 	}
 	return false;
 }
 
 function roomHasPurge(room) {
-	if (!room || !RocketChat.settings.get('RetentionPolicy_Enabled')) {
+	if (!room || !settings.get('RetentionPolicy_Enabled')) {
 		return false;
 	}
 
@@ -163,7 +174,7 @@ function roomFilesOnly(room) {
 		return room.retention.filesOnly;
 	}
 
-	return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+	return settings.get('RetentionPolicy_FilesOnly');
 }
 
 function roomExcludePinned(room) {
@@ -175,7 +186,7 @@ function roomExcludePinned(room) {
 		return room.retention.excludePinned;
 	}
 
-	return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
+	return settings.get('RetentionPolicy_ExcludePinned');
 }
 
 function roomMaxAge(room) {
@@ -191,26 +202,26 @@ function roomMaxAge(room) {
 	}
 
 	if (room.t === 'c') {
-		return RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+		return settings.get('RetentionPolicy_MaxAge_Channels');
 	}
 	if (room.t === 'p') {
-		return RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+		return settings.get('RetentionPolicy_MaxAge_Groups');
 	}
 	if (room.t === 'd') {
-		return RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+		return settings.get('RetentionPolicy_MaxAge_DMs');
 	}
 }
 
-RocketChat.callbacks.add('enter-room', wipeFailedUploads);
+callbacks.add('enter-room', wipeFailedUploads);
 
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
-		RocketChat.settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
+		settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
 
 	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded();
 	},
 
 	subscribed() {
@@ -219,7 +230,7 @@ Template.room.helpers({
 
 	messagesHistory() {
 		const hideMessagesOfType = [];
-		RocketChat.settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
+		settings.collection.find({ _id: /Message_HideType_.+/ }).forEach(function(record) {
 			let types;
 			const type = record._id.replace('Message_HideType_', '');
 			switch (type) {
@@ -280,10 +291,10 @@ Template.room.helpers({
 	roomLeader() {
 		const roles = RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } });
 		if (roles) {
-			const leader = RocketChat.models.Users.findOne({ _id: roles.u._id }, { fields: { status: 1 } }) || {};
+			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1 } }) || {};
 			return {
 				...roles.u,
-				name: RocketChat.settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
+				name: settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
 				status: leader.status || 'offline',
 				statusDisplay: ((status) => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline'),
 			};
@@ -291,7 +302,7 @@ Template.room.helpers({
 	},
 
 	chatNowLink() {
-		return RocketChat.roomTypes.getRouteLink('d', { name: this.username });
+		return roomTypes.getRouteLink('d', { name: this.username });
 	},
 
 	showAnnouncement() {
@@ -328,7 +339,7 @@ Template.room.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		const roomIcon = RocketChat.roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		const roomIcon = roomTypes.getIcon(roomData != null ? roomData.t : undefined);
 
 		// Remove this 'codegueira' on header redesign
 		if (!roomIcon) {
@@ -338,17 +349,13 @@ Template.room.helpers({
 		return roomIcon;
 	},
 
-	tokenAccessChannel() {
-		return Template.instance().hasTokenpass.get();
-	},
-
 	userStatus() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		return RocketChat.roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
+		return roomTypes.getUserStatus(roomData.t, this._id) || 'offline';
 	},
 
 	maxMessageLength() {
-		return RocketChat.settings.get('Message_MaxAllowedSize');
+		return settings.get('Message_MaxAllowedSize');
 	},
 
 	unreadData() {
@@ -392,7 +399,7 @@ Template.room.helpers({
 	},
 
 	adminClass() {
-		if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) { return 'admin'; }
+		if (hasRole(Meteor.userId(), 'admin')) { return 'admin'; }
 	},
 
 	showToggleFavorite() {
@@ -400,7 +407,7 @@ Template.room.helpers({
 	},
 
 	messageViewMode() {
-		const viewMode = RocketChat.getUserPreference(Meteor.userId(), 'messageViewMode');
+		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
 		const modes = ['', 'cozy', 'compact'];
 		return modes[viewMode] || modes[0];
 	},
@@ -410,11 +417,11 @@ Template.room.helpers({
 	},
 
 	hideUsername() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
+		return getUserPreference(Meteor.userId(), 'hideUsernames') ? 'hide-usernames' : undefined;
 	},
 
 	hideAvatar() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
+		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
 
 	userCanDrop() {
@@ -436,15 +443,15 @@ Template.room.helpers({
 			return true;
 		}
 
-		if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
+		if (settings.get('Accounts_AllowAnonymousRead') === true) {
 			return true;
 		}
 
-		if (RocketChat.authz.hasAllPermission('preview-c-room')) {
+		if (hasAllPermission('preview-c-room')) {
 			return true;
 		}
 
-		return (RocketChat.models.Subscriptions.findOne({ rid: this._id }) != null);
+		return (Subscriptions.findOne({ rid: this._id }) != null);
 
 	},
 	hideLeaderHeader() {
@@ -485,14 +492,14 @@ let lastScrollTop;
 Template.room.events({
 	'click .js-reply-broadcast'() {
 		const message = this._arguments[1];
-		RocketChat.roomTypes.openRouteLink('d', { name: this._arguments[1].u.username }, { ...FlowRouter.current().queryParams, reply: message._id });
+		roomTypes.openRouteLink('d', { name: this._arguments[1].u.username }, { ...FlowRouter.current().queryParams, reply: message._id });
 	},
 	'click, touchend'(e, t) {
-		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
+		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
 	'click .messages-container-main'() {
-		if (Template.instance().tabBar.getState() === 'opened' && RocketChat.getUserPreference(Meteor.userId(), 'hideFlexTab')) {
+		if (Template.instance().tabBar.getState() === 'opened' && getUserPreference(Meteor.userId(), 'hideFlexTab')) {
 			Template.instance().tabBar.close();
 		}
 	},
@@ -554,11 +561,7 @@ Template.room.events({
 				return;
 			}
 
-			if ((typeof cordova !== 'undefined' && cordova !== null ? cordova.InAppBrowser : undefined) != null) {
-				cordova.InAppBrowser.open(e.target.href, '_system');
-			} else {
-				window.open(e.target.href);
-			}
+			window.open(e.target.href);
 		}
 	},
 
@@ -663,7 +666,7 @@ Template.room.events({
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
-		chatMessages[RocketChat.openedRoom].input.focus();
+		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
 		let context = $(e.target).parents('.message').data('context');
@@ -672,7 +675,7 @@ Template.room.events({
 		}
 
 		const [, message] = this._arguments;
-		const allItems = RocketChat.MessageAction.getButtons(message, context, 'menu').map((item) => ({
+		const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
 			type: 'message-action',
@@ -710,16 +713,14 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const channel = $(e.currentTarget).data('channel');
-		if (channel != null) {
-			if (RocketChat.Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+		const roomNameOrId = $(e.currentTarget).data('channel');
+		if (roomNameOrId) {
+			if (Layout.isEmbedded()) {
+				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: roomNameOrId }), channel: roomNameOrId });
 			}
-
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
+			FlowRouter.goToRoomById(roomNameOrId);
 			return;
 		}
-
 		const username = $(e.currentTarget).data('username');
 
 		openProfileTabOrOpenDM(e, instance, username);
@@ -822,7 +823,7 @@ Template.room.events({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
-			return RocketChat.callbacks.run(roomData.announcementDetails.callback, this._id);
+			return callbacks.run(roomData.announcementDetails.callback, this._id);
 		} else {
 			modal.open({
 				title: t('Announcement'),
@@ -844,7 +845,12 @@ Template.room.events({
 		if (!msg) {
 			return;
 		}
-		RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
+		promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
+			const _chatMessages = chatMessages[rid];
+			if (_chatMessages && _chatMessages.processSlashCommand(msgObject)) {
+				return;
+			}
+
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
@@ -925,16 +931,6 @@ Template.room.onCreated(function() {
 		this.userDetail.set(null);
 	};
 
-	this.hasTokenpass = new ReactiveVar(false);
-
-	if (RocketChat.settings.get('API_Tokenpass_URL') !== '') {
-		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
-			if (!error) {
-				this.hasTokenpass.set(!!(result && result.tokens && result.tokens.length > 0));
-			}
-		});
-	}
-
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
 		if (error) {
 			handleError(error);
@@ -970,16 +966,19 @@ Template.room.onCreated(function() {
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
+	if (this.messageObserver) {
+		this.messageObserver.stop();
+	}
 	window.removeEventListener('resize', this.onWindowResize);
 });
 
 Template.room.onRendered(function() {
 	// $(this.find('.messages-box .wrapper')).perfectScrollbar();
 	const rid = Session.get('openedRoom');
-	if (!window.chatMessages[rid]) {
-		window.chatMessages[rid] = new ChatMessages;
+	if (!chatMessages[rid]) {
+		chatMessages[rid] = new ChatMessages;
 	}
-	window.chatMessages[rid].init(this.firstNode);
+	chatMessages[rid].init(this.firstNode);
 	// ScrollListener.init()
 
 	const wrapper = this.find('.wrapper');
@@ -1105,7 +1104,6 @@ Template.room.onRendered(function() {
 	});
 
 	wrapper.addEventListener('scroll', () => updateUnreadCount());
-	/* globals WebRTC */
 	// salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date);
 
@@ -1124,7 +1122,7 @@ Template.room.onRendered(function() {
 			}
 		});
 	}
-	RocketChat.callbacks.add('streamMessage', (msg) => {
+	callbacks.add('streamMessage', (msg) => {
 		if (rid !== msg.rid || msg.editedAt) {
 			return;
 		}
@@ -1133,7 +1131,7 @@ Template.room.onRendered(function() {
 		}
 	});
 	Tracker.autorun(function() {
-		const room = RocketChat.models.Rooms.findOne({ _id: template.data._id });
+		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
 			FlowRouter.go('home');
 		}

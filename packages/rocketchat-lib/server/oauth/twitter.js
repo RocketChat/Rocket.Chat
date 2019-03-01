@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { registerAccessTokenService } from './oauth';
 import Twit from 'twit';
 import _ from 'underscore';
 
@@ -27,7 +30,7 @@ const getIdentity = function(accessToken, appId, appSecret, accessTokenSecret) {
 	}
 };
 
-RocketChat.registerAccessTokenService('twitter', function(options) {
+registerAccessTokenService('twitter', function(options) {
 	check(options, Match.ObjectIncluding({
 		accessToken: String,
 		appSecret: String,

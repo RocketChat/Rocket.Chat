@@ -1,8 +1,11 @@
-/* globals UploadFS */
+import { Meteor } from 'meteor/meteor';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { settings } from 'meteor/rocketchat:settings';
+import { Uploads } from 'meteor/rocketchat:models';
 
 let protectedFiles;
 
-RocketChat.settings.get('FileUpload_ProtectFiles', function(key, value) {
+settings.get('FileUpload_ProtectFiles', function(key, value) {
 	protectedFiles = value;
 });
 
@@ -11,7 +14,7 @@ Meteor.methods({
 		if (protectedFiles && !Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
-		const file = RocketChat.models.Uploads.findOneById(fileId);
+		const file = Uploads.findOneById(fileId);
 
 		return UploadFS.getStore('AmazonS3:Uploads').getRedirectURL(file);
 	},

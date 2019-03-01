@@ -1,10 +1,19 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { TAPi18next } from 'meteor/tap:i18n';
+import { isEmail, Info, APIClient } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { Markdown } from 'meteor/rocketchat:markdown';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
-
+import { Apps } from '../orchestrator';
 import semver from 'semver';
 
 const HOST = 'https://marketplace.rocket.chat'; // TODO move this to inside RocketChat.API
@@ -13,8 +22,8 @@ function getApps(instance) {
 	const id = instance.id.get();
 
 	return Promise.all([
-		fetch(`${ HOST }/v1/apps/${ id }?version=${ RocketChat.Info.marketplaceApiVersion }`).then((data) => data.json()),
-		RocketChat.API.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
+		fetch(`${ HOST }/v1/apps/${ id }?version=${ Info.marketplaceApiVersion }`).then((data) => data.json()),
+		APIClient.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
 	]).then(([remoteApps, [localApp]]) => {
 		remoteApps = remoteApps.sort((a, b) => {
 			if (semver.gt(a.version, b.version)) {
@@ -38,10 +47,10 @@ function getApps(instance) {
 
 			instance.onSettingUpdated({ appId: id });
 
-			window.Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-			window.Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
-			window.Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-			window.Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+			Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+			Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+			Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+			Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 		}
 
 		instance.app.set(localApp || remoteApp);
@@ -69,7 +78,7 @@ Template.appManage.onCreated(function() {
 	const id = this.id.get();
 
 	this.getApis = async() => {
-		this.apis.set(await window.Apps.getAppApis(id));
+		this.apis.set(await Apps.getAppApis(id));
 	};
 
 	this.getApis();
@@ -107,7 +116,7 @@ Template.appManage.onCreated(function() {
 			return;
 		}
 
-		RocketChat.API.get(`apps/${ id }/settings`).then((result) => {
+		APIClient.get(`apps/${ id }/settings`).then((result) => {
 			_morphSettings(result.settings);
 		});
 	};
@@ -116,11 +125,12 @@ Template.appManage.onCreated(function() {
 Template.apps.onDestroyed(function() {
 	const instance = this;
 
-	window.Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-	window.Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 });
 
 Template.appManage.helpers({
+	isEmail,
 	_(key, ...args) {
 		const options = (args.pop()).hash;
 		if (!_.isEmpty(args)) {
@@ -146,7 +156,7 @@ Template.appManage.helpers({
 		return result;
 	},
 	appLanguage(key) {
-		const setting = RocketChat.settings.get('Language');
+		const setting = settings.get('Language');
 		return setting && setting.split('-').shift().toLowerCase() === key;
 	},
 	selectedOption(_id, val) {
@@ -221,7 +231,7 @@ Template.appManage.helpers({
 		return Template.instance().apis.get();
 	},
 	parseDescription(i18nDescription) {
-		const item = RocketChat.Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
+		const item = Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
 
 		item.tokens.forEach((t) => item.html = item.html.replace(t.token, t.text));
 
@@ -255,7 +265,7 @@ async function setActivate(actiavate, e, t) {
 	const status = actiavate ? 'manually_enabled' : 'manually_disabled';
 
 	try {
-		const result = await RocketChat.API.post(`apps/${ t.id.get() }/status`, { status });
+		const result = await APIClient.post(`apps/${ t.id.get() }/status`, { status });
 		const info = t.app.get();
 		info.status = result.status;
 		t.app.set(info);
@@ -293,7 +303,7 @@ Template.appManage.events({
 	'click .js-uninstall': async(e, t) => {
 		t.ready.set(false);
 		try {
-			await RocketChat.API.delete(`apps/${ t.id.get() }`);
+			await APIClient.delete(`apps/${ t.id.get() }`);
 			FlowRouter.go('/admin/apps');
 		} catch (err) {
 			console.warn('Error:', err);
@@ -313,7 +323,7 @@ Template.appManage.events({
 
 		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
 
-		RocketChat.API.post(api, { url }).then(() => {
+		APIClient.post(api, { url }).then(() => {
 			getApps(t).then(() => {
 				el.prop('disabled', false);
 				el.removeClass('loading');
@@ -363,7 +373,7 @@ Template.appManage.events({
 			if (toSave.length === 0) {
 				throw 'Nothing to save..';
 			}
-			const result = await RocketChat.API.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
+			const result = await APIClient.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
 			console.log('Updating results:', result);
 			result.updated.forEach((setting) => {
 				settings[setting.id].value = settings[setting.id].oldValue = setting.value;

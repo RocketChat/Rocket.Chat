@@ -1,4 +1,7 @@
-/* globals DDPRateLimiter */
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:sendOfflineMessage'(data) {
@@ -8,7 +11,7 @@ Meteor.methods({
 			message: String,
 		});
 
-		return RocketChat.Livechat.sendOfflineMessage(data);
+		return Livechat.sendOfflineMessage(data);
 	},
 });
 

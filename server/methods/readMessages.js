@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import { ReadReceipt } from '../../imports/message-read-receipt/server/lib/ReadReceipt';
+import { Subscriptions } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	readMessages(rid) {
@@ -13,9 +16,9 @@ Meteor.methods({
 		}
 
 		// this prevents cache from updating object reference/pointer
-		const userSubscription = Object.assign({}, RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, userId));
+		const userSubscription = Object.assign({}, Subscriptions.findOneByRoomIdAndUserId(rid, userId));
 
-		RocketChat.models.Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
+		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
 
 		Meteor.defer(() => {
 			ReadReceipt.markMessagesAsRead(rid, userId, userSubscription.ls);

@@ -1,29 +1,33 @@
-/* globals modal, RocketChat*/
+import { Meteor } from 'meteor/meteor';
+import { t, getURL } from 'meteor/rocketchat:utils';
+import { Subscriptions, WebdavAccounts } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { MessageAction, modal } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
 
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'webdav-upload',
 		icon: 'upload',
 		label: t('Save_To_Webdav'),
 		condition: (message) => {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-			if (RocketChat.models.WebdavAccounts.findOne() == null) {
+			if (WebdavAccounts.findOne() == null) {
 				return false;
 			}
 			if (!message.file) {
 				return false;
 			}
 
-			return RocketChat.settings.get('Webdav_Integration_Enabled');
+			return settings.get('Webdav_Integration_Enabled');
 		},
 		action() {
 			const [, message] = this._arguments;
 			const [attachment] = message.attachments;
 			const { file } = message;
-			const url = RocketChat.getURL(attachment.title_link, { full: true });
+			const url = getURL(attachment.title_link, { full: true });
 			modal.open({
 				data: {
 					message,

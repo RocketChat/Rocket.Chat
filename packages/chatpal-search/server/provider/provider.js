@@ -1,6 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { searchProviderService, SearchProvider } from 'meteor/rocketchat:search';
 import Index from './index';
 import ChatpalLogger from '../utils/logger';
+import { Subscriptions } from 'meteor/rocketchat:models';
 
 /**
  * The chatpal search provider enables chatpal search. An appropriate backedn has to be specified by settings.
@@ -299,7 +301,7 @@ class ChatpalProvider extends SearchProvider {
 	 * @private
 	 */
 	_getAcl(context) {
-		return RocketChat.models.Subscriptions.find({ 'u._id': context.uid }).fetch().map((room) => room.rid);
+		return Subscriptions.find({ 'u._id': context.uid }).fetch().map((room) => room.rid);
 	}
 
 	/**

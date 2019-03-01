@@ -1,4 +1,9 @@
-RocketChat.TabBar.addButton({
+import { Session } from 'meteor/session';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
+import { Rooms } from 'meteor/rocketchat:models';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+
+TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
 	id: 'rocket-search',
 	i18nTitle: 'Search_Messages',
@@ -7,7 +12,7 @@ RocketChat.TabBar.addButton({
 	order: 1,
 });
 
-RocketChat.TabBar.addButton({
+TabBar.addButton({
 	groups: ['direct'],
 	id: 'user-info',
 	i18nTitle: 'User_Info',
@@ -16,7 +21,7 @@ RocketChat.TabBar.addButton({
 	order: 2,
 });
 
-RocketChat.TabBar.addButton({
+TabBar.addButton({
 	groups: ['channel', 'group'],
 	id: 'members-list',
 	i18nTitle: 'Members_List',
@@ -25,7 +30,7 @@ RocketChat.TabBar.addButton({
 	order: 2,
 	condition() {
 		const rid = Session.get('openedRoom');
-		const room = RocketChat.models.Rooms.findOne({
+		const room = Rooms.findOne({
 			_id: rid,
 		});
 
@@ -33,11 +38,11 @@ RocketChat.TabBar.addButton({
 			return true;
 		}
 
-		return RocketChat.authz.hasAllPermission('view-broadcast-member-list', rid);
+		return hasAllPermission('view-broadcast-member-list', rid);
 	},
 });
 
-RocketChat.TabBar.addButton({
+TabBar.addButton({
 	groups: ['channel', 'group'],
 	id: 'addUsers',
 	i18nTitle: 'Add_users',
@@ -47,7 +52,7 @@ RocketChat.TabBar.addButton({
 });
 
 
-RocketChat.TabBar.addButton({
+TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
 	id: 'uploaded-files-list',
 	i18nTitle: 'Room_uploaded_file_list',
@@ -56,7 +61,7 @@ RocketChat.TabBar.addButton({
 	order: 3,
 });
 
-RocketChat.TabBar.addButton({
+TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],
 	id: 'keyboard-shortcut-list',
 	i18nTitle: 'Keyboard_Shortcuts_Title',

@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Users, Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+
 Meteor.methods({
 	removeRoomModerator(rid, userId) {
 		check(rid, String);
@@ -9,13 +16,13 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'set-moderator', rid)) {
+		if (!hasPermission(Meteor.userId(), 'set-moderator', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomModerator',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -23,7 +30,7 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -37,11 +44,11 @@ Meteor.methods({
 			});
 		}
 
-		RocketChat.models.Subscriptions.removeRoleById(subscription._id, 'moderator');
+		Subscriptions.removeRoleById(subscription._id, 'moderator');
 
-		const fromUser = RocketChat.models.Users.findOneById(Meteor.userId());
+		const fromUser = Users.findOneById(Meteor.userId());
 
-		RocketChat.models.Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(rid, user, {
+		Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(rid, user, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
@@ -49,8 +56,8 @@ Meteor.methods({
 			role: 'moderator',
 		});
 
-		if (RocketChat.settings.get('UI_DisplayRoles')) {
-			RocketChat.Notifications.notifyLogged('roles-change', {
+		if (settings.get('UI_DisplayRoles')) {
+			Notifications.notifyLogged('roles-change', {
 				type: 'removed',
 				_id: 'moderator',
 				u: {

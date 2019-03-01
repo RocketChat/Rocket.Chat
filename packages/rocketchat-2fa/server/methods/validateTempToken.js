@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Users } from 'meteor/rocketchat:models';
+import { TOTP } from '../lib/totp';
+
 Meteor.methods({
 	'2fa:validateTempToken'(userToken) {
 		if (!Meteor.userId()) {
@@ -10,15 +14,15 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-totp');
 		}
 
-		const verified = RocketChat.TOTP.verify({
+		const verified = TOTP.verify({
 			secret: user.services.totp.tempSecret,
 			token: userToken,
 		});
 
 		if (verified) {
-			const { codes, hashedCodes } = RocketChat.TOTP.generateCodes();
+			const { codes, hashedCodes } = TOTP.generateCodes();
 
-			RocketChat.models.Users.enable2FAAndSetSecretAndCodesByUserId(Meteor.userId(), user.services.totp.tempSecret, hashedCodes);
+			Users.enable2FAAndSetSecretAndCodesByUserId(Meteor.userId(), user.services.totp.tempSecret, hashedCodes);
 			return { codes };
 		}
 	},

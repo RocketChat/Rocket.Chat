@@ -1,4 +1,11 @@
-/* global logger, processWebhookMessage */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { HTTP } from 'meteor/http';
+import * as Models from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from 'meteor/rocketchat:lib';
+import { logger } from '../logger';
+import { integrations } from '../../lib/rocketchat';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -6,14 +13,14 @@ import vm from 'vm';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 
-RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler {
+integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	constructor() {
 		this.vm = vm;
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
 
-		RocketChat.models.Integrations.find({ type: 'webhook-outgoing' }).observe({
+		Models.Integrations.find({ type: 'webhook-outgoing' }).observe({
 			added: (record) => {
 				this.addIntegration(record);
 			},
@@ -32,7 +39,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 	addIntegration(record) {
 		logger.outgoing.debug(`Adding the integration ${ record.name } of the event ${ record.event }!`);
 		let channels;
-		if (record.event && !RocketChat.integrations.outgoingEvents[record.event].use.channel) {
+		if (record.event && !integrations.outgoingEvents[record.event].use.channel) {
 			logger.outgoing.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
 			channels = ['__any'];
@@ -146,11 +153,11 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		if (historyId) {
-			RocketChat.models.IntegrationHistory.update({ _id: historyId }, { $set: history });
+			Models.IntegrationHistory.update({ _id: historyId }, { $set: history });
 			return historyId;
 		} else {
 			history._createdAt = new Date();
-			return RocketChat.models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
+			return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
 		}
 	}
 
@@ -159,18 +166,18 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		let user;
 		// Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
-			user = RocketChat.models.Users.findOneByUsername(data.user_name);
+			user = Models.Users.findOneByUsername(data.user_name);
 		}
 
 		// If they don't exist (aka the trigger didn't contain a user) then we set the user based upon the
 		// configured username for the integration since this is required at all times.
 		if (!user) {
-			user = RocketChat.models.Users.findOneByUsername(trigger.username);
+			user = Models.Users.findOneByUsername(trigger.username);
 		}
 
 		let tmpRoom;
 		if (nameOrId || trigger.targetRoom || message.channel) {
-			tmpRoom = RocketChat.getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || message.channel || trigger.targetRoom, errorOnEmpty: false }) || room;
+			tmpRoom = getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || message.channel || trigger.targetRoom, errorOnEmpty: false }) || room;
 		} else {
 			tmpRoom = room;
 		}
@@ -227,8 +234,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			},
 		};
 
-		Object.keys(RocketChat.models).filter((k) => !k.startsWith('_')).forEach((k) => {
-			sandbox[k] = RocketChat.models[k];
+		Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => {
+			sandbox[k] = Models[k];
 		});
 
 		return { store, sandbox };
@@ -595,7 +602,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 
 		let word;
 		// Not all triggers/events support triggerWords
-		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
+		if (integrations.outgoingEvents[event].use.triggerWords) {
 			if (trigger.triggerWords && trigger.triggerWords.length > 0) {
 				for (const triggerWord of trigger.triggerWords) {
 					if (!trigger.triggerWordAnywhere && message.msg.indexOf(triggerWord) === 0) {
@@ -644,8 +651,8 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 			data,
 			auth: undefined,
 			npmRequestOptions: {
-				rejectUnauthorized: !RocketChat.settings.get('Allow_Invalid_SelfSigned_Certs'),
-				strictSSL: !RocketChat.settings.get('Allow_Invalid_SelfSigned_Certs'),
+				rejectUnauthorized: !settings.get('Allow_Invalid_SelfSigned_Certs'),
+				strictSSL: !settings.get('Allow_Invalid_SelfSigned_Certs'),
 			},
 			headers: {
 				'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
@@ -723,7 +730,7 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 					if (result.statusCode === 410) {
 						this.updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
 						logger.outgoing.error(`Disabling the Integration "${ trigger.name }" because the status code was 401 (Gone).`);
-						RocketChat.models.Integrations.update({ _id: trigger._id }, { $set: { enabled: false } });
+						Models.Integrations.update({ _id: trigger._id }, { $set: { enabled: false } });
 						return;
 					}
 
@@ -794,13 +801,13 @@ RocketChat.integrations.triggerHandler = new class RocketChatIntegrationHandler 
 		}
 
 		const { event } = history;
-		const message = RocketChat.models.Messages.findOneById(history.data.message_id);
-		const room = RocketChat.models.Rooms.findOneById(history.data.channel_id);
-		const user = RocketChat.models.Users.findOneById(history.data.user_id);
+		const message = Models.Messages.findOneById(history.data.message_id);
+		const room = Models.Rooms.findOneById(history.data.channel_id);
+		const user = Models.Users.findOneById(history.data.user_id);
 		let owner;
 
 		if (history.data.owner && history.data.owner._id) {
-			owner = RocketChat.models.Users.findOneById(history.data.owner._id);
+			owner = Models.Users.findOneById(history.data.owner._id);
 		}
 
 		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });

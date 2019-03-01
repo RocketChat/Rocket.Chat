@@ -1,12 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Integrations } from 'meteor/rocketchat:models';
+
 Meteor.publish('integrations', function _integrationPublication() {
 	if (!this.userId) {
 		return this.ready();
 	}
 
-	if (RocketChat.authz.hasPermission(this.userId, 'manage-integrations')) {
-		return RocketChat.models.Integrations.find();
-	} else if (RocketChat.authz.hasPermission(this.userId, 'manage-own-integrations')) {
-		return RocketChat.models.Integrations.find({ '_createdBy._id': this.userId });
+	if (hasPermission(this.userId, 'manage-integrations')) {
+		return Integrations.find();
+	} else if (hasPermission(this.userId, 'manage-own-integrations')) {
+		return Integrations.find({ '_createdBy._id': this.userId });
 	} else {
 		throw new Meteor.Error('not-authorized');
 	}

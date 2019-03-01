@@ -1,4 +1,9 @@
 // DEPRECATE
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Rooms } from 'meteor/rocketchat:models';
+import { canAccessRoom } from 'meteor/rocketchat:authorization';
+
 Meteor.methods({
 	getRoomIdByNameOrId(rid) {
 		check(rid, String);
@@ -9,7 +14,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid) || RocketChat.models.Rooms.findOneByName(rid);
+		const room = Rooms.findOneById(rid) || Rooms.findOneByName(rid);
 
 		if (room == null) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -17,7 +22,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.canAccessRoom(room, Meteor.user())) {
+		if (!canAccessRoom(room, Meteor.user())) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomIdByNameOrId',
 			});

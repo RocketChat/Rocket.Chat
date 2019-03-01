@@ -1,12 +1,16 @@
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { AccountBox, TabBar, MessageTypes } from 'meteor/rocketchat:ui-utils';
+
 AccountBox.addItem({
 	name: 'Livechat',
 	icon: 'livechat',
 	href: 'livechat-current-chats',
 	sideNav: 'livechatFlex',
-	condition: () => RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-livechat-manager'),
+	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
 });
 
-RocketChat.TabBar.addButton({
+TabBar.addButton({
 	groups: ['live'],
 	id: 'visitor-info',
 	i18nTitle: 'Visitor_Info',
@@ -15,7 +19,7 @@ RocketChat.TabBar.addButton({
 	order: 0,
 });
 
-RocketChat.TabBar.addButton({
+TabBar.addButton({
 	groups: ['live'],
 	id: 'visitor-history',
 	i18nTitle: 'Past_Chats',
@@ -24,13 +28,13 @@ RocketChat.TabBar.addButton({
 	order: 11,
 });
 
-RocketChat.TabBar.addGroup('message-search', ['live']);
-RocketChat.TabBar.addGroup('starred-messages', ['live']);
-RocketChat.TabBar.addGroup('uploaded-files-list', ['live']);
-RocketChat.TabBar.addGroup('push-notifications', ['live']);
-RocketChat.TabBar.addGroup('video', ['live']);
+TabBar.addGroup('message-search', ['live']);
+TabBar.addGroup('starred-messages', ['live']);
+TabBar.addGroup('uploaded-files-list', ['live']);
+TabBar.addGroup('push-notifications', ['live']);
+TabBar.addGroup('video', ['live']);
 
-RocketChat.TabBar.addButton({
+TabBar.addButton({
 	groups: ['live'],
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
@@ -39,7 +43,7 @@ RocketChat.TabBar.addButton({
 	order: 10,
 });
 
-RocketChat.MessageTypes.registerType({
+MessageTypes.registerType({
 	id: 'livechat-close',
 	system: true,
 	message: 'Conversation_closed',

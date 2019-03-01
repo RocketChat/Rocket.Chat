@@ -1,5 +1,8 @@
-RocketChat.API.helperMethods.set('insertUserObject', function _addUserToObject({ object, userId }) {
-	const user = RocketChat.models.Users.findOneById(userId);
+import { Users } from 'meteor/rocketchat:models';
+import { API } from '../api';
+
+API.helperMethods.set('insertUserObject', function _addUserToObject({ object, userId }) {
+	const user = Users.findOneById(userId);
 	object.user = { };
 	if (user) {
 		object.user = {

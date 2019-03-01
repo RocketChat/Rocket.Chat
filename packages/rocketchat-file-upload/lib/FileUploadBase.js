@@ -1,5 +1,8 @@
-/* globals FileUploadBase:true, UploadFS */
-/* exported FileUploadBase */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { UploadFS } from 'meteor/jalik:ufs';
+import { canAccessRoom, hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
@@ -18,22 +21,22 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 			return true;
 		}
 
-		if (RocketChat.authz.canAccessRoom(null, null, doc)) {
+		if (canAccessRoom(null, null, doc)) {
 			return true;
 		}
 
 		return false;
 	},
 	update(userId, doc) {
-		return RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (RocketChat.settings.get('Message_AllowDeleting') && userId === doc.userId);
+		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
 	},
 	remove(userId, doc) {
-		return RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (RocketChat.settings.get('Message_AllowDeleting') && userId === doc.userId);
+		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
 	},
 });
 
 
-FileUploadBase = class FileUploadBase {
+export class FileUploadBase {
 	constructor(store, meta, file) {
 		this.id = Random.id();
 		this.meta = meta;
@@ -75,4 +78,4 @@ FileUploadBase = class FileUploadBase {
 	stop() {
 		return this.handler.stop();
 	}
-};
+}

@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Subscriptions } from 'meteor/rocketchat:models';
+
 Meteor.methods({
 	hideRoom(rid) {
 		check(rid, String);
@@ -8,6 +12,6 @@ Meteor.methods({
 			});
 		}
 
-		return RocketChat.models.Subscriptions.hideByRoomIdAndUserId(rid, Meteor.userId());
+		return Subscriptions.hideByRoomIdAndUserId(rid, Meteor.userId());
 	},
 });

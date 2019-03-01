@@ -8,8 +8,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:utils',
 	]);
-
-	api.addFiles('me.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });

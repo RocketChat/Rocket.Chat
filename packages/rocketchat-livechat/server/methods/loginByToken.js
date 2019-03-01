@@ -1,4 +1,5 @@
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'livechat:loginByToken'(token) {

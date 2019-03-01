@@ -1,5 +1,7 @@
+import { Users } from 'meteor/rocketchat:models';
+
 export default function handleNickChanged(args) {
-	const user = RocketChat.models.Users.findOne({
+	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
 
@@ -10,7 +12,7 @@ export default function handleNickChanged(args) {
 	this.log(`${ user.username } changed nick: ${ args.nick } -> ${ args.newNick }`);
 
 	// Update on the database
-	RocketChat.models.Users.update({ _id: user._id }, {
+	Users.update({ _id: user._id }, {
 		$set: {
 			name: args.newNick,
 			'profile.irc.nick': args.newNick,

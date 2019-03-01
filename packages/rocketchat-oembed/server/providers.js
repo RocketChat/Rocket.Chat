@@ -1,4 +1,5 @@
-/* globals changeCase */
+import { changeCase } from 'meteor/konecty:change-case';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';
@@ -65,11 +66,11 @@ providers.registerProvider({
 	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200',
 });
 
-RocketChat.oembed = {};
+export const oembed = {};
 
-RocketChat.oembed.providers = providers;
+oembed.providers = providers;
 
-RocketChat.callbacks.add('oembed:beforeGetUrlContent', function(data) {
+callbacks.add('oembed:beforeGetUrlContent', function(data) {
 	if (data.parsedUrl != null) {
 		const url = URL.format(data.parsedUrl);
 		const provider = providers.getProviderForUrl(url);
@@ -86,9 +87,9 @@ RocketChat.callbacks.add('oembed:beforeGetUrlContent', function(data) {
 		}
 	}
 	return data;
-}, RocketChat.callbacks.priority.MEDIUM, 'oembed-providers-before');
+}, callbacks.priority.MEDIUM, 'oembed-providers-before');
 
-RocketChat.callbacks.add('oembed:afterParseContent', function(data) {
+callbacks.add('oembed:afterParseContent', function(data) {
 	if (data.parsedUrl && data.parsedUrl.query) {
 		let queryString = data.parsedUrl.query;
 		if (_.isString(data.parsedUrl.query)) {
@@ -115,4 +116,4 @@ RocketChat.callbacks.add('oembed:afterParseContent', function(data) {
 		}
 	}
 	return data;
-}, RocketChat.callbacks.priority.MEDIUM, 'oembed-providers-after');
+}, callbacks.priority.MEDIUM, 'oembed-providers-after');

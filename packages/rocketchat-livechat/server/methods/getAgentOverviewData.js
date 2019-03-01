@@ -1,6 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Livechat } from '../lib/Livechat';
+
 Meteor.methods({
 	'livechat:getAgentOverviewData'(options) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:getAgentOverviewData',
 			});
@@ -11,6 +15,6 @@ Meteor.methods({
 			return;
 		}
 
-		return RocketChat.Livechat.Analytics.getAgentOverviewData(options);
+		return Livechat.Analytics.getAgentOverviewData(options);
 	},
 });

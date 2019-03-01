@@ -1,5 +1,15 @@
+import { Meteor } from 'meteor/meteor';
 import { AppWebsocketReceiver } from './communication';
 import { Utilities } from '../lib/misc/Utilities';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { TAPi18next } from 'meteor/tap:i18n';
+import { APIClient } from 'meteor/rocketchat:utils';
+import { AdminBox } from 'meteor/rocketchat:ui-utils';
+import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+
+export let Apps;
 
 class AppClientOrchestrator {
 	constructor() {
@@ -56,18 +66,18 @@ class AppClientOrchestrator {
 	}
 
 	_addAdminMenuOption() {
-		RocketChat.AdminBox.addOption({
+		AdminBox.addOption({
 			icon: 'cube',
 			href: 'apps',
 			i18nLabel: 'Apps',
 			permissionGranted() {
-				return RocketChat.authz.hasAtLeastOnePermission(['manage-apps']);
+				return hasAtLeastOnePermission(['manage-apps']);
 			},
 		});
 	}
 
 	_loadLanguages() {
-		return RocketChat.API.get('apps/languages').then((info) => {
+		return APIClient.get('apps/languages').then((info) => {
 			info.apps.forEach((rlInfo) => this.parseAndLoadLanguages(rlInfo.languages, rlInfo.id));
 		});
 	}
@@ -88,23 +98,23 @@ class AppClientOrchestrator {
 	}
 
 	async getAppApis(appId) {
-		const result = await RocketChat.API.get(`apps/${ appId }/apis`);
+		const result = await APIClient.get(`apps/${ appId }/apis`);
 		return result.apis;
 	}
 }
 
 Meteor.startup(function _rlClientOrch() {
-	window.Apps = new AppClientOrchestrator();
+	Apps = new AppClientOrchestrator();
 
-	RocketChat.CachedCollectionManager.onLogin(() => {
+	CachedCollectionManager.onLogin(() => {
 		Meteor.call('apps/is-enabled', (error, isEnabled) => {
-			window.Apps.load(isEnabled);
+			Apps.load(isEnabled);
 		});
 	});
 });
 
 const appsRouteAction = function _theRealAction(whichCenter) {
-	Meteor.defer(() => window.Apps.getLoadingPromise().then((isEnabled) => {
+	Meteor.defer(() => Apps.getLoadingPromise().then((isEnabled) => {
 		if (isEnabled) {
 			BlazeLayout.render('main', { center: whichCenter, old: true }); // TODO remove old
 		} else {
@@ -145,7 +155,7 @@ FlowRouter.route('/admin/apps/:appId/logs', {
 FlowRouter.route('/admin/app/what-is-it', {
 	name: 'app-what-is-it',
 	action() {
-		Meteor.defer(() => window.Apps.getLoadingPromise().then((isEnabled) => {
+		Meteor.defer(() => Apps.getLoadingPromise().then((isEnabled) => {
 			if (isEnabled) {
 				FlowRouter.go('apps');
 			} else {

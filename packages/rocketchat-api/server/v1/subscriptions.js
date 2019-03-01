@@ -1,4 +1,9 @@
-RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { API } from '../api';
+
+API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;
 
@@ -21,21 +26,21 @@ RocketChat.API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 			};
 		}
 
-		return RocketChat.API.v1.success(result);
+		return API.v1.success(result);
 	},
 });
 
-RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
+API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
 	get() {
 		const { roomId } = this.requestParams();
 
 		if (!roomId) {
-			return RocketChat.API.v1.failure('The \'roomId\' param is required');
+			return API.v1.failure('The \'roomId\' param is required');
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
 
-		return RocketChat.API.v1.success({
+		return API.v1.success({
 			subscription,
 		});
 	},
@@ -49,7 +54,7 @@ RocketChat.API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
 	Params:
 		- rid: The rid of the room to be marked as read.
  */
-RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
+API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
 			rid: String,
@@ -59,22 +64,22 @@ RocketChat.API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 			Meteor.call('readMessages', this.bodyParams.rid)
 		);
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
 
-RocketChat.API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
+API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
 	post() {
 		const { roomId, firstUnreadMessage } = this.bodyParams;
 		if (!roomId && (firstUnreadMessage && !firstUnreadMessage._id)) {
-			return RocketChat.API.v1.failure('At least one of "roomId" or "firstUnreadMessage._id" params is required');
+			return API.v1.failure('At least one of "roomId" or "firstUnreadMessage._id" params is required');
 		}
 
 		Meteor.runAsUser(this.userId, () =>
 			Meteor.call('unreadMessages', firstUnreadMessage, roomId)
 		);
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });
 

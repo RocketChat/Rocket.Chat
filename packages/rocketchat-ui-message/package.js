@@ -16,35 +16,23 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'tracker',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:emoji',
+		'rocketchat:katex',
 		'rocketchat:lib',
+		'rocketchat:ui',
 		'rocketchat:ui-account',
 		'rocketchat:ui-vrecord',
+		'rocketchat:ui-sidenav',
+		'rocketchat:file-upload',
+		'rocketchat:autotranslate',
+		'rocketchat:authorization',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'rocketchat:markdown',
 	]);
-
-	api.addFiles('client/message.html', 'client');
-	api.addFiles('client/messageBox.html', 'client');
-	api.addFiles('client/messageDropdown.html', 'client');
-	api.addFiles('client/popup/messagePopup.html', 'client');
-	api.addFiles('client/popup/messagePopupChannel.html', 'client');
-	api.addFiles('client/popup/messagePopupConfig.html', 'client');
-	api.addFiles('client/popup/messagePopupEmoji.html', 'client');
-	api.addFiles('client/popup/messagePopupSlashCommand.html', 'client');
-	api.addFiles('client/popup/messagePopupSlashCommandPreview.html', 'client');
-	api.addFiles('client/popup/messagePopupSlashCommandPreview.js', 'client');
-	api.addFiles('client/popup/messagePopupUser.html', 'client');
-
-	api.addFiles('client/message.js', 'client');
-	api.addFiles('client/messageBox.js', 'client');
-	api.addFiles('client/popup/messagePopup.js', 'client');
-	api.addFiles('client/popup/messagePopupChannel.js', 'client');
-	api.addFiles('client/popup/messagePopupConfig.js', 'client');
-	api.addFiles('client/popup/messagePopupEmoji.js', 'client');
-
-	api.addFiles('client/renderMessageBody.js', 'client');
-
-	api.addFiles('startup/messageBoxActions.js', 'client');
-
 	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
-
-	api.export('renderMessageBody');
+	api.mainModule('client/index.js', 'client');
 });

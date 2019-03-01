@@ -1,5 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Users, Rooms } from 'meteor/rocketchat:models';
+
 export default function handleQUIT(args) {
-	const user = RocketChat.models.Users.findOne({
+	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
 
@@ -9,5 +12,5 @@ export default function handleQUIT(args) {
 		},
 	});
 
-	RocketChat.models.Rooms.removeUsernameFromAll(user.username);
+	Rooms.removeUsernameFromAll(user.username);
 }

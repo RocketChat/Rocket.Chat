@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { isTheLastMessage } from 'meteor/rocketchat:lib';
+import { Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
+
 Meteor.methods({
 	starMessage(message) {
 		if (!Meteor.userId()) {
@@ -6,22 +11,22 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.settings.get('Message_AllowStarring')) {
+		if (!settings.get('Message_AllowStarring')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message starring not allowed', {
 				method: 'pinMessage',
 				action: 'Message_starring',
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			return false;
 		}
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-		if (RocketChat.isTheLastMessage(room, message)) {
-			RocketChat.models.Rooms.updateLastMessageStar(room._id, Meteor.userId(), message.starred);
+		if (isTheLastMessage(room, message)) {
+			Rooms.updateLastMessageStar(room._id, Meteor.userId(), message.starred);
 		}
 
-		return RocketChat.models.Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
+		return Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
 	},
 });

@@ -1,8 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
 import OmniChannel from '../lib/OmniChannel';
 
 Meteor.methods({
 	'livechat:facebook'(options) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:addAgent' });
 		}
 
@@ -10,8 +13,8 @@ Meteor.methods({
 			switch (options.action) {
 				case 'initialState': {
 					return {
-						enabled: RocketChat.settings.get('Livechat_Facebook_Enabled'),
-						hasToken: !!RocketChat.settings.get('Livechat_Facebook_API_Key'),
+						enabled: settings.get('Livechat_Facebook_Enabled'),
+						hasToken: !!settings.get('Livechat_Facebook_API_Key'),
 					};
 				}
 
@@ -22,13 +25,13 @@ Meteor.methods({
 						return result;
 					}
 
-					return RocketChat.settings.updateById('Livechat_Facebook_Enabled', true);
+					return settings.updateById('Livechat_Facebook_Enabled', true);
 				}
 
 				case 'disable': {
 					OmniChannel.disable();
 
-					return RocketChat.settings.updateById('Livechat_Facebook_Enabled', false);
+					return settings.updateById('Livechat_Facebook_Enabled', false);
 				}
 
 				case 'list-pages': {

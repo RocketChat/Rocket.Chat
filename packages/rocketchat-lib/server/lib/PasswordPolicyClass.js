@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 class PasswordPolicy {
 	constructor({
 		enabled = false,

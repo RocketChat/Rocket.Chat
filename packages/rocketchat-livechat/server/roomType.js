@@ -1,5 +1,7 @@
-import LivechatRoomType from '../imports/LivechatRoomType';
-import LivechatVisitors from './models/LivechatVisitors';
+import { Rooms } from 'meteor/rocketchat:models';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import LivechatRoomType from '../lib/LivechatRoomType';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
 
 class LivechatRoomTypeServer extends LivechatRoomType {
 	getMsgSender(senderId) {
@@ -22,8 +24,8 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 	}
 
 	canAccessUploadedFile({ rc_token, rc_rid } = {}) {
-		return rc_token && rc_rid && RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(rc_rid, rc_token);
+		return rc_token && rc_rid && Rooms.findOneOpenByRoomIdAndVisitorToken(rc_rid, rc_token);
 	}
 }
 
-RocketChat.roomTypes.add(new LivechatRoomTypeServer());
+roomTypes.add(new LivechatRoomTypeServer());

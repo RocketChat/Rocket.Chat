@@ -1,4 +1,9 @@
-/* globals fireGlobalEvent */
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { handleError } from 'meteor/rocketchat:utils';
+import { fireGlobalEvent, Layout } from 'meteor/rocketchat:ui-utils';
+import { actionLinks } from '../both/lib/actionLinks';
+
 Template.room.events({
 	'click .action-link'(event, instance) {
 		event.preventDefault();
@@ -6,7 +11,7 @@ Template.room.events({
 
 		const data = Blaze.getData(event.currentTarget);
 
-		if (RocketChat.Layout.isEmbedded()) {
+		if (Layout.isEmbedded()) {
 			return fireGlobalEvent('click-action-link', {
 				actionlink: $(event.currentTarget).data('actionlink'),
 				value: data._arguments[1]._id,
@@ -15,7 +20,7 @@ Template.room.events({
 		}
 
 		if (data && data._arguments && data._arguments[1] && data._arguments[1]._id) {
-			RocketChat.actionLinks.run($(event.currentTarget).data('actionlink'), data._arguments[1]._id, instance, (err) => {
+			actionLinks.run($(event.currentTarget).data('actionlink'), data._arguments[1]._id, instance, (err) => {
 				if (err) {
 					handleError(err);
 				}

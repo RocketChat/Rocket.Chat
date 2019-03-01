@@ -1,8 +1,13 @@
-RocketChat.Migrations.add({
+import { Mongo } from 'meteor/mongo';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { settings } from 'meteor/rocketchat:settings';
+import { RocketChatAssets } from 'meteor/rocketchat:assets';
+
+Migrations.add({
 	version: 42,
 	up() {
-		const files = RocketChat.__migration_assets_files = new Mongo.Collection('assets.files');
-		const chunks = RocketChat.__migration_assets_chunks = new Mongo.Collection('assets.chunks');
+		const files = new Mongo.Collection('assets.files');
+		const chunks = new Mongo.Collection('assets.chunks');
 		const list = {
 			'favicon.ico': 'favicon_ico',
 			'favicon.svg': 'favicon',
@@ -26,11 +31,11 @@ RocketChat.Migrations.add({
 				});
 
 				if (oldFile) {
-					const extension = RocketChat.Assets.mime.extension(oldFile.contentType);
-					RocketChat.settings.removeById(`Assets_${ from }`);
-					RocketChat.settings.updateById(`Assets_${ to }`, {
+					const extension = RocketChatAssets.mime.extension(oldFile.contentType);
+					settings.removeById(`Assets_${ from }`);
+					settings.updateById(`Assets_${ to }`, {
 						url: `/assets/${ to }.${ extension }`,
-						defaultUrl: RocketChat.Assets.assets[to].defaultUrl,
+						defaultUrl: RocketChatAssets.assets[to].defaultUrl,
 					});
 
 					oldFile._id = to;

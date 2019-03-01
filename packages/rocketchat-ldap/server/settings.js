@@ -1,4 +1,6 @@
-RocketChat.settings.addGroup('LDAP', function() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('LDAP', function() {
 	const enableQuery = { _id: 'LDAP_Enable', value: true };
 	const enableAuthentication = [
 		enableQuery,

@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { Messages } from 'meteor/rocketchat:models';
+import { deleteMessage } from '../functions';
 import moment from 'moment';
 
 Meteor.methods({
@@ -10,7 +16,7 @@ Meteor.methods({
 				method: 'deleteMessage',
 			});
 		}
-		const originalMessage = RocketChat.models.Messages.findOneById(message._id, {
+		const originalMessage = Messages.findOneById(message._id, {
 			fields: {
 				u: 1,
 				rid: 1,
@@ -24,17 +30,17 @@ Meteor.methods({
 				action: 'Delete_message',
 			});
 		}
-		const forceDelete = RocketChat.authz.hasPermission(Meteor.userId(), 'force-delete-message', originalMessage.rid);
-		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid);
-		const deleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
+		const forceDelete = hasPermission(Meteor.userId(), 'force-delete-message', originalMessage.rid);
+		const _hasPermission = hasPermission(Meteor.userId(), 'delete-message', originalMessage.rid);
+		const deleteAllowed = settings.get('Message_AllowDeleting');
 		const deleteOwn = originalMessage && originalMessage.u && originalMessage.u._id === Meteor.userId();
-		if (!(hasPermission || (deleteAllowed && deleteOwn)) && !(forceDelete)) {
+		if (!(_hasPermission || (deleteAllowed && deleteOwn)) && !(forceDelete)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'deleteMessage',
 				action: 'Delete_message',
 			});
 		}
-		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
+		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0 && !forceDelete) {
 			if (originalMessage.ts == null) {
 				return;
@@ -50,6 +56,6 @@ Meteor.methods({
 				});
 			}
 		}
-		return RocketChat.deleteMessage(originalMessage, Meteor.user());
+		return deleteMessage(originalMessage, Meteor.user());
 	},
 });

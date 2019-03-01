@@ -1,5 +1,8 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
-RocketChat.ChannelSettings = new class {
+
+export const ChannelSettings = new class {
 	constructor() {
 		this.options = new ReactiveVar({});
 	}

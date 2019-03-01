@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	'2fa:checkCodesRemaining'() {
 		if (!Meteor.userId()) {

@@ -1,7 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { API } from 'meteor/rocketchat:api';
 import _ from 'underscore';
 import { findGuest, findRoom } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
-RocketChat.API.v1.addRoute('livechat/page.visited', {
+API.v1.addRoute('livechat/page.visited', {
 	post() {
 		try {
 			check(this.bodyParams, {
@@ -28,15 +32,15 @@ RocketChat.API.v1.addRoute('livechat/page.visited', {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const obj = RocketChat.Livechat.savePageHistory(token, rid, pageInfo);
+			const obj = Livechat.savePageHistory(token, rid, pageInfo);
 			if (obj) {
 				const page = _.pick(obj, 'msg', 'navigation');
-				return RocketChat.API.v1.success({ page });
+				return API.v1.success({ page });
 			}
 
-			return RocketChat.API.v1.success();
+			return API.v1.success();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });
