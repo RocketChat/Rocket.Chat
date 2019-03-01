@@ -9,7 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'service-configuration',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:settings',
 		'rocketchat:custom-oauth',
 		'templating',
 	]);

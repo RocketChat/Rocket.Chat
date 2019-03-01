@@ -7,9 +7,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
 		'rocketchat:logger',
-		'rocketchat:ui',
+		'rocketchat:models',
+		'rocketchat:ui-utils',
+		'rocketchat:utils',
 		'templating',
 	]);
 	api.mainModule('client/index.js', 'client');

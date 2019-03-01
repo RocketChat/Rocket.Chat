@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { ChatSubscription } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
+import { ChatSubscription, Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import toastr from 'toastr';
 
@@ -98,7 +97,7 @@ Template.autoTranslateFlexTab.onCreated(function() {
 
 	this.saveSetting = () => {
 		const field = this.editing.get();
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid: this.rid, 'u._id': Meteor.userId() });
+		const subscription = Subscriptions.findOne({ rid: this.rid, 'u._id': Meteor.userId() });
 		const previousLanguage = subscription.autoTranslateLanguage;
 		let value;
 		switch (field) {
@@ -124,7 +123,7 @@ Template.autoTranslateFlexTab.onCreated(function() {
 				}
 
 				if (field === 'autoTranslate' && value === '0') {
-					RocketChat.models.Messages.update(query, { $unset: { autoTranslateShowInverse: 1 } }, { multi: true });
+					Messages.update(query, { $unset: { autoTranslateShowInverse: 1 } }, { multi: true });
 				}
 
 				const display = field === 'autoTranslate' ? true : subscription && subscription.autoTranslate;
@@ -134,7 +133,7 @@ Template.autoTranslateFlexTab.onCreated(function() {
 					query.autoTranslateShowInverse = true;
 				}
 
-				RocketChat.models.Messages.update(query, { $set: { random: Random.id() } }, { multi: true });
+				Messages.update(query, { $set: { random: Random.id() } }, { multi: true });
 
 				this.editing.set();
 			});

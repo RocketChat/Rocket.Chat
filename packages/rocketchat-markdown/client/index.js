@@ -1,1 +1,1 @@
-import '../lib/markdown';
+export { Markdown } from '../lib/markdown';

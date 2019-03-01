@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'rocketchat:importer',
 		'rocketchat:logger',
+		'rocketchat:models',
 	]);
 
 	api.mainModule('client/index.js', 'client');

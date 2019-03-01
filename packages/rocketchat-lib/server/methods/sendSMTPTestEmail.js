@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import * as Mailer from 'meteor/rocketchat:mailer';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	sendSMTPTestEmail() {
@@ -18,7 +19,7 @@ Meteor.methods({
 		try {
 			Mailer.send({
 				to: user.emails[0].address,
-				from: RocketChat.settings.get('From_Email'),
+				from: settings.get('From_Email'),
 				subject: 'SMTP Test Email',
 				html: '<p>You have successfully sent an email</p>',
 			});

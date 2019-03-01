@@ -18,12 +18,11 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'rocketchat:utils',
 		'rocketchat:tooltip',
+		'rocketchat:settings',
 		'rocketchat:ui-utils',
 		'rocketchat:ui-sidenav',
 		'meteorhacks:inject-initial',
 	]);
-	api.addFiles('client/main.html', 'client');
-	api.addFiles('client/main.js', 'client');
 
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

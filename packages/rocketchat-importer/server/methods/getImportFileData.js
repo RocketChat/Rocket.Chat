@@ -1,8 +1,10 @@
 import { RocketChatImportFileInstance } from '../startup/store';
 import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import path from 'path';
+import fs from 'fs';
 
 Meteor.methods({
 	getImportFileData(importerKey) {
@@ -12,7 +14,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getImportFileData' });
 		}
 
-		if (!RocketChat.authz.hasRole(userId, 'admin')) {
+		if (!hasRole(userId, 'admin')) {
 			throw new Meteor.Error('not_authorized', 'User not authorized', { method: 'getImportFileData' });
 		}
 
@@ -55,7 +57,7 @@ Meteor.methods({
 		}
 
 		const fileName = importer.instance.importRecord.file;
-		const fullFilePath = path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
 		const results = importer.instance.prepareUsingLocalFile(fullFilePath);
 
 		if (results instanceof Promise) {

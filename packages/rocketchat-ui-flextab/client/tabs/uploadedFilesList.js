@@ -3,7 +3,7 @@ import { fixCordova } from 'meteor/rocketchat:lazy-load';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { DateFormat } from 'meteor/rocketchat:lib';
 import { t } from 'meteor/rocketchat:utils';
-import { popover } from 'meteor/rocketchat:ui';
+import { popover } from 'meteor/rocketchat:ui-utils';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 

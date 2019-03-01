@@ -1,29 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { Mongo } from 'meteor/mongo';
+import { settings } from 'meteor/rocketchat:settings';
+import { Logger } from 'meteor/rocketchat:logger';
+const logger = new Logger('CORS', {});
 
 import _ from 'underscore';
 import url from 'url';
-import tls from 'tls';
-// FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
-// TODO: Remove after NodeJS fix it, more information https://github.com/nodejs/node/issues/16196 https://github.com/nodejs/node/pull/16853
-tls.DEFAULT_ECDH_CURVE = 'auto';
-
-// Revert change from Meteor 1.6.1 who set ignoreUndefined: true
-// more information https://github.com/meteor/meteor/pull/9444
-let mongoOptions = {
-	ignoreUndefined: false,
-};
-
-const mongoOptionStr = process.env.MONGO_OPTIONS;
-if (typeof mongoOptionStr !== 'undefined') {
-	const jsonMongoOptions = JSON.parse(mongoOptionStr);
-
-	mongoOptions = Object.assign({}, mongoOptions, jsonMongoOptions);
-}
-
-Mongo.setConnectionOptions(mongoOptions);
 
 WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	if (req._body) {
@@ -46,9 +28,7 @@ WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	});
 
 	req.on('end', function() {
-		if (RocketChat && RocketChat.debugLevel === 'debug') {
-			console.log('[request]'.green, req.method, req.url, '\nheaders ->', req.headers, '\nbody ->', buf);
-		}
+		logger.debug('[request]'.green, req.method, req.url, '\nheaders ->', req.headers, '\nbody ->', buf);
 
 		try {
 			req.body = JSON.parse(buf);
@@ -94,7 +74,7 @@ WebApp.httpServer.addListener('request', function(req, res, ...args) {
 		}
 	};
 
-	if (RocketChat.settings.get('Force_SSL') !== true) {
+	if (settings.get('Force_SSL') !== true) {
 		next();
 		return;
 	}
@@ -108,13 +88,11 @@ WebApp.httpServer.addListener('request', function(req, res, ...args) {
 	const isLocal = localhostRegexp.test(remoteAddress) && (!req.headers['x-forwarded-for'] || _.all(req.headers['x-forwarded-for'].split(','), localhostTest));
 	const isSsl = req.connection.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 
-	if (RocketChat && RocketChat.debugLevel === 'debug') {
-		console.log('req.url', req.url);
-		console.log('remoteAddress', remoteAddress);
-		console.log('isLocal', isLocal);
-		console.log('isSsl', isSsl);
-		console.log('req.headers', req.headers);
-	}
+	logger.debug('req.url', req.url);
+	logger.debug('remoteAddress', remoteAddress);
+	logger.debug('isLocal', isLocal);
+	logger.debug('isSsl', isSsl);
+	logger.debug('req.headers', req.headers);
 
 	if (!isLocal && !isSsl) {
 		let host = req.headers.host || url.parse(Meteor.absoluteUrl()).hostname;
