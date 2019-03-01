@@ -50,17 +50,14 @@
 			{{#if title}}
         <div class="attachment-title">
             {{#if title_link}}
-                {{#if isPDF}}
-                    <a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer" class="pdf-open-in-modal">{{title}}</a>
-                {{else}}
-                    <a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer">
-                        {{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}
-                        {{title}}
-                    </a>
-                    {{#if title_link_download}}
-                        <a class="attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
-                    {{/if}}
-                {{/if}}
+				<a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer" class="{{#if isPDF}}pdf-open-in-modal{{/if}}">
+					{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}
+					{{title}}
+				</a>
+				{{#if title_link_download}}
+					<a class="attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
+				{{/if}}
+
             {{else}}
                 {{title}}
             {{/if}}
@@ -142,7 +139,7 @@
 					<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
 						{{> icon block="rc-input__icon-svg" icon="loading"}}
 					</div>
-					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
+					<canvas id="{{fileId}}" class="attachment-canvas pdf-open-in-modal"></canvas>
 				{{/unless}}
 			{{/if}}
 			{{#if fields}}
