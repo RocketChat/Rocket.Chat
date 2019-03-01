@@ -1,17 +1,15 @@
 Package.describe({
-	name: 'rocketchat:accounts',
+	name: 'rocketchat:mongo-config',
 	version: '0.0.1',
-	summary: 'JS-Accounts integration',
+	summary: '',
 	git: '',
 });
 
 Package.onUse(function(api) {
 	api.use([
-		'underscore',
 		'ecmascript',
+		'mongo',
 	]);
-
-	api.use('mongo', ['client', 'server']);
 
 	api.mainModule('server/index.js', 'server');
 });
