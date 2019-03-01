@@ -37,7 +37,7 @@ class FederatedUser extends FederatedResource {
 		delete user.services;
 
 		// Make sure some other properties are ready
-		user.name = user.name.indexOf('@') === -1 ? `${ user.name }@${ user.federation.peer }` : user.name;
+		user.name = user.name;
 		user.username = user.username.indexOf('@') === -1 ? `${ user.username }@${ user.federation.peer }` : user.username;
 		user.roles = ['user'];
 		user.status = 'online';

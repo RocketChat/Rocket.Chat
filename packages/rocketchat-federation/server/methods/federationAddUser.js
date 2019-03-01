@@ -26,6 +26,8 @@ Meteor.methods({
 
 		const localUser = federatedUser.getLocalUser();
 
+		localUser.name += `@${ federatedUser.user.federation.peer }`;
+
 		// Delete the _id
 		delete localUser._id;
 

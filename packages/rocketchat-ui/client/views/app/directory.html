@@ -88,11 +88,9 @@
 							<th class="js-sort {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
 								<div class="table-fake-th"><span>{{_ "Name"}}</span> {{> icon icon=(sortIcon 'name') }}</div>
 							</th>
-							{{#if $eq searchWorkspace 'local'}}
 							<th class="js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
 								<div class="table-fake-th"><span>{{_ "Username"}}</span> {{> icon icon=(sortIcon 'username') }}</div>
 							</th>
-							{{/if}}
 							<th class="js-sort {{#if searchSortBy 'email'}}is-sorting{{/if}}" data-sort="email">
 								<div class="table-fake-th"><span>{{_ "Email"}}</span> {{> icon icon=(sortIcon 'email') }}</div>
 							</th>
@@ -119,9 +117,7 @@
 										</div>
 									</div>
 								</td>
-								{{#if $eq searchWorkspace 'local'}}
 								<td>{{username}}</td>
-								{{/if}}
 								<td>{{email}}</td>
 								{{#if $eq searchWorkspace 'all'}}
 								<td>{{domain}}</td>
