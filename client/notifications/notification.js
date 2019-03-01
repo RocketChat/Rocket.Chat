@@ -12,6 +12,9 @@ import { Notifications } from 'meteor/rocketchat:notifications';
 // We trust the server to only send notifications for interesting messages, e.g. direct messages or
 // group messages in which the user is mentioned.
 
+import callDetector from '../lib/jitsiCallClasses/callDetector';
+import { JitsiCallHandler } from '../lib/jitsiCallClasses/JitsiCallHandler';
+
 function notifyNewRoom(sub) {
 
 	// Do not play new room sound if user is busy
@@ -28,6 +31,10 @@ Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
 			Notifications.onUser('notification', function(notification) {
+				const callJitsiMessage = callDetector(notification.payload);
+				if (callJitsiMessage instanceof JitsiCallHandler) {
+					callJitsiMessage.handle();
+				}
 
 				let openedRoomId = undefined;
 				if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {

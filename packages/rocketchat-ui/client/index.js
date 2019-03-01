@@ -22,6 +22,7 @@ import './views/modal.html';
 import './views/404/roomNotFound.html';
 import './views/404/invalidSecretURL.html';
 import './views/app/audioNotification.html';
+import './views/app/audioNotificationJitsi.html';
 import './views/app/burger.html';
 import './views/app/createChannel.html';
 import './views/app/fullModal.html';
