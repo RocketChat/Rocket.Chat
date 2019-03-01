@@ -80,5 +80,3 @@ export function generateUsernameSuggestion(user) {
 		index++;
 	}
 }
-
-RocketChat.generateUsernameSuggestion = generateUsernameSuggestion;

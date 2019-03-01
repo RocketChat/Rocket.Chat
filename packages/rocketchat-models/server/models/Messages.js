@@ -23,6 +23,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 		this.loadSettings();
 	}
 
@@ -31,6 +32,61 @@ export class Messages extends Base {
 			const { settings } = await import('meteor/rocketchat:settings');
 			this.settings = settings;
 		});
+	}
+
+	setReactions(messageId, reactions) {
+		return this.update({ _id: messageId }, { $set: { reactions } });
+	}
+
+	keepHistoryForToken(token) {
+		return this.update({
+			'navigation.token': token,
+			expireAt: {
+				$exists: true,
+			},
+		}, {
+			$unset: {
+				expireAt: 1,
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	setRoomIdByToken(token, rid) {
+		return this.update({
+			'navigation.token': token,
+			rid: null,
+		}, {
+			$set: {
+				rid,
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	createRoomArchivedByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
+	}
+
+	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
+	}
+
+	unsetReactions(messageId) {
+		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
+	}
+
+	deleteOldOTRMessages(roomId, ts) {
+		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
+		return this.remove(query);
+	}
+
+	updateOTRAck(_id, otrAck) {
+		const query = { _id };
+		const update = { $set: { otrAck } };
+		return this.update(query, update);
 	}
 
 	setGoogleVisionData(messageId, visionData) {

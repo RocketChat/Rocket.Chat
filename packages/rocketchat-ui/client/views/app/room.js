@@ -713,16 +713,14 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const channel = $(e.currentTarget).data('channel');
-		if (channel != null) {
+		const roomNameOrId = $(e.currentTarget).data('channel');
+		if (roomNameOrId) {
 			if (Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: roomNameOrId }), channel: roomNameOrId });
 			}
-
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
+			FlowRouter.goToRoomById(roomNameOrId);
 			return;
 		}
-
 		const username = $(e.currentTarget).data('username');
 
 		openProfileTabOrOpenDM(e, instance, username);

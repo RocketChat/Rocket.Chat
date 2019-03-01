@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Messages, Users, Rooms } from 'meteor/rocketchat:models';
 
 Meteor.publish('snippetedMessage', function(_id) {
 	if (typeof this.userId === 'undefined' || this.userId === null) {
 		return this.ready();
 	}
 
-	const snippet = RocketChat.models.Messages.findOne({ _id, snippeted: true });
-	const user = RocketChat.models.Users.findOneById(this.userId);
+	const snippet = Messages.findOne({ _id, snippeted: true });
+	const user = Users.findOneById(this.userId);
 	const roomSnippetQuery = {
 		_id: snippet.rid,
 		usernames: {
@@ -21,7 +21,7 @@ Meteor.publish('snippetedMessage', function(_id) {
 		return this.ready();
 	}
 
-	if (RocketChat.models.Rooms.findOne(roomSnippetQuery) === undefined) {
+	if (Rooms.findOne(roomSnippetQuery) === undefined) {
 		return this.ready();
 	}
 
@@ -32,7 +32,7 @@ Meteor.publish('snippetedMessage', function(_id) {
 		return this.ready();
 	}
 
-	const cursor = RocketChat.models.Messages.find(
+	const cursor = Messages.find(
 		{ _id }
 	).observeChanges({
 		added(_id, record) {

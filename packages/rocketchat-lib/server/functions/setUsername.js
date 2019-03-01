@@ -2,10 +2,10 @@ import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
 import { settings } from 'meteor/rocketchat:settings';
-import { Users, Messages, Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { RateLimiter } from '../lib';
-import { checkUsernameAvailability, setUserAvatar } from '.';
+import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
 const _setUsername = function(userId, u) {
 	const username = s.trim(u);
@@ -74,7 +74,7 @@ const _setUsername = function(userId, u) {
 		Rooms.replaceUsernameOfUserByUserId(user._id, username);
 		Subscriptions.setUserUsernameByUserId(user._id, username);
 		Subscriptions.setNameForDirectRoomsWithOldName(previousUsername, username);
-		RocketChat.models.LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+		LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 		const fileStore = FileUpload.getStore('Avatars');
 		const file = fileStore.model.findOneByName(previousUsername);
@@ -90,6 +90,3 @@ export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
 		return !userId || !hasPermission(userId, 'edit-other-user-info');
 	},
 });
-
-RocketChat.setUsername = setUsername;
-RocketChat._setUsername = _setUsername;

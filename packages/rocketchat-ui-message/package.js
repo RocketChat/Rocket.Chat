@@ -17,7 +17,6 @@ Package.onUse(function(api) {
 		'templating',
 		'tracker',
 		'rocketchat:utils',
-		'rocketchat:ui',
 		'rocketchat:ui-utils',
 		'rocketchat:emoji',
 		'rocketchat:katex',
@@ -28,6 +27,11 @@ Package.onUse(function(api) {
 		'rocketchat:ui-sidenav',
 		'rocketchat:file-upload',
 		'rocketchat:autotranslate',
+		'rocketchat:authorization',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'rocketchat:markdown',
 	]);
 	api.addAssets('../../node_modules/pdfjs-dist/build/pdf.worker.js', 'client');
 	api.mainModule('client/index.js', 'client');

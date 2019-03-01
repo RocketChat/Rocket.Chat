@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Rooms, LivechatVisitors, LivechatCustomField } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 import { API } from 'meteor/rocketchat:api';
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
 import { findGuest } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/visitor', {
 	post() {
@@ -33,18 +34,18 @@ API.v1.addRoute('livechat/visitor', {
 				guest.phone = { number: this.bodyParams.visitor.phone };
 			}
 
-			const visitorId = RocketChat.Livechat.registerGuest(guest);
+			const visitorId = Livechat.registerGuest(guest);
 
 			let visitor = LivechatVisitors.getVisitorByToken(token);
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const cursor = RocketChat.models.Rooms.findOpenByVisitorToken(token);
+			const cursor = Rooms.findOpenByVisitorToken(token);
 			cursor.forEach((room) => {
-				RocketChat.Livechat.saveRoomInfo(room, visitor);
+				Livechat.saveRoomInfo(room, visitor);
 			});
 
 			if (customFields && customFields instanceof Array) {
 				customFields.forEach((field) => {
-					const customField = RocketChat.models.LivechatCustomField.findOneById(field.key);
+					const customField = LivechatCustomField.findOneById(field.key);
 					if (!customField) {
 						return;
 					}
@@ -88,7 +89,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 			}
 
 			const { _id } = visitor;
-			const result = RocketChat.Livechat.removeGuest(_id);
+			const result = Livechat.removeGuest(_id);
 			if (result) {
 				return API.v1.success({
 					visitor: {
@@ -107,11 +108,11 @@ API.v1.addRoute('livechat/visitor/:token', {
 
 API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
-		const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(this.urlParams.token, {
+		const rooms = Rooms.findOpenByVisitorToken(this.urlParams.token, {
 			fields: {
 				name: 1,
 				t: 1,
@@ -140,7 +141,7 @@ API.v1.addRoute('livechat/visitor.status', {
 				throw new Meteor.Error('invalid-token');
 			}
 
-			RocketChat.Livechat.notifyGuestStatusChanged(token, status);
+			Livechat.notifyGuestStatusChanged(token, status);
 
 			return API.v1.success({ token, status });
 		} catch (e) {

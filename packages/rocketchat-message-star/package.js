@@ -10,6 +10,10 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:models',
+		'rocketchat:settings',
+		'rocketchat:ui-utils',
 		'templating',
 	]);
 	api.addFiles('client/views/stylesheets/messagestar.css', 'client');

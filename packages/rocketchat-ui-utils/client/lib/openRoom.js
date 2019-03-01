@@ -12,7 +12,7 @@ import { callbacks } from 'meteor/rocketchat:callbacks';
 import { roomTypes, handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
-export let currentTracker = undefined;
+window.currentTracker = undefined;
 
 let loadingDom;
 function getDomOfLoading() {
@@ -45,7 +45,7 @@ export const openRoom = function(type, name) {
 	Session.set('openedRoom', null);
 
 	return Meteor.defer(() =>
-		currentTracker = Tracker.autorun(function(c) {
+		window.currentTracker = Tracker.autorun(function(c) {
 			const user = Meteor.user();
 			if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
 				BlazeLayout.render('main');
@@ -56,9 +56,8 @@ export const openRoom = function(type, name) {
 				replaceCenterDomBy(getDomOfLoading());
 				return;
 			}
-
-			if (currentTracker) {
-				currentTracker = undefined;
+			if (window.currentTracker) {
+				window.currentTracker = undefined;
 			}
 			c.stop();
 

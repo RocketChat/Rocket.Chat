@@ -3,8 +3,7 @@ import { openRoom } from 'meteor/rocketchat:ui-utils';
 import { ChatRoom } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { getUserPreference } from 'meteor/rocketchat:utils';
-import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from 'meteor/rocketchat:utils';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {

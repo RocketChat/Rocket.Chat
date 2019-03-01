@@ -41,5 +41,3 @@ const _setEmail = function(userId, email, shouldSendVerificationEmail = true) {
 export const setEmail = RateLimiter.limitFunction(_setEmail, 1, 60000, {
 	0() { return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info'); }, // Administrators have permission to change others emails, so don't limit those
 });
-
-RocketChat.setEmail = setEmail;

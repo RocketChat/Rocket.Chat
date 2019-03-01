@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	getRoomNameById(rid) {
@@ -11,7 +13,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const room = Rooms.findOneById(rid);
 
 		if (room == null) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -19,12 +21,12 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { _id: 1 } });
 		if (subscription) {
 			return room.name;
 		}
 
-		if (room.t !== 'c' || RocketChat.authz.hasPermission(userId, 'view-c-room') !== true) {
+		if (room.t !== 'c' || hasPermission(userId, 'view-c-room') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomNameById',
 			});

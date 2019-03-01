@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { Users } from 'meteor/rocketchat:models';
+import { passwordPolicy } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	setUserPassword(password) {
@@ -14,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		if (user && user.requirePasswordChange !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -22,12 +24,12 @@ Meteor.methods({
 			});
 		}
 
-		RocketChat.passwordPolicy.validate(password);
+		passwordPolicy.validate(password);
 
 		Accounts.setPassword(userId, password, {
 			logout: false,
 		});
 
-		return RocketChat.models.Users.unsetRequirePasswordChange(userId);
+		return Users.unsetRequirePasswordChange(userId);
 	},
 });

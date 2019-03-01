@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { WebdavAccounts } from 'meteor/rocketchat:models';
 
 Meteor.publish('webdavAccounts', function() {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'webdavAccounts' }));
 	}
 
-	return RocketChat.models.WebdavAccounts.findWithUserId(this.userId, {
+	return WebdavAccounts.findWithUserId(this.userId, {
 		fields: {
 			_id:1,
 			username: 1,

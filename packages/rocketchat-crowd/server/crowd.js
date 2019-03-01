@@ -61,14 +61,15 @@ export class CROWD {
 		this.crowdClient.pingSync();
 	}
 
-	fetchCrowdUser(username) {
-		const userResponse = this.crowdClient.user.findSync(username);
+	fetchCrowdUser(crowd_username) {
+		const userResponse = this.crowdClient.user.findSync(crowd_username);
 
 		return {
 			displayname: userResponse['display-name'],
 			username: userResponse.name,
 			email: userResponse.email,
 			active: userResponse.active,
+			crowd_username,
 		};
 	}
 
@@ -78,15 +79,65 @@ export class CROWD {
 			return;
 		}
 
-		logger.info('Going to crowd:', username);
-		const auth = this.crowdClient.user.authenticateSync(username, password);
+		logger.info('Extracting crowd_username');
+		let user = null;
+		let crowd_username = username;
+
+		if (username.indexOf('@') !== -1) {
+			const email = username;
+
+			user = Meteor.users.findOne({ 'emails.address': email }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
+			if (user) {
+				crowd_username = user.crowd_username;
+			} else {
+				logger.debug('Could not find a user by email', username);
+			}
+		}
+
+		if (user == null) {
+			user = Meteor.users.findOne({ username }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
+			if (user) {
+				crowd_username = user.crowd_username;
+			} else {
+				logger.debug('Could not find a user by username');
+			}
+		}
+
+		if (user == null) {
+			user = Meteor.users.findOne({ crowd_username: username }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
+			if (user) {
+				crowd_username = user.crowd_username;
+			} else {
+				logger.debug('Could not find a user with by crowd_username', username);
+			}
+		}
+
+		if (user && !crowd_username) {
+			logger.debug('Local user found, redirecting to fallback login');
+			return {
+				crowd: false,
+			};
+		}
+
+		if (!user && crowd_username) {
+			logger.debug('New user. User is not synced yet.');
+		}
+		logger.debug('Going to crowd:', crowd_username);
+		const auth = this.crowdClient.user.authenticateSync(crowd_username, password);
 
 		if (!auth) {
 			return;
 		}
 
-		const crowdUser = this.fetchCrowdUser(username);
+		const crowdUser = this.fetchCrowdUser(crowd_username);
 
+		if (user && settings.get('CROWD_Allow_Custom_Username') === true) {
+			crowdUser.username = user.username;
+		}
+
+		if (user) {
+			crowdUser._id = user._id;
+		}
 		crowdUser.password = password;
 
 		return crowdUser;
@@ -96,7 +147,7 @@ export class CROWD {
 		const self = this;
 		const user = {
 			username: self.cleanUsername(crowdUser.username),
-			crowd_username: crowdUser.username,
+			crowd_username: crowdUser.crowd_username,
 			emails: [{
 				address : crowdUser.email,
 				verified: true,
@@ -134,29 +185,33 @@ export class CROWD {
 		logger.info('Sync started...');
 
 		users.forEach(function(user) {
-			let username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
-			logger.info('Syncing user', username);
+			let crowd_username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
+			logger.info('Syncing user', crowd_username);
 
 			let crowdUser = null;
 
 			try {
-				crowdUser = self.fetchCrowdUser(username);
+				crowdUser = self.fetchCrowdUser(crowd_username);
 			} catch (error) {
 				logger.debug(error);
-				logger.error('Could not sync user with username', username);
+				logger.error('Could not sync user with username', crowd_username);
 
 				const email = user.emails[0].address;
 				logger.info('Attempting to find for user by email', email);
 
 				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
 				if (!response || response.users.length === 0) {
-					logger.warning('Could not find user in CROWD with username or email:', username, email);
+					logger.warning('Could not find user in CROWD with username or email:', crowd_username, email);
 					return;
 				}
-				username = response.users[0].name;
-				logger.info('User found. Syncing user', username);
+				crowd_username = response.users[0].name;
+				logger.info('User found by email. Syncing user', crowd_username);
 
-				crowdUser = self.fetchCrowdUser(response.users[0].name);
+				crowdUser = self.fetchCrowdUser(crowd_username);
+			}
+
+			if (settings.get('CROWD_Allow_Custom_Username') === true) {
+				crowdUser.username = user.username;
 			}
 
 			self.syncDataToUser(crowdUser, user._id);
@@ -172,8 +227,7 @@ export class CROWD {
 
 	updateUserCollection(crowdUser) {
 		const userQuery = {
-			crowd: true,
-			username: crowdUser.username,
+			_id: crowdUser._id,
 		};
 
 		// find our existing user if they exist
@@ -227,11 +281,20 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 		const crowd = new CROWD();
 		const user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
+		if (user && (user.crowd === false)) {
+			logger.debug(`User ${ loginRequest.username } is not a valid crowd user, falling back`);
+			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
+		}
+
+		if (!user) {
+			logger.debug(`User ${ loginRequest.username } is not allowd to access Rocket.Chat`);
+			return new Meteor.Error('not-authorized', 'User is not authorized by crowd');
+		}
+
 		return crowd.updateUserCollection(user);
 	} catch (error) {
 		logger.debug(error);
-		logger.error('Crowd user not authenticated due to an error, falling back');
-		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
+		logger.error('Crowd user not authenticated due to an error');
 	}
 });
 

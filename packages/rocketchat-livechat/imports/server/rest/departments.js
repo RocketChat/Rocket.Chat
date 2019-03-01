@@ -1,19 +1,21 @@
 import { check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { LivechatDepartment, LivechatDepartmentAgents } from 'meteor/rocketchat:models';
+import { Livechat } from '../../../server/lib/Livechat';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
 		return API.v1.success({
-			departments: RocketChat.models.LivechatDepartment.find().fetch(),
+			departments: LivechatDepartment.find().fetch(),
 		});
 	},
 	post() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
@@ -23,12 +25,12 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 				agents: Array,
 			});
 
-			const department = RocketChat.Livechat.saveDepartment(null, this.bodyParams.department, this.bodyParams.agents);
+			const department = Livechat.saveDepartment(null, this.bodyParams.department, this.bodyParams.agents);
 
 			if (department) {
 				return API.v1.success({
 					department,
-					agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
+					agents: LivechatDepartmentAgents.find({ departmentId: department._id }).fetch(),
 				});
 			}
 
@@ -41,7 +43,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 
 API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
@@ -51,15 +53,15 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			});
 
 			return API.v1.success({
-				department: RocketChat.models.LivechatDepartment.findOneById(this.urlParams._id),
-				agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
+				department: LivechatDepartment.findOneById(this.urlParams._id),
+				agents: LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
 			});
 		} catch (e) {
 			return API.v1.failure(e.error);
 		}
 	},
 	put() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
@@ -73,10 +75,10 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 				agents: Array,
 			});
 
-			if (RocketChat.Livechat.saveDepartment(this.urlParams._id, this.bodyParams.department, this.bodyParams.agents)) {
+			if (Livechat.saveDepartment(this.urlParams._id, this.bodyParams.department, this.bodyParams.agents)) {
 				return API.v1.success({
-					department: RocketChat.models.LivechatDepartment.findOneById(this.urlParams._id),
-					agents: RocketChat.models.LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
+					department: LivechatDepartment.findOneById(this.urlParams._id),
+					agents: LivechatDepartmentAgents.find({ departmentId: this.urlParams._id }).fetch(),
 				});
 			}
 
@@ -86,7 +88,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 		}
 	},
 	delete() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
 			return API.v1.unauthorized();
 		}
 
@@ -95,7 +97,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 				_id: String,
 			});
 
-			if (RocketChat.Livechat.removeDepartment(this.urlParams._id)) {
+			if (Livechat.removeDepartment(this.urlParams._id)) {
 				return API.v1.success();
 			}
 

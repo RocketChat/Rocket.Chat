@@ -5,22 +5,12 @@
 	for the *server* pieces of code which does include the shared
 	library files.
 */
-
-import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig } from '../../lib/RoomTypeConfig';
-import { sendNotification } from './sendNotificationsOnMessage.js';
+export { sendNotification } from './sendNotificationsOnMessage';
 export { hostname } from '../../lib/startup/settingsOnLoadSiteUrl';
-import { passwordPolicy } from './passwordPolicy';
-import { validateEmailDomain } from './validateEmailDomain';
-import { RateLimiterClass as RateLimiter } from './RateLimiter';
-import { processDirectEmail } from './processDirectEmail';
+export { passwordPolicy } from './passwordPolicy';
+export { validateEmailDomain } from './validateEmailDomain';
+export { RateLimiterClass as RateLimiter } from './RateLimiter';
+export { processDirectEmail } from './processDirectEmail';
+export { msgStream } from './msgStream';
 
-export {
-	RoomSettingsEnum,
-	RoomTypeConfig,
-	RoomTypeRouteConfig,
-	sendNotification,
-	passwordPolicy,
-	validateEmailDomain,
-	RateLimiter,
-	processDirectEmail,
-};
+import './notifyUsersOnMessage';
