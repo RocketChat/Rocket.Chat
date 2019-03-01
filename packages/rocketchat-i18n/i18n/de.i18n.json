@@ -1613,6 +1613,8 @@
   "Layout_Sidenav_Footer": "Seitenfußzeile",
   "Layout_Sidenav_Footer_description": "Die Größe der Fußzeile beträgt 260 x 70 Pixel.",
   "Layout_Terms_of_Service": "Nutzungsbedingungen",
+  "Layout_Legal_Notice": "Impressum",
+  "Layout": "Layout",
   "LDAP": "LDAP",
   "LDAP_Authentication": "Aktivieren",
   "LDAP_Authentication_Password": "Passwort",
