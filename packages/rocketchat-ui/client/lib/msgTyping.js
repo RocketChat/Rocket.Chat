@@ -86,5 +86,3 @@ export const MsgTyping = (function() {
 
 	return { start, stop, get, selfTyping };
 }());
-
-this.MsgTyping = MsgTyping;

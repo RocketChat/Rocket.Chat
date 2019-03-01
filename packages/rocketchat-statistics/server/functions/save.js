@@ -1,8 +1,9 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Statistics } from 'meteor/rocketchat:models';
+import { statistics } from '../../lib/rocketchat';
 
-RocketChat.statistics.save = function() {
-	const statistics = RocketChat.statistics.get();
-	statistics.createdAt = new Date;
-	RocketChat.models.Statistics.insert(statistics);
-	return statistics;
+statistics.save = function() {
+	const rcStatistics = statistics.get();
+	rcStatistics.createdAt = new Date;
+	Statistics.insert(rcStatistics);
+	return rcStatistics;
 };

@@ -13,6 +13,8 @@ import { promises } from 'meteor/rocketchat:promises';
 import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { Messages, Rooms, ChatMessage } from 'meteor/rocketchat:models';
 import { emoji } from 'meteor/rocketchat:emoji';
+import { KonchatNotification } from './notification';
+import { MsgTyping } from './msgTyping';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -27,7 +29,7 @@ Meteor.startup(() => {
 	});
 });
 
-ChatMessages = class ChatMessages {
+export const ChatMessages = class ChatMessages {
 	constructor() {
 
 		this.saveTextMessageBox = _.debounce((rid, value) => {
@@ -164,7 +166,6 @@ ChatMessages = class ChatMessages {
 		this.input.classList.add('editing');
 
 		element.classList.add('editing');
-		this.$input.closest('.message-form').addClass('editing');
 
 		if (message.attachments && message.attachments[0].description) {
 			this.input.value = message.attachments[0].description;
@@ -187,7 +188,6 @@ ChatMessages = class ChatMessages {
 			this.input.parentElement.classList.remove('editing');
 
 			this.editing.element.classList.remove('editing');
-			this.$input.closest('.message-form').removeClass('editing');
 			delete this.editing.id;
 			delete this.editing.element;
 			delete this.editing.index;

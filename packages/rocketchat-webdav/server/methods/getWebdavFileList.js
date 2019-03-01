@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import Webdav from 'webdav';
+import { settings } from 'meteor/rocketchat:settings';
+import { WebdavAccounts } from 'meteor/rocketchat:models';
+import { createClient } from 'webdav';
 
 Meteor.methods({
 	async getWebdavFileList(accountId, path) {
@@ -8,19 +9,21 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'addNewWebdavAccount' });
 		}
 
-		if (!RocketChat.settings.get('Webdav_Integration_Enabled')) {
+		if (!settings.get('Webdav_Integration_Enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'addNewWebdavAccount' });
 		}
 
-		const account = RocketChat.models.WebdavAccounts.findOne({ _id: accountId, user_id: Meteor.userId() });
+		const account = WebdavAccounts.findOne({ _id: accountId, user_id: Meteor.userId() });
 		if (!account) {
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'addNewWebdavAccount' });
 		}
 
-		const client = new Webdav(
+		const client = createClient(
 			account.server_url,
-			account.username,
-			account.password
+			{
+				username: account.username,
+				password: account.password,
+			}
 		);
 		try {
 			const data = await client.getDirectoryContents(path);

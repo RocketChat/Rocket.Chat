@@ -1,33 +1,21 @@
-import { t, isRtl } from '../lib/tapi18n';
-import { isChrome, isFirefox } from './lib/browsers';
-import { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
-import { Info } from '../rocketchat.info';
-import { handleError } from './lib/handleError';
-import { getUserPreference } from '../lib/getUserPreference';
-import { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
-import { roomTypes } from './lib/roomTypes';
-import { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } from '../lib/RoomTypeConfig';
-import { RoomTypesCommon } from '../lib/RoomTypesCommon';
-import { getAvatarUrlFromUsername } from '../lib/getAvatarUrlFromUsername';
-import { slashCommands } from '../lib/slashCommand';
-
-export {
-	t,
-	isRtl,
-	isChrome,
-	isFirefox,
-	getDefaultSubscriptionPref,
-	Info,
-	handleError,
-	getUserPreference,
-	fileUploadIsValidContentType,
-	fileUploadMediaWhiteList,
-	roomTypes,
-	RoomTypeRouteConfig,
-	RoomTypesCommon,
-	RoomTypeConfig,
-	RoomSettingsEnum,
-	UiTextContext,
-	getAvatarUrlFromUsername,
-	slashCommands,
-};
+export { t, isRtl } from '../lib/tapi18n';
+export { isChrome, isFirefox } from './lib/browsers';
+export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
+export { Info } from '../rocketchat.info';
+export { isEmail } from '../lib/isEmail';
+export { handleError } from './lib/handleError';
+export { getUserPreference } from '../lib/getUserPreference';
+export { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
+export { roomTypes } from './lib/roomTypes';
+export { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } from '../lib/RoomTypeConfig';
+export { RoomTypesCommon } from '../lib/RoomTypesCommon';
+export { getAvatarUrlFromUsername } from '../lib/getAvatarUrlFromUsername';
+export { slashCommands } from '../lib/slashCommand';
+export { getUserNotificationPreference } from '../lib/getUserNotificationPreference';
+export { applyCustomTranslations } from './lib/CustomTranslations';
+export { getAvatarColor } from '../lib/getAvatarColor';
+export { getURL } from '../lib/getURL';
+export { getValidRoomName } from '../lib/getValidRoomName';
+export { placeholders } from '../lib/placeholders';
+export { templateVarHandler } from '../lib/templateVarHandler';
+export { APIClient } from './lib/RestApiClient';

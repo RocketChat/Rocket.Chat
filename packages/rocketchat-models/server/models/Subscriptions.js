@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Base } from './_Base';
 import { Match } from 'meteor/check';
 import Rooms from './Rooms';
@@ -29,6 +30,78 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 	}
 
+	findByRoomIds(roomIds) {
+		const query = {
+			rid: {
+				$in: roomIds,
+			},
+		};
+		const options = {
+			fields: {
+				'u._id': 1,
+				rid: 1,
+			},
+		};
+
+		return this._db.find(query, options);
+	}
+
+	removeByVisitorToken(token) {
+		const query = {
+			'v.token': token,
+		};
+
+		this.remove(query);
+	}
+
+	updateAutoTranslateById(_id, autoTranslate) {
+		const query = {
+			_id,
+		};
+
+		let update;
+		if (autoTranslate) {
+			update = {
+				$set: {
+					autoTranslate,
+				},
+			};
+		} else {
+			update = {
+				$unset: {
+					autoTranslate: 1,
+				},
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	updateAutoTranslateLanguageById(_id, autoTranslateLanguage) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				autoTranslateLanguage,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	getAutoTranslateLanguagesByRoomAndNotUser(rid, userId) {
+		const subscriptionsRaw = this.model.rawCollection();
+		const distinct = Meteor.wrapAsync(subscriptionsRaw.distinct, subscriptionsRaw);
+		const query = {
+			rid,
+			'u._id': { $ne: userId },
+			autoTranslate: true,
+		};
+		return distinct('autoTranslateLanguage', query);
+	}
+
 	roleBaseQuery(userId, scope) {
 		if (scope == null) {
 			return;
@@ -50,6 +123,282 @@ export class Subscriptions extends Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	updateAudioNotificationsById(_id, audioNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (audioNotifications === 'default') {
+			update.$unset = { audioNotifications: 1 };
+		} else {
+			update.$set = { audioNotifications };
+		}
+
+		return this.update(query, update);
+	}
+
+	updateAudioNotificationValueById(_id, audioNotificationValue) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				audioNotificationValue,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateDesktopNotificationsById(_id, desktopNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (desktopNotifications === null) {
+			update.$unset = {
+				desktopNotifications: 1,
+				desktopPrefOrigin: 1,
+			};
+		} else {
+			update.$set = {
+				desktopNotifications: desktopNotifications.value,
+				desktopPrefOrigin: desktopNotifications.origin,
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	updateDesktopNotificationDurationById(_id, value) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				desktopNotificationDuration: parseInt(value),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateMobilePushNotificationsById(_id, mobilePushNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (mobilePushNotifications === null) {
+			update.$unset = {
+				mobilePushNotifications: 1,
+				mobilePrefOrigin: 1,
+			};
+		} else {
+			update.$set = {
+				mobilePushNotifications: mobilePushNotifications.value,
+				mobilePrefOrigin: mobilePushNotifications.origin,
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	updateEmailNotificationsById(_id, emailNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (emailNotifications === null) {
+			update.$unset = {
+				emailNotifications: 1,
+				emailPrefOrigin: 1,
+			};
+		} else {
+			update.$set = {
+				emailNotifications: emailNotifications.value,
+				emailPrefOrigin: emailNotifications.origin,
+			};
+		}
+
+		return this.update(query, update);
+	}
+
+	updateUnreadAlertById(_id, unreadAlert) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				unreadAlert,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateDisableNotificationsById(_id, disableNotifications) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				disableNotifications,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateHideUnreadStatusById(_id, hideUnreadStatus) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				hideUnreadStatus,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateMuteGroupMentions(_id, muteGroupMentions) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				muteGroupMentions,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findAlwaysNotifyAudioUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			audioNotifications: 'all',
+		};
+
+		return this.find(query);
+	}
+
+	findAlwaysNotifyDesktopUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			desktopNotifications: 'all',
+		};
+
+		return this.find(query);
+	}
+
+	findDontNotifyDesktopUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			desktopNotifications: 'nothing',
+		};
+
+		return this.find(query);
+	}
+
+	findAlwaysNotifyMobileUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			mobilePushNotifications: 'all',
+		};
+
+		return this.find(query);
+	}
+
+	findDontNotifyMobileUsersByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			mobilePushNotifications: 'nothing',
+		};
+
+		return this.find(query);
+	}
+
+	findWithSendEmailByRoomId(roomId) {
+		const query = {
+			rid: roomId,
+			emailNotifications: {
+				$exists: true,
+			},
+		};
+
+		return this.find(query, { fields: { emailNotifications: 1, u: 1 } });
+	}
+
+	findNotificationPreferencesByRoom(query/* { roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
+
+		return this._db.find(query, {
+			fields: {
+
+				// fields needed for notifications
+				rid: 1,
+				t: 1,
+				u: 1,
+				name: 1,
+				fname: 1,
+				code: 1,
+
+				// fields to define if should send a notification
+				ignored: 1,
+				audioNotifications: 1,
+				audioNotificationValue: 1,
+				desktopNotificationDuration: 1,
+				desktopNotifications: 1,
+				mobilePushNotifications: 1,
+				emailNotifications: 1,
+				disableNotifications: 1,
+				muteGroupMentions: 1,
+				userHighlights: 1,
+			},
+		});
+	}
+
+	findAllMessagesNotificationPreferencesByRoom(roomId) {
+		const query = {
+			rid: roomId,
+			'u._id': { $exists: true },
+			$or: [
+				{ desktopNotifications: { $in: ['all', 'mentions'] } },
+				{ mobilePushNotifications: { $in: ['all', 'mentions'] } },
+				{ emailNotifications: { $in: ['all', 'mentions'] } },
+			],
+		};
+
+		return this._db.find(query, {
+			fields: {
+				'u._id': 1,
+				audioNotifications: 1,
+				audioNotificationValue: 1,
+				desktopNotificationDuration: 1,
+				desktopNotifications: 1,
+				mobilePushNotifications: 1,
+				emailNotifications: 1,
+				disableNotifications: 1,
+				muteGroupMentions: 1,
+			},
+		});
 	}
 
 	resetUserE2EKey(userId) {

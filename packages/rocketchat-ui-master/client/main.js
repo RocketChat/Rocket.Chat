@@ -15,7 +15,7 @@ import { tooltip } from 'meteor/rocketchat:tooltip';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
-settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true); } });
+settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -124,9 +124,6 @@ Template.body.onRendered(function() {
 			}(w, d, script, l, i));
 		}
 	});
-	if (Meteor.isCordova) {
-		return $(document.body).addClass('is-cordova');
-	}
 });
 
 Template.main.onCreated(function() {

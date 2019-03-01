@@ -9,7 +9,12 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'rocketchat:settings',
+		'rocketchat:utils',
 		'rocketchat:lib',
+		'rocketchat:callbacks',
+		'rocketchat:channel-settings',
+		'rocketchat:models',
 		'rocketchat:logger',
 		'rocketchat:file-upload',
 	]);

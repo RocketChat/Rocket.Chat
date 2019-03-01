@@ -1,6 +1,4 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
-
-RocketChat.integrations = {
+export const integrations = {
 	outgoingEvents: {
 		sendMessage: {
 			label: 'Integrations_Outgoing_Type_SendMessage',

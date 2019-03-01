@@ -64,16 +64,16 @@ function getEmojisBySearchTerm(searchTerm) {
 
 	const searchRegExp = new RegExp(RegExp.escape(searchTerm.replace(/:/g, '')), 'i');
 
-	for (let _emoji in emoji.list) {
-		if (!emoji.list.hasOwnProperty(_emoji)) {
+	for (let current in emoji.list) {
+		if (!emoji.list.hasOwnProperty(current)) {
 			continue;
 		}
 
-		if (searchRegExp.test(_emoji)) {
-			const emojiObject = emoji.list[_emoji];
+		if (searchRegExp.test(current)) {
+			const emojiObject = emoji.list[current];
 			const { emojiPackage } = emojiObject;
 			let tone = '';
-			_emoji = _emoji.replace(/:/g, '');
+			current = current.replace(/:/g, '');
 
 			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(emoji)) {
 				tone = `_tone${ actualTone }`;
@@ -84,7 +84,7 @@ function getEmojisBySearchTerm(searchTerm) {
 			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
 				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
-					if (contents.indexOf(emoji) !== -1) {
+					if (contents.indexOf(current) !== -1) {
 						emojiFound = true;
 						break;
 					}
@@ -92,8 +92,8 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				const image = emoji.packages[emojiPackage].render(`:${ _emoji }${ tone }:`);
-				html += `<li class="emoji-${ _emoji }" data-emoji="${ _emoji }" title="${ _emoji }">${ image }</li>`;
+				const image = emoji.packages[emojiPackage].render(`:${ current }${ tone }:`);
+				html += `<li class="emoji-${ current }" data-emoji="${ current }" title="${ current }">${ image }</li>`;
 			}
 		}
 	}

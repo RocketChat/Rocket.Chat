@@ -2,7 +2,20 @@ import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import http from 'http';
+import fs from 'fs';
+
+function downloadHttpFile(fileUrl, writeStream) {
+	http.get(fileUrl, function(response) {
+		response.pipe(writeStream);
+	});
+}
+
+function copyLocalFile(filePath, writeStream) {
+	const readStream = fs.createReadStream(filePath);
+	readStream.pipe(writeStream);
+}
 
 Meteor.methods({
 	downloadPublicImportFile(fileUrl, importerKey) {
@@ -12,7 +25,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'downloadPublicImportFile' });
 		}
 
-		if (!RocketChat.authz.hasRole(userId, 'admin')) {
+		if (!hasRole(userId, 'admin')) {
 			throw new Meteor.Error('not_authorized', 'User not authorized', { method: 'downloadPublicImportFile' });
 		}
 
@@ -30,9 +43,23 @@ Meteor.methods({
 		importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE_URL);
 
 		const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
-		http.get(fileUrl, function(response) {
-			response.pipe(writeStream);
-		});
+
+		if (fileUrl.startsWith('http')) {
+			downloadHttpFile(fileUrl, writeStream);
+		} else {
+			if (!fs.existsSync(fileUrl)) {
+				throw new Meteor.Error('error-import-file-missing', fileUrl, { method: 'downloadPublicImportFile' });
+			}
+
+			// If the url is actually a folder path on the current machine, skip moving it to the file store
+			if (fs.statSync(fileUrl).isDirectory()) {
+				importer.instance.updateRecord({ file: fileUrl });
+				importer.instance.updateProgress(ProgressStep.DOWNLOAD_COMPLETE);
+				return;
+			}
+
+			copyLocalFile(fileUrl, writeStream);
+		}
 
 		writeStream.on('error', Meteor.bindEnvironment(() => {
 			importer.instance.updateProgress(ProgressStep.ERROR);

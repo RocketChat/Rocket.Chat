@@ -29,6 +29,13 @@ FlowRouter.route('/admin/import', {
 	},
 });
 
+FlowRouter.route('/admin/import/history', {
+	name: 'admin-import-history',
+	action() {
+		BlazeLayout.render('main', { center: 'adminImportHistory' });
+	},
+});
+
 FlowRouter.route('/admin/import/prepare/:importer', {
 	name: 'admin-import-prepare',
 	action() {

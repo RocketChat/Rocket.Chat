@@ -9,8 +9,10 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:utils',
+		'rocketchat:ui-utils',
 		'rocketchat:notifications',
 		'rocketchat:settings',
+		'rocketchat:models',
 		'templating',
 	]);
 	api.mainModule('client/index.js', 'client');

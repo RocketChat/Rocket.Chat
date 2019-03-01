@@ -2,8 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { ChatRoom, RoomManager } from 'meteor/rocketchat:ui';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { RoomManager } from 'meteor/rocketchat:ui-utils';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { ChatRoom, ChatSubscription } from 'meteor/rocketchat:models';
 
 Meteor.startup(function() {
 	const roomSettingsChangedCallback = (msg) => {
@@ -23,7 +25,7 @@ Meteor.startup(function() {
 		return msg;
 	};
 
-	RocketChat.callbacks.add('streamMessage', roomSettingsChangedCallback, RocketChat.callbacks.priority.HIGH, 'room-settings-changed');
+	callbacks.add('streamMessage', roomSettingsChangedCallback, callbacks.priority.HIGH, 'room-settings-changed');
 
 	const roomNameChangedCallback = (msg) => {
 		Tracker.nonreactive(() => {
@@ -32,7 +34,7 @@ Meteor.startup(function() {
 					const room = ChatRoom.findOne(msg.rid);
 					if (room.name !== FlowRouter.getParam('name')) {
 						RoomManager.close(room.t + FlowRouter.getParam('name'));
-						RocketChat.roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+						roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
 					}
 				}
 			}
@@ -41,5 +43,5 @@ Meteor.startup(function() {
 		return msg;
 	};
 
-	RocketChat.callbacks.add('streamMessage', roomNameChangedCallback, RocketChat.callbacks.priority.HIGH, 'room-name-changed');
+	callbacks.add('streamMessage', roomNameChangedCallback, callbacks.priority.HIGH, 'room-name-changed');
 });

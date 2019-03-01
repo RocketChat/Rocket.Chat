@@ -48,28 +48,28 @@
 				{{/if}}
 			{{/if}}
 			{{#if title}}
-                <div class="attachment-title">
-                    {{#if title_link}}
-                        {{#if isPDF}}
-                            <a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer" class="pdf-open-in-modal">{{title}}</a>
-                        {{else}}
-                            <a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer">
-                                {{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}
-                                {{title}}
-                            </a>
-                            {{#if title_link_download}}
-                                <a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
-                            {{/if}}
-                        {{/if}}
-                    {{else}}
+        <div class="attachment-title">
+            {{#if title_link}}
+                {{#if isPDF}}
+                    <a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer" class="pdf-open-in-modal">{{title}}</a>
+                {{else}}
+                    <a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer">
+                        {{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}
                         {{title}}
+                    </a>
+                    {{#if title_link_download}}
+                        <a class="attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
                     {{/if}}
-                    {{#if collapsed}}
-                        <span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-                    {{else}}
-                        <span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-                    {{/if}}
-                </div>
+                {{/if}}
+            {{else}}
+                {{title}}
+            {{/if}}
+            {{#if collapsed}}
+                <span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
+            {{else}}
+                <span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
+            {{/if}}
+        </div>
 			{{/if}}
 
 			{{#unless collapsed}}

@@ -6,6 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import { KonchatNotification } from 'meteor/rocketchat:ui';
+import { Layout } from 'meteor/rocketchat:ui-utils';
 import s from 'underscore.string';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
@@ -27,7 +28,7 @@ FlowRouter.subscriptions = function() {
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
+		BlazeLayout.render('main', { modal: Layout.isEmbedded(), center: 'loading' });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
