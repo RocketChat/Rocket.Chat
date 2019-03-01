@@ -13,7 +13,7 @@ Template.lazyloadImage.helpers({
 	},
 
 	srcUrl() {
-		return this.src && this.src;
+		return this.src;
 	},
 
 	lazySrcUrl() {
