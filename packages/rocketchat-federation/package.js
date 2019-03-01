@@ -18,5 +18,6 @@ Package.onUse(function(api) {
 	api.use('accounts-base', 'server');
 	api.use('accounts-password', 'server');
 
+	api.mainModule('client/main.js', 'client');
 	api.mainModule('server/main.js', 'server');
 });

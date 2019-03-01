@@ -10,7 +10,7 @@ const errorsToSkipRetrying = [
 ];
 
 function skipRetryOnSpecificError(err) {
-	return !!errorsToSkipRetrying[err.errorType];
+	return errorsToSkipRetrying.includes(err && err.errorType);
 }
 
 // Delay method to wait a little bit before retrying
@@ -73,7 +73,7 @@ function doRequest(peer, method, uri, body, retryInfo = {}) {
 			}
 
 			// Check if we need to skip due to specific error
-			if (skipRetryOnSpecificError(err)) {
+			if (skipRetryOnSpecificError(err && err.response && err.response.data)) {
 				this.log('Retry: skipping due to specific error');
 
 				throw err;

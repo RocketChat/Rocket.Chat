@@ -164,6 +164,35 @@ class PeerClient {
 			} catch (err) {
 				this.log(`[${ e.t }] Event could not be sent to peer:${ domain }`);
 
+				if (err.response) {
+					const { response: { data: error } } = err;
+
+					if (error.errorType === 'error-app-prevented-sending') {
+						const { payload: {
+							message: {
+								rid: roomId,
+								u: {
+									username,
+									federation: { _id: userId },
+								},
+							},
+						} } = e;
+
+						const localUsername = username.split('@')[0];
+
+						// Create system message
+						Messages.createRejectedMessageByPeer(roomId, localUsername, {
+							u: {
+								_id: userId,
+								username: localUsername,
+							},
+							peer: domain,
+						});
+
+						return FederationEvents.setEventAsErrored(e, err.error, true);
+					}
+				}
+
 				if (err.error === 'federation-peer-does-not-exist') {
 					const { payload: {
 						message: {
@@ -179,31 +208,6 @@ class PeerClient {
 
 					// Create system message
 					Messages.createPeerDoesNotExist(roomId, localUsername, {
-						u: {
-							_id: userId,
-							username: localUsername,
-						},
-						peer: domain,
-					});
-
-					return FederationEvents.setEventAsErrored(e, err.error, true);
-				}
-
-				if (err.error === 'error-app-prevented-sending') {
-					const { payload: {
-						message: {
-							rid: roomId,
-							u: {
-								username,
-								federation: { _id: userId },
-							},
-						},
-					} } = e;
-
-					const localUsername = username.split('@')[0];
-
-					// Create system message
-					Messages.createRejectedMessageByPeer(roomId, localUsername, {
 						u: {
 							_id: userId,
 							username: localUsername,
