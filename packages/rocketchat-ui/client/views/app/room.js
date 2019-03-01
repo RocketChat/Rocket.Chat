@@ -857,6 +857,24 @@ Template.room.events({
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
+	'click .pdf-open-in-modal'(event) {
+		event.preventDefault();
+		const isElectron = (navigator.userAgent.toLowerCase().indexOf(' electron/') > -1);
+		const relPdfLink = this._arguments[1].attachments[0].title_link;
+		const pdfId = `${ relPdfLink.split('/')[2] }.pdf`;
+		const absPdfLink = Meteor.absoluteUrl().replace(/\/$/, '') + relPdfLink;
+		if (isElectron) {
+			const newWindow = window.open(absPdfLink, pdfId, 'width=1,height=1');
+			newWindow.close();
+		} else {
+			const absPdfLinkInline = `${ absPdfLink }?disposition=inline`;
+			modal.open({
+				showConfirmButton: false,
+				text: Blaze.toHTMLWithData(Template.pdfViewer, { absPdfLinkInline }),
+				html: true,
+			});
+		}
+	},
 });
 
 

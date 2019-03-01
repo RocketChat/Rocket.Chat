@@ -156,7 +156,12 @@ new FileUploadClass({
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		if (req.query && req.query.hasOwnProperty('disposition')) {
+			res.removeHeader('Content-Security-Policy');
+			res.setHeader('Content-Disposition', `${ req.query.disposition }; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		} else {
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		}
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size);
@@ -175,7 +180,12 @@ new FileUploadClass({
 	get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		if (req.query && req.query.hasOwnProperty('disposition')) {
+			res.removeHeader('Content-Security-Policy');
+			res.setHeader('Content-Disposition', `${ req.query.disposition }; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		} else {
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+		}
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type);
 		res.setHeader('Content-Length', file.size);
