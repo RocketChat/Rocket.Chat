@@ -9,9 +9,7 @@ import peerDNS from './peerDNS';
 import peerHTTP from './peerHTTP';
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
-import FederatedMessage from './federatedResources/FederatedMessage';
-import FederatedRoom from './federatedResources/FederatedRoom';
-import FederatedUser from './federatedResources/FederatedUser';
+import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
 
 class PeerClient {
 	constructor() {

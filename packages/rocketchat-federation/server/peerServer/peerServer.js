@@ -3,18 +3,9 @@ import { setReaction } from 'meteor/rocketchat:reactions';
 import { addUserToRoom, removeUserFromRoom, deleteMessage } from 'meteor/rocketchat:lib';
 import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
 
-import peerClient from '../peerClient';
-
+import { FederatedMessage, FederatedRoom, FederatedUser } from '../federatedResources';
 import { logger } from '../logger.js';
-
-import FederatedMessage from '../federatedResources/FederatedMessage';
-import FederatedRoom from '../federatedResources/FederatedRoom';
-import FederatedUser from '../federatedResources/FederatedUser';
-
-// Setup routes
-import './routes/events';
-import './routes/uploads';
-import './routes/users';
+import peerClient from '../peerClient';
 
 class PeerServer {
 	constructor() {
