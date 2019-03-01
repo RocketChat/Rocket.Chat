@@ -4,8 +4,9 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -16,14 +17,14 @@ Template.loginForm.helpers({
 		return user && user.username;
 	},
 	namePlaceholder() {
-		if (RocketChat.settings.get('Accounts_RequireNameForSignUp')) {
+		if (settings.get('Accounts_RequireNameForSignUp')) {
 			return t('Name');
 		} else {
 			return t('Name_optional');
 		}
 	},
 	showFormLogin() {
-		return RocketChat.settings.get('Accounts_ShowFormLogin');
+		return settings.get('Accounts_ShowFormLogin');
 	},
 	state(...state) {
 		return state.indexOf(Template.instance().state.get()) > -1;
@@ -44,35 +45,32 @@ Template.loginForm.helpers({
 		}
 	},
 	loginTerms() {
-		return RocketChat.settings.get('Layout_Login_Terms');
+		return settings.get('Layout_Login_Terms');
 	},
 	registrationAllowed() {
 		const validSecretUrl = Template.instance().validSecretURL;
-		return RocketChat.settings.get('Accounts_RegistrationForm') === 'Public' || (validSecretUrl && validSecretUrl.get());
+		return settings.get('Accounts_RegistrationForm') === 'Public' || (validSecretUrl && validSecretUrl.get());
 	},
 	linkReplacementText() {
-		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText');
+		return settings.get('Accounts_RegistrationForm_LinkReplacementText');
 	},
 	passwordResetAllowed() {
-		return RocketChat.settings.get('Accounts_PasswordReset');
+		return settings.get('Accounts_PasswordReset');
 	},
 	requirePasswordConfirmation() {
-		return RocketChat.settings.get('Accounts_RequirePasswordConfirmation');
+		return settings.get('Accounts_RequirePasswordConfirmation');
 	},
 	emailOrUsernamePlaceholder() {
-		return RocketChat.settings.get('Accounts_EmailOrUsernamePlaceholder') || t('Email_or_username');
+		return settings.get('Accounts_EmailOrUsernamePlaceholder') || t('Email_or_username');
 	},
 	passwordPlaceholder() {
-		return RocketChat.settings.get('Accounts_PasswordPlaceholder') || t('Password');
+		return settings.get('Accounts_PasswordPlaceholder') || t('Password');
 	},
 	confirmPasswordPlaceholder() {
-		return RocketChat.settings.get('Accounts_ConfirmPasswordPlaceholder') || t('Confirm_password');
-	},
-	hasOnePassword() {
-		return typeof OnePassword !== 'undefined' && OnePassword.findLoginForUrl && typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios';
+		return settings.get('Accounts_ConfirmPasswordPlaceholder') || t('Confirm_password');
 	},
 	manuallyApproveNewUsers() {
-		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers');
+		return settings.get('Accounts_ManuallyApproveNewUsers');
 	},
 });
 
@@ -87,7 +85,7 @@ Template.loginForm.events({
 			if (state === 'email-verification') {
 				Meteor.call('sendConfirmationEmail', s.trim(formData.email), () => {
 					instance.loading.set(false);
-					RocketChat.callbacks.run('userConfirmationEmailRequested');
+					callbacks.run('userConfirmationEmailRequested');
 					toastr.success(t('We_have_sent_registration_email'));
 					return instance.state.set('login');
 				});
@@ -100,7 +98,7 @@ Template.loginForm.events({
 						return instance.state.set('login');
 					} else {
 						instance.loading.set(false);
-						RocketChat.callbacks.run('userForgotPasswordEmailRequested');
+						callbacks.run('userForgotPasswordEmailRequested');
 						toastr.success(t('If_this_email_is_registered'));
 						return instance.state.set('login');
 					}
@@ -119,7 +117,7 @@ Template.loginForm.events({
 						}
 						return;
 					}
-					RocketChat.callbacks.run('userRegistered');
+					callbacks.run('userRegistered');
 					return Meteor.loginWithPassword(s.trim(formData.email), formData.pass, function(error) {
 						if (error && error.error === 'error-invalid-email') {
 							return instance.state.set('wait-email-activation');
@@ -132,10 +130,10 @@ Template.loginForm.events({
 				});
 			} else {
 				let loginMethod = 'loginWithPassword';
-				if (RocketChat.settings.get('LDAP_Enable')) {
+				if (settings.get('LDAP_Enable')) {
 					loginMethod = 'loginWithLDAP';
 				}
-				if (RocketChat.settings.get('CROWD_Enable')) {
+				if (settings.get('CROWD_Enable')) {
 					loginMethod = 'loginWithCrowd';
 				}
 				return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
@@ -157,28 +155,15 @@ Template.loginForm.events({
 	},
 	'click .register'() {
 		Template.instance().state.set('register');
-		return RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
+		return callbacks.run('loginPageStateChange', Template.instance().state.get());
 	},
 	'click .back-to-login'() {
 		Template.instance().state.set('login');
-		return RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
+		return callbacks.run('loginPageStateChange', Template.instance().state.get());
 	},
 	'click .forgot-password'() {
 		Template.instance().state.set('forgot-password');
-		return RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
-	},
-	'click .one-passsword'() {
-		if (typeof OnePassword === 'undefined' || OnePassword.findLoginForUrl == null) {
-			return;
-		}
-		const succesCallback = function(credentials) {
-			$('input[name=emailOrUsername]').val(credentials.username);
-			return $('input[name=pass]').val(credentials.password);
-		};
-		const errorCallback = function(...args) {
-			return console.log('OnePassword errorCallback', ...args);
-		};
-		return OnePassword.findLoginForUrl(succesCallback, errorCallback, Meteor.absoluteUrl());
+		return callbacks.run('loginPageStateChange', Template.instance().state.get());
 	},
 });
 
@@ -187,10 +172,10 @@ Template.loginForm.onCreated(function() {
 	this.customFields = new ReactiveVar;
 	this.loading = new ReactiveVar(false);
 	Tracker.autorun(() => {
-		const Accounts_CustomFields = RocketChat.settings.get('Accounts_CustomFields');
+		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
 		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
 			try {
-				return this.customFields.set(JSON.parse(RocketChat.settings.get('Accounts_CustomFields')));
+				return this.customFields.set(JSON.parse(settings.get('Accounts_CustomFields')));
 			} catch (error1) {
 				return console.error('Invalid JSON for Accounts_CustomFields');
 			}
@@ -255,13 +240,13 @@ Template.loginForm.onCreated(function() {
 			}
 		}
 		if (state === 'register') {
-			if (RocketChat.settings.get('Accounts_RequireNameForSignUp') && !formObj.name) {
+			if (settings.get('Accounts_RequireNameForSignUp') && !formObj.name) {
 				validationObj.name = t('Invalid_name');
 			}
-			if (RocketChat.settings.get('Accounts_RequirePasswordConfirmation') && formObj['confirm-pass'] !== formObj.pass) {
+			if (settings.get('Accounts_RequirePasswordConfirmation') && formObj['confirm-pass'] !== formObj.pass) {
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass');
 			}
-			if (RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && !formObj.reason) {
+			if (settings.get('Accounts_ManuallyApproveNewUsers') && !formObj.reason) {
 				validationObj.reason = t('Invalid_reason');
 			}
 			validateCustomFields(formObj, validationObj);
@@ -290,7 +275,7 @@ Template.loginForm.onCreated(function() {
 Template.loginForm.onRendered(function() {
 	Session.set('loginDefaultState');
 	return Tracker.autorun(() => {
-		RocketChat.callbacks.run('loginPageStateChange', this.state.get());
+		callbacks.run('loginPageStateChange', this.state.get());
 		switch (this.state.get()) {
 			case 'login':
 			case 'forgot-password':

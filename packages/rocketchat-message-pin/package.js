@@ -8,6 +8,12 @@ Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
+		'rocketchat:ui-utils',
+		'rocketchat:utils',
+		'rocketchat:settings',
+		'rocketchat:authorization',
+		'rocketchat:models',
+		'rocketchat:callbacks',
 		'rocketchat:lib',
 		'templating',
 	]);

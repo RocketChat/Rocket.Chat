@@ -2,10 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t } from 'meteor/rocketchat:utils';
+import { t, getUserPreference, roomTypes } from 'meteor/rocketchat:utils';
 import moment from 'moment';
-import { renderMessageBody } from 'meteor/rocketchat:ui-message';
-import { popover } from 'meteor/rocketchat:ui';
+import { popover, renderMessageBody } from 'meteor/rocketchat:ui-utils';
+import { Users, ChatSubscription } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { menu } from 'meteor/rocketchat:ui-utils';
 
 Template.sidebarItem.helpers({
 	or(...args) {
@@ -19,7 +22,7 @@ Template.sidebarItem.helpers({
 		return this.rid || this._id;
 	},
 	isExtendedViewMode() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
+		return getUserPreference(Meteor.userId(), 'sidebarViewMode') === 'extended';
 	},
 	lastMessage() {
 		return this.lastMessage && Template.instance().renderedMessage;
@@ -58,7 +61,7 @@ function setLastMessageTs(instance, ts) {
 }
 
 Template.sidebarItem.onCreated(function() {
-	this.user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { username: 1 } });
+	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
 	this.lastMessageTs = new ReactiveVar();
 	this.timeAgoInterval;
@@ -68,7 +71,7 @@ Template.sidebarItem.onCreated(function() {
 	this.autorun(() => {
 		const currentData = Template.currentData();
 
-		if (!currentData.lastMessage || RocketChat.getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
+		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
 			return clearInterval(this.timeAgoInterval);
 		}
 
@@ -82,7 +85,7 @@ Template.sidebarItem.onCreated(function() {
 			return this.renderedMessage = '******';
 		}
 
-		const otherUser = RocketChat.settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
+		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
 		const renderedMessage = renderMessageBody(currentData.lastMessage).replace(/<br\s?\\?>/g, ' ');
 		const sender = this.user._id === currentData.lastMessage.u._id ? t('You') : otherUser;
 
@@ -98,17 +101,6 @@ Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
 		return menu.close();
 	},
-	'mouseenter .sidebar-item__link'(e) {
-		const element = e.currentTarget;
-		const ellipsedElement = element.querySelector('.sidebar-item__ellipsis');
-		const isTextEllipsed = ellipsedElement.offsetWidth < ellipsedElement.scrollWidth;
-
-		if (isTextEllipsed) {
-			element.setAttribute('title', element.getAttribute('aria-label'));
-		} else {
-			element.removeAttribute('title');
-		}
-	},
 	'click .sidebar-item__menu'(e) {
 		e.preventDefault();
 
@@ -117,13 +109,13 @@ Template.sidebarItem.events({
 
 			if (!roomData) { return false; }
 
-			if (roomData.t === 'c' && !RocketChat.authz.hasAtLeastOnePermission('leave-c')) { return false; }
-			if (roomData.t === 'p' && !RocketChat.authz.hasAtLeastOnePermission('leave-p')) { return false; }
+			if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
+			if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
 
 			return !(((roomData.cl != null) && !roomData.cl) || (['d', 'l'].includes(roomData.t)));
 		};
 
-		const canFavorite = RocketChat.settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
+		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;
 		const isFavorite = () => {
 			const sub = ChatSubscription.findOne({ rid: this.rid }, { fields: { f: 1 } });
 			if (((sub != null ? sub.f : undefined) != null) && sub.f) {
@@ -209,7 +201,7 @@ Template.sidebarItemIcon.helpers({
 		}
 
 		if (this.t === 'l') {
-			return RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+			return roomTypes.getUserStatus('l', this.rid) || 'offline';
 		}
 
 		return false;

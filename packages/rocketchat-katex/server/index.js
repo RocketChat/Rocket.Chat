@@ -1,2 +1,2 @@
 import './settings';
-import '../lib/katex';
+export { Katex } from '../lib/katex';

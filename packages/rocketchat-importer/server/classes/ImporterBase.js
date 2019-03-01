@@ -6,9 +6,10 @@ import { Imports } from '../models/Imports';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { ImporterWebsocket } from './ImporterWebsocket';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Settings } from 'meteor/rocketchat:models';
 import { Logger } from 'meteor/rocketchat:logger';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { sendMessage } from 'meteor/rocketchat:lib';
 import http from 'http';
 import fs from 'fs';
 import https from 'https';
@@ -99,13 +100,15 @@ export class Base {
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
-		const userId = Meteor.user()._id;
+		const userId = Meteor.userId();
 		const importRecord = Imports.findPendingImport(this.info.key);
 
 		if (importRecord) {
+			this.logger.debug('Found existing import operation');
 			this.importRecord = importRecord;
 			this.progress.step = this.importRecord.status;
 		} else {
+			this.logger.debug('Starting new import operation');
 			const importId = Imports.insert({ type: this.info.name, importerKey: this.info.key, ts: Date.now(), status: this.progress.step, valid: true, user: userId });
 			this.importRecord = Imports.findOne(importId);
 		}
@@ -159,6 +162,7 @@ export class Base {
 	 * @returns {Progress} The progress record of the import.
 	 */
 	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
+		this.collection.remove({});
 		if (!skipTypeCheck) {
 			const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);
@@ -227,24 +231,29 @@ export class Base {
 
 		switch (step) {
 			case ProgressStep.IMPORTING_STARTED:
-				this.oldSettings.Accounts_AllowedDomainsList = RocketChat.models.Settings.findOneById('Accounts_AllowedDomainsList').value;
-				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', '');
+				this.oldSettings.Accounts_AllowedDomainsList = Settings.findOneById('Accounts_AllowedDomainsList').value;
+				Settings.updateValueById('Accounts_AllowedDomainsList', '');
 
-				this.oldSettings.Accounts_AllowUsernameChange = RocketChat.models.Settings.findOneById('Accounts_AllowUsernameChange').value;
-				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', true);
+				this.oldSettings.Accounts_AllowUsernameChange = Settings.findOneById('Accounts_AllowUsernameChange').value;
+				Settings.updateValueById('Accounts_AllowUsernameChange', true);
 
-				this.oldSettings.FileUpload_MaxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').value;
-				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', -1);
+				this.oldSettings.FileUpload_MaxFileSize = Settings.findOneById('FileUpload_MaxFileSize').value;
+				Settings.updateValueById('FileUpload_MaxFileSize', -1);
 
-				this.oldSettings.FileUpload_MediaTypeWhiteList = RocketChat.models.Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
-				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
+				this.oldSettings.FileUpload_MediaTypeWhiteList = Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
+				Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*');
+
+				this.oldSettings.UI_Allow_room_names_with_special_chars = Settings.findOneById('UI_Allow_room_names_with_special_chars').value;
+				Settings.updateValueById('UI_Allow_room_names_with_special_chars', true);
 				break;
 			case ProgressStep.DONE:
 			case ProgressStep.ERROR:
-				RocketChat.models.Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
-				RocketChat.models.Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
-				RocketChat.models.Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
-				RocketChat.models.Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+			case ProgressStep.CANCELLED:
+				Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList);
+				Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange);
+				Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize);
+				Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList);
+				Settings.updateValueById('UI_Allow_room_names_with_special_chars', this.oldSettings.UI_Allow_room_names_with_special_chars);
 				break;
 		}
 
@@ -285,6 +294,7 @@ export class Base {
 		}
 
 		ImporterWebsocket.progressUpdated(this.progress);
+		this.logger.log(`${ this.progress.count.completed } messages imported`);
 
 		return this.progress;
 	}
@@ -303,6 +313,34 @@ export class Base {
 			$set: {
 				'fileData.users.$.error': error,
 				hasErrors: true,
+			},
+		});
+	}
+
+	addMessageError(error, msg) {
+		Imports.model.update({
+			_id: this.importRecord._id,
+		}, {
+			$push: {
+				errors: {
+					error,
+					msg,
+				},
+			},
+			$set: {
+				hasErrors: true,
+			},
+		});
+	}
+
+	flagConflictingEmails(emailList) {
+		Imports.model.update({
+			_id: this.importRecord._id,
+			'fileData.users.email': { $in: emailList },
+		}, {
+			$set: {
+				'fileData.users.$.is_email_taken': true,
+				'fileData.users.$.do_import': false,
 			},
 		});
 	}
@@ -389,7 +427,7 @@ export class Base {
 							msg._id = details.message_id;
 						}
 
-						return RocketChat.sendMessage(user, msg, room, true);
+						return sendMessage(user, msg, room, true);
 					}
 				});
 			}));

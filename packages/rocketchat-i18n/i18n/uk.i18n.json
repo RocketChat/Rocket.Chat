@@ -1862,7 +1862,7 @@
   "No_results_found_for": "Результатів не знайдено для:",
   "No_snippet_messages": "Немає фрагмента",
   "No_starred_messages": "Немає позначених повідомлень",
-  "No_such_command": "Немає такої команди: `/ __ command__`",
+  "No_such_command": "Немає такої команди: `/ __command__`",
   "No_user_with_username_%s_was_found": "Ні один користувач з ім'ям користувача <strong>\" %s\"</strong> не було знайдено!",
   "Nobody_available": "Ніхто не доступний",
   "Node_version": "версія для вузла",

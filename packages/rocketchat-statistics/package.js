@@ -9,7 +9,14 @@ Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
-		'rocketchat:lib',
+		'littledata:synced-cron',
+		'accounts-base',
+		'rocketchat:migrations',
+		'rocketchat:utils',
+		'rocketchat:settings',
+		'rocketchat:authorization',
+		'rocketchat:models',
+		'rocketchat:logger',
 		'konecty:multiple-instances-status',
 	]);
 	api.mainModule('client/index.js', 'client');

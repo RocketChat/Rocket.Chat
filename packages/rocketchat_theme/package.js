@@ -10,9 +10,8 @@ Package.onUse(function(api) {
 		'less',
 		'webapp',
 		'webapp-hashing',
-		'rocketchat:lib',
+		'rocketchat:settings',
 		'rocketchat:logger',
-		'rocketchat:assets',
 		'templating',
 		'juliancwirko:postcss',
 	]);

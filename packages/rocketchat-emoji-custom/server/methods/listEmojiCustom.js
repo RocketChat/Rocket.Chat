@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { EmojiCustom } from 'meteor/rocketchat:models';
 
 Meteor.methods({
-	listEmojiCustom(options) {
-		return RocketChat.models.EmojiCustom.find(options).fetch();
+	listEmojiCustom(options = {}) {
+		return EmojiCustom.find(options).fetch();
 	},
 });

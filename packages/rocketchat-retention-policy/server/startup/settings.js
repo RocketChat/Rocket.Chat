@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.settings.addGroup('RetentionPolicy', function() {
+settings.addGroup('RetentionPolicy', function() {
 
 	this.add('RetentionPolicy_Enabled', false, {
 		type: 'boolean',

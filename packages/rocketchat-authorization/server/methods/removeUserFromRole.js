@@ -1,10 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Roles } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { hasPermission } from '../functions/hasPermission';
 import _ from 'underscore';
 
 Meteor.methods({
 	'authorization:removeUserFromRole'(roleName, username, scope) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'access-permissions')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
 				method: 'authorization:removeUserFromRole',
 				action: 'Accessing_permissions',
@@ -49,9 +52,9 @@ Meteor.methods({
 			}
 		}
 
-		const remove = RocketChat.models.Roles.removeUserRoles(user._id, roleName, scope);
-		if (RocketChat.settings.get('UI_DisplayRoles')) {
-			RocketChat.Notifications.notifyLogged('roles-change', {
+		const remove = Roles.removeUserRoles(user._id, roleName, scope);
+		if (settings.get('UI_DisplayRoles')) {
+			Notifications.notifyLogged('roles-change', {
 				type: 'removed',
 				_id: roleName,
 				u: {

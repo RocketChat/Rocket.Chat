@@ -5,7 +5,16 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t } from 'meteor/rocketchat:utils';
+import { t, getUserPreference, slashCommands, handleError } from 'meteor/rocketchat:utils';
+import { MessageAction, messageProperties, MessageTypes, readMessage, modal } from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { promises } from 'meteor/rocketchat:promises';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { Messages, Rooms, ChatMessage } from 'meteor/rocketchat:models';
+import { emoji } from 'meteor/rocketchat:emoji';
+import { KonchatNotification } from './notification';
+import { MsgTyping } from './msgTyping';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -16,13 +25,13 @@ let sendOnEnter = '';
 Meteor.startup(() => {
 	Tracker.autorun(function() {
 		const user = Meteor.userId();
-		sendOnEnter = RocketChat.getUserPreference(user, 'sendOnEnter');
+		sendOnEnter = getUserPreference(user, 'sendOnEnter');
 	});
 });
 
 export const getPermaLinks = async(replies) => {
 	const promises = replies.map(async(reply) =>
-		RocketChat.MessageAction.getPermaLink(reply._id)
+		MessageAction.getPermaLink(reply._id)
 	);
 
 	return Promise.all(promises);
@@ -39,7 +48,7 @@ export const mountReply = async(msg, input) => {
 			if (reply !== undefined) {
 				msg += `[ ](${ permalinks[replyIndex] }) `;
 
-				const roomInfo = RocketChat.models.Rooms.findOne(reply.rid, { fields: { t: 1 } });
+				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
 				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
 					msg += `@${ reply.u.username } `;
 				}
@@ -50,8 +59,7 @@ export const mountReply = async(msg, input) => {
 	return msg;
 };
 
-
-ChatMessages = class ChatMessages {
+export const ChatMessages = class ChatMessages {
 	constructor() {
 
 		this.saveTextMessageBox = _.debounce((rid, value) => {
@@ -63,7 +71,7 @@ ChatMessages = class ChatMessages {
 	init(node) {
 		this.editing = {};
 		this.records = {};
-		this.messageMaxSize = RocketChat.settings.get('Message_MaxAllowedSize');
+		this.messageMaxSize = settings.get('Message_MaxAllowedSize');
 		this.wrapper = $(node).find('.wrapper');
 		this.input = this.input || $(node).find('.js-input-message').get(0);
 		this.$input = $(this.input);
@@ -151,14 +159,14 @@ ChatMessages = class ChatMessages {
 
 		const message = this.getMessageById(element.getAttribute('id'));
 
-		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid);
-		const editAllowed = RocketChat.settings.get('Message_AllowEditing');
+		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = message && message.u && message.u._id === Meteor.userId();
 
 		if (!hasPermission && (!editAllowed || !editOwn)) { return; }
 		if (element.classList.contains('system')) { return; }
 
-		const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
+		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (blockEditInMinutes && blockEditInMinutes !== 0) {
 			let currentTsDiff;
 			let msgTs;
@@ -188,7 +196,6 @@ ChatMessages = class ChatMessages {
 		this.input.classList.add('editing');
 
 		element.classList.add('editing');
-		this.$input.closest('.message-form').addClass('editing');
 
 		if (message.attachments && message.attachments[0].description) {
 			this.input.value = message.attachments[0].description;
@@ -211,7 +218,6 @@ ChatMessages = class ChatMessages {
 			this.input.parentElement.classList.remove('editing');
 
 			this.editing.element.classList.remove('editing');
-			this.$input.closest('.message-form').removeClass('editing');
 			delete this.editing.id;
 			delete this.editing.element;
 			delete this.editing.index;
@@ -249,7 +255,7 @@ ChatMessages = class ChatMessages {
 
 			if (msg.slice(0, 2) === '+:') {
 				const reaction = msg.slice(1).trim();
-				if (RocketChat.emoji.list[reaction]) {
+				if (emoji.list[reaction]) {
 					const lastMessage = ChatMessage.findOne({ rid }, { fields: { ts: 1 }, sort: { ts: -1 } });
 					Meteor.call('setReaction', reaction, lastMessage._id);
 					input.value = '';
@@ -259,7 +265,7 @@ ChatMessages = class ChatMessages {
 			}
 
 			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			const msgObject = await RocketChat.promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg });
+			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg });
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
@@ -314,12 +320,12 @@ ChatMessages = class ChatMessages {
 			const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
 			if (match) {
 				let command;
-				if (RocketChat.slashCommands.commands[match[1]]) {
-					const commandOptions = RocketChat.slashCommands.commands[match[1]];
+				if (slashCommands.commands[match[1]]) {
+					const commandOptions = slashCommands.commands[match[1]];
 					command = match[1];
 					const param = match[2] || '';
 
-					if (!commandOptions.permission || RocketChat.authz.hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
+					if (!commandOptions.permission || hasAtLeastOnePermission(commandOptions.permission, Session.get('openedRoom'))) {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
@@ -330,14 +336,14 @@ ChatMessages = class ChatMessages {
 					}
 				}
 
-				if (!RocketChat.settings.get('Message_AllowUnrecognizedSlashCommand')) {
+				if (!settings.get('Message_AllowUnrecognizedSlashCommand')) {
 					const invalidCommandMsg = {
 						_id: Random.id(),
 						rid: msgObject.rid,
 						ts: new Date,
 						msg: TAPi18n.__('No_such_command', { command: match[1] }),
 						u: {
-							username: RocketChat.settings.get('InternalHubot_Username'),
+							username: settings.get('InternalHubot_Username'),
 						},
 						private: true,
 					};
@@ -352,7 +358,7 @@ ChatMessages = class ChatMessages {
 	}
 
 	confirmDeleteMsg(message, done = function() {}) {
-		if (RocketChat.MessageTypes.isSystemMessage(message)) { return; }
+		if (MessageTypes.isSystemMessage(message)) { return; }
 		modal.open({
 			title: t('Are_you_sure'),
 			text: t('You_will_not_be_able_to_recover'),
@@ -382,8 +388,8 @@ ChatMessages = class ChatMessages {
 	}
 
 	deleteMsg(message) {
-		const forceDelete = RocketChat.authz.hasAtLeastOnePermission('force-delete-message', message.rid);
-		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
+		const forceDelete = hasAtLeastOnePermission('force-delete-message', message.rid);
+		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes && forceDelete === false) {
 			let msgTs;
 			if (message.ts != null) { msgTs = moment(message.ts); }
@@ -484,7 +490,7 @@ ChatMessages = class ChatMessages {
 		if (!msgId) {
 			return;
 		}
-		const message = RocketChat.models.Messages.findOne(msgId);
+		const message = Messages.findOne(msgId);
 		if (message) {
 			return this.$input.data('reply', message).trigger('dataChange');
 		}
@@ -618,8 +624,8 @@ ChatMessages = class ChatMessages {
 	}
 
 	isMessageTooLong(message) {
-		const adjustedMessage = RocketChat.messageProperties.messageWithoutEmojiShortnames(message);
-		return RocketChat.messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
+		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message);
+		return messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
 	}
 
 	isEmpty() {
@@ -628,10 +634,10 @@ ChatMessages = class ChatMessages {
 };
 
 
-RocketChat.callbacks.add('afterLogoutCleanUp', () => {
+callbacks.add('afterLogoutCleanUp', () => {
 	Object.keys(localStorage).forEach((item) => {
 		if (item.indexOf('messagebox_') === 0) {
 			localStorage.removeItem(item);
 		}
 	});
-}, RocketChat.callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
+}, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');

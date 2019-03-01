@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Settings } from 'meteor/rocketchat:models';
 
 const config = {
 	serverURL: '',
@@ -27,38 +29,38 @@ function DolphinOnCreateUser(options, user) {
 
 if (Meteor.isServer) {
 	Meteor.startup(() =>
-		RocketChat.models.Settings.find({ _id: 'Accounts_OAuth_Dolphin_URL' }).observe({
+		Settings.find({ _id: 'Accounts_OAuth_Dolphin_URL' }).observe({
 			added() {
-				config.serverURL = RocketChat.settings.get('Accounts_OAuth_Dolphin_URL');
+				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);
 			},
 			changed() {
-				config.serverURL = RocketChat.settings.get('Accounts_OAuth_Dolphin_URL');
+				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);
 			},
 		})
 	);
 
-	if (RocketChat.settings.get('Accounts_OAuth_Dolphin_URL')) {
+	if (settings.get('Accounts_OAuth_Dolphin_URL')) {
 		const data = {
-			buttonLabelText: RocketChat.settings.get('Accounts_OAuth_Dolphin_button_label_text'),
-			buttonColor: RocketChat.settings.get('Accounts_OAuth_Dolphin_button_color'),
-			buttonLabelColor: RocketChat.settings.get('Accounts_OAuth_Dolphin_button_label_color'),
-			clientId: RocketChat.settings.get('Accounts_OAuth_Dolphin_id'),
-			secret: RocketChat.settings.get('Accounts_OAuth_Dolphin_secret'),
-			serverURL: RocketChat.settings.get('Accounts_OAuth_Dolphin_URL'),
-			loginStyle: RocketChat.settings.get('Accounts_OAuth_Dolphin_login_style'),
+			buttonLabelText: settings.get('Accounts_OAuth_Dolphin_button_label_text'),
+			buttonColor: settings.get('Accounts_OAuth_Dolphin_button_color'),
+			buttonLabelColor: settings.get('Accounts_OAuth_Dolphin_button_label_color'),
+			clientId: settings.get('Accounts_OAuth_Dolphin_id'),
+			secret: settings.get('Accounts_OAuth_Dolphin_secret'),
+			serverURL: settings.get('Accounts_OAuth_Dolphin_URL'),
+			loginStyle: settings.get('Accounts_OAuth_Dolphin_login_style'),
 		};
 
 		ServiceConfiguration.configurations.upsert({ service: 'dolphin' }, { $set: data });
 	}
 
-	RocketChat.callbacks.add('beforeCreateUser', DolphinOnCreateUser, RocketChat.callbacks.priority.HIGH);
+	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH);
 } else {
 	Meteor.startup(() =>
 		Tracker.autorun(function() {
-			if (RocketChat.settings.get('Accounts_OAuth_Dolphin_URL')) {
-				config.serverURL = RocketChat.settings.get('Accounts_OAuth_Dolphin_URL');
+			if (settings.get('Accounts_OAuth_Dolphin_URL')) {
+				config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
 				return Dolphin.configure(config);
 			}
 		})

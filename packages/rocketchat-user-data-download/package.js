@@ -9,7 +9,9 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:file',
-		'rocketchat:lib',
+		'rocketchat:file-upload',
+		'rocketchat:settings',
+		'rocketchat:models',
 		'webapp',
 	]);
 	api.mainModule('server/index.js', 'server');

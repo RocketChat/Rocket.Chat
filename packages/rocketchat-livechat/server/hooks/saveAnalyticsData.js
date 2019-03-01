@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Rooms } from 'meteor/rocketchat:models';
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (!message || message.editedAt) {
 		return message;
@@ -58,8 +59,8 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			}	// ignore, its continuing response
 		}
 
-		RocketChat.models.Rooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
+		Rooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
 	});
 
 	return message;
-}, RocketChat.callbacks.priority.LOW, 'saveAnalyticsData');
+}, callbacks.priority.LOW, 'saveAnalyticsData');

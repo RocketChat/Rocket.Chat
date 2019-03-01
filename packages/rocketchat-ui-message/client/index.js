@@ -1,5 +1,4 @@
 import './message.html';
-import './messageBox.html';
 import './messageDropdown.html';
 import './popup/messagePopup.html';
 import './popup/messagePopupChannel.html';
@@ -15,9 +14,4 @@ import './popup/messagePopup';
 import './popup/messagePopupChannel';
 import './popup/messagePopupConfig';
 import './popup/messagePopupEmoji';
-import { renderMessageBody } from './renderMessageBody';
-import './startup/messageBoxActions';
-
-export {
-	renderMessageBody,
-};
+import './startup';

@@ -5,6 +5,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { menu } from 'meteor/rocketchat:ui-utils';
+import { toolbarSearch } from './sidebarHeader';
 import _ from 'underscore';
 
 let filterText = '';
@@ -88,7 +93,7 @@ Template.toolbar.helpers({
 	popupConfig() {
 		const config = {
 			cls: 'search-results-list',
-			collection: Meteor.userId() ? RocketChat.models.Subscriptions : RocketChat.models.Rooms,
+			collection: Meteor.userId() ? Subscriptions : Rooms,
 			template: 'toolbarSearchList',
 			sidebar: true,
 			emptyTemplate: 'toolbarSearchListEmpty',
@@ -161,7 +166,7 @@ Template.toolbar.helpers({
 			getValue(_id, collection, records) {
 				const doc = _.findWhere(records, { _id });
 
-				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
+				roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
 				menu.close();
 			},
 		};
@@ -190,7 +195,7 @@ Template.toolbar.events({
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {
-		if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
+		if (hasAtLeastOnePermission(['create-c', 'create-p'])) {
 			// TODO: resolve this name menu/sidebar/sidebav/flex...
 			menu.close();
 			FlowRouter.go('create-channel');

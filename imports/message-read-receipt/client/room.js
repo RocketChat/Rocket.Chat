@@ -1,6 +1,8 @@
 import { t } from 'meteor/rocketchat:utils';
+import { modal, MessageAction } from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
 
-RocketChat.MessageAction.addButton({
+MessageAction.addButton({
 	id: 'receipt-detail',
 	icon: 'info-circled',
 	label: 'Message_info',
@@ -19,7 +21,7 @@ RocketChat.MessageAction.addButton({
 		});
 	},
 	condition() {
-		return RocketChat.settings.get('Message_Read_Receipt_Store_Users');
+		return settings.get('Message_Read_Receipt_Store_Users');
 	},
 	order: 1,
 	group: 'menu',

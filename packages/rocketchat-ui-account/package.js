@@ -17,7 +17,14 @@ Package.onUse(function(api) {
 		'rocketchat:lib',
 		'sha',
 		'rocketchat:utils',
+		'rocketchat:custom-sounds',
+		'rocketchat:authorization',
+		'rocketchat:settings',
+		'rocketchat:notifications',
+		'rocketchat:callbacks',
+		'rocketchat:ui-utils',
 		'rocketchat:lazy-load',
+		'rocketchat:file-upload',
 	]);
 	api.mainModule('client/index.js', 'client');
 });

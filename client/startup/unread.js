@@ -3,7 +3,10 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Favico } from 'meteor/rocketchat:favico';
-import { fireGlobalEvent, readMessage } from 'meteor/rocketchat:ui';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+import { RoomManager, menu, fireGlobalEvent, readMessage } from 'meteor/rocketchat:ui-utils';
+import { getUserPreference } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {
@@ -37,7 +40,7 @@ Meteor.startup(function() {
 				// Increment the total unread count.
 				unreadCount += subscription.unread;
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					const userUnreadAlert = RocketChat.getUserPreference(Meteor.userId(), 'unreadAlert');
+					const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 						unreadAlert = '•';
 					}
@@ -72,7 +75,7 @@ Meteor.startup(function() {
 	});
 
 	Tracker.autorun(function() {
-		const siteName = RocketChat.settings.get('Site_Name') || '';
+		const siteName = settings.get('Site_Name') || '';
 
 		const unread = Session.get('unread');
 		fireGlobalEvent('unread-changed', unread);

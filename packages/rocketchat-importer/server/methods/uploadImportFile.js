@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
 import { RocketChatFile } from 'meteor/rocketchat:file';
 import { RocketChatImportFileInstance } from '../startup/store';
+import { hasRole } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	uploadImportFile(binaryContent, contentType, fileName, importerKey) {
@@ -11,7 +12,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'uploadImportFile' });
 		}
 
-		if (!RocketChat.authz.hasRole(userId, 'admin')) {
+		if (!hasRole(userId, 'admin')) {
 			throw new Meteor.Error('not_authorized', 'User not authorized', { method: 'uploadImportFile' });
 		}
 
@@ -29,9 +30,6 @@ Meteor.methods({
 		const file = new Buffer(binaryContent, 'binary');
 		const readStream = RocketChatFile.bufferToStream(file);
 		const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
-
-		writeStream.on('end', Meteor.bindEnvironment(() => {
-		}));
 
 		readStream.pipe(writeStream);
 	},

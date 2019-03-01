@@ -2,15 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { modal } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { Roles } from 'meteor/rocketchat:models';
+import { hasAllPermission } from '../hasPermission';
 import toastr from 'toastr';
+
+let _modal;
 
 Template.permissionsRole.helpers({
 	role() {
-		return RocketChat.models.Roles.findOne({
+		return Roles.findOne({
 			_id: FlowRouter.getParam('name'),
 		}) || {};
 	},
@@ -30,7 +31,7 @@ Template.permissionsRole.helpers({
 	},
 
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('access-permissions');
+		return hasAllPermission('access-permissions');
 	},
 
 	protected() {
@@ -111,9 +112,13 @@ Template.permissionsRole.helpers({
 });
 
 Template.permissionsRole.events({
-	'click .remove-user'(e, instance) {
+	async 'click .remove-user'(e, instance) {
+		if (!_modal) {
+			const { modal } = await import('meteor/rocketchat:ui-utils');
+			_modal = modal;
+		}
 		e.preventDefault();
-		modal.open({
+		_modal.open({
 			title: t('Are_you_sure'),
 			type: 'warning',
 			showCancelButton: true,
@@ -128,7 +133,7 @@ Template.permissionsRole.events({
 					return handleError(error);
 				}
 
-				modal.open({
+				_modal.open({
 					title: t('Removed'),
 					text: t('User_removed'),
 					type: 'success',
@@ -238,7 +243,7 @@ Template.permissionsRole.onCreated(function() {
 		const subscription = this.subscribe('usersInRole', FlowRouter.getParam('name'), this.searchRoom.get(), limit);
 		this.ready.set(subscription.ready());
 
-		this.usersInRole.set(RocketChat.models.Roles.findUsersInRole(FlowRouter.getParam('name'), this.searchRoom.get(), {
+		this.usersInRole.set(Roles.findUsersInRole(FlowRouter.getParam('name'), this.searchRoom.get(), {
 			sort: {
 				username: 1,
 			},

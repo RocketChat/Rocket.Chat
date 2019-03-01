@@ -1,13 +1,16 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+import { RocketChatTabBar, SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { SideNav } from 'meteor/rocketchat:ui';
+import { CustomSounds } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
 
 Template.adminSounds.helpers({
+	searchText() {
+		const instance = Template.instance();
+		return instance.filter && instance.filter.get();
+	},
 	isReady() {
 		if (Template.instance().ready != null) {
 			return Template.instance().ready.get();
@@ -38,6 +41,26 @@ Template.adminSounds.helpers({
 			data: Template.instance().tabBarData.get(),
 		};
 	},
+
+	onTableScroll() {
+		const instance = Template.instance();
+		return function(currentTarget) {
+			if (
+				currentTarget.offsetHeight + currentTarget.scrollTop >=
+				currentTarget.scrollHeight - 100
+			) {
+				return instance.limit.set(instance.limit.get() + 50);
+			}
+		};
+	},
+	onTableItemClick() {
+		const instance = Template.instance();
+		return function(item) {
+			instance.tabBarData.set(CustomSounds.findOne({ _id: item._id }));
+			instance.tabBar.showGroup('custom-sounds-selected');
+			instance.tabBar.open('admin-sound-info');
+		};
+	},
 });
 
 Template.adminSounds.onCreated(function() {
@@ -50,7 +73,7 @@ Template.adminSounds.onCreated(function() {
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['custom-sounds', 'custom-sounds-selected'],
 		id: 'add-sound',
 		i18nTitle: 'Custom_Sound_Add',
@@ -63,7 +86,7 @@ Template.adminSounds.onCreated(function() {
 		order: 1,
 	});
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['custom-sounds-selected'],
 		id: 'admin-sound-info',
 		i18nTitle: 'Custom_Sound_Info',
@@ -90,7 +113,7 @@ Template.adminSounds.onCreated(function() {
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
+		return CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
 });
 
@@ -109,26 +132,11 @@ Template.adminSounds.events({
 			e.preventDefault();
 		}
 	},
-
 	'keyup #sound-filter'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
 	},
-
-	'click .sound-info'(e, instance) {
-		e.preventDefault();
-		instance.tabBarData.set(RocketChat.models.CustomSounds.findOne({ _id: this._id }));
-		instance.tabBar.showGroup('custom-sounds-selected');
-		instance.tabBar.open('admin-sound-info');
-	},
-
-	'click .load-more'(e, t) {
-		e.preventDefault();
-		e.stopPropagation();
-		t.limit.set(t.limit.get() + 50);
-	},
-
 	'click .icon-play-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
