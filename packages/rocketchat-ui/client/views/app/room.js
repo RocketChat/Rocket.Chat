@@ -718,7 +718,7 @@ Template.room.events({
 			if (Layout.isEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: roomNameOrId }), channel: roomNameOrId });
 			}
-			FlowRouter.goToRoomById(roomNameOrId); // the name can be handled in the underlying methods as well
+			FlowRouter.goToRoomById(roomNameOrId);
 			return;
 		}
 		const username = $(e.currentTarget).data('username');

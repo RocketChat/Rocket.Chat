@@ -1,18 +1,17 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Meteor } from 'meteor/meteor';
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { ChatSubscription } from 'meteor/rocketchat:models';
 import { roomTypes } from 'meteor/rocketchat:utils';
+import { call } from 'meteor/rocketchat:ui-utils';
 
-FlowRouter.goToRoomById = (roomId) => {
-	const room = ChatRoom.findOne({ _id: roomId });
-	if (room) {
-		roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
-	} else {
-		// no cache hit => verify, that the rooms is server-side not existing/accessible for the user
-		Meteor.call('getRoomNameAndTypeByNameOrId', roomId, (err, room) => {
-			if (!err) {
-				roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
-			}
-		});
+FlowRouter.goToRoomById = async(rid) => {
+	if (!rid) {
+		return;
 	}
+	const subscription = ChatSubscription.findOne({ rid });
+	if (subscription) {
+		return roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+	}
+
+	const room = await call('getRoomById', rid);
+	return roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
 };
