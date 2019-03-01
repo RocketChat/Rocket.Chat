@@ -509,7 +509,7 @@ class PeerClient {
 		FederationEvents.messageDeleted(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
 	}
 
-	afterReadMessages(roomId, userId) {
+	afterReadMessages(roomId, { userId }) {
 		this.log('afterReadMessages');
 
 		if (!settings.get('Message_Read_Receipt_Enabled')) { this.log('Skipping: read receipts are not enabled'); return roomId; }
@@ -518,12 +518,12 @@ class PeerClient {
 
 		const room = Rooms.findOneById(roomId);
 
+		// Check if room is federated
+		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return roomId; }
+
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
 		if (this.skipCallbackIfNeeded('afterReadMessages', federatedRoom.getLocalRoom())) { return roomId; }
-
-		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room)) { return roomId; }
 
 		const user = Users.findOneById(userId);
 

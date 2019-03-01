@@ -335,9 +335,10 @@ class PeerServer {
 
 		// Mark the messages as read
 		// TODO: move below calls to an exported function
+		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(federatedRoom.room._id, localUser._id, { fields: { ls: 1 } });
 		Subscriptions.setAsReadByRoomIdAndUserId(federatedRoom.room._id, localUser._id);
 
-		callbacks.run('afterReadMessages', federatedRoom.room._id, localUser._id);
+		callbacks.run('afterReadMessages', federatedRoom.room._id, { userId: localUser._id, lastSeen: userSubscription.ls });
 	}
 
 	handleMessagesSetReactionEvent(e) {

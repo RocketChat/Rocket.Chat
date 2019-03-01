@@ -16,7 +16,6 @@ callbacks.add('afterSaveMessage', (message, room) => {
 	ReadReceipt.markMessageAsReadBySender(message, room._id, message.u._id);
 });
 
-callbacks.add('afterReadMessages', (rid, userId) => {
-	const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
-	ReadReceipt.markMessagesAsRead(rid, userId, userSubscription.ls);
+callbacks.add('afterReadMessages', (rid, { userId, lastSeen }) => {
+	ReadReceipt.markMessagesAsRead(rid, userId, lastSeen);
 });

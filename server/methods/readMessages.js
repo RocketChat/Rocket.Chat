@@ -17,11 +17,12 @@ Meteor.methods({
 
 		callbacks.run('beforeReadMessages', rid, userId);
 
-		// TODO: move this call to an exported function
+		// TODO: move this calls to an exported function
+		const userSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields: { ls: 1 } });
 		Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
 
 		Meteor.defer(() => {
-			callbacks.run('afterReadMessages', rid, userId);
+			callbacks.run('afterReadMessages', rid, { userId, lastSeen: userSubscription.ls });
 		});
 	},
 });
