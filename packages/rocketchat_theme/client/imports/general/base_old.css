@@ -2311,6 +2311,10 @@ rc-old select,
 	line-height: unset;
 }
 
+.rc-old .rc-message-box .reply-preview__wrap {
+	position: relative;
+}
+
 .rc-old .rc-message-box .reply-preview {
 
 	position: relative;
@@ -2335,15 +2339,33 @@ rc-old select,
 	}
 }
 
+.rc-old .rc-message-box .reply-preview:not(:last-child)::before {
+
+	position: absolute;
+	right: 15px;
+
+	bottom: 0;
+	left: 15px;
+
+	height: 2px;
+
+	content: "";
+
+	background: rgba(31, 35, 41, 0.08);
+}
+
 .rc-old .rc-message-box .reply-preview-with-popup {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	border-bottom-left-radius: 5px;
-	box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
 }
 
 .rc-old .reply-preview .cancel-reply {
 	padding: 10px;
+}
+
+.rc-message-box__icon.cancel-reply .rc-input__icon-svg--cross {
+	font-size: 1em;
 }
 
 .rc-old .reply-preview .mention-link.mention-link-all {
