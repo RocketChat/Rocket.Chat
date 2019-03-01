@@ -8,6 +8,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, getUserPreference, handleError } from 'meteor/rocketchat:utils';
 import { WebRTC } from 'meteor/rocketchat:webrtc';
+
 import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 import {
 	fireGlobalEvent,
@@ -781,7 +782,9 @@ Template.room.events({
 			});
 		}
 
-		fileUpload(filesToUpload);
+		const { input } = chatMessages[RoomManager.openedRoom];
+
+		fileUpload(filesToUpload, input);
 	},
 
 	'load img'(e, template) {
