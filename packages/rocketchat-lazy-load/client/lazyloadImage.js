@@ -1,7 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import './lazyloadImage.html';
-import { addImage, fixCordova } from './';
+import { addImage } from './';
 
 const emptyImageEncoded =
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==';
@@ -13,14 +13,14 @@ Template.lazyloadImage.helpers({
 	},
 
 	srcUrl() {
-		return this.src && fixCordova(this.src);
+		return this.src && this.src;
 	},
 
 	lazySrcUrl() {
 		const { preview, placeholder, src } = this;
 
 		if (Template.instance().loaded.get() || (!preview && !placeholder)) {
-			return fixCordova(src);
+			return src;
 		}
 
 		return `data:image/png;base64,${ preview || emptyImageEncoded }`;
