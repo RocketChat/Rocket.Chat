@@ -1,23 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 import MentionsServer from './Mentions';
 
 const mention = new MentionsServer({
-	pattern: () => RocketChat.settings.get('UTF8_Names_Validation'),
-	messageMaxAll: () => RocketChat.settings.get('Message_MaxAll'),
+	pattern: () => settings.get('UTF8_Names_Validation'),
+	messageMaxAll: () => settings.get('Message_MaxAll'),
 	getUsers: (usernames) => Meteor.users.find({ username: { $in: _.unique(usernames) } }, { fields: { _id: true, username: true, name: 1 } }).fetch(),
-	getUser: (userId) => RocketChat.models.Users.findOneById(userId),
-	getTotalChannelMembers: (rid) => RocketChat.models.Subscriptions.findByRoomId(rid).count(),
-	getChannels: (channels) => RocketChat.models.Rooms.find({ name: { $in: _.unique(channels) }, t: 'c'	}, { fields: { _id: 1, name: 1 } }).fetch(),
+	getUser: (userId) => Users.findOneById(userId),
+	getTotalChannelMembers: (rid) => Subscriptions.findByRoomId(rid).count(),
+	getChannels: (channels) => Rooms.find({ name: { $in: _.unique(channels) }, t: { $in: ['c', 'p'] } }, { fields: { _id: 1, name: 1 } }).fetch(),
 	onMaxRoomMembersExceeded({ sender, rid }) {
 		// Get the language of the user for the error notification.
 		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
-		RocketChat.Notifications.notifyUser(sender._id, 'message', {
+		Notifications.notifyUser(sender._id, 'message', {
 			_id: Random.id(),
 			rid,
 			ts: new Date,
@@ -32,4 +35,4 @@ const mention = new MentionsServer({
 		});
 	},
 });
-RocketChat.callbacks.add('beforeSaveMessage', (message) => mention.execute(message), RocketChat.callbacks.priority.HIGH, 'mentions');
+callbacks.add('beforeSaveMessage', (message) => mention.execute(message), callbacks.priority.HIGH, 'mentions');

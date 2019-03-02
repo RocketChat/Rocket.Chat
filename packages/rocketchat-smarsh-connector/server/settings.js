@@ -1,8 +1,8 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import moment from 'moment';
 import 'moment-timezone';
 
-RocketChat.settings.addGroup('Smarsh', function addSettings() {
+settings.addGroup('Smarsh', function addSettings() {
 	this.add('Smarsh_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Smarsh_Enabled',

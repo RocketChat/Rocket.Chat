@@ -1,8 +1,11 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Users } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 73,
 	up() {
-		RocketChat.models.Users.find({ 'oauth.athorizedClients': { $exists: true } }, { oauth: 1 }).forEach(function(user) {
-			RocketChat.models.Users.update({ _id: user._id }, {
+		Users.find({ 'oauth.athorizedClients': { $exists: true } }, { oauth: 1 }).forEach(function(user) {
+			Users.update({ _id: user._id }, {
 				$set: {
 					'oauth.authorizedClients': user.oauth.athorizedClients,
 				},

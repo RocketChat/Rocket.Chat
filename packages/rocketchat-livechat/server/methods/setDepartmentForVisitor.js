@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Rooms, Messages, LivechatVisitors } from 'meteor/rocketchat:models';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:setDepartmentForVisitor'({ roomId, visitorToken, departmentId } = {}) {
@@ -9,7 +9,7 @@ Meteor.methods({
 		check(visitorToken, String);
 		check(departmentId, String);
 
-		const room = RocketChat.models.Rooms.findOneById(roomId);
+		const room = Rooms.findOneById(roomId);
 		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== visitor.token) {
@@ -17,13 +17,13 @@ Meteor.methods({
 		}
 
 		// update visited page history to not expire
-		RocketChat.models.Messages.keepHistoryForToken(visitorToken);
+		Messages.keepHistoryForToken(visitorToken);
 
 		const transferData = {
 			roomId,
 			departmentId,
 		};
 
-		return RocketChat.Livechat.transfer(room, visitor, transferData);
+		return Livechat.transfer(room, visitor, transferData);
 	},
 });

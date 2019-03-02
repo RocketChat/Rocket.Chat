@@ -1,3 +1,1 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
-
-RocketChat.statistics = {};
+export const statistics = {};

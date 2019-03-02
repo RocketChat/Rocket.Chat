@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { WebdavAccounts } from 'meteor/rocketchat:models';
 import Future from 'fibers/future';
 import { createClient } from 'webdav';
 import stream from 'stream';
@@ -10,11 +11,11 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'uploadFileToWebdav' });
 		}
-		if (!RocketChat.settings.get('Webdav_Integration_Enabled')) {
+		if (!settings.get('Webdav_Integration_Enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', { method: 'uploadFileToWebdav' });
 		}
 
-		const account = RocketChat.models.WebdavAccounts.findOne({ _id: accountId });
+		const account = WebdavAccounts.findOne({ _id: accountId });
 		if (!account) {
 			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', { method: 'uploadFileToWebdav' });
 		}
