@@ -18,12 +18,15 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'rocketchat:utils',
 		'rocketchat:tooltip',
+		'rocketchat:settings',
 		'rocketchat:ui-utils',
 		'rocketchat:ui-sidenav',
 		'meteorhacks:inject-initial',
 	]);
+
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
+
 	api.addAssets('server/dynamic-css.js', 'server');
 	api.addAssets('public/icons.svg', 'server');
 });

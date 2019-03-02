@@ -71,7 +71,7 @@
 	&-button {
 		color: var(--sidebar-item-text-color);
 
-		font-size: 18px;
+		font-size: 20px;
 		fill: var(--sidebar-item-text-color);
 	}
 

@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
-RocketChat.slashCommands.add('hide', undefined, {
+slashCommands.add('hide', undefined, {
 	description: 'Hide_room',
 	params: '#room',
 });

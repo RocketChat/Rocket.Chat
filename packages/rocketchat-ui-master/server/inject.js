@@ -31,7 +31,7 @@ Settings.find({ _id:/theme-color-rc/i }, { fields: { value: 1 } }).observe({
 	changed: renderDynamicCssList,
 });
 
-Inject.rawHead('noreferrer', '<meta name="referrer" content="origin-when-crossorigin">');
+Inject.rawHead('noreferrer', '<meta name="referrer" content="origin-when-cross-origin" />');
 Inject.rawHead('dynamic', `<script>${ Assets.getText('server/dynamic-css.js') }</script>`);
 
 Inject.rawBody('icons', Assets.getText('public/icons.svg'));

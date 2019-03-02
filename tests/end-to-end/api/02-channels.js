@@ -587,6 +587,35 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.addLeader', (done) => {
+		request.post(api('channels.addLeader'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', true);
+			})
+			.end(done);
+	});
+	it('/channels.removeLeader', (done) => {
+		request.post(api('channels.removeLeader'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
 
 	describe('/channels.setCustomFields:', () => {
 		let cfchannel;
