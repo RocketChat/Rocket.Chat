@@ -18,13 +18,21 @@ import semver from 'semver';
 
 const HOST = 'https://marketplace.rocket.chat'; // TODO move this to inside RocketChat.API
 
-function getApps(instance) {
+async function getApps(instance) {
 	const id = instance.id.get();
-
-	return Promise.all([
-		fetch(`${ HOST }/v1/apps/${ id }?version=${ Info.marketplaceApiVersion }`).then((data) => data.json()),
-		APIClient.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
-	]).then(([remoteApps, [localApp]]) => {
+	let remoteApps;
+	let localApp;
+	try {
+		localApp = (await APIClient.get('apps/')).apps.filter((app) => app.id === id)[0];
+		remoteApps = await fetch(`${ HOST }/v1/apps/${ id }?version=${ Info.marketplaceApiVersion }`).then((data) => data.json());
+	} catch (error) {
+		if (!localApp) {
+			instance.hasError.set(true);
+			instance.theError.set(error.message);
+		}
+	}
+	let remoteApp;
+	if (remoteApps && remoteApps.length) {
 		remoteApps = remoteApps.sort((a, b) => {
 			if (semver.gt(a.version, b.version)) {
 				return -1;
@@ -34,32 +42,29 @@ function getApps(instance) {
 			}
 			return 0;
 		});
+		remoteApp = remoteApps[0];
+	}
 
-		const remoteApp = remoteApps[0];
-		if (localApp) {
-			localApp.installed = true;
-			if (remoteApp) {
-				localApp.categories = remoteApp.categories;
-				if (semver.gt(remoteApp.version, localApp.version)) {
-					localApp.newVersion = remoteApp.version;
-				}
+	if (localApp) {
+		localApp.installed = true;
+		if (remoteApp) {
+			localApp.categories = remoteApp.categories;
+			if (semver.gt(remoteApp.version, localApp.version)) {
+				localApp.newVersion = remoteApp.version;
 			}
-
-			instance.onSettingUpdated({ appId: id });
-
-			Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
-			Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-			Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 		}
 
-		instance.app.set(localApp || remoteApp);
+		instance.onSettingUpdated({ appId: id });
 
-		instance.ready.set(true);
-	}).catch((e) => {
-		instance.hasError.set(true);
-		instance.theError.set(e.message);
-	});
+		Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+		Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+		Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+		Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+	}
+
+	instance.app.set(localApp || remoteApp);
+
+	instance.ready.set(true);
 }
 
 Template.appManage.onCreated(function() {
