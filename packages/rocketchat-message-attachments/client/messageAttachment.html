@@ -21,9 +21,11 @@
 									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
 								</span>
 							{{else}}
-								<span class="time">
-									{{time}}
-								</span>
+								{{#unless time}}
+									<span class="time">
+										{{time}}
+									</span>
+								{{/unless}}
 							{{/if}}
 						{{/if}}
 					</div>
@@ -39,9 +41,11 @@
 								<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
 							</span>
 						{{else}}
-							<span class="time">
-								{{time}}
-							</span>
+							{{#unless time}}
+								<span class="time">
+									{{time}}
+								</span>
+							{{/unless}}
 						{{/if}}
 					{{/if}}
 					</div>
