@@ -15,8 +15,12 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
+		'mizzao:autocomplete',
 		'rocketchat:utils',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:ui-utils',
+		'rocketchat:authorization',
 	]);
 	api.addFiles('client/views/stylesheets/cleanHistory.css', 'client');
 	api.mainModule('client/index.js', 'client');

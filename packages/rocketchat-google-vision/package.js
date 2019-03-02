@@ -8,7 +8,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:notifications',
 		'rocketchat:file-upload',
 	]);
 	api.mainModule('client/index.js', 'client');

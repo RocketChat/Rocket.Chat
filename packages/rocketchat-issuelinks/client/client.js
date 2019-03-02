@@ -1,4 +1,5 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import s from 'underscore.string';
 
 //
@@ -7,13 +8,13 @@ import s from 'underscore.string';
 //
 
 function IssueLink(message) {
-	if (s.trim(message.html) && RocketChat.settings.get('IssueLinks_Enabled')) {
+	if (s.trim(message.html) && settings.get('IssueLinks_Enabled')) {
 		message.html = message.html.replace(/(?:^|\s|\n)(#[0-9]+)\b/g, function(match, issueNumber) {
-			const url = RocketChat.settings.get('IssueLinks_Template').replace('%s', issueNumber.substring(1));
+			const url = settings.get('IssueLinks_Template').replace('%s', issueNumber.substring(1));
 			return match.replace(issueNumber, `<a href="${ url }" target="_blank">${ issueNumber }</a>`);
 		});
 	}
 	return message;
 }
 
-RocketChat.callbacks.add('renderMessage', IssueLink, RocketChat.callbacks.priority.MEDIUM, 'issuelink');
+callbacks.add('renderMessage', IssueLink, callbacks.priority.MEDIUM, 'issuelink');

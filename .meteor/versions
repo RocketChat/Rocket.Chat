@@ -9,7 +9,7 @@ accounts-twitter@1.4.2
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
 autoupdate@1.5.0
-babel-compiler@7.2.3
+babel-compiler@7.2.4
 babel-runtime@1.3.0
 base64@1.0.11
 binary-heap@1.0.11
@@ -35,7 +35,7 @@ deps@1.0.12
 diff-sequence@1.1.1
 dispatch:run-as-user@1.1.1
 dynamic-import@0.5.1
-ecmascript@0.12.3
+ecmascript@0.12.4
 ecmascript-runtime@0.7.0
 ecmascript-runtime-client@0.8.0
 ecmascript-runtime-server@0.7.1
@@ -117,7 +117,7 @@ ordered-dict@1.1.0
 ostrio:cookies@2.3.0
 pauli:accounts-linkedin@2.1.5
 pauli:linkedin-oauth@1.2.0
-promise@0.11.1
+promise@0.11.2
 raix:eventemitter@0.1.3
 raix:eventstate@0.0.4
 raix:handlebar-helpers@0.2.5
@@ -193,7 +193,6 @@ rocketchat:mailer@0.0.1
 rocketchat:mailmessages@0.0.1
 rocketchat:mapview@0.0.1
 rocketchat:markdown@0.0.2
-rocketchat:metrics@0.0.1
 rocketchat:mentions@0.0.1
 rocketchat:mentions-flextab@0.0.1
 rocketchat:message-action@0.0.1
@@ -202,8 +201,10 @@ rocketchat:message-mark-as-unread@0.0.1
 rocketchat:message-pin@0.0.1
 rocketchat:message-snippet@0.0.1
 rocketchat:message-star@0.0.1
+rocketchat:metrics@0.0.1
 rocketchat:migrations@0.0.1
 rocketchat:models@1.0.0
+rocketchat:mongo-config@0.0.1
 rocketchat:monitoring@2.30.2_3
 rocketchat:notifications@0.0.1
 rocketchat:nrr@1.0.0

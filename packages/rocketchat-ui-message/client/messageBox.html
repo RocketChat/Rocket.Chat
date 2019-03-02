@@ -1,80 +1,72 @@
 <template name="messageBox">
-	<div class="rc-message-box rc-new {{#if embeddedVersion}}rc-message-box--embedded{{/if}}">
+	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#if subscribed}}
-			{{#with usersTyping}}
-				<div class="rc-message-box__typing">
-					<b class="rc-message-box__typing__user">{{users}}</b>
-					{{#if multi}}
-						{{#if selfTyping}}
-							{{_ "are_also_typing"}}
-						{{else}}
-							{{_ "are_typing"}}
-						{{/if}}
-					{{else}}
-						{{#if selfTyping}}
-							{{_ "is_also_typing" context="male"}}
-						{{else}}
-							{{_ "is_typing" context="male"}}
-						{{/if}}
-					{{/if}}
-				</div>
-			{{/with}}
-			{{#if allowedToSend}}
-				{{> messagePopupConfig getPopupConfig}}
-				{{> messagePopupSlashCommandPreview getPopupConfig}}
+			{{> messageBoxTyping rid=_id}}
 
-				{{#if dataReply}}
-					{{#with dataReply}}
-							<div class="reply-preview message-popup">
-								<div class="message">
-									{{> messageAttachment text=msg author_name=u.username}}
-								</div>
-								<div class="rc-message-box__icon cancel-reply">
-									{{> icon block="rc-input__icon-svg" icon="cross"}}
-								</div>
-							</div>
-					{{/with}}
-				{{/if}}
-				<label class="rc-message-box__container">
-					<div class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnable}}emoji-picker-icon--disabled{{/unless}}">
-						{{> icon block="rc-input__icon-svg" icon="emoji"}}
+			{{#if canSend}}
+				{{> messagePopupConfig popupConfig}}
+				{{> messagePopupSlashCommandPreview popupConfig}}
+
+				{{#if replyMessageData}}
+					<div class="reply-preview__wrap message-popup">
+					{{#each replyMessageData}}
+						{{> messageBoxReplyPreview input=input replyMessageData=.}}
+					{{/each}}
 					</div>
-					<textarea autofocus name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message autogrow-short"></textarea>
-					{{#unless disableSendIcon}}
-						<div class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
+				{{/if}}
+
+				<label class="rc-message-box__container">
+					<span class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnabled}}emoji-picker-icon--disabled{{/unless}}">
+						{{> icon block="rc-input__icon-svg" icon="emoji"}}
+					</span>
+					<textarea name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
+					{{#unless isSendIconDisabled}}
+						<span class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
 							{{> icon block="rc-input__icon-svg" icon="send"}}
-						</div>
+						</span>
 					{{else}}
 						{{#if isAudioMessageAllowed}}
-							{{> messageBox__audioMessage}}
+							{{> messageBoxAudioMessage}}
 						{{/if}}
-						{{> messageBox__actions}}
-					{{/unless}}
-					{{# messageBox__actionsSmall}}
-						<span class="rc-message-box__send js-message-action js-send" {{disableSendIcon}} data-small>
-							{{> icon block="rc-message-box__action" icon="send"}}
+						<span class="rc-message-box__action-menu" data-desktop>
+							{{#if actions}}
+								<span class="rc-message-box__icon">
+									{{> icon block="rc-input__icon-svg" icon="plus"}}
+								</span>
+							{{/if}}
 						</span>
-					{{/messageBox__actionsSmall}}
+					{{/unless}}
+					<span class="rc-message-box__action-label js-message-actions" data-small>
+						{{#each actions}}
+							<span class="js-message-action">
+								{{> icon block="rc-message-box__action" icon=icon }}
+							</span>
+						{{/each}}
+					</span>
+					<span class="rc-message-box__send js-message-action js-send" disabled="{{isSendIconDisabled}}" data-small>
+						{{> icon block="rc-message-box__action" icon="send"}}
+					</span>
 				</label>
-				{{#unless embeddedVersion}}
+
+				{{#unless isEmbedded}}
 					{{#if showFormattingTips}}
-						<div class="rc-message-box__toolbar-markdown">
-							{{#each mdButtons}}
-								<button class="rc-message-box__toolbar-markdown-item rc-tooltip js-md" aria-label={{_ label}} data-link="{{link}}">
-									{{#if icon}}
-										{{> icon block="rc-message-box__toolbar-markdown-icon" icon=icon }}
-									{{else}}
-										{{#if link}}
-											<a href="{{link}}" target="_blank" class="rc-message-box__toolbar-markdown-link">{{label}}</a>
-										{{/if}}
-									{{/if}}
-								</button>
+						<div class="rc-message-box__toolbar-formatting">
+							{{#each formattingButtons}}
+								{{#if icon}}
+									<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" aria-label={{_ label}}>
+										{{> icon block="rc-message-box__toolbar-formatting-icon" icon=icon }}
+									</button>
+								{{else}}
+									<span class="rc-message-box__toolbar-formatting-item rc-tooltip" aria-label={{_ label}}>
+										<a href="{{link}}" target="_blank" rel="noopener noreferrer" class="rc-message-box__toolbar-formatting-link">{{text}}</a>
+									</span>
+								{{/if}}
 							{{/each}}
 						</div>
 					{{/if}}
 				{{/unless}}
 			{{else}}
-				<div class="stream-info">
+				<div class="rc-message-box__cannot-send">
 					{{#if isBlockedOrBlocker}}
 						{{_ "room_is_blocked"}}
 					{{else}}
@@ -83,67 +75,7 @@
 				</div>
 			{{/if}}
 		{{else}}
-			{{#with notSubscribedTpl}}
-				{{> Template.dynamic . }}
-			{{else}}
-				{{#if canJoin}}
-					<div>
-						{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
-						{{#if joinCodeRequired}}
-							<input type="text" name="joinCode" placeholder="{{_ 'Password'}}" style="width: 100px">
-						{{/if}}
-						<button class="button join"><span><i class="icon-login"></i> {{_ "join"}}</span></button>
-					</div>
-				{{/if}}
-				{{#if anonymousRead}}
-					<div>
-						<button class="button register"><span>{{_ "Sign_in_to_start_talking"}}</span></button>
-						{{#if anonymousWrite}}
-							<button class="button register-anonymous"><span>{{_ "Or_talk_as_anonymous"}}</span></button>
-						{{/if}}
-					</div>
-				{{/if}}
-			{{/with}}
-		{{/if}}
-	</div>
-</template>
-<template name="messageBox__audioMessage">
-	<div class="rc-message-box__audio-message">
-		<div class="rc-message-box__icon cross js-audio-message-cross">
-			{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
-		</div>
-		<div class="rc-message-box__timer-box">
-			<p class="rc-message-box__timer-dot">&#8226;&nbsp;</p>
-			<span class="rc-message-box__timer"> 00:00</span>
-		</div>
-		<div class="rc-message-box__icon check js-audio-message-check">
-			{{> icon block="rc-input__icon-svg" icon="checkmark-circled"}}
-		</div>
-		<div class="rc-message-box__icon mic active js-audio-message-record">
-			{{> icon block="rc-input__icon-svg" icon="mic"}}
-		</div>
-		<div class="rc-message-box__icon loading js-audio-message-loading">
-			{{> icon block="rc-input__icon-svg" icon="loading"}}
-		</div>
-	</div>
-</template>
-
-<template name="messageBox__actionsSmall">
-	<div class="js-message-actions rc-message-box__action-label" data-small>
-		{{#each actions }}
-			<span class="js-message-action">
-				{{> icon block="rc-message-box__action" icon=icon }}
-			</span>
-		{{/each}}
-	</div>
-	{{> Template.contentBlock}}
-</template>
-<template name="messageBox__actions">
-	<div class="rc-message-box__action-menu" data-desktop>
-		{{#if actions}}
-			<div class="rc-message-box__icon">
-				{{> icon block="rc-input__icon-svg" icon="plus"}}
-			</div>
+			{{> messageBoxNotSubscribed rid=_id}}
 		{{/if}}
 	</div>
 </template>

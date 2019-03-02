@@ -606,53 +606,8 @@ input:-webkit-autofill {
 }
 
 /** ----------------------------------------------------------------------------
- * Side nav
+ * Sidebar
  */
-.side-nav {
-	.arrow::before,
-	.arrow::after {
-		background-color: @tertiary-font-color;
-	}
-
-	li.active {
-		background-color: @transparent-light !important;
-	}
-
-	i.status-offline {
-		color: @transparent-lighter !important;
-	}
-
-	i {
-		color: @transparent-lighter;
-	}
-
-	.opt i:hover {
-		color: @transparent-lightest;
-	}
-
-	.has-alert .name {
-		color: @primary-background-contrast;
-	}
-
-	.unread {
-		color: @success-color;
-		border: 1px solid @success-color;
-	}
-
-	.unread.unread-mention {
-		background-color: @success-color;
-		color: contrast(@success-color, #000000, #ffffff, 50%);
-	}
-
-	.button {
-		.buttonColors(@tertiary-font-color, mix(@primary-action-color, @primary-background-color));
-	}
-
-	.options button {
-		.buttonColors(@tertiary-font-color, @primary-background-color);
-	}
-}
-
 .sidebar-item__last-message {
 	a:not(.mention-link) {
 		color: @link-font-color;

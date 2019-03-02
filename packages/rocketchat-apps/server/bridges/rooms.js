@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomBridge {
@@ -61,7 +62,7 @@ export class AppRoomBridge {
 	async getCreatorById(roomId, appId) {
 		console.log(`The App ${ appId } is getting the room's creator by id: "${ roomId }"`);
 
-		const room = RocketChat.models.Rooms.findOneById(roomId);
+		const room = Rooms.findOneById(roomId);
 
 		if (!room || !room.u || !room.u._id) {
 			return undefined;
@@ -73,7 +74,7 @@ export class AppRoomBridge {
 	async getCreatorByName(roomName, appId) {
 		console.log(`The App ${ appId } is getting the room's creator by name: "${ roomName }"`);
 
-		const room = RocketChat.models.Rooms.findOneByName(roomName);
+		const room = Rooms.findOneByName(roomName);
 
 		if (!room || !room.u || !room.u._id) {
 			return undefined;
@@ -84,13 +85,13 @@ export class AppRoomBridge {
 
 	async getMembers(roomId, appId) {
 		console.log(`The App ${ appId } is getting the room's members by room id: "${ roomId }"`);
-		const subscriptions = await RocketChat.models.Subscriptions.findByRoomId(roomId);
+		const subscriptions = await Subscriptions.findByRoomId(roomId);
 		return subscriptions.map((sub) => this.orch.getConverters().get('users').convertById(sub.u && sub.u._id));
 	}
 
 	async getDirectByUsernames(usernames, appId) {
 		console.log(`The App ${ appId } is getting direct room by usernames: "${ usernames }"`);
-		const room = await RocketChat.models.Rooms.findDirectRoomContainingAllUsernames(usernames);
+		const room = await Rooms.findDirectRoomContainingAllUsernames(usernames);
 		if (!room) {
 			return undefined;
 		}
@@ -100,22 +101,27 @@ export class AppRoomBridge {
 	async update(room, members = [], appId) {
 		console.log(`The App ${ appId } is updating a room.`);
 
-		if (!room.id || !RocketChat.models.Rooms.findOneById(room.id)) {
+		if (!this.addUserToRoom) {
+			const { addUserToRoom } = await import('meteor/rocketchat:lib');
+			this.addUserToRoom = addUserToRoom;
+		}
+
+		if (!room.id || !Rooms.findOneById(room.id)) {
 			throw new Error('A room must exist to update.');
 		}
 
 		const rm = this.orch.getConverters().get('rooms').convertAppRoom(room);
 
-		RocketChat.models.Rooms.update(rm._id, rm);
+		Rooms.update(rm._id, rm);
 
 		for (const username of members) {
-			const member = RocketChat.models.Users.findOneByUsername(username);
+			const member = Users.findOneByUsername(username);
 
 			if (!member) {
 				continue;
 			}
 
-			RocketChat.addUserToRoom(rm._id, member);
+			this.addUserToRoom(rm._id, member);
 		}
 	}
 }
