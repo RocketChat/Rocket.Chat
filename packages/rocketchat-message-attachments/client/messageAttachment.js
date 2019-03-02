@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
-import { fixCordova } from 'meteor/rocketchat:lazy-load';
 import { Template } from 'meteor/templating';
 import { getUserPreference } from 'meteor/rocketchat:utils';
 import { Users } from 'meteor/rocketchat:models';
@@ -13,7 +12,6 @@ const colors = {
 };
 
 Template.messageAttachment.helpers({
-	fixCordova,
 	parsedText() {
 		return renderMessageBody({
 			msg: this.text,
