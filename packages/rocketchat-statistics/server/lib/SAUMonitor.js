@@ -278,9 +278,7 @@ export class SAUMonitorClass {
 		}
 		if (Meteor.server.sessions[sessionId]) {
 			Object.keys(data).forEach((p) => {
-				Object.defineProperty(Meteor.server.sessions[sessionId].connectionHandle, p, {
-					value: data[p],
-				});
+				Meteor.server.sessions[sessionId].connectionHandle = Object.assign({}, Meteor.server.sessions[sessionId].connectionHandle, { [p]: data[p] });
 			});
 		}
 	}

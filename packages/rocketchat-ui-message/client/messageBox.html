@@ -8,7 +8,11 @@
 				{{> messagePopupSlashCommandPreview popupConfig}}
 
 				{{#if replyMessageData}}
-					{{> messageBoxReplyPreview input=input replyMessageData=replyMessageData}}
+					<div class="reply-preview__wrap message-popup">
+					{{#each replyMessageData}}
+						{{> messageBoxReplyPreview input=input replyMessageData=.}}
+					{{/each}}
+					</div>
 				{{/if}}
 
 				<label class="rc-message-box__container">
