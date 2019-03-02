@@ -88,6 +88,6 @@ const _setUsername = function(userId, u) {
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
 	[0]() {
-		return !Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'edit-other-user-info');
+		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
 	},
 });
