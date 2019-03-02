@@ -546,12 +546,12 @@ settings.get('API_Enable_CORS', (key, value) => {
 
 settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
 	defaultRateLimiterOptions.intervalTimeInMS = value;
-	RocketChat.API.v1.reloadRoutesToRefreshRateLimiter();
+	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
 settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
-	RocketChat.API.v1.reloadRoutesToRefreshRateLimiter();
+	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
 // also create the API immediately
