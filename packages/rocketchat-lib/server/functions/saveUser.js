@@ -110,6 +110,13 @@ function validateUserEditing(userId, userData) {
 	const canEditOtherUserInfo = hasPermission(userId, 'edit-other-user-info');
 	const canEditOtherUserPassword = hasPermission(userId, 'edit-other-user-password');
 
+	if (userData.roles && !hasPermission(userId, 'assign-roles')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Assign roles is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Assign_role',
+		});
+	}
+
 	if (!settings.get('Accounts_AllowUserProfileChange') && !canEditOtherUserInfo && !canEditOtherUserPassword) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user profile is not allowed', {
 			method: 'insertOrUpdateUser',

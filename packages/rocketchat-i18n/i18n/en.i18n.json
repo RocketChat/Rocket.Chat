@@ -360,6 +360,7 @@
   "assign-admin-role": "Assign Admin Role",
   "assign-admin-role_description": "Permission to assign the admin role to other users",
   "Assign_admin": "Assigning admin",
+  "assign-roles": "Assign Roles",
   "at": "at",
   "At_least_one_added_token_is_required_by_the_user": "At least one added token is required by the user",
   "AtlassianCrowd": "Atlassian Crowd",
