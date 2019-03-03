@@ -240,9 +240,12 @@ export const FileUpload = Object.assign(_FileUpload, {
 			return file;
 		}
 
-		const ext = mime.extension(file.type);
-		if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
-			file.name = `${ file.name }.${ ext }`;
+		// This file type can be pretty much anything, so it's better if we don't mess with the file extension
+		if (file.type !== 'application/octet-stream') {
+			const ext = mime.extension(file.type);
+			if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
+				file.name = `${ file.name }.${ ext }`;
+			}
 		}
 
 		return file;

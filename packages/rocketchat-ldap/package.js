@@ -18,7 +18,6 @@ Package.onUse(function(api) {
 		'rocketchat:authorization',
 		'rocketchat:utils',
 		'rocketchat:callbacks',
-		'yasaricli:slugify',
 		'templating',
 		'accounts-base',
 		'accounts-password',
