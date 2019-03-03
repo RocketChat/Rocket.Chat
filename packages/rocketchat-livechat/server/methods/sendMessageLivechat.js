@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import LivechatVisitors from '../models/LivechatVisitors';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
+import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	sendMessageLivechat({ token, _id, rid, msg, attachments }, agent) {
@@ -27,7 +28,7 @@ Meteor.methods({
 			throw new Meteor.Error('invalid-token');
 		}
 
-		return RocketChat.Livechat.sendMessage({
+		return Livechat.sendMessage({
 			guest,
 			message: {
 				_id,

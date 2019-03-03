@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { addUserToRoom } from '../functions';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -17,9 +20,9 @@ Meteor.methods({
 		}
 
 		// Get user and room details
-		const room = RocketChat.models.Rooms.findOneById(data.rid);
+		const room = Rooms.findOneById(data.rid);
 		const userId = Meteor.userId();
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, { fields: { _id: 1 } });
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, { fields: { _id: 1 } });
 		const userInRoom = subscription != null;
 
 		// Can't add to direct room ever
@@ -31,11 +34,11 @@ Meteor.methods({
 
 		// Can add to any room you're in, with permission, otherwise need specific room type permission
 		let canAddUser = false;
-		if (userInRoom && RocketChat.authz.hasPermission(userId, 'add-user-to-joined-room', room._id)) {
+		if (userInRoom && hasPermission(userId, 'add-user-to-joined-room', room._id)) {
 			canAddUser = true;
-		} else if (room.t === 'c' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-c-room')) {
+		} else if (room.t === 'c' && hasPermission(userId, 'add-user-to-any-c-room')) {
 			canAddUser = true;
-		} else if (room.t === 'p' && RocketChat.authz.hasPermission(userId, 'add-user-to-any-p-room')) {
+		} else if (room.t === 'p' && hasPermission(userId, 'add-user-to-any-p-room')) {
 			canAddUser = true;
 		}
 
@@ -56,13 +59,13 @@ Meteor.methods({
 		// Validate each user, then add to room
 		const user = Meteor.user();
 		data.users.forEach((username) => {
-			const newUser = RocketChat.models.Users.findOneByUsername(username);
+			const newUser = Users.findOneByUsername(username);
 			if (!newUser) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 					method: 'addUsersToRoom',
 				});
 			}
-			RocketChat.addUserToRoom(data.rid, newUser, user);
+			addUserToRoom(data.rid, newUser, user);
 		});
 
 		return true;

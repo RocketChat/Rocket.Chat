@@ -9,12 +9,11 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'underscore',
+		'rocketchat:utils',
 		'rocketchat:lib',
-		'rocketchat:ui',
+		'rocketchat:callbacks',
+		'rocketchat:settings',
+		'rocketchat:models',
 	]);
 	api.mainModule('server/index.js', 'server');
-});
-
-Npm.depends({
-	'queue-fifo': '0.2.4',
 });

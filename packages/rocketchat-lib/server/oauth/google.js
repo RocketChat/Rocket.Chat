@@ -1,7 +1,8 @@
-/* globals Google */
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { HTTP } from 'meteor/http';
+import { Google } from 'meteor/google-oauth';
+import { registerAccessTokenService } from './oauth';
 
 function getIdentity(accessToken) {
 	try {
@@ -24,7 +25,7 @@ function getScopes(accessToken) {
 }
 
 
-RocketChat.registerAccessTokenService('google', function(options) {
+registerAccessTokenService('google', function(options) {
 	check(options, Match.ObjectIncluding({
 		accessToken: String,
 		idToken: String,

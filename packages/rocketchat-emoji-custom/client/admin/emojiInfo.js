@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { handleError } from 'meteor/rocketchat:lib';
-import { t, modal } from 'meteor/rocketchat:ui';
+import { handleError, t } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
 
 Template.emojiInfo.helpers({
 	name() {

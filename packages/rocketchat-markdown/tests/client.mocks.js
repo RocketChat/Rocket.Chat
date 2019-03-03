@@ -11,25 +11,40 @@ mock('meteor/meteor', {
 	},
 });
 
-mock('meteor/rocketchat:lib', {
-	RocketChat: {
-		settings: {
-			get(setting) {
-				switch (setting) {
-					case 'Markdown_SupportSchemesForLink':
-						return 'http,https';
-					case 'Markdown_Headers':
-					// case 'Markdown_Marked_GFM':
-					// case 'Markdown_Marked_Tables':
-					// case 'Markdown_Marked_Breaks':
-					// case 'Markdown_Marked_Pedantic':
-					// case 'Markdown_Marked_SmartLists':
-					// case 'Markdown_Marked_Smartypants':
-						return true;
-					default:
-						throw new Error(`Missing setting mock ${ setting }`);
-				}
-			},
+mock('meteor/blaze', {
+	Blaze: {},
+});
+
+mock('meteor/rocketchat:settings', {
+	settings: {
+		get(setting) {
+			switch (setting) {
+				case 'Markdown_SupportSchemesForLink':
+					return 'http,https';
+				case 'Markdown_Parser':
+					return 'original';
+				case 'Markdown_Headers':
+				// case 'Markdown_Marked_GFM':
+				// case 'Markdown_Marked_Tables':
+				// case 'Markdown_Marked_Breaks':
+				// case 'Markdown_Marked_Pedantic':
+				// case 'Markdown_Marked_SmartLists':
+				// case 'Markdown_Marked_Smartypants':
+					return true;
+				default:
+					throw new Error(`Missing setting mock ${ setting }`);
+			}
+		},
+	},
+});
+
+mock('meteor/rocketchat:callbacks', {
+	callbacks: {
+		add() {
+
+		},
+		priority: {
+			HIGH: 1,
 		},
 	},
 });

@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { ChatRoom } from 'meteor/rocketchat:ui-utils';
+import toastr from 'toastr';
 
 Template.channelSettings__tokenpass.helpers({
 	addDisabled() {

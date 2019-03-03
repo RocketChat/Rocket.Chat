@@ -14,35 +14,16 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
 		'rocketchat:lib',
+		'rocketchat:ui',
 		'rocketchat:assets',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
 		'rocketchat:2fa',
+		'kadira:flow-router',
+		'kadira:blaze-layout',
 	]);
-
-	api.use('kadira:flow-router', 'client');
-	api.use('kadira:blaze-layout', 'client');
-
-	api.addFiles('client/routes.js', 'client');
-
-	api.addFiles('client/reset-password/resetPassword.html', 'client');
-	api.addFiles('client/reset-password/resetPassword.js', 'client');
-
-	api.addFiles('client/login/footer.html', 'client');
-	api.addFiles('client/login/form.html', 'client');
-	api.addFiles('client/login/header.html', 'client');
-	api.addFiles('client/login/layout.html', 'client');
-	api.addFiles('client/login/layout.js', 'client');
-	api.addFiles('client/login/services.html', 'client');
-	api.addFiles('client/login/social.html', 'client');
-
-	api.addFiles('client/username/layout.html', 'client');
-	api.addFiles('client/username/username.html', 'client');
-
-	api.addFiles('client/login/footer.js', 'client');
-	api.addFiles('client/login/form.js', 'client');
-	api.addFiles('client/login/header.js', 'client');
-	api.addFiles('client/login/services.js', 'client');
-	api.addFiles('client/login/social.js', 'client');
-	api.addFiles('client/username/layout.js', 'client');
-	api.addFiles('client/username/username.js', 'client');
+	api.mainModule('client/index.js', 'client');
 });

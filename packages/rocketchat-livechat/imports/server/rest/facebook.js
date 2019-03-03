@@ -1,7 +1,9 @@
 import crypto from 'crypto';
 import { Random } from 'meteor/random';
-
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
+import { API } from 'meteor/rocketchat:api';
+import { Rooms, Users, LivechatVisitors } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Livechat } from '../../../server/lib/Livechat';
 
 /**
  * @api {post} /livechat/facebook Send Facebook message
@@ -16,7 +18,7 @@ import LivechatVisitors from '../../../server/models/LivechatVisitors';
  * @apiParam {String} [text] Facebook message text
  * @apiParam {String} [attachments] Facebook message attachments
  */
-RocketChat.API.v1.addRoute('livechat/facebook', {
+API.v1.addRoute('livechat/facebook', {
 	post() {
 		if (!this.bodyParams.text && !this.bodyParams.attachments) {
 			return {
@@ -30,7 +32,7 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 			};
 		}
 
-		if (!RocketChat.settings.get('Livechat_Facebook_Enabled')) {
+		if (!settings.get('Livechat_Facebook_Enabled')) {
 			return {
 				success: false,
 				error: 'Integration disabled',
@@ -38,7 +40,7 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 		}
 
 		// validate if request come from omni
-		const signature = crypto.createHmac('sha1', RocketChat.settings.get('Livechat_Facebook_API_Secret')).update(JSON.stringify(this.request.body)).digest('hex');
+		const signature = crypto.createHmac('sha1', settings.get('Livechat_Facebook_API_Secret')).update(JSON.stringify(this.request.body)).digest('hex');
 		if (this.request.headers['x-hub-signature'] !== `sha1=${ signature }`) {
 			return {
 				success: false,
@@ -58,7 +60,7 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 		};
 		let visitor = LivechatVisitors.getVisitorByToken(this.bodyParams.token);
 		if (visitor) {
-			const rooms = RocketChat.models.Rooms.findOpenByVisitorToken(visitor.token).fetch();
+			const rooms = Rooms.findOpenByVisitorToken(visitor.token).fetch();
 			if (rooms && rooms.length > 0) {
 				sendMessage.message.rid = rooms[0]._id;
 			} else {
@@ -69,12 +71,12 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 			sendMessage.message.rid = Random.id();
 			sendMessage.message.token = this.bodyParams.token;
 
-			const userId = RocketChat.Livechat.registerGuest({
+			const userId = Livechat.registerGuest({
 				token: sendMessage.message.token,
 				name: `${ this.bodyParams.first_name } ${ this.bodyParams.last_name }`,
 			});
 
-			visitor = RocketChat.models.Users.findOneById(userId);
+			visitor = Users.findOneById(userId);
 		}
 
 		sendMessage.message.msg = this.bodyParams.text;
@@ -83,7 +85,7 @@ RocketChat.API.v1.addRoute('livechat/facebook', {
 		try {
 			return {
 				sucess: true,
-				message: RocketChat.Livechat.sendMessage(sendMessage),
+				message: Livechat.sendMessage(sendMessage),
 			};
 		} catch (e) {
 			console.error('Error using Facebook ->', e);

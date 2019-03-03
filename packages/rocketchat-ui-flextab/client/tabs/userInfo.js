@@ -1,4 +1,3 @@
-/* globals RoomRoles UserRoles popover */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
@@ -8,7 +7,10 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import { DateFormat } from 'meteor/rocketchat:lib';
-
+import { popover } from 'meteor/rocketchat:ui-utils';
+import { templateVarHandler } from 'meteor/rocketchat:utils';
+import { RoomRoles, UserRoles, Roles } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import { getActions } from './userActions';
 
 const more = function() {
@@ -32,7 +34,7 @@ Template.userInfo.helpers({
 			.slice(0, 2);
 	},
 	customField() {
-		const sCustomFieldsToShow = RocketChat.settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
+		const sCustomFieldsToShow = settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
 		const customFields = [];
 
 		if (sCustomFieldsToShow) {
@@ -44,13 +46,13 @@ Template.userInfo.helpers({
 				let content = '';
 				if (_.isObject(el)) {
 					_.map(el, (key, label) => {
-						const value = RocketChat.templateVarHandler(key, userCustomFields);
+						const value = templateVarHandler(key, userCustomFields);
 						if (value) {
 							content = { label, value };
 						}
 					});
 				} else {
-					content = RocketChat.templateVarHandler(el, userCustomFields);
+					content = templateVarHandler(el, userCustomFields);
 				}
 				if (content) {
 					customFields.push(content);
@@ -175,12 +177,12 @@ Template.userInfo.helpers({
 		const userRoles = UserRoles.findOne(user._id) || {};
 		const roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 		const roles = _.union(userRoles.roles || [], roomRoles.roles || []);
-		return roles.length && RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
+		return roles.length && Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
 	},
 
 	shouldDisplayReason() {
 		const user = Template.instance().user.get();
-		return RocketChat.settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
+		return settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	},
 });
 

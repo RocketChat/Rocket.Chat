@@ -1,10 +1,13 @@
-/* globals fileUploadHandler */
-
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { SideNav } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import s from 'underscore.string';
 import toastr from 'toastr';
 import mime from 'mime-type/with-db';
@@ -24,7 +27,7 @@ Template.avatarPrompt.onCreated(function() {
 
 Template.avatarPrompt.onRendered(function() {
 	Tracker.afterFlush(function() {
-		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange')) {
 			FlowRouter.go('home');
 		}
 		SideNav.setFlex('accountFlex');
@@ -38,7 +41,7 @@ Template.avatarPrompt.helpers({
 	},
 	suggestAvatar(service) {
 		const suggestions = Template.instance().suggestions.get();
-		return RocketChat.settings.get(`Accounts_OAuth_${ s.capitalize(service) }`) && !suggestions.avatars[service];
+		return settings.get(`Accounts_OAuth_${ s.capitalize(service) }`) && !suggestions.avatars[service];
 	},
 	upload() {
 		return Template.instance().upload.get();
@@ -63,7 +66,7 @@ Template.avatarPrompt.events({
 					}));
 				} else {
 					toastr.success(t('Avatar_changed_successfully'));
-					RocketChat.callbacks.run('userAvatarSet', 'initials');
+					callbacks.run('userAvatarSet', 'initials');
 				}
 			});
 		} else if (this.service === 'url') {
@@ -79,7 +82,7 @@ Template.avatarPrompt.events({
 						}
 					} else {
 						toastr.success(t('Avatar_changed_successfully'));
-						RocketChat.callbacks.run('userAvatarSet', 'url');
+						callbacks.run('userAvatarSet', 'url');
 					}
 				});
 			} else {
@@ -111,7 +114,7 @@ Template.avatarPrompt.events({
 			upload.start((error, result) => {
 				if (result) {
 					toastr.success(t('Avatar_changed_successfully'));
-					RocketChat.callbacks.run('userAvatarSet', this.service);
+					callbacks.run('userAvatarSet', this.service);
 				}
 			});
 		} else {
@@ -123,7 +126,7 @@ Template.avatarPrompt.events({
 					}));
 				} else {
 					toastr.success(t('Avatar_changed_successfully'));
-					RocketChat.callbacks.run('userAvatarSet', tmpService);
+					callbacks.run('userAvatarSet', tmpService);
 				}
 			});
 		}
@@ -161,7 +164,7 @@ Template.avatarPrompt.events({
 					contentType: blob.type,
 					blob: reader.result,
 				});
-				RocketChat.callbacks.run('userAvatarSet', 'upload');
+				callbacks.run('userAvatarSet', 'upload');
 			};
 		});
 	},

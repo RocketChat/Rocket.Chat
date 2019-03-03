@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { settings } from 'meteor/rocketchat:settings';
+import { getUserPreference } from 'meteor/rocketchat:utils';
+import { Subscriptions, Users } from 'meteor/rocketchat:models';
 
 let audio = null;
 
@@ -21,24 +24,24 @@ const play = (audio) => {
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 
-		if (!RocketChat.settings.get('Livechat_continuous_sound_notification_new_livechat_room')) {
+		if (!settings.get('Livechat_continuous_sound_notification_new_livechat_room')) {
 			stop(audio);
 			return;
 		}
 
-		const subs = RocketChat.models.Subscriptions.find({ t: 'l', ls : { $exists: 0 }, open: true }).count();
+		const subs = Subscriptions.find({ t: 'l', ls : { $exists: 0 }, open: true }).count();
 		if (subs === 0) {
 			stop(audio);
 			return;
 		}
 
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), {
+		const user = Users.findOne(Meteor.userId(), {
 			fields: {
 				'settings.preferences.newRoomNotification': 1,
 			},
 		});
 
-		const newRoomNotification = RocketChat.getUserPreference(user, 'newRoomNotification');
+		const newRoomNotification = getUserPreference(user, 'newRoomNotification');
 
 		[audio] = $(`#${ newRoomNotification }`);
 		play(audio);

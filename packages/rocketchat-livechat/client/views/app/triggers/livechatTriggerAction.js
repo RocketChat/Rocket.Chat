@@ -1,5 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
 
 Template.livechatTriggerAction.helpers({
 	hiddenValue(current) {
@@ -17,7 +18,7 @@ Template.livechatTriggerAction.helpers({
 		return !!(this.params && this.params.sender === current);
 	},
 	disableIfGuestPool() {
-		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
 });
 

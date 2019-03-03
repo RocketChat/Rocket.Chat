@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { TabBar } from 'meteor/rocketchat:ui-utils';
 
 Meteor.startup(function() {
-	return RocketChat.TabBar.addButton({
+	return TabBar.addButton({
 		groups: ['channel', 'group'],
 		id: 'mentions',
 		i18nTitle: 'Mentions',

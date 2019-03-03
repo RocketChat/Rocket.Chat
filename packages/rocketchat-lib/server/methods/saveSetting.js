@@ -1,6 +1,8 @@
-/* eslint new-cap: 0 */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { Settings } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {
@@ -10,7 +12,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'edit-privileged-setting')) {
+		if (!hasPermission(Meteor.userId(), 'edit-privileged-setting')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
 			});
@@ -19,7 +21,7 @@ Meteor.methods({
 		// Verify the _id passed in is a string.
 		check(_id, String);
 
-		const setting = RocketChat.models.Settings.db.findOneById(_id);
+		const setting = Settings.db.findOneById(_id);
 
 		// Verify the value is what it should be
 		switch (setting.type) {
@@ -37,7 +39,7 @@ Meteor.methods({
 				break;
 		}
 
-		RocketChat.settings.updateById(_id, value, editor);
+		settings.updateById(_id, value, editor);
 		return true;
 	},
 });

@@ -9,8 +9,11 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
 		'mongo',
+		'rocketchat:utils',
+		'rocketchat:models',
+		'rocketchat:notifications',
+		'rocketchat:ui-cached-collection',
 	]);
 	api.use([
 		'templating',
@@ -18,7 +21,7 @@ Package.onUse(function(api) {
 		'kadira:flow-router',
 		'kadira:blaze-layout',
 	], 'client');
-
+	api.addFiles('client/stylesheets/permissions.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

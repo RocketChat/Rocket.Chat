@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Messages } from 'meteor/rocketchat:models';
 
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 
@@ -6,15 +8,15 @@ Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorPageVisited' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-l-room')) {
+	if (!hasPermission(this.userId, 'view-l-room')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorPageVisited' }));
 	}
 
 	const self = this;
-	const room = RocketChat.models.Rooms.findOneById(roomId);
+	const room = Rooms.findOneById(roomId);
 
 	if (room) {
-		const handle = RocketChat.models.Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history').observeChanges({
+		const handle = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history').observeChanges({
 			added(id, fields) {
 				self.added('visitor_navigation_history', id, fields);
 			},

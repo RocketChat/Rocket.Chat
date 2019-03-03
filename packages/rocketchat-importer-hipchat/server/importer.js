@@ -1,3 +1,4 @@
+import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import {
@@ -8,9 +9,9 @@ import {
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
 import { RocketChatFile } from 'meteor/rocketchat:file';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users, Rooms } from 'meteor/rocketchat:models';
+import { sendMessage } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
-import s from 'underscore.string';
 import moment from 'moment';
 
 import 'moment-timezone';
@@ -24,8 +25,8 @@ export class HipChatImporter extends Base {
 		this.usersPrefix = 'hipchat_export/users/';
 	}
 
-	prepare(dataURI, sentContentType, fileName) {
-		super.prepare(dataURI, sentContentType, fileName);
+	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
+		super.prepare(dataURI, sentContentType, fileName, skipTypeCheck);
 		const { image } = RocketChatFile.dataURIParse(dataURI);
 		// const contentType = ref.contentType;
 		const zip = new this.AdmZip(new Buffer(image, 'base64'));
@@ -47,11 +48,11 @@ export class HipChatImporter extends Base {
 					super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 					tempRooms = JSON.parse(entry.getData().toString()).rooms;
 					tempRooms.forEach((room) => {
-						room.name = s.slugify(room.name);
+						room.name = limax(room.name);
 					});
 				} else if (roomName.indexOf('/') > -1) {
 					const item = roomName.split('/');
-					roomName = s.slugify(item[0]);
+					roomName = limax(item[0]);
 					const msgGroupData = item[1].split('.')[0];
 					if (!tempMessages[roomName]) {
 						tempMessages[roomName] = {};
@@ -178,7 +179,7 @@ export class HipChatImporter extends Base {
 					}
 
 					Meteor.runAsUser(startedByUserId, () => {
-						const existantUser = RocketChat.models.Users.findOneByEmailAddress(user.email);
+						const existantUser = Users.findOneByEmailAddress(user.email);
 						if (existantUser) {
 							user.rocketId = existantUser._id;
 							this.userTags.push({
@@ -203,7 +204,7 @@ export class HipChatImporter extends Base {
 								return Meteor.call('userSetUtcOffset', parseInt(moment().tz(user.timezone).format('Z').toString().split(':')[0]));
 							});
 							if (user.name != null) {
-								RocketChat.models.Users.setName(userId, user.name);
+								Users.setName(userId, user.name);
 							}
 							if (user.is_deleted) {
 								Meteor.call('setUserActiveStatus', userId, false);
@@ -222,7 +223,7 @@ export class HipChatImporter extends Base {
 					}
 					Meteor.runAsUser(startedByUserId, () => {
 						channel.name = channel.name.replace(/ /g, '');
-						const existantRoom = RocketChat.models.Rooms.findOneByName(channel.name);
+						const existantRoom = Rooms.findOneByName(channel.name);
 						if (existantRoom) {
 							channel.rocketId = existantRoom._id;
 						} else {
@@ -240,7 +241,7 @@ export class HipChatImporter extends Base {
 								const returned = Meteor.call('createChannel', channel.name, []);
 								return channel.rocketId = returned.rid;
 							});
-							RocketChat.models.Rooms.update({
+							Rooms.update({
 								_id: channel.rocketId,
 							}, {
 								$set: {
@@ -262,7 +263,7 @@ export class HipChatImporter extends Base {
 					Meteor.runAsUser(startedByUserId, () => {
 						const hipchatChannel = this.getHipChatChannelFromName(channel);
 						if (hipchatChannel != null ? hipchatChannel.do_import : undefined) {
-							const room = RocketChat.models.Rooms.findOneById(hipchatChannel.rocketId, {
+							const room = Rooms.findOneById(hipchatChannel.rocketId, {
 								fields: {
 									usernames: 1,
 									t: 1,
@@ -288,7 +289,7 @@ export class HipChatImporter extends Base {
 													username: user.username,
 												},
 											};
-											RocketChat.sendMessage(user, msgObj, room, true);
+											sendMessage(user, msgObj, room, true);
 										} else if (!nousers[message.from.user_id]) {
 											nousers[message.from.user_id] = message.from;
 										}
@@ -330,7 +331,7 @@ export class HipChatImporter extends Base {
 
 	getRocketUser(hipchatId) {
 		const user = this.users.users.find((user) => user.user_id === hipchatId);
-		return user ? RocketChat.models.Users.findOneById(user.rocketId, {
+		return user ? Users.findOneById(user.rocketId, {
 			fields: {
 				username: 1,
 				name: 1,

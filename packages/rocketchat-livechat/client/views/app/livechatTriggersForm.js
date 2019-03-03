@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { LivechatTrigger } from '../../collections/LivechatTrigger';
 import toastr from 'toastr';
 
 Template.livechatTriggersForm.helpers({

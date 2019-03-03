@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { t } from 'meteor/rocketchat:utils';
 import Bridge from '../irc-bridge';
 
 Meteor.methods({
 	resetIrcConnection() {
-		const ircEnabled = (!!RocketChat.settings.get('IRC_Enabled')) === true;
+		const ircEnabled = (!!settings.get('IRC_Enabled')) === true;
 
 		if (Meteor.ircBridge) {
 			Meteor.ircBridge.stop();
@@ -29,15 +29,15 @@ Meteor.methods({
 			// Normalize the config values
 			const config = {
 				server: {
-					protocol: RocketChat.settings.get('IRC_Protocol'),
-					host: RocketChat.settings.get('IRC_Host'),
-					port: RocketChat.settings.get('IRC_Port'),
-					name: RocketChat.settings.get('IRC_Name'),
-					description: RocketChat.settings.get('IRC_Description'),
+					protocol: settings.get('IRC_Protocol'),
+					host: settings.get('IRC_Host'),
+					port: settings.get('IRC_Port'),
+					name: settings.get('IRC_Name'),
+					description: settings.get('IRC_Description'),
 				},
 				passwords: {
-					local: RocketChat.settings.get('IRC_Local_Password'),
-					peer: RocketChat.settings.get('IRC_Peer_Password'),
+					local: settings.get('IRC_Local_Password'),
+					peer: settings.get('IRC_Peer_Password'),
 				},
 			};
 

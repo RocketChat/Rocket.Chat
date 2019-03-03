@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { Messages, Users, Subscriptions } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 export class AppMessageBridge {
 	constructor(orch) {
@@ -26,19 +28,23 @@ export class AppMessageBridge {
 
 	async update(message, appId) {
 		console.log(`The App ${ appId } is updating a message.`);
+		if (!this.updateMessage) {
+			const { updateMessage } = await import('meteor/rocketchat:lib');
+			this.updateMessage = updateMessage;
+		}
 
 		if (!message.editor) {
 			throw new Error('Invalid editor assigned to the message for the update.');
 		}
 
-		if (!message.id || !RocketChat.models.Messages.findOneById(message.id)) {
+		if (!message.id || !Messages.findOneById(message.id)) {
 			throw new Error('A message must exist to update.');
 		}
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
-		const editor = RocketChat.models.Users.findOneById(message.editor.id);
+		const editor = Users.findOneById(message.editor.id);
 
-		RocketChat.updateMessage(msg, editor);
+		this.updateMessage(msg, editor);
 	}
 
 	async notifyUser(user, message, appId) {
@@ -46,7 +52,7 @@ export class AppMessageBridge {
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 
-		RocketChat.Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
+		Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
 			_id: Random.id(),
 			ts: new Date(),
 			u: undefined,
@@ -67,13 +73,13 @@ export class AppMessageBridge {
 				editor: undefined,
 			});
 
-			const users = RocketChat.models.Subscriptions.findByRoomIdWhenUserIdExists(room._id, { fields: { 'u._id': 1 } })
+			const users = Subscriptions.findByRoomIdWhenUserIdExists(room._id, { fields: { 'u._id': 1 } })
 				.fetch()
 				.map((s) => s.u._id);
-			RocketChat.models.Users.findByIds(users, { fields: { _id: 1 } })
+			Users.findByIds(users, { fields: { _id: 1 } })
 				.fetch()
 				.forEach(({ _id }) =>
-					RocketChat.Notifications.notifyUser(_id, 'message', rmsg)
+					Notifications.notifyUser(_id, 'message', rmsg)
 				);
 		}
 	}

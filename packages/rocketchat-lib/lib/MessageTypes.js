@@ -1,27 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-
-RocketChat.MessageTypes = new class {
-	constructor() {
-		this.types = {};
-	}
-
-	registerType(options) {
-		return this.types[options.id] = options;
-	}
-
-	getType(message) {
-		return this.types[message && message.t];
-	}
-
-	isSystemMessage(message) {
-		const type = this.types[message && message.t];
-		return type && type.system;
-	}
-
-};
+import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
 Meteor.startup(function() {
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'r',
 		system: true,
 		message: 'Room_name_changed',
@@ -32,7 +14,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'au',
 		system: true,
 		message: 'User_added_by',
@@ -43,7 +25,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'ru',
 		system: true,
 		message: 'User_removed_by',
@@ -54,7 +36,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'ul',
 		system: true,
 		message: 'User_left',
@@ -64,7 +46,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'uj',
 		system: true,
 		message: 'User_joined_channel',
@@ -74,7 +56,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'wm',
 		system: true,
 		message: 'Welcome',
@@ -84,7 +66,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'rm',
 		system: true,
 		message: 'Message_removed',
@@ -94,13 +76,13 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'rtc',
 		render(message) {
-			return RocketChat.callbacks.run('renderRtcMessage', message);
+			return callbacks.run('renderRtcMessage', message);
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'user-muted',
 		system: true,
 		message: 'User_muted_by',
@@ -111,7 +93,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'user-unmuted',
 		system: true,
 		message: 'User_unmuted_by',
@@ -122,7 +104,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'subscription-role-added',
 		system: true,
 		message: '__username__was_set__role__by__user_by_',
@@ -134,7 +116,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'subscription-role-removed',
 		system: true,
 		message: '__username__is_no_longer__role__defined_by__user_by_',
@@ -146,7 +128,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'room-archived',
 		system: true,
 		message: 'This_room_has_been_archived_by__username_',
@@ -156,7 +138,7 @@ Meteor.startup(function() {
 			};
 		},
 	});
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'room-unarchived',
 		system: true,
 		message: 'This_room_has_been_unarchived_by__username_',

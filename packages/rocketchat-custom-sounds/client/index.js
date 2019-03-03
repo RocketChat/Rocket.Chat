@@ -1,6 +1,4 @@
-import '../assets/stylesheets/customSoundsAdmin.css';
-import './lib/CustomSounds';
-import './models/CustomSounds';
+export { CustomSounds } from './lib/CustomSounds';
 import './notifications/deleteCustomSound';
 import './notifications/updateCustomSound';
 import './admin/adminSoundEdit.html';

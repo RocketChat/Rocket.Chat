@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import LivechatVisitors from '../models/LivechatVisitors';
+import { loadMessageHistory } from 'meteor/rocketchat:lib';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {
@@ -9,6 +10,6 @@ Meteor.methods({
 			return;
 		}
 
-		return RocketChat.loadMessageHistory({ userId: visitor._id, rid, end, limit, ls });
+		return loadMessageHistory({ userId: visitor._id, rid, end, limit, ls });
 	},
 });

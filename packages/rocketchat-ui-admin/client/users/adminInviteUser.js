@@ -1,12 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import toastr from 'toastr';
 
 Template.adminInviteUser.helpers({
 	isAllowed() {
-		return RocketChat.authz.hasAtLeastOnePermission('bulk-register-user');
+		return hasAtLeastOnePermission('bulk-register-user');
 	},
 	inviteEmails() {
 		return Template.instance().inviteEmails.get();

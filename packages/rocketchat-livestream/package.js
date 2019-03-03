@@ -8,13 +8,17 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:authorization',
 		'rocketchat:lib',
-		'rocketchat:ui',
+		'rocketchat:api',
 		'templating',
 	]);
+	api.addFiles('client/styles/liveStreamTab.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
-	Npm.depends({
-		googleapis: '25.0.0',
-	});
 });

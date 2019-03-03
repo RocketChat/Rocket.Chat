@@ -1,4 +1,3 @@
-import './style.css';
 import './template/admin.html';
 import './template/result.html';
 import './template/suggestion.html';

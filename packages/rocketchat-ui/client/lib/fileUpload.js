@@ -1,9 +1,14 @@
-/* globals fileUploadHandler, Handlebars, fileUpload, modal, t */
-/* exported fileUpload */
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
+
+import { mountReply } from './chatMessages';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { Handlebars } from 'meteor/ui';
+import { t, fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
+
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -134,10 +139,14 @@ const getUploadPreview = async(file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-fileUpload = async(files) => {
+export const fileUpload = async(files, input) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');
+
+	let msg = '';
+
+	msg += await mountReply(msg, input);
 
 	const uploadNextFile = () => {
 		const file = files.pop();
@@ -146,7 +155,7 @@ fileUpload = async(files) => {
 			return;
 		}
 
-		if (!RocketChat.fileUploadIsValidContentType(file.file.type)) {
+		if (!fileUploadIsValidContentType(file.file.type)) {
 			modal.open({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,
@@ -224,7 +233,11 @@ fileUpload = async(files) => {
 					return;
 				}
 
-				Meteor.call('sendFileMessage', roomId, storage, file, () => {
+				Meteor.call('sendFileMessage', roomId, storage, file, { msg }, () => {
+					$(input)
+						.removeData('reply')
+						.trigger('dataChange');
+
 					Meteor.setTimeout(() => {
 						const uploads = Session.get('uploading') || [];
 						Session.set('uploading', uploads.filter((u) => u.id !== upload.id));

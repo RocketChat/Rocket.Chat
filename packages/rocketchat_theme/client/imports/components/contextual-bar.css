@@ -51,7 +51,7 @@
 
 		padding: var(--default-padding);
 
-		align-items: end;
+		align-items: flex-end;
 		justify-content: flex-end;
 
 		&-data {
@@ -119,15 +119,21 @@
 
 .attachments {
 	&__item {
+		position: relative;
 
 		margin-bottom: 10px;
 
 		transition: background-color 300ms linear;
 
+		&.active,
 		&:hover {
 			cursor: pointer;
 
 			background-color: #f7f8fa;
+
+			.attachments-menu {
+				display: inline-block;
+			}
 		}
 
 		&-link {
@@ -228,6 +234,24 @@
 		flex: 1 1 100%;
 
 		color: #9ea2a8;
+	}
+}
+
+.attachments-menu {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+
+	display: none;
+
+	color: var(--color-darkest);
+
+	font-size: 16px;
+
+	fill: currentColor;
+
+	&:hover {
+		fill: var(--rc-color-button-primary);
 	}
 }
 

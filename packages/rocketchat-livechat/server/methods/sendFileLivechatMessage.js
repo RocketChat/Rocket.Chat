@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
 
 Meteor.methods({
 	async 'sendFileLivechatMessage'(roomId, visitorToken, file, msgData = {}) {
@@ -11,7 +12,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const room = RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
+		const room = Rooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
 
 		if (!room) {
 			return false;

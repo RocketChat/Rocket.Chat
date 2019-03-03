@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { EJSON } from 'meteor/ejson';
+import { API } from '../api';
 
-RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
+API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	let sort;
 	if (this.queryParams.sort) {
 		try {
@@ -24,33 +26,33 @@ RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 
 	// Verify the user's selected fields only contains ones which their role allows
 	if (typeof fields === 'object') {
-		let nonSelectableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
+		let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
 		if (this.request.route.includes('/v1/users.')) {
-			const getFields = () => Object.keys(RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info') ? RocketChat.API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser : RocketChat.API.v1.limitedUserFieldsToExclude);
+			const getFields = () => Object.keys(hasPermission(this.userId, 'view-full-other-user-info') ? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser : API.v1.limitedUserFieldsToExclude);
 			nonSelectableFields = nonSelectableFields.concat(getFields());
 		}
 
 		Object.keys(fields).forEach((k) => {
-			if (nonSelectableFields.includes(k) || nonSelectableFields.includes(k.split(RocketChat.API.v1.fieldSeparator)[0])) {
+			if (nonSelectableFields.includes(k) || nonSelectableFields.includes(k.split(API.v1.fieldSeparator)[0])) {
 				delete fields[k];
 			}
 		});
 	}
 
 	// Limit the fields by default
-	fields = Object.assign({}, fields, RocketChat.API.v1.defaultFieldsToExclude);
+	fields = Object.assign({}, fields, API.v1.defaultFieldsToExclude);
 	if (this.request.route.includes('/v1/users.')) {
-		if (RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
-			fields = Object.assign(fields, RocketChat.API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser);
+		if (hasPermission(this.userId, 'view-full-other-user-info')) {
+			fields = Object.assign(fields, API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser);
 		} else {
-			fields = Object.assign(fields, RocketChat.API.v1.limitedUserFieldsToExclude);
+			fields = Object.assign(fields, API.v1.limitedUserFieldsToExclude);
 		}
 	}
 
 	let query = {};
 	if (this.queryParams.query) {
 		try {
-			query = JSON.parse(this.queryParams.query);
+			query = EJSON.parse(this.queryParams.query);
 		} catch (e) {
 			this.logger.warn(`Invalid query parameter provided "${ this.queryParams.query }":`, e);
 			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: "${ this.queryParams.query }"`, { helperMethod: 'parseJsonQuery' });
@@ -59,17 +61,17 @@ RocketChat.API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 
 	// Verify the user has permission to query the fields they are
 	if (typeof query === 'object') {
-		let nonQueryableFields = Object.keys(RocketChat.API.v1.defaultFieldsToExclude);
+		let nonQueryableFields = Object.keys(API.v1.defaultFieldsToExclude);
 		if (this.request.route.includes('/v1/users.')) {
-			if (RocketChat.authz.hasPermission(this.userId, 'view-full-other-user-info')) {
-				nonQueryableFields = nonQueryableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
+			if (hasPermission(this.userId, 'view-full-other-user-info')) {
+				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
 			} else {
-				nonQueryableFields = nonQueryableFields.concat(Object.keys(RocketChat.API.v1.limitedUserFieldsToExclude));
+				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExclude));
 			}
 		}
 
 		Object.keys(query).forEach((k) => {
-			if (nonQueryableFields.includes(k) || nonQueryableFields.includes(k.split(RocketChat.API.v1.fieldSeparator)[0])) {
+			if (nonQueryableFields.includes(k) || nonQueryableFields.includes(k.split(API.v1.fieldSeparator)[0])) {
 				delete query[k];
 			}
 		});

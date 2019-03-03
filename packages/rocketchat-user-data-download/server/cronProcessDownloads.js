@@ -1,22 +1,24 @@
-/* globals SyncedCron */
-
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
+import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations } from 'meteor/rocketchat:models';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
 let zipFolder = '/tmp/zipFiles';
-if (RocketChat.settings.get('UserData_FileSystemZipPath') != null) {
-	if (RocketChat.settings.get('UserData_FileSystemZipPath').trim() !== '') {
-		zipFolder = RocketChat.settings.get('UserData_FileSystemZipPath');
+if (settings.get('UserData_FileSystemZipPath') != null) {
+	if (settings.get('UserData_FileSystemZipPath').trim() !== '') {
+		zipFolder = settings.get('UserData_FileSystemZipPath');
 	}
 }
 
 let processingFrequency = 15;
-if (RocketChat.settings.get('UserData_ProcessingFrequency') > 0) {
-	processingFrequency = RocketChat.settings.get('UserData_ProcessingFrequency');
+if (settings.get('UserData_ProcessingFrequency') > 0) {
+	processingFrequency = settings.get('UserData_ProcessingFrequency');
 }
 
 const startFile = function(fileName, content) {
@@ -37,16 +39,16 @@ const loadUserSubscriptions = function(exportOperation) {
 	exportOperation.roomList = [];
 
 	const exportUserId = exportOperation.userId;
-	const cursor = RocketChat.models.Subscriptions.findByUserId(exportUserId);
+	const cursor = Subscriptions.findByUserId(exportUserId);
 	cursor.forEach((subscription) => {
 		const roomId = subscription.rid;
-		const roomData = RocketChat.models.Rooms.findOneById(roomId);
+		const roomData = Rooms.findOneById(roomId);
 		let roomName = (roomData && roomData.name) ? roomData.name : roomId;
 		let userId = null;
 
 		if (subscription.t === 'd') {
 			userId = roomId.replace(exportUserId, '');
-			const userData = RocketChat.models.Users.findOneById(userId);
+			const userData = Users.findOneById(userId);
 
 			if (userData) {
 				roomName = userData.name;
@@ -107,7 +109,7 @@ const getAttachmentData = function(attachment) {
 			const match = /^\/([^\/]+)\/([^\/]+)\/(.*)/.exec(url);
 
 			if (match && match[2]) {
-				const file = RocketChat.models.Uploads.findOneById(match[2]);
+				const file = Uploads.findOneById(match[2]);
 
 				if (file) {
 					attachmentData.fileId = file._id;
@@ -172,7 +174,7 @@ const copyFile = function(exportOperation, attachmentData) {
 		return;
 	}
 
-	const file = RocketChat.models.Uploads.findOneById(attachmentData.fileId);
+	const file = Uploads.findOneById(attachmentData.fileId);
 
 	if (file) {
 		if (FileUpload.copy(file, attachmentData.targetFile)) {
@@ -196,13 +198,13 @@ const continueExportingRoom = function(exportOperation, exportOpRoomData) {
 	}
 
 	let limit = 100;
-	if (RocketChat.settings.get('UserData_MessageLimitPerRequest') > 0) {
-		limit = RocketChat.settings.get('UserData_MessageLimitPerRequest');
+	if (settings.get('UserData_MessageLimitPerRequest') > 0) {
+		limit = settings.get('UserData_MessageLimitPerRequest');
 	}
 
 	const skip = exportOpRoomData.exportedCount;
 
-	const cursor = RocketChat.models.Messages.findByRoomId(exportOpRoomData.roomId, { limit, skip });
+	const cursor = Messages.findByRoomId(exportOpRoomData.roomId, { limit, skip });
 	const count = cursor.count();
 
 	cursor.forEach((msg) => {
@@ -287,17 +289,17 @@ const isDownloadFinished = function(exportOperation) {
 };
 
 const sendEmail = function(userId) {
-	const lastFile = RocketChat.models.UserDataFiles.findLastFileByUser(userId);
+	const lastFile = UserDataFiles.findLastFileByUser(userId);
 	if (!lastFile) {
 		return;
 	}
-	const userData = RocketChat.models.Users.findOneById(userId);
+	const userData = Users.findOneById(userId);
 
 	if (!userData || !userData.emails || !userData.emails[0] || !userData.emails[0].address) {
 		return;
 	}
 	const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
-	const fromAddress = RocketChat.settings.get('From_Email');
+	const fromAddress = settings.get('From_Email');
 	const subject = TAPi18n.__('UserDataDownload_EmailSubject');
 
 	const download_link = lastFile.url;
@@ -354,7 +356,7 @@ const uploadZipFile = function(exportOperation, callback) {
 	const { size } = stat;
 
 	const { userId } = exportOperation;
-	const user = RocketChat.models.Users.findOneById(userId);
+	const user = Users.findOneById(userId);
 	const userDisplayName = user ? user.name : userId;
 	const utcDate = new Date().toISOString().split('T')[0];
 
@@ -447,7 +449,7 @@ const continueExportOperation = function(exportOperation) {
 		if (exportOperation.status === 'uploading') {
 			uploadZipFile(exportOperation, () => {
 				exportOperation.status = 'completed';
-				RocketChat.models.ExportOperations.updateOperation(exportOperation);
+				ExportOperations.updateOperation(exportOperation);
 			});
 			return;
 		}
@@ -457,14 +459,14 @@ const continueExportOperation = function(exportOperation) {
 };
 
 function processDataDownloads() {
-	const cursor = RocketChat.models.ExportOperations.findAllPending({ limit: 1 });
+	const cursor = ExportOperations.findAllPending({ limit: 1 });
 	cursor.forEach((exportOperation) => {
 		if (exportOperation.status === 'completed') {
 			return;
 		}
 
 		continueExportOperation(exportOperation);
-		RocketChat.models.ExportOperations.updateOperation(exportOperation);
+		ExportOperations.updateOperation(exportOperation);
 
 		if (exportOperation.status === 'completed') {
 			sendEmail(exportOperation.userId);

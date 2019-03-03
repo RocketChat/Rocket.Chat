@@ -1,11 +1,17 @@
 import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { isTheLastMessage } from 'meteor/rocketchat:lib';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Subscriptions, Messages, Users, Rooms } from 'meteor/rocketchat:models';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {
 		return;
 	}
 
-	if (deep > RocketChat.settings.get('Message_QuoteChainLimit')) {
+	if (deep > settings.get('Message_QuoteChainLimit')) {
 		delete msg.attachments;
 		return msg;
 	}
@@ -28,19 +34,23 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.settings.get('Message_AllowPinning')) {
+		if (!settings.get('Message_AllowPinning')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message pinning not allowed', {
 				method: 'pinMessage',
 				action: 'Message_pinning',
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		if (!hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+		}
+
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			return false;
 		}
 
-		let originalMessage = RocketChat.models.Messages.findOneById(message._id);
+		let originalMessage = Messages.findOneById(message._id);
 		if (originalMessage == null || originalMessage._id == null) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
 				method: 'pinMessage',
@@ -49,11 +59,11 @@ Meteor.methods({
 		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (RocketChat.settings.get('Message_KeepHistory')) {
-			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
+		if (settings.get('Message_KeepHistory')) {
+			Messages.cloneAndSaveAsHistoryById(message._id);
 		}
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-		const me = RocketChat.models.Users.findOneById(userId);
+		const me = Users.findOneById(userId);
 
 		originalMessage.pinned = true;
 		originalMessage.pinnedAt = pinnedAt || Date.now;
@@ -62,11 +72,11 @@ Meteor.methods({
 			username: me.username,
 		};
 
-		originalMessage = RocketChat.callbacks.run('beforeSaveMessage', originalMessage);
+		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 
-		RocketChat.models.Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
-		if (RocketChat.isTheLastMessage(room, message)) {
-			RocketChat.models.Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+		Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		if (isTheLastMessage(room, message)) {
+			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
 
 		const attachments = [];
@@ -79,7 +89,7 @@ Meteor.methods({
 			});
 		}
 
-		return RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(
+		return Messages.createWithTypeRoomIdMessageAndUser(
 			'message_pinned',
 			originalMessage.rid,
 			'',
@@ -106,19 +116,23 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.settings.get('Message_AllowPinning')) {
+		if (!settings.get('Message_AllowPinning')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message pinning not allowed', {
 				method: 'unpinMessage',
 				action: 'Message_pinning',
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
+		if (!hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+		}
+
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
 			return false;
 		}
 
-		let originalMessage = RocketChat.models.Messages.findOneById(message._id);
+		let originalMessage = Messages.findOneById(message._id);
 
 		if (originalMessage == null || originalMessage._id == null) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
@@ -128,22 +142,22 @@ Meteor.methods({
 		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (RocketChat.settings.get('Message_KeepHistory')) {
-			RocketChat.models.Messages.cloneAndSaveAsHistoryById(originalMessage._id);
+		if (settings.get('Message_KeepHistory')) {
+			Messages.cloneAndSaveAsHistoryById(originalMessage._id);
 		}
 
-		const me = RocketChat.models.Users.findOneById(Meteor.userId());
+		const me = Users.findOneById(Meteor.userId());
 		originalMessage.pinned = false;
 		originalMessage.pinnedBy = {
 			_id: Meteor.userId(),
 			username: me.username,
 		};
-		originalMessage = RocketChat.callbacks.run('beforeSaveMessage', originalMessage);
+		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-		if (RocketChat.isTheLastMessage(room, message)) {
-			RocketChat.models.Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+		if (isTheLastMessage(room, message)) {
+			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
 
-		return RocketChat.models.Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		return Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 	},
 });

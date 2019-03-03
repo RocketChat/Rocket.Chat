@@ -1,4 +1,3 @@
-/* globals popover */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
@@ -6,8 +5,13 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
-import { call, erase, hide, leave, RocketChat, RoomSettingsEnum } from 'meteor/rocketchat:lib';
-import { modal, t, ChatRoom } from 'meteor/rocketchat:ui';
+import { modal, popover, call, erase, hide, leave } from 'meteor/rocketchat:ui-utils';
+import { ChatRoom, Rooms } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { t, roomTypes, RoomSettingsEnum } from 'meteor/rocketchat:utils';
+import { ChannelSettings } from '../lib/ChannelSettings';
 
 const common = {
 	canLeaveRoom() {
@@ -22,11 +26,11 @@ const common = {
 		});
 
 		const roomType = room && room.t;
-		return roomType && RocketChat.roomTypes.roomTypes[roomType].canBeDeleted(room);
+		return roomType && roomTypes.roomTypes[roomType].canBeDeleted(hasPermission, room);
 	},
 	canEditRoom() {
 		const { _id } = Template.instance().room;
-		return RocketChat.authz.hasAllPermission('edit-room', _id);
+		return hasAllPermission('edit-room', _id);
 	},
 	isDirectMessage() {
 		const { room } = Template.instance();
@@ -43,7 +47,7 @@ function roomFilesOnly(room) {
 		return room.retention.filesOnly;
 	}
 
-	return RocketChat.settings.get('RetentionPolicy_FilesOnly');
+	return settings.get('RetentionPolicy_FilesOnly');
 }
 
 function roomExcludePinned(room) {
@@ -55,27 +59,27 @@ function roomExcludePinned(room) {
 		return room.retention.excludePinned;
 	}
 
-	return RocketChat.settings.get('RetentionPolicy_ExcludePinned');
+	return settings.get('RetentionPolicy_ExcludePinned');
 }
 
 function roomHasGlobalPurge(room) {
-	if (!RocketChat.settings.get('RetentionPolicy_Enabled')) {
+	if (!settings.get('RetentionPolicy_Enabled')) {
 		return false;
 	}
 
 	switch (room.t) {
 		case 'c':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
+			return settings.get('RetentionPolicy_AppliesToChannels');
 		case 'p':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToGroups');
+			return settings.get('RetentionPolicy_AppliesToGroups');
 		case 'd':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToDMs');
+			return settings.get('RetentionPolicy_AppliesToDMs');
 	}
 	return false;
 }
 
 function roomHasPurge(room) {
-	if (!room || !RocketChat.settings.get('RetentionPolicy_Enabled')) {
+	if (!room || !settings.get('RetentionPolicy_Enabled')) {
 		return false;
 	}
 
@@ -89,11 +93,11 @@ function roomHasPurge(room) {
 function retentionEnabled({ t: type }) {
 	switch (type) {
 		case 'c':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToChannels');
+			return settings.get('RetentionPolicy_AppliesToChannels');
 		case 'p':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToGroups');
+			return settings.get('RetentionPolicy_AppliesToGroups');
 		case 'd':
-			return RocketChat.settings.get('RetentionPolicy_AppliesToDMs');
+			return settings.get('RetentionPolicy_AppliesToDMs');
 	}
 	return false;
 }
@@ -101,11 +105,11 @@ function retentionEnabled({ t: type }) {
 function roomMaxAgeDefault(type) {
 	switch (type) {
 		case 'c':
-			return RocketChat.settings.get('RetentionPolicy_MaxAge_Channels');
+			return settings.get('RetentionPolicy_MaxAge_Channels');
 		case 'p':
-			return RocketChat.settings.get('RetentionPolicy_MaxAge_Groups');
+			return settings.get('RetentionPolicy_MaxAge_Groups');
 		case 'd':
-			return RocketChat.settings.get('RetentionPolicy_MaxAge_DMs');
+			return settings.get('RetentionPolicy_MaxAge_DMs');
 		default:
 			return 30; // days
 	}
@@ -124,10 +128,10 @@ function roomMaxAge(room) {
 }
 
 const fixRoomName = (old) => {
-	if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		return old;
 	}
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
@@ -209,13 +213,13 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'text',
 			label: 'Name',
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.NAME);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.NAME);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			getValue() {
-				if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+				if (settings.get('UI_Allow_room_names_with_special_chars')) {
 					return room.fname || room.name;
 				}
 
@@ -224,9 +228,9 @@ Template.channelSettingsEditing.onCreated(function() {
 			save(value) {
 				let nameValidation;
 
-				if (!RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+				if (!settings.get('UI_Allow_room_names_with_special_chars')) {
 					try {
-						nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+						nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 					} catch (error1) {
 						nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 					}
@@ -240,7 +244,7 @@ Template.channelSettingsEditing.onCreated(function() {
 					}
 				}
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.NAME, value).then(function() {
-					RocketChat.callbacks.run('roomNameChanged', {
+					callbacks.run('roomNameChanged', {
 						_id: room._id,
 						name: value,
 					});
@@ -253,15 +257,15 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'markdown',
 			label: 'Topic',
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.TOPIC);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.TOPIC);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.TOPIC, value).then(function() {
 					toastr.success(t('Room_topic_changed_successfully'));
-					return RocketChat.callbacks.run('roomTopicChanged', room);
+					return callbacks.run('roomTopicChanged', room);
 				});
 			},
 		},
@@ -272,15 +276,15 @@ Template.channelSettingsEditing.onCreated(function() {
 				return Template.instance().room.announcement;
 			},
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ANNOUNCEMENT);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ANNOUNCEMENT);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.ANNOUNCEMENT, value).then(() => {
 					toastr.success(t('Room_announcement_changed_successfully'));
-					return RocketChat.callbacks.run('roomAnnouncementChanged', room);
+					return callbacks.run('roomAnnouncementChanged', room);
 				});
 			},
 		},
@@ -288,10 +292,10 @@ Template.channelSettingsEditing.onCreated(function() {
 			type: 'text',
 			label: 'Description',
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.DESCRIPTION);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.DESCRIPTION);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.DESCRIPTION, value).then(function() {
@@ -310,11 +314,11 @@ Template.channelSettingsEditing.onCreated(function() {
 				return room.t === 'p';
 			},
 			disabled() {
-				return room.default && !RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+				return room.default && !hasRole(Meteor.userId(), 'admin');
 			},
 			message() {
-				if (RocketChat.authz.hasAllPermission('edit-room', room._id) && room.default) {
-					if (!RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
+				if (hasAllPermission('edit-room', room._id) && room.default) {
+					if (!hasRole(Meteor.userId(), 'admin')) {
 						return 'Room_type_of_default_rooms_cant_be_changed';
 					}
 				}
@@ -322,24 +326,24 @@ Template.channelSettingsEditing.onCreated(function() {
 			canView() {
 				if (!['c', 'p'].includes(room.t)) {
 					return false;
-				} else if (room.t === 'p' && !RocketChat.authz.hasAllPermission('create-c')) {
+				} else if (room.t === 'p' && !hasAllPermission('create-c')) {
 					return false;
-				} else if (room.t === 'c' && !RocketChat.authz.hasAllPermission('create-p')) {
+				} else if (room.t === 'c' && !hasAllPermission('create-p')) {
 					return false;
 				}
 				return true;
 			},
 			canEdit() {
-				return (RocketChat.authz.hasAllPermission('edit-room', room._id) && !room.default) || RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+				return (hasAllPermission('edit-room', room._id) && !room.default) || hasRole(Meteor.userId(), 'admin');
 			},
 			save(value) {
 				const saveRoomSettings = () => {
 					value = value ? 'p' : 'c';
-					RocketChat.callbacks.run('roomTypeChanged', room);
+					callbacks.run('roomTypeChanged', room);
 					return call('saveRoomSettings', room._id, 'roomType', value).then(() => toastr.success(t('Room_type_changed_successfully')));
 				};
 				if (room.default) {
-					if (RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {
+					if (hasRole(Meteor.userId(), 'admin')) {
 						return new Promise((resolve, reject) => {
 							modal.open({
 								title: t('Room_default_change_to_private_will_be_default_no_more'),
@@ -370,10 +374,10 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.READ_ONLY);
 			},
 			canEdit() {
-				return !room.broadcast && RocketChat.authz.hasAllPermission('set-readonly', room._id);
+				return !room.broadcast && hasAllPermission('set-readonly', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, RoomSettingsEnum.READ_ONLY, value).then(() => toastr.success(t('Read_only_changed_successfully')));
@@ -385,10 +389,10 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY);
 			},
 			canEdit() {
-				return !room.broadcast && RocketChat.authz.hasAllPermission('set-react-when-readonly', room._id);
+				return !room.broadcast && hasAllPermission('set-react-when-readonly', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'reactWhenReadOnly', value).then(() => {
@@ -402,7 +406,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(
 					room,
 					RoomSettingsEnum.SYSTEM_MESSAGES
 				);
@@ -411,7 +415,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return room.sysMes !== false;
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'systemMessages', value).then(
@@ -429,10 +433,10 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAtLeastOnePermission(['archive-room', 'unarchive-room'], room._id);
+				return hasAtLeastOnePermission(['archive-room', 'unarchive-room'], room._id);
 			},
 			save(value) {
 				return new Promise((resolve, reject) => {
@@ -456,7 +460,7 @@ Template.channelSettingsEditing.onCreated(function() {
 									timer: 2000,
 									showConfirmButton: false,
 								});
-								return RocketChat.callbacks.run(action, room);
+								return callbacks.run(action, room);
 							}));
 						}
 						return reject();
@@ -470,7 +474,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.BROADCAST);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.BROADCAST);
 			},
 			canEdit() {
 				return false;
@@ -485,10 +489,10 @@ Template.channelSettingsEditing.onCreated(function() {
 			showingValue: new ReactiveVar(false),
 			realValue: null,
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.JOIN_CODE) && RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.JOIN_CODE) && hasAllPermission('edit-room', room._id);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			getValue() {
 				if (this.showingValue.get()) {
@@ -521,7 +525,7 @@ Template.channelSettingsEditing.onCreated(function() {
 			save(value) {
 				return call('saveRoomSettings', room._id, 'joinCode', value).then(function() {
 					toastr.success(t('Room_password_changed_successfully'));
-					return RocketChat.callbacks.run('roomCodeChanged', room);
+					return callbacks.run('roomCodeChanged', room);
 				});
 			},
 		},
@@ -537,7 +541,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return true;
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'retentionEnabled', value).then(() => toastr.success(t('Retention_setting_changed_successfully')));
@@ -555,10 +559,10 @@ Template.channelSettingsEditing.onCreated(function() {
 				return true;
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-privileged-setting', room._id);
+				return hasAllPermission('edit-privileged-setting', room._id);
 			},
 			disabled() {
-				return !RocketChat.authz.hasAllPermission('edit-privileged-setting', room._id);
+				return !hasAllPermission('edit-privileged-setting', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'retentionOverrideGlobal', value).then(
@@ -582,7 +586,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return true;
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'retentionMaxAge', value).then(
@@ -606,7 +610,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return true;
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'retentionExcludePinned', value).then(
@@ -630,7 +634,7 @@ Template.channelSettingsEditing.onCreated(function() {
 				return true;
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'retentionFilesOnly', value).then(
@@ -648,10 +652,10 @@ Template.channelSettingsEditing.onCreated(function() {
 			isToggle: true,
 			processing: new ReactiveVar(false),
 			canView() {
-				return RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E);
+				return roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E);
 			},
 			canEdit() {
-				return RocketChat.authz.hasAllPermission('edit-room', room._id);
+				return hasAllPermission('edit-room', room._id);
 			},
 			save(value) {
 				return call('saveRoomSettings', room._id, 'encrypted', value).then(() => {
@@ -692,7 +696,7 @@ Template.channelSettingsEditing.helpers({
 		return text === text2 ? '' : ret;
 	},
 	getIcon(room) {
-		const roomType = RocketChat.models.Rooms.findOne(room._id).t;
+		const roomType = Rooms.findOne(room._id).t;
 		switch (roomType) {
 			case 'd':
 				return 'at';
@@ -714,7 +718,7 @@ Template.channelSettingsEditing.helpers({
 	},
 	isDisabled(field, room) {
 		const setting = Template.instance().settings[field];
-		return (typeof setting.disabled === 'function' && setting.disabled(room)) || setting.processing.get() || !RocketChat.authz.hasAllPermission('edit-room', room._id);
+		return (typeof setting.disabled === 'function' && setting.disabled(room)) || setting.processing.get() || !hasAllPermission('edit-room', room._id);
 	},
 	unscape(value) {
 		return s.unescapeHTML(value);
@@ -722,7 +726,7 @@ Template.channelSettingsEditing.helpers({
 	hasRetentionPermission() {
 		const { room } = Template.instance();
 
-		return RocketChat.settings.get('RetentionPolicy_Enabled') && RocketChat.authz.hasAllPermission('edit-room-retention-policy', room._id);
+		return settings.get('RetentionPolicy_Enabled') && hasAllPermission('edit-room-retention-policy', room._id);
 	},
 	subValue(value) {
 		if (value === undefined) {
@@ -791,7 +795,7 @@ Template.channelSettingsInfo.helpers({
 		return s.unescapeHTML(value);
 	},
 	channelSettings() {
-		return RocketChat.ChannelSettings.getOptions(Template.currentData(), 'room');
+		return ChannelSettings.getOptions(Template.currentData(), 'room');
 	},
 	name() {
 		return Template.instance().room.name;

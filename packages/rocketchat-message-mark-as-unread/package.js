@@ -7,19 +7,12 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
 		'rocketchat:logger',
-		'rocketchat:ui',
+		'rocketchat:models',
+		'rocketchat:ui-utils',
+		'rocketchat:utils',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'client/actionButton.js',
-	], 'client');
-
-	api.addFiles([
-		'server/logger.js',
-		'server/unreadMessages.js',
-	], 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

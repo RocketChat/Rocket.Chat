@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms } from 'meteor/rocketchat:models';
+import { Tokenpass } from '../Tokenpass';
 
 Meteor.methods({
 	findTokenChannels() {
@@ -14,8 +16,8 @@ Meteor.methods({
 				tokens[token.asset] = 1;
 			});
 
-			return RocketChat.models.Rooms.findByTokenpass(Object.keys(tokens))
-				.filter((room) => RocketChat.Tokenpass.validateAccess(room.tokenpass, user.services.tokenpass.tcaBalances));
+			return Rooms.findByTokenpass(Object.keys(tokens))
+				.filter((room) => Tokenpass.validateAccess(room.tokenpass, user.services.tokenpass.tcaBalances));
 		}
 
 		return [];

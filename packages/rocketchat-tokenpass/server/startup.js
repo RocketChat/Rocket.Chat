@@ -1,7 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { settings } from 'meteor/rocketchat:settings';
+import { addRoomAccessValidator } from 'meteor/rocketchat:authorization';
+import { Users } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
+import { Tokenpass } from './Tokenpass';
 
-RocketChat.settings.addGroup('OAuth', function() {
+settings.addGroup('OAuth', function() {
 	this.section('Tokenpass', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Tokenpass',
@@ -21,21 +27,21 @@ function validateTokenAccess(userData, roomData) {
 		return false;
 	}
 
-	return RocketChat.Tokenpass.validateAccess(roomData.tokenpass, userData.services.tokenpass.tcaBalances);
+	return Tokenpass.validateAccess(roomData.tokenpass, userData.services.tokenpass.tcaBalances);
 }
 
 Meteor.startup(function() {
-	RocketChat.authz.addRoomAccessValidator(function(room, user) {
+	addRoomAccessValidator(function(room, user) {
 		if (!room || !room.tokenpass || !user) {
 			return false;
 		}
 
-		const userData = RocketChat.models.Users.getTokenBalancesByUserId(user._id);
+		const userData = Users.getTokenBalancesByUserId(user._id);
 
 		return validateTokenAccess(userData, room);
 	});
 
-	RocketChat.callbacks.add('beforeJoinRoom', function(user, room) {
+	callbacks.add('beforeJoinRoom', function(user, room) {
 		if (room.tokenpass && !validateTokenAccess(user, room)) {
 			throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 		}
@@ -46,6 +52,6 @@ Meteor.startup(function() {
 
 Accounts.onLogin(function({ user }) {
 	if (user && user.services && user.services.tokenpass) {
-		RocketChat.updateUserTokenpassBalances(user);
+		updateUserTokenpassBalances(user);
 	}
 });

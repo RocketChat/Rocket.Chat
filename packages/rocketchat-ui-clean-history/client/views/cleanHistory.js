@@ -4,9 +4,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { ChatRoom } from 'meteor/rocketchat:models';
+import { t, roomTypes } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { modal, call } from 'meteor/rocketchat:ui-utils';
 import moment from 'moment';
-
-import { call } from 'meteor/rocketchat:lib';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -17,7 +19,7 @@ const getRoomName = function() {
 		return `#${ room.name }`;
 	}
 
-	return t('conversation_with_s', RocketChat.roomTypes.getRoomName(room.t, room));
+	return t('conversation_with_s', roomTypes.getRoomName(room.t, room));
 };
 
 const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, filesOnly, fromUsers) {
@@ -42,7 +44,7 @@ const getTimeZoneOffset = function() {
 
 
 const filterNames = (old) => {
-	const reg = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 

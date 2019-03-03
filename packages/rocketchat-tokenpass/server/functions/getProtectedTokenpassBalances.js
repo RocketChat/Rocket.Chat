@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { settings } from 'meteor/rocketchat:settings';
 
 let userAgent = 'Meteor';
 if (Meteor.release) { userAgent += `/${ Meteor.release }`; }
 
-RocketChat.getProtectedTokenpassBalances = function(accessToken) {
+export const getProtectedTokenpassBalances = function(accessToken) {
 	try {
 		return HTTP.get(
-			`${ RocketChat.settings.get('API_Tokenpass_URL') }/api/v1/tca/protected/balances`, {
+			`${ settings.get('API_Tokenpass_URL') }/api/v1/tca/protected/balances`, {
 				headers: {
 					Accept: 'application/json',
 					'User-Agent': userAgent,

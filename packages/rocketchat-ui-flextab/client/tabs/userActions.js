@@ -1,29 +1,33 @@
-/* globals RoomRoles, WebRTC*/
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { WebRTC } from 'meteor/rocketchat:webrtc';
+import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from 'meteor/rocketchat:models';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAllPermission, hasRole } from 'meteor/rocketchat:authorization';
 import _ from 'underscore';
 import toastr from 'toastr';
 
-
 export const getActions = function({ user, directActions, hideAdminControls }) {
 
-	const hasPermission = RocketChat.authz.hasAllPermission;
+	const hasPermission = hasAllPermission;
 	const isIgnored = () => {
-		const sub = RocketChat.models.Subscriptions.findOne({ rid : Session.get('openedRoom') });
+		const sub = Subscriptions.findOne({ rid : Session.get('openedRoom') });
 		return sub && sub.ignored && sub.ignored.indexOf(user._id) > -1;
 	};
-	const canSetLeader = () => RocketChat.authz.hasAllPermission('set-leader', Session.get('openedRoom'));
+	const canSetLeader = () => hasAllPermission('set-leader', Session.get('openedRoom'));
 	const active = () => user && user.active;
 	const hasAdminRole = () => {
 		if (user && user._id) {
-			return RocketChat.authz.hasRole(user._id, 'admin');
+			return hasRole(user._id, 'admin');
 		}
 	};
-	const canRemoveUser = () => RocketChat.authz.hasAllPermission('remove-user', Session.get('openedRoom'));
-	const canSetModerator = () => RocketChat.authz.hasAllPermission('set-moderator', Session.get('openedRoom'));
 	const isBot = () => (user && user.type === 'bot');
+	const canRemoveUser = () => hasAllPermission('remove-user', Session.get('openedRoom'));
+	const canSetModerator = () => hasAllPermission('set-moderator', Session.get('openedRoom'));
 	const isDirect = () => {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
 		return (room != null ? room.t : undefined) === 'd';
@@ -47,15 +51,15 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			return !!RoomRoles.findOne({ rid: Session.get('openedRoom'), 'u._id': user._id, roles: 'moderator' });
 		}
 	};
-	const canSetOwner = () => RocketChat.authz.hasAllPermission('set-owner', Session.get('openedRoom'));
+	const canSetOwner = () => hasAllPermission('set-owner', Session.get('openedRoom'));
 	const canDirectMessage = (username) => {
 		const rid = Session.get('openedRoom');
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid });
-		const canOpenDm = RocketChat.authz.hasAllPermission('create-d') || RocketChat.models.Subscriptions.findOne({ name: username });
+		const subscription = Subscriptions.findOne({ rid });
+		const canOpenDm = hasAllPermission('create-d') || Subscriptions.findOne({ name: username });
 		const dmIsNotAlreadyOpen = subscription && subscription.name !== username;
 		return canOpenDm && dmIsNotAlreadyOpen;
 	};
-	const canMuteUser = () => RocketChat.authz.hasAllPermission('mute-user', Session.get('openedRoom'));
+	const canMuteUser = () => hasAllPermission('mute-user', Session.get('openedRoom'));
 	const userMuted = () => {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
 		return _.isArray(room && room.muted) && (room.muted.indexOf(user && user.username) !== -1);
@@ -330,7 +334,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 					name: t('Unmute_user'),
 					action:prevent(getUser, ({ username }) => {
 						const rid = Session.get('openedRoom');
-						if (!RocketChat.authz.hasAllPermission('mute-user', rid)) {
+						if (!hasAllPermission('mute-user', rid)) {
 							return toastr.error(TAPi18n.__('error-not-allowed'));
 						}
 						Meteor.call('unmuteUserInRoom', { rid, username }, success(() => toastr.success(TAPi18n.__('User_unmuted_in_room'))));
@@ -344,7 +348,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				action: prevent(getUser, ({ username }) => {
 					const rid = Session.get('openedRoom');
 					const room = ChatRoom.findOne(rid);
-					if (!RocketChat.authz.hasAllPermission('mute-user', rid)) {
+					if (!hasAllPermission('mute-user', rid)) {
 						return toastr.error(TAPi18n.__('error-not-allowed'));
 					}
 					modal.open({
@@ -378,7 +382,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			action: prevent(getUser, (user) => {
 				const rid = Session.get('openedRoom');
 				const room = ChatRoom.findOne(rid);
-				if (!RocketChat.authz.hasAllPermission('remove-user', rid)) {
+				if (!hasAllPermission('remove-user', rid)) {
 					return toastr.error(TAPi18n.__('error-not-allowed'));
 				}
 				modal.open({
@@ -415,7 +419,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			icon : 'trash',
 			name: 'Delete',
 			action: prevent(getUser, ({ _id }) => {
-				const erasureType = RocketChat.settings.get('Message_ErasureType');
+				const erasureType = settings.get('Message_ErasureType');
 				const warningKey = `Delete_User_Warning_${ erasureType }`;
 
 				modal.open({
@@ -520,7 +524,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			if (hideAdminControls || !hasPermission('reset-other-user-e2e-key')) {
 				return;
 			}
-			if (!RocketChat.settings.get('E2E_Enable')) {
+			if (!settings.get('E2E_Enable')) {
 				return;
 			}
 

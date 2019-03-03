@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Subscriptions, Messages } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	deleteOldOTRMessages(roomId) {
@@ -7,9 +8,9 @@ Meteor.methods({
 		}
 
 		const now = new Date();
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(roomId, Meteor.userId());
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, Meteor.userId());
 		if (subscription && subscription.t === 'd') {
-			RocketChat.models.Messages.deleteOldOTRMessages(roomId, now);
+			Messages.deleteOldOTRMessages(roomId, now);
 		} else {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'deleteOldOTRMessages' });
 		}

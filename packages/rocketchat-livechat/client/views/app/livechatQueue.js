@@ -1,7 +1,12 @@
-/* globals LivechatQueueUser */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import { Users } from 'meteor/rocketchat:models';
+import { LivechatDepartment } from '../../collections/LivechatDepartment';
+import { LivechatQueueUser } from '../../collections/LivechatQueueUser';
+import { AgentUsers } from '../../collections/AgentUsers';
 
 Template.livechatQueue.helpers({
 	departments() {
@@ -41,8 +46,8 @@ Template.livechatQueue.helpers({
 	},
 
 	hasPermission() {
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
-		return RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager') || (user.statusLivechat === 'available' && RocketChat.settings.get('Livechat_show_queue_list_link'));
+		const user = Users.findOne(Meteor.userId(), { fields: { statusLivechat: 1 } });
+		return hasRole(Meteor.userId(), 'livechat-manager') || (user.statusLivechat === 'available' && settings.get('Livechat_show_queue_list_link'));
 	},
 });
 

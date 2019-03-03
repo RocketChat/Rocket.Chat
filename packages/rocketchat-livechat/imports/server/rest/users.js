@@ -1,10 +1,14 @@
 import { check } from 'meteor/check';
+import { hasPermission, getUsersInRole } from 'meteor/rocketchat:authorization';
+import { API } from 'meteor/rocketchat:api';
+import { Users } from 'meteor/rocketchat:models';
+import { Livechat } from '../../../server/lib/Livechat';
 import _ from 'underscore';
 
-RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
+API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+			return API.v1.unauthorized();
 		}
 
 		try {
@@ -21,18 +25,18 @@ RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 				throw 'Invalid type';
 			}
 
-			const users = RocketChat.authz.getUsersInRole(role);
+			const users = getUsersInRole(role);
 
-			return RocketChat.API.v1.success({
+			return API.v1.success({
 				users: users.fetch().map((user) => _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat')),
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 	post() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+			return API.v1.unauthorized();
 		}
 		try {
 			check(this.urlParams, {
@@ -44,30 +48,30 @@ RocketChat.API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 			});
 
 			if (this.urlParams.type === 'agent') {
-				const user = RocketChat.Livechat.addAgent(this.bodyParams.username);
+				const user = Livechat.addAgent(this.bodyParams.username);
 				if (user) {
-					return RocketChat.API.v1.success({ user });
+					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
-				const user = RocketChat.Livechat.addManager(this.bodyParams.username);
+				const user = Livechat.addManager(this.bodyParams.username);
 				if (user) {
-					return RocketChat.API.v1.success({ user });
+					return API.v1.success({ user });
 				}
 			} else {
 				throw 'Invalid type';
 			}
 
-			return RocketChat.API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
+API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
 	get() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+			return API.v1.unauthorized();
 		}
 
 		try {
@@ -76,10 +80,10 @@ RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, 
 				_id: String,
 			});
 
-			const user = RocketChat.models.Users.findOneById(this.urlParams._id);
+			const user = Users.findOneById(this.urlParams._id);
 
 			if (!user) {
-				return RocketChat.API.v1.failure('User not found');
+				return API.v1.failure('User not found');
 			}
 
 			let role;
@@ -93,21 +97,21 @@ RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, 
 			}
 
 			if (user.roles.indexOf(role) !== -1) {
-				return RocketChat.API.v1.success({
+				return API.v1.success({
 					user: _.pick(user, '_id', 'username'),
 				});
 			}
 
-			return RocketChat.API.v1.success({
+			return API.v1.success({
 				user: null,
 			});
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 	delete() {
-		if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
-			return RocketChat.API.v1.unauthorized();
+		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+			return API.v1.unauthorized();
 		}
 
 		try {
@@ -116,27 +120,27 @@ RocketChat.API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, 
 				_id: String,
 			});
 
-			const user = RocketChat.models.Users.findOneById(this.urlParams._id);
+			const user = Users.findOneById(this.urlParams._id);
 
 			if (!user) {
-				return RocketChat.API.v1.failure();
+				return API.v1.failure();
 			}
 
 			if (this.urlParams.type === 'agent') {
-				if (RocketChat.Livechat.removeAgent(user.username)) {
-					return RocketChat.API.v1.success();
+				if (Livechat.removeAgent(user.username)) {
+					return API.v1.success();
 				}
 			} else if (this.urlParams.type === 'manager') {
-				if (RocketChat.Livechat.removeManager(user.username)) {
-					return RocketChat.API.v1.success();
+				if (Livechat.removeManager(user.username)) {
+					return API.v1.success();
 				}
 			} else {
 				throw 'Invalid type';
 			}
 
-			return RocketChat.API.v1.failure();
+			return API.v1.failure();
 		} catch (e) {
-			return RocketChat.API.v1.failure(e.error);
+			return API.v1.failure(e.error);
 		}
 	},
 });

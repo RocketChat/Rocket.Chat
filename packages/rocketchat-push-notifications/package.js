@@ -8,20 +8,18 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
+		'rocketchat:custom-sounds',
+		'rocketchat:settings',
+		'rocketchat:metrics',
+		'rocketchat:ui',
+		'rocketchat:assets',
+		'rocketchat:push',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'client/stylesheets/pushNotifications.css',
-		'client/views/pushNotificationsFlexTab.html',
-		'client/views/pushNotificationsFlexTab.js',
-		'client/tabBar.js',
-	], 'client');
-
-	api.addFiles([
-		'server/methods/saveNotificationSettings.js',
-		'server/models/Subscriptions.js',
-	], 'server');
+	api.addFiles('client/stylesheets/pushNotifications.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

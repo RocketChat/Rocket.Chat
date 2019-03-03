@@ -1,14 +1,13 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { t } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 
 FlowRouter.route('/admin/permissions', {
 	name: 'admin-permissions',
 	action(/* params*/) {
 		return BlazeLayout.render('main', {
-			center: 'pageContainer',
+			center: 'permissions',
 			pageTitle: t('Permissions'),
-			pageTemplate: 'permissions',
 		});
 	},
 });

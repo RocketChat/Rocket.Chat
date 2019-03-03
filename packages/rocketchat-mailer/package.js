@@ -10,6 +10,7 @@ Package.onUse(function(api) {
 		'email',
 		'ddp-rate-limiter',
 		'rocketchat:i18n',
+		'rocketchat:settings',
 	]);
 
 	api.mainModule('server/api.js', 'server');

@@ -9,10 +9,12 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
+		'rocketchat:ui-utils',
+		'rocketchat:utils',
 		'rocketchat:theme',
-		'rocketchat:ui',
+		'rocketchat:models',
 	]);
+	api.addFiles('client/stylesheets/actionLinks.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

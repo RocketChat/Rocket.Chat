@@ -2,8 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { RoutePolicy } from 'meteor/routepolicy';
+import { CredentialTokens } from 'meteor/rocketchat:models';
+import { generateUsernameSuggestion } from 'meteor/rocketchat:lib';
+import bodyParser from 'body-parser';
 import { SAML } from './saml_utils';
 import _ from 'underscore';
 
@@ -18,7 +20,6 @@ if (!Accounts.saml) {
 }
 
 import fiber from 'fibers';
-import connect from 'connect';
 RoutePolicy.declare('/_saml/', 'network');
 
 /**
@@ -126,7 +127,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
-				const username = RocketChat.generateUsernameSuggestion(newUser);
+				const username = generateUsernameSuggestion(newUser);
 				if (username) {
 					newUser.username = username;
 				}
@@ -176,19 +177,19 @@ Accounts.registerLoginHandler(function(loginRequest) {
 });
 
 Accounts.saml.hasCredential = function(credentialToken) {
-	return RocketChat.models.CredentialTokens.findOneById(credentialToken) != null;
+	return CredentialTokens.findOneById(credentialToken) != null;
 };
 
 Accounts.saml.retrieveCredential = function(credentialToken) {
 	// The credentialToken in all these functions corresponds to SAMLs inResponseTo field and is mandatory to check.
-	const data = RocketChat.models.CredentialTokens.findOneById(credentialToken);
+	const data = CredentialTokens.findOneById(credentialToken);
 	if (data) {
 		return data.userInfo;
 	}
 };
 
 Accounts.saml.storeCredential = function(credentialToken, loginResult) {
-	RocketChat.models.CredentialTokens.create(credentialToken, loginResult);
+	CredentialTokens.create(credentialToken, loginResult);
 };
 
 const closePopup = function(res, err) {
@@ -373,7 +374,7 @@ const middleware = function(req, res, next) {
 };
 
 // Listen to incoming SAML http requests
-WebApp.connectHandlers.use(connect.bodyParser()).use(function(req, res, next) {
+WebApp.connectHandlers.use(bodyParser.json()).use(function(req, res, next) {
 	// Need to create a fiber since we're using synchronous http calls and nothing
 	// else is wrapping this in a fiber automatically
 	fiber(function() {

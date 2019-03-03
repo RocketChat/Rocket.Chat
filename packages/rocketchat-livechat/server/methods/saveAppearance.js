@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings as rcSettings } from 'meteor/rocketchat:settings';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveAppearance' });
 		}
 
@@ -21,6 +23,7 @@ Meteor.methods({
 			'Livechat_registration_form',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
+			'Livechat_registration_form_message',
 		];
 
 		const valid = settings.every((setting) => validSettings.indexOf(setting._id) !== -1);
@@ -30,7 +33,7 @@ Meteor.methods({
 		}
 
 		settings.forEach((setting) => {
-			RocketChat.settings.updateById(setting._id, setting.value);
+			rcSettings.updateById(setting._id, setting.value);
 		});
 
 		return;

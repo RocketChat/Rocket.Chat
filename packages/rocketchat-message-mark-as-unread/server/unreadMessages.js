@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Messages, Subscriptions } from 'meteor/rocketchat:models';
 import logger from './logger';
+
 Meteor.methods({
 	unreadMessages(firstUnreadMessage, room) {
 		const userId = Meteor.userId();
@@ -10,7 +12,7 @@ Meteor.methods({
 		}
 
 		if (room) {
-			const lastMessage = RocketChat.models.Messages.findVisibleByRoomId(room, { limit: 1, sort: { ts: -1 } }).fetch()[0];
+			const lastMessage = Messages.findVisibleByRoomId(room, { limit: 1, sort: { ts: -1 } }).fetch()[0];
 
 			if (lastMessage == null) {
 				throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
@@ -19,10 +21,10 @@ Meteor.methods({
 				});
 			}
 
-			return RocketChat.models.Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+			return Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
 		}
 
-		const originalMessage = RocketChat.models.Messages.findOneById(firstUnreadMessage._id, {
+		const originalMessage = Messages.findOneById(firstUnreadMessage._id, {
 			fields: {
 				u: 1,
 				rid: 1,
@@ -36,11 +38,11 @@ Meteor.methods({
 				action: 'Unread_messages',
 			});
 		}
-		const lastSeen = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId).ls;
+		const lastSeen = Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId).ls;
 		if (firstUnreadMessage.ts >= lastSeen) {
 			return logger.connection.debug('Provided message is already marked as unread');
 		}
 		logger.connection.debug(`Updating unread  message of ${ originalMessage.ts } as the first unread`);
-		return RocketChat.models.Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
+		return Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
 	},
 });

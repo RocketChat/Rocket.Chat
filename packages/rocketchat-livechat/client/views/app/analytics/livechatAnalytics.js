@@ -1,9 +1,9 @@
-/* globals popover */
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-
+import { handleError } from 'meteor/rocketchat:utils';
+import { popover } from 'meteor/rocketchat:ui-utils';
 import moment from 'moment';
 import { drawLineChart } from '../../../lib/chartHandler';
 import { setDateRange, updateDateRange } from '../../../lib/dateHandler';

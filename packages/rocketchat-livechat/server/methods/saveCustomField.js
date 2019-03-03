@@ -1,10 +1,11 @@
-/* eslint new-cap: [2, {"capIsNewExceptions": ["Match.ObjectIncluding", "Match.Optional"]}] */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { LivechatCustomField } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'livechat:saveCustomField'(_id, customFieldData) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveCustomField' });
 		}
 
@@ -19,12 +20,12 @@ Meteor.methods({
 		}
 
 		if (_id) {
-			const customField = RocketChat.models.LivechatCustomField.findOneById(_id);
+			const customField = LivechatCustomField.findOneById(_id);
 			if (!customField) {
 				throw new Meteor.Error('error-invalid-custom-field', 'Custom Field Not found', { method: 'livechat:saveCustomField' });
 			}
 		}
 
-		return RocketChat.models.LivechatCustomField.createOrUpdateCustomField(_id, customFieldData.field, customFieldData.label, customFieldData.scope, customFieldData.visibility);
+		return LivechatCustomField.createOrUpdateCustomField(_id, customFieldData.field, customFieldData.label, customFieldData.scope, customFieldData.visibility);
 	},
 });

@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { slashCommands, roomTypes } from 'meteor/rocketchat:utils';
+import { ChatSubscription, Subscriptions } from 'meteor/rocketchat:models';
 
 function Open(command, params /* , item*/) {
 	const dict = {
@@ -29,7 +31,7 @@ function Open(command, params /* , item*/) {
 	const subscription = ChatSubscription.findOne(query);
 
 	if (subscription) {
-		RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	}
 
 	if (type && type.indexOf('d') === -1) {
@@ -39,13 +41,13 @@ function Open(command, params /* , item*/) {
 		if (err) {
 			return;
 		}
-		const subscription = RocketChat.models.Subscriptions.findOne(query);
-		RocketChat.roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
+		const subscription = Subscriptions.findOne(query);
+		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	});
 
 }
 
-RocketChat.slashCommands.add('open', Open, {
+slashCommands.add('open', Open, {
 	description: 'Opens_a_channel_group_or_direct_message',
 	params: 'room_name',
 	clientOnly: true,

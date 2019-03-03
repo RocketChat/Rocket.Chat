@@ -1,9 +1,13 @@
-/* global InstanceStatus, DDP, LoggerManager */
-
 import { Meteor } from 'meteor/meteor';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import _ from 'underscore';
+import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
+import { Logger, LoggerManager } from 'meteor/rocketchat:logger';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { isDocker } from 'meteor/rocketchat:utils';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -68,7 +72,7 @@ function startMatrixBroadcast() {
 				return;
 			}
 
-			if (record.extraInformation.host === process.env.INSTANCE_IP && RocketChat.isDocker() === false) {
+			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
 				instance = `localhost:${ record.extraInformation.port }`;
 			}
 
@@ -98,7 +102,7 @@ function startMatrixBroadcast() {
 		removed(record) {
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }`;
 
-			if (record.extraInformation.host === process.env.INSTANCE_IP && RocketChat.isDocker() === false) {
+			if (record.extraInformation.host === process.env.INSTANCE_IP && isDocker() === false) {
 				instance = `localhost:${ record.extraInformation.port }`;
 			}
 
@@ -205,7 +209,7 @@ function startStreamBroadcast() {
 
 	logger.info('startStreamBroadcast');
 
-	RocketChat.settings.get('Stream_Cast_Address', function(key, value) {
+	settings.get('Stream_Cast_Address', function(key, value) {
 		// var connection, fn, instance;
 		const fn = function(instance, connection) {
 			connection.disconnect();
@@ -272,7 +276,7 @@ Meteor.startup(function() {
 
 Meteor.methods({
 	'instances/get'() {
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-statistics')) {
+		if (!hasPermission(Meteor.userId(), 'view-statistics')) {
 			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
 				method: 'instances/get',
 			});

@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { LivechatTrigger } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	'livechat:saveTrigger'(trigger) {
-		if (!Meteor.userId() || !RocketChat.authz.hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTrigger' });
 		}
 
@@ -18,9 +20,9 @@ Meteor.methods({
 		});
 
 		if (trigger._id) {
-			return RocketChat.models.LivechatTrigger.updateById(trigger._id, trigger);
+			return LivechatTrigger.updateById(trigger._id, trigger);
 		} else {
-			return RocketChat.models.LivechatTrigger.insert(trigger);
+			return LivechatTrigger.insert(trigger);
 		}
 	},
 });

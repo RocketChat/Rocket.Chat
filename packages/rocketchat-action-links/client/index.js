@@ -1,4 +1,7 @@
-import '../both/lib/actionLinks';
-import './stylesheets/actionLinks.css';
+import { actionLinks } from '../both/lib/actionLinks';
 import './lib/actionLinks';
 import './init';
+
+export {
+	actionLinks,
+};

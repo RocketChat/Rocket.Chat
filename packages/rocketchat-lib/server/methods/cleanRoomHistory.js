@@ -1,6 +1,7 @@
-/* globals FileUpload */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { cleanRoomHistory } from '../functions';
 
 Meteor.methods({
 	cleanRoomHistory({ roomId, latest, oldest, inclusive = true, limit, excludePinned = false, filesOnly = false, fromUsers = [] }) {
@@ -19,10 +20,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cleanRoomHistory' });
 		}
 
-		if (!RocketChat.authz.hasPermission(userId, 'clean-channel-history', roomId)) {
+		if (!hasPermission(userId, 'clean-channel-history', roomId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
 
-		return RocketChat.cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, filesOnly, fromUsers });
+		return cleanRoomHistory({ rid: roomId, latest, oldest, inclusive, limit, excludePinned, filesOnly, fromUsers });
 	},
 });

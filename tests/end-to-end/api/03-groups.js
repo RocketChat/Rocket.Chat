@@ -1,10 +1,4 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
-import { getCredentials, api, login, request, credentials, group, log, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
+import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
 import { adminUsername } from '../../data/user';
 
 function getRoomInfo(roomId) {
@@ -243,6 +237,36 @@ describe('[Groups]', function() {
 
 	it('/groups.removeOwner', (done) => {
 		request.post(api('groups.removeOwner'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/groups.addLeader', (done) => {
+		request.post(api('groups.addLeader'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/groups.removeLeader', (done) => {
+		request.post(api('groups.removeLeader'))
 			.set(credentials)
 			.send({
 				roomId: group._id,

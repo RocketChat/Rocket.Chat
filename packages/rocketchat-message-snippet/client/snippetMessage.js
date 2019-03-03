@@ -1,17 +1,19 @@
 import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { ChatMessage, Subscriptions } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	snippetMessage(message) {
 		if (typeof Meteor.userId() === 'undefined' || Meteor.userId() === null) {
 			return false;
 		}
-		if ((typeof RocketChat.settings.get('Message_AllowSnippeting') === 'undefined') ||
-			(RocketChat.settings.get('Message_AllowSnippeting') === null) ||
-			(RocketChat.settings.get('Message_AllowSnippeting') === false)) {
+		if ((typeof settings.get('Message_AllowSnippeting') === 'undefined') ||
+			(settings.get('Message_AllowSnippeting') === null) ||
+			(settings.get('Message_AllowSnippeting') === false)) {
 			return false;
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
+		const subscription = Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() });
 
 		if (subscription === undefined) {
 			return false;

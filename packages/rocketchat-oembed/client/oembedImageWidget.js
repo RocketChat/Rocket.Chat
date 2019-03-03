@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { getUserPreference } from 'meteor/rocketchat:utils';
 
 Template.oembedImageWidget.helpers({
 	loadImage() {
-		if (RocketChat.getUserPreference(Meteor.userId(), 'autoImageLoad') === false && this.downloadImages == null) {
+		if (getUserPreference(Meteor.userId(), 'autoImageLoad') === false && this.downloadImages == null) {
 			return false;
 		}
-		if (Meteor.Device.isPhone() && RocketChat.getUserPreference(Meteor.userId(), 'saveMobileBandwidth') && this.downloadImages == null) {
+		if (Meteor.Device.isPhone() && getUserPreference(Meteor.userId(), 'saveMobileBandwidth') && this.downloadImages == null) {
 			return false;
 		}
 		return true;
@@ -15,7 +16,7 @@ Template.oembedImageWidget.helpers({
 		if (this.collapsed != null) {
 			return this.collapsed;
 		} else {
-			return RocketChat.getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
+			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
 	},
 });

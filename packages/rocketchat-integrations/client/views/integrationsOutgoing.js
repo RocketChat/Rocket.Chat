@@ -4,9 +4,11 @@ import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { t, modal } from 'meteor/rocketchat:ui';
+import { hasAllPermission, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import { ChatIntegrations } from '../collections';
+import { integrations } from '../../lib/rocketchat';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
 
@@ -52,9 +54,9 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			if (sub.ready()) {
 				let intRecord;
 
-				if (RocketChat.authz.hasAllPermission('manage-integrations')) {
+				if (hasAllPermission('manage-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id });
-				} else if (RocketChat.authz.hasAllPermission('manage-own-integrations')) {
+				} else if (hasAllPermission('manage-own-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
 				}
 
@@ -83,7 +85,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	hasPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
 	},
 
 	data() {
@@ -95,7 +97,7 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	eventTypes() {
-		return Object.values(RocketChat.integrations.outgoingEvents);
+		return Object.values(integrations.outgoingEvents);
 	},
 
 	hasTypeSelected() {
@@ -107,19 +109,19 @@ Template.integrationsOutgoing.helpers({
 	shouldDisplayChannel() {
 		const record = Template.instance().record.get();
 
-		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.channel;
+		return typeof record.event === 'string' && integrations.outgoingEvents[record.event].use.channel;
 	},
 
 	shouldDisplayTriggerWords() {
 		const record = Template.instance().record.get();
 
-		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.triggerWords;
+		return typeof record.event === 'string' && integrations.outgoingEvents[record.event].use.triggerWords;
 	},
 
 	shouldDisplayTargetRoom() {
 		const record = Template.instance().record.get();
 
-		return typeof record.event === 'string' && RocketChat.integrations.outgoingEvents[record.event].use.targetRoom;
+		return typeof record.event === 'string' && integrations.outgoingEvents[record.event].use.targetRoom;
 	},
 
 	example() {
@@ -297,7 +299,7 @@ Template.integrationsOutgoing.events({
 		let triggerWords;
 		let triggerWordAnywhere;
 		let runOnEdits;
-		if (RocketChat.integrations.outgoingEvents[event].use.triggerWords) {
+		if (integrations.outgoingEvents[event].use.triggerWords) {
 			triggerWords = $('[name=triggerWords]').val().trim();
 			triggerWords = triggerWords.split(',').filter((word) => word.trim() !== '');
 
@@ -306,7 +308,7 @@ Template.integrationsOutgoing.events({
 		}
 
 		let channel;
-		if (RocketChat.integrations.outgoingEvents[event].use.channel) {
+		if (integrations.outgoingEvents[event].use.channel) {
 			channel = $('[name=channel]').val().trim();
 
 			if (!channel || channel.trim() === '') {
@@ -315,7 +317,7 @@ Template.integrationsOutgoing.events({
 		}
 
 		let targetRoom;
-		if (RocketChat.integrations.outgoingEvents[event].use.targetRoom) {
+		if (integrations.outgoingEvents[event].use.targetRoom) {
 			targetRoom = $('[name=targetRoom]').val().trim();
 
 			if (!targetRoom || targetRoom.trim() === '') {

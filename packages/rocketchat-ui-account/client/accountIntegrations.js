@@ -1,12 +1,13 @@
-/* global */
-
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { WebdavAccounts } from 'meteor/rocketchat:models';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
 import toastr from 'toastr';
 
 Template.accountIntegrations.helpers({
 	webdavAccounts() {
-		return RocketChat.models.WebdavAccounts.find().fetch();
+		return WebdavAccounts.find().fetch();
 	},
 	getOptionValue(account) {
 		return account.name || `${ account.username }@${ account.server_url.replace(/^https?\:\/\//i, '') }`;

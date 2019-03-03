@@ -1,9 +1,13 @@
-/* globals getAvatarSuggestionForUser */
 import { RocketChatFile } from 'meteor/rocketchat:file';
-RocketChat.Migrations.add({
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Users } from 'meteor/rocketchat:models';
+import { getAvatarSuggestionForUser } from 'meteor/rocketchat:lib';
+
+Migrations.add({
 	version: 2,
 	up() {
-		return RocketChat.models.Users.find({
+		return Users.find({
 			avatarOrigin: {
 				$exists: false,
 			},
@@ -34,7 +38,7 @@ RocketChat.Migrations.add({
 				type: contentType,
 			};
 
-			fileStore.insert(file, rs, () => RocketChat.models.Users.setAvatarOrigin(user._id, service));
+			fileStore.insert(file, rs, () => Users.setAvatarOrigin(user._id, service));
 		});
 	},
 });

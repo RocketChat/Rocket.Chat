@@ -11,10 +11,13 @@ Package.onUse(function(api) {
 		'accounts-base',
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
+		'rocketchat:settings',
 		'sha',
 		'random',
-		'rocketchat:ui',
+		'rocketchat:ui-utils',
+		'rocketchat:utils',
+		'rocketchat:models',
+		'rocketchat:callbacks',
 	]);
 
 	api.mainModule('client/index.js', 'client');

@@ -15,13 +15,13 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
+		'mizzao:autocomplete',
+		'rocketchat:utils',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:ui-utils',
+		'rocketchat:authorization',
 	]);
-
-	api.addFiles([
-		'client/lib/startup.js',
-		'client/views/cleanHistory.html',
-		'client/views/cleanHistory.js',
-		'client/views/stylesheets/cleanHistory.css',
-	], 'client');
+	api.addFiles('client/views/stylesheets/cleanHistory.css', 'client');
+	api.mainModule('client/index.js', 'client');
 });

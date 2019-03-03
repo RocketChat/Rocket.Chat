@@ -1,5 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import BigBlueButtonApi from 'meteor/rocketchat:bigbluebutton';
+import { settings } from 'meteor/rocketchat:settings';
+import { Rooms, Users } from 'meteor/rocketchat:models';
+import { saveStreamingOptions } from 'meteor/rocketchat:channel-settings';
+import { API } from 'meteor/rocketchat:api';
 import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 
@@ -10,8 +14,8 @@ const parser = new xml2js.Parser({
 const parseString = Meteor.wrapAsync(parser.parseString);
 
 const getBBBAPI = () => {
-	const url = RocketChat.settings.get('bigbluebutton_server');
-	const secret = RocketChat.settings.get('bigbluebutton_sharedSecret');
+	const url = settings.get('bigbluebutton_server');
+	const secret = settings.get('bigbluebutton_sharedSecret');
 	const api = new BigBlueButtonApi(`${ url }/bigbluebutton/api`, secret);
 	return { api, url };
 };
@@ -27,13 +31,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
 		}
 
-		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
+		if (!settings.get('bigbluebutton_Enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'bbbJoin' });
 		}
 
 		const { api } = getBBBAPI();
-		const meetingID = RocketChat.settings.get('uniqueID') + rid;
-		const room = RocketChat.models.Rooms.findOneById(rid);
+		const meetingID = settings.get('uniqueID') + rid;
+		const room = Rooms.findOneById(rid);
 		const createUrl = api.urlFor('create', {
 			name: room.t === 'd' ? 'Direct' : room.name,
 			meetingID,
@@ -51,7 +55,7 @@ Meteor.methods({
 		const doc = parseString(createResult.content);
 
 		if (doc.response.returncode[0]) {
-			const user = RocketChat.models.Users.findOneById(this.userId);
+			const user = Users.findOneById(this.userId);
 
 			const hookApi = api.urlFor('hooks/create', {
 				meetingID,
@@ -66,7 +70,7 @@ Meteor.methods({
 				return;
 			}
 
-			RocketChat.saveStreamingOptions(rid, {
+			saveStreamingOptions(rid, {
 				type: 'call',
 			});
 
@@ -93,12 +97,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
 		}
 
-		if (!RocketChat.settings.get('bigbluebutton_Enabled')) {
+		if (!settings.get('bigbluebutton_Enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'bbbEnd' });
 		}
 
 		const { api } = getBBBAPI();
-		const meetingID = RocketChat.settings.get('uniqueID') + rid;
+		const meetingID = settings.get('uniqueID') + rid;
 		const endApi = api.urlFor('end', {
 			meetingID,
 			password: 'mp', // mp if moderator ap if attendee
@@ -115,23 +119,23 @@ Meteor.methods({
 		const doc = parseString(endApiResult.content);
 
 		if (doc.response.returncode[0] === 'FAILED') {
-			RocketChat.saveStreamingOptions(rid, {});
+			saveStreamingOptions(rid, {});
 		}
 	},
 });
 
-RocketChat.API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
+API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
 	post() {
 		// TODO check checksum
 		const event = JSON.parse(this.bodyParams.event)[0];
 		const eventType = event.data.id;
 		const meetingID = event.data.attributes.meeting['external-meeting-id'];
-		const rid = meetingID.replace(RocketChat.settings.get('uniqueID'), '');
+		const rid = meetingID.replace(settings.get('uniqueID'), '');
 
 		console.log(eventType, rid);
 
 		if (eventType === 'meeting-ended') {
-			RocketChat.saveStreamingOptions(rid, {});
+			saveStreamingOptions(rid, {});
 		}
 
 		// if (eventType === 'user-left') {

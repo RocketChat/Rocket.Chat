@@ -11,10 +11,13 @@ Package.onUse(function(api) {
 		'templating',
 		'reactive-var',
 		'less',
-		'rocketchat:lib',
-		'rocketchat:channel-settings',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
+		'rocketchat:authorization',
+		'rocketchat:settings',
 		'mizzao:autocomplete',
 		'mongo',
+		'rocketchat:utils',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

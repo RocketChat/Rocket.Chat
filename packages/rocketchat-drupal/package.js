@@ -9,10 +9,11 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'service-configuration',
-		'rocketchat:lib@0.0.1',
+		'rocketchat:settings',
 		'rocketchat:custom-oauth',
 		'templating',
 	]);
+	api.addFiles('client/login-button.css', 'client');
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
