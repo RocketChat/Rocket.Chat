@@ -2,6 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import Busboy from 'busboy';
 
+import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
+import { settings } from 'meteor/rocketchat:settings';
+import { Info } from 'meteor/rocketchat:utils';
+
 let _API;
 
 export class AppsRestApi {
@@ -52,6 +56,45 @@ export class AppsRestApi {
 
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
+				// Gets the Apps from the marketplace
+				if (this.queryParams.marketplace) {
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200) {
+						return _API.v1.failure();
+					}
+
+					return _API.v1.success(result.data);
+				}
+
+				if (this.queryParams.categories) {
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const result = HTTP.get(`${ baseUrl }/v1/categories`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200) {
+						return _API.v1.failure();
+					}
+
+					return _API.v1.success(result.data);
+				}
+
 				const apps = manager.get().map((prl) => {
 					const info = prl.getInfo();
 					info.languages = prl.getStorageItem().languageContent;

@@ -108,6 +108,11 @@ settings.addGroup('General', function() {
 			type: 'boolean',
 			hidden: false,
 		});
+
+		this.add('Apps_Framework_Marketplace_Url', 'https://marketplace.rocket.chat', {
+			type: 'string',
+			hidden: true,
+		});
 	});
 });
 

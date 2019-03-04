@@ -14,8 +14,10 @@ Package.onUse(function(api) {
 		'rocketchat:ui-utils',
 		'rocketchat:authorization',
 		'rocketchat:ui-cached-collection',
+		'rocketchat:cloud',
 		'templating',
 	]);
+
 	api.use([
 		'reactive-var',
 		'kadira:flow-router',
