@@ -3,6 +3,12 @@ import { HTTP } from 'meteor/http';
 import { API } from '../../../api/server/api';
 import Busboy from 'busboy';
 
+import { getWorkspaceAccessToken } from '../../../cloud';
+import { settings } from '../../../settings';
+import { Info } from '../../../utils';
+
+let _API;
+
 export class AppsRestApi {
 	constructor(orch, manager) {
 		this._orch = orch;
@@ -49,6 +55,45 @@ export class AppsRestApi {
 
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
+				// Gets the Apps from the marketplace
+				if (this.queryParams.marketplace) {
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200) {
+						return _API.v1.failure();
+					}
+
+					return _API.v1.success(result.data);
+				}
+
+				if (this.queryParams.categories) {
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const result = HTTP.get(`${ baseUrl }/v1/categories`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200) {
+						return _API.v1.failure();
+					}
+
+					return _API.v1.success(result.data);
+				}
+
 				const apps = manager.get().map((prl) => {
 					const info = prl.getInfo();
 					info.languages = prl.getStorageItem().languageContent;

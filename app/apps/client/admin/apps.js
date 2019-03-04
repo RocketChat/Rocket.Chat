@@ -2,12 +2,11 @@ import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, Info, APIClient } from '../../../utils';
+import { t, APIClient } from '../../../utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
-const HOST = 'https://marketplace.rocket.chat';
 const enabled = ({ status }) => ENABLED_STATUS.includes(status);
 
 const sortByColumn = (array, column, inverted) =>
@@ -34,9 +33,11 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 };
 
 const getApps = (instance) => {
-	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
-		.then((response) => response.json())
+	instance.isLoading.set(true);
+
+	APIClient.get('apps?marketplace=true')
 		.then((data) => {
+			console.log('Marketplace apps', data);
 			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
 
 			if (instance.searchType.get() === 'marketplace') {
@@ -82,14 +83,10 @@ Template.apps.onCreated(function() {
 		}
 	}
 
-	getApps(instance);
 	getInstalledApps(instance);
+	getApps(instance);
 
-	fetch(`${ HOST }/v1/categories`)
-		.then((response) => response.json())
-		.then((data) => {
-			instance.categories.set(data);
-		});
+	APIClient.get('apps?categories=true').then((data) => instance.categories.set(data));
 
 	instance.onAppAdded = function _appOnAppAdded() {
 		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
