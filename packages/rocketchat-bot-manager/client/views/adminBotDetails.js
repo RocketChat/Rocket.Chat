@@ -12,10 +12,8 @@ import { modal } from 'meteor/rocketchat:ui-utils';
 
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
-	this.now = new ReactiveVar(new Date());
 	this.statistics = new ReactiveVar({});
 	this.changed = new ReactiveVar(false);
-	this.ping = new ReactiveVar(undefined);
 
 	/**
 	 * Get new values of editable fields when saving the changes
@@ -73,32 +71,6 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	 */
 	this.isOnline = (bot) => bot.statusConnection && bot.statusConnection !== 'offline';
 
-	/**
-	 * Calls pingBot each second, always waiting for the previous call to finish
-	 * or timeout, it then sets the ping variable to the value of the response time.
-	 * Also updates the 'now' reactiveVar, to refresh the uptime views in the front-end.
-	 */
-	this.autorun(() => {
-		let finished = true;
-		const bot = this.bot.get();
-		Meteor.clearInterval(this.interval);
-		this.interval = Meteor.setInterval(() => {
-			this.now.set(new Date());
-			if (!finished || !this.isOnline(bot)) {
-				return;
-			}
-			finished = false;
-			Meteor.call('pingBot', bot, (err, ping) => {
-				if (err) {
-					this.ping.set(Infinity);
-				} else {
-					this.ping.set(ping);
-				}
-				finished = true;
-			});
-		}, 1000);
-	});
-
 	this.humanReadableTime = (time) => {
 		const days = Math.floor(time / 86400);
 		const hours = Math.floor((time % 86400) / 3600);
@@ -119,11 +91,6 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 		}
 		return out;
 	};
-});
-
-Template.adminBotDetails.onDestroyed(function _adminBotDetailsOnDestroyed() {
-	// Clearing the interval which calls pingBot and updates 'now'
-	Meteor.clearInterval(this.interval);
 });
 
 Template.adminBotDetails.helpers({
