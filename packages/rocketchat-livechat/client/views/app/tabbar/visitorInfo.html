@@ -38,6 +38,14 @@
 					</ul>
 				</div>
 			{{/with}}
+
+			{{#with department}}
+				<div class="info">
+					<ul>
+						{{#if name}} <li>{{_ "Department"}}: {{name}}</li> {{/if}}
+					</ul>
+				</div>
+			{{/with}}
 		</div>
 
 		{{#if canSeeButtons}}
