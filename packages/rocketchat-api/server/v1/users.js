@@ -451,6 +451,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarHideAvatar: Match.Optional(Boolean),
 				sidebarGroupByType: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean),
+				hideUserTyping: Match.Maybe(Boolean),
 			}),
 		});
 		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;

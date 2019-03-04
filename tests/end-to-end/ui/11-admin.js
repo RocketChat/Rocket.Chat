@@ -853,6 +853,16 @@ describe('[Administration]', () => {
 					admin.accountsHideRolesFalse.isSelected().should.be.true;
 				});
 
+				it('it should show the hide user-typing field', () => {
+					admin.accountsHideUserTypingTrue.scroll();
+					admin.accountsHideUserTypingTrue.isVisible().should.be.true;
+					admin.accountsHideUserTypingFalse.isVisible().should.be.true;
+				});
+				it('the hide usernames field value should be false', () => {
+					admin.accountsHideUserTypingTrue.isSelected().should.be.false;
+					admin.accountsHideUserTypingFalse.isSelected().should.be.true;
+				});
+
 				it('it should show the hide right sidebar with click field', () => {
 					admin.accountsHideFlexTabTrue.scroll();
 					admin.accountsHideFlexTabTrue.isVisible().should.be.true;

@@ -28,6 +28,7 @@ export const preferences = {
 		hideUsernames: false,
 		hideRoles: false,
 		hideAvatars: false,
+		hideUserTyping: false,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
 		roomCounterSidebar: false,

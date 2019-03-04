@@ -319,6 +319,11 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_Avatars',
 		});
+		this.add('Accounts_Default_User_Preferences_hideUserTyping', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Show_when_I_am_typing',
+		});
 		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 			type: 'boolean',
 			public: true,

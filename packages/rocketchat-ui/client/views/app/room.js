@@ -425,6 +425,10 @@ Template.room.helpers({
 		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
 
+	hideUserTyping() {
+		return getUserPreference(Meteor.userId(), 'hideUserTyping') ? 'hide-typing' : undefined;
+	},
+
 	userCanDrop() {
 		return userCanDrop(this._id);
 	},

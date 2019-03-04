@@ -1429,6 +1429,7 @@
   "Hide_Room_Warning": "Are you sure you want to hide the room \"%s\"?",
   "Hide_Unread_Room_Status": "Hide Unread Room Status",
   "Hide_usernames": "Hide Usernames",
+  "Show_when_I_am_typing": "Show when I am typing",
   "Highlights": "Highlights",
   "Highlights_How_To": "To be notified when someone mentions a word or phrase, add it here. You can separate words or phrases with commas. Highlight Words are not case sensitive.",
   "Highlights_List": "Highlight words",
