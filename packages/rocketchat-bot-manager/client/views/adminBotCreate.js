@@ -1,12 +1,20 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
+import * as Models from 'meteor/rocketchat:models';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { Meteor } from 'meteor/meteor';
+import { handleError, t } from 'meteor/rocketchat:utils';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
 
 Template.adminBotCreate.helpers({
 	disabled(cursor) {
 		return cursor.count() === 0 ? 'disabled' : '';
 	},
 	canCreate() {
-		return RocketChat.authz.hasAtLeastOnePermission('create-bot-account');
+		return hasAtLeastOnePermission('create-bot-account');
 	},
 
 	bot() {
@@ -15,7 +23,7 @@ Template.adminBotCreate.helpers({
 
 	roles() {
 		const roles = Template.instance().roles.get();
-		return RocketChat.models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
+		return Models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	botRoles() {

@@ -1,10 +1,12 @@
+import * as Models from 'meteor/rocketchat:models';
+
 /**
  * Resets the customClientData property of the user with id equal to userId
  * @param {string} userId _id property of the user
  */
-RocketChat.resetCustomClientData = async(userId) => {
+export const resetCustomClientData = async(userId) => {
 	const customClientData = {};
-	RocketChat.models.Users.update({ _id: userId }, { $unset: { customClientData } });
+	Models.Users.update({ _id: userId }, { $unset: { customClientData } });
 
 	return true;
 };

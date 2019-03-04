@@ -1,5 +1,14 @@
 import toastr from 'toastr';
 import _ from 'underscore';
+import * as Models from 'meteor/rocketchat:models';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { Meteor } from 'meteor/meteor';
+import { handleError, t } from 'meteor/rocketchat:utils';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { modal } from 'meteor/rocketchat:ui-utils';
 
 Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	this.bot = new ReactiveVar({});
@@ -12,7 +21,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 	 * Get new values of editable fields when saving the changes
 	 */
 	this.updateBot = () => {
-		if (!RocketChat.authz.hasAllPermission('edit-bot-account')) {
+		if (!hasAllPermission('edit-bot-account')) {
 			return;
 		}
 
@@ -32,15 +41,6 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 			const currentStats = _.assign(this.statistics.get(), statistics);
 			this.statistics.set(currentStats);
 		});
-		if (this.isOnline(bot)) {
-			Meteor.call('getBotLiveStats', bot, (err, statistics) => {
-				if (err) {
-					return handleError(err);
-				}
-				const currentStats = _.assign(this.statistics.get(), statistics);
-				this.statistics.set(currentStats);
-			});
-		}
 	};
 
 	/**
@@ -55,7 +55,7 @@ Template.adminBotDetails.onCreated(function _adminBotDetailsOnCreated() {
 			if (sub.ready()) {
 				let bot;
 
-				if (RocketChat.authz.hasAllPermission('manage-bot-account')) {
+				if (hasAllPermission('manage-bot-account')) {
 					bot = Meteor.users.findOne({ username });
 				}
 
@@ -128,7 +128,7 @@ Template.adminBotDetails.onDestroyed(function _adminBotDetailsOnDestroyed() {
 
 Template.adminBotDetails.helpers({
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('manage-bot-account');
+		return hasAllPermission('manage-bot-account');
 	},
 
 	getName() {
@@ -161,18 +161,6 @@ Template.adminBotDetails.helpers({
 		return bot.roles;
 	},
 
-	canPause() {
-		const bot = Template.instance().bot.get();
-		return bot.customClientData && bot.customClientData.canPauseResumeMsgStream;
-	},
-
-	isPaused() {
-		const bot = Template.instance().bot.get();
-		if (bot.customClientData) {
-			return bot.customClientData.pausedMsgStream;
-		}
-	},
-
 	isOnline() {
 		const bot = Template.instance().bot.get();
 		return Template.instance().isOnline(bot);
@@ -186,41 +174,10 @@ Template.adminBotDetails.helpers({
 		return TAPi18n.__('Unknown');
 	},
 
-	canGetLogs() {
-		const bot = Template.instance().bot.get();
-		return bot.customClientData && bot.customClientData.canGetLogs;
-	},
-
-	canPing() {
-		const bot = Template.instance().bot.get();
-		return bot.customClientData && bot.customClientData.canListenToHeartbeat;
-	},
-
-	ping() {
-		const ping = Template.instance().ping.get();
-		return (ping === Infinity ? TAPi18n.__('Infinity') : `${ Math.round(ping) }ms`);
-	},
-
 	connectedUptime() {
 		const bot = Template.instance().bot.get();
 		const now = Template.instance().now.get();
 		const diff = now.getTime() - bot.lastLogin.getTime();
-		return Template.instance().humanReadableTime(diff / 1000);
-	},
-
-	activeUptime() {
-		const bot = Template.instance().bot.get();
-		const now = Template.instance().now.get();
-		let diff = now.getTime() - bot.lastLogin.getTime();
-
-		if (bot.customClientData.pausedMsgStream) {
-			return TAPi18n.__('Paused');
-		}
-
-		if (bot.customClientData.msgStreamLastActive) {
-			// Use min in case the bot relogs in but does not reset stream last active
-			diff = Math.min(diff, now.getTime() - bot.customClientData.msgStreamLastActive.getTime());
-		}
 		return Template.instance().humanReadableTime(diff / 1000);
 	},
 
@@ -238,7 +195,7 @@ Template.adminBotDetails.helpers({
 			return [];
 		}
 		const { roles } = bot;
-		return RocketChat.models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
+		return Models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	roleName() {
@@ -250,11 +207,11 @@ Template.adminBotDetails.helpers({
 	},
 
 	canDelete() {
-		return RocketChat.authz.hasAllPermission('delete-bot-account');
+		return hasAllPermission('delete-bot-account');
 	},
 
 	canConvert() {
-		return RocketChat.authz.hasAllPermission('edit-bot-account');
+		return hasAllPermission('edit-bot-account');
 	},
 
 	keyval(object) {
@@ -271,30 +228,6 @@ Template.adminBotDetails.helpers({
 Template.adminBotDetails.events({
 	'blur input': (e, t) => {
 		t.updateBot();
-	},
-
-	'click .resume': (e, t) => {
-		const bot = t.bot.get();
-		$(e.currentTarget).closest('button').addClass('disabled');
-		Meteor.call('resumeBot', bot, (err) => {
-			$(e.currentTarget).closest('button').removeClass('disabled');
-			if (err) {
-				return toastr.error(TAPi18n.__('Bot_resumed_error'));
-			}
-			toastr.success(TAPi18n.__('Bot_resumed'));
-		});
-	},
-
-	'click .pause': (e, t) => {
-		const bot = t.bot.get();
-		$(e.currentTarget).closest('button').addClass('disabled');
-		Meteor.call('pauseBot', bot, (err) => {
-			$(e.currentTarget).closest('button').removeClass('disabled');
-			if (err) {
-				return toastr.error(TAPi18n.__('Bot_paused_error'));
-			}
-			toastr.success(TAPi18n.__('Bot_paused'));
-		});
 	},
 
 	'click .remove-role'(e, t) {
@@ -337,15 +270,10 @@ Template.adminBotDetails.events({
 		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
 	},
 
-	'click .logs': (e, t) => {
-		const bot = t.bot.get();
-		return FlowRouter.go('admin-bots-log', { username: bot.username, bot });
-	},
-
 	'click .rc-header__section-button > .save': (e, t) => {
 		const bot = t.bot.get();
 
-		if (!RocketChat.authz.hasAllPermission('edit-bot-account')) {
+		if (!hasAllPermission('edit-bot-account')) {
 			const error = new Meteor.Error('error-action-not-allowed', 'Editing bot is not allowed');
 			return handleError(error);
 		}
@@ -364,7 +292,7 @@ Template.adminBotDetails.events({
 	'click .rc-header__section-button > .delete': (e, instance) => {
 		const bot = instance.bot.get();
 
-		if (!RocketChat.authz.hasAllPermission('delete-bot-account')) {
+		if (!hasAllPermission('delete-bot-account')) {
 			const error = new Meteor.Error('error-action-not-allowed', 'Deleting bot is not allowed');
 			return handleError(error);
 		}
@@ -401,7 +329,7 @@ Template.adminBotDetails.events({
 	'click .rc-header__section-button > .convert': (e, instance) => {
 		const bot = instance.bot.get();
 
-		if (!RocketChat.authz.hasAllPermission('edit-bot-account')) {
+		if (!hasAllPermission('edit-bot-account')) {
 			const error = new Meteor.Error('error-action-not-allowed', 'Changing bot type is not allowed');
 			return handleError(error);
 		}

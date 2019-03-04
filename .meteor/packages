@@ -58,7 +58,6 @@ rocketchat:colors
 rocketchat:crowd
 rocketchat:custom-oauth
 rocketchat:custom-sounds
-rocketchat:ddp-requests
 rocketchat:dolphin
 rocketchat:drupal
 rocketchat:emoji

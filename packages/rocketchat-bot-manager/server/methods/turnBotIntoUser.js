@@ -1,18 +1,24 @@
+import { Meteor } from 'meteor/meteor';
+import * as Models from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { saveUser } from 'meteor/rocketchat:lib';
+
 Meteor.methods({
 	async turnBotIntoUser(botId, email) {
-		check(botId, String);
-		// check(email, String);
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'turnBotIntoUser' });
 		}
 
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'edit-bot-account') !== true) {
+		if (!hasPermission(Meteor.userId(), 'edit-bot-account')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'turnBotIntoUser',
 			});
 		}
-		const bot = RocketChat.models.Users.findOneById(botId);
+		if (!botId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'turnBotIntoUser' });
+		}
+
+		const bot = Models.Users.findOneById(botId);
 		if (!bot.emails && !email) {
 			throw new Meteor.Error('error-missing-email', 'Can\'t convert bot account to user account without an e-mail', {
 				method: 'turnBotIntoUser',
@@ -24,9 +30,9 @@ Meteor.methods({
 			email,
 		};
 
-		RocketChat.saveUser(Meteor.userId(), userData);
+		saveUser(Meteor.userId(), userData);
 
-		const update = RocketChat.models.Users.update({ _id: botId }, {
+		const update = Models.Users.update({ _id: botId }, {
 			$set: {
 				type: 'user',
 				roles: ['user'],

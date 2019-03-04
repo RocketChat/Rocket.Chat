@@ -1,17 +1,8 @@
-RocketChat.API.v1.addRoute('bots.getLiveStats', { authRequired: true }, {
-	get() {
-		const bot = this.getUserFromParams();
+import { Meteor } from 'meteor/meteor';
+import { API } from 'meteor/rocketchat:api';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
-		const statistics = Meteor.wrapAsync((callback) => {
-			Meteor.runAsUser(this.userId, () => Meteor.call('getBotLiveStats', bot, (err, response) => {
-				callback(err, response);
-			}));
-		})();
-		return RocketChat.API.v1.success({ statistics });
-	},
-});
-
-RocketChat.API.v1.addRoute('bots.getServerStats', { authRequired: true }, {
+API.v1.addRoute('bots.getServerStats', { authRequired: true }, {
 	get() {
 		const bot = this.getUserFromParams();
 
@@ -20,18 +11,18 @@ RocketChat.API.v1.addRoute('bots.getServerStats', { authRequired: true }, {
 				callback(err, response);
 			}));
 		})();
-		return RocketChat.API.v1.success({ statistics });
+		return API.v1.success({ statistics });
 	},
 });
 
-RocketChat.API.v1.addRoute('bots.getCustomClientData', { authRequired: true }, {
+API.v1.addRoute('bots.getCustomClientData', { authRequired: true }, {
 	get() {
 		const bot = this.getUserFromParams();
 		const { userId } = this;
 		let customClientData = {};
-		if (bot._id === userId || RocketChat.authz.hasPermission(userId, 'manage-bot-account')) {
+		if (bot._id === userId || hasPermission(userId, 'manage-bot-account')) {
 			customClientData = bot.customClientData;
 		}
-		return RocketChat.API.v1.success({ customClientData });
+		return API.v1.success({ customClientData });
 	},
 });

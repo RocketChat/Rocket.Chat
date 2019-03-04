@@ -1,5 +1,12 @@
 import moment from 'moment';
 import toastr from 'toastr';
+import * as Models from 'meteor/rocketchat:models';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.adminBotInfo.helpers({
 	hideHeader() {
@@ -71,7 +78,7 @@ Template.adminBotInfo.helpers({
 			return;
 		}
 		const { roles } = bot;
-		return roles.length && RocketChat.models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
+		return roles.length && Models.Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
 	},
 });
 

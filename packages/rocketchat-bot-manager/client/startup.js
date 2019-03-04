@@ -1,6 +1,10 @@
-RocketChat.AdminBox.addOption({
+
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { AdminBox } from 'meteor/rocketchat:ui-utils';
+
+AdminBox.addOption({
 	href: 'admin-bots',
 	i18nLabel: 'Bots',
 	icon: 'hubot',
-	permissionGranted: () => RocketChat.authz.hasAtLeastOnePermission(['view-bot-administration']),
+	permissionGranted: () => hasAtLeastOnePermission(['view-bot-administration']),
 });

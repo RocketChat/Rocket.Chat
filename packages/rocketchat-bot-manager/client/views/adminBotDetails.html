@@ -23,55 +23,6 @@
 						</div>
 						<div class="section-content">
               <div class="input-line double-col">
-                <label>{{_ "Status"}}</label>
-                <div>
-                  {{#if isOnline}}
-                    {{#if canPause}}
-                      <button class="button primary resume" disabled="{{not isPaused}}"><span>{{_ "Resume"}}</span></button>
-                      <button class="button primary pause danger" disabled="{{isPaused}}"><span>{{_ "Pause"}}</span></button>
-                    {{else}}
-                    <button class="button primary" disabled="true" style="background-color: #18b230"><span>{{_ "Online"}}</span></button>
-                    {{/if}}
-                  {{else}}
-                    <button class="button primary danger" disabled="true" style="background-color: #bc2031"><span>{{_ "Offline"}}</span></button>
-                  {{/if}}
-                </div>
-              </div>
-              <!-- Commenting avatar change section to use it later when setAvatar methods are decoupled from the user that calls them
-              <div class="input-line double-col">
-                <label>{{_ "Profile_picture"}}</label>
-                <div class="rc-select-avatar">
-                  <div class="rc-select-avatar__preview">
-                    {{> avatar username=getUsername}}
-                  </div>
-                  <div class="rc-select-avatar__list">
-                    <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
-                      {{> avatar username=getUsername }}
-                    </div>
-                    <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_user_avatar" }}">
-                      <label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
-                        {{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
-                      </label>
-                      <input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg">
-                    </div>
-                    <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectUrl}}"  aria-label="{{_ "Use_url_for_avatar" }}">
-                      <label class="rc-select-avatar__upload-label avatar">
-                        {{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
-                      </label>
-                    </div>
-                    <div class="rc-input">
-                      <label class="rc-input__label">
-                        <div class="rc-input__title">{{_ "Use_url_for_avatar"}}</div>
-                        <div class="rc-input__wrapper">
-                          <input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            -->
-              <div class="input-line double-col">
                 <label>{{_ "Account_name"}}</label>
                 <div>
                   <input type="text" class="rc-input__element" name="name" value="{{getName}}" />
@@ -118,12 +69,6 @@
                       {{_ "IP_Address"}}: {{ipAddress}}
                       <span class="rc-tooltip" aria-label="{{_ "Bot_IP_Address_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
                     </div>
-                    {{#if canPing}}
-                      <div class="settings-description">
-                        {{_ "Ping"}}: {{ping}}
-                        <span class="rc-tooltip" aria-label="{{_ "Bot_Ping_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
-                      </div>
-                    {{/if}}
                   </div>
                 </div>
                 <div class="input-line double-col">
@@ -133,18 +78,6 @@
                       {{_ "Connected"}}: {{connectedUptime}}
                       <span class="rc-tooltip" aria-label="{{_ "Bot_Connected_Uptime_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
                     </div>
-                    {{#if canPause}}
-                      <div class="settings-description">
-                        {{_ "Active"}}: {{activeUptime}}
-                        <span class="rc-tooltip" aria-label="{{_ "Bot_Active_Uptime_description"}}">{{> icon block="rc-input__icon-svg" icon="info-circled" }}</span>
-                      </div>
-                    {{/if}}
-                  </div>
-                </div>
-                <div class="input-line double-col">
-                  <label>{{_ "Logs"}}</label>
-                  <div>
-                    <button class="button primary logs" disabled="{{not canGetLogs}}"><span>{{_ "View_Logs"}}</span></button>
                   </div>
                 </div>
               {{/if}}

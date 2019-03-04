@@ -1,6 +1,10 @@
 import s from 'underscore.string';
-
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router' ;
+import { RocketChatTabBar, TabBar, SideNav } from 'meteor/rocketchat:ui-utils';
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 Template.adminBots.helpers({
 	isReady() {
@@ -68,7 +72,7 @@ Template.adminBots.onCreated(function() {
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar;
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-bots'],
 		id: 'add-bot',
 		i18nTitle: 'Add_Bot',
@@ -76,7 +80,7 @@ Template.adminBots.onCreated(function() {
 		template: 'adminBotCreate',
 		order: 1,
 	});
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['admin-bots'],
 		id: 'admin-bot-info',
 		i18nTitle: 'Bot_Info',
@@ -111,10 +115,8 @@ Template.adminBots.onCreated(function() {
 });
 
 Template.adminBots.onRendered(function() {
-	Tracker.afterFlush(function() {
-		SideNav.setFlex('adminFlex');
-		SideNav.openFlex();
-	});
+	SideNav.setFlex('adminFlex');
+	SideNav.openFlex();
 });
 
 Template.adminBots.events({

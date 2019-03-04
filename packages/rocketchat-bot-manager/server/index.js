@@ -1,0 +1,11 @@
+import './startup';
+import './api';
+import './methods/deleteBot';
+import './methods/getBotServerStats';
+import './methods/insertOrUpdateBot';
+import './methods/turnBotIntoUser';
+import './methods/turnUserIntoBot';
+import './methods/setCustomClientData';
+import './functions/saveBot';
+import './functions/resetCustomClientData';
+import './functions/setCustomClientData';

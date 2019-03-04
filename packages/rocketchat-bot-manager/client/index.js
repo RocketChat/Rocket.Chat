@@ -1,0 +1,10 @@
+import './views/adminBotCreate.html';
+import './views/adminBotDetails.html';
+import './views/adminBotInfo.html';
+import './views/adminBots.html';
+import './views/adminBotCreate';
+import './views/adminBotDetails';
+import './views/adminBotInfo';
+import './views/adminBots';
+import './route';
+import './startup';

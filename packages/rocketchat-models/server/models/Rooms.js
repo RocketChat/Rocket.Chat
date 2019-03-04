@@ -75,6 +75,10 @@ export class Rooms extends Base {
 		return this.find(query, { sort: { ts: - 1 }, offset, limit });
 	}
 
+	findWithUsername(username, options) {
+		return this.find({ usernames: username }, options);
+	}
+
 	findLivechatById(_id, fields) {
 		const options = {};
 

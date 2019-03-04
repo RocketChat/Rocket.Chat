@@ -1,18 +1,24 @@
+import { Meteor } from 'meteor/meteor';
+import * as Models from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+
 Meteor.methods({
 	async turnUserIntoBot(userId) {
-		check(userId, String);
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'turnUserIntoBot' });
 		}
 
-		if (RocketChat.authz.hasPermission(Meteor.userId(), 'edit-bot-account') !== true) {
+		if (hasPermission(Meteor.userId(), 'edit-bot-account') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'turnUserIntoBot',
 			});
 		}
 
-		const update = RocketChat.models.Users.update({ _id: userId }, {
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'turnUserIntoBot' });
+		}
+
+		const update = Models.Users.update({ _id: userId }, {
 			$set: {
 				type: 'bot',
 				roles: ['bot'],

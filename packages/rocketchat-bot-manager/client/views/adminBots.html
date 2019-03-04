@@ -22,38 +22,65 @@
 					<div class="results">
 						{{{_ "Showing_results" bots.length}}}
 					</div>
-					<div class="list">
-						<table class="secondary-background-color">
-							<thead>
-								<tr class="admin-table-row">
-									<th class="content-background-color border-component-color">&nbsp;</th>
-									<th class="content-background-color border-component-color" width="34%">{{_ "Name"}}</th>
-									<th class="content-background-color border-component-color" width="33%">{{_ "Username"}}</th>
-									<th class="content-background-color border-component-color" width="33%">{{_ "Framework"}}</th>
-									<th class="content-background-color border-component-color" width="33%">{{_ "Status"}}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{{#each bots}}
-								<tr class="user-info row-link {{#if not active}}deactivated{{/if}}">
-									<td class="border-component-color">
-										<div class="user-image status-{{status}}">
+					{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+						<thead>
+							<tr>
+								<th width="34%">
+									<div class="table-fake-th">{{_ "Name"}}</div>
+								</th>
+								<th width="33%">
+									<div class="table-fake-th">{{_ "Username"}}</div>
+								</th>
+								<th width="33%">
+									<div class="table-fake-th">{{_ "Framework"}}</div>
+								</th>
+								<th width="33%">
+									<div class="table-fake-th">{{_ "Status"}}</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each bots}}
+							<tr class='user-info'>
+								<td width="30%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-avatar">
 											{{> avatar username=username}}
 										</div>
-									</td>
-									<td class="border-component-color">{{name}}</td>
-									<td class="border-component-color">{{username}}</td>
-									<td class="border-component-color">{{_ getFramework}}</td>
-									<td class="border-component-color">{{status}}</td>
-								</tr>
-								{{/each}}
-							</tbody>
-						</table>
-
-						{{#if hasMore}}
-							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
-						{{/if}}
-					</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">{{name}}</span>
+										</div>
+									</div>
+								</td>
+								<td width="20%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">{{username}}</span>
+										</div>
+									</div>
+								</td>
+								<td width="20%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">{{_ getFramework}}</span>
+										</div>
+									</div>
+								</td>
+								<td width="20%">
+									<div class="rc-table-wrapper">{{#if not active}}{{_"deactivated"}}{{else}}{{status}}{{/if}}</div>
+								</td>
+							</tr>
+							{{else}} {{# with searchText}}
+							<tr class="table-no-click">
+								<td>{{_ "No_results_found_for"}} {{.}}</td>
+							</tr>
+							{{/with}} {{/each}} {{#unless isReady}}
+							<tr class="table-no-click">
+								<td class="table-loading-td" colspan="{{#if showLastMessage}}5{{else}}4{{/if}}">{{> loading}}</td>
+							</tr>
+							{{/unless}}
+						</tbody>
+					{{/table}}
 				{{/unless}}
 			</div>
 		</section>

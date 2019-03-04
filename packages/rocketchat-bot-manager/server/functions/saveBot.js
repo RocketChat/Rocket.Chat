@@ -1,18 +1,23 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { getRoles, hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
+import { checkUsernameAvailability, setRealName, setUsername } from 'meteor/rocketchat:lib';
 
-RocketChat.saveBot = function(userId, botData) {
-	// const bot = RocketChat.models.Users.findOneById(userId);
-	const existingRoles = _.pluck(RocketChat.authz.getRoles(), '_id');
+export const saveBot = function(userId, botData) {
+	// const bot = models.Users.findOneById(userId);
+	const existingRoles = _.pluck(getRoles(), '_id');
 
-	if (botData._id && userId !== botData._id && !RocketChat.authz.hasPermission(userId, 'edit-bot-account')) {
+	if (botData._id && userId !== botData._id && !hasPermission(userId, 'edit-bot-account')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing bot is not allowed', {
 			method: 'insertOrUpdateBot',
 			action: 'Editing_bot',
 		});
 	}
 
-	if (!botData._id && !RocketChat.authz.hasPermission(userId, 'create-bot-account')) {
+	if (!botData._id && !hasPermission(userId, 'create-bot-account')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Creating bot account is not allowed', {
 			method: 'insertOrUpdateBot',
 			action: 'Creating_bot',
@@ -26,7 +31,7 @@ RocketChat.saveBot = function(userId, botData) {
 		});
 	}
 
-	if (botData.roles && _.indexOf(botData.roles, 'admin') >= 0 && !RocketChat.authz.hasPermission(userId, 'assign-admin-role')) {
+	if (botData.roles && _.indexOf(botData.roles, 'admin') >= 0 && !hasPermission(userId, 'assign-admin-role')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 			method: 'insertOrUpdateBot',
 			action: 'Assign_admin',
@@ -50,7 +55,7 @@ RocketChat.saveBot = function(userId, botData) {
 	let nameValidation;
 
 	try {
-		nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+		nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	} catch (e) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
@@ -71,7 +76,7 @@ RocketChat.saveBot = function(userId, botData) {
 	}
 
 	if (!botData._id) {
-		if (!RocketChat.checkUsernameAvailability(botData.username)) {
+		if (!checkUsernameAvailability(botData.username)) {
 			throw new Meteor.Error('error-field-unavailable', `${ _.escape(botData.username) } is already in use :(`, {
 				method: 'insertOrUpdateBot',
 				field: botData.username,
@@ -104,14 +109,14 @@ RocketChat.saveBot = function(userId, botData) {
 	} else {
 		// update bot acc
 		if (botData.username) {
-			RocketChat.setUsername(botData._id, botData.username);
+			setUsername(botData._id, botData.username);
 		}
 
 		if (botData.name) {
-			RocketChat.setRealName(botData._id, botData.name);
+			setRealName(botData._id, botData.name);
 		}
 
-		if (botData.password && botData.password.trim() && RocketChat.authz.hasPermission(userId, 'edit-other-user-password')) {
+		if (botData.password && botData.password.trim() && hasPermission(userId, 'edit-other-user-password')) {
 			Accounts.setPassword(botData._id, botData.password.trim());
 		}
 
