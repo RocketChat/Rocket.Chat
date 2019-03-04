@@ -7,7 +7,7 @@ import { hasPermission } from 'meteor/rocketchat:authorization';
 import { RateLimiter } from '../lib';
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
-const _setUsername = function(userId, u) {
+export const _setUsername = function(userId, u) {
 	const username = s.trim(u);
 	if (!userId || !username) {
 		return false;
