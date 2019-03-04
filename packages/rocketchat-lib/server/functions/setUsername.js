@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
@@ -86,7 +87,7 @@ export const _setUsername = function(userId, u) {
 };
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
-	[0](userId) {
-		return !userId || !hasPermission(userId, 'edit-other-user-info');
+	[0]() {
+		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
 	},
 });
