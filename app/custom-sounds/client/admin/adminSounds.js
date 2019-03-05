@@ -144,13 +144,20 @@ Template.adminSounds.events({
 		if ($audio && $audio[0] && $audio[0].play) {
 			$audio[0].play();
 		}
-	}, 'click .icon-stop-circled'(e) {
+	}, 'click .icon-pause-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
 		const $audio = $(`audio#${ this._id }`);
-		if ($audio && $audio[0] && $audio[0].play) {
+		console.log($audio);
+		if ($audio && $audio[0] && $audio[0].pause) {
 			$audio[0].pause();
 		}
+	}, 'click .icon-reset-circled'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		const $audio = $(`audio#${ this._id }`);
+		if ($audio && $audio[0] && $audio[0].pause) {
+			$audio[0].currentTime = 0;
+		}
 	},
-
 });
