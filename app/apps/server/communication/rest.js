@@ -115,6 +115,8 @@ export class AppsRestApi {
 					}
 
 					buff = Buffer.from(result.content, 'base64');
+				} else if (this.bodyParams.appId && this.bodyParams.version) {
+					// TODO: Figure it out
 				} else {
 					buff = fileHandler(this.request, 'app');
 				}
