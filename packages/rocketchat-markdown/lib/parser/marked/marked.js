@@ -59,6 +59,12 @@ renderer.blockquote = function(quote) {
 	return `<blockquote class="background-transparent-darker-before">${ quote }</blockquote>`;
 };
 
+const linkRenderer = renderer.link;
+renderer.link = function(href, title, text) {
+	const html = linkRenderer.call(renderer, href, title, text);
+	return html.replace(/^<a /, '<a target="_blank" rel="nofollow noopener noreferrer" ');
+};
+
 const highlight = function(code, lang) {
 	if (!lang) {
 		return code;
