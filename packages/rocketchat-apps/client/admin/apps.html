@@ -14,80 +14,69 @@
 				</label>
 			</div>
 			{{#requiresPermission 'manage-apps'}}
-				{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
-					<thead>
-						<tr>
-							<th class="js-sort rc-table-td--medium {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
-								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</div>
-							</th>
-							<th class="js-sort rc-table-td--medium {{#if searchSortBy 'category'}}is-sorting{{/if}}" data-sort="category">>
-								<div class="table-fake-th">{{_ "Category"}} {{> icon icon=(sortIcon 'category') }}</div>
-							</th>
-							<th class="rc-table-td">
-								<div class="table-fake-th">{{_ "Details"}} </div>
-							</th>
-							<th class="rc-table-td--small">
-							</th>
-						</tr>
-					</thead>
-					<tbody>
+				<div class="rc-apps-apps-container">
+					<div class="rc-apps-apps">
 						{{#each apps}}
-							<tr class="rc-table-tr manage" data-name="{{latest.name}}">
-								<td>
-									<div class="rc-table-wrapper">
+							<div class="rc-apps-app manage" data-name="{{latest.name}}">
+								<div class="rc-apps-app-content">
+									<div class="rc-apps-app-icon">
 										{{#if latest.iconFileData}}
 											<div class="rc-table-avatar" style="background-image:url(data:image/png;base64,{{latest.iconFileData}})"></div>
 										{{else}}
 											<div class="rc-table-avatar" style="background-image:url({{latest.iconFileContent}})"></div>
 										{{/if}}
-										<div class="rc-table-info">
-											<span class="rc-table-title">
-												{{latest.name}}
-											</span>
-											{{#if latest.author.name}}
-												<span class="rc-table-subtitle">by {{latest.author.name}}</span>
-											{{/if}}
-										</div>
 									</div>
-								</td>
-								<td>{{latest.categories}}</td>
-								<td>
-									<p class="rc-table-title">
-										{{#if latest.summary}}
-											{{latest.summary}}
-										{{else}}
-											{{latest.description}}
-										{{/if}}
-									</p>
-									{{#if latest.summary}}
-										<p>
-											{{latest.description}}
-										</p>
-									{{/if}}
-								</td>
-								<td>
-
-									{{#if $eq latest._installed true}}
-										{{> icon icon="checkmark-circled" block="rc-icon--default-size"}}
-									{{/if}}
-									{{#if renderDownloadButton latest}}
-										<div class="rc-apps-marketplace__wrap-actions">
-											{{> icon block="rc-icon--default-size rc-icon" icon="loading"}}
-											<button class="js-install apps-installer" data-app="{{appId}}">
-												{{> icon block="installer rc-icon--default-size" icon="circled-arrow-down"}}
-											</button>
+									<div class="rc-apps-app-info">
+										<div class="rc-apps-app-info-title">
+											{{latest.name}}
 										</div>
-									{{/if}}
-								</td>
-							</tr>
+										{{#if latest.author.name}}
+											<div class="rc-apps-app-info-subtitle">by {{latest.author.name}}</div>
+										{{/if}}
+
+										<!-- <p class="rc-table-title">
+											{{#if latest.summary}}
+												{{latest.summary}}
+											{{else}}
+												{{latest.description}}
+											{{/if}}
+										</p>
+										{{#if latest.summary}}
+											<p>
+												{{latest.description}}
+											</p>
+										{{/if}} -->
+									</div>
+									<div class="rc-apps-app-action">
+										{{#if $eq latest._installed true}}
+											<button class="js-configure rc-button rc-button--secondary rc-button--small" data-app="{{appId}}">
+												OPEN
+											</button>
+										{{/if}}
+										{{#if renderDownloadButton latest}}
+											<div class="rc-apps-app-action-install">
+												{{> icon block="rc-icon--default-size rc-icon" icon="loading"}}
+												<button class="js-install rc-button rc-button--primary rc-button--small" data-app="{{appId}}">
+													FREE
+												</button>
+											</div>
+										{{/if}}
+									</div>
+								</div>
+								<div class="rc-apps-app-categories">
+									{{#each latest.categories}}
+										<div class="rc-apps-app-category">{{.}}</div>
+									{{/each}}
+								</div>
+							</div>
 						{{/each}}
 						{{#if isLoading}}
-							<tr>
-								<td colspan="3" style="position: relative;">{{> loading}}</td>
-							</tr>
+							<div>
+								{{> loading}}
+							</div>
 						{{/if}}
-					</tbody>
-				{{/table}}
+					</div>
+				</div>
 			{{/requiresPermission}}
 		</div>
 	</section>
