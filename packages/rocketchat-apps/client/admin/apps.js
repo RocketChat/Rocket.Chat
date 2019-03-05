@@ -246,12 +246,10 @@ Template.apps.events({
 	'click .js-install'(e, template) {
 		e.stopPropagation();
 
-		const url = `${ HOST }/v1/apps/${ this.latest.id }/download/${ this.latest.version }`;
-
 		// play animation
 		e.currentTarget.parentElement.classList.add('loading');
 
-		APIClient.post('apps/', { url })
+		APIClient.post('apps/', { appId: this.latest.id, version: this.latest.version })
 			.then(() => {
 				getApps(template);
 				getInstalledApps(template);
