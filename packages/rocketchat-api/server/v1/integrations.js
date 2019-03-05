@@ -102,6 +102,68 @@ API.v1.addRoute('integrations.list', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('integrations.update', { authRequired: true }, {
+	put() {
+		check(this.bodyParams, Match.ObjectIncluding({
+			type: String,
+			name: String,
+			enabled: Boolean,
+			username: String,
+			urls: Match.Maybe([String]),
+			channel: String,
+			event: Match.Maybe(String),
+			triggerWords: Match.Maybe([String]),
+			alias: Match.Maybe(String),
+			avatar: Match.Maybe(String),
+			emoji: Match.Maybe(String),
+			token: Match.Maybe(String),
+			scriptEnabled: Boolean,
+			script: Match.Maybe(String),
+			targetChannel: Match.Maybe(String),
+			integrationId: Match.Maybe(String),
+			target_url: Match.Maybe(String),
+		}));
+
+		let integration;
+		switch (this.bodyParams.type) {
+			case 'webhook-outgoing':
+				if (this.bodyParams.target_url) {
+					integration = Integrations.findOne({ urls: this.bodyParams.target_url });
+				} else if (this.bodyParams.integrationId) {
+					integration = Integrations.findOne({ _id: this.bodyParams.integrationId });
+				}
+
+				if (!integration) {
+					return API.v1.failure('No integration found.');
+				}
+
+				Meteor.runAsUser(this.userId, () => {
+					Meteor.call('updateOutgoingIntegration', integration._id, this.bodyParams);
+				});
+
+				return API.v1.success({
+					integration,
+				});
+			case 'webhook-incoming':
+				integration = Integrations.findOne({ _id: this.bodyParams.integrationId });
+
+				if (!integration) {
+					return API.v1.failure('No integration found.');
+				}
+
+				Meteor.runAsUser(this.userId, () => {
+					Meteor.call('updateIncomingIntegration', integration._id. this.bodyParams);
+				});
+
+				return API.v1.success({
+					integration,
+				});
+			default:
+				return API.v1.failure('Invalid integration type.');
+		}
+	},
+});
+
 API.v1.addRoute('integrations.remove', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, Match.ObjectIncluding({

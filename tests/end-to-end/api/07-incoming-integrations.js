@@ -27,6 +27,27 @@ describe('Incoming Integrations', function() {
 			.end(done);
 	});
 
+	before((done) => {
+		request.put(api('integrations.update'))
+			.set(credentials)
+			.send({
+				type: 'webhook-incoming',
+				name: 'Incoming test',
+				enabled: true,
+				alias: 'test',
+				username: 'rocket.cat',
+				scriptEnabled: true,
+				channel: '#general',
+				integrationId: integration._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				integration = res.body.integration;
+			})
+			.end(done);
+	});
+
 	after((done) => {
 		request.post(api('integrations.remove'))
 			.set(credentials)
