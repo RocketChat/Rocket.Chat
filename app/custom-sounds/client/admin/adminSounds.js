@@ -144,5 +144,13 @@ Template.adminSounds.events({
 		if ($audio && $audio[0] && $audio[0].play) {
 			$audio[0].play();
 		}
+	}, 'click .icon-stop-circled'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		const $audio = $(`audio#${ this._id }`);
+		if ($audio && $audio[0] && $audio[0].play) {
+			$audio[0].pause();
+		}
 	},
+
 });

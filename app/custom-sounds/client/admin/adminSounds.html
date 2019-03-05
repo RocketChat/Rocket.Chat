@@ -34,7 +34,7 @@
 						<tbody>
 							{{#each customsounds}}
 							<tr>
-								<td width="95%">
+								<td width="90%">
 									<div class="rc-table-wrapper">
 										<div class="rc-table-info">
 											<span class="rc-table-title">
@@ -43,11 +43,12 @@
 										</div>
 									</div>
 								</td>
-								<td width="5%">
-									<div class="rc-table-wrapper">
-										{{>icon _id=_id icon="play" block="icon-play-circled"}}
-									</div>
-								</td>
+                                                                <td width="10%">
+                                                                        <div class="rc-table-wrapper">
+                                                                                {{>icon _id=_id icon="play" block="icon-play-circled"}}
+                                                                                {{>icon _id=_id icon="pause" block="icon-stop-circled"}}
+                                                                        </div>
+                                                                </td>
 							</tr>
 							{{else}}
 								{{# with searchText}}
