@@ -1177,6 +1177,8 @@
   "Favorites": "Favoriter",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Den här funktionen beror på \"Skicka besökarnavigationshistorik som ett meddelande\" för att aktiveras.",
   "Features_Enabled": "Funktioner aktiverade",
+  "FEDERATION_Domain": "Domän",
+  "FEDERATION_Status": "Status",
   "Field": "Fält",
   "Field_removed": "Fältet borttaget",
   "Field_required": "Fält krävs",
