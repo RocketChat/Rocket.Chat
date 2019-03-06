@@ -15,3 +15,7 @@ callbacks.add('afterSaveMessage', (message, room) => {
 	// mark message as read as well
 	ReadReceipt.markMessageAsReadBySender(message, room._id, message.u._id);
 });
+
+callbacks.add('afterReadMessages', (rid, { userId, lastSeen }) => {
+	ReadReceipt.markMessagesAsRead(rid, userId, lastSeen);
+});
