@@ -11,6 +11,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import * as Models from 'meteor/rocketchat:models';
 import { FileUpload as _FileUpload } from '../../lib/FileUpload';
 import { roomTypes } from 'meteor/rocketchat:utils';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 const cookie = new Cookies();
 
@@ -85,6 +86,9 @@ export const FileUpload = Object.assign(_FileUpload, {
 	avatarsOnValidate(file) {
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
+		}
+		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
@@ -207,6 +211,9 @@ export const FileUpload = Object.assign(_FileUpload, {
 	},
 
 	avatarsOnFinishUpload(file) {
+		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		}
 		// update file record to match user's username
 		const user = Models.Users.findOneById(file.userId);
 		const oldAvatar = Models.Avatars.findOneByName(user.username);
