@@ -1,3 +1,4 @@
+import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { RocketChatFile } from 'meteor/rocketchat:file';
@@ -9,7 +10,6 @@ import { _setRealName, _setUsername } from 'meteor/rocketchat:lib';
 import { templateVarHandler } from 'meteor/rocketchat:utils';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { slugify } from 'meteor/yasaricli:slugify';
 import _ from 'underscore';
 import LDAP from './ldap';
 
@@ -19,7 +19,7 @@ export function slug(text) {
 	if (settings.get('UTF8_Names_Slugify') !== true) {
 		return text;
 	}
-	text = slugify(text, '.');
+	text = limax(text, { replacement: '.' });
 	return text.replace(/[^0-9a-z-_.]/g, '');
 }
 

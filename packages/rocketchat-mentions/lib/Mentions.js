@@ -57,7 +57,9 @@ export default class {
 				return match;
 			}
 
-			return `${ prefix }<a class="mention-link" data-channel="${ name }">${ `#${ name }` }</a>`;
+			const channel = message.channels && message.channels.find((c) => c.name === name);
+			const roomNameorId = channel ? channel._id : name;
+			return `${ prefix }<a class="mention-link" data-channel="${ roomNameorId }">${ `#${ name }` }</a>`;
 		});
 	}
 	getUserMentions(str) {

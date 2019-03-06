@@ -1,3 +1,4 @@
+import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
@@ -13,7 +14,6 @@ import { Messages, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models'
 import { insertMessage } from 'meteor/rocketchat:lib';
 import { Readable } from 'stream';
 import path from 'path';
-import s from 'underscore.string';
 import fs from 'fs';
 import TurndownService from 'turndown';
 
@@ -968,7 +968,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 	_importChannel(channelToImport, startedByUserId) {
 		Meteor.runAsUser(startedByUserId, () => {
-			const existingRoom = Rooms.findOneByName(s.slugify(channelToImport.name));
+			const existingRoom = Rooms.findOneByName(limax(channelToImport.name));
 			// If the room exists or the name of it is 'general', then we don't need to create it again
 			if (existingRoom || channelToImport.name.toUpperCase() === 'GENERAL') {
 				channelToImport.rocketId = channelToImport.name.toUpperCase() === 'GENERAL' ? 'GENERAL' : existingRoom._id;

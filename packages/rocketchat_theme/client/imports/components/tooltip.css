@@ -1,5 +1,6 @@
 .rc-tooltip {
 	position: relative;
+	--translation-x: -50%;
 
 	&::before,
 	&::after {
@@ -9,7 +10,7 @@
 		left: 50%;
 
 		transition: all 0.18s ease-out 0.18s;
-		transform: translate(-50%, 10px);
+		transform: translate(var(--translation-x), 10px);
 		transform-origin: top;
 		pointer-events: none;
 
@@ -61,6 +62,16 @@
 			border-color: transparent transparent var(--tooltip-background)  transparent;
 		}
 	}
+
+	&--start,
+	.rtl &--end {
+		--translation-x: -10%;
+	}
+
+	&--end,
+	.rtl &--start {
+		--translation-x: -90%;
+	}
 }
 
 @media (min-width: 501px) {
@@ -69,7 +80,7 @@
 		&:hover::after,
 		&:focus::before,
 		&:focus::after {
-			transform: translate(-50%, 0);
+			transform: translate(var(--translation-x), 0);
 			pointer-events: auto;
 
 			opacity: 1;
