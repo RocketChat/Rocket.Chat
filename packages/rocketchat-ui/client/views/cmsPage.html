@@ -3,6 +3,26 @@
 		<div class="cms-page-close">
 			<a href="login" class="button primary"><i class="icon-cancel"></i></a>
 		</div>
+		{{>cmsPageStyle}}
 		{{{page}}}
 	</div>
+</template>
+
+<template name="cmsPageStyle">
+	<h1>Hello</h1>
+	<style>
+		h1 {
+			margin:20px;
+			font-size: 1.8em;
+		}
+
+		h2 {
+			margin:20px;
+			font-size: 1.4px;
+		}
+		
+		p {
+			margin-left: 30px;
+		}
+	</style>>
 </template>
