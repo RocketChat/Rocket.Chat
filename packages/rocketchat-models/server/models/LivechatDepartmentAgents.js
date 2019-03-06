@@ -78,7 +78,7 @@ export class LivechatDepartmentAgents extends Base {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
-			return [];
+			return;
 		}
 
 		const onlineUsers = Users.findOnlineUserFromList(_.pluck(agents, 'username'));
@@ -92,36 +92,8 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		const depAgents = this.find(query);
-
-		if (depAgents) {
-			return depAgents;
-		} else {
-			return [];
-		}
+		return this.find(query);
 	}
-
-	departmentIsOnline(departmentId) {
-		const agents = this.findByDepartmentId(departmentId).fetch();
-
-		if (agents.length === 0) {
-			return false;
-		}
-
-		const onlineUsers = Users.findOnlineUserFromList(_.pluck(agents, 'username'));
-
-		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
-		const query = {
-			departmentId,
-			username: {
-				$in: onlineUsernames,
-			},
-		};
-
-		const depAgents = this.find(query);
-		return depAgents.count() > 0;
-	}
-
 
 	findUsersInQueue(usersList) {
 		const query = {};

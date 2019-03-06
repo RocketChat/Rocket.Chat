@@ -18,7 +18,7 @@ API.v1.addRoute('livechat/config', {
 			const status = online();
 
 			const { token } = this.queryParams;
-			const guest = findGuest(token);
+			const guest = token && findGuest(token);
 
 			let room;
 			let agent;

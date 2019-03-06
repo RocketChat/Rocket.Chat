@@ -86,7 +86,8 @@ export const Livechat = {
 				return true;
 			}
 
-			return LivechatDepartmentAgents.departmentIsOnline(dept._id);
+			const onlineAgents = LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
+			return onlineAgents && onlineAgents.count() > 0;
 		});
 	},
 	getRoom(guest, message, roomInfo, agent) {
