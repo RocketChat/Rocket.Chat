@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
+import streamBuffers from 'stream-buffers';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import sharp from 'sharp';
@@ -240,9 +241,12 @@ export const FileUpload = Object.assign(_FileUpload, {
 			return file;
 		}
 
-		const ext = mime.extension(file.type);
-		if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
-			file.name = `${ file.name }.${ ext }`;
+		// This file type can be pretty much anything, so it's better if we don't mess with the file extension
+		if (file.type !== 'application/octet-stream') {
+			const ext = mime.extension(file.type);
+			if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
+				file.name = `${ file.name }.${ ext }`;
+			}
 		}
 
 		return file;
@@ -269,6 +273,22 @@ export const FileUpload = Object.assign(_FileUpload, {
 		}
 		res.writeHead(404);
 		res.end();
+	},
+
+	getBuffer(file, cb) {
+		const store = this.getStoreByName(file.store);
+
+		if (!store || !store.get) { cb(new Error('Store is invalid'), null); }
+
+		const buffer = new streamBuffers.WritableStreamBuffer({
+			initialSize: file.size,
+		});
+
+		buffer.on('finish', () => {
+			cb(null, buffer.getContents());
+		});
+
+		store.copy(file, buffer);
 	},
 
 	copy(file, targetFile) {

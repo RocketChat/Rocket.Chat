@@ -141,6 +141,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		let path = urlObj.pathname;
 		if (urlObj.query != null) {
 			path += `?${ urlObj.query }`;
+			urlObj.search = `?${ urlObj.query }`;
 		}
 		urlObj.path = path;
 	}

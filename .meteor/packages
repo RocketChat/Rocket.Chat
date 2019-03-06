@@ -64,6 +64,7 @@ rocketchat:emoji-custom
 rocketchat:emoji-emojione
 rocketchat:error-handler
 rocketchat:favico
+rocketchat:federation
 rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
@@ -187,7 +188,6 @@ rocketchat:push
 raix:ui-dropped-event
 steffo:meteor-accounts-saml
 todda00:friendly-slugs
-yasaricli:slugify
 yasinuslu:blaze-meta
 rocketchat:e2e
 

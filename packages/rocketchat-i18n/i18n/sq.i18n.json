@@ -1127,6 +1127,8 @@
   "Favorites": "Të preferuarat",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ky funksion varet nga \"Dërgo historinë e lundrimit të vizitorit si mesazh\" për t'u aktivizuar.",
   "Features_Enabled": "Features Enabled",
+  "FEDERATION_Domain": "fushë",
+  "FEDERATION_Status": "status",
   "Field": "fushë",
   "Field_removed": "Field hequr",
   "Field_required": "Fusha e kërkuar",

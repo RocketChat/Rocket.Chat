@@ -1,21 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import _ from 'underscore';
 import './lazyloadImage';
-
-export const fixCordova = function(url) {
-	if (url && url.indexOf('data:image') === 0) {
-		return url;
-	}
-
-	if (Meteor.settings.public.sandstorm || url.match(/^(https?:)?\/\//i)) {
-		return url;
-	} else if (navigator.userAgent.indexOf('Electron') > -1) {
-		return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
-	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + url;
-	}
-};
 
 const getEl = (el, instance) => (instance && instance.firstNode) || el;
 
@@ -23,7 +8,7 @@ const loadImage = (el, instance) => {
 	const element = getEl(el, instance);
 	const img = new Image();
 	const src = element.getAttribute('data-src');
-	img.onload = function() {
+	img.onload = () => {
 		if (instance) {
 			instance.loaded.set(true);
 		} else {
@@ -32,7 +17,7 @@ const loadImage = (el, instance) => {
 		}
 		element.removeAttribute('data-src');
 	};
-	img.src = fixCordova(src);
+	img.src = src;
 };
 
 const isVisible = (el, instance) => {
