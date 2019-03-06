@@ -123,6 +123,18 @@
 						font-weight: 500;
 						line-height: 12px;
 					}
+
+					.js-install-check {
+						.rc-apps-app-install-text-install {
+							display: none;
+						}
+					}
+
+					.js-install {
+						.rc-apps-app-install-text-free {
+							display: none;
+						}
+					}
 				}
 			}
 

@@ -254,6 +254,11 @@ Template.apps.events({
 	'click [data-button="install"]'() {
 		FlowRouter.go('/admin/app/install');
 	},
+	'click .js-install-check'(e) {
+		e.stopPropagation();
+
+		e.currentTarget.classList.replace('js-install-check', 'js-install');
+	},
 	'click .js-install'(e, template) {
 		e.stopPropagation();
 

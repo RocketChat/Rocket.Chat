@@ -62,8 +62,9 @@
 											{{#if renderDownloadButton latest}}
 												<div class="rc-apps-app-action-install">
 													{{> icon block="rc-icon--default-size rc-icon" icon="loading"}}
-													<button class="js-install rc-button rc-button--primary rc-button--small" data-app="{{appId}}">
-														{{_ "Free"}}
+													<button class="js-install-check rc-button rc-button--primary rc-button--small" data-app="{{appId}}">
+														<span class="rc-apps-app-install-text-free">{{_ "Free"}}</span>
+														<span class="rc-apps-app-install-text-install">{{_ "Install"}}</span>
 													</button>
 												</div>
 											{{/if}}
