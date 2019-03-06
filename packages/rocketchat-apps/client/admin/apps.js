@@ -56,6 +56,8 @@ const getInstalledApps = (instance) => {
 	APIClient.get('apps').then((data) => {
 		const apps = data.apps.map((app) => ({ latest: app }));
 
+		apps.forEach((app) => app.latest._installed = true);
+
 		instance.installedApps.set(apps);
 	});
 };

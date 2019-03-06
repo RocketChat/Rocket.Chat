@@ -70,11 +70,13 @@
 											{{/if}}
 										</div>
 									</div>
-									<div class="rc-apps-app-categories">
-										{{#each latest.categories}}
-											<div class="rc-apps-app-category">{{.}}</div>
-										{{/each}}
-									</div>
+									{{#if latest.categories}}
+										<div class="rc-apps-app-categories">
+											{{#each latest.categories}}
+												<div class="rc-apps-app-category">{{.}}</div>
+											{{/each}}
+										</div>
+									{{/if}}
 								</div>
 							{{/each}}
 						</div>

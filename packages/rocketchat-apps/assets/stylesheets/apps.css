@@ -83,9 +83,16 @@
 			margin: 5px;
 			padding: 15px 20px;
 
+			cursor: pointer;
+
+			border: 2px solid #f3f5f8;
 			background: #f3f5f8;
 			align-items: center;
 			flex-grow: 1;
+
+			&:hover {
+				background: #f9fafc;
+			}
 
 			.rc-apps-app-content {
 				display: flex;
