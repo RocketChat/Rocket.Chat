@@ -63,6 +63,13 @@
 		justify-content: center;
 	}
 
+	.rc-apps-loading {
+		position: relative;
+
+		height: 100%;
+		flex-grow: 1;
+	}
+
 	.rc-apps-apps {
 		display: flex;
 
