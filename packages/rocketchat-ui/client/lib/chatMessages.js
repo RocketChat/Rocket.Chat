@@ -29,6 +29,36 @@ Meteor.startup(() => {
 	});
 });
 
+export const getPermaLinks = async(replies) => {
+	const promises = replies.map(async(reply) =>
+		MessageAction.getPermaLink(reply._id)
+	);
+
+	return Promise.all(promises);
+};
+
+export const mountReply = async(msg, input) => {
+	const replies = $(input).data('reply');
+	const mentionUser = $(input).data('mention-user') || false;
+
+	if (replies && replies.length) {
+		const permalinks = await getPermaLinks(replies);
+
+		replies.forEach(async(reply, replyIndex) => {
+			if (reply !== undefined) {
+				msg += `[ ](${ permalinks[replyIndex] }) `;
+
+				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
+				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
+					msg += `@${ reply.u.username } `;
+				}
+			}
+		});
+	}
+
+	return msg;
+};
+
 export const ChatMessages = class ChatMessages {
 	constructor() {
 
@@ -214,16 +244,9 @@ export const ChatMessages = class ChatMessages {
 			$('.message.first-unread').removeClass('first-unread');
 
 			let msg = '';
-			const reply = $(input).data('reply');
-			const mentionUser = $(input).data('mention-user') || false;
 
-			if (reply !== undefined) {
-				msg = `[ ](${ await MessageAction.getPermaLink(reply._id) }) `;
-				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
-					msg += `@${ reply.u.username } `;
-				}
-			}
+			msg += await mountReply(msg, input);
+
 			msg += input.value;
 			$(input)
 				.removeData('reply')

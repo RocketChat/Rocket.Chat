@@ -180,6 +180,7 @@
 		"ldapjs": "^1.0.2",
 		"less": "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6",
 		"less-plugin-autoprefix": "^2.0.0",
+		"limax": "^1.7.0",
 		"localforage": "^1.7.3",
 		"lodash.property": "^4.4.2",
 		"lokijs": "^1.5.5",
@@ -195,6 +196,7 @@
 		"moment": "^2.22.2",
 		"moment-timezone": "^0.5.23",
 		"node-dogstatsd": "^0.0.7",
+		"node-rsa": "^1.0.3",
 		"object-path": "^0.11.4",
 		"pdfjs-dist": "^2.0.943",
 		"photoswipe": "^4.1.2",
@@ -206,6 +208,7 @@
 		"semver": "^5.6.0",
 		"sharp": "^0.21.0",
 		"speakeasy": "^2.0.0",
+		"stream-buffers": "^3.0.2",
 		"subscriptions-transport-ws": "^0.9.11",
 		"tar-stream": "^1.6.2",
 		"toastr": "^2.1.4",
@@ -215,6 +218,7 @@
 		"ua-parser-js": "^0.7.19",
 		"underscore": "^1.9.1",
 		"underscore.string": "^3.3.5",
+		"uuid": "^3.3.2",
 		"webdav": "^2.0.0",
 		"wolfy87-eventemitter": "^5.2.5",
 		"xml-crypto": "^1.0.2",
@@ -223,5 +227,11 @@
 		"xmlbuilder": "^10.1.1",
 		"xmldom": "^0.1.27",
 		"yaqrcode": "^0.2.1"
+	},
+	"meteor": {
+		"mainModule": {
+			"client": "client/main.js",
+			"server": "server/main.js"
+		}
 	}
 }

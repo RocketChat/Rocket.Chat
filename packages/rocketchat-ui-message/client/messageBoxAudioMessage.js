@@ -4,7 +4,8 @@ import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Template } from 'meteor/templating';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
-import { RoomManager, AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
+import { AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
+import { RoomManager } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import './messageBoxAudioMessage.html';
 

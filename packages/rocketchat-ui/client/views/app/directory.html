@@ -3,14 +3,25 @@
 		{{> header sectionName="Directory" hideHelp=true fullpage=true}}
 		<div class="rc-table-content">
 			{{>tabs tabs=tabsData}}
-			<div class="rc-input rc-input--small rc-directory-search">
-				<label class="rc-input__label">
-					<div class="rc-input__wrapper">
-						{{> icon icon="magnifier" block="rc-input__icon" }}
-						<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
-					</div>
-				</label>
+
+			<div class="rc-directory-fields">
+				{{#if $eq searchType 'users'}}
+					{{#if federationEnabled}}
+						<label class="rc-select rc-directory-dropdown rc-directory-search">
+							<select class="rc-select__element js-setting-data js-workspace" name="search-type">
+								<option class="rc-select__option" value="local" selected="true">{{_ "Local_Workspace"}}</option>
+								<option class="rc-select__option" value="all">{{_ "Every_Workspace"}}</option>
+							</select>
+							{{> icon block="rc-select__arrow" icon="arrow-down" }}
+						</label>
+					{{/if}}
+				{{/if}}
+				<div class="rc-input rc-input--small rc-directory-search">
+					{{> icon icon="magnifier" block="rc-input__icon" }}
+					<input type="text" class="rc-input__element rc-input__element--small js-search" name="message-search" id="message-search" placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}} autocomplete="off">
+				</div>
 			</div>
+
 			{{#if $eq searchType 'channels'}}
 				{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 					<thead>
@@ -80,6 +91,14 @@
 							<th class="js-sort {{#if searchSortBy 'username'}}is-sorting{{/if}}" data-sort="username">
 								<div class="table-fake-th"><span>{{_ "Username"}}</span> {{> icon icon=(sortIcon 'username') }}</div>
 							</th>
+							<th class="js-sort {{#if searchSortBy 'email'}}is-sorting{{/if}}" data-sort="email">
+								<div class="table-fake-th"><span>{{_ "Email"}}</span> {{> icon icon=(sortIcon 'email') }}</div>
+							</th>
+							{{#if $eq searchWorkspace 'all'}}
+							<th class="js-sort {{#if searchSortBy 'domain'}}is-sorting{{/if}}" data-sort="domain">
+								<div class="table-fake-th"><span>{{_ "Domain"}}</span> {{> icon icon=(sortIcon 'domain') }}</div>
+							</th>
+							{{/if}}
 							<th class="js-sort table-column-date {{#if searchSortBy 'createdAt'}}is-sorting{{/if}}" data-sort="createdAt">
 								<div class="table-fake-th"><span>{{_ "Created_at"}}</span> {{> icon icon=(sortIcon 'createdAt') }}</div>
 							</th>
@@ -99,6 +118,10 @@
 									</div>
 								</td>
 								<td>{{username}}</td>
+								<td>{{email}}</td>
+								{{#if $eq searchWorkspace 'all'}}
+								<td>{{domain}}</td>
+								{{/if}}
 								<td>{{createdAt}}</td>
 							</tr>
 						{{else}}

@@ -1,5 +1,7 @@
+
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Rooms } from 'meteor/rocketchat:models';
 import { canAccessRoom } from 'meteor/rocketchat:authorization';
 
@@ -27,3 +29,11 @@ Meteor.methods({
 		return room;
 	},
 });
+
+DDPRateLimiter.addRule({
+	type: 'method',
+	name: 'getRoomById',
+	userId() {
+		return true;
+	},
+}, 1, 60000);

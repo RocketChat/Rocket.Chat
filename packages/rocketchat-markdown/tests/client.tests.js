@@ -26,14 +26,16 @@ const bold = {
 	'*Hello': '*Hello',
 	'Hello*': 'Hello*',
 	'He*llo': 'He*llo',
-	'***Hello***': '***Hello***',
-	'***Hello**': '***Hello**',
+	'***Hello***': `*${ boldWrapper('Hello') }*`,
+	'***Hello**': `*${ boldWrapper('Hello') }`,
 	'*Hello* this is dog': `${ boldWrapper('Hello') } this is dog`,
 	'Rocket cat says *Hello*': `Rocket cat says ${ boldWrapper('Hello') }`,
 	'He said *Hello* to her': `He said ${ boldWrapper('Hello') } to her`,
 	'**Hello** this is dog': `${ boldWrapper('Hello') } this is dog`,
 	'Rocket cat says **Hello**': `Rocket cat says ${ boldWrapper('Hello') }`,
 	'He said **Hello** to her': `He said ${ boldWrapper('Hello') } to her`,
+	'He was a**nn**oyed': `He was a${ boldWrapper('nn') }oyed`,
+	'There are two o in f*oo*tball': `There are two o in f${ boldWrapper('oo') }tball`,
 };
 
 const italic = {

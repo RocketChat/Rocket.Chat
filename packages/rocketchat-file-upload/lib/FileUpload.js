@@ -14,8 +14,10 @@ export const FileUpload = {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
+
 		// livechat users can upload files but they don't have an userId
-		const user = file.userId ? Meteor.user() : null;
+		const user = file.userId ? Meteor.users.findOne(file.userId) : null;
+
 		const room = Rooms.findOneById(file.rid);
 		const directMessageAllow = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');

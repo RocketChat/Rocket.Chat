@@ -8,7 +8,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, getUserPreference, handleError } from 'meteor/rocketchat:utils';
 import { WebRTC } from 'meteor/rocketchat:webrtc';
-import { ChatSubscription, ChatRoom, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 import {
 	fireGlobalEvent,
 	RoomHistoryManager,
@@ -714,25 +714,16 @@ Template.room.events({
 			return;
 		}
 		const channel = $(e.currentTarget).data('channel');
-		if (channel != null) {
+		if (channel) {
 			if (Layout.isEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
 			}
-
-			const room = ChatRoom.findOne({ name: channel }) || ChatRoom.findOne({ _id: channel });
-			if (room) {
-				if (Layout.isEmbedded()) {
-					fireGlobalEvent('click-mention-link', { path: roomTypes.getRouteLink(room.t, { name: room.name }), channel });
-				}
-
-				FlowRouter.goToRoomById(room._id);
-			}
+			FlowRouter.goToRoomById(channel);
 			return;
-		} else {
-			const username = $(e.currentTarget).data('username');
-
-			openProfileTabOrOpenDM(e, instance, username);
 		}
+		const username = $(e.currentTarget).data('username');
+
+		openProfileTabOrOpenDM(e, instance, username);
 	},
 
 	'click .image-to-download'(event) {
@@ -790,7 +781,9 @@ Template.room.events({
 			});
 		}
 
-		fileUpload(filesToUpload);
+		const { input } = chatMessages[RoomManager.openedRoom];
+
+		fileUpload(filesToUpload, input);
 	},
 
 	'load img'(e, template) {

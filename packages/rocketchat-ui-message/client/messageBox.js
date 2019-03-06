@@ -293,16 +293,30 @@ Template.messageBox.events({
 			input.selectionEnd = caretPos + emojiValue.length;
 		});
 	},
-	'focus .js-input-message'() {
+	'focus .js-input-message'(event, instance) {
 		KonchatNotification.removeRoomNotification(this._id);
+		if (chatMessages[this._id]) {
+			chatMessages[this._id].input = instance.find('.js-input-message');
+		}
+	},
+	'click .cancel-reply'(event, instance) {
+
+		const input = instance.find('.js-input-message');
+		const messages = $(input).data('reply');
+		const filtered = messages.filter((msg) => msg._id !== this._id);
+
+		$(input)
+			.data('reply', filtered)
+			.trigger('dataChange');
 	},
 	'keyup .js-input-message'(event, instance) {
 		chatMessages[this._id].keyup(this._id, event, instance);
 		instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
 	},
 	'paste .js-input-message'(event, instance) {
+		const { $input } = chatMessages[RoomManager.openedRoom];
+		const [input] = $input;
 		setTimeout(() => {
-			const { input } = chatMessages[RoomManager.openedRoom];
 			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
 		}, 50);
 
@@ -320,7 +334,7 @@ Template.messageBox.events({
 
 		if (files.length) {
 			event.preventDefault();
-			fileUpload(files);
+			fileUpload(files, input);
 			return;
 		}
 

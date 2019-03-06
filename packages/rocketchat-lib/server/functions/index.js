@@ -24,7 +24,7 @@ export { sendMessage } from './sendMessage';
 export { setEmail } from './setEmail';
 export { setRealName, _setRealName } from './setRealName';
 export { setUserAvatar } from './setUserAvatar';
-export { setUsername } from './setUsername';
+export { _setUsername, setUsername } from './setUsername';
 export { unarchiveRoom } from './unarchiveRoom';
 export { updateMessage } from './updateMessage';
 export { validateCustomFields } from './validateCustomFields';
