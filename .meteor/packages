@@ -64,6 +64,7 @@ rocketchat:emoji-custom
 rocketchat:emoji-emojione
 rocketchat:error-handler
 rocketchat:favico
+rocketchat:federation
 rocketchat:file
 rocketchat:file-upload
 rocketchat:github-enterprise
