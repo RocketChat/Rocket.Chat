@@ -17,7 +17,8 @@ function Invite(command, params, item) {
 	if (command !== 'invite' || !Match.test(params, String)) {
 		return;
 	}
-	const usernames = params.split(/[\s,]/).map((username) => username.replace(/^@/, '')).filter((a) => a !== '');
+
+	const usernames = params.split(/[\s,]/).map((username) => username.replace(/(^@)|( @)/, '')).filter((a) => a !== '');
 	if (usernames.length === 0) {
 		return;
 	}
