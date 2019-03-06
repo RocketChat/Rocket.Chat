@@ -39,6 +39,10 @@ const getApps = (instance) => {
 	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
 		.then((response) => response.json())
 		.then((data) => {
+			if (instance.searchType.get() !== 'marketplace') {
+				return;
+			}
+
 			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
 
 			instance.isLoading.set(false);
@@ -232,6 +236,7 @@ Template.apps.helpers({
 					getApps(instance);
 				} else {
 					instance.apps.set(instance.installedApps.get());
+					instance.isLoading.set(false);
 				}
 			},
 		};
