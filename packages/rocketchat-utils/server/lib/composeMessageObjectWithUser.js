@@ -1,7 +1,11 @@
 import { Users } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 
-const getNameOfUser = (username) => Users.findOneByUsername(username, { fields: { name: 1 } });
+const getUserByUsername = (username) => Users.findOneByUsername(username, { fields: { name: 1 } });
+const getNameOfUser = (username) => {
+	const user = getUserByUsername(username);
+	return user ? user.name : undefined;
+};
 
 export const composeMessageObjectWithUser = function(message, userId) {
 	if (message) {
@@ -18,7 +22,7 @@ export const composeMessageObjectWithUser = function(message, userId) {
 		}
 		if (message.reactions && Object.keys(message.reactions).length && settings.get('UI_Use_Real_Name')) {
 			Object.keys(message.reactions).forEach((reaction) => {
-				const names = message.reactions[reaction].usernames.map((username) => getNameOfUser(username).name);
+				const names = message.reactions[reaction].usernames.map(getNameOfUser);
 				message.reactions[reaction].names = names;
 			});
 		}
