@@ -2,8 +2,9 @@ import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t } from 'meteor/rocketchat:utils';
+import { t, Info, APIClient } from 'meteor/rocketchat:utils';
 import { AppEvents } from '../communication';
+import { Apps } from '../orchestrator';
 
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const HOST = 'https://marketplace.rocket.chat';
@@ -35,7 +36,7 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 const getApps = (instance) => {
 	instance.isLoading.set(true);
 
-	fetch(`${ HOST }/v1/apps?version=${ RocketChat.Info.marketplaceApiVersion }`)
+	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
 		.then((response) => response.json())
 		.then((data) => {
 			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
@@ -48,7 +49,7 @@ const getApps = (instance) => {
 
 const getInstalledApps = (instance) => {
 
-	RocketChat.API.get('apps').then((data) => {
+	APIClient.get('apps').then((data) => {
 		const apps = data.apps.map((app) => ({ latest: app }));
 
 		instance.installedApps.set(apps);
@@ -108,15 +109,15 @@ Template.apps.onCreated(function() {
 		instance.apps.set(apps);
 	};
 
-	window.Apps.getWsListener().registerListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	window.Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, instance.onAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
 });
 
 Template.apps.onDestroyed(function() {
 	const instance = this;
 
-	window.Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	window.Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
 });
 
 Template.apps.helpers({
@@ -256,7 +257,7 @@ Template.apps.events({
 		// play animation
 		e.currentTarget.parentElement.classList.add('loading');
 
-		RocketChat.API.post('apps/', { url })
+		APIClient.post('apps/', { url })
 			.then(() => {
 				getApps(template);
 				getInstalledApps(template);

@@ -1,5 +1,8 @@
 import s from 'underscore.string';
 import { Logger } from 'meteor/rocketchat:logger';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 const logger = new Logger('getFullUserData');
 
@@ -28,7 +31,7 @@ const fullFields = {
 let publicCustomFields = {};
 let customFields = {};
 
-RocketChat.settings.get('Accounts_CustomFields', (key, value) => {
+settings.get('Accounts_CustomFields', (key, value) => {
 	publicCustomFields = {};
 	customFields = {};
 
@@ -50,11 +53,11 @@ RocketChat.settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
-RocketChat.getFullUserData = function({ userId, filter, limit: l }) {
+export const getFullUserData = function({ userId, filter, limit: l }) {
 	const username = s.trim(filter);
-	const userToRetrieveFullUserData = RocketChat.models.Users.findOneByUsername(username);
+	const userToRetrieveFullUserData = Users.findOneByUsername(username);
 	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
-	const viewFullOtherUserInfo = RocketChat.authz.hasPermission(userId, 'view-full-other-user-info');
+	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
 	const limit = !viewFullOtherUserInfo ? 1 : l;
 
 	if (!username && limit <= 1) {
@@ -72,11 +75,11 @@ RocketChat.getFullUserData = function({ userId, filter, limit: l }) {
 	};
 
 	if (!username) {
-		return RocketChat.models.Users.find({}, options);
+		return Users.find({}, options);
 	}
 	if (limit === 1) {
-		return RocketChat.models.Users.findByUsername(username, options);
+		return Users.findByUsername(username, options);
 	}
 	const usernameReg = new RegExp(s.escapeRegExp(username), 'i');
-	return RocketChat.models.Users.findByUsernameNameOrEmailAddress(usernameReg, options);
+	return Users.findByUsernameNameOrEmailAddress(usernameReg, options);
 };

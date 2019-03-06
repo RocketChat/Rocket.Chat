@@ -9,7 +9,9 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'tap:i18n',
 		'kadira:flow-router',
+		'kadira:blaze-layout',
 		'rocketchat:version',
+		'rocketchat:callbacks',
 		'rocketchat:models',
 		'rocketchat:settings',
 	]);

@@ -15,9 +15,9 @@ Package.on_use(function(api) {
 		'routepolicy',
 		'webapp',
 		'rocketchat:lib',
+		'rocketchat:models',
 		'service-configuration',
 	], 'server');
-
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });

@@ -8,6 +8,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, getUserPreference, handleError } from 'meteor/rocketchat:utils';
 import { WebRTC } from 'meteor/rocketchat:webrtc';
+
 import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 import {
 	fireGlobalEvent,
@@ -495,7 +496,7 @@ Template.room.events({
 		roomTypes.openRouteLink('d', { name: this._arguments[1].u.username }, { ...FlowRouter.current().queryParams, reply: message._id });
 	},
 	'click, touchend'(e, t) {
-		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
+		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
 	'click .messages-container-main'() {
@@ -713,16 +714,14 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const channel = $(e.currentTarget).data('channel');
-		if (channel != null) {
+		const roomNameOrId = $(e.currentTarget).data('channel');
+		if (roomNameOrId) {
 			if (Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: roomNameOrId }), channel: roomNameOrId });
 			}
-
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
+			FlowRouter.goToRoomById(roomNameOrId);
 			return;
 		}
-
 		const username = $(e.currentTarget).data('username');
 
 		openProfileTabOrOpenDM(e, instance, username);
@@ -783,7 +782,9 @@ Template.room.events({
 			});
 		}
 
-		fileUpload(filesToUpload);
+		const { input } = chatMessages[RoomManager.openedRoom];
+
+		fileUpload(filesToUpload, input);
 	},
 
 	'load img'(e, template) {
@@ -968,6 +969,9 @@ Template.room.onCreated(function() {
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
+	if (this.messageObserver) {
+		this.messageObserver.stop();
+	}
 	window.removeEventListener('resize', this.onWindowResize);
 });
 

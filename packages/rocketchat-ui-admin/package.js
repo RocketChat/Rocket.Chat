@@ -16,7 +16,13 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'templating',
 		'rocketchat:utils',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:ui-cached-collection',
+		'rocketchat:authorization',
+		'rocketchat:channel-settings',
+		'rocketchat:ui-utils',
 	]);
 	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');

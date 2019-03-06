@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Notifications } from 'meteor/rocketchat:notifications';
 import { updateEmojiCustom } from '../lib/emojiCustom';
 
 Meteor.startup(() =>
-	RocketChat.Notifications.onLogged('updateEmojiCustom', (data) => updateEmojiCustom(data.emojiData))
+	Notifications.onLogged('updateEmojiCustom', (data) => updateEmojiCustom(data.emojiData))
 );

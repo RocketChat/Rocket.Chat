@@ -1,9 +1,9 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChat, RocketChatTabBar } from 'meteor/rocketchat:lib';
+import { RocketChatTabBar, SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
 import { Tracker } from 'meteor/tracker';
+import { EmojiCustom } from 'meteor/rocketchat:models';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { SideNav } from 'meteor/rocketchat:ui';
 import s from 'underscore.string';
 
 Template.adminEmoji.helpers({
@@ -44,7 +44,7 @@ Template.adminEmoji.helpers({
 	onTableItemClick() {
 		const instance = Template.instance();
 		return function({ _id }) {
-			instance.tabBarData.set(RocketChat.models.EmojiCustom.findOne({ _id }));
+			instance.tabBarData.set(EmojiCustom.findOne({ _id }));
 			instance.tabBar.open('admin-emoji-info');
 		};
 	},
@@ -60,7 +60,7 @@ Template.adminEmoji.onCreated(function() {
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['emoji-custom'],
 		id: 'add-emoji',
 		i18nTitle: 'Custom_Emoji_Add',
@@ -69,7 +69,7 @@ Template.adminEmoji.onCreated(function() {
 		order: 1,
 	});
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['emoji-custom'],
 		id: 'admin-emoji-info',
 		i18nTitle: 'Custom_Emoji_Info',
@@ -96,7 +96,7 @@ Template.adminEmoji.onCreated(function() {
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.EmojiCustom.find(query, { limit, sort: { name: 1 } }).fetch();
+		return EmojiCustom.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
 });
 
