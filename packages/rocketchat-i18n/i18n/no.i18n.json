@@ -1128,6 +1128,8 @@
   "Favorites": "Favoritter",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Denne funksjonen avhenger av \"Send besøkende navigasjonshistorikk som en melding\" for å være aktivert.",
   "Features_Enabled": "Funksjoner aktivert",
+  "FEDERATION_Domain": "Domene",
+  "FEDERATION_Status": "Status",
   "Field": "Felt",
   "Field_removed": "Felt fjernet",
   "Field_required": "Felt kreves",
