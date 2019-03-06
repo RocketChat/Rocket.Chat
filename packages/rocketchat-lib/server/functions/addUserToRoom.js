@@ -14,6 +14,10 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
+		// Add a new event, with an optional inviter
+		callbacks.run('beforeAddedToRoom', { user, inviter }, room);
+
+		// Keep the current event
 		callbacks.run('beforeJoinRoom', user, room);
 	}
 
@@ -47,6 +51,10 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 
 	if (room.t === 'c' || room.t === 'p') {
 		Meteor.defer(function() {
+			// Add a new event, with an optional inviter
+			callbacks.run('afterAddedToRoom', { user, inviter }, room);
+
+			// Keep the current event
 			callbacks.run('afterJoinRoom', user, room);
 		});
 	}

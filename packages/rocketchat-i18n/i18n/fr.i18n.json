@@ -1128,6 +1128,8 @@
   "Favorites": "Favoris",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Cette fonctionnalité dépend de \"Envoyer l'historique de navigation du visiteur en tant que message\" à activer.",
   "Features_Enabled": "Fonctionnalités activées",
+  "FEDERATION_Domain": "Domaine",
+  "FEDERATION_Status": "Statut",
   "Field": "Champ",
   "Field_removed": "Champ supprimé",
   "Field_required": "Champs requis",

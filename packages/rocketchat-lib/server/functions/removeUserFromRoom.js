@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Rooms, Messages, Subscriptions } from 'meteor/rocketchat:models';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 
-export const removeUserFromRoom = function(rid, user) {
+export const removeUserFromRoom = function(rid, user, options = {}) {
 	const room = Rooms.findOneById(rid);
 
 	if (room) {
@@ -12,7 +12,13 @@ export const removeUserFromRoom = function(rid, user) {
 
 		if (subscription) {
 			const removedUser = user;
-			Messages.createUserLeaveWithRoomIdAndUser(rid, removedUser);
+			if (options.byUser) {
+				Messages.createUserRemovedWithRoomIdAndUser(rid, user, {
+					u: options.byUser,
+				});
+			} else {
+				Messages.createUserLeaveWithRoomIdAndUser(rid, removedUser);
+			}
 		}
 
 		if (room.t === 'l') {

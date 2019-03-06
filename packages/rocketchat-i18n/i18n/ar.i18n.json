@@ -1127,6 +1127,8 @@
   "Favorites": "المفضلة",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "تعتمد هذه الميزة على \"إرسال محفوظات تنقل الزائر كرسالة\" ليتم تمكينها.",
   "Features_Enabled": "الميزات الممكنة",
+  "FEDERATION_Domain": "نطاق",
+  "FEDERATION_Status": "الحالة",
   "Field": "حقل",
   "Field_removed": "إزالة الميدان",
   "Field_required": "حقل مطلوب",
