@@ -9,15 +9,6 @@ import { callbacks } from 'meteor/rocketchat:callbacks';
 
 Template.chatRoomItem.helpers({
 	roomData() {
-		let { name } = this;
-		if (this.fname) {
-			const realNameForDirectMessages = this.t === 'd' && settings.get('UI_Use_Real_Name');
-			const realNameForChannel = this.t !== 'd' && settings.get('UI_Allow_room_names_with_special_chars');
-			if (realNameForDirectMessages || realNameForChannel) {
-				name = this.fname;
-			}
-		}
-
 		const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
 		const unread = this.unread > 0 ? this.unread : false;
 		// if (this.unread > 0 && (!hasFocus || openedRoom !== this.rid)) {
@@ -33,13 +24,16 @@ Template.chatRoomItem.helpers({
 		const icon = roomTypes.getIcon(this.t);
 		const avatar = !icon;
 
+		// dont touch this
+		const name = roomTypes.getRoomName(this.t, this);
+
 		const roomData = {
 			...this,
 			icon,
 			avatar,
 			username : this.name,
 			route: roomTypes.getRouteLink(this.t, this),
-			name: name || roomTypes.getRoomName(this.t, this),
+			name,
 			unread,
 			active,
 			archivedClass,

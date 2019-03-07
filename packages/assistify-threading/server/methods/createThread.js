@@ -1,7 +1,7 @@
 /* UserRoles RoomRoles*/
 // import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
-// import { Random } from 'meteor/random';
+import { Random } from 'meteor/random';
 // import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 import { hasAtLeastOnePermission, canAccessRoom } from 'meteor/rocketchat:authorization';
 import { Messages, Rooms } from 'meteor/rocketchat:models';
@@ -212,9 +212,6 @@ import { createRoom, addUserToRoom, sendMessage, attachMessage } from 'meteor/ro
 // 	}
 // }
 
-export const getName = ({ t_name /* message, p_name*/ }) => t_name;
-
-
 const fields = [
 	{
 		type: 'messageCounter',
@@ -225,7 +222,6 @@ const fields = [
 		lm: null,
 	},
 ];
-
 
 export const createThreadMessage = (rid, user, t_rid, msg, message_embedded) => {
 	const welcomeMessage = {
@@ -239,8 +235,6 @@ export const createThreadMessage = (rid, user, t_rid, msg, message_embedded) => 
 	return Messages.createWithTypeRoomIdMessageAndUser('thread-created', t_rid, '', user, welcomeMessage);
 };
 
-
-
 export const mentionThreadMessage = (rid, user, msg, message_embedded) => {
 	const welcomeMessage = {
 		msg,
@@ -249,7 +243,6 @@ export const mentionThreadMessage = (rid, user, msg, message_embedded) => {
 	};
 	return Messages.createWithTypeRoomIdMessageAndUser('thread-created', rid, '', user, welcomeMessage);
 };
-
 
 const cloneMessage = ({ _id, ...msg }) => ({ ...msg });
 
@@ -293,10 +286,10 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 		}
 	}
 
-
-	const name = getName({ t_name, p_name: p_room.name, message: message.msg });
+	const name = Random.id();
 
 	const thread = createRoom(t_type, name, user.username, users, false, {
+		fname: t_name,
 		description: message.msg, // TODO threads remove
 		topic: p_room.name, // TODO threads remove
 		prid,

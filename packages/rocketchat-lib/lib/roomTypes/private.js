@@ -39,6 +39,9 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
+		if (roomData.prid) {
+			return roomData.fname;
+		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {
 			return roomData.fname || roomData.name;
 		}
