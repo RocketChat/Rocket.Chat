@@ -4,7 +4,9 @@
 			<a href="login" class="button primary"><i class="icon-cancel"></i></a>
 		</div>
 		{{>cmsPageStyle}}
-		{{{page}}}
+		<div class="container">
+			{{{page}}}
+		</div>
 	</div>
 </template>
 
@@ -23,5 +25,20 @@
 		p {
 			margin-left: 30px;
 		}
-	</style>>
+		
+		.container{
+			padding:20px;
+		}
+
+		b{
+			font-size: 1.4em;
+			margin-bottom : 10px;
+			margin-left: 0px;
+		}
+
+		ul{
+			margin-top: 10px;
+			margin-left: 16px;
+		}
+	</style>
 </template>
