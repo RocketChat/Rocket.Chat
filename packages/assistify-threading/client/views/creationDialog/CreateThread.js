@@ -19,42 +19,6 @@ Template.CreateThread.helpers({
 	onSelectUser() {
 		return Template.instance().onSelectUser;
 	},
-	roomItems() {
-		const instance = Template.instance();
-		return instance.acRoom.filteredList();
-	},
-	roomConfig() {
-		const filter = Template.instance().parentChannel;
-		return {
-			filter: filter.get(),
-			template_item: 'CreateThreadAutocomplete',
-			noMatchTemplate: 'ChannelNotFound',
-			modifier(text) {
-				const f = filter.get();
-				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
-					return `<strong>${ part }</strong>`;
-				}) }`;
-			},
-		};
-	},
-	userItems() {
-		const instance = Template.instance();
-		return instance.acUsers.filteredList();
-	},
-	userConfig() {
-		const filter = Template.instance().parentChannel;
-		return {
-			filter: filter.get(),
-			template_item: 'CreateThreadAutocomplete',
-			noMatchTemplate: 'ChannelNotFound',
-			modifier(text) {
-				const f = filter.get();
-				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), function(part) {
-					return `<strong>${ part }</strong>`;
-				}) }`;
-			},
-		};
-	},
 	disabled() {
 		if (Template.instance().selectParent.get()) {
 			return 'disabled';
@@ -183,6 +147,18 @@ Template.CreateThread.helpers({
 	},
 	roomSelector() {
 		return (expression) => ({ name: { $regex: `.*${ expression }.*` } });
+	},
+	roomModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+		};
+	},
+	userModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+		};
 	},
 });
 
@@ -375,14 +351,14 @@ Template.search.helpers({
 		return Template.instance().ac.filteredList();
 	},
 	config() {
-		const { filter, noMatchTemplate, templateItem } = Template.instance();
+		const { filter } = Template.instance();
+		const { noMatchTemplate, templateItem, modifier } = Template.instance().data;
 		return {
 			filter: filter.get(),
 			template_item: templateItem,
 			noMatchTemplate,
 			modifier(text) {
-				const f = filter.get();
-				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+				return modifier(filter, text);
 			},
 		};
 	},

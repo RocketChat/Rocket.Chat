@@ -193,7 +193,7 @@ const toolbarButtons = (user) => [{
 									},
 								},
 								{
-									icon: 'message',
+									icon: 'thread',
 									name: t('Thread'),
 									action: (e) => {
 										e.preventDefault();

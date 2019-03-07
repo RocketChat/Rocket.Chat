@@ -23,7 +23,8 @@
 					selector=roomSelector
 					description=targetChannelText
 					noMatchTemplate="ChannelNotFound"
-					templateItem="CreateThreadAutocomplete"
+					templateItem="popupList_item_channel"
+					modifier=roomModifier
 				}} {{else}}
 					<div class="rc-input" disabled>
 						<label class="rc-input__label">
@@ -68,6 +69,8 @@
 						name="users"
 						icon="at"
 						noMatchTemplate="userSearchEmpty"
+						templateItem="popupList_item_default"
+						modifier=userModifier
 					}}
 				</div>
 			</form>
@@ -88,9 +91,9 @@
 					{{> icon block="rc-input__icon-svg" icon=icon}}
 				</div>
 				{{/if}}
-				<div class="rc-tags">
+				<div class="rc-tags{{# unless icon}} rc-tags--no-icon{{/unless}}">
 					{{#each item in list}} {{> tag item}} {{/each}}
-					<input type="text" class="rc-tags__input" placeholder="{{_ placeholder}}" name="{{name}}" autocomplete="off" {{disabled}} />
+					<input type="text" id="{{name}}" class="rc-tags__input" placeholder="{{_ placeholder}}" name="{{name}}" autocomplete="off" {{disabled}} />
 				</div>
 			</div>
 			{{#with config}} {{#if autocomplete 'isShowing'}}
