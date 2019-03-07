@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { openRoom } from 'meteor/rocketchat:ui-utils';
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { ChatRoom, ChatSubscription } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from 'meteor/rocketchat:utils';
@@ -63,6 +63,18 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	canAddUser(room) {
 		return hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
+	}
+
+	canSendMessage(roomId) {
+		const room = ChatRoom.findOne({ _id: roomId, t: 'c' }, { fields: { prid: 1 } });
+		if (room.prid) {
+			return true;
+		}
+
+		// TODO: remove duplicated code
+		return ChatSubscription.find({
+			rid: roomId,
+		}).count() > 0;
 	}
 
 	enableMembersListProfile() {

@@ -12,6 +12,8 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use(['ecmascript', 'mizzao:autocomplete']);
 	api.use('rocketchat:authorization'); // In order to create custom permissions
+	api.use('rocketchat:callbacks', 'server');
+	api.use('rocketchat:models', 'server');
 	api.use('templating', 'client');
 	api.use('meteorhacks:inject-initial'); // for provisioning of svg-icons
 
@@ -27,6 +29,7 @@ Package.onUse(function(api) {
 	// Extensions to the rest of RC
 	api.addFiles('server/models/RoomsExtension.js', 'server');
 	api.addFiles('server/models/MessagesExtension.js', 'server');
+	api.addFiles('server/hooks/joinThreadOnMessage.js', 'server');
 	api.addFiles('server/hooks/propagateThreadMetadata.js', 'server');
 	api.addFiles('server/publications/threadParentAutocomplete.js', 'server');
 	api.addFiles('server/publications/threadsOfRoom.js', 'server');
