@@ -295,8 +295,9 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 
 
 	const name = getName({ t_name, p_name: p_room.name, message: message.msg });
+	const invitedUsers = message ? [message.u.username, ...users] : users; // auto invite the replied message owner
 
-	const thread = createRoom(t_type, name, user.username, users, false, {
+	const thread = createRoom(t_type, name, user.username, invitedUsers, false, {
 		description: message.msg, // TODO threads remove
 		topic: p_room.name, // TODO threads remove
 		prid,

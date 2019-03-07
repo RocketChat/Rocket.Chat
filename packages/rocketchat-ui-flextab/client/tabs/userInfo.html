@@ -18,7 +18,7 @@
 			{{> userEdit (userToEdit)}}
 		{{else}}
 			{{#with user}}
-				<main class="contextual-bar__content">
+				<section class="contextual-bar__content">
 					<div class="rc-user-info-wrapper">
 						<div class="rc-user-info">
 							<div class="rc-user-info__avatar">
@@ -114,7 +114,7 @@
 					{{#if ../showAll}}
 						<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
 					{{/if}}
-				</main>
+				</section>
 			{{/with}}
 		{{/if}}
 	{{/if}}

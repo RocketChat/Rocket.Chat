@@ -19,10 +19,11 @@
 					label="Thread_target_channel"
 					placeholder="Thread_target_channel_description"
 					name="parentChannel"
-					icon="at"
 					disabled=disabled
 					selector=roomSelector
 					description=targetChannelText
+					noMatchTemplate="ChannelNotFound"
+					templateItem="CreateThreadAutocomplete"
 				}} {{else}}
 					<div class="rc-input" disabled>
 						<label class="rc-input__label">
@@ -54,7 +55,21 @@
 							</div>
 						</label>
 					</div>
-					{{> search onClickTag=onClickTagUser deleteLastItem=deleteLastItemUser list=selectedUsers onSelect=onSelectUser collection='UserAndRoom' subscription='userAutocomplete' field='username' sort='username' label="Invite_Users" placeholder="Username_Placeholder" name="users" icon="at"}}
+					{{> search
+						onClickTag=onClickTagUser
+						deleteLastItem=deleteLastItemUser
+						list=selectedUsers
+						onSelect=onSelectUser
+						collection='UserAndRoom'
+						subscription='userAutocomplete'
+						field='username'
+						sort='username'
+						label="Invite_Users"
+						placeholder="Username_Placeholder"
+						name="users"
+						icon="at"
+						noMatchTemplate="userSearchEmpty"
+					}}
 				</div>
 			</form>
 			<div class="rc-input">
@@ -69,9 +84,11 @@
 		<label class="rc-input__label">
 			<div class="rc-input__title">{{_ label}}</div>
 			<div class="rc-input__wrapper">
+				{{# if icon}}
 				<div class="rc-input__icon">
 					{{> icon block="rc-input__icon-svg" icon=icon}}
 				</div>
+				{{/if}}
 				<div class="rc-tags">
 					{{#each item in list}} {{> tag item}} {{/each}}
 					<input type="text" class="rc-tags__input" placeholder="{{_ placeholder}}" name="{{name}}" autocomplete="off" {{disabled}} />
