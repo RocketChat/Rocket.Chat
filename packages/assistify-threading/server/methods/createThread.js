@@ -270,9 +270,6 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 		throw new Meteor.Error('error-not-allowed', { method: 'ThreadCreation' });
 	}
 
-	const t_type = p_room.t;
-
-
 	if (pmid) {
 		const threadAlreadyExists = Rooms.findOne({
 			prid,
@@ -289,7 +286,9 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 	const name = Random.id();
 
 	const invitedUsers = message ? [message.u.username, ...users] : users; // auto invite the replied message owner
-	const thread = createRoom(t_type, name, user.username, invitedUsers, false, {
+
+	// threads are always created as private groups
+	const thread = createRoom('p', name, user.username, invitedUsers, false, {
 		fname: t_name,
 		description: message.msg, // TODO threads remove
 		topic: p_room.name, // TODO threads remove
