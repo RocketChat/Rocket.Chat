@@ -184,13 +184,13 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 			}
 			if (isBlocker()) {
 				return {
-					icon : 'ban',
+					icon : 'mic',
 					name:t('Unblock_User'),
 					action: prevent(getUser, ({ _id }) => Meteor.call('unblockUser', { rid: Session.get('openedRoom'), blocked: _id }, success(() => toastr.success(t('User_is_unblocked'))))),
 				};
 			}
 			return {
-				icon : 'ban',
+				icon : 'mic',
 				name:t('Block_User'),
 				modifier: 'alert',
 				action: prevent(getUser, ({ _id }) => Meteor.call('blockUser', { rid: Session.get('openedRoom'), blocked: _id }, success(() => toastr.success(t('User_is_blocked'))))),
