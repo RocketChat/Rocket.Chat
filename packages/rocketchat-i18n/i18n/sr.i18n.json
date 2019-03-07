@@ -1127,6 +1127,8 @@
   "Favorites": "Омиљено",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ова функција зависи од \"Пошаљи историју навигације посетилаца као поруке\" која ће бити омогућена.",
   "Features_Enabled": "karakteristike Омогућено",
+  "FEDERATION_Domain": "домен",
+  "FEDERATION_Status": "Стање",
   "Field": "поље",
   "Field_removed": "поље уклоњена",
   "Field_required": "Потребно поље",

@@ -1127,6 +1127,8 @@
   "Favorites": "Pasirinkimai",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ši funkcija priklauso nuo \"Siųskite lankytojo naršymo istoriją kaip pranešimą\", kad būtų įjungta.",
   "Features_Enabled": "Įranga įjungta",
+  "FEDERATION_Domain": "Domenas",
+  "FEDERATION_Status": "Statusas",
   "Field": "Laukas",
   "Field_removed": "Laukas pašalintas",
   "Field_required": "Reikalingas laukas",

@@ -152,7 +152,7 @@ API.v1.addRoute('directory', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, query } = this.parseJsonQuery();
 
-		const { text, type } = query;
+		const { text, type, workspace = 'local' } = query;
 		if (sort && Object.keys(sort).length > 1) {
 			return API.v1.failure('This method support only one "sort" parameter');
 		}
@@ -162,6 +162,7 @@ API.v1.addRoute('directory', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
 			text,
 			type,
+			workspace,
 			sortBy,
 			sortDirection,
 			offset: Math.max(0, offset),
