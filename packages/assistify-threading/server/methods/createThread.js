@@ -264,6 +264,11 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 		throw new Meteor.Error('error-invalid-arguments', { method: 'ThreadCreation' });
 	}
 	const p_room = Rooms.findOne(prid);
+
+	if (p_room.prid) {
+		throw new Meteor.Error('error-nested-thread', 'Cannot create nested threads', { method: 'ThreadCreation' });
+	}
+
 	const user = Meteor.user();
 
 	if (!canAccessRoom(p_room, user)) {

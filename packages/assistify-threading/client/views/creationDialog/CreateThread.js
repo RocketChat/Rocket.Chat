@@ -263,7 +263,10 @@ Template.CreateThread.onCreated(function() {
 	const { rid, message: msg } = this.data;
 	const instance = this;
 
-	const room = rid && ChatRoom.findOne(rid);
+	const parentRoom = rid && ChatRoom.findOne(rid);
+
+	// if creating a thread from inside a thread, uses the same channel as parent channel
+	const room = parentRoom && parentRoom.prid ? ChatRoom.findOne(parentRoom.prid) : parentRoom;
 
 	if (room) {
 		room.text = room.name;
@@ -273,7 +276,7 @@ Template.CreateThread.onCreated(function() {
 
 	this.pmid = msg && msg._id;
 
-	this.parentChannel = new ReactiveVar(room && room.name); // determine parent Channel from setting and allow to overwrite
+	this.parentChannel = new ReactiveVar(roomTypes.getRoomName(room)); // determine parent Channel from setting and allow to overwrite
 	this.parentChannelId = new ReactiveVar(rid);
 	this.parentChannelError = new ReactiveVar(null);
 
