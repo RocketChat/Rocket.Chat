@@ -330,7 +330,7 @@
 	</div>
 </template>
 <template name="channelSettingsInfo">
-	<main class="rc-user-info__scroll{{#if archived}} archived{{/if}}">
+	<section class="rc-user-info__scroll{{#if archived}} archived{{/if}}">
 		{{# with settings=settings}}
 			{{#unless isDirectMessage}}
 				<div class="rc-user-info">
@@ -401,7 +401,7 @@
 				{{> Template.dynamic template=template data=data}}
 			</div>
 		{{/each}}
-	</main>
+	</section>
 
 	<div class="rc-user-info__flex rc-user-info__row">
 		{{#if canEditRoom}}

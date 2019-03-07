@@ -29,12 +29,12 @@ const common = {
 		return roomType && roomTypes.roomTypes[roomType].canBeDeleted(hasPermission, room);
 	},
 	canEditRoom() {
-		const { _id } = Template.instance().room;
-		return hasAllPermission('edit-room', _id);
+		const { _id, prid } = Template.instance().room;
+		return !prid && hasAllPermission('edit-room', _id);
 	},
 	isDirectMessage() {
-		const { room } = Template.instance();
-		return room.t === 'd';
+		const { room: { t } } = Template.instance();
+		return t === 'd';
 	},
 };
 

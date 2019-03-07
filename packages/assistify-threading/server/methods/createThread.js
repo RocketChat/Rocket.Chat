@@ -288,7 +288,8 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 
 	const name = Random.id();
 
-	const thread = createRoom(t_type, name, user.username, users, false, {
+	const invitedUsers = message ? [message.u.username, ...users] : users; // auto invite the replied message owner
+	const thread = createRoom(t_type, name, user.username, invitedUsers, false, {
 		fname: t_name,
 		description: message.msg, // TODO threads remove
 		topic: p_room.name, // TODO threads remove

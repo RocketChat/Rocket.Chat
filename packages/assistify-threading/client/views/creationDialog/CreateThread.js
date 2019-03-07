@@ -152,7 +152,12 @@ Template.CreateThread.helpers({
 	},
 
 	selectedUsers() {
-		return Template.instance().selectedUsers.get();
+		const { message } = this;
+		const users = Template.instance().selectedUsers.get();
+		if (message) {
+			users.unshift(message.u);
+		}
+		return users;
 	},
 
 	onClickTagUser() {
@@ -367,11 +372,11 @@ Template.search.helpers({
 		return Template.instance().ac.filteredList();
 	},
 	config() {
-		const { filter } = Template.instance();
+		const { filter, noMatchTemplate, templateItem } = Template.instance();
 		return {
 			filter: filter.get(),
-			template_item: 'CreateThreadAutocomplete',
-			noMatchTemplate: 'ChannelNotFound',
+			template_item: templateItem,
+			noMatchTemplate,
 			modifier(text) {
 				const f = filter.get();
 				return `#${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
@@ -454,7 +459,6 @@ Template.search.onCreated(function() {
 			inputDelay: 300,
 			rules: [
 				{
-					// @TODO maybe change this 'collection' and/or template
 					collection,
 					subscription,
 					field,
