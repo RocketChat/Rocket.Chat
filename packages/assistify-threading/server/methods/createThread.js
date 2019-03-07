@@ -290,10 +290,11 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 
 	const name = Random.id();
 
-	const invitedUsers = message ? [message.u.username, ...users] : users; // auto invite the replied message owner
+	// auto invite the replied message owner
+	const invitedUsers = message ? [message.u.username, ...users] : users;
 
 	// threads are always created as private groups
-	const thread = createRoom('p', name, user.username, invitedUsers, false, {
+	const thread = createRoom('p', name, user.username, [...new Set(invitedUsers)], false, {
 		fname: t_name,
 		description: message.msg, // TODO threads remove
 		topic: p_room.name, // TODO threads remove
@@ -301,25 +302,36 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 	});
 
 	if (pmid) {
-		const message_cloned = cloneMessage(message);
+		const clonedMessage = cloneMessage(message);
 
 		Messages.update({
 			_id: message._id,
 		}, {
-			...message_cloned,
-			attachments: [{
-				fields,
-			}, ...(message_cloned.attachments || [])],
+			...clonedMessage,
+			attachments: [
+				{ fields },
+				...(message.attachments || []),
+			],
 			t_rid: thread._id,
 		});
 
+		mentionThreadMessage(thread._id, user, reply, attachMessage(message, p_room));
 
-		mentionThreadMessage(thread._id, user, reply, attachMessage(message_cloned, p_room));
+		// check if the message is in the latest 10 messages sent to the room
+		// if not creates a new message saying about the thread creation
+		const lastMessageIds = Messages.findByRoomId(message.rid, {
+			sort: {
+				ts: -1,
+			},
+			limit: 15,
+			fields: {
+				_id: 1,
+			},
+		}).fetch();
 
-		// Messages.insert({
-		// 	...message_cloned,
-		// 	rid: thread._id,
-		// });
+		if (!lastMessageIds.find((msg) => msg._id === message._id)) {
+			createThreadMessage(message.rid, user, thread._id, reply, attachMessage(message, p_room));
+		}
 	} else {
 		createThreadMessage(prid, user, thread._id, reply);
 		if (reply) {
