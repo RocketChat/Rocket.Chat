@@ -8,7 +8,7 @@
 			</header>
 			<form id="create-thread" class="create-channel__content">
 				{{#unless disabled}}
-				{{> search
+				{{> SearchCreateThread
 					onClickTag=onClickTagRoom
 					deleteLastItem=deleteLastItemRoom
 					list=selectedRoom
@@ -42,7 +42,7 @@
 							<div class="rc-input__title">{{_ "Thread_name"}}</div>
 							<div class="rc-input__wrapper">
 								<input name="thread_name" id="thread_name" class="rc-input__element" placeholder="{{_ 'New_thread_name'}}"
-									maxlength="{{maxMessageLength}}"/>
+									maxlength="{{maxMessageLength}}" value="{{channelName}}"/>
 							</div>
 						</label>
 					</div>
@@ -55,7 +55,7 @@
 							</div>
 						</label>
 					</div>
-					{{> search
+					{{> SearchCreateThread
 						onClickTag=onClickTagUser
 						deleteLastItem=deleteLastItemUser
 						list=selectedUsers
@@ -81,7 +81,7 @@
 	</section>
 </template>
 
-<template name="search">
+<template name="SearchCreateThread">
 	<div class="rc-input" id='search-{{name}}' {{disabled}}>
 		<label class="rc-input__label">
 			<div class="rc-input__title">{{_ label}}</div>

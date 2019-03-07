@@ -160,6 +160,9 @@ Template.CreateThread.helpers({
 			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
 		};
 	},
+	channelName() {
+		return Template.instance().threadName.get();
+	},
 });
 
 Template.CreateThread.events({
@@ -246,9 +249,11 @@ Template.CreateThread.onCreated(function() {
 
 	if (room) {
 		room.text = room.name;
+		this.threadName = new ReactiveVar(`${ room.name } - ${ msg && msg.msg }`);
+	} else {
+		this.threadName = new ReactiveVar('');
 	}
 
-	this.threadName = new ReactiveVar('');
 
 	this.pmid = msg && msg._id;
 
@@ -343,7 +348,7 @@ Template.CreateThread.onCreated(function() {
 	}
 });
 
-Template.search.helpers({
+Template.SearchCreateThread.helpers({
 	list() {
 		return this.list;
 	},
@@ -369,7 +374,7 @@ Template.search.helpers({
 	},
 });
 
-Template.search.events({
+Template.SearchCreateThread.events({
 	'input input'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
@@ -410,7 +415,7 @@ Template.search.events({
 		return onClickTag & onClickTag(Blaze.getData(target));
 	},
 });
-Template.search.onRendered(function() {
+Template.SearchCreateThread.onRendered(function() {
 
 	const { name } = this.data;
 
@@ -418,7 +423,7 @@ Template.search.onRendered(function() {
 	this.ac.$element = $(this.ac.element);
 });
 
-Template.search.onCreated(function() {
+Template.SearchCreateThread.onCreated(function() {
 	this.filter = new ReactiveVar('');
 	this.selected = new ReactiveVar([]);
 	this.onClickTag = this.data.onClickTag;
