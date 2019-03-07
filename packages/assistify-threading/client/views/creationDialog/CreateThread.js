@@ -178,7 +178,7 @@ Template.CreateThread.events({
 		t.parentChannelId.set('');
 		t.parentChannelError.set('');
 	},
-	'input #first_question'(e, t) {
+	'input #thread_message'(e, t) {
 		const { value } = e.target;
 		t.reply.set(value);
 	},

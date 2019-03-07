@@ -35,7 +35,7 @@ class Threading extends Page {
 	}
 
 	get firstQuestion() {
-		return browser.element('.create-thread #first_question');
+		return browser.element('.create-thread #thread_message');
 	}
 
 	get parentChannelName() {
