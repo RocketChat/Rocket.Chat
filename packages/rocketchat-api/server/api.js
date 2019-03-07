@@ -192,7 +192,6 @@ class APIClass extends Restivus {
 		let shouldVerifyPermissions;
 
 		if (!_.isArray(options.permissionsRequired)) {
-			logger.warn('Invalid value for permissionsRequired');
 			options.permissionsRequired = undefined;
 			shouldVerifyPermissions = false;
 		} else {
@@ -539,6 +538,9 @@ const createApi = function _createApi(enableCors) {
 	}
 };
 
+// also create the API immediately
+createApi(!!settings.get('API_Enable_CORS'));
+
 // register the API to be re-created once the CORS-setting changes.
 settings.get('API_Enable_CORS', (key, value) => {
 	createApi(value);
@@ -553,6 +555,3 @@ settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
-
-// also create the API immediately
-createApi(!!settings.get('API_Enable_CORS'));

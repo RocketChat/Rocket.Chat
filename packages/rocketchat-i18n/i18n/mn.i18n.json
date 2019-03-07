@@ -1127,6 +1127,8 @@
   "Favorites": "Дуртай",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Энэ боломж нь идэвхжүүлсэн \"Visitor Navigation History зурвас байдлаар илгээх\" хамаарна.",
   "Features_Enabled": "Идэвхжүүлсэн онцлогууд",
+  "FEDERATION_Domain": "Домэйн",
+  "FEDERATION_Status": "Статус",
   "Field": "Талбар",
   "Field_removed": "Талбарыг арилгасан",
   "Field_required": "Шаардлагатай талбар",
