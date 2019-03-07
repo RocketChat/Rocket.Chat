@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Users, Subscriptions } from 'meteor/rocketchat:models';
+import { Users, Subscriptions, Messages, Rooms } from 'meteor/rocketchat:models';
 import { hasPermission } from 'meteor/rocketchat:authorization';
 import { settings } from 'meteor/rocketchat:settings';
 import { getURL } from 'meteor/rocketchat:utils';
@@ -167,12 +167,20 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 					name: 1,
 					t: 1,
 					roles: 1,
+					ls: 1,
 				},
 				sort: {
 					t: 1,
 					name: 1,
 				},
-			}).fetch();
+			})
+				.fetch()
+				.map((subscription) => {
+					const room = Rooms.findOneById(subscription.rid);
+					const lm = room.lm ? room.lm : room._updatedAt;
+					subscription.unreads = Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+					return subscription;
+				});
 		}
 
 		return API.v1.success({

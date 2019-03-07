@@ -210,7 +210,7 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
+		it('should return "rooms" property and unreads messages for each room when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
 			request.get(api('users.info'))
 				.set(credentials)
 				.query({
@@ -222,6 +222,7 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
+					res.body.user.rooms.forEach((room) => expect(room).to.have.property('unreads'));
 				})
 				.end(done);
 		});
