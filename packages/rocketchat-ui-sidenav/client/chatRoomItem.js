@@ -21,10 +21,9 @@ Template.chatRoomItem.helpers({
 
 		this.alert = !this.hideUnreadStatus && this.alert; // && (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
 
-		const icon = roomTypes.getIcon(this.t);
+		const icon = roomTypes.getIcon(this);
 		const avatar = !icon;
 
-		// dont touch this
 		const name = roomTypes.getRoomName(this.t, this);
 
 		const roomData = {
@@ -40,6 +39,11 @@ Template.chatRoomItem.helpers({
 			status: this.t === 'd' || this.t === 'l',
 		};
 		roomData.username = roomData.username || roomData.name;
+
+		// hide icon for threads
+		if (this.prid) {
+			roomData.darken = true;
+		}
 
 		if (!this.lastMessage && settings.get('Store_Last_Message')) {
 			const room = Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });

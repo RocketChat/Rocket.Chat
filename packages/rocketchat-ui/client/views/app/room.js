@@ -339,7 +339,7 @@ Template.room.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		const roomIcon = roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		const roomIcon = roomTypes.getIcon(roomData);
 
 		// Remove this 'codegueira' on header redesign
 		if (!roomIcon) {

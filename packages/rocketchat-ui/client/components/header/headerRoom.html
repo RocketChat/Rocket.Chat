@@ -7,9 +7,8 @@
 			</div>
 
 			{{#if isThread}}
-				<div class="rc-header__block rc-header__block--action rc-header__thread_open_parent js-open-parent-channel">
+				<div class="rc-header__block rc-header__block--action js-open-parent-channel">
 					<span class="rc-header__first-icon">{{> icon block="rc-header__icon rc-header__icon" icon="back"}}</span>
-
 				</div>
 			{{/if}}
 
@@ -39,7 +38,7 @@
 
 				<div class="rc-header__data">
 					{{#unless secondaryName}}
-					<div class="rc-header__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</div>
+					<div class="rc-header__name">{{> icon block="rc-header__icon" icon=roomIcon}}{{roomName}}</div>
 					{{else}}
 					<div class="rc-header__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
 					{{/unless}}

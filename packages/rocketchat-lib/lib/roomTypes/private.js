@@ -29,6 +29,13 @@ export class PrivateRoomType extends RoomTypeConfig {
 		});
 	}
 
+	getIcon(roomData) {
+		if (roomData.prid) {
+			return 'thread';
+		}
+		return this.icon;
+	}
+
 	findRoom(identifier) {
 		const query = {
 			t: 'p',

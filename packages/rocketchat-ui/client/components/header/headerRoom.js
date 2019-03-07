@@ -91,27 +91,11 @@ Template.headerRoom.helpers({
 		return roomTopic;
 	},
 
-	channelIcon() {
-		const roomType = Rooms.findOne(this._id).t;
-		switch (roomType) {
-			case 'd':
-				return 'at';
-			case 'p':
-				return 'lock';
-			case 'c':
-				return 'hashtag';
-			case 'l':
-				return 'livechat';
-			default:
-				return roomTypes.getIcon(roomType);
-		}
-	},
-
 	roomIcon() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		return roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		return roomTypes.getIcon(roomData);
 	},
 
 	tokenAccessChannel() {

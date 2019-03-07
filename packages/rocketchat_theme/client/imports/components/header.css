@@ -49,6 +49,10 @@
 		padding: 0 0.5rem;
 
 		align-items: center;
+
+		&--action {
+			cursor: pointer;
+		}
 	}
 
 	&__content {
