@@ -32,6 +32,3 @@ export const addUserToDefaultChannels = function(user, silenced) {
 		}
 	});
 };
-
-RocketChat.addUserToDefaultChannels = addUserToDefaultChannels;
-

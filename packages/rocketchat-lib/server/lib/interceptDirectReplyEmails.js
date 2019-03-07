@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from 'meteor/rocketchat:settings';
 import IMAP from 'imap';
-import POP3 from 'poplib';
+import POP3Lib from 'poplib';
 import { simpleParser } from 'mailparser';
 import { processDirectEmail } from '.';
 
@@ -142,7 +142,7 @@ export class IMAPIntercepter {
 
 export class POP3Intercepter {
 	constructor() {
-		this.pop3 = new POP3(settings.get('Direct_Reply_Port'), settings.get('Direct_Reply_Host'), {
+		this.pop3 = new POP3Lib(settings.get('Direct_Reply_Port'), settings.get('Direct_Reply_Host'), {
 			enabletls: !settings.get('Direct_Reply_IgnoreTLS'),
 			debug: settings.get('Direct_Reply_Debug') ? console.log : false,
 		});
@@ -236,6 +236,7 @@ export class POP3Intercepter {
 		processDirectEmail(email);
 	}
 }
+export let POP3;
 
 export class POP3Helper {
 	constructor() {
@@ -245,11 +246,11 @@ export class POP3Helper {
 	start() {
 		// run every x-minutes
 		if (settings.get('Direct_Reply_Frequency')) {
-			RocketChat.POP3 = new POP3Intercepter();
+			POP3 = new POP3Intercepter();
 
 			this.running = Meteor.setInterval(() => {
 				// get new emails and process
-				RocketChat.POP3 = new POP3Intercepter();
+				POP3 = new POP3Intercepter();
 			}, Math.max(settings.get('Direct_Reply_Frequency') * 60 * 1000, 2 * 60 * 1000));
 		}
 	}

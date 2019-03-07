@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 import Grid from 'gridfs-stream';
 import stream from 'stream';
 import fs from 'fs';
@@ -38,8 +39,8 @@ RocketChatFile.GridFS = class {
 
 		this.name = name;
 		this.transformWrite = transformWrite;
-		const mongo = Package.mongo.MongoInternals.NpmModule;
-		const { db } = Package.mongo.MongoInternals.defaultRemoteCollectionDriver().mongo;
+		const mongo = MongoInternals.NpmModule;
+		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 		this.store = new Grid(db, mongo);
 		this.findOneSync = Meteor.wrapAsync(this.store.collection(this.name).findOne.bind(this.store.collection(this.name)));
 		this.removeSync = Meteor.wrapAsync(this.store.remove.bind(this.store));

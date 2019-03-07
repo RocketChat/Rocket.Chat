@@ -55,6 +55,7 @@ class RoomStreamer extends Meteor.Streamer {
 
 class Notifications {
 	constructor() {
+		const self = this;
 		this.debug = false;
 		this.notifyUser = this.notifyUser.bind(this);
 		this.streamAll = new Meteor.Streamer('notify-all');
@@ -74,7 +75,7 @@ class Notifications {
 			// });
 			if (Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId) != null) {
 				const subscriptions = Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId).fetch();
-				subscriptions.forEach((subscription) => this.notifyUser(subscription.u._id, e, ...args));
+				subscriptions.forEach((subscription) => self.notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
 		});

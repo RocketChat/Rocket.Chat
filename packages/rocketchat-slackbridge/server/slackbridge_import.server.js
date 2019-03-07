@@ -3,6 +3,7 @@ import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Rooms } from 'meteor/rocketchat:models';
+import { msgStream } from 'meteor/rocketchat:lib';
 import { slashCommands } from 'meteor/rocketchat:utils';
 import { SlackBridge } from './slackbridge';
 

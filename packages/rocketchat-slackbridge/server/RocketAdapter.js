@@ -8,13 +8,13 @@ import { Messages, Rooms, Users } from 'meteor/rocketchat:models';
 import { createRoom, sendMessage, setUserAvatar } from 'meteor/rocketchat:lib';
 import { logger } from './logger';
 import _ from 'underscore';
+import util from 'util';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {
 		logger.rocket.debug('constructor');
 		this.slackBridge = slackBridge;
-		this.util = Npm.require('util');
-
+		this.util = util;
 		this.userTags = {};
 		this.slack = {};
 	}

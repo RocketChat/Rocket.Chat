@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { OTR } from '../rocketchat.otr';
-import { modal } from 'meteor/rocketchat:ui';
+import { modal } from 'meteor/rocketchat:ui-utils';
 
 Template.otrFlexTab.helpers({
 	otrAvailable() {

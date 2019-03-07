@@ -7,7 +7,7 @@ import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 
 Meteor.methods({
-	getChannelHistory({ rid, latest, oldest, inclusive, count = 20, unreads }) {
+	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads }) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -39,6 +39,7 @@ Meteor.methods({
 			sort: {
 				ts: -1,
 			},
+			skip: offset,
 			limit: count,
 		};
 

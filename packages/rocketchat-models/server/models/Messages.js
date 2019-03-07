@@ -23,6 +23,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 		this.loadSettings();
 	}
 
@@ -810,6 +811,16 @@ export class Messages extends Base {
 	createSubscriptionRoleRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
+	}
+
+	createRejectedMessageByPeer(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('rejected-message-by-peer', roomId, message, user, extraData);
+	}
+
+	createPeerDoesNotExist(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('peer-does-not-exist', roomId, message, user, extraData);
 	}
 
 	// REMOVE

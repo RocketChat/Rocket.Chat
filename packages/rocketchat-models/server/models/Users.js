@@ -27,6 +27,45 @@ export class Users extends Base {
 		});
 	}
 
+	getLoginTokensByUserId(userId) {
+		const query = {
+			'services.resume.loginTokens.type': {
+				$exists: true,
+				$eq: 'personalAccessToken',
+			},
+			_id: userId,
+		};
+
+		return this.find(query, { fields: { 'services.resume.loginTokens': 1 } });
+	}
+
+	addPersonalAccessTokenToUser({ userId, loginTokenObject }) {
+		return this.update(userId, {
+			$push: {
+				'services.resume.loginTokens': loginTokenObject,
+			},
+		});
+	}
+
+	removePersonalAccessTokenOfUser({ userId, loginTokenObject }) {
+		return this.update(userId, {
+			$pull: {
+				'services.resume.loginTokens': loginTokenObject,
+			},
+		});
+	}
+
+	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }) {
+		const query = {
+			'services.resume.loginTokens': {
+				$elemMatch: { name: tokenName, type: 'personalAccessToken' },
+			},
+			_id: userId,
+		};
+
+		return this.findOne(query);
+	}
+
 	setOperator(_id, operator) {
 		const update = {
 			$set: {
@@ -448,7 +487,7 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findByActiveUsersExcept(searchTerm, exceptions, options) {
+	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
@@ -457,7 +496,9 @@ export class Users extends Base {
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 
-		const orStmt = _.reduce(this.settings.get('Accounts_SearchFields').trim().split(','), function(acc, el) {
+		const searchFields = forcedSearchFields || this.settings.get('Accounts_SearchFields').trim().split(',');
+
+		const orStmt = _.reduce(searchFields, function(acc, el) {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);

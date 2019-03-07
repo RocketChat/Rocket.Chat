@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { RocketChat } from 'meteor/rocketchat:lib';
 import { API } from 'meteor/rocketchat:api';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	get() {
@@ -47,19 +47,19 @@ API.v1.addRoute('livechat/agent.next/:token', {
 
 			const { token } = this.urlParams;
 			const room = findOpenRoom(token);
-			if (!room) {
-				throw new Meteor.Error('invalid-token');
+			if (room) {
+				return API.v1.success();
 			}
 
 			let { department } = this.queryParams;
 			if (!department) {
-				const requireDeparment = RocketChat.Livechat.getRequiredDepartment();
+				const requireDeparment = Livechat.getRequiredDepartment();
 				if (requireDeparment) {
 					department = requireDeparment._id;
 				}
 			}
 
-			const agentData = RocketChat.Livechat.getNextAgent(department);
+			const agentData = Livechat.getNextAgent(department);
 			if (!agentData) {
 				throw new Meteor.Error('agent-not-found');
 			}

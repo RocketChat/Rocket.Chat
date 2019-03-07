@@ -1127,6 +1127,8 @@
   "Favorites": "பிடித்தவை",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "இந்த அம்சம் செயல்படுத்தப்படுவதற்கு \"அனுப்புநர் ஊடுருவல் வரலாற்றை ஒரு செய்தியாக அனுப்பு\" என்பதை சார்ந்துள்ளது.",
   "Features_Enabled": "அம்சங்கள் இயக்கப்பட்டன",
+  "FEDERATION_Domain": "டொமைன்",
+  "FEDERATION_Status": "நிலைமை",
   "Field": "களம்",
   "Field_removed": "துறையில் நீக்கப்பட்டது",
   "Field_required": "புலம் தேவை",
