@@ -1127,6 +1127,8 @@
   "Favorites": "Favorits",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Aquesta funció depèn de \"Enviar l'historial de navegació del visitant com a missatge\" per estar habilitat.",
   "Features_Enabled": "Funcionalitats habilitades",
+  "FEDERATION_Domain": "Domini",
+  "FEDERATION_Status": "Estat",
   "Field": "Camp",
   "Field_removed": "Camp eliminat",
   "Field_required": "Camp obligatori",
