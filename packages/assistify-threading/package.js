@@ -23,9 +23,6 @@ Package.onUse(function(api) {
 	api.addFiles('lib/messageTypes/threadMessage.js');
 	api.addFiles('lib/threadRoomType.js');
 
-	// Libraries
-	api.addFiles('server/inject.js', 'server');
-
 	// Extensions to the rest of RC
 	api.addFiles('server/models/RoomsExtension.js', 'server');
 	api.addFiles('server/models/MessagesExtension.js', 'server');
@@ -36,24 +33,10 @@ Package.onUse(function(api) {
 
 	// Methods
 	api.addFiles('server/methods/createThread.js', 'server');
-	api.addFiles('server/methods/getParentChannelId.js', 'server');
-	api.addFiles('server/methods/getParentChannelList.js', 'server');
-	// api.addFiles('server/methods/expertiseList.js', 'server');
-
-	// UI artifacts which are pre-processed or packaged by the server
-	api.addAssets('client/public/icons.svg', 'server');
-
-	// /////// Client
 
 	// Templates
 	api.addFiles('client/views/creationDialog/CreateThread.html', 'client');
 	api.addFiles('client/views/creationDialog/CreateThread.js', 'client');
-	api.addFiles('client/views/creationDialog/CreateThreadInputError.html', 'client');
-	api.addFiles('client/views/creationDialog/CreateThreadAutocomplete.html', 'client');
-	api.addFiles('client/views/creationDialog/ChannelNotFound.html', 'client');
-	api.addFiles('client/views/creationDialog/ChannelNotFound.js', 'client');
-	api.addFiles('client/views/creationDialog/ChannelSelection.html', 'client');
-	api.addFiles('client/views/creationDialog/ChannelSelection.js', 'client');
 	api.addFiles('client/views/ThreadList.html', 'client');
 	api.addFiles('client/views/ThreadList.js', 'client');
 	api.addFiles('client/views/ThreadsTabbar.html', 'client');

@@ -198,7 +198,6 @@ chatpal:search
 rocketchat:lazy-load
 tap:i18n
 assistify:threading
-overture8:wordcloud2
 underscore@1.0.10
 rocketchat:bigbluebutton
 rocketchat:mailmessages

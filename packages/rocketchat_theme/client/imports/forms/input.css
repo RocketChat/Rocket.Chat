@@ -45,6 +45,11 @@
 		}
 	}
 
+	textarea.&__element {
+		font-family: inherit;
+		line-height: 2rem;
+	}
+
 	&__element {
 		width: 100%;
 		padding: 0 1rem;

@@ -38,9 +38,9 @@ class Threading extends Page {
 		return browser.element('.create-thread #thread_message');
 	}
 
-	get parentChannelName() {
-		return browser.element('.create-thread #parentChannel-search');
-	}
+	// get parentChannelName() {
+	// 	return browser.element('.create-thread #parentChannel-search');
+	// }
 
 	get saveThreadButton() {
 		return browser.element('.create-channel .js-save-thread');
@@ -54,8 +54,8 @@ class Threading extends Page {
 		this.createThreadModal.waitForVisible(1000);
 		this.firstQuestion.setValue(message);
 		this.selectChannelAction.click();
-		this.parentChannelName.waitForVisible(1000);
-		this.parentChannelName.setValue(parentChannelName);
+		// this.parentChannelName.waitForVisible(1000);
+		// this.parentChannelName.setValue(parentChannelName);
 		sendEscape();
 		browser.pause(4000); // wait for the autocompete to vanish - for sure
 
