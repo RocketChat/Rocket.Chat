@@ -1,44 +1,3 @@
-.create-thread textarea {
-	width: 100%;
-
-	height: 45px;
-	min-height: 80px;
-	max-height: 250px;
-
-	padding: 0.75rem 1rem;
-
-	resize: vertical;
-
-	font: inherit;
-
-	line-height: 20px;
-}
-
-.content .threading-wrapper {
-	max-width: 650px;
-	margin-top: 50px;
-}
-
-.create-thread .action-link {
-	cursor: pointer;
-}
-
-.create-thread .create-channel {
-	height: 100%;
-}
-
-.create-thread .full-modal__back-text {
-	font-size: 11px; /* no clue, why we have to specify this explicitly. Dirty hack. */
-}
-
-.create-thread-sidebar-button {
-	width: 82.5%;
-	min-height: 24px;
-	margin: 0 auto 20px;
-
-	font-size: 100%;
-}
-
 .attachment-fields button {
 	min-height: auto;
 	padding: 3px;
@@ -54,7 +13,7 @@
 	opacity: 0.4;
 }
 
-.threads-list li.empty {
+.threads-list .empty {
 	margin-top: 60px;
 
 	text-align: center;
