@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { roomTypes } from 'meteor/rocketchat:utils';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Template } from 'meteor/templating';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { ChatRoom } from 'meteor/rocketchat:models';
@@ -10,7 +9,6 @@ import { Blaze } from 'meteor/blaze';
 import { call } from 'meteor/rocketchat:ui-utils';
 
 import { TAPi18n } from 'meteor/tap:i18n';
-import _ from 'underscore';
 import toastr from 'toastr';
 
 
@@ -31,90 +29,15 @@ Template.CreateThread.helpers({
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
-		if (instance.reply.get() && instance.parentChannel.get() && !instance.error.get()) {
+		if (instance.reply.get() && instance.parentChannel.get()) {
 			return '';
-		} else {
-			return 'disabled';
 		}
-	},
-	parentChannelError() {
-		const instance = Template.instance();
-		return instance.parentChannelError.get();
+		return 'disabled';
 	},
 	parentChannel() {
 		const instance = Template.instance();
 		return instance.parentChannel.get();
 	},
-	error() {
-		const instance = Template.instance();
-		return instance.error.get();
-	},
-	getWordcloudProperties() {
-		const instance = Template.instance();
-		const parentChannels = instance.parentChannelsList.get();
-
-		function getSize(/* channel*/) {
-			return Math.random() * (4 - 10) + 4;
-		}
-
-		function getWordList() {
-			const list = [];
-			parentChannels.forEach(function(parentChannel) {
-				list.push([parentChannel.name, getSize(parentChannel)]);
-			});
-			return list;
-		}
-
-		function setParentChannel() {
-			return function(selectedparentChannel) {
-				const parentChannel = parentChannels.find((parentChannel) => parentChannel.name === selectedparentChannel[0]);
-				if (parentChannel) {
-					instance.debounceWordCloudSelect(parentChannel);
-				}
-				instance.showChannelSelection.set(false); // Search completed.
-			};
-		}
-
-		function onWordHover() {
-			return function(item) {
-				// To Do
-				return item;
-
-			};
-		}
-
-		function setFlatness() {
-			return 0.5;
-		}
-
-		return {
-			clearCanvas: true,
-			weightFactor: 8,
-			fontWeight: 'normal',
-			gridSize: 55,
-			shape: 'square',
-			rotateRatio: 0,
-			rotationSteps: 0,
-			drawOutOfBound: true,
-			shuffle: true,
-			ellipticity: setFlatness(),
-			list: getWordList(),
-			click: setParentChannel(),
-			hover: onWordHover(),
-			// setCanvas: getCanvas
-		};
-	},
-
-	hideWordcloud() {
-		const instance = Template.instance();
-
-		const hideMe = function() {
-			instance.showChannelSelection.set(false);
-		};
-
-		return hideMe;
-	},
-
 	selectedUsers() {
 		const { message } = this;
 		const users = Template.instance().selectedUsers.get();
@@ -169,78 +92,43 @@ Template.CreateThread.events({
 	'input #thread_name'(e, t) {
 		t.threadName.set(e.target.value);
 	},
-	'input #parentChannel-search'(e, t) {
-		const input = e.target;
-		const position = input.selectionEnd || input.selectionStart;
-		const { length } = input.value;
-		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
-		t.parentChannel.set(input.value);
-		t.parentChannelId.set('');
-		t.parentChannelError.set('');
-	},
 	'input #thread_message'(e, t) {
 		const { value } = e.target;
 		t.reply.set(value);
 	},
-	async 'submit create-channel__content, click .js-save-thread'(event, instance) {
+	async 'submit #create-thread, click .js-save-thread'(event, instance) {
 		event.preventDefault();
 		const parentChannel = instance.parentChannel.get();
 
 		const { pmid } = instance;
 		const t_name = instance.threadName.get();
-		const users = instance.selectedUsers.get().map(({ username }) => username);
+		const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
 
 		const prid = instance.parentChannelId.get();
 		const reply = instance.reply.get();
 
 		if (!prid) {
 			const errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
-
-			instance.parentChannelError.set(errorText);
-			if (!instance.selectParent.get()) {
-				toastr.error(errorText);
-			}
-			return;
+			return toastr.error(errorText);
 		}
 		const result = await call('createThread', { prid, pmid, t_name, reply, users });
 		// callback to enable tracking
-		Meteor.defer(() => callbacks.run('afterCreateThread', Meteor.user(), result));
-		// instance.error.set(null);
+		callbacks.run('afterCreateThread', Meteor.user(), result);
+
 		if (instance.data.onCreate) {
 			instance.data.onCreate(result);
 		}
+
 		roomTypes.openRouteLink(result.t, result);
 	},
 });
 
 Template.CreateThread.onRendered(function() {
-	const instance = this;
-
 	this.find(this.data.rid ? '#thread_name' : '#parentChannel').focus();
-
-	this.autorun(() => {
-		instance.debounceWordCloudSelect = _.debounce((parentChannel) => { // integrate Wordcloud
-			/*
-			* Update the parentChannel html reference to autocomplete
-			*/
-			instance.acRoom.element = this.find('#parentChannel-search');
-			instance.acRoom.$element = $(instance.acRoom.element);
-			$('input[name="parentChannel-search"]').val(parentChannel.name); // copy the selected value to screen field
-			instance.acRoom.$element.on('autocompleteselect', function(e, { item }) {
-				instance.parentChannel.set(item.name);
-				$('input[name="parentChannel-search"]').val(item.name);
-				instance.debounceValidateParentChannel(item.name);
-				return instance.find('.js-save-thread').focus();
-			});
-			instance.parentChannel.set(parentChannel.name);
-			instance.debounceValidateParentChannel(parentChannel.name); // invoke validation*/
-		}, 200);
-	});
 });
 
 Template.CreateThread.onCreated(function() {
 	const { rid, message: msg } = this.data;
-	const instance = this;
 
 	const parentRoom = rid && ChatRoom.findOne(rid);
 
@@ -257,13 +145,11 @@ Template.CreateThread.onCreated(function() {
 
 	this.pmid = msg && msg._id;
 
-	this.parentChannel = new ReactiveVar(roomTypes.getRoomName(room)); // determine parent Channel from setting and allow to overwrite
+	this.parentChannel = new ReactiveVar(roomTypes.getRoomName(room));
 	this.parentChannelId = new ReactiveVar(rid);
-	this.parentChannelError = new ReactiveVar(null);
 
 	this.selectParent = new ReactiveVar(!!rid);
 
-	this.error = new ReactiveVar(null);
 	this.reply = new ReactiveVar('');
 
 
@@ -291,7 +177,10 @@ Template.CreateThread.onCreated(function() {
 
 	this.selectedUsers = new ReactiveVar([]);
 	this.onSelectUser = ({ item: user }) => {
-		this.selectedUsers.set([...this.selectedUsers.get(), user]);
+		const users = this.selectedUsers.get();
+		if (!users.find((u) => user.username === u.username)) {
+			this.selectedUsers.set([...this.selectedUsers.get(), user].filter());
+		}
 	};
 	this.onClickTagUser = (({ username }) => {
 		this.selectedUsers.set(this.selectedUsers.get().filter((user) => user.username !== username));
@@ -304,47 +193,13 @@ Template.CreateThread.onCreated(function() {
 
 
 	// callback to allow setting a parent Channel or e. g. tracking the event using Piwik or GA
-	const callbackDefaults = callbacks.run('openThreadCreationScreen');
-	if (callbackDefaults) {
-		if (callbackDefaults.parentChannel) {
-			this.parentChannel.set(callbackDefaults.parentChannel);
-		}
-		if (callbackDefaults.reply) {
-			this.reply.set(callbackDefaults.reply);
-		}
+	const { parentChannel, reply } = callbacks.run('openThreadCreationScreen') || {};
+
+	if (parentChannel) {
+		this.parentChannel.set(parentChannel);
 	}
-
-	this.debounceValidateParentChannel = _.debounce((parentChannel) => {
-		if (!parentChannel) {
-			return false; // parentChannel is mandatory
-		}
-		return Meteor.call('assistify:getParentChannelId', parentChannel, (error, result) => {
-			if (!result) {
-				this.parentChannelId.set(false);
-				return this.parentChannelError.set(TAPi18n.__('Invalid_room_name', `${ parentChannel }...`));
-			}
-			this.parentChannelError.set('');
-			this.parentChannelId.set(result); // assign parent channel Id
-		});
-	}, 500);
-
-	// trigger the validation once
-	this.debounceValidateParentChannel(this.parentChannel.get());
-
-
-
-	// pre-fill form based on query parameters if passed
-	if (FlowRouter.current().queryParams) {
-		const parentChannel = FlowRouter.getQueryParam('topic') || FlowRouter.getQueryParam('parentChannel');
-		if (parentChannel) {
-			instance.parentChannel.set(parentChannel);
-			instance.debounceValidateParentChannel(parentChannel);
-		}
-
-		const question = FlowRouter.getQueryParam('question') || FlowRouter.getQueryParam('message');
-		if (question) {
-			instance.reply.set(question);
-		}
+	if (reply) {
+		this.reply.set(reply);
 	}
 });
 
@@ -384,14 +239,6 @@ Template.SearchCreateThread.events({
 	},
 	'click .rc-popup-list__item'(e, t) {
 		t.ac.onItemClick(this, e);
-	},
-	'click .rc-input__icon-svg--book-alt'(e, t) {
-		e.preventDefault();
-		t.showChannelSelection.set(true);
-	},
-	'click #more-topics'(e, t) {
-		e.preventDefault();
-		t.showChannelSelection.set(true);
 	},
 	'keydown input'(e, t) {
 		t.ac.onKeyDown(e);

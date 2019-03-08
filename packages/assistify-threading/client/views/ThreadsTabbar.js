@@ -45,7 +45,7 @@ Template.threadsTabbar.onCreated(function() {
 	});
 });
 
-Template.pinnedMessages.events({
+Template.threadsTabbar.events({
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);
