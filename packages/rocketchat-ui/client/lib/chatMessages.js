@@ -360,8 +360,8 @@ export const ChatMessages = class ChatMessages {
 	confirmDeleteMsg(message, done = function() {}) {
 		if (MessageTypes.isSystemMessage(message)) { return; }
 
-		const room = message.t_rid && Rooms.findOne({
-			_id: message.t_rid,
+		const room = message.trid && Rooms.findOne({
+			_id: message.trid,
 			prid: { $exists: true },
 		});
 		modal.open({

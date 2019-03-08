@@ -12,7 +12,7 @@ Meteor.publish('threadsOfRoom', function(rid, limit = 50) {
 		return this.ready();
 	}
 
-	const cursorHandle = Messages.find({ rid, t_rid: { $exists: 1 } }, { sort: { ts: -1 }, limit }).observeChanges({
+	const cursorHandle = Messages.find({ rid, trid: { $exists: 1 } }, { sort: { ts: -1 }, limit }).observeChanges({
 		added(_id, record) {
 			return publication.added('rocketchat_threads_of_room', _id, record);
 		},

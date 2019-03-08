@@ -18,16 +18,16 @@ const fields = [
 	},
 ];
 
-export const createThreadMessage = (rid, user, t_rid, msg, message_embedded) => {
+export const createThreadMessage = (rid, user, trid, msg, message_embedded) => {
 	const welcomeMessage = {
 		msg,
 		rid,
-		t_rid,
+		trid,
 		attachments: [{
 			fields,
 		}, message_embedded].filter((e) => e),
 	};
-	return Messages.createWithTypeRoomIdMessageAndUser('thread-created', t_rid, '', user, welcomeMessage);
+	return Messages.createWithTypeRoomIdMessageAndUser('thread-created', trid, '', user, welcomeMessage);
 };
 
 export const mentionThreadMessage = (rid, user, msg, message_embedded) => {
@@ -107,7 +107,7 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 				{ fields },
 				...(message.attachments || []),
 			],
-			t_rid: thread._id,
+			trid: thread._id,
 		});
 
 		mentionThreadMessage(thread._id, user, reply, attachMessage(message, p_room));
