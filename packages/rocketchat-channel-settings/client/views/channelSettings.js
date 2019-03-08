@@ -29,12 +29,12 @@ const common = {
 		return roomType && roomTypes.roomTypes[roomType].canBeDeleted(hasPermission, room);
 	},
 	canEditRoom() {
-		const { _id } = Template.instance().room;
-		return hasAllPermission('edit-room', _id);
+		const { _id, prid } = Template.instance().room;
+		return !prid && hasAllPermission('edit-room', _id);
 	},
 	isDirectMessage() {
-		const { room } = Template.instance();
-		return room.t === 'd';
+		const { room: { t } } = Template.instance();
+		return t === 'd';
 	},
 };
 
@@ -797,8 +797,13 @@ Template.channelSettingsInfo.helpers({
 	channelSettings() {
 		return ChannelSettings.getOptions(Template.currentData(), 'room');
 	},
+	showAvatar() {
+		const { room } = Template.instance();
+		return !room.prid;
+	},
 	name() {
-		return Template.instance().room.name;
+		const { room } = Template.instance();
+		return roomTypes.getRoomName(room.t, room);
 	},
 	description() {
 		return Template.instance().room.description;
@@ -814,19 +819,7 @@ Template.channelSettingsInfo.helpers({
 	},
 
 	channelIcon() {
-		const roomType = Template.instance().room.t;
-		switch (roomType) {
-			case 'd':
-				return 'at';
-			case 'p':
-				return 'lock';
-			case 'c':
-				return 'hashtag';
-			case 'l':
-				return 'livechat';
-			default:
-				return null;
-		}
+		return roomTypes.getIcon(Template.instance().room);
 	},
 	hasPurge() {
 		return roomHasPurge(Template.instance().room);

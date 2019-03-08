@@ -64,7 +64,6 @@ Template.sideNav.events({
 	'dropped .sidebar'(e) {
 		return e.preventDefault();
 	},
-
 	'mouseenter .sidebar-item__link'(e) {
 		const element = e.currentTarget;
 		setTimeout(() => {

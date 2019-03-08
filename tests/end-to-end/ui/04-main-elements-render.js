@@ -22,7 +22,7 @@ describe('[Main Elements Render]', function() {
 			});
 
 			it('it should show the new channel button', () => {
-				sideNav.newChannelBtn.isVisible().should.be.true;
+				sideNav.newChannelBtnToolbar.isVisible().should.be.true;
 			});
 
 			it('it should show "general" channel', () => {

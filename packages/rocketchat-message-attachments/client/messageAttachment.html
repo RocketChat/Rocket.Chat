@@ -145,11 +145,8 @@
 			{{#if fields}}
 				{{#unless collapsed}}
 					<div class="attachment-fields">
-						{{#each fields}}
-							<div class="attachment-field{{# if short }} attachment-field-short{{/if}}">
-								<div class="attachment-field-title">{{title}}</div>
-								{{{RocketChatMarkdown value}}}
-							</div>
+						{{#each field in fields}}
+							{{> renderField field=field}}
 						{{/each}}
 					</div>
 				{{/unless}}

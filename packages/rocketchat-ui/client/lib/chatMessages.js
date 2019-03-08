@@ -359,9 +359,14 @@ export const ChatMessages = class ChatMessages {
 
 	confirmDeleteMsg(message, done = function() {}) {
 		if (MessageTypes.isSystemMessage(message)) { return; }
+
+		const room = message.trid && Rooms.findOne({
+			_id: message.trid,
+			prid: { $exists: true },
+		});
 		modal.open({
 			title: t('Are_you_sure'),
-			text: t('You_will_not_be_able_to_recover'),
+			text: room ? t('The_message_is_a_thread_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',

@@ -162,7 +162,7 @@ Template.popover.events({
 		const { id } = event.currentTarget.dataset;
 		const action = messageBox.actions.getById(id);
 		if ((action[0] != null ? action[0].action : undefined) != null) {
-			action[0].action({ rid: t.data.data.rid, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });
+			action[0].action({ rid: t.data.data.rid, ...t.data.data, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });
 			if (id !== 'audio-message') {
 				popover.close();
 			}

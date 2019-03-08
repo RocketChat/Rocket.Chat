@@ -4,14 +4,21 @@
 
 	width: 100%;
 
-	margin: 0 -25px;
-
 	animation-name: fadeIn;
 	animation-duration: 1s;
 
+	&__content {
+		overflow: auto;
+		flex: 1 1 auto;
+
+		margin: 0 -40px;
+		padding: 0 40px;
+	}
+
 	&__wrapper {
-		overflow-x: hidden;
-		overflow-y: auto;
+
+		display: flex;
+		flex-direction: column;
 
 		height: 100%;
 

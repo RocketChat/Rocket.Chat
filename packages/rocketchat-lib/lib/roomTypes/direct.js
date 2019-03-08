@@ -50,9 +50,16 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		const subscription = Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } });
-		if (!subscription) {
-			return '';
+
+		// this function can receive different types of data
+		// if it doesn't have fname and name properties, should be a Room object
+		// so, need to find the related subscription
+		const subscription = roomData && (roomData.fname || roomData.name) ?
+			roomData :
+			Subscriptions.findOne({ rid: roomData._id });
+
+		if (subscription === undefined) {
+			return console.log('roomData', roomData);
 		}
 
 		if (settings.get('UI_Use_Real_Name') && subscription.fname) {

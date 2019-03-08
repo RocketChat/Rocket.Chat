@@ -145,6 +145,10 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 
 		extra.open = true;
 
+		if (room.prid) {
+			extra.prid = room.prid;
+		}
+
 		if (username === owner.username) {
 			extra.ls = now;
 		}
@@ -174,7 +178,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 	}
 
 	return {
-		rid: room._id,
-		name: room.name,
+		rid: room._id, // backwards compatible
+		...room,
 	};
 };
