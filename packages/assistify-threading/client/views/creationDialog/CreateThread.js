@@ -147,7 +147,7 @@ Template.CreateThread.onCreated(function() {
 	this.parentChannel = new ReactiveVar(roomName);
 	this.parentChannelId = new ReactiveVar(room && room.rid);
 
-	this.selectParent = new ReactiveVar(!!room && room.rid);
+	this.selectParent = new ReactiveVar(room && room.rid);
 
 	this.reply = new ReactiveVar('');
 
