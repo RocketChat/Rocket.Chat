@@ -39,12 +39,13 @@ Template.CreateThread.helpers({
 		return instance.parentChannel.get();
 	},
 	selectedUsers() {
+		const myUsername = Meteor.user().username;
 		const { message } = this;
 		const users = Template.instance().selectedUsers.get();
 		if (message) {
 			users.unshift(message.u);
 		}
-		return users.filter(({ username }) => Meteor.user().username !== username);
+		return users.filter(({ username }) => myUsername !== username);
 	},
 
 	onClickTagUser() {
