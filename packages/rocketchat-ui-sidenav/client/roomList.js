@@ -23,6 +23,7 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
+				'settings.preferences.sidebarShowThreads': 1,
 				'services.tokenpass': 1,
 			},
 		});
