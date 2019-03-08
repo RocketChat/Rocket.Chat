@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { t, APIClient } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 
@@ -22,6 +23,7 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 
 	const tagged = apps.map((app) =>
 		({
+			price: app.price,
 			latest: {
 				...app.latest,
 				_installed: installedIds.includes(app.latest.id),
@@ -37,7 +39,6 @@ const getApps = (instance) => {
 
 	APIClient.get('apps?marketplace=true')
 		.then((data) => {
-			console.log('Marketplace apps', data);
 			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
 
 			instance.isLoading.set(false);
@@ -194,6 +195,9 @@ Template.apps.helpers({
 
 		return isMarketplace && isDownloaded;
 	},
+	formatPrice(price) {
+		return `$${ Number.parseFloat(price).toFixed(2) }`;
+	},
 	tabsData() {
 		const instance = Template.instance();
 
@@ -243,16 +247,20 @@ Template.apps.events({
 	'click [data-button="install"]'() {
 		FlowRouter.go('/admin/app/install');
 	},
-	'click .js-install'(e, template) {
+	'click .js-install'(e) {
 		e.stopPropagation();
 
 		// play animation
 		e.currentTarget.parentElement.classList.add('loading');
 
-		APIClient.post('apps/', { appId: this.latest.id, version: this.latest.version })
-			.then(() => {
-				getApps(template);
-				getInstalledApps(template);
+		APIClient.get(`apps?buildBuyUrl=true&appId=${ this.latest.id }`)
+			.then((data) => {
+				// TODO: Add a listener for when it is closed, remove the animation
+				modal.open({
+					allowOutsideClick: false,
+					data,
+					template: 'iframeModal',
+				});
 			})
 			.catch((e) => toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message));
 	},

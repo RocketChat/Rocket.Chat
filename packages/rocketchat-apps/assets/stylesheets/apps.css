@@ -146,6 +146,11 @@
 		margin: 0 7px;
 	}
 
+	.rc-app-price {
+		position: relative;
+		top: -3px;
+	}
+
 	&__wrap-actions {
 		& > .rc-icon--loading {
 			display: none;
