@@ -48,7 +48,7 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 		message = Messages.findOne({ _id: pmid });
 		if (prid) {
 			if (prid !== message.rid) {
-				throw new Meteor.Error('error-invalid-arguments', { method: 'ThreadCreation1' });
+				throw new Meteor.Error('error-invalid-arguments', { method: 'ThreadCreation' });
 			}
 		} else {
 			prid = message.rid;
@@ -56,7 +56,7 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 	}
 
 	if (!prid) {
-		throw new Meteor.Error('error-invalid-arguments', { method: 'ThreadCreation2' });
+		throw new Meteor.Error('error-invalid-arguments', { method: 'ThreadCreation' });
 	}
 	const p_room = Rooms.findOne(prid);
 
