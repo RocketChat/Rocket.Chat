@@ -36,6 +36,7 @@ class PeerClient {
 			domain: this.config.peer.domain,
 			url: this.config.peer.url,
 			public_key: this.config.peer.public_key,
+			cloud_token: this.config.cloud.token,
 		};
 	}
 
