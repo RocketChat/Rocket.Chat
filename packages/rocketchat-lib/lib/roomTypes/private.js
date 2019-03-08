@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { ChatRoom, ChatSubscription } from 'meteor/rocketchat:models';
 import { openRoom } from 'meteor/rocketchat:ui-utils';
 import { settings } from 'meteor/rocketchat:settings';
 import { hasAtLeastOnePermission, hasPermission } from 'meteor/rocketchat:authorization';
@@ -29,6 +29,13 @@ export class PrivateRoomType extends RoomTypeConfig {
 		});
 	}
 
+	getIcon(roomData) {
+		if (roomData.prid) {
+			return 'thread';
+		}
+		return this.icon;
+	}
+
 	findRoom(identifier) {
 		const query = {
 			t: 'p',
@@ -39,6 +46,9 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
+		if (roomData.prid) {
+			return roomData.fname;
+		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {
 			return roomData.fname || roomData.name;
 		}
@@ -57,6 +67,18 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	canAddUser(room) {
 		return hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], room._id);
+	}
+
+	canSendMessage(roomId) {
+		const room = ChatRoom.findOne({ _id: roomId, t: 'p' }, { fields: { prid: 1 } });
+		if (room.prid) {
+			return true;
+		}
+
+		// TODO: remove duplicated code
+		return ChatSubscription.find({
+			rid: roomId,
+		}).count() > 0;
 	}
 
 	allowRoomSettingChange(room, setting) {

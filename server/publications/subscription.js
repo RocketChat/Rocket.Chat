@@ -16,6 +16,7 @@ const fields = {
 	alert: 1,
 	roles: 1,
 	unread: 1,
+	prid: 1,
 	userMentions: 1,
 	groupMentions: 1,
 	archived: 1,
@@ -44,8 +45,6 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			return [];
 		}
-
-		this.unblock();
 
 		const options = { fields };
 
