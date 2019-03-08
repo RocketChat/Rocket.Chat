@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 
-export const upsertMessage = ({ msg, subscription }) => {
+export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	const userId = msg.u && msg.u._id;
 
 	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
@@ -21,7 +21,7 @@ export const upsertMessage = ({ msg, subscription }) => {
 		msg.e2e = 'pending';
 	}
 
-	return ChatMessage.upsert({ _id: msg._id }, msg);
+	return ChatMessage.upsert({ _id }, msg);
 };
 
 function upsertMessageBulk({ msgs, subscription }) {

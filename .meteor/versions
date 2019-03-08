@@ -8,6 +8,7 @@ accounts-password@1.5.1
 accounts-twitter@1.4.2
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
+assistify:threading@0.1.0
 autoupdate@1.5.0
 babel-compiler@7.2.4
 babel-runtime@1.3.0

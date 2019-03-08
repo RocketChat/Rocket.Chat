@@ -161,7 +161,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		delete message.tokens;
 	}
 
-	message = callbacks.run('beforeSaveMessage', message);
+	message = callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
 		// Avoid saving sandstormSessionId to the database
 		let sandstormSessionId = null;
