@@ -33,13 +33,13 @@ class PeerDNS {
 	//
 	// ########
 	register(peerConfig) {
-		const { uniqueId, domain, url, public_key } = peerConfig;
+		const { uniqueId, domain, url, public_key, cloud_token } = peerConfig;
 
 		this.log(`Registering peer with domain ${ domain }...`);
 
 		// Attempt to register peer
 		try {
-			peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key }, { total: 5, stepSize: 1000, tryToUpdateDNS: false });
+			peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key, cloud_token }, { total: 5, stepSize: 1000, tryToUpdateDNS: false });
 
 			this.log('Peer registered!');
 
