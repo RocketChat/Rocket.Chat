@@ -20,7 +20,7 @@ const delay = Meteor.wrapAsync(function(ms, callback) {
 	}, ms);
 });
 
-function doSimpleRequest(peer, method, uri, body) {
+function doSimpleRequest(peer, method, uri, body, headers = {}) {
 	this.log(`Request: ${ method } ${ uri }`);
 
 	const { url: serverBaseURL } = peer;
@@ -35,12 +35,12 @@ function doSimpleRequest(peer, method, uri, body) {
 
 	this.log(`Sending request: ${ method } - ${ uri }`);
 
-	return HTTP.call(method, url, { data, timeout: 2000, headers: { 'x-federation-domain': this.config.peer.domain } });
+	return HTTP.call(method, url, { data, timeout: 2000, headers: { ...headers, 'x-federation-domain': this.config.peer.domain } });
 }
 
 //
 // Actually does the request, handling retries and everything
-function doRequest(peer, method, uri, body, retryInfo = {}) {
+function doRequest(peer, method, uri, body, retryInfo = {}, headers = {}) {
 	// Normalize retry info
 	retryInfo = {
 		total: retryInfo.total || 1,
@@ -52,7 +52,7 @@ function doRequest(peer, method, uri, body, retryInfo = {}) {
 
 	for (let i = 0; i <= retryInfo.total; i++) {
 		try {
-			return doSimpleRequest.call(this, peer, method, uri, body);
+			return doSimpleRequest.call(this, peer, method, uri, body, headers);
 		} catch (err) {
 			try {
 				if (retryInfo.tryToUpdateDNS && !retryInfo.DNSUpdated) {
@@ -112,14 +112,14 @@ class PeerHTTP {
 
 	//
 	// Direct request
-	simpleRequest(peer, method, uri, body) {
-		return doSimpleRequest.call(this, peer, method, uri, body);
+	simpleRequest(peer, method, uri, body, headers) {
+		return doSimpleRequest.call(this, peer, method, uri, body, headers);
 	}
 
 	//
 	// Request trying to find DNS entries
-	request(peer, method, uri, body, retryInfo = {}) {
-		return doRequest.call(this, peer, method, uri, body, retryInfo);
+	request(peer, method, uri, body, retryInfo = {}, headers = {}) {
+		return doRequest.call(this, peer, method, uri, body, retryInfo, headers);
 	}
 }
 
