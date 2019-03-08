@@ -8,7 +8,6 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, getUserPreference, handleError } from 'meteor/rocketchat:utils';
 import { WebRTC } from 'meteor/rocketchat:webrtc';
-
 import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
 import {
 	fireGlobalEvent,
@@ -340,7 +339,7 @@ Template.room.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		const roomIcon = roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		const roomIcon = roomTypes.getIcon(roomData);
 
 		// Remove this 'codegueira' on header redesign
 		if (!roomIcon) {
@@ -714,12 +713,12 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const roomNameOrId = $(e.currentTarget).data('channel');
-		if (roomNameOrId) {
+		const channel = $(e.currentTarget).data('channel');
+		if (channel) {
 			if (Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: roomNameOrId }), channel: roomNameOrId });
+				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
 			}
-			FlowRouter.goToRoomById(roomNameOrId);
+			FlowRouter.goToRoomById(channel);
 			return;
 		}
 		const username = $(e.currentTarget).data('username');
@@ -1133,10 +1132,17 @@ Template.room.onRendered(function() {
 			newMessage.classList.remove('not');
 		}
 	});
-	Tracker.autorun(function() {
+
+	this.autorun(function() {
+
+		if (template.data._id !== RoomManager.openedRoom) {
+			return;
+		}
+
 		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
 			FlowRouter.go('home');
 		}
 	});
+
 });

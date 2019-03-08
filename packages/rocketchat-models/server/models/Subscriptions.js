@@ -28,6 +28,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ autoTranslate: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ autoTranslateLanguage: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ prid: 1 });
 	}
 
 	findByRoomIds(roomIds) {
@@ -1220,6 +1221,10 @@ export class Subscriptions extends Base {
 			...this.getDefaultSubscriptionPref(user),
 			...extraData,
 		};
+
+		if (room.prid) {
+			subscription.prid = room.prid;
+		}
 
 		const result = this.insert(subscription);
 

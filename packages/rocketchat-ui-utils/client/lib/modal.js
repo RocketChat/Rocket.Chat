@@ -97,7 +97,7 @@ Template.rc_modal.helpers({
 		return !!this.action;
 	},
 	type() {
-		return `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
+		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
 
 	},
 	modalIcon() {

@@ -26,6 +26,7 @@ const fields = {
 	customFields: 1,
 	lastMessage: 1,
 	retention: 1,
+	prid: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,
@@ -58,7 +59,7 @@ const roomMap = (record) => {
 
 Meteor.methods({
 	'rooms/get'(updatedAt) {
-		let options = { fields };
+		const options = { fields };
 
 		if (!Meteor.userId()) {
 			if (settings.get('Accounts_AllowAnonymousRead') === true) {
@@ -66,10 +67,6 @@ Meteor.methods({
 			}
 			return [];
 		}
-
-		options = {
-			fields,
-		};
 
 		if (updatedAt instanceof Date) {
 			return {

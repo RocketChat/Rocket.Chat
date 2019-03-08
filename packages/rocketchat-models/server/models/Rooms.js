@@ -17,6 +17,9 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ open: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: 1 });
+
+		// threads
+		this.tryEnsureIndex({ prid: 1 });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -1362,6 +1365,37 @@ export class Rooms extends Base {
 		};
 
 		return this.remove(query);
+	}
+
+	// ############################
+	// Threads
+	findThreadParentByNameStarting(name, options) {
+		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c'],
+			},
+			name: nameRegex,
+			archived: { $ne: true },
+			prid: {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	setLinkMessageById(_id, linkMessageId) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				linkMessageId,
+			},
+		};
+
+		return this.update(query, update);
 	}
 }
 
