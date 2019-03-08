@@ -125,8 +125,6 @@ Meteor.methods({
 		check(selfId, String);
 		check(remoteId, String);
 
-		this.unblock();
-
 		const query = {
 			_id: remoteId,
 		};

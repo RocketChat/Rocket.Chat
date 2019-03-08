@@ -9,8 +9,6 @@ Meteor.methods({
 			});
 		}
 
-		this.unblock();
-
 		const user = Meteor.user();
 
 		return getAvatarSuggestionForUser(user);

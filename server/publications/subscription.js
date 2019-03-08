@@ -44,8 +44,6 @@ Meteor.methods({
 			return [];
 		}
 
-		this.unblock();
-
 		const options = { fields };
 
 		const records = Subscriptions.findByUserId(Meteor.userId(), options).fetch();

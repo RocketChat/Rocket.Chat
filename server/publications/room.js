@@ -67,8 +67,6 @@ Meteor.methods({
 			return [];
 		}
 
-		this.unblock();
-
 		options = {
 			fields,
 		};

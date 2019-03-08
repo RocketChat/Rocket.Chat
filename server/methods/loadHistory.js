@@ -26,7 +26,6 @@ settings.get(/Message_HideType_.+/, function(key, value) {
 
 Meteor.methods({
 	loadHistory(rid, end, limit = 20, ls) {
-		this.unblock();
 		check(rid, String);
 
 		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {

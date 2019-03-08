@@ -4,7 +4,6 @@ import { Notifications } from 'meteor/rocketchat:notifications';
 
 Meteor.methods({
 	'permissions/get'(updatedAt) {
-		this.unblock();
 		// TODO: should we return this for non logged users?
 		// TODO: we could cache this collection
 
