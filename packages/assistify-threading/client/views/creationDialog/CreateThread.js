@@ -4,7 +4,7 @@ import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { ChatRoom, ChatSubscription } from 'meteor/rocketchat:models';
 import { Blaze } from 'meteor/blaze';
 import { call } from 'meteor/rocketchat:ui-utils';
 
@@ -39,12 +39,13 @@ Template.CreateThread.helpers({
 		return instance.parentChannel.get();
 	},
 	selectedUsers() {
+		const myUsername = Meteor.user().username;
 		const { message } = this;
 		const users = Template.instance().selectedUsers.get();
 		if (message) {
 			users.unshift(message.u);
 		}
-		return users;
+		return users.filter(({ username }) => myUsername !== username);
 	},
 
 	onClickTagUser() {
@@ -126,29 +127,28 @@ Template.CreateThread.events({
 Template.CreateThread.onRendered(function() {
 	this.find(this.data.rid ? '#thread_name' : '#parentChannel').focus();
 });
-
+const suggestName = (name, msg) => [name, msg].filter((e) => e).join(' - ').substr(0, 140);
 Template.CreateThread.onCreated(function() {
 	const { rid, message: msg } = this.data;
 
-	const parentRoom = rid && ChatRoom.findOne(rid);
+	const parentRoom = rid && ChatSubscription.findOne({ rid });
 
 	// if creating a thread from inside a thread, uses the same channel as parent channel
-	const room = parentRoom && parentRoom.prid ? ChatRoom.findOne(parentRoom.prid) : parentRoom;
+	const room = parentRoom && parentRoom.prid ? ChatSubscription.findOne({ rid: parentRoom.prid }) : parentRoom;
 
 	if (room) {
 		room.text = room.name;
-		this.threadName = new ReactiveVar(`${ room.name } - ${ msg && msg.msg }`);
-	} else {
-		this.threadName = new ReactiveVar('');
 	}
 
+	const roomName = room && roomTypes.getRoomName(room.t, room);
+	this.threadName = new ReactiveVar(suggestName(roomName, msg && msg.msg));
 
 	this.pmid = msg && msg._id;
 
-	this.parentChannel = new ReactiveVar(roomTypes.getRoomName(room));
-	this.parentChannelId = new ReactiveVar(rid);
+	this.parentChannel = new ReactiveVar(roomName);
+	this.parentChannelId = new ReactiveVar(room && room.rid);
 
-	this.selectParent = new ReactiveVar(!!rid);
+	this.selectParent = new ReactiveVar(room && room.rid);
 
 	this.reply = new ReactiveVar('');
 
@@ -170,16 +170,21 @@ Template.CreateThread.onCreated(function() {
 
 	this.autorun(() => {
 		const [room = {}] = this.selectedRoom.get();
-		this.parentChannel.set(room && room.name); // determine parent Channel from setting and allow to overwrite
-		this.parentChannelId.set(room && room._id);
+		this.parentChannel.set(roomTypes.getRoomName(room.t, room)); // determine parent Channel from setting and allow to overwrite
+		this.parentChannelId.set(room && (room.rid || room._id));
 	});
 
 
 	this.selectedUsers = new ReactiveVar([]);
 	this.onSelectUser = ({ item: user }) => {
+
+		if (user.username === (msg && msg.u.username)) {
+			return;
+		}
+
 		const users = this.selectedUsers.get();
 		if (!users.find((u) => user.username === u.username)) {
-			this.selectedUsers.set([...this.selectedUsers.get(), user].filter());
+			this.selectedUsers.set([...users, user]);
 		}
 	};
 	this.onClickTagUser = (({ username }) => {
