@@ -55,6 +55,9 @@ export class AppsRestApi {
 
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
+				// const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+				const baseUrl = 'http://localhost:7488';
+
 				// Gets the Apps from the marketplace
 				if (this.queryParams.marketplace) {
 					const headers = {};
@@ -63,7 +66,6 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
 					const result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
 						headers,
 					});
@@ -82,7 +84,6 @@ export class AppsRestApi {
 						headers.Authorization = `Bearer ${ token }`;
 					}
 
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
 					const result = HTTP.get(`${ baseUrl }/v1/categories`, {
 						headers,
 					});
@@ -92,6 +93,11 @@ export class AppsRestApi {
 					}
 
 					return _API.v1.success(result.data);
+				}
+
+				if (this.queryParams.buildBuyUrl && this.queryParams.appId) {
+					const workspaceId = settings.get('Cloud_Workspace_Id');
+					return _API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }` });
 				}
 
 				const apps = manager.get().map((prl) => {
