@@ -3,7 +3,6 @@ import Page from './Page';
 import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
-import { sendEscape } from './keyboard';
 
 class Threading extends Page {
 	// Sidebar - this should actually be part of the sidebar-file - leaving it here for mergability
@@ -27,40 +26,46 @@ class Threading extends Page {
 
 	// Modal
 	get createThreadModal() {
-		return browser.element('.create-thread');
+		return browser.element('#create-thread');
 	}
 
-	get selectChannelAction() {
-		return browser.element('.create-thread .js-select-parent');
+	get threadName() {
+		return browser.element('#create-thread #thread_name');
 	}
 
-	get firstQuestion() {
-		return browser.element('.create-thread #thread_message');
+	get threadMessage() {
+		return browser.element('#create-thread #thread_message');
 	}
 
-	// get parentChannelName() {
-	// 	return browser.element('.create-thread #parentChannel-search');
-	// }
+	get parentChannelName() {
+		return browser.element('#create-thread #parentChannel');
+	}
 
 	get saveThreadButton() {
-		return browser.element('.create-channel .js-save-thread');
+		return browser.element('.js-save-thread');
 	}
 
 	// Sequences
 
-	createThread(parentChannelName, message) {
-		this.newThreadButton.waitForVisible(1000);
-		this.newThreadButton.click();
+	createThread(parentChannelName, name, message) {
+		sideNav.newChannelBtnToolbar.waitForVisible(1000);
+		sideNav.newChannelBtnToolbar.click();
+		sideNav.newThreadBtn.waitForVisible(1000);
+		sideNav.newThreadBtn.click();
 		this.createThreadModal.waitForVisible(1000);
-		this.firstQuestion.setValue(message);
-		this.selectChannelAction.click();
-		// this.parentChannelName.waitForVisible(1000);
-		// this.parentChannelName.setValue(parentChannelName);
-		sendEscape();
-		browser.pause(4000); // wait for the autocompete to vanish - for sure
+		this.threadName.setValue(name);
+		this.threadMessage.setValue(message);
+		this.parentChannelName.waitForVisible(1000);
+		this.parentChannelName.setValue(parentChannelName);
+
+		const list = browser.element('.rc-popup-list__list');
+		list.waitForVisible(2000);
+
+		list.element('.rc-popup-list__item').waitForVisible(10000);
+		list.element('.rc-popup-list__item').click();
 
 		browser.waitUntil(function() {
-			return browser.isEnabled('.create-channel .js-save-thread');
+			return browser.isEnabled('.js-save-thread');
 		}, 5000);
 
 		this.saveThreadButton.click();

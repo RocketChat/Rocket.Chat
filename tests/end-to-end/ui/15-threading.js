@@ -9,6 +9,7 @@ import { threading } from '../../pageobjects/threading.page';
 import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 const parentChannelName = 'unit-testing';
+const threadName = 'Lorem ipsum dolor sit amet';
 const message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
 describe('[Threading]', function () {
@@ -30,13 +31,13 @@ describe('[Threading]', function () {
 
 	describe('via creation screen', function() {
 		it('Create a thread', function () {
-			threading.createThread(parentChannelName, message);
+			threading.createThread(parentChannelName, threadName, message);
 		});
 	});
 
 	describe('from context menu', function() {
 		before(() => {
-			sideNav.openChannel(parentChannelName);
+			// sideNav.openChannel(parentChannelName);
 			mainContent.sendMessage(message);
 		});
 

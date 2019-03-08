@@ -37,7 +37,7 @@ Meteor.startup(function() {
 				});
 			},
 			condition({ rid, u: { _id: uid }, attachments }) {
-				if (attachments && attachments[0].fields && attachments[0].fields[0].type === 'messageCounter') {
+				if (attachments && attachments[0] && attachments[0].fields && attachments[0].fields[0].type === 'messageCounter') {
 					return false;
 				}
 				return condition(rid, uid);

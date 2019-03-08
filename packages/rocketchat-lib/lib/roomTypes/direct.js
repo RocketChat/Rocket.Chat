@@ -49,7 +49,15 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		}
 	}
 
-	roomName(subscription) {
+	roomName(roomData) {
+
+		// this function can receive different types of data
+		// if it doesn't have fname and name properties, should be a Room object
+		// so, need to find the related subscription
+		const subscription = !roomData.fname && !roomData.fname ?
+			Subscriptions.findOne({ rid: roomData._id }) :
+			roomData;
+
 		if (settings.get('UI_Use_Real_Name') && subscription.fname) {
 			return subscription.fname;
 		}

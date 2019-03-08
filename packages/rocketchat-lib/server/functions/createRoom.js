@@ -177,5 +177,8 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		Apps.getBridges().getListenerBridge().roomEvent('IPostRoomCreate', room);
 	}
 
-	return room;
+	return {
+		rid: room._id, // backwards compatible
+		...room,
+	};
 };
