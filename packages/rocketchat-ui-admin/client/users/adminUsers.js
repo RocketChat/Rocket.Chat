@@ -3,11 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
+import { SideNav, TabBar, RocketChatTabBar } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import s from 'underscore.string';
-
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 Template.adminUsers.helpers({
 	searchText() {
@@ -133,6 +131,8 @@ Template.adminUsers.onRendered(function() {
 	});
 });
 
+const DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS = 300;
+
 Template.adminUsers.events({
 	'keydown #users-filter'(e) {
 		if (e.which === 13) {
@@ -140,11 +140,11 @@ Template.adminUsers.events({
 			e.preventDefault();
 		}
 	},
-	'keyup #users-filter'(e, t) {
+	'keyup #users-filter': _.debounce((e, t) => {
 		e.stopPropagation();
 		e.preventDefault();
 		t.filter.set(e.currentTarget.value);
-	},
+	}, DEBOUNCE_TIME_FOR_SEARCH_USERS_IN_MS),
 	'click .user-info'(e, instance) {
 		e.preventDefault();
 		instance.tabBarData.set(Meteor.users.findOne(this._id));

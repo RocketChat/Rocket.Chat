@@ -9,6 +9,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { t, roomTypes } from 'meteor/rocketchat:utils';
 import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import toastr from 'toastr';
 import _ from 'underscore';
 
 const acEvents = {
@@ -241,18 +242,27 @@ Template.createChannel.events({
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
 				if (err.error === 'error-invalid-name') {
-					return instance.invalid.set(true);
+					instance.invalid.set(true);
+					return;
 				}
 				if (err.error === 'error-duplicate-channel-name') {
-					return instance.inUse.set(true);
+					instance.inUse.set(true);
+					return;
 				}
+				if (err.error === 'error-invalid-room-name') {
+					toastr.error(t('error-invalid-room-name', { room_name: name }));
+					return;
+				}
+				toastr.error(err.message);
 				return;
 			}
 
 			if (!isPrivate) {
 				callbacks.run('aftercreateCombined', { _id: result.rid, name: result.name });
 			}
-
+			if (instance.data.onCreate) {
+				instance.data.onCreate(result);
+			}
 			return FlowRouter.go(isPrivate ? 'group' : 'channel', { name: result.name }, FlowRouter.current().queryParams);
 		});
 		return false;
@@ -326,15 +336,17 @@ Template.createChannel.onCreated(function() {
 	this.ac = new AutoComplete(
 		{
 			selector:{
+				anchor: '.rc-input__label',
 				item: '.rc-popup-list__item',
 				container: '.rc-popup-list__list',
 			},
-
+			position:'fixed',
 			limit: 10,
 			inputDelay: 300,
 			rules: [
 				{
 				// @TODO maybe change this 'collection' and/or template
+
 					collection: 'UserAndRoom',
 					subscription: 'userAutocomplete',
 					field: 'username',

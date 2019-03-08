@@ -1,3 +1,4 @@
+import { Rooms, Users } from 'meteor/rocketchat:models';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomsConverter {
@@ -6,13 +7,13 @@ export class AppRoomsConverter {
 	}
 
 	convertById(roomId) {
-		const room = RocketChat.models.Rooms.findOneById(roomId);
+		const room = Rooms.findOneById(roomId);
 
 		return this.convertRoom(room);
 	}
 
 	convertByName(roomName) {
-		const room = RocketChat.models.Rooms.findOneByName(roomName);
+		const room = Rooms.findOneByName(roomName);
 
 		return this.convertRoom(room);
 	}
@@ -24,7 +25,7 @@ export class AppRoomsConverter {
 
 		let u;
 		if (room.creator) {
-			const creator = RocketChat.models.Users.findOneById(room.creator.id);
+			const creator = Users.findOneById(room.creator.id);
 			u = {
 				_id: creator._id,
 				username: creator.username,

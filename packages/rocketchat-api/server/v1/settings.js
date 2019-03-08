@@ -134,8 +134,6 @@ API.v1.addRoute('settings/:_id', { authRequired: true }, {
 
 API.v1.addRoute('service.configurations', { authRequired: false }, {
 	get() {
-		const { ServiceConfiguration } = Package['service-configuration'];
-
 		return API.v1.success({
 			configurations: ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch(),
 		});

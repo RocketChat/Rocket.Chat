@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Messages, Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -13,7 +12,7 @@ Meteor.methods({
 		});
 
 		// update visited page history to not expire
-		RocketChat.models.Messages.keepHistoryForToken(token);
+		Messages.keepHistoryForToken(token);
 
 		const visitor = LivechatVisitors.getVisitorByToken(token, {
 			fields: {
@@ -26,7 +25,7 @@ Meteor.methods({
 		});
 
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const cursor = RocketChat.models.Rooms.findOpenByVisitorToken(token);
+		const cursor = Rooms.findOpenByVisitorToken(token);
 		cursor.forEach((room) => {
 			Livechat.saveRoomInfo(room, visitor);
 		});

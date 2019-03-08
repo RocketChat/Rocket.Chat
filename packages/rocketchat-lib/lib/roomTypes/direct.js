@@ -2,10 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { ChatRoom, Subscriptions } from 'meteor/rocketchat:models';
 import { openRoom } from 'meteor/rocketchat:ui-utils';
-import { getUserPreference } from 'meteor/rocketchat:utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from 'meteor/rocketchat:utils';
 import { hasPermission, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { settings } from 'meteor/rocketchat:settings';
-import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -51,9 +50,16 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		const subscription = Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } });
-		if (!subscription) {
-			return '';
+
+		// this function can receive different types of data
+		// if it doesn't have fname and name properties, should be a Room object
+		// so, need to find the related subscription
+		const subscription = roomData && (roomData.fname || roomData.name) ?
+			roomData :
+			Subscriptions.findOne({ rid: roomData._id });
+
+		if (subscription === undefined) {
+			return console.log('roomData', roomData);
 		}
 
 		if (settings.get('UI_Use_Real_Name') && subscription.fname) {

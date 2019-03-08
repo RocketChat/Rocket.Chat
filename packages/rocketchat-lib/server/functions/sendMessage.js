@@ -3,6 +3,8 @@ import { Match, check } from 'meteor/check';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Messages } from 'meteor/rocketchat:models';
+import { Apps } from 'meteor/rocketchat:apps';
+import { Markdown } from 'meteor/rocketchat:markdown';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
@@ -146,20 +148,20 @@ export const sendMessage = function(user, message, room, upsert = false) {
 
 	if (message.parseUrls !== false) {
 		message.html = message.msg;
-		message = RocketChat.Markdown.code(message);
+		message = Markdown.code(message);
 
 		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
 		if (urls) {
 			message.urls = urls.map((url) => ({ url }));
 		}
 
-		message = RocketChat.Markdown.mountTokensBack(message, false);
+		message = Markdown.mountTokensBack(message, false);
 		message.msg = message.html;
 		delete message.html;
 		delete message.tokens;
 	}
 
-	message = callbacks.run('beforeSaveMessage', message);
+	message = callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
 		// Avoid saving sandstormSessionId to the database
 		let sandstormSessionId = null;
@@ -197,5 +199,3 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		return message;
 	}
 };
-
-RocketChat.sendMessage = sendMessage;

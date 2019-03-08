@@ -4,12 +4,21 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, handleError } from 'meteor/rocketchat:utils';
 import { TabBar, fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
-import { ChatSubscription, Rooms } from 'meteor/rocketchat:models';
+import { ChatSubscription, Rooms, ChatRoom } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { emoji } from 'meteor/rocketchat:emoji';
+import { Markdown } from 'meteor/rocketchat:markdown';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
+
+const isThread = ({ _id }) => {
+	const room = ChatRoom.findOne({ _id });
+	return !!(room && room.prid);
+};
+
 
 Template.headerRoom.helpers({
 	back() {
@@ -22,6 +31,10 @@ Template.headerRoom.helpers({
 	},
 	buttons() {
 		return TabBar.getButtons();
+	},
+
+	isThread() {
+		return isThread(Template.instance().data);
 	},
 
 	isTranslated() {
@@ -63,13 +76,13 @@ Template.headerRoom.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData || !roomData.topic) { return ''; }
 
-		let roomTopic = RocketChat.Markdown.parse(roomData.topic);
+		let roomTopic = Markdown.parse(roomData.topic);
 
 		// &#39; to apostrophe (') for emojis such as :')
 		roomTopic = roomTopic.replace(/&#39;/g, '\'');
 
-		Object.keys(RocketChat.emoji.packages).forEach((emojiPackage) => {
-			roomTopic = RocketChat.emoji.packages[emojiPackage].render(roomTopic);
+		Object.keys(emoji.packages).forEach((emojiPackage) => {
+			roomTopic = emoji.packages[emojiPackage].render(roomTopic);
 		});
 
 		// apostrophe (') back to &#39;
@@ -78,27 +91,11 @@ Template.headerRoom.helpers({
 		return roomTopic;
 	},
 
-	channelIcon() {
-		const roomType = Rooms.findOne(this._id).t;
-		switch (roomType) {
-			case 'd':
-				return 'at';
-			case 'p':
-				return 'lock';
-			case 'c':
-				return 'hashtag';
-			case 'l':
-				return 'livechat';
-			default:
-				return roomTypes.getIcon(roomType);
-		}
-	},
-
 	roomIcon() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		return roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		return roomTypes.getIcon(roomData);
 	},
 
 	tokenAccessChannel() {
@@ -116,7 +113,7 @@ Template.headerRoom.helpers({
 	},
 
 	showToggleFavorite() {
-		if (isSubscribed(this._id) && favoritesEnabled()) { return true; }
+		return !isThread(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
 	},
 
 	fixedHeight() {
@@ -163,6 +160,12 @@ Template.headerRoom.events({
 				.focus()
 				.select(),
 		10);
+	},
+
+	'click .js-open-parent-channel'(event, t) {
+		event.preventDefault();
+		const { prid } = t.currentChannel;
+		FlowRouter.goToRoomById(prid);
 	},
 });
 

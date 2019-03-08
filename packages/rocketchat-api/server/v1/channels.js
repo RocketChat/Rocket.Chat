@@ -345,6 +345,11 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 			count = parseInt(this.queryParams.count);
 		}
 
+		let offset = 0;
+		if (this.queryParams.offset) {
+			offset = parseInt(this.queryParams.offset);
+		}
+
 		const unreads = this.queryParams.unreads || false;
 
 		let result;
@@ -354,6 +359,7 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 				latest: latestDate,
 				oldest: oldestDate,
 				inclusive,
+				offset,
 				count,
 				unreads,
 			});
@@ -970,3 +976,32 @@ API.v1.addRoute('channels.moderators', { authRequired: true }, {
 		});
 	},
 });
+
+API.v1.addRoute('channels.addLeader', { authRequired: true }, {
+	post() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		const user = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('addRoomLeader', findResult._id, user._id);
+		});
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('channels.removeLeader', { authRequired: true }, {
+	post() {
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		const user = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('removeRoomLeader', findResult._id, user._id);
+		});
+
+		return API.v1.success();
+	},
+});
+

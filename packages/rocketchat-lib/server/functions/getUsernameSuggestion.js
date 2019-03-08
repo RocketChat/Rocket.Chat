@@ -1,10 +1,10 @@
+import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
-import { slugify } from 'meteor/yasaricli:slugify';
 import { Users } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 
 function slug(text) {
-	return slugify(text, '.').replace(/[^0-9a-z-_.]/g, '');
+	return limax(text, { replacement: '.' }).replace(/[^0-9a-z-_.]/g, '');
 }
 
 function usernameIsAvaliable(username) {
@@ -80,5 +80,3 @@ export function generateUsernameSuggestion(user) {
 		index++;
 	}
 }
-
-RocketChat.generateUsernameSuggestion = generateUsernameSuggestion;

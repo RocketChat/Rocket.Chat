@@ -1127,6 +1127,8 @@
   "Favorites": "Favorites",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "ຄຸນນະສົມບັດນີ້ແມ່ນຂື້ນກັບ \"ສົ່ງປະຫວັດຂອງການສົນທະນາຜູ້ເຂົ້າຊົມເປັນຂໍ້ຄວາມ\" ທີ່ຕ້ອງການ.",
   "Features_Enabled": "ຄຸນນະສົມບັດເປີດໃຊ້ວຽກ",
+  "FEDERATION_Domain": "ໂດເມນ",
+  "FEDERATION_Status": "ສະຖານະພາບ",
   "Field": "ພາກສະຫນາມ",
   "Field_removed": "ພາກສະຫນາມອອກ",
   "Field_required": "ຕ້ອງການພາກສະຫນາມ",

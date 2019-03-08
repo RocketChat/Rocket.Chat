@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import * as Models from 'meteor/rocketchat:models';
 import { Restivus } from 'meteor/nimble:restivus';
 import { API } from 'meteor/rocketchat:api';
+import { Livechat } from 'meteor/rocketchat:livechat';
+import { processWebhookMessage } from 'meteor/rocketchat:lib';
 import { logger } from '../logger';
-import { processWebhookMessage } from '../processWebhookMessage';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';
@@ -36,7 +37,7 @@ const Api = new Restivus({
 				}
 			}
 
-			this.integration = RocketChat.models.Integrations.findOne({
+			this.integration = Models.Integrations.findOne({
 				_id: this.request.params.integrationId,
 				token: decodeURIComponent(this.request.params.token),
 			});
@@ -55,7 +56,7 @@ const Api = new Restivus({
 				};
 			}
 
-			const user = RocketChat.models.Users.findOne({
+			const user = Models.Users.findOne({
 				_id: this.integration.userId,
 			});
 
@@ -76,7 +77,7 @@ function buildSandbox(store = {}) {
 		moment,
 		Fiber,
 		Promise,
-		Livechat: RocketChat.Livechat,
+		Livechat,
 		Store: {
 			set(key, val) {
 				return store[key] = val;
@@ -97,8 +98,7 @@ function buildSandbox(store = {}) {
 			}
 		},
 	};
-
-	Object.keys(RocketChat.models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = RocketChat.models[k]);
+	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = Models[k]);
 	return { store, sandbox	};
 }
 
@@ -180,7 +180,7 @@ function removeIntegration(options, user) {
 	logger.incoming.info('Remove integration');
 	logger.incoming.debug(options);
 
-	const integrationToRemove = RocketChat.models.Integrations.findOne({
+	const integrationToRemove = Models.Integrations.findOne({
 		urls: options.target_url,
 	});
 

@@ -4,6 +4,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import { Messages, Uploads, Rooms } from 'meteor/rocketchat:models';
 import { Notifications } from 'meteor/rocketchat:notifications';
 import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Apps } from 'meteor/rocketchat:apps';
 
 export const deleteMessage = function(message, user) {
 	const keepHistory = settings.get('Message_KeepHistory');
@@ -37,13 +38,13 @@ export const deleteMessage = function(message, user) {
 		}
 	}
 
+	const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1, prid: 1, mid: 1 } });
 	Meteor.defer(function() {
 		callbacks.run('afterDeleteMessage', deletedMsg);
 	});
 
 	// update last message
 	if (settings.get('Store_Last_Message')) {
-		const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1 } });
 		if (!room.lastMessage || room.lastMessage._id === message._id) {
 			Rooms.resetLastMessageById(message.rid, message._id);
 		}
@@ -59,5 +60,3 @@ export const deleteMessage = function(message, user) {
 		Apps.getBridges().getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg);
 	}
 };
-
-RocketChat.deleteMessage = deleteMessage;
