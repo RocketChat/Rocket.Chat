@@ -1127,6 +1127,8 @@
   "Favorites": "Обрані",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ця функція залежить від \"Відправити історію навігації відвідувачів як повідомлення\", щоб бути включений.",
   "Features_Enabled": "особливості Включено",
+  "FEDERATION_Domain": "домен",
+  "FEDERATION_Status": "Статус",
   "Field": "поле",
   "Field_removed": "поле видалено",
   "Field_required": "Поле обов'язкове",

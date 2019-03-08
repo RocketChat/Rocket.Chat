@@ -6,8 +6,27 @@
 
 	padding: 1.25rem 2rem;
 
+	&-fields {
+		display: flex;
+		flex-direction: row;
+
+		height: 89px;
+
+		margin-right: -5px;
+		margin-left: -5px;
+
+		padding: 10px 0;
+	}
+
+	&-dropdown {
+		height: 48px;
+	}
+
 	&-search {
-		width: 100%;
+		height: 48px;
+
+		margin-right: 5px;
+		margin-left: 5px;
 
 		& .rc-icon {
 			width: 0.875rem;

@@ -7,7 +7,7 @@ Template.roomSearch.helpers({
 			return 'icon-at';
 		}
 		if (this.type === 'r') {
-			return roomTypes.getIcon(this.t);
+			return roomTypes.getIcon(this);
 		}
 	},
 	userStatus() {

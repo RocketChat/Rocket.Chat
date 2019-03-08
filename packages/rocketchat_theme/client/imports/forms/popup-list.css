@@ -45,6 +45,11 @@
 		}
 
 		&-name {
+
+			overflow: hidden;
+
+			text-overflow: ellipsis;
+
 			color: var(--popup-list-name-color);
 
 			font-size: var(--popup-list-name-size);

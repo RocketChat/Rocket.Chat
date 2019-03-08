@@ -1126,6 +1126,8 @@
   "Favorites": "Ffefrynnau",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Mae'r nodwedd hon yn dibynnu ar \"Anfon Hanes Llywio Ymwelwyr fel Neges\" i'w alluogi.",
   "Features_Enabled": "Nodweddion Galluogi",
+  "FEDERATION_Domain": "Parth",
+  "FEDERATION_Status": "Statws",
   "Field": "Maes",
   "Field_removed": "Cae wedi'i dynnu",
   "Field_required": "Maes gofynnol",

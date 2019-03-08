@@ -1127,6 +1127,8 @@
   "Favorites": "Kedvencek",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Ez a funkció a \"Látogatók navigálási előzményeinek küldése üzenetként való elküldéséhez\" tartozik.",
   "Features_Enabled": "Jellemzők Enabled",
+  "FEDERATION_Domain": "Domain",
+  "FEDERATION_Status": "Állapot",
   "Field": "Mező",
   "Field_removed": "Field eltávolított",
   "Field_required": "Szükséges mező",

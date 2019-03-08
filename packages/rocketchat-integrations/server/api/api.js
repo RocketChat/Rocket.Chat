@@ -98,7 +98,6 @@ function buildSandbox(store = {}) {
 			}
 		},
 	};
-
 	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = Models[k]);
 	return { store, sandbox	};
 }

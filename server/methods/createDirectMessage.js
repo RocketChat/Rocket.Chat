@@ -5,6 +5,7 @@ import { hasPermission } from 'meteor/rocketchat:authorization';
 import { Users, Rooms, Subscriptions } from 'meteor/rocketchat:models';
 import { getDefaultSubscriptionPref } from 'meteor/rocketchat:utils';
 import { RateLimiter } from 'meteor/rocketchat:lib';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
 Meteor.methods({
 	createDirectMessage(username) {
@@ -55,7 +56,7 @@ Meteor.methods({
 		const now = new Date();
 
 		// Make sure we have a room
-		Rooms.upsert({
+		const roomUpsertResult = Rooms.upsert({
 			_id: rid,
 		}, {
 			$set: {
@@ -128,6 +129,13 @@ Meteor.methods({
 				...toNotificationPref,
 			},
 		});
+
+		// If the room is new, run a callback
+		if (roomUpsertResult.insertedId) {
+			const insertedRoom = Rooms.findOneById(rid);
+
+			callbacks.run('afterCreateDirectRoom', insertedRoom, { from: me, to });
+		}
 
 		return {
 			rid,

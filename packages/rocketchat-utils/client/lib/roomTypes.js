@@ -10,8 +10,11 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	getTypes() {
 		return _.sortBy(this.roomTypesOrder, 'order').map((type) => this.roomTypes[type.identifier]).filter((type) => !type.condition || type.condition());
 	}
-	getIcon(roomType) {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].icon;
+	getIcon(roomData) {
+		if (!roomData || !roomData.t || !this.roomTypes[roomData.t]) {
+			return;
+		}
+		return (this.roomTypes[roomData.t].getIcon && this.roomTypes[roomData.t].getIcon(roomData)) || this.roomTypes[roomData.t].icon;
 	}
 	getRoomName(roomType, roomData) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
