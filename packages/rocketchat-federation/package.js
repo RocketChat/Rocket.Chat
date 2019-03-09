@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:api',
+		'rocketchat:cloud',
 		'rocketchat:lib',
 		'rocketchat:reactions',
 		'rocketchat:models',
