@@ -44,14 +44,14 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 					username: inviter.username,
 				},
 			});
-		} else {
-			if(room.prid){
-				Messages.createUserJoinWithRoomIdAndUserThread(rid,user,{ts:now});
+		} 
+		else {
+			if (room.prid) {
+				Messages.createUserJoinWithRoomIdAndUserThread(rid, user, { ts: now });
 			}
-			else{
+			else {
 				Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
-			}
-			
+			}	
 		}
 	}
 
