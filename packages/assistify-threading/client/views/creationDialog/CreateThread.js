@@ -85,7 +85,11 @@ Template.CreateThread.helpers({
 		};
 	},
 	channelName() {
-		return Template.instance().threadName.get();
+		let tempThreadName = Template.instance().threadName.get();
+		if (tempThreadName.length >= 20) {
+			tempThreadName = tempThreadName.substr(0, 20);
+		}
+		return tempThreadName;
 	},
 });
 
