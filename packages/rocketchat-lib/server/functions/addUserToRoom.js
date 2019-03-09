@@ -44,11 +44,11 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 					username: inviter.username,
 				},
 			});
-		} else if(room.prid){
+		} else if (room.prid) {
 			Messages.createUserJoinWithRoomIdAndUserThread(rid, user, { ts: now });
 		} else {
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
-		}	
+		}
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
