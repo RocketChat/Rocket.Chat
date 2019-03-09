@@ -45,7 +45,13 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 				},
 			});
 		} else {
-			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
+			if(room.prid){
+				Messages.createUserJoinWithRoomIdAndUserThread(rid,user,{ts:now});
+			}
+			else{
+				Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
+			}
+			
 		}
 	}
 
