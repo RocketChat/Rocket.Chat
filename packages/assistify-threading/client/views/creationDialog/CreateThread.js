@@ -88,7 +88,7 @@ Template.CreateThread.helpers({
 		let tempThreadName = Template.instance().threadName.get();
 		if (tempThreadName.length >= 20) {
 			tempThreadName = tempThreadName.substr(0, 20);
-			toastr.error('The Thread name has been trimmed due to it\'s large length.');
+			toastr.error(TAPi18n.__('Thread_name_is_too_long'));
 		}
 		return tempThreadName;
 	},
