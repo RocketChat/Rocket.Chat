@@ -39,9 +39,7 @@ Meteor.methods({
 
 		const result = deleteRoom(rid);
 
-		if (Apps && Apps.isLoaded()) {
-			Apps.getBridges().getListenerBridge().roomEvent('IPostRoomDeleted', room);
-		}
+		Apps.roomEvent('IPostRoomDeleted',room);
 
 		return result;
 	},
