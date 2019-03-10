@@ -39,7 +39,7 @@ Meteor.methods({
 
 		const result = deleteRoom(rid);
 
-		Apps.roomEvent('IPostRoomDeleted',room);
+		Apps.roomEvent('IPostRoomDeleted', room);
 
 		return result;
 	},
