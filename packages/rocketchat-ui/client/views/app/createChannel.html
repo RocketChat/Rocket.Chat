@@ -10,7 +10,7 @@
 				<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
 				<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
 			</header>
-			<form class="create-channel__content">
+			<form id="create-channel" name="create-channel" class="create-channel__content">
 				<div class="create-channel__switches">
 					<div class="rc-switch">
 						<label class="rc-switch__label" tabindex="-1">
@@ -106,9 +106,9 @@
 							{{#with config}}
 								{{#if autocomplete 'isShowing'}}
 									<div class="fadeInDown">
-										{{#if autocomplete 'isLoaded'}}
-											{{> popupList data=config items=items}}
-										{{/if}}
+
+										{{> popupList data=config items=items}}
+
 									</div>
 								{{/if}}
 							{{/with}}
@@ -133,10 +133,10 @@
 						{{> tokenpass extensionsConfig}}
 					{{/if}}
 				{{/if}}
-				<div class="create-channel__inputs">
-					<input class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
-				</div>
 			</form>
+			<div class="create-channel__inputs">
+				<input form='create-channel' class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
+			</div>
 		</div>
 		{{#each roomType in roomTypesAfterStandard}}
 			<div class="room-type-creation">

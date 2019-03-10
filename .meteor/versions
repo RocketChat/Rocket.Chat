@@ -8,6 +8,7 @@ accounts-password@1.5.1
 accounts-twitter@1.4.2
 aldeed:simple-schema@1.5.4
 allow-deny@1.1.0
+assistify:threading@0.1.0
 autoupdate@1.5.0
 babel-compiler@7.2.4
 babel-runtime@1.3.0
@@ -159,6 +160,7 @@ rocketchat:emoji-custom@1.0.0
 rocketchat:emoji-emojione@0.0.1
 rocketchat:error-handler@1.0.0
 rocketchat:favico@0.0.1
+rocketchat:federation@0.0.1
 rocketchat:file@0.0.1
 rocketchat:file-upload@0.0.1
 rocketchat:github-enterprise@0.0.1
@@ -294,5 +296,4 @@ underscore@1.0.10
 url@1.2.0
 webapp@1.7.2
 webapp-hashing@1.0.9
-yasaricli:slugify@0.0.7
 yasinuslu:blaze-meta@0.3.3

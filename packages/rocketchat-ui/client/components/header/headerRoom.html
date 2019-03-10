@@ -6,9 +6,18 @@
 				{{> burger}}
 			</div>
 
-			<div class="rc-header__block rc-header__favorite">
-				<a href="#favorite" class="rc-header__toggle-favorite {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
-			</div>
+			{{#if isThread}}
+				<div class="rc-header__block rc-header__block--action js-open-parent-channel">
+					<span class="rc-header__first-icon">{{> icon block="rc-header__icon rc-header__icon" icon="back"}}</span>
+				</div>
+			{{/if}}
+
+			{{#if showToggleFavorite}}
+				<div class="rc-header__block rc-header__favorite rc-header__block--action">
+					<a href="#favorite" class="rc-header__toggle-favorite rc-header__first-icon {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
+				</div>
+			{{/if}}
+
 
 			<!-- TODO: fix it style and helper -->
 			{{#if tokenAccessChannel}}
@@ -29,7 +38,7 @@
 
 				<div class="rc-header__data">
 					{{#unless secondaryName}}
-					<div class="rc-header__name">{{> icon block="rc-header__icon" icon=channelIcon}}{{roomName}}</div>
+					<div class="rc-header__name">{{> icon block="rc-header__icon" icon=roomIcon}}{{roomName}}</div>
 					{{else}}
 					<div class="rc-header__name">{{roomName}} <div class="rc-header__username">@{{secondaryName}}</div></div>
 					{{/unless}}

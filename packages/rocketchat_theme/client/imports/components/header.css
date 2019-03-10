@@ -3,6 +3,16 @@
 
 	font-size: var(--text-heading-size);
 
+	&__first-icon {
+		display: flex;
+
+		width: 48px;
+
+		padding: 0 0.25rem;
+
+		justify-content: center;
+	}
+
 	&--room {
 		padding: 1.25rem;
 
@@ -39,6 +49,10 @@
 		padding: 0 0.5rem;
 
 		align-items: center;
+
+		&--action {
+			cursor: pointer;
+		}
 	}
 
 	&__content {

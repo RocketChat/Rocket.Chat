@@ -27,7 +27,10 @@ function directorySearch(config, cb) {
 				return {
 					name: result.name,
 					username: result.username,
+					// If there is no email address (probably only rocket.cat) show the username)
+					email: (result.emails && result.emails[0] && result.emails[0].address) || result.username,
 					createdAt: timeAgo(result.createdAt, t),
+					domain: result.federation && result.federation.peer,
 				};
 			}
 			return null;
@@ -36,8 +39,14 @@ function directorySearch(config, cb) {
 }
 
 Template.directory.helpers({
+	federationEnabled() {
+		return settings.get('FEDERATION_Enabled');
+	},
 	searchText() {
 		return Template.instance().searchText.get();
+	},
+	searchWorkspace() {
+		return Template.instance().searchWorkspace.get();
 	},
 	showLastMessage() {
 		return settings.get('Store_Last_Message');
@@ -107,18 +116,35 @@ Template.directory.helpers({
 		};
 	},
 	onTableItemClick() {
-		const { searchType } = Template.instance();
+		const instance = Template.instance();
+
+		const { searchType } = instance;
+
 		let type;
 		let routeConfig;
+
 		return function(item) {
-			if (searchType.get() === 'channels') {
-				type = 'c';
-				routeConfig = { name: item.name };
+			// This means we need to add this user locally first
+			if (item.remoteOnly) {
+				Meteor.call('federationAddUser', item.email, item.domain, (error, federatedUser) => {
+					if (!federatedUser) { return; }
+
+					// Reload
+					instance.end.set(false);
+					// directorySearch.call(instance);
+
+					roomTypes.openRouteLink('d', { name: item.username });
+				});
 			} else {
-				type = 'd';
-				routeConfig = { name: item.username };
+				if (searchType.get() === 'channels') {
+					type = 'c';
+					routeConfig = { name: item.name };
+				} else {
+					type = 'd';
+					routeConfig = { name: item.username };
+				}
+				roomTypes.openRouteLink(type, routeConfig);
 			}
-			roomTypes.openRouteLink(type, routeConfig);
 		};
 	},
 	isLoading() {
@@ -170,36 +196,84 @@ Template.directory.events({
 		t.page.set(0);
 		t.searchText.set(e.currentTarget.value);
 	}, 300),
+	'change .js-workspace': (e, t) => {
+		t.end.set(false);
+		t.sortDirection.set('asc');
+		t.page.set(0);
+		t.searchWorkspace.set(e.target.value);
+	},
 });
 
 Template.directory.onRendered(function() {
+	function setResults(result) {
+		if (!Array.isArray(result)) {
+			result = [];
+		}
+
+		if (this.page.get() > 0) {
+			return this.results.set([...this.results.get(), ...result]);
+		}
+
+		return this.results.set(result);
+	}
+
 	Tracker.autorun(() => {
+
 		const searchConfig = {
 			text: this.searchText.get(),
+			workspace: this.searchWorkspace.get(),
 			type: this.searchType.get(),
 			sortBy: this.searchSortBy.get(),
 			sortDirection: this.sortDirection.get(),
 			limit: this.limit.get(),
 			page: this.page.get(),
 		};
+
 		if (this.end.get() || this.loading) {
 			return;
 		}
+
 		this.loading = true;
 		this.isLoading.set(true);
+
 		directorySearch(searchConfig, (result) => {
 			this.loading = false;
 			this.isLoading.set(false);
 			this.end.set(!result);
 
-			if (!Array.isArray(result)) {
-				result = [];
+			// If there is no result, searching every workspace and
+			// the search text is an email address, try to find a federated user
+			if (this.searchWorkspace.get() === 'all' && this.searchText.get().indexOf('@') !== -1) {
+				const email = this.searchText.get();
+
+				Meteor.call('federationSearchUsers', email, (error, federatedUsers) => {
+					if (!federatedUsers) { return; }
+
+					result = result || [];
+
+					for (const federatedUser of federatedUsers) {
+						const { user } = federatedUser;
+
+						const exists = result.findIndex((e) => e.domain === user.federation.peer && e.username === user.username) !== -1;
+
+						if (exists) { continue; }
+
+						// Add the federated user to the results
+						result.unshift({
+							remoteOnly: true,
+							name: user.name,
+							username: user.username,
+							email: user.emails && user.emails[0] && user.emails[0].address,
+							createdAt: timeAgo(user.createdAt, t),
+							domain: user.federation.peer,
+						});
+					}
+
+					setResults.call(this, result);
+				});
 			}
 
-			if (this.page.get() > 0) {
-				return this.results.set([...this.results.get(), ...result]);
-			}
-			return this.results.set(result);
+			setResults.call(this, result);
 		});
 	});
 });
@@ -215,6 +289,7 @@ Template.directory.onCreated(function() {
 		this.sortDirection = new ReactiveVar('asc');
 	}
 	this.searchText = new ReactiveVar('');
+	this.searchWorkspace = new ReactiveVar('local');
 	this.limit = new ReactiveVar(0);
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
