@@ -455,7 +455,8 @@ Template.room.helpers({
 
 	},
 	hideLeaderHeader() {
-		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
+		return (Template.instance().hideLeaderHeader.get() || (Template.instance().unreadCount.curValue > 0)) ?
+			'animated-hidden' : '';
 	},
 	hasLeader() {
 		if (RoomRoles.findOne({ rid: this._id, roles: 'leader', 'u._id': { $ne: Meteor.userId() } }, { fields: { _id: 1 } })) {
