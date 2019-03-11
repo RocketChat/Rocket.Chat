@@ -250,7 +250,10 @@
 	display: flex;
 	flex-direction: column;
 
+
 	height: 100%;
+
+background-color: white;
 
 	&--new {
 		padding: 0 1.5rem;
