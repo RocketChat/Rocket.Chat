@@ -83,7 +83,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return room && room.prid;
 	}
 	verifyCanSendMessage(roomId) {
-		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1, prid: 1 } });
+		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1 } });
 
 		if (!room || !room.t) {
 			return;
