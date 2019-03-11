@@ -263,7 +263,6 @@ Template.createChannel.events({
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
 		const isPrivate = type === 'p';
-		let route = isPrivate ? 'group' : 'channel';
 		const users = instance.selectedUsers.get().map((user) => user.username);
 
 		if (instance.invalid.get() || instance.inUse.get()) {
@@ -275,7 +274,6 @@ Template.createChannel.events({
 				return e.target.users.focus();
 			}
 			name = users.sort().join('-');
-			route = 'groupchat';
 		}
 		if (!Object.keys(instance.extensions_validations).map((key) => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
