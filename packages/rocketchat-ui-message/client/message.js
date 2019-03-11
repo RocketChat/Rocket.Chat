@@ -177,6 +177,21 @@ Template.message.helpers({
 	body() {
 		return Template.instance().body;
 	},
+	msgSummary() {
+		let msg = Template.currentData();
+		let msgSummary;
+		msg = renderMessageBody(msg);
+		if (msg.length > 100) {
+			msgSummary = msg.split(/\s+/).slice(0, 5).join(' ');
+			if (msgSummary.length > 25) {
+				msgSummary = msgSummary.slice(0, 10);
+			}
+			msgSummary = msgSummary.concat('... ');
+			return msgSummary;
+		}
+		msg = msg.concat('... ');
+		return msg;
+	},
 	system(returnClass) {
 		if (MessageTypes.isSystemMessage(this)) {
 			if (returnClass) {
@@ -380,6 +395,18 @@ Template.message.helpers({
 	},
 	isSnippet() {
 		return this.actionContext === 'snippeted';
+	},
+	isLong() {
+		let msg = Template.currentData();
+		const isSystemMessage = RocketChat.MessageTypes.isSystemMessage(msg);
+		const messageType = RocketChat.MessageTypes.getType(msg) || {};
+		msg = renderMessageBody(msg);
+		if (!messageType.render && !messageType.template && !messageType.message && !msg.u && !isSystemMessage) {
+			if (msg.length > 100) {
+				return true;
+			}
+			return false;
+		}
 	},
 });
 

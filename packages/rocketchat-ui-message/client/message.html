@@ -65,7 +65,14 @@
 			{{#if isDecrypting}}
 				<span>******</span>
 			{{else}}
+			{{#if isLong}}
+					<details>
+						<summary>{{{msgSummary}}} <i>[View Long Message]</i></summary>
+						{{{body}}}
+					</details>
+			{{else}}
 				{{{body}}}
+			{{/if}}
 			{{/if}}
 			{{#if hasOembed}}
 				{{#each urls}}
