@@ -2961,6 +2961,7 @@
   "User_is_now_an_admin": "User is now an admin",
   "User_is_unblocked": "User is unblocked",
   "User_joined_channel": "Has joined the channel.",
+  "User_joined_conversation":"Has joined the conversation",
   "User_joined_channel_female": "Has joined the channel.",
   "User_joined_channel_male": "Has joined the channel.",
   "User_left": "Has left the channel.",
