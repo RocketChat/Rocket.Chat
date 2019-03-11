@@ -2,6 +2,16 @@
 	{{#if customTemplate}}
 		{{> Template.dynamic customTemplate }}
 	{{else}}
+
+		{{#if thread}}
+			{{#if isThreadNotSubscribed}}
+				<div class="rc-message-box__join">
+					{{{_ "you_are_in_preview_mode_of_thread" room_name=roomName}}}
+					<button class="rc-button rc-button--primary rc-button--small rc-message-box__join-button js-join">{{_ "join"}}</button>
+				</div>
+			{{/if}}
+		{{/if}}
+
 		{{#if canJoinRoom}}
 			<div class="rc-message-box__join">
 				{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}

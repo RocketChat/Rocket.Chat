@@ -1,6 +1,10 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#if subscribed}}
+			{{#if thread}}
+				{{> messageBoxNotSubscribed rid=_id}}
+			{{/if}}
+			
 			{{> messageBoxTyping rid=_id}}
 
 			{{#if canSend}}

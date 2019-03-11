@@ -178,6 +178,9 @@ Template.messageBox.helpers({
 	subscribed() {
 		return roomTypes.verifyCanSendMessage(this._id);
 	},
+	thread() {
+		return roomTypes.isThread(this._id); // Check if the room is a thread
+	},
 	canSend() {
 		if (roomTypes.readOnly(this._id, Meteor.user())) {
 			return false;

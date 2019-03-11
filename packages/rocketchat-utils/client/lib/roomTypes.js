@@ -75,13 +75,19 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		});
 		return room && room.archived === true;
 	}
+	isThread(roomId) {
+		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1, prid: 1 } });
+		if (!room || !room.t) {
+			return;
+		}
+		return room && room.prid;
+	}
 	verifyCanSendMessage(roomId) {
-		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1, prid: 1 } });
 
 		if (!room || !room.t) {
 			return;
 		}
-
 		const roomType = room.t;
 		if (this.roomTypes[roomType] && this.roomTypes[roomType].canSendMessage) {
 			return this.roomTypes[roomType].canSendMessage(roomId);
