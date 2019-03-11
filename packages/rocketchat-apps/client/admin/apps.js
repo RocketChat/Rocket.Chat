@@ -34,8 +34,6 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 };
 
 const getApps = (instance) => {
-	instance.isLoading.set(true);
-
 	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
 		.then((response) => response.json())
 		.then((data) => {
@@ -53,6 +51,12 @@ const getInstalledApps = (instance) => {
 	APIClient.get('apps').then((data) => {
 		const apps = data.apps.map((app) => ({ latest: app }));
 		instance.installedApps.set(apps);
+
+		if (instance.searchType.get() === 'installed') {
+			instance.apps.set(apps);
+			instance.isLoading.set(false);
+			instance.ready.set(true);
+		}
 	});
 };
 
@@ -68,7 +72,7 @@ Template.apps.onCreated(function() {
 	this.limit = new ReactiveVar(0);
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
-	this.isLoading = new ReactiveVar(false);
+	this.isLoading = new ReactiveVar(true);
 	this.searchType = new ReactiveVar('marketplace');
 
 	const queryTab = FlowRouter.getQueryParam('tab');
@@ -234,6 +238,7 @@ Template.apps.helpers({
 			onChange(value) {
 				instance.apps.set([]);
 				searchType.set(value);
+				instance.isLoading.set(true);
 
 				if (value === 'marketplace') {
 					getApps(instance);
