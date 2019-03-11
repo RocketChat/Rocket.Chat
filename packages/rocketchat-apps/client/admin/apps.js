@@ -34,16 +34,12 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 };
 
 const getApps = (instance) => {
-	if (instance.searchType.get() === 'marketplace') {
-		instance.isLoading.set(true);
-		instance.ready.set(false);
-	}
+	instance.isLoading.set(true);
 
 	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
 		.then((response) => response.json())
 		.then((data) => {
 			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
-			instance.marketplaceApps.set(tagged);
 
 			if (instance.searchType.get() === 'marketplace') {
 				instance.apps.set(tagged);
@@ -54,20 +50,9 @@ const getApps = (instance) => {
 };
 
 const getInstalledApps = (instance) => {
-	if (instance.searchType.get() === 'marketplace') {
-		instance.isLoading.set(true);
-		instance.ready.set(false);
-	}
-
 	APIClient.get('apps').then((data) => {
 		const apps = data.apps.map((app) => ({ latest: app }));
 		instance.installedApps.set(apps);
-
-		if (instance.searchType.get() === 'installed') {
-			instance.apps.set(apps);
-			instance.isLoading.set(false);
-			instance.ready.set(true);
-		}
 	});
 };
 
@@ -75,7 +60,6 @@ Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
-	this.marketplaceApps = new ReactiveVar([]);
 	this.installedApps = new ReactiveVar([]);
 	this.categories = new ReactiveVar([]);
 	this.searchText = new ReactiveVar('');
@@ -255,6 +239,7 @@ Template.apps.helpers({
 					getApps(instance);
 				} else {
 					instance.apps.set(instance.installedApps.get());
+					instance.isLoading.set(false);
 				}
 			},
 		};
