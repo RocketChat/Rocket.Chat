@@ -1,6 +1,6 @@
 language: node_js
 services:
-- docker
+# - docker
 - mongodb
 branches:
   only:
@@ -13,12 +13,12 @@ node_js:
 addons:
   apt:
     sources:
-    - google-chrome
-    - ubuntu-toolchain-r-test
+    # - google-chrome
+    # - ubuntu-toolchain-r-test
     packages:
-    - google-chrome-stable
+    # - google-chrome-stable
     - g++-4.8
-  firefox: "latest"
+  # firefox: "latest"
 before_cache:
 - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/log
 - rm -rf $HOME/build/RocketChat/Rocket.Chat/.meteor/local/run
@@ -37,7 +37,7 @@ cache:
 before_install:
 - if [ ! -e "$HOME/.meteor/meteor" ]; then curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh; fi
 # Start X Virtual Frame Buffer for headless testing with real browsers
-- .scripts/start-xvfb.sh
+# - .scripts/start-xvfb.sh
 install:
 - export PATH="$HOME/.meteor:$PATH"
 before_script:
@@ -52,7 +52,7 @@ before_script:
 - |-
   mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
 - meteor npm run lint
-- meteor npm run testunit
+# - meteor npm run testunit
 - travis_retry meteor build --headless /tmp/build
 - mkdir /tmp/build-test
 - tar -xf /tmp/build/Rocket.Chat.tar.gz -C /tmp/build-test/
@@ -65,13 +65,13 @@ script:
 - travis_retry npm test
 - mongo meteor --eval 'db.dropDatabase()'
 - unset MONGO_OPLOG_URL
-- travis_retry npm test
+# - travis_retry npm test
 before_deploy:
 - source ".travis/setartname.sh"
 - source ".travis/setdeploydir.sh"
-- ".travis/setupsig.sh"
+# - ".travis/setupsig.sh"
 - ".travis/namefiles.sh"
-- echo ".travis/sandstorm.sh"
+# - echo ".travis/sandstorm.sh"
 deploy:
   - provider: s3
     access_key_id: AKIAIKIA7H7D47KUHYCA
@@ -92,14 +92,14 @@ deploy:
   #     tags: true
 
 after_deploy:
-- ".travis/docker.sh"
-- ".travis/update-releases.sh"
+# - ".travis/docker.sh"
+# - ".travis/update-releases.sh"
 - ".travis/snap.sh"
 env:
   global:
   - DISPLAY=:99.0
   - CXX=g++-4.8
-  - secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
+  # - secure: HrPOM5sBibYkMcf9aeQThYPCDiXeLkg0Xgv0HvH88/ku/gphDpNEjHNReHZM3cyfm9y3RhHpVdD+Zzy38S2goKyewRzpXJsuyerOYkjND0v3tivhs9CAX8PAUxj1U5zllTyH4bgW2ZwRtNnwnmtIM/JJlnySMpKVDqIZBpbhn3ph9bJ2J+BW3D3Jw8meQ1vCX8szIibyJK/5QX6HG2RBFXJGYoQ8DmR8jQv0aJQvT1Az5DO4yImk8tX4NP95qOc19Jywr1DsbaSBZeJ8lFJAmBpIGx7KAmUVCcxSxfbXGRhs2K4iEYb3rJ/dU6KiyPsKGUG4aYNGgbvcX0ZxX/BZ6ZU9ff0E4IIf43IxoN3ElrOqOFk5msJAXbrJEreINSzDqKOy8NFYtCQ49E2gwzfage4ZXkhFyx3wMPa5bzpr3ncsTceMjMVz03uL781X6NLuCkUmXv+n8K2MNhJU9Xinpdx1GRJm+0lXJspNNJ1ruHeJtls4epj4bmCwKmmZbFKPXqa5e8xVcMIkwt1LMiHduhE+WgKNHdOMhXrCcTxF62ybLlsHXmyLLJeNjTeKS8QG2XSoonClDAz/1R41I1DsMPblcgz9uvYCf7UtyftbhJ83bnJeEmOYQiwijLG0+QMq+B2+mmZan3Z7Hl7O53dnwuLxz7EO7EhQhY+CqHVgc6s=
   - MONGO_OPLOG_URL: "mongodb://localhost:27017/local"
   - MONGO_URL: "mongodb://localhost:27017/meteor"
   - TEST_MODE: "true"
