@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
-RocketChat.slashCommands.add('create', null, {
+slashCommands.add('create', null, {
 	description: 'Create_A_New_Channel',
 	params: '#channel',
 });

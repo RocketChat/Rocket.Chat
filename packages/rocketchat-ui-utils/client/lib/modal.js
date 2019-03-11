@@ -96,8 +96,21 @@ Template.rc_modal.helpers({
 	hasAction() {
 		return !!this.action;
 	},
+	type() {
+		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
+
+	},
 	modalIcon() {
-		return `modal-${ this.type }`;
+		switch (this.type) {
+			case 'success':
+				return 'checkmark-circled';
+			case 'error':
+				return 'circle-cross';
+			case 'info':
+				return 'info-circled';
+			default:
+				return `modal-${ this.type }`;
+		}
 	},
 });
 

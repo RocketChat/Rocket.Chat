@@ -27,7 +27,7 @@ FlowRouter.subscriptions = function() {
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
+		BlazeLayout.render('main', { center: 'loading' });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -116,6 +116,15 @@ FlowRouter.route('/privacy-policy', {
 
 	action() {
 		Session.set('cmsPage', 'Layout_Privacy_Policy');
+		BlazeLayout.render('cmsPage');
+	},
+});
+
+FlowRouter.route('/legal-notice', {
+	name: 'legal-notice',
+
+	action() {
+		Session.set('cmsPage', 'Layout_Legal_Notice');
 		BlazeLayout.render('cmsPage');
 	},
 });

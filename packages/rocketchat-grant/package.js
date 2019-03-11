@@ -12,16 +12,9 @@ Package.onUse(function(api) {
 		'check',
 		'ecmascript',
 		'rocketchat:utils',
-		'rocketchat:lib',
 		'rocketchat:accounts',
-		'rocketchat:ui',
+		'rocketchat:models',
 	]);
 
 	api.mainModule('server/index.js', 'server');
-});
-
-Npm.depends({
-	express: '4.15.3',
-	'express-session': '1.15.4',
-	'grant-express': '3.8.0',
 });

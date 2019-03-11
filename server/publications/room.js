@@ -1,4 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
 import _ from 'underscore';
 
 const fields = {
@@ -21,6 +26,7 @@ const fields = {
 	customFields: 1,
 	lastMessage: 1,
 	retention: 1,
+	prid: 1,
 
 	// @TODO create an API to register this fields based on room type
 	livechatData: 1,
@@ -41,6 +47,7 @@ const fields = {
 	broadcast: 1,
 	encrypted: 1,
 	e2eKeyId: 1,
+	departmentId: 1,
 };
 
 const roomMap = (record) => {
@@ -52,59 +59,45 @@ const roomMap = (record) => {
 
 Meteor.methods({
 	'rooms/get'(updatedAt) {
-		let options = { fields };
+		const options = { fields };
 
 		if (!Meteor.userId()) {
-			if (RocketChat.settings.get('Accounts_AllowAnonymousRead') === true) {
-				return RocketChat.models.Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
+			if (settings.get('Accounts_AllowAnonymousRead') === true) {
+				return Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
 			}
 			return [];
 		}
 
-		this.unblock();
-
-		options = {
-			fields,
-		};
-
 		if (updatedAt instanceof Date) {
 			return {
-				update: RocketChat.models.Rooms.findBySubscriptionUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch(),
-				remove: RocketChat.models.Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				update: Rooms.findBySubscriptionUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch(),
+				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
-		return RocketChat.models.Rooms.findBySubscriptionUserId(Meteor.userId(), options).fetch();
+		return Rooms.findBySubscriptionUserId(Meteor.userId(), options).fetch();
 	},
 
 	getRoomByTypeAndName(type, name) {
 		const userId = Meteor.userId();
 
-		if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
+		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
 		}
 
-		const roomFind = RocketChat.roomTypes.getRoomFind(type);
+		const roomFind = roomTypes.getRoomFind(type);
 
-		let room;
+		const room = roomFind ? roomFind.call(this, name) : Rooms.findByTypeAndName(type, name);
 
-		if (roomFind) {
-			room = roomFind.call(this, name);
-		} else {
-			room = RocketChat.models.Rooms.findByTypeAndName(type, name).fetch();
-		}
-
-		if (!room || room.length === 0) {
+		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
 		}
-
-		room = room[0];
 
 		if (!Meteor.call('canAccessRoom', room._id, userId)) {
 			throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
 		}
 
-		if (RocketChat.settings.get('Store_Last_Message') && !RocketChat.authz.hasPermission(userId, 'preview-c-room')) {
+		if (settings.get('Store_Last_Message') && !hasPermission(userId, 'preview-c-room')) {
 			delete room.lastMessage;
 		}
 
@@ -112,12 +105,17 @@ Meteor.methods({
 	},
 });
 
-RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
+const getSubscriptions = (id) => {
+	const fields = { 'u._id': 1 };
+	return Subscriptions.trashFind({ rid: id }, { fields });
+};
+
+Rooms.on('change', ({ clientAction, id, data }) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
 			// Override data cuz we do not publish all fields
-			data = RocketChat.models.Rooms.findOneById(id, { fields });
+			data = Rooms.findOneById(id, { fields });
 			break;
 
 		case 'removed':
@@ -126,6 +124,11 @@ RocketChat.models.Rooms.on('change', ({ clientAction, id, data }) => {
 	}
 
 	if (data) {
-		RocketChat.Notifications.streamUser.__emit(id, clientAction, data);
+		if (clientAction === 'removed') {
+			getSubscriptions(clientAction, id).forEach(({ u }) => {
+				Notifications.notifyUserInThisInstance(u._id, 'rooms-changed', clientAction, data);
+			});
+		}
+		Notifications.streamUser.__emit(id, clientAction, data);
 	}
 });

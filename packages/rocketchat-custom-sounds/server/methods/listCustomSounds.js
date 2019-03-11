@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { CustomSounds } from 'meteor/rocketchat:models';
 
 Meteor.methods({
 	listCustomSounds() {
-		return RocketChat.models.CustomSounds.find({}).fetch();
+		return CustomSounds.find({}).fetch();
 	},
 });

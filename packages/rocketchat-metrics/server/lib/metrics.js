@@ -1,16 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { Migrations } from 'meteor/rocketchat:migrations';
 import client from 'prom-client';
 import connect from 'connect';
 import http from 'http';
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { Info } from 'meteor/rocketchat:utils';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { settings } from 'meteor/rocketchat:settings';
+import { Statistics } from 'meteor/rocketchat:models';
 
 client.collectDefaultMetrics();
 
 export const metrics = {};
-let Info;
-
-// one sample metrics only - a counter
 
 metrics.meteorMethods = new client.Summary({
 	name: 'rocketchat_meteor_methods',
@@ -48,6 +48,7 @@ metrics.notificationsSent = new client.Counter({ name: 'rocketchat_notification_
 metrics.ddpSessions = new client.Gauge({ name: 'rocketchat_ddp_sessions_count', help: 'number of open ddp sessions' });
 metrics.ddpAthenticatedSessions = new client.Gauge({ name: 'rocketchat_ddp_sessions_auth', help: 'number of authenticated open ddp sessions' });
 metrics.ddpConnectedUsers = new client.Gauge({ name: 'rocketchat_ddp_connected_users', help: 'number of unique connected users' });
+metrics.ddpRateLimitExceeded = new client.Counter({ name: 'rocketchat_ddp_rate_limit_exceeded', labelNames: ['limit_name', 'user_id', 'client_address', 'type', 'name', 'connection_id'], help: 'number of times a ddp rate limiter was exceeded' });
 
 metrics.version = new client.Gauge({ name: 'rocketchat_version', labelNames: ['version'], help: 'Rocket.Chat version' });
 metrics.migration = new client.Gauge({ name: 'rocketchat_migration', help: 'migration versoin' });
@@ -77,17 +78,11 @@ metrics.totalDirectMessages = new client.Gauge({ name: 'rocketchat_direct_messag
 metrics.totalLivechatMessages = new client.Gauge({ name: 'rocketchat_livechat_messages_total', help: 'total of messages in livechat rooms' });
 
 const setPrometheusData = async() => {
-	const { settings } = await import('meteor/rocketchat:settings');
 	client.register.setDefaultLabels({
 		uniqueId: settings.get('uniqueID'),
 		siteUrl: settings.get('Site_Url'),
 	});
 	const date = new Date();
-	if (!Info) {
-		const Utils = await import('meteor/rocketchat:utils');
-		Info = Utils.Info;
-	}
-
 	client.register.setDefaultLabels({
 		unique_id: settings.get('uniqueID'),
 		site_url: settings.get('Site_Url'),
@@ -99,11 +94,6 @@ const setPrometheusData = async() => {
 	metrics.ddpSessions.set(sessions.length, date);
 	metrics.ddpAthenticatedSessions.set(authenticatedSessions.length, date);
 	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length, date);
-	const { Statistics } = await import('meteor/rocketchat:models');
-
-	if (!Statistics) {
-		return;
-	}
 
 	const statistics = Statistics.findLast();
 	if (!statistics) {
@@ -167,8 +157,7 @@ const server = http.createServer(app);
 
 let timer;
 const updatePrometheusConfig = async() => {
-	const { settings } = await import('meteor/rocketchat:settings');
-	const port = settings.get('Prometheus_Port');
+	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
 	const enabled = settings.get('Prometheus_Enabled');
 	if (port == null || enabled == null) {
 		return;
@@ -187,7 +176,6 @@ const updatePrometheusConfig = async() => {
 };
 
 Meteor.startup(async() => {
-	const { settings } = await import('meteor/rocketchat:settings');
 	settings.get('Prometheus_Enabled', updatePrometheusConfig);
 	settings.get('Prometheus_Port', updatePrometheusConfig);
 });

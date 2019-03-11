@@ -1,8 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { settings } from 'meteor/rocketchat:settings';
 
 export const getAvatarUrlFromUsername = function(username) {
+	const externalSource = (settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
+	if (externalSource !== '') {
+		return externalSource.replace('{username}', username);
+	}
 	const key = `avatar_random_${ username }`;
 	const random = typeof Session !== 'undefined' && typeof Session.keys[key] !== 'undefined' ? Session.keys[key] : 0;
 	if (username == null) {
@@ -13,8 +16,6 @@ export const getAvatarUrlFromUsername = function(username) {
 	let path = pathPrefix;
 	if (cdnPrefix) {
 		path = cdnPrefix + pathPrefix;
-	} else if (Meteor.isCordova) {
-		path = Meteor.absoluteUrl().replace(/\/$/, '');
 	}
 	return `${ path }/avatar/${ encodeURIComponent(username) }?_dc=${ random }`;
 };

@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { SideNav } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { SideNav, Layout } from 'meteor/rocketchat:ui-utils';
 import { t } from 'meteor/rocketchat:utils';
 
 Template.accountFlex.events({
@@ -15,16 +16,16 @@ Template.accountFlex.events({
 
 Template.accountFlex.helpers({
 	allowUserProfileChange() {
-		return RocketChat.settings.get('Accounts_AllowUserProfileChange');
+		return settings.get('Accounts_AllowUserProfileChange');
 	},
 	accessTokensEnabled() {
-		return RocketChat.authz.hasAllPermission(['create-personal-access-tokens']);
+		return hasAllPermission(['create-personal-access-tokens']);
 	},
 	encryptionEnabled() {
-		return RocketChat.settings.get('E2E_Enable');
+		return settings.get('E2E_Enable');
 	},
 	webdavIntegrationEnabled() {
-		return RocketChat.settings.get('Webdav_Integration_Enabled');
+		return settings.get('Webdav_Integration_Enabled');
 	},
 	menuItem(name, icon, section, group) {
 		return {
@@ -36,6 +37,6 @@ Template.accountFlex.helpers({
 		};
 	},
 	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded();
 	},
 });

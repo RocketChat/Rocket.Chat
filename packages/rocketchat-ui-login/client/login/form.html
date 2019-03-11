@@ -35,9 +35,6 @@
 										<div class="input-error"></div>
 									</div>
 								</label>
-								{{#if hasOnePassword}}
-									<div class="one-passsword"></div>
-								{{/if}}
 							</div>
 							<div class="rc-input">
 								<label class="rc-input__label" for="pass">
@@ -122,33 +119,31 @@
 						</div>
 						{{/if}}
 					</div>
-						<div class="submit">
-							<button class='rc-button rc-button--primary login'><span>{{btnLoginSave}}</span></button>
-						</div>
+					<div class="rc-button__group rc-button__group--vertical">
+						<button class='rc-button rc-button--primary login'>{{btnLoginSave}}</button>
 						{{#if state 'login'}}
 							{{#if registrationAllowed}}
-								<div>
-									<button type="button" class="register">{{_ 'Register'}}</button>
-								</div>
+
+							<button type="button" class="rc-button rc-button--nude register">{{_ 'Register'}}</button>
+
 							{{else}}
-								{{#if linkReplacementText}}
-									<div class="register-link-replacement">
-										{{{linkReplacementText}}}
-									</div>
-								{{/if}}
+							{{#if linkReplacementText}}
+							<div class="register-link-replacement">
+								{{{linkReplacementText}}}
+							</div>
+							{{/if}}
 							{{/if}}
 							{{#if passwordResetAllowed}}
-								<div>
-									<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
-								</div>
+								<button type="button" class="rc-button rc-button--nude forgot-password">{{_ 'Forgot_password'}}</button>
 							{{/if}}
 						{{/if}}
+					</div>
 				{{/if}}
 			{{/if}}
 			{{#unless state 'login'}}
-				<div>
-					<button type="button" class="back-to-login">{{_ 'Back_to_login'}}</button>
-				</div>
+			<div class="rc-button__group rc-button__group--vertical">
+				<button type="button" class="rc-button rc-button--nude back-to-login">{{_ 'Back_to_login'}}</button>
+			</div>
 			{{/unless}}
 		</form>
 		<div class='login-terms'>

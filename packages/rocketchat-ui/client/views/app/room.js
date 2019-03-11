@@ -32,7 +32,7 @@ import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 
-chatMessages = {};
+export const chatMessages = {};
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
@@ -111,20 +111,6 @@ const mountPopover = (e, i, outerContext) => {
 
 	if (deleteItem.length) {
 		groups.push({ items: deleteItem });
-	}
-
-	if (typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') {
-		groups.push({
-			items: [
-				{
-					icon: 'warning',
-					name: t('Report_Abuse'),
-					type: 'message-action',
-					id: 'report-abuse',
-					modifier: 'alert',
-				},
-			],
-		});
 	}
 
 	const config = {
@@ -353,7 +339,7 @@ Template.room.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!(roomData != null ? roomData.t : undefined)) { return ''; }
 
-		const roomIcon = roomTypes.getIcon(roomData != null ? roomData.t : undefined);
+		const roomIcon = roomTypes.getIcon(roomData);
 
 		// Remove this 'codegueira' on header redesign
 		if (!roomIcon) {
@@ -361,10 +347,6 @@ Template.room.helpers({
 		}
 
 		return roomIcon;
-	},
-
-	tokenAccessChannel() {
-		return Template.instance().hasTokenpass.get();
 	},
 
 	userStatus() {
@@ -513,7 +495,7 @@ Template.room.events({
 		roomTypes.openRouteLink('d', { name: this._arguments[1].u.username }, { ...FlowRouter.current().queryParams, reply: message._id });
 	},
 	'click, touchend'(e, t) {
-		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced(), 100);
+		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
 	'click .messages-container-main'() {
@@ -579,11 +561,7 @@ Template.room.events({
 				return;
 			}
 
-			if ((typeof cordova !== 'undefined' && cordova !== null ? cordova.InAppBrowser : undefined) != null) {
-				cordova.InAppBrowser.open(e.target.href, '_system');
-			} else {
-				window.open(e.target.href);
-			}
+			window.open(e.target.href);
 		}
 	},
 
@@ -736,15 +714,13 @@ Template.room.events({
 			return;
 		}
 		const channel = $(e.currentTarget).data('channel');
-		if (channel != null) {
+		if (channel) {
 			if (Layout.isEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
 			}
-
-			FlowRouter.go('channel', { name: channel }, FlowRouter.current().queryParams);
+			FlowRouter.goToRoomById(channel);
 			return;
 		}
-
 		const username = $(e.currentTarget).data('username');
 
 		openProfileTabOrOpenDM(e, instance, username);
@@ -805,7 +781,9 @@ Template.room.events({
 			});
 		}
 
-		fileUpload(filesToUpload);
+		const { input } = chatMessages[RoomManager.openedRoom];
+
+		fileUpload(filesToUpload, input);
 	},
 
 	'load img'(e, template) {
@@ -955,16 +933,6 @@ Template.room.onCreated(function() {
 		this.userDetail.set(null);
 	};
 
-	this.hasTokenpass = new ReactiveVar(false);
-
-	if (settings.get('API_Tokenpass_URL') !== '') {
-		Meteor.call('getChannelTokenpass', this.data._id, (error, result) => {
-			if (!error) {
-				this.hasTokenpass.set(!!(result && result.tokens && result.tokens.length > 0));
-			}
-		});
-	}
-
 	Meteor.call('getRoomRoles', this.data._id, function(error, results) {
 		if (error) {
 			handleError(error);
@@ -1000,6 +968,9 @@ Template.room.onCreated(function() {
 }); // Update message to re-render DOM
 
 Template.room.onDestroyed(function() {
+	if (this.messageObserver) {
+		this.messageObserver.stop();
+	}
 	window.removeEventListener('resize', this.onWindowResize);
 });
 
@@ -1161,10 +1132,17 @@ Template.room.onRendered(function() {
 			newMessage.classList.remove('not');
 		}
 	});
-	Tracker.autorun(function() {
+
+	this.autorun(function() {
+
+		if (template.data._id !== RoomManager.openedRoom) {
+			return;
+		}
+
 		const room = Rooms.findOne({ _id: template.data._id });
 		if (!room) {
 			FlowRouter.go('home');
 		}
 	});
+
 });

@@ -1,6 +1,4 @@
 import './startup/settings';
-import './lib/totp';
-import './models/users';
 import './methods/checkCodesRemaining';
 import './methods/disable';
 import './methods/enable';

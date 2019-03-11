@@ -1,17 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { t } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from 'meteor/rocketchat:authorization';
 
 Meteor.startup(function() {
-	if (Meteor.isCordova === true) {
-		return;
-	}
 	Tracker.autorun(function(c) {
-		const siteUrl = RocketChat.settings.get('Site_Url');
+		const siteUrl = settings.get('Site_Url');
 		if (!siteUrl || (Meteor.userId() == null)) {
 			return;
 		}
-		if (RocketChat.authz.hasRole(Meteor.userId(), 'admin') === false || Meteor.settings.public.sandstorm) {
+		if (hasRole(Meteor.userId(), 'admin') === false || Meteor.settings.public.sandstorm) {
 			return c.stop();
 		}
 		Meteor.setTimeout(function() {
@@ -38,7 +38,7 @@ Meteor.startup(function() {
 				});
 			}
 		}, 100);
-		const documentDomain = RocketChat.settings.get('Document_Domain');
+		const documentDomain = settings.get('Document_Domain');
 		if (documentDomain) {
 			window.document.domain = documentDomain;
 		}

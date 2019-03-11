@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import fs from 'fs';
 import stream from 'stream';
+import streamBuffers from 'stream-buffers';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import sharp from 'sharp';
@@ -10,6 +11,7 @@ import { settings } from 'meteor/rocketchat:settings';
 import * as Models from 'meteor/rocketchat:models';
 import { FileUpload as _FileUpload } from '../../lib/FileUpload';
 import { roomTypes } from 'meteor/rocketchat:utils';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 const cookie = new Cookies();
 
@@ -85,6 +87,9 @@ export const FileUpload = Object.assign(_FileUpload, {
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
+		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
@@ -101,12 +106,20 @@ export const FileUpload = Object.assign(_FileUpload, {
 				metadata = {};
 			}
 
-			s.toFormat(sharp.format.jpeg)
-				.resize(Math.min(height || 0, metadata.width || Infinity), Math.min(height || 0, metadata.height || Infinity))
+			s.flatten({ background: '#FFFFFF' })
+				.jpeg()
+				.resize({
+					width: Math.min(height || 0, metadata.width || Infinity),
+					height: Math.min(height || 0, metadata.height || Infinity),
+					fit: sharp.fit.cover,
+				})
 				.pipe(sharp()
-					.resize(height, height)
-					.background('#FFFFFF')
-					.embed()
+					.resize({
+						height,
+						width: height,
+						fit: sharp.fit.contain,
+						background: '#FFFFFF',
+					})
 				)
 				// Use buffer to get the result in memory then replace the existing file
 				// There is no option to override a file using this library
@@ -198,6 +211,9 @@ export const FileUpload = Object.assign(_FileUpload, {
 	},
 
 	avatarsOnFinishUpload(file) {
+		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-info')) {
+			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
+		}
 		// update file record to match user's username
 		const user = Models.Users.findOneById(file.userId);
 		const oldAvatar = Models.Avatars.findOneByName(user.username);
@@ -232,9 +248,12 @@ export const FileUpload = Object.assign(_FileUpload, {
 			return file;
 		}
 
-		const ext = mime.extension(file.type);
-		if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
-			file.name = `${ file.name }.${ ext }`;
+		// This file type can be pretty much anything, so it's better if we don't mess with the file extension
+		if (file.type !== 'application/octet-stream') {
+			const ext = mime.extension(file.type);
+			if (ext && false === new RegExp(`\.${ ext }$`, 'i').test(file.name)) {
+				file.name = `${ file.name }.${ ext }`;
+			}
 		}
 
 		return file;
@@ -261,6 +280,22 @@ export const FileUpload = Object.assign(_FileUpload, {
 		}
 		res.writeHead(404);
 		res.end();
+	},
+
+	getBuffer(file, cb) {
+		const store = this.getStoreByName(file.store);
+
+		if (!store || !store.get) { cb(new Error('Store is invalid'), null); }
+
+		const buffer = new streamBuffers.WritableStreamBuffer({
+			initialSize: file.size,
+		});
+
+		buffer.on('finish', () => {
+			cb(null, buffer.getContents());
+		});
+
+		store.copy(file, buffer);
 	},
 
 	copy(file, targetFile) {

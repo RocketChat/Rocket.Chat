@@ -2,8 +2,9 @@ import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t } from 'meteor/rocketchat:utils';
+import { t, Info, APIClient } from 'meteor/rocketchat:utils';
 import { AppEvents } from '../communication';
+import { Apps } from '../orchestrator';
 
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
 const HOST = 'https://marketplace.rocket.chat';
@@ -33,25 +34,29 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 };
 
 const getApps = (instance) => {
-	instance.isLoading.set(true);
-
-	fetch(`${ HOST }/v1/apps?version=${ RocketChat.Info.marketplaceApiVersion }`)
+	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
 		.then((response) => response.json())
 		.then((data) => {
 			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
 
-			instance.isLoading.set(false);
-			instance.apps.set(tagged);
-			instance.ready.set(true);
+			if (instance.searchType.get() === 'marketplace') {
+				instance.apps.set(tagged);
+				instance.isLoading.set(false);
+				instance.ready.set(true);
+			}
 		});
 };
 
 const getInstalledApps = (instance) => {
-
-	RocketChat.API.get('apps').then((data) => {
+	APIClient.get('apps').then((data) => {
 		const apps = data.apps.map((app) => ({ latest: app }));
-
 		instance.installedApps.set(apps);
+
+		if (instance.searchType.get() === 'installed') {
+			instance.apps.set(apps);
+			instance.isLoading.set(false);
+			instance.ready.set(true);
+		}
 	});
 };
 
@@ -67,8 +72,15 @@ Template.apps.onCreated(function() {
 	this.limit = new ReactiveVar(0);
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
-	this.isLoading = new ReactiveVar(false);
+	this.isLoading = new ReactiveVar(true);
 	this.searchType = new ReactiveVar('marketplace');
+
+	const queryTab = FlowRouter.getQueryParam('tab');
+	if (queryTab) {
+		if (queryTab.toLowerCase() === 'installed') {
+			this.searchType.set('installed');
+		}
+	}
 
 	getApps(instance);
 	getInstalledApps(instance);
@@ -108,15 +120,15 @@ Template.apps.onCreated(function() {
 		instance.apps.set(apps);
 	};
 
-	window.Apps.getWsListener().registerListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	window.Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_ADDED, instance.onAppAdded);
+	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
 });
 
 Template.apps.onDestroyed(function() {
 	const instance = this;
 
-	window.Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
-	window.Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
+	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
 });
 
 Template.apps.helpers({
@@ -202,9 +214,7 @@ Template.apps.helpers({
 	tabsData() {
 		const instance = Template.instance();
 
-		const {
-			searchType,
-		} = instance;
+		const { searchType } = instance;
 
 		return {
 			tabs: [
@@ -214,7 +224,7 @@ Template.apps.helpers({
 					condition() {
 						return true;
 					},
-					active: true,
+					active: searchType.get() === 'marketplace',
 				},
 				{
 					label: t('Installed'),
@@ -222,15 +232,19 @@ Template.apps.helpers({
 					condition() {
 						return true;
 					},
+					active: searchType.get() === 'installed',
 				},
 			],
 			onChange(value) {
+				instance.apps.set([]);
 				searchType.set(value);
+				instance.isLoading.set(true);
 
 				if (value === 'marketplace') {
 					getApps(instance);
 				} else {
 					instance.apps.set(instance.installedApps.get());
+					instance.isLoading.set(false);
 				}
 			},
 		};
@@ -253,14 +267,15 @@ Template.apps.events({
 
 		const url = `${ HOST }/v1/apps/${ this.latest.id }/download/${ this.latest.version }`;
 
-		RocketChat.API.post('apps/', { url }).then(() => {
-			getInstalledApps(template);
-		}).catch((e) => {
-			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-		});
-
 		// play animation
-		$(e.currentTarget).find('.rc-icon').addClass('play');
+		e.currentTarget.parentElement.classList.add('loading');
+
+		APIClient.post('apps/', { url })
+			.then(() => {
+				getApps(template);
+				getInstalledApps(template);
+			})
+			.catch((e) => toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message));
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);

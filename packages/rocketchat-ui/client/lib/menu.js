@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { menu as _menu } from 'meteor/rocketchat:ui-utils';
+import { menu } from 'meteor/rocketchat:ui-utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
 const emitter = new EventEmitter();
@@ -16,8 +16,6 @@ window.addEventListener('resize', _.debounce((() => {
 	};
 })(), 100));
 
-this.menu = _menu;
-
 emitter.on('grid', () => {
-	_menu.close();
+	menu.close();
 });

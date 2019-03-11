@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 /*
 * Gimme is a named function that will replace /gimme commands
 * @param {Object} message - The message object
@@ -14,7 +14,7 @@ function Gimme(command, params, item) {
 	}
 }
 
-RocketChat.slashCommands.add('gimme', Gimme, {
+slashCommands.add('gimme', Gimme, {
 	description: 'Slash_Gimme_Description',
 	params: 'your_message_optional',
 });

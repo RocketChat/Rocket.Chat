@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
@@ -24,6 +23,111 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
+
+		// threads
+		this.tryEnsureIndex({ trid: 1 }, { sparse: true });
+
+		this.loadSettings();
+	}
+
+	loadSettings() {
+		Meteor.startup(async() => {
+			const { settings } = await import('meteor/rocketchat:settings');
+			this.settings = settings;
+		});
+	}
+
+	setReactions(messageId, reactions) {
+		return this.update({ _id: messageId }, { $set: { reactions } });
+	}
+
+	keepHistoryForToken(token) {
+		return this.update({
+			'navigation.token': token,
+			expireAt: {
+				$exists: true,
+			},
+		}, {
+			$unset: {
+				expireAt: 1,
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	setRoomIdByToken(token, rid) {
+		return this.update({
+			'navigation.token': token,
+			rid: null,
+		}, {
+			$set: {
+				rid,
+			},
+		}, {
+			multi: true,
+		});
+	}
+
+	createRoomArchivedByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
+	}
+
+	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
+	}
+
+	unsetReactions(messageId) {
+		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
+	}
+
+	deleteOldOTRMessages(roomId, ts) {
+		const query = { rid: roomId, t: 'otr', ts: { $lte: ts } };
+		return this.remove(query);
+	}
+
+	updateOTRAck(_id, otrAck) {
+		const query = { _id };
+		const update = { $set: { otrAck } };
+		return this.update(query, update);
+	}
+
+	setGoogleVisionData(messageId, visionData) {
+		const updateObj = {};
+		for (const index in visionData) {
+			if (visionData.hasOwnProperty(index)) {
+				updateObj[`attachments.0.${ index }`] = visionData[index];
+			}
+		}
+
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
+	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
+	}
+
+	createRoomRenamedWithRoomIdRoomNameAndUser(roomId, roomName, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
+	}
+
+	addTranslations(messageId, translations) {
+		const updateObj = {};
+		Object.keys(translations).forEach((key) => {
+			const translation = translations[key];
+			updateObj[`translations.${ key }`] = translation;
+		});
+		return this.update({ _id: messageId }, { $set: updateObj });
+	}
+
+	addAttachmentTranslations = function(messageId, attachmentIndex, translations) {
+		const updateObj = {};
+		Object.keys(translations).forEach((key) => {
+			const translation = translations[key];
+			updateObj[`attachments.${ attachmentIndex }.translations.${ key }`] = translation;
+		});
+		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
@@ -56,7 +160,7 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreThreads = true, ts, users = [], options = {}) {
 		const query = {
 			rid,
 			ts,
@@ -65,6 +169,10 @@ export class Messages extends Base {
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (!ignoreThreads) {
+			query.trid = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -600,7 +708,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (this.settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -629,7 +737,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (this.settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -642,6 +750,11 @@ export class Messages extends Base {
 	createUserJoinWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
+	}
+
+	createUserJoinWithRoomIdAndUserThread(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ut', roomId, message, user, extraData);
 	}
 
 	createUserLeaveWithRoomIdAndUser(roomId, user, extraData) {
@@ -713,6 +826,16 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
 	}
 
+	createRejectedMessageByPeer(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('rejected-message-by-peer', roomId, message, user, extraData);
+	}
+
+	createPeerDoesNotExist(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('peer-does-not-exist', roomId, message, user, extraData);
+	}
+
 	// REMOVE
 	removeById(_id) {
 		const query =	{ _id };
@@ -726,7 +849,7 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampAndUsers(rid, pinned, ts, users = []) {
+	removeByIdPinnedTimestampAndUsers(rid, pinned, ignoreThreads = true, ts, users = []) {
 		const query = {
 			rid,
 			ts,
@@ -735,7 +858,9 @@ export class Messages extends Base {
 		if (pinned) {
 			query.pinned = { $ne: true };
 		}
-
+		if (!ignoreThreads) {
+			query.trid = { $exists: 0 };
+		}
 		if (users.length) {
 			query['u.username'] = { $in: users };
 		}
@@ -743,7 +868,7 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ts, limit, users = []) {
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreThreads = true, ts, limit, users = []) {
 		const query = {
 			rid,
 			ts,
@@ -751,6 +876,10 @@ export class Messages extends Base {
 
 		if (pinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (!ignoreThreads) {
+			query.trid = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -837,6 +966,44 @@ export class Messages extends Base {
 				_id: 1,
 			},
 		});
+	}
+
+	/**
+	 * Copy metadata from the thread to the system message in the parent channel
+	 * which links to the thread.
+	 * Since we don't pass this metadata into the model's function, it is not a subject
+	 * to race conditions: If multiple updates occur, the current state will be updated
+	 * only if the new state of the thread room is really newer.
+	 */
+	refreshThreadMetadata({ rid }) {
+		if (!rid) {
+			return false;
+		}
+		const { lm, msgs: count } = Rooms.findOneById(rid, {
+			fields: {
+				msgs: 1,
+				lm: 1,
+			},
+		});
+
+		const query = {
+			trid: rid,
+		};
+
+		return this.update(query, {
+			$set: {
+				'attachments.0.fields': [
+					{
+						type: 'messageCounter',
+						count,
+					},
+					{
+						type: 'lastMessageAge',
+						lm,
+					},
+				],
+			},
+		}, { multi: 1 });
 	}
 }
 
