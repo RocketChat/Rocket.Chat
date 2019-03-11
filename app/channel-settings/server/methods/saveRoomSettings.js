@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Rooms } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Integrations } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
@@ -230,5 +230,11 @@ Meteor.methods({
 			result: true,
 			rid: room._id,
 		};
+	},
+	changeChannelNameInWebhook(oldRoomName, newRoomName) {
+		const hashedOldRoomName = `#${ oldRoomName }`;
+		const hashedNewRoomName = `#${ newRoomName }`;
+		const changedNumber = Integrations.update({ channel: hashedOldRoomName }, { $set: { 'channel.$': hashedNewRoomName } }, { multi: true });
+		return changedNumber;
 	},
 });
