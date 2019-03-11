@@ -6,17 +6,16 @@ import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from 'meteor/rocketchat:emoji';
 import { katex } from 'meteor/rocketchat:katex';
 import { Markdown } from 'meteor/rocketchat:markdown';
+import { ChatSubscription } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import {
 	AudioRecorder,
-	ChatSubscription,
-	KonchatNotification,
-	popover,
 	ChatMessages,
-	fileUpload,
 	chatMessages,
+	fileUpload,
+	KonchatNotification,
 } from 'meteor/rocketchat:ui';
-import { messageBox, Layout, RoomManager } from 'meteor/rocketchat:ui-utils';
+import { Layout, messageBox, popover, RoomManager } from 'meteor/rocketchat:ui-utils';
 import { t, roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
 import moment from 'moment';
 import './messageBoxReplyPreview';
