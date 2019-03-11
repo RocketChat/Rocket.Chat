@@ -133,3 +133,9 @@ Template.videoCall.events({
 		return e.currentTarget.volume = 0;
 	},
 });
+
+Template.rcVideo.onRendered(function() {
+	this.autorun(() => {
+		this.firstNode.srcObject = this.data.src;
+	});
+});

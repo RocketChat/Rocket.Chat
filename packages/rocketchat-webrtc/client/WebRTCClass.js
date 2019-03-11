@@ -260,7 +260,7 @@ class WebRTCClass {
 			peerConnection.getRemoteStreams().forEach((remoteStream) => {
 				const item = {
 					id,
-					url: URL.createObjectURL(remoteStream),
+					url: remoteStream,
 					state: peerConnection.iceConnectionState,
 				};
 				switch (peerConnection.iceConnectionState) {
@@ -404,7 +404,7 @@ class WebRTCClass {
 	}
 
 	_getUserMedia(media, onSuccess, onError) {
-		const onSuccessLocal = function(stream) {
+		const onSuccessLocal = (stream) => {
 			if (AudioContext && stream.getAudioTracks().length > 0) {
 				const audioContext = new AudioContext;
 				const source = audioContext.createMediaStreamSource(stream);
@@ -535,7 +535,7 @@ class WebRTCClass {
 		}
 		const onSuccess = (stream) => {
 			this.localStream = stream;
-			this.localUrl.set(URL.createObjectURL(stream));
+			this.localUrl.set(stream);
 			this.videoEnabled.set(this.media.video === true);
 			this.audioEnabled.set(this.media.audio === true);
 			const { peerConnections } = this;

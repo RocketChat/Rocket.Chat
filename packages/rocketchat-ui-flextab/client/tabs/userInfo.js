@@ -17,7 +17,7 @@ const more = function() {
 	return Template.instance().actions.get()
 		.map((action) => (typeof action === 'function' ? action.call(this) : action))
 		.filter((action) => action && (!action.condition || action.condition.call(this)))
-		.slice(2);
+		.slice(3);
 };
 
 
