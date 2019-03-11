@@ -2806,6 +2806,7 @@
   "thread-created" : "Started a new thread: \"__message__\"",
   "thread-welcome" : "Thanks __username__ for creating a thread! I invited some members from __parentChannel__ who shall be able to help you. Hint: You can poke them with \"@all\", in case there's nothing happening for a longer time ;)",
   "thread": "thread",
+  "Thread_name_is_too_long": "The thread name has been trimmed due to it's large length.",
   "Threading_context_menu_button": "Dedicated button",
   "Threading_context_menu_none": "Invisible",
   "Threading_description": "Help keeping an overview about what's going on! By creating a thread, a sub-channel of the one you selected is created and both are linked.",
