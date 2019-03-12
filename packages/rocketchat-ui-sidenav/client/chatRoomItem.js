@@ -21,7 +21,7 @@ Template.chatRoomItem.helpers({
 
 		this.alert = !this.hideUnreadStatus && this.alert; // && (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
 
-		const icon = roomTypes.getIcon(this);
+		const icon = this.t !== 'd' && roomTypes.getIcon(this);
 		const avatar = !icon;
 
 		const name = roomTypes.getRoomName(this.t, this);
