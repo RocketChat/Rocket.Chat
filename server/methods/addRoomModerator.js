@@ -50,7 +50,7 @@ Meteor.methods({
 
 		if (room && (room.ro || room.broadcast)) {
 			const permission = Permissions.findOneById('post-readonly');
-			if (permission.roles.includes('moderator')===true) {
+			if (permission.roles.includes('moderator') === true) {
 				Rooms.unmuteUsernameByRoomId(rid, user.username);
 			}
 		}
