@@ -26,7 +26,7 @@
 						</span>
 					{{else}}
 						{{#if isAudioMessageAllowed}}
-							{{> messageBoxAudioMessage}}
+							{{> messageBoxAudioMessage rid=_id}}
 						{{/if}}
 						<span class="rc-message-box__action-menu" data-desktop>
 							{{#if actions}}
