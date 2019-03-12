@@ -6,7 +6,7 @@ import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
 import { modal, popover, call, erase, hide, leave } from 'meteor/rocketchat:ui-utils';
-import { ChatRoom, Rooms } from 'meteor/rocketchat:models';
+import { ChatRoom } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
@@ -694,21 +694,6 @@ Template.channelSettingsEditing.helpers({
 	},
 	equal(text = '', text2 = '', ret = '*') {
 		return text === text2 ? '' : ret;
-	},
-	getIcon(room) {
-		const roomType = Rooms.findOne(room._id).t;
-		switch (roomType) {
-			case 'd':
-				return 'at';
-			case 'p':
-				return 'lock';
-			case 'c':
-				return 'hashtag';
-			case 'l':
-				return 'livechat';
-			default:
-				return null;
-		}
 	},
 	settings() {
 		return Template.instance().settings;
