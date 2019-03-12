@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
 
-RocketChat.archiveRoom = function(rid) {
-	RocketChat.models.Rooms.archiveById(rid);
-	RocketChat.models.Subscriptions.archiveByRoomId(rid);
+export const archiveRoom = function(rid) {
+	Rooms.archiveById(rid);
+	Subscriptions.archiveByRoomId(rid);
 
-	RocketChat.callbacks.run('afterRoomArchived', RocketChat.models.Rooms.findOneById(rid), Meteor.user());
+	callbacks.run('afterRoomArchived', Rooms.findOneById(rid), Meteor.user());
 };

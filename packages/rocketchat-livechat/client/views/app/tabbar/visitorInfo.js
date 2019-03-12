@@ -3,10 +3,13 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { modal, ChatRoom } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { ChatRoom, Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { t, handleError, roomTypes } from 'meteor/rocketchat:utils';
+import { hasRole } from 'meteor/rocketchat:authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
+import { LivechatDepartment } from '../../../collections/LivechatDepartment';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
@@ -28,13 +31,17 @@ Template.visitorInfo.helpers({
 			user.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
 			user.browserIcon = `icon-${ ua.getBrowser().name.toLowerCase() }`;
 
-			user.status = RocketChat.roomTypes.getUserStatus('l', this.rid) || 'offline';
+			user.status = roomTypes.getUserStatus('l', this.rid) || 'offline';
 		}
 		return user;
 	},
 
 	room() {
 		return ChatRoom.findOne({ _id: this.rid });
+	},
+
+	department() {
+		return LivechatDepartment.findOne({ _id: Template.instance().departmentId.get() });
 	},
 
 	joinTags() {
@@ -51,7 +58,7 @@ Template.visitorInfo.helpers({
 
 		const data = Template.currentData();
 		if (data && data.rid) {
-			const room = RocketChat.models.Rooms.findOne(data.rid);
+			const room = Rooms.findOne(data.rid);
 			if (room) {
 				livechatData = _.extend(livechatData, room.livechatData);
 			}
@@ -132,7 +139,7 @@ Template.visitorInfo.helpers({
 	},
 
 	guestPool() {
-		return RocketChat.settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
 
 	showDetail() {
@@ -142,13 +149,13 @@ Template.visitorInfo.helpers({
 	},
 
 	canSeeButtons() {
-		if (RocketChat.authz.hasRole(Meteor.userId(), 'livechat-manager')) {
+		if (hasRole(Meteor.userId(), 'livechat-manager')) {
 			return true;
 		}
 
 		const data = Template.currentData();
 		if (data && data.rid) {
-			const subscription = RocketChat.models.Subscriptions.findOne({ rid: data.rid });
+			const subscription = Subscriptions.findOne({ rid: data.rid });
 			return subscription !== undefined;
 		}
 		return false;
@@ -230,6 +237,7 @@ Template.visitorInfo.onCreated(function() {
 	this.customFields = new ReactiveVar([]);
 	this.action = new ReactiveVar();
 	this.user = new ReactiveVar();
+	this.departmentId = new ReactiveVar(null);
 
 	Meteor.call('livechat:getCustomFields', (err, customFields) => {
 		if (customFields) {
@@ -241,15 +249,13 @@ Template.visitorInfo.onCreated(function() {
 
 	if (currentData && currentData.rid) {
 		this.autorun(() => {
-			const room = ChatRoom.findOne(currentData.rid);
-			if (room && room.v && room.v._id) {
-				this.visitorId.set(room.v._id);
-			} else {
-				this.visitorId.set();
-			}
+			const room = Rooms.findOne({ _id: currentData.rid });
+			this.visitorId.set(room && room.v && room.v._id);
+			this.departmentId.set(room && room.departmentId);
 		});
 
 		this.subscribe('livechat:visitorInfo', { rid: currentData.rid });
+		this.subscribe('livechat:departments', this.departmentId.get());
 	}
 
 	this.autorun(() => {

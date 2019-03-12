@@ -1,6 +1,6 @@
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
-RocketChat.slashCommands.add('unarchive', null, {
+slashCommands.add('unarchive', null, {
 	description: 'Unarchive',
 	params: '#channel',
 });

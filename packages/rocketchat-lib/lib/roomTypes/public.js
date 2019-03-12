@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { openRoom } from 'meteor/rocketchat:ui-utils';
+import { ChatRoom, ChatSubscription } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from 'meteor/rocketchat:utils';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -26,6 +29,13 @@ export class PublicRoomType extends RoomTypeConfig {
 		});
 	}
 
+	getIcon(roomData) {
+		if (roomData.prid) {
+			return 'thread';
+		}
+		return this.icon;
+	}
+
 	findRoom(identifier) {
 		const query = {
 			t: 'c',
@@ -35,15 +45,18 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-		if (RocketChat.settings.get('UI_Allow_room_names_with_special_chars')) {
+		if (roomData.prid) {
+			return roomData.fname;
+		}
+		if (settings.get('UI_Allow_room_names_with_special_chars')) {
 			return roomData.fname || roomData.name;
 		}
 		return roomData.name;
 	}
 
 	condition() {
-		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && (RocketChat.authz.hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || RocketChat.settings.get('Accounts_AllowAnonymousRead') === true);
+		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		return groupByType && (hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true);
 	}
 
 	showJoinLink(roomId) {
@@ -59,7 +72,19 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	canAddUser(room) {
-		return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
+		return hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], room._id);
+	}
+
+	canSendMessage(roomId) {
+		const room = ChatRoom.findOne({ _id: roomId, t: 'c' }, { fields: { prid: 1 } });
+		if (room.prid) {
+			return true;
+		}
+
+		// TODO: remove duplicated code
+		return ChatSubscription.find({
+			rid: roomId,
+		}).count() > 0;
 	}
 
 	enableMembersListProfile() {

@@ -9,6 +9,8 @@
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
+	border: none;
+
 	background: white;
 
 	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
@@ -59,7 +61,6 @@
 		position: relative;
 
 		display: flex;
-		overflow: auto;
 
 		flex-direction: column;
 

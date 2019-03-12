@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import SearchLogger from '../logger/logger';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
 
 class ValidationService {
 	constructor() {}
@@ -22,7 +22,7 @@ class ValidationService {
 		const getUsername = (uid) => {
 			if (!userCache.hasOwnProperty(uid)) {
 				try {
-					userCache[uid] = RocketChat.models.Users.findById(uid).fetch()[0].username;
+					userCache[uid] = Users.findById(uid).fetch()[0].username;
 				} catch (e) {
 					userCache[uid] = undefined;
 				}

@@ -4,6 +4,8 @@
 	width: 100%;
 
 	&__label {
+		display: block;
+
 		cursor: pointer;
 	}
 
@@ -43,9 +45,16 @@
 		}
 	}
 
+	textarea.&__element {
+		font-family: inherit;
+		line-height: 2rem;
+	}
+
 	&__element {
 		width: 100%;
 		padding: 0 1rem;
+
+		text-overflow: ellipsis;
 
 		color: var(--input-text-color);
 
@@ -63,6 +72,8 @@
 		}
 
 		&::placeholder {
+			text-overflow: ellipsis;
+
 			color: var(--input-placeholder-color);
 		}
 
@@ -128,6 +139,8 @@
 	width: 100%;
 
 	&__label {
+		display: block;
+
 		cursor: pointer;
 	}
 

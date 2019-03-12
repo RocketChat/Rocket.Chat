@@ -166,7 +166,7 @@ Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://he
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 ## Helm Kubernetes
-Deploy on Kubernetes using the official [helm chart](https://github.com/kubernetes/charts/pull/752).
+Deploy on Kubernetes using the official [helm chart](https://github.com/helm/charts/tree/master/stable/rocketchat).
 
 ## Scalingo
 Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com).

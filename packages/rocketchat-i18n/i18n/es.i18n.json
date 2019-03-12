@@ -1140,6 +1140,8 @@
   "Favorites": "Favoritos",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Esta función depende de \"Enviar el historial de navegación de visitantes como un mensaje\" para que se habilite.",
   "Features_Enabled": "Funcionalidades habilitadas",
+  "FEDERATION_Domain": "Dominio",
+  "FEDERATION_Status": "Estado",
   "Field": "Campo",
   "Field_removed": "Campo eliminado",
   "Field_required": "Campo requerido",

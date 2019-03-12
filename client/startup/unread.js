@@ -5,6 +5,8 @@ import { Session } from 'meteor/session';
 import { Favico } from 'meteor/rocketchat:favico';
 import { ChatSubscription } from 'meteor/rocketchat:models';
 import { RoomManager, menu, fireGlobalEvent, readMessage } from 'meteor/rocketchat:ui-utils';
+import { getUserPreference } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
 
 const fetchSubscriptions = () => (
 	ChatSubscription.find({
@@ -26,14 +28,11 @@ const fetchSubscriptions = () => (
 
 // TODO: make it a helper
 const getOpenRoomId = () => {
-	let openedRoomId = undefined;
-	Tracker.nonreactive(() => {
+	return Tracker.nonreactive(() => {
 		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-			openedRoomId = Session.get('openedRoom');
+			return Session.get('openedRoom');
 		}
 	});
-
-	return openedRoomId;
 };
 
 Meteor.startup(() => {
@@ -64,7 +63,7 @@ Meteor.startup(() => {
 					unreadCountInOpenedRoom = subscription.unread;
 				}
 				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					const userUnreadAlert = RocketChat.getUserPreference(Meteor.userId(), 'unreadAlert');
+					const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
 					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 						unreadAlert = '•';
 					}
@@ -100,8 +99,8 @@ Meteor.startup(() => {
 		animation: 'none',
 	});
 
-	Tracker.autorun(() => {
-		const siteName = RocketChat.settings.get('Site_Name') || '';
+	Tracker.autorun(function() {
+		const siteName = settings.get('Site_Name') || '';
 
 		const unread = Session.get('unread');
 		fireGlobalEvent('unread-changed', unread);

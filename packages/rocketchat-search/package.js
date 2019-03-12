@@ -9,7 +9,10 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
+		'rocketchat:ui-utils',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:settings',
 		'rocketchat:logger',
 		'kadira:flow-router',
 	]);

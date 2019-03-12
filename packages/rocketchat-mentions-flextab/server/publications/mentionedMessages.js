@@ -1,19 +1,19 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users, Messages } from 'meteor/rocketchat:models';
 
 Meteor.publish('mentionedMessages', function(rid, limit = 50) {
 	if (!this.userId) {
 		return this.ready();
 	}
 	const publication = this;
-	const user = RocketChat.models.Users.findOneById(this.userId);
+	const user = Users.findOneById(this.userId);
 	if (!user) {
 		return this.ready();
 	}
 	if (!Meteor.call('canAccessRoom', rid, this.userId)) {
 		return this.ready();
 	}
-	const cursorHandle = RocketChat.models.Messages.findVisibleByMentionAndRoomId(user.username, rid, {
+	const cursorHandle = Messages.findVisibleByMentionAndRoomId(user.username, rid, {
 		sort: {
 			ts: -1,
 		},

@@ -35,8 +35,9 @@
 				</div>
 
 				{{#if username.ready}}
-					<div class="submit">
-						<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{_ "Use_this_username"}}</span></button>
+					<div class="rc-button__group rc-button__group--vertical">
+						<button data-loading-text="{{_ " Please_wait "}}..." class='rc-button rc-button--primary login'>{{_ "Use_this_username"}}</button>
+						<button type="reset" class='rc-button rc-button--nude'>{{_ "Logout"}}</button>
 					</div>
 				{{/if}}
 			</form>
