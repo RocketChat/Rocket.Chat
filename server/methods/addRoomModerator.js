@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Messages, Rooms } from 'meteor/rocketchat:models';
+import { Users, Subscriptions, Messages, Rooms, Permissions } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 import { Notifications } from 'meteor/rocketchat:notifications';
 
@@ -49,7 +49,10 @@ Meteor.methods({
 		Subscriptions.addRoleById(subscription._id, 'moderator');
 
 		if (room && (room.ro || room.broadcast)) {
-			Rooms.unmuteUsernameByRoomId(rid, user.username);
+			const permission = Permissions.findOneById('post-readonly');
+			if (permission.roles.includes('moderator')===true) {
+				Rooms.unmuteUsernameByRoomId(rid, user.username);
+			}
 		}
 
 		const fromUser = Users.findOneById(Meteor.userId());

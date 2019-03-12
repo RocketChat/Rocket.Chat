@@ -77,6 +77,7 @@ Meteor.startup(function() {
 		{ _id: 'view-outside-room',             roles : ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'view-broadcast-member-list',    roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'call-management',               roles : ['admin', 'owner', 'moderator'] },
+		{ _id: 'post-readonly',                 roles : ['admin', 'owner', 'moderator'] },
 	];
 
 	for (const permission of permissions) {
