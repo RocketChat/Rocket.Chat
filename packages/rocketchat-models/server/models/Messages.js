@@ -849,25 +849,6 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampAndUsers(rid, pinned, ignoreThreads = true, ts, users = []) {
-		const query = {
-			rid,
-			ts,
-		};
-
-		if (pinned) {
-			query.pinned = { $ne: true };
-		}
-		if (!ignoreThreads) {
-			query.trid = { $exists: 0 };
-		}
-		if (users.length) {
-			query['u.username'] = { $in: users };
-		}
-
-		return this.remove(query);
-	}
-
 	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreThreads = true, ts, limit, users = []) {
 		const query = {
 			rid,
@@ -878,12 +859,16 @@ export class Messages extends Base {
 			query.pinned = { $ne: true };
 		}
 
-		if (!ignoreThreads) {
+		if (ignoreThreads) {
 			query.trid = { $exists: 0 };
 		}
 
 		if (users.length) {
 			query['u.username'] = { $in: users };
+		}
+
+		if (!limit) {
+			return this.remove(query);
 		}
 
 		const messagesToDelete = this.find(query, {
