@@ -1131,6 +1131,8 @@
   "Favorites": "Oblíbené",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Tato funkce závisí na povolení volby \"Odeslat historii navigace návštěv jako zprávu\".",
   "Features_Enabled": "Povolené funkce",
+  "FEDERATION_Domain": "Doména",
+  "FEDERATION_Status": "Stav",
   "Field": "Pole",
   "Field_removed": "Pole odebráno",
   "Field_required": "Pole vyžadováno",

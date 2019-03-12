@@ -1,17 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { emoji } from 'meteor/rocketchat:emoji';
+import { getUserPreference } from 'meteor/rocketchat:utils';
 import { emojione } from 'meteor/emojione:emojione';
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 
-RocketChat.emoji.packages.emojione = emojione;
-RocketChat.emoji.packages.emojione.imageType = 'png';
-RocketChat.emoji.packages.emojione.sprites = true;
-RocketChat.emoji.packages.emojione.emojisByCategory = emojisByCategory;
-RocketChat.emoji.packages.emojione.emojiCategories = emojiCategories;
-RocketChat.emoji.packages.emojione.toneList = toneList;
+emoji.packages.emojione = emojione;
+emoji.packages.emojione.imageType = 'png';
+emoji.packages.emojione.sprites = true;
+emoji.packages.emojione.emojisByCategory = emojisByCategory;
+emoji.packages.emojione.emojiCategories = emojiCategories;
+emoji.packages.emojione.toneList = toneList;
 
-RocketChat.emoji.packages.emojione.render = function(emoji) {
+emoji.packages.emojione.render = function(emoji) {
 	return emojione.toImage(emoji);
 };
 
@@ -30,20 +31,20 @@ function isSetNotNull(fn) {
 // RocketChat.emoji.list is the collection of emojis from all emoji packages
 for (const key in emojione.emojioneList) {
 	if (emojione.emojioneList.hasOwnProperty(key)) {
-		const emoji = emojione.emojioneList[key];
-		emoji.emojiPackage = 'emojione';
-		RocketChat.emoji.list[key] = emoji;
+		const currentEmoji = emojione.emojioneList[key];
+		currentEmoji.emojiPackage = 'emojione';
+		emoji.list[key] = currentEmoji;
 	}
 }
 
 // Additional settings -- ascii emojis
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (isSetNotNull(() => RocketChat.emoji.packages.emojione)) {
-			if (isSetNotNull(() => RocketChat.getUserPreference(Meteor.userId(), 'convertAsciiEmoji'))) {
-				RocketChat.emoji.packages.emojione.ascii = RocketChat.getUserPreference(Meteor.userId(), 'convertAsciiEmoji');
+		if (isSetNotNull(() => emoji.packages.emojione)) {
+			if (isSetNotNull(() => getUserPreference(Meteor.userId(), 'convertAsciiEmoji'))) {
+				emoji.packages.emojione.ascii = getUserPreference(Meteor.userId(), 'convertAsciiEmoji');
 			} else {
-				RocketChat.emoji.packages.emojione.ascii = true;
+				emoji.packages.emojione.ascii = true;
 			}
 		}
 	});

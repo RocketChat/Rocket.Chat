@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 
-export const upsertMessage = ({ msg, subscription }) => {
+export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	const userId = msg.u && msg.u._id;
 
 	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
@@ -21,8 +21,19 @@ export const upsertMessage = ({ msg, subscription }) => {
 		msg.e2e = 'pending';
 	}
 
-	return ChatMessage.upsert({ _id: msg._id }, msg);
+	return ChatMessage.upsert({ _id }, msg);
 };
+
+function upsertMessageBulk({ msgs, subscription }) {
+	const { queries } = ChatMessage;
+	ChatMessage.queries = [];
+	msgs.forEach((msg, index) => {
+		if (index === msgs.length - 1) {
+			ChatMessage.queries = queries;
+		}
+		upsertMessage({ msg, subscription });
+	});
+}
 
 export const RoomHistoryManager = new class {
 	constructor() {
@@ -91,7 +102,10 @@ export const RoomHistoryManager = new class {
 				previousHeight = wrapper.scrollHeight;
 			}
 
-			messages.forEach((msg) => msg.t !== 'command' && upsertMessage({ msg, subscription }));
+			upsertMessageBulk({
+				msgs: messages.filter((msg) => msg.t !== 'command'),
+				subscription,
+			});
 
 			if (wrapper) {
 				const heightDiff = wrapper.scrollHeight - previousHeight;

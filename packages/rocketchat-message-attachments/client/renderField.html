@@ -1,0 +1,20 @@
+<template name="renderField">
+    {{#if field.type}}
+        <!-- a custom rendering is requested -->
+        <div class="field">
+            {{{specializedRendering field=field message=../..}}}
+        </div>
+    {{else}}
+        {{#if short}}
+            <div class="attachment-field attachment-field-short">
+                <div class="attachment-field-title">{{field.title}}</div>
+                {{{RocketChatMarkdown field.value}}}
+            </div>
+        {{else}}
+            <div class="attachment-field">
+                <div class="attachment-field-title">{{field.title}}</div>
+                {{{RocketChatMarkdown field.value}}}
+            </div>
+        {{/if}}
+    {{/if}}
+</template>

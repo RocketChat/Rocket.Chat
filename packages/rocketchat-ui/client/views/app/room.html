@@ -111,7 +111,7 @@
 											<li class="start color-info-font-color">
 												{{#if hasPurge}}
 													<div class="start__purge-warning error-background error-border error-color">
-														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
+														{{> icon block="start__purge-warning-icon" icon="warning"}}
 														{{#unless filesOnly}}
 															{{#unless excludePinned}}
 																{{_ "RetentionPolicy_RoomWarning" time=purgeTimeout}}
@@ -125,7 +125,6 @@
 																{{_ "RetentionPolicy_RoomWarning_UnpinnedFilesOnly" time=purgeTimeout}}
 															{{/unless}}
 														{{/unless}}
-														{{> icon block="start__purge-warning-icon" icon="warning-empty"}}
 													</div>
 												{{/if}}
 												{{_ "Start_of_conversation"}}

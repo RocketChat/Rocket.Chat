@@ -1,3 +1,1 @@
-import '../lib/models/Messages';
-import '../lib/models/Rooms';
-import './setReaction';
+export { setReaction } from './setReaction';

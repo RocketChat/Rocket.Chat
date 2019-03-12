@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Rooms } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 115,
 	up() {
-		RocketChat.models.Rooms.update({
+		Rooms.update({
 			'announcement.message': { $exists: true },
 		}, {
 			$unset: { announcement: 1 },

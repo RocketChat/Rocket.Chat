@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../RoomTypeConfig';
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { ChatRoom, Subscriptions } from 'meteor/rocketchat:models';
+import { openRoom } from 'meteor/rocketchat:ui-utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from 'meteor/rocketchat:utils';
+import { hasPermission, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { settings } from 'meteor/rocketchat:settings';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -25,13 +28,14 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'd',
 			order: 50,
+			icon: 'at',
 			label: 'Direct_Messages',
 			route: new DirectMessageRoomRoute(),
 		});
 	}
 
 	findRoom(identifier) {
-		if (!RocketChat.authz.hasPermission('view-d-room')) {
+		if (!hasPermission('view-d-room')) {
 			return null;
 		}
 
@@ -40,19 +44,26 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			name: identifier,
 		};
 
-		const subscription = RocketChat.models.Subscriptions.findOne(query);
+		const subscription = Subscriptions.findOne(query);
 		if (subscription && subscription.rid) {
 			return ChatRoom.findOne(subscription.rid);
 		}
 	}
 
 	roomName(roomData) {
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1, fname: 1 } });
-		if (!subscription) {
-			return '';
+
+		// this function can receive different types of data
+		// if it doesn't have fname and name properties, should be a Room object
+		// so, need to find the related subscription
+		const subscription = roomData && (roomData.fname || roomData.name) ?
+			roomData :
+			Subscriptions.findOne({ rid: roomData._id });
+
+		if (subscription === undefined) {
+			return console.log('roomData', roomData);
 		}
 
-		if (RocketChat.settings.get('UI_Use_Real_Name') && subscription.fname) {
+		if (settings.get('UI_Use_Real_Name') && subscription.fname) {
 			return subscription.fname;
 		}
 
@@ -60,19 +71,19 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	secondaryRoomName(roomData) {
-		if (RocketChat.settings.get('UI_Use_Real_Name')) {
-			const subscription = RocketChat.models.Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
+		if (settings.get('UI_Use_Real_Name')) {
+			const subscription = Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
 			return subscription && subscription.name;
 		}
 	}
 
 	condition() {
-		const groupByType = RocketChat.getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		return groupByType && RocketChat.authz.hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+		const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		return groupByType && hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 	}
 
 	getUserStatus(roomId) {
-		const subscription = RocketChat.models.Subscriptions.findOne({ rid: roomId });
+		const subscription = Subscriptions.findOne({ rid: roomId });
 		if (subscription == null) {
 			return;
 		}
@@ -95,7 +106,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
 			case RoomSettingsEnum.E2E:
-				return RocketChat.settings.get('E2E_Enable') === true;
+				return settings.get('E2E_Enable') === true;
 			default:
 				return true;
 		}
@@ -133,7 +144,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			return {};
 		}
 
-		const title = RocketChat.settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`;
+		const title = settings.get('UI_Use_Real_Name') ? user.name : `@${ user.username }`;
 		const text = notificationMessage;
 
 		return { title, text };

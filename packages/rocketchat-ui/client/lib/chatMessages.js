@@ -29,6 +29,36 @@ Meteor.startup(() => {
 	});
 });
 
+export const getPermaLinks = async(replies) => {
+	const promises = replies.map(async(reply) =>
+		MessageAction.getPermaLink(reply._id)
+	);
+
+	return Promise.all(promises);
+};
+
+export const mountReply = async(msg, input) => {
+	const replies = $(input).data('reply');
+	const mentionUser = $(input).data('mention-user') || false;
+
+	if (replies && replies.length) {
+		const permalinks = await getPermaLinks(replies);
+
+		replies.forEach(async(reply, replyIndex) => {
+			if (reply !== undefined) {
+				msg += `[ ](${ permalinks[replyIndex] }) `;
+
+				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
+				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
+					msg += `@${ reply.u.username } `;
+				}
+			}
+		});
+	}
+
+	return msg;
+};
+
 export const ChatMessages = class ChatMessages {
 	constructor() {
 
@@ -166,7 +196,6 @@ export const ChatMessages = class ChatMessages {
 		this.input.classList.add('editing');
 
 		element.classList.add('editing');
-		this.$input.closest('.message-form').addClass('editing');
 
 		if (message.attachments && message.attachments[0].description) {
 			this.input.value = message.attachments[0].description;
@@ -189,7 +218,6 @@ export const ChatMessages = class ChatMessages {
 			this.input.parentElement.classList.remove('editing');
 
 			this.editing.element.classList.remove('editing');
-			this.$input.closest('.message-form').removeClass('editing');
 			delete this.editing.id;
 			delete this.editing.element;
 			delete this.editing.index;
@@ -216,16 +244,9 @@ export const ChatMessages = class ChatMessages {
 			$('.message.first-unread').removeClass('first-unread');
 
 			let msg = '';
-			const reply = $(input).data('reply');
-			const mentionUser = $(input).data('mention-user') || false;
 
-			if (reply !== undefined) {
-				msg = `[ ](${ await MessageAction.getPermaLink(reply._id) }) `;
-				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
-					msg += `@${ reply.u.username } `;
-				}
-			}
+			msg += await mountReply(msg, input);
+
 			msg += input.value;
 			$(input)
 				.removeData('reply')
@@ -338,9 +359,14 @@ export const ChatMessages = class ChatMessages {
 
 	confirmDeleteMsg(message, done = function() {}) {
 		if (MessageTypes.isSystemMessage(message)) { return; }
+
+		const room = message.trid && Rooms.findOne({
+			_id: message.trid,
+			prid: { $exists: true },
+		});
 		modal.open({
 			title: t('Are_you_sure'),
-			text: t('You_will_not_be_able_to_recover'),
+			text: room ? t('The_message_is_a_thread_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',

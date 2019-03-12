@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users } from 'meteor/rocketchat:models';
+import { deleteUser } from '../functions';
 import s from 'underscore.string';
 
 Meteor.methods({
@@ -12,12 +15,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'deleteUserOwnAccount' });
 		}
 
-		if (!RocketChat.settings.get('Accounts_AllowDeleteOwnAccount')) {
+		if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'deleteUserOwnAccount' });
 		}
 
 		const userId = Meteor.userId();
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'deleteUserOwnAccount' });
@@ -33,7 +36,7 @@ Meteor.methods({
 		}
 
 		Meteor.defer(function() {
-			RocketChat.deleteUser(userId);
+			deleteUser(userId);
 		});
 
 		return true;

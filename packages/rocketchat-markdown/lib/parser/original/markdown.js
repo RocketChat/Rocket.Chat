@@ -4,7 +4,7 @@
  */
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import s from 'underscore.string';
 
 const parseNotEscaped = function(msg, message) {
@@ -22,9 +22,9 @@ const parseNotEscaped = function(msg, message) {
 		return token;
 	};
 
-	const schemes = RocketChat.settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+	const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
-	if (RocketChat.settings.get('Markdown_Headers')) {
+	if (settings.get('Markdown_Headers')) {
 		// Support # Text for h1
 		msg = msg.replace(/^# (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h1>$1</h1>');
 
@@ -39,7 +39,7 @@ const parseNotEscaped = function(msg, message) {
 	}
 
 	// Support *text* to make bold
-	msg = msg.replace(/(^|&gt;|[ >_~`])\*{1,2}([^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3');
+	msg = msg.replace(/(|&gt;|[ >_~`])\*{1,2}([^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3');
 
 	// Support _text_ to make italics
 	msg = msg.replace(/(^|&gt;|[ >*~`])\_{1,2}([^\_\r\n]+)\_{1,2}([<*~`]|\B|\b|$)/gm, '$1<span class="copyonly">_</span><em>$2</em><span class="copyonly">_</span>$3');

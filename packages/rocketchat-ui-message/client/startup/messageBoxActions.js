@@ -1,28 +1,31 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import mime from 'mime-type/with-db';
 import { VRecDialog } from 'meteor/rocketchat:ui-vrecord';
-import { RocketChat } from 'meteor/rocketchat:lib';
-import { modal, fileUpload } from 'meteor/rocketchat:ui';
+import { messageBox, modal } from 'meteor/rocketchat:ui-utils';
+import { fileUpload } from 'meteor/rocketchat:ui';
+import { settings } from 'meteor/rocketchat:settings';
 import { t } from 'meteor/rocketchat:utils';
 
-RocketChat.messageBox.actions.add('Create_new', 'Video_message', {
+messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
 	icon: 'video',
 	condition: () => (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
 		navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
 		window.MediaRecorder &&
-		RocketChat.settings.get('FileUpload_Enabled') &&
-		RocketChat.settings.get('Message_VideoRecorderEnabled') &&
-		(!RocketChat.settings.get('FileUpload_MediaTypeWhiteList') ||
-			RocketChat.settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
+		settings.get('FileUpload_Enabled') &&
+		settings.get('Message_VideoRecorderEnabled') &&
+		(!settings.get('FileUpload_MediaTypeWhiteList') ||
+			settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
 	action: ({ messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox)),
 });
 
-RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
+messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
-	condition: () => RocketChat.settings.get('FileUpload_Enabled'),
+	condition: () => settings.get('FileUpload_Enabled'),
 	action({ event }) {
 		event.preventDefault();
 		const $input = $(document.createElement('input'));
@@ -46,7 +49,7 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload);
+			fileUpload(filesToUpload, $('.rc-message-box__textarea.js-input-message'));
 			$input.remove();
 		});
 
@@ -59,14 +62,16 @@ RocketChat.messageBox.actions.add('Add_files_from', 'Computer', {
 	},
 });
 
-RocketChat.messageBox.actions.add('Share', 'My_location', {
+const geolocation = new ReactiveVar(false);
+
+messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
-	condition: () => RocketChat.Geolocation.get() !== false,
+	condition: () => geolocation.get() !== false,
 	action({ rid }) {
-		const position = RocketChat.Geolocation.get();
+		const position = geolocation.get();
 		const { latitude, longitude } = position.coords;
-		const text = `<div class="upload-preview"><div class="upload-preview-file" style="background-size: cover; box-shadow: 0 0 0px 1px #dfdfdf; border-radius: 2px; height: 250px; width:100%; max-width: 500px; background-image:url(https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ RocketChat.settings.get('MapView_GMapsAPIKey') })" ></div></div>`;
+		const text = `<div class="upload-preview"><div class="upload-preview-file" style="background-size: cover; box-shadow: 0 0 0px 1px #dfdfdf; border-radius: 2px; height: 250px; width:100%; max-width: 500px; background-image:url(https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ settings.get('MapView_GMapsAPIKey') })" ></div></div>`;
 
 		modal.open({
 			title: t('Share_Location_Title'),
@@ -90,4 +95,28 @@ RocketChat.messageBox.actions.add('Share', 'My_location', {
 			});
 		});
 	},
+});
+
+Meteor.startup(() => {
+	const handleGeolocation = (position) => geolocation.set(position);
+	const handleGeolocationError = () => geolocation.set(false);
+
+	Tracker.autorun(() => {
+		const isMapViewEnabled = settings.get('MapView_Enabled') === true;
+		const isGeolocationWatchSupported = navigator.geolocation && navigator.geolocation.watchPosition;
+		const googleMapsApiKey = settings.get('MapView_GMapsAPIKey');
+		const canGetGeolocation =
+			isMapViewEnabled && isGeolocationWatchSupported && (googleMapsApiKey && googleMapsApiKey.length);
+
+		if (!canGetGeolocation) {
+			geolocation.set(false);
+			return;
+		}
+
+		navigator.geolocation.watchPosition(handleGeolocation, handleGeolocationError, {
+			enableHighAccuracy: true,
+			maximumAge: 0,
+			timeout: 10000,
+		});
+	});
 });

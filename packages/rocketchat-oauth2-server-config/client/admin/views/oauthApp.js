@@ -3,9 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RocketChat, handleError } from 'meteor/rocketchat:lib';
-import { modal } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
 import { ChatOAuthApps } from '../collection';
 import toastr from 'toastr';
 
@@ -18,7 +18,7 @@ Template.oauthApp.onCreated(function() {
 
 Template.oauthApp.helpers({
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('manage-oauth-apps');
+		return hasAllPermission('manage-oauth-apps');
 	},
 	data() {
 		const instance = Template.instance();

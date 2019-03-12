@@ -4,24 +4,26 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from 'meteor/rocketchat:settings';
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
 
 import { executableSchema } from './schema';
 
-const subscriptionPort = RocketChat.settings.get('Graphql_Subscription_Port') || 3100;
+const subscriptionPort = settings.get('Graphql_Subscription_Port') || 3100;
 
 // the Meteor GraphQL server is an Express server
 const graphQLServer = express();
 
-if (RocketChat.settings.get('Graphql_CORS')) {
+graphQLServer.disable('x-powered-by');
+
+if (settings.get('Graphql_CORS')) {
 	graphQLServer.use(cors());
 }
 
 graphQLServer.use('/api/graphql', (req, res, next) => {
-	if (RocketChat.settings.get('Graphql_Enabled')) {
+	if (settings.get('Graphql_Enabled')) {
 		next();
 	} else {
 		res.status(400).send('Graphql is not enabled in this server');
@@ -52,7 +54,7 @@ graphQLServer.use(
 );
 
 const startSubscriptionServer = () => {
-	if (RocketChat.settings.get('Graphql_Enabled')) {
+	if (settings.get('Graphql_Enabled')) {
 		SubscriptionServer.create({
 			schema: executableSchema,
 			execute,
