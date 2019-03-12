@@ -12,21 +12,21 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ rid: 1, ts: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ editedAt: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ editedAt: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ rid: 1, t: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
 		this.tryEnsureIndex({ msg: 'text' });
-		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ pinned: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: true });
+		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
+		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ location: '2dsphere' });
-		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ unread: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: true });
+		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
 		// threads
-		this.tryEnsureIndex({ trid: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ trid: 1 }, { sparse: true });
 
 		this.loadSettings();
 	}
