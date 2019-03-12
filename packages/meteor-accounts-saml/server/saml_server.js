@@ -117,7 +117,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 		if (!user) {
 			const newUser = {
-				name: loginResult.profile.cn || loginResult.profile.username,
+				name: loginResult.profile.displayName || loginResult.profile.cn || loginResult.profile.username,
 				active: true,
 				globalRoles: ['user'],
 				emails: emailList.map((email) => ({

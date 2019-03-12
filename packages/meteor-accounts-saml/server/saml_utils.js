@@ -361,6 +361,15 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 	if (!profile.email && profile.mail) {
 		profile.email = profile.mail;
 	}
+
+	if (!profile.displayName && profile['urn:oid:2.16.840.1.113730.3.1.241']) {
+		profile.displayName = profile['urn:oid:2.16.840.1.113730.3.1.241'];
+	}
+
+	if (!profile.cn && profile['urn:oid:2.5.4.3']) {
+		profile.cn = profile['urn:oid:2.5.4.3'];
+	}
+
 };
 
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
