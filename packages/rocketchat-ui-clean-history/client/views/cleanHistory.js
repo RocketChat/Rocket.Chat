@@ -22,7 +22,7 @@ const getRoomName = function() {
 	return t('conversation_with_s', roomTypes.getRoomName(room.t, room));
 };
 
-const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, filesOnly, fromUsers) {
+const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, ignoreThreads, filesOnly, fromUsers) {
 	return call('cleanRoomHistory', {
 		roomId,
 		latest,
@@ -30,6 +30,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 		inclusive,
 		limit,
 		excludePinned,
+		ignoreThreads,
 		filesOnly,
 		fromUsers,
 	});
@@ -138,6 +139,8 @@ Template.cleanHistory.onCreated(function() {
 	this.cleanHistoryInclusive = new ReactiveVar(false);
 	this.cleanHistoryExcludePinned = new ReactiveVar(false);
 	this.cleanHistoryFilesOnly = new ReactiveVar(false);
+
+	this.ignoreThreads = new ReactiveVar(false);
 
 
 	this.cleanHistoryBusy = new ReactiveVar(false);
@@ -271,6 +274,9 @@ Template.cleanHistory.events({
 	'change [name=filesOnly]'(e, instance) {
 		instance.cleanHistoryFilesOnly.set(e.target.checked);
 	},
+	'change [name=ignoreThreads]'(e, instance) {
+		instance.ignoreThreads.set(e.target.checked);
+	},
 	'click .js-prune'(e, instance) {
 
 		modal.open({
@@ -293,6 +299,7 @@ Template.cleanHistory.events({
 			const metaCleanHistoryInclusive = instance.cleanHistoryInclusive.get();
 			const metaCleanHistoryExcludePinned = instance.cleanHistoryExcludePinned.get();
 			const metaCleanHistoryFilesOnly = instance.cleanHistoryFilesOnly.get();
+			const ignoreThreads = instance.ignoreThreads.get();
 
 			let fromDate = new Date('0001-01-01T00:00:00Z');
 			let toDate = new Date('9999-12-31T23:59:59Z');
@@ -311,7 +318,7 @@ Template.cleanHistory.events({
 			let count = 0;
 			let result;
 			do {
-				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, metaCleanHistoryFilesOnly, users);
+				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreThreads, metaCleanHistoryFilesOnly, users);
 				count += result;
 			} while (result === limit);
 

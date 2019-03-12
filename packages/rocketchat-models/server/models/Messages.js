@@ -23,10 +23,10 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
+		this.tryEnsureIndex({ unread: 1 }, { sparse: 1 });
 
 		// threads
-		this.tryEnsureIndex({ trid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ trid: 1 }, { sparse: 1 });
 
 		this.loadSettings();
 	}
@@ -171,7 +171,7 @@ export class Messages extends Base {
 			query.pinned = { $ne: true };
 		}
 
-		if (!ignoreThreads) {
+		if (ignoreThreads) {
 			query.trid = { $exists: 0 };
 		}
 
