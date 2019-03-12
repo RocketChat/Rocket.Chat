@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Permissions, Roles } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Permissions, Roles } from '/app/models';
 import { API } from '../api';
 
 /**

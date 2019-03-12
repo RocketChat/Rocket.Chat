@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
-import { Rooms } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Rooms } from '/app/models';
+import { callbacks } from '/app/callbacks';
 
 import { pubsub } from '../../subscriptions';
 import { authenticated } from '../../helpers/authenticated';

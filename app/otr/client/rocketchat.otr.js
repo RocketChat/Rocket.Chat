@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { promises } from 'meteor/rocketchat:promises';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { t } from 'meteor/rocketchat:utils';
+import { Subscriptions } from '/app/models';
+import { promises } from '/app/promises';
+import { Notifications } from '/app/notifications';
+import { t } from '/app/utils';
 
 class OTRClass {
 	constructor() {

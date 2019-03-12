@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from '/app/callbacks';
+import { settings } from '/app/settings';
 import Mentions from '../lib/Mentions';
 
 const MentionsClient = new Mentions({

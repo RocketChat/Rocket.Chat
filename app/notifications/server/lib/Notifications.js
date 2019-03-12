@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
-import { Subscriptions, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { Subscriptions, Rooms } from '/app/models';
+import { settings } from '/app/settings';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({

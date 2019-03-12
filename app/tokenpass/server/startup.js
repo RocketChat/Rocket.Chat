@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from 'meteor/rocketchat:settings';
-import { addRoomAccessValidator } from 'meteor/rocketchat:authorization';
-import { Users } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { addRoomAccessValidator } from '/app/authorization';
+import { Users } from '/app/models';
+import { callbacks } from '/app/callbacks';
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
 import { Tokenpass } from './Tokenpass';
 

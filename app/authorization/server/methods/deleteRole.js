@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import * as Models from 'meteor/rocketchat:models';
+import * as Models from '/app/models';
 import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({

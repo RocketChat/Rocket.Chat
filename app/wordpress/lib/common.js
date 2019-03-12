@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
+import { CustomOAuth } from '/app/custom-oauth';
 import _ from 'underscore';
 
 const config = {

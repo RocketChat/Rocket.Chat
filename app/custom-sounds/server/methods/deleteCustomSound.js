@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { CustomSounds } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { CustomSounds } from '/app/models';
+import { hasPermission } from '/app/authorization';
+import { Notifications } from '/app/notifications';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 Meteor.methods({

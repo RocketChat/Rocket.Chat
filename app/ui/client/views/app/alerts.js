@@ -1,1 +1,1 @@
-export { alerts } from 'meteor/rocketchat:ui-utils';
+export { alerts } from '/app/ui-utils';

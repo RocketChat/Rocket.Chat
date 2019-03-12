@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { Rooms } from 'meteor/rocketchat:models';
+import { FileUpload } from '/app/file-upload';
+import { Rooms } from '/app/models';
 import Busboy from 'busboy';
 import { API } from '../api';
 

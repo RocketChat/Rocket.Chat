@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from 'meteor/rocketchat:importer';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Importers } from '/app/importer';
+import { hasPermission } from '/app/authorization';
 
 Meteor.methods({
 	setupImporter(key) {

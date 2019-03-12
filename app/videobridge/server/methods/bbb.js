@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import BigBlueButtonApi from 'meteor/rocketchat:bigbluebutton';
-import { settings } from 'meteor/rocketchat:settings';
-import { Rooms, Users } from 'meteor/rocketchat:models';
-import { saveStreamingOptions } from 'meteor/rocketchat:channel-settings';
-import { API } from 'meteor/rocketchat:api';
+import BigBlueButtonApi from '/app/bigbluebutton';
+import { settings } from '/app/settings';
+import { Rooms, Users } from '/app/models';
+import { saveStreamingOptions } from '/app/channel-settings';
+import { API } from '/app/api';
 import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 

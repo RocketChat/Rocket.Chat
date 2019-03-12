@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { Rooms, Subscriptions, Users } from '/app/models';
+import { settings } from '/app/settings';
 import _ from 'underscore';
-import { sendNotification } from 'meteor/rocketchat:lib';
+import { sendNotification } from '/app/lib';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from './Livechat';
 

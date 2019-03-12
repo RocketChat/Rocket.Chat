@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
-import { settings } from 'meteor/rocketchat:settings';
-import { Rooms } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Rooms } from '/app/models';
 
 export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;

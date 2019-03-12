@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 settings.add('Accounts_OAuth_Dolphin_URL', '', { type: 'string', group: 'OAuth', public: true, section: 'Dolphin', i18nLabel: 'URL' });
 settings.add('Accounts_OAuth_Dolphin', false, { type: 'boolean', group: 'OAuth', section: 'Dolphin', i18nLabel: 'Accounts_OAuth_Custom_Enable' });

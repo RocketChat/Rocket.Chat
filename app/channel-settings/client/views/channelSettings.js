@@ -5,12 +5,12 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
-import { modal, popover, call, erase, hide, leave } from 'meteor/rocketchat:ui-utils';
-import { ChatRoom } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { t, roomTypes, RoomSettingsEnum } from 'meteor/rocketchat:utils';
+import { modal, popover, call, erase, hide, leave } from '/app/ui-utils';
+import { ChatRoom } from '/app/models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from '/app/authorization';
+import { t, roomTypes, RoomSettingsEnum } from '/app/utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
 
 const common = {

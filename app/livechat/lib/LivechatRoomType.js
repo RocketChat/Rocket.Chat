@@ -1,9 +1,9 @@
 import { Session } from 'meteor/session';
-import { ChatRoom } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { openRoom } from 'meteor/rocketchat:ui-utils';
-import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from 'meteor/rocketchat:utils';
+import { ChatRoom } from '/app/models';
+import { settings } from '/app/settings';
+import { hasPermission } from '/app/authorization';
+import { openRoom } from '/app/ui-utils';
+import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '/app/utils';
 import { LivechatInquiry } from './LivechatInquiry';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {

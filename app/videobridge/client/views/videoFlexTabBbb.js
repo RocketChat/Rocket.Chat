@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
-import { Rooms } from 'meteor/rocketchat:models';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
-import { popout } from 'meteor/rocketchat:ui-utils';
+import { settings } from '/app/settings';
+import { Rooms } from '/app/models';
+import { hasAllPermission } from '/app/authorization';
+import { popout } from '/app/ui-utils';
 
 Template.videoFlexTabBbb.helpers({
 	openInNewWindow() {

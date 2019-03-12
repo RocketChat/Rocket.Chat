@@ -2,8 +2,8 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { RateLimiter } from 'meteor/rate-limit';
-import { settings } from 'meteor/rocketchat:settings';
-import { metrics } from 'meteor/rocketchat:metrics';
+import { settings } from '/app/settings';
+import { metrics } from '/app/metrics';
 
 // Get initial set of names already registered for rules
 const names = new Set(Object.values(DDPRateLimiter.printRules())

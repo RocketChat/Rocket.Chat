@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { FederationKeys } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { FederationKeys } from '/app/models';
 
 Meteor.startup(function() {
 	// const federationUniqueId = FederationKeys.getUniqueId();

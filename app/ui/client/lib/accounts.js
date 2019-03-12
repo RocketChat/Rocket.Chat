@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { t } from 'meteor/rocketchat:utils';
+import { t } from '/app/utils';
 import toastr from 'toastr';
 
 Accounts.onEmailVerificationLink(function(token, done) {

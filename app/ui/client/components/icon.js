@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { isChrome, isFirefox } from 'meteor/rocketchat:utils';
+import { isChrome, isFirefox } from '/app/utils';
 
 const baseUrlFix = () => `${ document.baseURI }${ FlowRouter.current().path.substring(1) }`;
 

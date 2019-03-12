@@ -1,7 +1,7 @@
 import { Push } from 'meteor/rocketchat:push';
-import { settings } from 'meteor/rocketchat:settings';
-import { metrics } from 'meteor/rocketchat:metrics';
-import { RocketChatAssets } from 'meteor/rocketchat:assets';
+import { settings } from '/app/settings';
+import { metrics } from '/app/metrics';
+import { RocketChatAssets } from '/app/assets';
 
 export class PushNotification {
 	getNotificationId(roomId) {

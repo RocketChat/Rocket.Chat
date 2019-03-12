@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Messages } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
-import { processWebhookMessage } from 'meteor/rocketchat:lib';
+import { Messages } from '/app/models';
+import { hasPermission } from '/app/authorization';
+import { composeMessageObjectWithUser } from '/app/utils';
+import { processWebhookMessage } from '/app/lib';
 import { API } from '../api';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {

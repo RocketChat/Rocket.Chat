@@ -1,4 +1,4 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { callbacks } from '/app/callbacks';
 import s from 'underscore.string';
 
 export const renderMessageBody = (message) => {

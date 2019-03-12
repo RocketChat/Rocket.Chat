@@ -1,5 +1,5 @@
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
 
 export const getUserNotificationPreference = (user, pref) => {
 	if (typeof user === 'string') {

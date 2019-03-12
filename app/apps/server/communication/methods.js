@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from '/app/settings';
+import { hasPermission } from '/app/authorization';
 
 const waitToLoad = function(orch) {
 	return new Promise((resolve) => {

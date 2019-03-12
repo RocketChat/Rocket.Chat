@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { slashCommands } from 'meteor/rocketchat:utils';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { toolbarSearch } from 'meteor/rocketchat:ui-sidenav';
+import { slashCommands } from '/app/utils';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { toolbarSearch } from '/app/ui-sidenav';
 import _ from 'underscore';
 
 const keys = {

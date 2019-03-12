@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Rooms, Messages } from 'meteor/rocketchat:models';
+import { Rooms, Messages } from '/app/models';
 
 export const saveRoomTopic = function(rid, roomTopic, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {

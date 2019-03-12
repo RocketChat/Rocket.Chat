@@ -3,11 +3,11 @@ import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import mime from 'mime-type/with-db';
-import { VRecDialog } from 'meteor/rocketchat:ui-vrecord';
-import { messageBox, modal } from 'meteor/rocketchat:ui-utils';
-import { fileUpload } from 'meteor/rocketchat:ui';
-import { settings } from 'meteor/rocketchat:settings';
-import { t } from 'meteor/rocketchat:utils';
+import { VRecDialog } from '/app/ui-vrecord';
+import { messageBox, modal } from '/app/ui-utils';
+import { fileUpload } from '/app/ui';
+import { settings } from '/app/settings';
+import { t } from '/app/utils';
 
 messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',

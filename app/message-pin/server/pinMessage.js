@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { isTheLastMessage } from 'meteor/rocketchat:lib';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Subscriptions, Messages, Users, Rooms } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { isTheLastMessage } from '/app/lib';
+import { getAvatarUrlFromUsername } from '/app/utils';
+import { hasPermission } from '/app/authorization';
+import { Subscriptions, Messages, Users, Rooms } from '/app/models';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {

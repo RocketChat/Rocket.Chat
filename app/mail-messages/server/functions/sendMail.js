@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { placeholders } from 'meteor/rocketchat:utils';
+import { placeholders } from '/app/utils';
 import s from 'underscore.string';
-import * as Mailer from 'meteor/rocketchat:mailer';
+import * as Mailer from '/app/mailer';
 
 export const sendMail = function(from, subject, body, dryrun, query) {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');

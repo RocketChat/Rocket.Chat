@@ -15,7 +15,7 @@ mock('meteor/blaze', {
 	Blaze: {},
 });
 
-mock('meteor/rocketchat:settings', {
+mock('/app/settings', {
 	settings: {
 		get(setting) {
 			switch (setting) {
@@ -38,7 +38,7 @@ mock('meteor/rocketchat:settings', {
 	},
 });
 
-mock('meteor/rocketchat:callbacks', {
+mock('/app/callbacks', {
 	callbacks: {
 		add() {
 

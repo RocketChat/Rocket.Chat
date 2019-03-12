@@ -1,5 +1,5 @@
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 export function applyCustomTranslations() {
 	let CustomTranslations = settings.get('Custom_Translations');

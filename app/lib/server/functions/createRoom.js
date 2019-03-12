@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { hasPermission, addUserRoles } from 'meteor/rocketchat:authorization';
-import { getValidRoomName } from 'meteor/rocketchat:utils';
-import { Apps } from 'meteor/rocketchat:apps';
+import { Users, Rooms, Subscriptions } from '/app/models';
+import { callbacks } from '/app/callbacks';
+import { hasPermission, addUserRoles } from '/app/authorization';
+import { getValidRoomName } from '/app/utils';
+import { Apps } from '/app/apps';
 import _ from 'underscore';
 import s from 'underscore.string';
 

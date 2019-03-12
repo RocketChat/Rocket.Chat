@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Imports } from '../models/Imports';
-import { hasRole } from 'meteor/rocketchat:authorization';
+import { hasRole } from '/app/authorization';
 
 Meteor.methods({
 	getLatestImportOperations() {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from 'meteor/rocketchat:utils';
+import { slashCommands } from '/app/utils';
 /*
 * Gimme is a named function that will replace /gimme commands
 * @param {Object} message - The message object

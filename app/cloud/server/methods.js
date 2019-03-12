@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Settings } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Settings } from '/app/models';
 
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { connectWorkspace } from './functions/connectWorkspace';

@@ -7,12 +7,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
-import { e2e } from 'meteor/rocketchat:e2e';
-import { Users, ChatSubscription } from 'meteor/rocketchat:models';
-import { getUserPreference } from 'meteor/rocketchat:utils';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
-import { getAvatarAsPng } from 'meteor/rocketchat:ui-utils';
-import { promises } from 'meteor/rocketchat:promises';
+import { e2e } from '/app/e2e';
+import { Users, ChatSubscription } from '/app/models';
+import { getUserPreference } from '/app/utils';
+import { getAvatarUrlFromUsername } from '/app/utils';
+import { getAvatarAsPng } from '/app/ui-utils';
+import { promises } from '/app/promises';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar,

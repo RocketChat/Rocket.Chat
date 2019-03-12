@@ -1,4 +1,4 @@
-import { Roles } from 'meteor/rocketchat:models';
+import { Roles } from '/app/models';
 
 export const hasRole = (userId, roleNames, scope) => {
 	roleNames = [].concat(roleNames);

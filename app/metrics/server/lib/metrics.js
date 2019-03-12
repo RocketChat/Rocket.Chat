@@ -3,10 +3,10 @@ import connect from 'connect';
 import http from 'http';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { Info } from 'meteor/rocketchat:utils';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { settings } from 'meteor/rocketchat:settings';
-import { Statistics } from 'meteor/rocketchat:models';
+import { Info } from '/app/utils';
+import { Migrations } from '/app/migrations';
+import { settings } from '/app/settings';
+import { Statistics } from '/app/models';
 
 client.collectDefaultMetrics();
 

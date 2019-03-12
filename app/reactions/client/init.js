@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { MessageAction } from 'meteor/rocketchat:ui-utils';
-import { EmojiPicker } from 'meteor/rocketchat:emoji';
-import { tooltip } from 'meteor/rocketchat:tooltip';
+import { Rooms, Subscriptions } from '/app/models';
+import { MessageAction } from '/app/ui-utils';
+import { EmojiPicker } from '/app/emoji';
+import { tooltip } from '/app/tooltip';
 
 Template.room.events({
 	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {

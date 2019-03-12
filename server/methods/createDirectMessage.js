@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { getDefaultSubscriptionPref } from 'meteor/rocketchat:utils';
-import { RateLimiter } from 'meteor/rocketchat:lib';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { hasPermission } from '/app/authorization';
+import { Users, Rooms, Subscriptions } from '/app/models';
+import { getDefaultSubscriptionPref } from '/app/utils';
+import { RateLimiter } from '/app/lib';
+import { callbacks } from '/app/callbacks';
 
 Meteor.methods({
 	createDirectMessage(username) {

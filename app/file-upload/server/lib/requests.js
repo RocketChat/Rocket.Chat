@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { Uploads } from 'meteor/rocketchat:models';
+import { Uploads } from '/app/models';
 import { FileUpload } from './FileUpload';
 
 WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {

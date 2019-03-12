@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { hasAtLeastOnePermission } from '/app/authorization';
 
 Template.integrationsNew.helpers({
 	hasPermission() {

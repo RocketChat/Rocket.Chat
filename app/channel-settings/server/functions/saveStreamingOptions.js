@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Rooms } from 'meteor/rocketchat:models';
+import { Rooms } from '/app/models';
 
 export const saveStreamingOptions = function(rid, options) {
 	if (!Match.test(rid, String)) {

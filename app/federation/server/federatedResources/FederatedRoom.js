@@ -1,5 +1,5 @@
-import { createRoom } from 'meteor/rocketchat:lib';
-import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { createRoom } from '/app/lib';
+import { Rooms, Subscriptions, Users } from '/app/models';
 
 import FederatedResource from './FederatedResource';
 import FederatedUser from './FederatedUser';

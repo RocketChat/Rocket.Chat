@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';

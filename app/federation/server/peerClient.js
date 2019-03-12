@@ -1,8 +1,8 @@
 import qs from 'querystring';
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { settings } from 'meteor/rocketchat:settings';
-import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { callbacks } from '/app/callbacks';
+import { settings } from '/app/settings';
+import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '/app/models';
 
 import { Federation } from './main';
 import peerDNS from './peerDNS';

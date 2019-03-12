@@ -1,4 +1,4 @@
-import { emoji } from 'meteor/rocketchat:emoji';
+import { emoji } from '/app/emoji';
 import GraphemeSplitter from 'grapheme-splitter';
 
 const splitter = new GraphemeSplitter();

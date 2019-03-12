@@ -1,5 +1,5 @@
-import { AdminBox } from 'meteor/rocketchat:ui-utils';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { AdminBox } from '/app/ui-utils';
+import { hasAtLeastOnePermission } from '/app/authorization';
 
 AdminBox.addOption({
 	href: 'custom-sounds',

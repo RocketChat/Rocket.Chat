@@ -4,8 +4,8 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from 'meteor/rocketchat:importer';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+} from '/app/importer';
+import { hasPermission } from '/app/authorization';
 
 Meteor.methods({
 	startImport(key, input) {

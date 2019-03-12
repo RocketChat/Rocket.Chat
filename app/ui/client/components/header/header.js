@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { TabBar, fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
+import { TabBar, fireGlobalEvent } from '/app/ui-utils';
 
 Template.header.helpers({
 	back() {

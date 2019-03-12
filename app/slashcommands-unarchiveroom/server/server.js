@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Messages } from 'meteor/rocketchat:models';
-import { slashCommands } from 'meteor/rocketchat:utils';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Rooms, Messages } from '/app/models';
+import { slashCommands } from '/app/utils';
+import { Notifications } from '/app/notifications';
 
 function Unarchive(command, params, item) {
 	if (command !== 'unarchive' || !Match.test(params, String)) {

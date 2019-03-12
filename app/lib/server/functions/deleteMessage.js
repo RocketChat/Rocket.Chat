@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { settings } from 'meteor/rocketchat:settings';
-import { Messages, Uploads, Rooms } from 'meteor/rocketchat:models';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Apps } from 'meteor/rocketchat:apps';
+import { FileUpload } from '/app/file-upload';
+import { settings } from '/app/settings';
+import { Messages, Uploads, Rooms } from '/app/models';
+import { Notifications } from '/app/notifications';
+import { callbacks } from '/app/callbacks';
+import { Apps } from '/app/apps';
 
 export const deleteMessage = function(message, user) {
 	const keepHistory = settings.get('Message_KeepHistory');

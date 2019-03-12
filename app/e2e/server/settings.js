@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 settings.addGroup('E2E Encryption', function() {
 	this.add('E2E_Enable', false, {

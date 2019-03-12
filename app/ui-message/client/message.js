@@ -5,16 +5,16 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import moment from 'moment';
-import { DateFormat } from 'meteor/rocketchat:lib';
-import { renderEmoji } from 'meteor/rocketchat:emoji';
-import { renderMessageBody, MessageTypes, MessageAction } from 'meteor/rocketchat:ui-utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { RoomRoles, UserRoles, Roles, Subscriptions, Rooms } from 'meteor/rocketchat:models';
-import { AutoTranslate } from 'meteor/rocketchat:autotranslate';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Markdown } from 'meteor/rocketchat:markdown';
-import { t, getUserPreference, roomTypes } from 'meteor/rocketchat:utils';
+import { DateFormat } from '/app/lib';
+import { renderEmoji } from '/app/emoji';
+import { renderMessageBody, MessageTypes, MessageAction } from '/app/ui-utils';
+import { settings } from '/app/settings';
+import { RoomRoles, UserRoles, Roles, Subscriptions, Rooms } from '/app/models';
+import { AutoTranslate } from '/app/autotranslate';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { callbacks } from '/app/callbacks';
+import { Markdown } from '/app/markdown';
+import { t, getUserPreference, roomTypes } from '/app/utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -38,7 +38,7 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	}
 
 	const pdfjsLib = await import('pdfjs-dist');
-	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }node_modules/pdfjs-dist/build/pdf.worker.js`;
+	pdfjsLib.GlobalWorkerOptions.workerSrc = `${ Meteor.absoluteUrl() }pdf.worker.min.js`;
 
 	const loader = document.getElementById(`js-loading-${ canvasId }`);
 

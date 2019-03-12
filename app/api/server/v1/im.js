@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { getRoomByNameOrIdWithOptionToJoin } from 'meteor/rocketchat:lib';
-import { Subscriptions, Uploads, Users, Messages, Rooms } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { getRoomByNameOrIdWithOptionToJoin } from '/app/lib';
+import { Subscriptions, Uploads, Users, Messages, Rooms } from '/app/models';
+import { hasPermission } from '/app/authorization';
+import { composeMessageObjectWithUser } from '/app/utils';
+import { settings } from '/app/settings';
 import { API } from '../api';
 
 function findDirectMessageRoom(params, user) {

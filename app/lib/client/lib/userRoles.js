@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { UserRoles, RoomRoles, ChatMessage } from 'meteor/rocketchat:models';
-import { handleError } from 'meteor/rocketchat:utils';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { UserRoles, RoomRoles, ChatMessage } from '/app/models';
+import { handleError } from '/app/utils';
+import { Notifications } from '/app/notifications';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

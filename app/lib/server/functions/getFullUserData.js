@@ -1,8 +1,8 @@
 import s from 'underscore.string';
-import { Logger } from 'meteor/rocketchat:logger';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Logger } from '/app/logger';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
+import { hasPermission } from '/app/authorization';
 
 const logger = new Logger('getFullUserData');
 

@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { Tracker } from 'meteor/tracker';
 
 export const fireGlobalEvent = function _fireGlobalEvent(eventName, params) {

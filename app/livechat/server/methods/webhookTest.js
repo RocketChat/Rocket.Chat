@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { HTTP } from 'meteor/http';
 
 const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {

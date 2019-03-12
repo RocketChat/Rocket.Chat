@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Subscriptions } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Users, Subscriptions } from '/app/models';
+import { settings } from '/app/settings';
+import { Notifications } from '/app/notifications';
+import { hasPermission } from '/app/authorization';
 import { RateLimiter } from '../lib';
 import s from 'underscore.string';
 

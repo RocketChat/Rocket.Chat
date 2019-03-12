@@ -1,8 +1,8 @@
 import querystring from 'querystring';
 
 import { HTTP } from 'meteor/http';
-import { settings } from 'meteor/rocketchat:settings';
-import { Settings } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Settings } from '/app/models';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';

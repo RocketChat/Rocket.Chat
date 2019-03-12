@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Settings } from 'meteor/rocketchat:models';
+import { CustomOAuth } from '/app/custom-oauth';
+import { callbacks } from '/app/callbacks';
+import { Settings } from '/app/models';
 
 const config = {
 	serverURL: '',

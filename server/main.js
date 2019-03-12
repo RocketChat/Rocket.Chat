@@ -1,3 +1,4 @@
+import './importPackages';
 import '../imports/startup/server';
 
 import '../lib/RegExp';

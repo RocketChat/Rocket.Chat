@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { RocketChatFile } from 'meteor/rocketchat:file';
+import { Notifications } from '/app/notifications';
+import { hasPermission } from '/app/authorization';
+import { RocketChatFile } from '/app/file';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 Meteor.methods({

@@ -1,4 +1,4 @@
-import { SideNav } from 'meteor/rocketchat:ui-utils';
+import { SideNav } from '/app/ui-utils';
 import { VideoRecorder } from './recorderjs/videoRecorder';
 
 const escapify = {
@@ -40,7 +40,7 @@ const escapify = {
 	},
 
 	async videoDialog() {
-		const { VRecDialog } = await import('meteor/rocketchat:ui-vrecord');
+		const { VRecDialog } = await import('/app/ui-vrecord');
 		const vrecDialog = document.querySelector('.vrec-dialog');
 		if (vrecDialog && Number(window.getComputedStyle(vrecDialog).opacity) === 1) {
 			VideoRecorder.stop();

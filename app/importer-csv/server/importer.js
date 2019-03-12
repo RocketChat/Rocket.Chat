@@ -6,10 +6,10 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from 'meteor/rocketchat:importer';
-import { RocketChatFile } from 'meteor/rocketchat:file';
-import { Users, Rooms } from 'meteor/rocketchat:models';
-import { sendMessage } from 'meteor/rocketchat:lib';
+} from '/app/importer';
+import { RocketChatFile } from '/app/file';
+import { Users, Rooms } from '/app/models';
+import { sendMessage } from '/app/lib';
 
 export class CsvImporter extends Base {
 	constructor(info) {

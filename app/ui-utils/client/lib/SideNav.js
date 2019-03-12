@@ -1,7 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { roomTypes } from '/app/utils';
+import { Subscriptions } from '/app/models';
 import { AccountBox } from './AccountBox';
 
 export const SideNav = new class {

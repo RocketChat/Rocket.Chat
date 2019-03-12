@@ -1,5 +1,5 @@
-import { AdminBox } from 'meteor/rocketchat:ui-utils';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { AdminBox } from '/app/ui-utils';
+import { hasAllPermission } from '/app/authorization';
 
 AdminBox.addOption({
 	href: 'mailer',

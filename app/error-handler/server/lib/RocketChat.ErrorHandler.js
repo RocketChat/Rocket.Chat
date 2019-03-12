@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users, Rooms } from 'meteor/rocketchat:models';
-import { sendMessage } from 'meteor/rocketchat:lib';
+import { settings } from '/app/settings';
+import { Users, Rooms } from '/app/models';
+import { sendMessage } from '/app/lib';
 
 class ErrorHandler {
 	constructor() {

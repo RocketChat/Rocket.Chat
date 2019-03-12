@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Subscriptions, Rooms } from '/app/models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({

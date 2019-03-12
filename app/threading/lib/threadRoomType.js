@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RoomTypeConfig, roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
+import { RoomTypeConfig, roomTypes, getUserPreference } from '/app/utils';
 
 export class ThreadRoomType extends RoomTypeConfig {
 	constructor() {

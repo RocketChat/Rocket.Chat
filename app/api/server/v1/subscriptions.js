@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { Subscriptions } from '/app/models';
 import { API } from '../api';
 
 API.v1.addRoute('subscriptions.get', { authRequired: true }, {

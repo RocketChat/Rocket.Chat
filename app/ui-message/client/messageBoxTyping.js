@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
-import { MsgTyping } from 'meteor/rocketchat:ui';
-import { t } from 'meteor/rocketchat:utils';
+import { MsgTyping } from '/app/ui';
+import { t } from '/app/utils';
 import './messageBoxTyping.html';
 
 

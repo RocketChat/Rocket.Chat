@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions } from 'meteor/rocketchat:models';
+import { Permissions } from '/app/models';
 
 Meteor.startup(function() {
 	Permissions.upsert('post-readonly', { $setOnInsert: { roles: ['admin', 'owner', 'moderator'] } });

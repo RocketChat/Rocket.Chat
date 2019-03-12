@@ -3,9 +3,9 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 import { Session } from 'meteor/session';
-import { modal, call } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
-import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { modal, call } from '/app/ui-utils';
+import { t } from '/app/utils';
+import { fileUploadHandler } from '/app/file-upload';
 import { Handlebars } from 'meteor/ui';
 
 Template.webdavFilePicker.rendered = async function() {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions, Users } from 'meteor/rocketchat:models';
+import { Subscriptions, Users } from '/app/models';
 
 Meteor.methods({
 	'e2e.getUsersOfRoomWithoutKey'(rid) {

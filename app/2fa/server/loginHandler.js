@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 import { TOTP } from './lib/totp';
 
 Accounts.registerLoginHandler('totp', function(options) {

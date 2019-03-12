@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from 'meteor/rocketchat:models';
+import { Messages } from '/app/models';
 
 Meteor.publish('threadsOfRoom', function(rid, limit = 50) {
 	if (!this.userId) {

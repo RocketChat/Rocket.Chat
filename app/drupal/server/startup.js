@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 settings.addGroup('OAuth', function() {
 	this.section('Drupal', function() {

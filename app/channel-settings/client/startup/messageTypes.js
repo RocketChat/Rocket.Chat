@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { MessageTypes } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { MessageTypes } from '/app/ui-utils';
+import { t } from '/app/utils';
 import s from 'underscore.string';
 
 Meteor.startup(function() {

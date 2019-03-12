@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { Subscriptions, Messages } from '/app/models';
 
 Meteor.methods({
 	deleteOldOTRMessages(roomId) {

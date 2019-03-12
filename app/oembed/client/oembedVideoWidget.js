@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { getUserPreference } from 'meteor/rocketchat:utils';
+import { getUserPreference } from '/app/utils';
 
 const getTitle = function(self) {
 	if (self.meta == null) {

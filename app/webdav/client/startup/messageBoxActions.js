@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { t } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { messageBox, modal } from 'meteor/rocketchat:ui-utils';
-import { WebdavAccounts } from 'meteor/rocketchat:models';
+import { t } from '/app/utils';
+import { settings } from '/app/settings';
+import { messageBox, modal } from '/app/ui-utils';
+import { WebdavAccounts } from '/app/models';
 
 messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',

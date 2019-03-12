@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission, canAccessRoom } from 'meteor/rocketchat:authorization';
-import { Rooms } from 'meteor/rocketchat:models';
-import { Tokenpass, updateUserTokenpassBalances } from 'meteor/rocketchat:tokenpass';
+import { hasPermission, canAccessRoom } from '/app/authorization';
+import { Rooms } from '/app/models';
+import { Tokenpass, updateUserTokenpassBalances } from '/app/tokenpass';
 import { addUserToRoom } from '../functions';
 
 Meteor.methods({

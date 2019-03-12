@@ -3,8 +3,8 @@ import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
 import { EventEmitter } from 'events';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from '/app/settings';
+import { hasPermission } from '/app/authorization';
 import _ from 'underscore';
 import s from 'underscore.string';
 

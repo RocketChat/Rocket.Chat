@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Rooms, Subscriptions, Messages } from '/app/models';
+import { hasPermission } from '/app/authorization';
+import { callbacks } from '/app/callbacks';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();

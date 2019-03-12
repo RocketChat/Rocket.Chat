@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Messages, Subscriptions } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Rooms, Messages, Subscriptions } from '/app/models';
+import { callbacks } from '/app/callbacks';
 
 export const removeUserFromRoom = function(rid, user, options = {}) {
 	const room = Rooms.findOneById(rid);

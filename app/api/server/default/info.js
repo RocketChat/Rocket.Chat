@@ -1,5 +1,5 @@
-import { hasRole } from 'meteor/rocketchat:authorization';
-import { Info } from 'meteor/rocketchat:utils';
+import { hasRole } from '/app/authorization';
+import { Info } from '/app/utils';
 import { API } from '../api';
 
 API.default.addRoute('info', { authRequired: false }, {

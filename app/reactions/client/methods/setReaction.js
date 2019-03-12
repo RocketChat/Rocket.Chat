@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages, Rooms, Subscriptions, EmojiCustom } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { emoji } from 'meteor/rocketchat:emoji';
+import { Messages, Rooms, Subscriptions, EmojiCustom } from '/app/models';
+import { callbacks } from '/app/callbacks';
+import { emoji } from '/app/emoji';
 import _ from 'underscore';
 
 Meteor.methods({

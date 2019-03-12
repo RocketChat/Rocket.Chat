@@ -6,13 +6,13 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import { auth } from '../oauth.js';
-import { RocketChatAnnouncement } from 'meteor/rocketchat:lib';
-import { popout } from 'meteor/rocketchat:ui-utils';
-import { t, handleError } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
-import { Users, Rooms } from 'meteor/rocketchat:models';
+import { RocketChatAnnouncement } from '/app/lib';
+import { popout } from '/app/ui-utils';
+import { t, handleError } from '/app/utils';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { hasAllPermission } from '/app/authorization';
+import { Users, Rooms } from '/app/models';
 
 export const call = (...args) => new Promise(function(resolve, reject) {
 	Meteor.call(...args, function(err, result) {

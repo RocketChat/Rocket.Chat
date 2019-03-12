@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Logger } from 'meteor/rocketchat:logger';
-import { settings } from 'meteor/rocketchat:settings';
+import { Logger } from '/app/logger';
+import { settings } from '/app/settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 export const logger = new Logger('CAS', {});
 

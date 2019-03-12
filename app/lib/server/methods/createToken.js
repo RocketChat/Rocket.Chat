@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { hasPermission } from '/app/authorization';
 
 Meteor.methods({
 	createToken(userId) {

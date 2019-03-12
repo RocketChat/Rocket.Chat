@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import IMAP from 'imap';
 import POP3Lib from 'poplib';
 import { simpleParser } from 'mailparser';

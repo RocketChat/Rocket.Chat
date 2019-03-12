@@ -6,10 +6,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import { Layout, RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
-import { ChatSubscription, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { roomTypes, handleError } from 'meteor/rocketchat:utils';
+import { ChatSubscription, Rooms } from '/app/models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { roomTypes, handleError } from '/app/utils';
 import _ from 'underscore';
 
 window.currentTracker = undefined;

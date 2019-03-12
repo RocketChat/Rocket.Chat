@@ -4,9 +4,9 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { timeAgo } from './helpers';
-import { t, roomTypes } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { t, roomTypes } from '/app/utils';
+import { settings } from '/app/settings';
+import { hasAtLeastOnePermission } from '/app/authorization';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, OAuthApps } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Users, OAuthApps } from '/app/models';
 import _ from 'underscore';
 
 Meteor.methods({

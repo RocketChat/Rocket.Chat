@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { Sandstorm } from 'meteor/rocketchat:sandstorm';
+import { hasPermission } from '/app/authorization';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { Subscriptions } from '/app/models';
+import { roomTypes } from '/app/utils';
+import { Sandstorm } from '/app/sandstorm';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
 import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';

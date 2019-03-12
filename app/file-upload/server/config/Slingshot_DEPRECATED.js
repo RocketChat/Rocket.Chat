@@ -1,8 +1,8 @@
 import _ from 'underscore';
 import { Random } from 'meteor/random';
 import { Slingshot } from 'meteor/edgee:slingshot';
-import { settings } from 'meteor/rocketchat:settings';
-import { Uploads } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Uploads } from '/app/models';
 
 const configureSlingshot = _.debounce(() => {
 	const type = settings.get('FileUpload_Storage_Type');

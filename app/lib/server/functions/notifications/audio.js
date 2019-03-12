@@ -1,6 +1,6 @@
-import { metrics } from 'meteor/rocketchat:metrics';
-import { settings } from 'meteor/rocketchat:settings';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { metrics } from '/app/metrics';
+import { settings } from '/app/settings';
+import { Notifications } from '/app/notifications';
 
 export function shouldNotifyAudio({
 	disableAllMessageNotifications,

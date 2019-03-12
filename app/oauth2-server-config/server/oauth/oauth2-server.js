@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { OAuthApps, Users } from 'meteor/rocketchat:models';
+import { OAuthApps, Users } from '/app/models';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
-import { API } from 'meteor/rocketchat:api';
+import { API } from '/app/api';
 
 const oauth2server = new OAuth2Server({
 	accessTokensCollectionName: 'rocketchat_oauth_access_tokens',

@@ -1,4 +1,4 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { callbacks } from '/app/callbacks';
 import { integrations } from '../lib/rocketchat';
 
 const callbackHandler = function _callbackHandler(eventType) {

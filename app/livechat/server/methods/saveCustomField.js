@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { LivechatCustomField } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { LivechatCustomField } from '/app/models';
 
 Meteor.methods({
 	'livechat:saveCustomField'(_id, customFieldData) {

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Settings, Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
-import { fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { API } from 'meteor/rocketchat:api';
+import { settings } from '/app/settings';
+import { Settings, Rooms, LivechatVisitors } from '/app/models';
+import { fileUploadIsValidContentType } from '/app/utils';
+import { FileUpload } from '/app/file-upload';
+import { API } from '/app/api';
 import Busboy from 'busboy';
 import filesize from 'filesize';
 let maxFileSize;

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { LivechatDepartment } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { LivechatDepartment } from '/app/models';
 
 Meteor.publish('livechat:departments', function(_id) {
 	if (!this.userId) {

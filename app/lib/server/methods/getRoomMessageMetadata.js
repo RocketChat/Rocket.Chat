@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Messages } from 'meteor/rocketchat:models';
+import { Messages } from '/app/models';
 Meteor.methods({
 	/**
 	 * Non-reactively retrieves metadata about messages of a room

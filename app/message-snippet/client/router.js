@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { TabBar } from 'meteor/rocketchat:ui-utils';
+import { TabBar } from '/app/ui-utils';
 
 FlowRouter.route('/snippet/:snippetId/:snippetName', {
 	name: 'snippetView',

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
-import { API } from 'meteor/rocketchat:api';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
+import { API } from '/app/api';
 import google from 'googleapis';
 const { OAuth2 } = google.auth;
 

@@ -3,10 +3,10 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { t, handleError, roomTypes } from 'meteor/rocketchat:utils';
-import { Messages, Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
+import { t, handleError, roomTypes } from '/app/utils';
+import { Messages, Rooms, Subscriptions } from '/app/models';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { settings } from '/app/settings';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -147,7 +147,7 @@ export const MessageAction = new class {
 };
 
 Meteor.startup(async function() {
-	const { chatMessages } = await import('meteor/rocketchat:ui');
+	const { chatMessages } = await import('/app/ui');
 	MessageAction.addButton({
 		id: 'reply-message',
 		icon: 'reply',

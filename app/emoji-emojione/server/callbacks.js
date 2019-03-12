@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { callbacks } from '/app/callbacks';
 import { emojione } from 'meteor/emojione:emojione';
 
 Meteor.startup(function() {

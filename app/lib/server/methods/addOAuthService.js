@@ -2,8 +2,8 @@
 /* eslint comma-spacing: 0 */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { settings } from '/app/settings';
+import { hasPermission } from '/app/authorization';
 import s from 'underscore.string';
 
 Meteor.methods({

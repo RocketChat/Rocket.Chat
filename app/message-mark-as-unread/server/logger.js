@@ -1,4 +1,4 @@
-import { Logger } from 'meteor/rocketchat:logger';
+import { Logger } from '/app/logger';
 
 const logger = new Logger('MessageMarkAsUnread', {
 	sections: {

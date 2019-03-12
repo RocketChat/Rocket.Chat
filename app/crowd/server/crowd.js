@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { SHA256 } from 'meteor/sha';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
-import { Logger } from 'meteor/rocketchat:logger';
-import { _setRealName } from 'meteor/rocketchat:lib';
-import { Users } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasRole } from 'meteor/rocketchat:authorization';
+import { Logger } from '/app/logger';
+import { _setRealName } from '/app/lib';
+import { Users } from '/app/models';
+import { settings } from '/app/settings';
+import { hasRole } from '/app/authorization';
 import _ from 'underscore';
 
 const logger = new Logger('CROWD', {});

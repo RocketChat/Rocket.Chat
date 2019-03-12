@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
-import { Settings } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { settings } from '/app/settings';
+import { Settings } from '/app/models';
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {

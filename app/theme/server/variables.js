@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { theme } from './server';
 // TODO: Define registers/getters/setters for packages to work with established
 // 			heirarchy of colors instead of making duplicate definitions

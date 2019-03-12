@@ -1,10 +1,10 @@
-import { DateFormat } from 'meteor/rocketchat:lib';
+import { DateFormat } from '/app/lib';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { roomTypes } from '/app/utils';
+import { Subscriptions } from '/app/models';
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);

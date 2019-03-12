@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
-import { handleError } from 'meteor/rocketchat:utils';
-import { popover } from 'meteor/rocketchat:ui-utils';
+import { handleError } from '/app/utils';
+import { popover } from '/app/ui-utils';
 import moment from 'moment';
 import { setDateRange } from '../../../lib/dateHandler';
 

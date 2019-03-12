@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { Users } from '/app/models';
+import { settings } from '/app/settings';
 
 export const RoomSettingsEnum = {
 	NAME: 'roomName',

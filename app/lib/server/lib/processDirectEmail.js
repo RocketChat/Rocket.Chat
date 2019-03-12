@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Rooms, Messages, Users, Subscriptions } from 'meteor/rocketchat:models';
-import { metrics } from 'meteor/rocketchat:metrics';
+import { settings } from '/app/settings';
+import { Rooms, Messages, Users, Subscriptions } from '/app/models';
+import { metrics } from '/app/metrics';
 import { EmailReplyParser as reply } from 'emailreplyparser';
 import { sendMessage as _sendMessage } from '../functions';
 import moment from 'moment';

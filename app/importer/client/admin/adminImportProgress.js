@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Importers, ImporterWebsocketReceiver, ProgressStep } from 'meteor/rocketchat:importer';
+import { Importers, ImporterWebsocketReceiver, ProgressStep } from '/app/importer';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from 'meteor/rocketchat:utils';
+import { t, handleError } from '/app/utils';
 import toastr from 'toastr';
 
 Template.adminImportProgress.helpers({

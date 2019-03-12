@@ -1,9 +1,9 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChatTabBar, SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
+import { RocketChatTabBar, SideNav, TabBar } from '/app/ui-utils';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { CustomSounds } from 'meteor/rocketchat:models';
+import { CustomSounds } from '/app/models';
 import s from 'underscore.string';
 
 Template.adminSounds.helpers({

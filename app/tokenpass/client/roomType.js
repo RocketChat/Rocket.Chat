@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { roomTypes, RoomTypeConfig } from 'meteor/rocketchat:utils';
+import { roomTypes, RoomTypeConfig } from '/app/utils';
 
 class TokenPassRoomType extends RoomTypeConfig {
 	constructor() {

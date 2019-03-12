@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles } from 'meteor/rocketchat:models';
+import { Roles } from '/app/models';
 
 Meteor.publish('roles', function() {
 	if (!this.userId) {

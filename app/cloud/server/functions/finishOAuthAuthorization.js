@@ -2,8 +2,8 @@ import querystring from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { settings } from 'meteor/rocketchat:settings';
-import { Settings, Users } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Settings, Users } from '/app/models';
 
 import { getRedirectUri } from './getRedirectUri';
 

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Settings } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
-import { canAccessRoom } from 'meteor/rocketchat:authorization';
+import { Rooms, Settings } from '/app/models';
+import { settings } from '/app/settings';
+import { fileUploadIsValidContentType } from '/app/utils';
+import { canAccessRoom } from '/app/authorization';
 import filesize from 'filesize';
 
 let maxFileSize = 0;

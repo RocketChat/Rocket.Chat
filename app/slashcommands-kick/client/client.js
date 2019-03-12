@@ -1,4 +1,4 @@
-import { slashCommands } from 'meteor/rocketchat:utils';
+import { slashCommands } from '/app/utils';
 
 slashCommands.add('kick', function(command, params) {
 	const username = params.trim();

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Messages } from 'meteor/rocketchat:models';
+import { Messages } from '/app/models';
 
 Meteor.methods({
 	getSingleMessage(msgId) {

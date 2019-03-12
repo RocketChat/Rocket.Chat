@@ -1,4 +1,4 @@
-import { Rooms, Users } from 'meteor/rocketchat:models';
+import { Rooms, Users } from '/app/models';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomsConverter {

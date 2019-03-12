@@ -1,4 +1,4 @@
-import { Base } from 'meteor/rocketchat:models';
+import { Base } from '/app/models';
 
 class RawImportsModel extends Base {
 	constructor() {

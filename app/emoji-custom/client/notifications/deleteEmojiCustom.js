@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Notifications } from '/app/notifications';
 import { deleteEmojiCustom } from '../lib/emojiCustom';
 
 Meteor.startup(() =>

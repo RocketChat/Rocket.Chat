@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Info } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { Info } from '/app/utils';
 import bugsnag from 'bugsnag';
 
 settings.get('Bugsnag_api_key', (key, value) => {

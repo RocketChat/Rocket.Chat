@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Users, Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
+import { Users, Rooms, LivechatVisitors } from '/app/models';
 
 Meteor.methods({
 	'livechat:getAgentData'({ roomId, token }) {

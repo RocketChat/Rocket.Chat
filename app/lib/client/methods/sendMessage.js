@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { ChatMessage } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { promises } from 'meteor/rocketchat:promises';
+import { ChatMessage } from '/app/models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { promises } from '/app/promises';
 import s from 'underscore.string';
 
 Meteor.methods({

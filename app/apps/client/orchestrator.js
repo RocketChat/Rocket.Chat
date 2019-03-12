@@ -4,10 +4,10 @@ import { Utilities } from '../lib/misc/Utilities';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { TAPi18next } from 'meteor/tap:i18n';
-import { APIClient } from 'meteor/rocketchat:utils';
-import { AdminBox } from 'meteor/rocketchat:ui-utils';
-import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { APIClient } from '/app/utils';
+import { AdminBox } from '/app/ui-utils';
+import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { hasAtLeastOnePermission } from '/app/authorization';
 
 export let Apps;
 

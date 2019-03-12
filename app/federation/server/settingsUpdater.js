@@ -1,4 +1,4 @@
-import { Settings } from 'meteor/rocketchat:models';
+import { Settings } from '/app/models';
 
 let nextStatus;
 

@@ -1,6 +1,6 @@
 // Convenience method, almost need to turn it into a middleware of sorts
 import { Meteor } from 'meteor/meteor';
-import { Users } from 'meteor/rocketchat:models';
+import { Users } from '/app/models';
 import { API } from '../api';
 
 API.helperMethods.set('getUserFromParams', function _getUserFromParams() {

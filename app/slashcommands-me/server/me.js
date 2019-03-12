@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from 'meteor/rocketchat:utils';
+import { slashCommands } from '/app/utils';
 import s from 'underscore.string';
 
 /*

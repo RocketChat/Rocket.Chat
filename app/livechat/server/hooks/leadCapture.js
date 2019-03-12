@@ -1,6 +1,6 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { settings } from 'meteor/rocketchat:settings';
-import { LivechatVisitors } from 'meteor/rocketchat:models';
+import { callbacks } from '/app/callbacks';
+import { settings } from '/app/settings';
+import { LivechatVisitors } from '/app/models';
 
 function validateMessage(message, room) {
 	// skips this callback if the message was edited

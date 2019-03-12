@@ -33,7 +33,7 @@ export class AppsRestApi {
 	}
 
 	async loadAPI() {
-		const { API } = await import('meteor/rocketchat:api');
+		const { API } = await import('/app/api');
 		_API = API;
 		this.api = new API.ApiClass({
 			version: 'apps',

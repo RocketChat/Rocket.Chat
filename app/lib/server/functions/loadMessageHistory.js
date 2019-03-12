@@ -1,6 +1,6 @@
-import { settings } from 'meteor/rocketchat:settings';
-import { Messages } from 'meteor/rocketchat:models';
-import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { Messages } from '/app/models';
+import { composeMessageObjectWithUser } from '/app/utils';
 
 const hideMessagesOfType = [];
 

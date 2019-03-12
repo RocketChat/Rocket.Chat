@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { getUserPreference } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { getUserPreference } from '/app/utils';
+import { settings } from '/app/settings';
 import moment from 'moment';
 
 export const formatTime = (time) => {

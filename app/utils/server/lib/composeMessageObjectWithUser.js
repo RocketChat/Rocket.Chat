@@ -1,5 +1,5 @@
-import { Users } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { Users } from '/app/models';
+import { settings } from '/app/settings';
 
 const getUser = (userId) => Users.findOneById(userId);
 

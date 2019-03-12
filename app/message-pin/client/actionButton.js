@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { RoomHistoryManager, MessageAction } from 'meteor/rocketchat:ui-utils';
-import { handleError } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { RoomHistoryManager, MessageAction } from '/app/ui-utils';
+import { handleError } from '/app/utils';
+import { settings } from '/app/settings';
+import { Subscriptions } from '/app/models';
+import { hasAtLeastOnePermission } from '/app/authorization';
 import toastr from 'toastr';
 
 Meteor.startup(function() {

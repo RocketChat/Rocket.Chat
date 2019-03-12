@@ -1,5 +1,5 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from '/app/callbacks';
+import { settings } from '/app/settings';
 import { Livechat } from '../lib/Livechat';
 
 callbacks.add('livechat.offlineMessage', (data) => {

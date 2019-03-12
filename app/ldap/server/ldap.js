@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Logger } from 'meteor/rocketchat:logger';
+import { settings } from '/app/settings';
+import { Logger } from '/app/logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 

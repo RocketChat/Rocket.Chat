@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { slashCommands, roomTypes } from 'meteor/rocketchat:utils';
-import { ChatSubscription, Subscriptions } from 'meteor/rocketchat:models';
+import { slashCommands, roomTypes } from '/app/utils';
+import { ChatSubscription, Subscriptions } from '/app/models';
 
 function Open(command, params /* , item*/) {
 	const dict = {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Subscriptions } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Users, Subscriptions } from '/app/models';
+import { hasPermission } from '/app/authorization';
 
 Meteor.methods({
 	'e2e.resetUserE2EKey'(userId) {

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { DateFormat } from 'meteor/rocketchat:lib';
+import { DateFormat } from '/app/lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
-import { Markdown } from 'meteor/rocketchat:markdown';
+import { settings } from '/app/settings';
+import { Markdown } from '/app/markdown';
 import { SnippetedMessages } from '../lib/collections';
 import moment from 'moment';
 

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { LivechatVisitors } from 'meteor/rocketchat:models';
+import { LivechatVisitors } from '/app/models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({

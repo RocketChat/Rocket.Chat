@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { WebdavAccounts } from 'meteor/rocketchat:models';
+import { WebdavAccounts } from '/app/models';
 
 Meteor.methods({
 	removeWebdavAccount(accountId) {

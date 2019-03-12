@@ -1,7 +1,7 @@
-import { Rooms } from 'meteor/rocketchat:models';
-import { roomTypes } from 'meteor/rocketchat:utils';
+import { Rooms } from '/app/models';
+import { roomTypes } from '/app/utils';
 import LivechatRoomType from '../lib/LivechatRoomType';
-import { LivechatVisitors } from 'meteor/rocketchat:models';
+import { LivechatVisitors } from '/app/models';
 
 class LivechatRoomTypeServer extends LivechatRoomType {
 	getMsgSender(senderId) {

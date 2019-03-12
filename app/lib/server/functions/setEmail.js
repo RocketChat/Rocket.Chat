@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Users } from '/app/models';
+import { hasPermission } from '/app/authorization';
 import { RateLimiter, validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from '.';
 import s from 'underscore.string';

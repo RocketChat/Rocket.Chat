@@ -1,4 +1,4 @@
-import { Rooms, Messages } from 'meteor/rocketchat:models';
+import { Rooms, Messages } from '/app/models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/messages.graphqls';

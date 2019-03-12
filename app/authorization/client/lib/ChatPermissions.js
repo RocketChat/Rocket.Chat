@@ -1,3 +1,3 @@
-import { AuthzCachedCollection } from 'meteor/rocketchat:models';
+import { AuthzCachedCollection } from '/app/models';
 
 export const ChatPermissions = AuthzCachedCollection.collection;

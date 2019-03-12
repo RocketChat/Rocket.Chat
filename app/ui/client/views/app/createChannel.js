@@ -5,10 +5,10 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { t, roomTypes } from 'meteor/rocketchat:utils';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { t, roomTypes } from '/app/utils';
+import { hasAllPermission } from '/app/authorization';
 import toastr from 'toastr';
 import _ from 'underscore';
 
