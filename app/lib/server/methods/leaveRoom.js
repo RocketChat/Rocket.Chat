@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission, hasRole, getUsersInRole } from 'meteor/rocketchat:authorization';
-import { Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { hasPermission, hasRole, getUsersInRole } from '/app/authorization';
+import { Subscriptions, Rooms } from '/app/models';
 import { removeUserFromRoom } from '../functions';
 
 Meteor.methods({

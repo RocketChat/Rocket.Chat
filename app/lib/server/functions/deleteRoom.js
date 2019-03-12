@@ -1,5 +1,5 @@
-import { Messages, Subscriptions, Rooms } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Messages, Subscriptions, Rooms } from '/app/models';
+import { callbacks } from '/app/callbacks';
 export const deleteRoom = function(rid) {
 	Messages.removeFilesByRoomId(rid);
 	Messages.removeByRoomId(rid);

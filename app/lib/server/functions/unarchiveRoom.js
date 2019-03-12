@@ -1,4 +1,4 @@
-import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { Rooms, Subscriptions } from '/app/models';
 
 export const unarchiveRoom = function(rid) {
 	Rooms.unarchiveById(rid);

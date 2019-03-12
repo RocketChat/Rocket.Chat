@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 import _ from 'underscore';
 import s from 'underscore.string';
 import katex from 'katex';

@@ -2,7 +2,7 @@ import './modal.html';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { t, getUserPreference, handleError } from 'meteor/rocketchat:utils';
+import { t, getUserPreference, handleError } from '/app/utils';
 
 export const modal = {
 	renderedModal: null,

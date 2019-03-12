@@ -1,4 +1,4 @@
-import { Statistics } from 'meteor/rocketchat:models';
+import { Statistics } from '/app/models';
 import { statistics } from '../../lib/rocketchat';
 
 statistics.save = function() {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from '../../lib/settings';
-import { Settings } from 'meteor/rocketchat:models';
+import { Settings } from '/app/models';
 import _ from 'underscore';
 
 const blockedSettings = {};

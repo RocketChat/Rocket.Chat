@@ -1,4 +1,4 @@
-import { slashCommands } from 'meteor/rocketchat:utils';
+import { slashCommands } from '/app/utils';
 
 slashCommands.add('join', undefined, {
 	description: 'Join_the_given_channel',

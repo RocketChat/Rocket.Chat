@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasRole } from 'meteor/rocketchat:authorization';
-import { Info } from 'meteor/rocketchat:utils';
-import { Users } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from '/app/authorization';
+import { Info } from '/app/utils';
+import { Users } from '/app/models';
+import { settings } from '/app/settings';
 import { API } from '../api';
 
 API.v1.addRoute('info', { authRequired: false }, {

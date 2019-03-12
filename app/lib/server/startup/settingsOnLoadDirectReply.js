@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import _ from 'underscore';
 import { IMAPIntercepter, POP3Helper } from '../lib/interceptDirectReplyEmails.js';
 import { POP3 } from '../lib/interceptDirectReplyEmails';

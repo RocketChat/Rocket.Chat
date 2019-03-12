@@ -1,6 +1,6 @@
 import mock from 'mock-require';
 
-mock('meteor/rocketchat:emoji', {
+mock('/app/emoji', {
 	emoji: {
 		list: {
 		},

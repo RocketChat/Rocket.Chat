@@ -1,6 +1,6 @@
-import { settings } from 'meteor/rocketchat:settings';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
-import { AccountBox, TabBar, MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { settings } from '/app/settings';
+import { hasAllPermission } from '/app/authorization';
+import { AccountBox, TabBar, MessageTypes } from '/app/ui-utils';
 
 AccountBox.addItem({
 	name: 'Livechat',

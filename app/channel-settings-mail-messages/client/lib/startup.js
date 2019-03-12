@@ -1,7 +1,7 @@
 // import resetSelection from '../resetSelection';
 import { Meteor } from 'meteor/meteor';
-import { TabBar } from 'meteor/rocketchat:ui-utils';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { TabBar } from '/app/ui-utils';
+import { hasAllPermission } from '/app/authorization';
 
 Meteor.startup(() => {
 	TabBar.addButton({

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { WebdavAccounts } from 'meteor/rocketchat:models';
-import { modal } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { WebdavAccounts } from '/app/models';
+import { modal } from '/app/ui-utils';
+import { t } from '/app/utils';
 import toastr from 'toastr';
 
 Template.accountIntegrations.helpers({

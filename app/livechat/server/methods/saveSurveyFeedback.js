@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
+import { Rooms, LivechatVisitors } from '/app/models';
 import _ from 'underscore';
 
 Meteor.methods({

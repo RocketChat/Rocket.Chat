@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebAppInternals } from 'meteor/webapp';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 export let hostname;
 

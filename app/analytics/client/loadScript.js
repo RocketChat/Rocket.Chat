@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 Template.body.onRendered(() => {
 	Tracker.autorun((c) => {

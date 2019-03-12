@@ -1,5 +1,5 @@
-import { Users, Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { sendMessage } from 'meteor/rocketchat:lib';
+import { Users, Rooms, Subscriptions } from '/app/models';
+import { sendMessage } from '/app/lib';
 /*
  *
  * Get direct chat room helper

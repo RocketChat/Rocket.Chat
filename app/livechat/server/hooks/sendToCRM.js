@@ -1,6 +1,6 @@
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Messages, Rooms } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { Messages, Rooms } from '/app/models';
 import { Livechat } from '../lib/Livechat';
 
 const msgNavType = 'livechat_navigation_history';

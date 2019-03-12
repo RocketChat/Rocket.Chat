@@ -1,5 +1,5 @@
-import { settings } from 'meteor/rocketchat:settings';
-import { slashCommands } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { slashCommands } from '/app/utils';
 
 settings.onload('SlackBridge_Enabled', (key, value) => {
 	if (value) {

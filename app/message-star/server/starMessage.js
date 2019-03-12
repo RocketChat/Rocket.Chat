@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { isTheLastMessage } from 'meteor/rocketchat:lib';
-import { Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { isTheLastMessage } from '/app/lib';
+import { Subscriptions, Rooms, Messages } from '/app/models';
 
 Meteor.methods({
 	starMessage(message) {

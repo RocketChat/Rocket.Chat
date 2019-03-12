@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { settings } from 'meteor/rocketchat:settings';
+import * as Mailer from '/app/mailer';
+import { settings } from '/app/settings';
 
 Meteor.methods({
 	sendSMTPTestEmail() {

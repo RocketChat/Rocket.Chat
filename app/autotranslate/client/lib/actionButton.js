@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { MessageAction } from 'meteor/rocketchat:ui-utils';
-import { Messages } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { MessageAction } from '/app/ui-utils';
+import { Messages } from '/app/models';
 import { AutoTranslate } from './autotranslate';
 
 Meteor.startup(function() {

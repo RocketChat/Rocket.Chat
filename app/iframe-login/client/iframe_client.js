@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { IframeLogin } from 'meteor/rocketchat:ui-utils';
+import { IframeLogin } from '/app/ui-utils';
 import _ from 'underscore';
 
 const iframeLogin = new IframeLogin();

@@ -2,10 +2,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
-import { AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
-import { call } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { fileUploadHandler } from '/app/file-upload';
+import { AudioRecorder, chatMessages } from '/app/ui';
+import { call } from '/app/ui-utils';
+import { t } from '/app/utils';
 import './messageBoxAudioMessage.html';
 
 const startRecording = () => new Promise((resolve) => AudioRecorder.start(resolve));

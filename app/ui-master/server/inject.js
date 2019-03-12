@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
-import { Settings } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { Settings } from '/app/models';
+import { settings } from '/app/settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 

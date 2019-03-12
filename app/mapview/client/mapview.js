@@ -1,6 +1,6 @@
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 /*
  * MapView is a named function that will replace geolocation in messages with a Google Static Map
  * @param {Object} message - The message object

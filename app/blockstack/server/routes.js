@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from 'meteor/rocketchat:settings';
-import { RocketChatAssets } from 'meteor/rocketchat:assets';
+import { settings } from '/app/settings';
+import { RocketChatAssets } from '/app/assets';
 
 WebApp.connectHandlers.use('/_blockstack/manifest', Meteor.bindEnvironment(function(req, res) {
 	const name = settings.get('Site_Name');

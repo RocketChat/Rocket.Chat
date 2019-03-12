@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { WebdavAccounts } from 'meteor/rocketchat:models';
+import { WebdavAccounts } from '/app/models';
 
 Meteor.publish('webdavAccounts', function() {
 	if (!this.userId) {

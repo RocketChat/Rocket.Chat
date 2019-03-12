@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { PushNotification } from 'meteor/rocketchat:push-notifications';
+import { settings } from '/app/settings';
+import { Subscriptions } from '/app/models';
+import { roomTypes } from '/app/utils';
+import { PushNotification } from '/app/push-notifications';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';

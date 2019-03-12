@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { MessageTypes } from 'meteor/rocketchat:ui-utils';
-import { actionLinks } from 'meteor/rocketchat:action-links';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { Messages, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { MessageTypes } from '/app/ui-utils';
+import { actionLinks } from '/app/action-links';
+import { Notifications } from '/app/notifications';
+import { Messages, Rooms } from '/app/models';
+import { settings } from '/app/settings';
 import { Livechat } from 'meteor/rocketchat:livechat';
 
 MessageTypes.registerType({

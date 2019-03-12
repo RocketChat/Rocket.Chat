@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { Log } from 'meteor/logging';
-import { Info } from 'meteor/rocketchat:utils';
+import { Info } from '/app/utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';

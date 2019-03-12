@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from 'meteor/rocketchat:importer';
+import { Importers } from '/app/importer';
 import { Template } from 'meteor/templating';
-import { hasRole } from 'meteor/rocketchat:authorization';
-import { t, APIClient } from 'meteor/rocketchat:utils';
+import { hasRole } from '/app/authorization';
+import { t, APIClient } from '/app/utils';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ProgressStep } from '../../lib/ImporterProgressStep';

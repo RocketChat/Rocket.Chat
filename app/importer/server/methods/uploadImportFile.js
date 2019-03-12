@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from 'meteor/rocketchat:importer';
-import { RocketChatFile } from 'meteor/rocketchat:file';
+import { Importers } from '/app/importer';
+import { RocketChatFile } from '/app/file';
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasRole } from 'meteor/rocketchat:authorization';
+import { hasRole } from '/app/authorization';
 
 Meteor.methods({
 	uploadImportFile(binaryContent, contentType, fileName, importerKey) {

@@ -3,7 +3,7 @@ import './cloud.html';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { t } from 'meteor/rocketchat:utils';
+import { t } from '/app/utils';
 
 import queryString from 'query-string';
 import toastr from 'toastr';

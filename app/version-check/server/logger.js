@@ -1,3 +1,3 @@
-import { Logger } from 'meteor/rocketchat:logger';
+import { Logger } from '/app/logger';
 
 export default new Logger('VersionCheck');

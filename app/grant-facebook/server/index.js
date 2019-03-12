@@ -1,4 +1,4 @@
-import { Providers, GrantError } from 'meteor/rocketchat:grant';
+import { Providers, GrantError } from '/app/grant';
 import { HTTP } from 'meteor/http';
 
 const userAgent = 'Meteor';

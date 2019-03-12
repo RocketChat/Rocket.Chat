@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import s from 'underscore.string';
 
 export const getURL = (path, { cdn = true, full = false } = {}) => {

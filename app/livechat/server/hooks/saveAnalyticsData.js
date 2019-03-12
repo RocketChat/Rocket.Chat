@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Rooms } from 'meteor/rocketchat:models';
+import { callbacks } from '/app/callbacks';
+import { Rooms } from '/app/models';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited

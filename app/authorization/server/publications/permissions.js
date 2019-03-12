@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions } from 'meteor/rocketchat:models';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Permissions } from '/app/models';
+import { Notifications } from '/app/notifications';
 
 Meteor.methods({
 	'permissions/get'(updatedAt) {

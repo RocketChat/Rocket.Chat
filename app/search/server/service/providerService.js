@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import _ from 'underscore';
 import { validationService } from '../service/validationService';
 import SearchLogger from '../logger/logger';

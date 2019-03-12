@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
-import { hasPermission, getUsersInRole } from 'meteor/rocketchat:authorization';
-import { API } from 'meteor/rocketchat:api';
-import { Users } from 'meteor/rocketchat:models';
+import { hasPermission, getUsersInRole } from '/app/authorization';
+import { API } from '/app/api';
+import { Users } from '/app/models';
 import { Livechat } from '../../../server/lib/Livechat';
 import _ from 'underscore';
 

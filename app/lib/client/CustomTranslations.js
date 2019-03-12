@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { applyCustomTranslations } from 'meteor/rocketchat:utils';
+import { applyCustomTranslations } from '/app/utils';
 import { Tracker } from 'meteor/tracker';
 
 Meteor.startup(function() {

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { Messages } from 'meteor/rocketchat:models';
-import { settings as rcSettings } from 'meteor/rocketchat:settings';
-import { API } from 'meteor/rocketchat:api';
+import { Messages } from '/app/models';
+import { settings as rcSettings } from '/app/settings';
+import { API } from '/app/api';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 
 API.v1.addRoute('livechat/video.call/:token', {

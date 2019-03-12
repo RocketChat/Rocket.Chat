@@ -4,7 +4,7 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
-import { t, handleError } from 'meteor/rocketchat:utils';
+import { t, handleError } from '/app/utils';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';

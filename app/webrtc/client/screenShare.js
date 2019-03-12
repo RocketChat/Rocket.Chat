@@ -1,4 +1,4 @@
-import { fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
+import { fireGlobalEvent } from '/app/ui-utils';
 
 export const ChromeScreenShare = {
 	callbacks: {},

@@ -2,7 +2,7 @@ import './methods';
 import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
 
-import { Permissions } from 'meteor/rocketchat:models';
+import { Permissions } from '/app/models';
 
 if (Permissions) {
 	Permissions.createOrUpdate('manage-cloud', ['admin']);

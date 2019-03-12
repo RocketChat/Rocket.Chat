@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { modal } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { modal } from '/app/ui-utils';
+import { t } from '/app/utils';
 import _ from 'underscore';
 import toastr from 'toastr';
 

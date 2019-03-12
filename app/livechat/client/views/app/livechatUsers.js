@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
-import { modal } from 'meteor/rocketchat:ui-utils';
-import { t, handleError } from 'meteor/rocketchat:utils';
+import { modal } from '/app/ui-utils';
+import { t, handleError } from '/app/utils';
 import { AgentUsers } from '../../collections/AgentUsers';
 import _ from 'underscore';
 import toastr from 'toastr';

@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { validateCustomFields, saveCustomFieldsWithoutValidation } from '.';
 import s from 'underscore.string';
 

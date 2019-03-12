@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Info } from 'meteor/rocketchat:utils';
+import { Info } from '/app/utils';
 
 Meteor.methods({
 	getServerInfo() {

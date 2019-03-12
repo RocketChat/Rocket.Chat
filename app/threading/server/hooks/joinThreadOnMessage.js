@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { callbacks } from '/app/callbacks';
+import { Subscriptions } from '/app/models';
 
 callbacks.add('beforeSaveMessage', (message, room) => {
 

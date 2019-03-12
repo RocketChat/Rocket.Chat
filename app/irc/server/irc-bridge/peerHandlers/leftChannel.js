@@ -1,5 +1,5 @@
-import { Users, Rooms } from 'meteor/rocketchat:models';
-import { removeUserFromRoom } from 'meteor/rocketchat:lib';
+import { Users, Rooms } from '/app/models';
+import { removeUserFromRoom } from '/app/lib';
 
 export default function handleLeftChannel(args) {
 	const user = Users.findOne({

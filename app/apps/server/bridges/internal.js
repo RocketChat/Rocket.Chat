@@ -1,4 +1,4 @@
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { Subscriptions } from '/app/models';
 
 export class AppInternalBridge {
 	constructor(orch) {

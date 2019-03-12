@@ -1,6 +1,6 @@
 import { HTTP } from 'meteor/http';
-import { settings } from 'meteor/rocketchat:settings';
-import { Settings } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Settings } from '/app/models';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 

@@ -7,11 +7,11 @@ import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { settings } from 'meteor/rocketchat:settings';
-import * as Models from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import * as Models from '/app/models';
 import { FileUpload as _FileUpload } from '../../lib/FileUpload';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { roomTypes } from '/app/utils';
+import { hasPermission } from '/app/authorization';
 
 const cookie = new Cookies();
 

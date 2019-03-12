@@ -1,6 +1,6 @@
 
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
-import { roomTypes } from 'meteor/rocketchat:utils';
+import { getAvatarUrlFromUsername } from '/app/utils';
+import { roomTypes } from '/app/utils';
 export const attachMessage = function(message, room) {
 	const { msg, u: { username }, ts, attachments, _id } = message;
 	return {

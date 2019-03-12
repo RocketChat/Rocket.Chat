@@ -6,11 +6,11 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from 'meteor/rocketchat:importer';
-import { RocketChatFile } from 'meteor/rocketchat:file';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
-import { Users, Rooms, Messages } from 'meteor/rocketchat:models';
-import { sendMessage } from 'meteor/rocketchat:lib';
+} from '/app/importer';
+import { RocketChatFile } from '/app/file';
+import { getAvatarUrlFromUsername } from '/app/utils';
+import { Users, Rooms, Messages } from '/app/models';
+import { sendMessage } from '/app/lib';
 
 import _ from 'underscore';
 

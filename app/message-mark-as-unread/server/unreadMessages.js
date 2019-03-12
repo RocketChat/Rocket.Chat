@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages, Subscriptions } from 'meteor/rocketchat:models';
+import { Messages, Subscriptions } from '/app/models';
 import logger from './logger';
 
 Meteor.methods({

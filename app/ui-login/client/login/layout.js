@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 Template.loginLayout.onRendered(function() {
 	$('#initial-page-loading').remove();

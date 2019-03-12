@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
-import { SideNav, Layout } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { SideNav, Layout } from '/app/ui-utils';
+import { t } from '/app/utils';
 
 Template.livechatFlex.helpers({
 	menuItem(name, icon, section) {

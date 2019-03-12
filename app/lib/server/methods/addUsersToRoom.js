@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Subscriptions, Users } from '/app/models';
+import { hasPermission } from '/app/authorization';
 import { addUserToRoom } from '../functions';
 
 Meteor.methods({

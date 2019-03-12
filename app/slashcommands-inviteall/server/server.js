@@ -6,10 +6,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { slashCommands } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Rooms, Subscriptions } from '/app/models';
+import { slashCommands } from '/app/utils';
+import { settings } from '/app/settings';
+import { Notifications } from '/app/notifications';
 
 function inviteAll(type) {
 	return function inviteAll(command, params, item) {

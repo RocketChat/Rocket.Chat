@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { hasPermission } from '/app/authorization';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 
 Meteor.publish('livechat:inquiry', function() {

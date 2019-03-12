@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Rooms, Settings } from 'meteor/rocketchat:models';
-import { cleanRoomHistory } from 'meteor/rocketchat:lib';
+import { settings } from '/app/settings';
+import { Rooms, Settings } from '/app/models';
+import { cleanRoomHistory } from '/app/lib';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 let types = [];

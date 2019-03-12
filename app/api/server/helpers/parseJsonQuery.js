@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { hasPermission } from '/app/authorization';
 import { EJSON } from 'meteor/ejson';
 import { API } from '../api';
 

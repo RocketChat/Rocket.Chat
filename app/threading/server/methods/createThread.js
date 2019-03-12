@@ -2,10 +2,10 @@
 // import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-// import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
-import { hasAtLeastOnePermission, canAccessRoom } from 'meteor/rocketchat:authorization';
-import { Messages, Rooms } from 'meteor/rocketchat:models';
-import { createRoom, addUserToRoom, sendMessage, attachMessage } from 'meteor/rocketchat:lib';
+// import { getAvatarUrlFromUsername } from '/app/utils';
+import { hasAtLeastOnePermission, canAccessRoom } from '/app/authorization';
+import { Messages, Rooms } from '/app/models';
+import { createRoom, addUserToRoom, sendMessage, attachMessage } from '/app/lib';
 
 const fields = [
 	{

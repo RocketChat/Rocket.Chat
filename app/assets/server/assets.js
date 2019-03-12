@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from 'meteor/rocketchat:settings';
-import { Settings } from 'meteor/rocketchat:models';
-import { getURL } from 'meteor/rocketchat:utils';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { RocketChatFile } from 'meteor/rocketchat:file';
+import { settings } from '/app/settings';
+import { Settings } from '/app/models';
+import { getURL } from '/app/utils';
+import { hasPermission } from '/app/authorization';
+import { RocketChatFile } from '/app/file';
 import { WebAppHashing } from 'meteor/webapp-hashing';
 import { WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';

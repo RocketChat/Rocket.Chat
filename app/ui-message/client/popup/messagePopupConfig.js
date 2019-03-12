@@ -5,11 +5,11 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Messages, Subscriptions, Users } from 'meteor/rocketchat:models';
-import { hasAllPermission, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { EmojiPicker, emoji } from 'meteor/rocketchat:emoji';
-import { RoomManager } from 'meteor/rocketchat:ui-utils';
-import { t, getUserPreference, slashCommands } from 'meteor/rocketchat:utils';
+import { Messages, Subscriptions, Users } from '/app/models';
+import { hasAllPermission, hasAtLeastOnePermission } from '/app/authorization';
+import { EmojiPicker, emoji } from '/app/emoji';
+import { RoomManager } from '/app/ui-utils';
+import { t, getUserPreference, slashCommands } from '/app/utils';
 import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);

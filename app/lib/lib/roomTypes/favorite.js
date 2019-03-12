@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { getUserPreference, RoomTypeConfig } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { getUserPreference, RoomTypeConfig } from '/app/utils';
 
 export class FavoriteRoomType extends RoomTypeConfig {
 	constructor() {

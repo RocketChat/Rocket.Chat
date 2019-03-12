@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { Users } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { callbacks } from '/app/callbacks';
+import { Notifications } from '/app/notifications';
+import { Users } from '/app/models';
 import _ from 'underscore';
 import moment from 'moment';
 

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { FileUpload } from '/app/file-upload';
+import { settings } from '/app/settings';
+import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from '/app/models';
+import { hasPermission } from '/app/authorization';
 import { RateLimiter } from '../lib';
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 

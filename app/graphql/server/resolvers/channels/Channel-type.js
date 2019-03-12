@@ -1,4 +1,4 @@
-import { Subscriptions, Users } from 'meteor/rocketchat:models';
+import { Subscriptions, Users } from '/app/models';
 import property from 'lodash.property';
 
 import schema from '../../schemas/channels/Channel-type.graphqls';

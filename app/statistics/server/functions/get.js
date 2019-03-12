@@ -3,10 +3,10 @@ import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, LivechatVisitors } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { Info } from 'meteor/rocketchat:utils';
-import { Migrations } from 'meteor/rocketchat:migrations';
+import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, LivechatVisitors } from '/app/models';
+import { settings } from '/app/settings';
+import { Info } from '/app/utils';
+import { Migrations } from '/app/migrations';
 import { statistics } from '../../lib/rocketchat';
 
 const wizardFields = [

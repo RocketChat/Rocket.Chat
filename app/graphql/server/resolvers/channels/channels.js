@@ -1,4 +1,4 @@
-import { Rooms } from 'meteor/rocketchat:models';
+import { Rooms } from '/app/models';
 
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';

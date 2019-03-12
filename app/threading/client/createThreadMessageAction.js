@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { MessageAction, modal } from 'meteor/rocketchat:ui-utils';
+import { Subscriptions } from '/app/models';
+import { settings } from '/app/settings';
+import { hasPermission } from '/app/authorization';
+import { MessageAction, modal } from '/app/ui-utils';
 
 
 const condition = (rid, uid) => {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from 'meteor/rocketchat:models';
+import { Messages } from '/app/models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/deleteMessage.graphqls';

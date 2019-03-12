@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { API } from 'meteor/rocketchat:api';
-import { Uploads } from 'meteor/rocketchat:models';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { API } from '/app/api';
+import { Uploads } from '/app/models';
+import { FileUpload } from '/app/file-upload';
 
 import peerServer from '../peerServer';
 

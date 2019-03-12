@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { SystemLogger } from 'meteor/rocketchat:logger';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { SystemLogger } from '/app/logger';
 import { HTTP } from 'meteor/http';
 import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
 import _ from 'underscore';

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Permissions } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Permissions } from '/app/models';
 
 Meteor.startup(function() {
 	settings.add('Message_AllowPinning', true, {

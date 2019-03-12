@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasRole } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from '/app/authorization';
+import { settings } from '/app/settings';
 import LDAP from './ldap';
 
 Meteor.methods({

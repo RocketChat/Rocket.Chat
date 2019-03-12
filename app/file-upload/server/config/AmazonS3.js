@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { FileUploadClass } from '../lib/FileUpload';
 import { FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server.js';

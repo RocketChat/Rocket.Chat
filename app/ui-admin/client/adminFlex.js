@@ -1,10 +1,10 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from 'meteor/rocketchat:settings';
-import { CachedCollection } from 'meteor/rocketchat:ui-cached-collection';
-import { SideNav, AdminBox, Layout } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { CachedCollection } from '/app/ui-cached-collection';
+import { SideNav, AdminBox, Layout } from '/app/ui-utils';
+import { t } from '/app/utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 

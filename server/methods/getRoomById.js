@@ -2,8 +2,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Rooms } from 'meteor/rocketchat:models';
-import { canAccessRoom } from 'meteor/rocketchat:authorization';
+import { Rooms } from '/app/models';
+import { canAccessRoom } from '/app/authorization';
 
 Meteor.methods({
 	getRoomById(rid) {

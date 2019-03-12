@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { CustomSounds } from 'meteor/rocketchat:models';
+import { CustomSounds } from '/app/models';
 
 Meteor.methods({
 	listCustomSounds() {

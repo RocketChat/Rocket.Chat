@@ -1,7 +1,7 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { handleError } from 'meteor/rocketchat:utils';
-import { fireGlobalEvent, Layout } from 'meteor/rocketchat:ui-utils';
+import { handleError } from '/app/utils';
+import { fireGlobalEvent, Layout } from '/app/ui-utils';
 import { actionLinks } from '../both/lib/actionLinks';
 
 Template.room.events({

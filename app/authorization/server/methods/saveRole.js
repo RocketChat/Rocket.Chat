@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Roles } from '/app/models';
+import { settings } from '/app/settings';
+import { Notifications } from '/app/notifications';
 import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({

@@ -6,9 +6,9 @@ import {
 	ProgressStep,
 	Selection,
 	SelectionUser,
-} from 'meteor/rocketchat:importer';
-import { RocketChatFile } from 'meteor/rocketchat:file';
-import { Users } from 'meteor/rocketchat:models';
+} from '/app/importer';
+import { RocketChatFile } from '/app/file';
+import { Users } from '/app/models';
 
 export class SlackUsersImporter extends Base {
 	constructor(info) {

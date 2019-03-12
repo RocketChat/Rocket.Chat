@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Subscriptions } from '/app/models';
 
 Meteor.methods({
 	'autoTranslate.saveSettings'(rid, field, value, options) {

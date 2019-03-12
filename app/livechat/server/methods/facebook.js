@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
+import { hasPermission } from '/app/authorization';
+import { settings } from '/app/settings';
 import OmniChannel from '../lib/OmniChannel';
 
 Meteor.methods({

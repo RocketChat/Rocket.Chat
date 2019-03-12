@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 Meteor.startup(function() {
 	settings.add('AutoTranslate_Enabled', false, { type: 'boolean', group: 'Message', section: 'AutoTranslate', public: true });

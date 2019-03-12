@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { emoji } from 'meteor/rocketchat:emoji';
-import { getUserPreference } from 'meteor/rocketchat:utils';
+import { emoji } from '/app/emoji';
+import { getUserPreference } from '/app/utils';
 import { emojione } from 'meteor/emojione:emojione';
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 

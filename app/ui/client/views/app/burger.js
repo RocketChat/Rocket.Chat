@@ -1,6 +1,6 @@
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { Layout } from 'meteor/rocketchat:ui-utils';
+import { Layout } from '/app/ui-utils';
 
 Template.burger.helpers({
 	unread() {

@@ -5,9 +5,9 @@
 //  files: ['i3nc9l3mn']
 // }
 import _ from 'underscore';
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { Uploads } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import * as Mailer from '/app/mailer';
+import { Uploads } from '/app/models';
+import { settings } from '/app/settings';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { smarsh } from '../lib/rocketchat';
 

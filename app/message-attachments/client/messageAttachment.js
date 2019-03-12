@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { DateFormat } from 'meteor/rocketchat:lib';
+import { DateFormat } from '/app/lib';
 import { Template } from 'meteor/templating';
-import { getUserPreference } from 'meteor/rocketchat:utils';
-import { Users } from 'meteor/rocketchat:models';
-import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
+import { getUserPreference } from '/app/utils';
+import { Users } from '/app/models';
+import { renderMessageBody } from '/app/ui-utils';
 
 const colors = {
 	good: '#35AC19',

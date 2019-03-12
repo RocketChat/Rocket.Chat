@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Mailer } from '../lib/Mailer';
-import { hasRole } from 'meteor/rocketchat:authorization';
+import { hasRole } from '/app/authorization';
 
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {

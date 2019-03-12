@@ -1,4 +1,4 @@
-import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { MessageTypes } from '/app/ui-utils';
 
 // Register message types
 MessageTypes.registerType({

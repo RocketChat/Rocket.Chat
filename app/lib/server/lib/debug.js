@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { settings } from 'meteor/rocketchat:settings';
-import { metrics } from 'meteor/rocketchat:metrics';
+import { settings } from '/app/settings';
+import { metrics } from '/app/metrics';
 import _ from 'underscore';
-import { Logger } from 'meteor/rocketchat:logger';
+import { Logger } from '/app/logger';
 
 const logger = new Logger('Meteor', {
 	methods: {

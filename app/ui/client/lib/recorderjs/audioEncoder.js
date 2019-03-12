@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import EventEmitter from 'wolfy87-eventemitter';
 
 class AudioEncoder extends EventEmitter {
@@ -10,7 +10,7 @@ class AudioEncoder extends EventEmitter {
 	} = {}) {
 		super();
 
-		const workerPath = Meteor.absoluteUrl('packages/rocketchat_ui/client/public/mp3-realtime-worker.js');
+		const workerPath = Meteor.absoluteUrl('public/mp3-realtime-worker.js');
 
 		this.worker = new Worker(workerPath);
 		this.worker.onmessage = this.handleWorkerMessage;

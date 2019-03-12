@@ -2,7 +2,7 @@ import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, Info, APIClient } from 'meteor/rocketchat:utils';
+import { t, Info, APIClient } from '/app/utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 

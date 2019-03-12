@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms } from 'meteor/rocketchat:models';
+import { Rooms } from '/app/models';
 
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { hasPermission } from '/app/authorization';
 
 Meteor.publish('threadParentAutocomplete', function(selector) {
 	if (!this.userId) {

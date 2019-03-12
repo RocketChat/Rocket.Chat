@@ -4,10 +4,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { ChatRoom } from 'meteor/rocketchat:models';
-import { t, roomTypes } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { modal, call } from 'meteor/rocketchat:ui-utils';
+import { ChatRoom } from '/app/models';
+import { t, roomTypes } from '/app/utils';
+import { settings } from '/app/settings';
+import { modal, call } from '/app/ui-utils';
 import moment from 'moment';
 
 const getRoomName = function() {

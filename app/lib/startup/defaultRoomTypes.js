@@ -1,4 +1,4 @@
-import { roomTypes } from 'meteor/rocketchat:utils';
+import { roomTypes } from '/app/utils';
 import {
 	ConversationRoomType,
 	DirectMessageRoomType,

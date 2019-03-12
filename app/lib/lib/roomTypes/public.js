@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { openRoom } from 'meteor/rocketchat:ui-utils';
-import { ChatRoom, ChatSubscription } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from 'meteor/rocketchat:utils';
+import { openRoom } from '/app/ui-utils';
+import { ChatRoom, ChatSubscription } from '/app/models';
+import { settings } from '/app/settings';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '/app/utils';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {

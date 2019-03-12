@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
-import { Settings } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { Settings } from '/app/models';
+import { settings } from '/app/settings';
 
 import { getRedirectUri } from './getRedirectUri';
 

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { CachedCollection } from 'meteor/rocketchat:ui-cached-collection';
+import { CachedCollection } from '/app/ui-cached-collection';
 import { settings } from '../../lib/settings';
 
 settings.cachedCollection = new CachedCollection({

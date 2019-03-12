@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
-import { hasRole } from 'meteor/rocketchat:authorization';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
+import { hasRole } from '/app/authorization';
 
 Template.setupWizardFinal.onCreated(function() {
 	const isSetupWizardDone = localStorage.getItem('wizardFinal');

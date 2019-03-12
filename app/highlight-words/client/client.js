@@ -3,8 +3,8 @@
  * @param {Object} message - The message object
  */
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { getUserPreference } from 'meteor/rocketchat:utils';
+import { callbacks } from '/app/callbacks';
+import { getUserPreference } from '/app/utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { highlightWords } from './helper';

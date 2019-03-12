@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Rooms } from 'meteor/rocketchat:models';
+import { Users, Rooms } from '/app/models';
 
 export default function handleOnCreateUser(newUser) {
 	if (!newUser) {

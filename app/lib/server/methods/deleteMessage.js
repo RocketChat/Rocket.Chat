@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
-import { Messages } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { settings } from '/app/settings';
+import { Messages } from '/app/models';
 import { deleteMessage } from '../functions';
 import moment from 'moment';
 

@@ -1,4 +1,4 @@
-import { Users } from 'meteor/rocketchat:models';
+import { Users } from '/app/models';
 
 export default function handleOnCreateRoom(user, room) {
 	const users = Users.findByRoomId(room._id);

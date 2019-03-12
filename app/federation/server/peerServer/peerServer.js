@@ -1,7 +1,7 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { setReaction } from 'meteor/rocketchat:reactions';
-import { addUserToRoom, removeUserFromRoom, deleteMessage } from 'meteor/rocketchat:lib';
-import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { callbacks } from '/app/callbacks';
+import { setReaction } from '/app/reactions';
+import { addUserToRoom, removeUserFromRoom, deleteMessage } from '/app/lib';
+import { Rooms, Subscriptions } from '/app/models';
 
 import { FederatedMessage, FederatedRoom, FederatedUser } from '../federatedResources';
 import { logger } from '../logger.js';

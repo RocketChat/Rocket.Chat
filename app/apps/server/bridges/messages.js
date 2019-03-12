@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Messages, Users, Subscriptions } from 'meteor/rocketchat:models';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Messages, Users, Subscriptions } from '/app/models';
+import { Notifications } from '/app/notifications';
 
 export class AppMessageBridge {
 	constructor(orch) {
@@ -29,7 +29,7 @@ export class AppMessageBridge {
 	async update(message, appId) {
 		console.log(`The App ${ appId } is updating a message.`);
 		if (!this.updateMessage) {
-			const { updateMessage } = await import('meteor/rocketchat:lib');
+			const { updateMessage } = await import('/app/lib');
 			this.updateMessage = updateMessage;
 		}
 

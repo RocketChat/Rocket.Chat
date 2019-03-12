@@ -1,9 +1,9 @@
 import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Logger } from 'meteor/rocketchat:logger';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { Logger } from '/app/logger';
 import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
 import LDAP from './ldap';
 

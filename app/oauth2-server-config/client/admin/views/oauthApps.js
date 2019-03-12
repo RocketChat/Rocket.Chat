@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { hasAllPermission } from '/app/authorization';
 import { ChatOAuthApps } from '../collection';
 import moment from 'moment';
 
