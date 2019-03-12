@@ -92,7 +92,7 @@ Template.ChatpalSearchSingleMessage.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room && room.t);
+		return roomTypes.getIcon(room);
 	},
 
 	roomLink() {
@@ -119,7 +119,7 @@ Template.ChatpalSearchSingleRoom.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room && room.t);
+		return roomTypes.getIcon(room);
 	},
 	roomLink() {
 		const subscription = Subscriptions.findOne({ rid: this._id });

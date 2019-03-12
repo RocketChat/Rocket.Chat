@@ -24,6 +24,10 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
+
+		// threads
+		this.tryEnsureIndex({ trid: 1 }, { sparse: true });
+
 		this.loadSettings();
 	}
 
@@ -156,7 +160,7 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreThreads = true, ts, users = [], options = {}) {
 		const query = {
 			rid,
 			ts,
@@ -165,6 +169,10 @@ export class Messages extends Base {
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (!ignoreThreads) {
+			query.trid = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -744,6 +752,11 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
 	}
 
+	createUserJoinWithRoomIdAndUserThread(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ut', roomId, message, user, extraData);
+	}
+
 	createUserLeaveWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ul', roomId, message, user, extraData);
@@ -836,7 +849,7 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampAndUsers(rid, pinned, ts, users = []) {
+	removeByIdPinnedTimestampAndUsers(rid, pinned, ignoreThreads = true, ts, users = []) {
 		const query = {
 			rid,
 			ts,
@@ -845,7 +858,9 @@ export class Messages extends Base {
 		if (pinned) {
 			query.pinned = { $ne: true };
 		}
-
+		if (!ignoreThreads) {
+			query.trid = { $exists: 0 };
+		}
 		if (users.length) {
 			query['u.username'] = { $in: users };
 		}
@@ -853,7 +868,7 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ts, limit, users = []) {
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreThreads = true, ts, limit, users = []) {
 		const query = {
 			rid,
 			ts,
@@ -861,6 +876,10 @@ export class Messages extends Base {
 
 		if (pinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (!ignoreThreads) {
+			query.trid = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -947,6 +966,44 @@ export class Messages extends Base {
 				_id: 1,
 			},
 		});
+	}
+
+	/**
+	 * Copy metadata from the thread to the system message in the parent channel
+	 * which links to the thread.
+	 * Since we don't pass this metadata into the model's function, it is not a subject
+	 * to race conditions: If multiple updates occur, the current state will be updated
+	 * only if the new state of the thread room is really newer.
+	 */
+	refreshThreadMetadata({ rid }) {
+		if (!rid) {
+			return false;
+		}
+		const { lm, msgs: count } = Rooms.findOneById(rid, {
+			fields: {
+				msgs: 1,
+				lm: 1,
+			},
+		});
+
+		const query = {
+			trid: rid,
+		};
+
+		return this.update(query, {
+			$set: {
+				'attachments.0.fields': [
+					{
+						type: 'messageCounter',
+						count,
+					},
+					{
+						type: 'lastMessageAge',
+						lm,
+					},
+				],
+			},
+		}, { multi: 1 });
 	}
 }
 

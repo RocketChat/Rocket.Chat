@@ -360,7 +360,7 @@ Template.message.helpers({
 		if (room && room.t === 'd') {
 			return 'at';
 		}
-		return roomTypes.getIcon(room && room.t);
+		return roomTypes.getIcon(room);
 	},
 	fromSearch() {
 		return this.customClass === 'search';

@@ -8,7 +8,7 @@ import { AccountBox, menu, SideNav } from 'meteor/rocketchat:ui-utils';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { settings } from 'meteor/rocketchat:settings';
 import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-
+import { modal } from 'meteor/rocketchat:ui-utils';
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
 	callbacks.run('userStatusManuallySet', status);
@@ -163,12 +163,63 @@ const toolbarButtons = (user) => [{
 	},
 },
 {
-	name: t('Create_A_New_Channel'),
+	name: t('Create_new'),
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
-	action: () => {
-		menu.close();
-		FlowRouter.go('create-channel');
+	action: (e) => {
+		const config = {
+			columns: [
+				{
+					groups: [
+						{
+							items: [
+								{
+									icon: 'hashtag',
+									name: t('Channel'),
+									action: (e) => {
+										e.preventDefault();
+										modal.open({
+											// title: t('Message_info'),
+											content: 'createChannel',
+											data: {
+												onCreate() {
+													modal.close();
+												},
+											},
+											showConfirmButton: false,
+											showCancelButton: false,
+											// confirmButtonText: t('Close'),
+										});
+									},
+								},
+								{
+									icon: 'thread',
+									name: t('Thread'),
+									action: (e) => {
+										e.preventDefault();
+										modal.open({
+											// title: t('Message_info'),
+											content: 'CreateThread',
+											data: {
+												onCreate() {
+													modal.close();
+												},
+											},
+											showConfirmButton: false,
+											showCancelButton: false,
+											// confirmButtonText: t('Close'),
+										});
+									},
+								},
+							],
+						},
+					],
+				},
+			],
+			currentTarget: e.currentTarget,
+			offsetVertical: e.currentTarget.clientHeight + 10,
+		};
+		popover.open(config);
 	},
 },
 {
