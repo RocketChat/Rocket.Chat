@@ -32,7 +32,8 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	}
 
 	if (!ignoreThreads) {
-		Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreThreads, ts, fromUsers, { fields: { trid: 1 }, ...(limit && { limit }) }).forEach(({ trid }) => deleteRoom(trid));
+		Messages.findThreadByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { fields: { trid: 1 }, ...(limit && { limit }) }).fetch()
+			.forEach(({ trid }) => deleteRoom(trid));
 	}
 
 	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreThreads, ts, limit, fromUsers);
