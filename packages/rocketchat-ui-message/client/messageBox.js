@@ -91,7 +91,7 @@ const formattingButtons = [
 
 function applyFormatting(event, instance) {
 	event.preventDefault();
-	const { input } = instance;
+	const { input } = chatMessages[RoomManager.openedRoom];
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 	const initText = input.value.slice(0, selectionStart);
 	const selectedText = input.value.slice(selectionStart, selectionEnd);
