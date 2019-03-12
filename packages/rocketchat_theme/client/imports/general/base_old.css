@@ -1364,18 +1364,33 @@ rc-old select,
 	}
 }
 
-.rc-old .cms-page {
+.cms-page {
+	display: flex;
+	flex-direction: column;
+
 	max-width: 800px;
-	margin: 40px auto;
-	padding: 20px;
+	max-height: 100%;
+	margin: auto;
+
+	padding: 2rem;
 
 	border-radius: var(--border-radius);
-	box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+
+	&__content {
+
+		overflow: auto;
+
+		margin: -1rem;
+		padding: 1rem;
+	}
 
 	& .cms-page-close {
+
+		display: flex;
+
 		margin-bottom: 10px;
 
-		text-align: right;
+		justify-content: flex-end;
 	}
 }
 
