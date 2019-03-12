@@ -351,7 +351,7 @@ API.v1.addRoute(['dm.open', 'im.open'], { authRequired: true }, {
 
 API.v1.addRoute(['dm.setTopic', 'im.setTopic'], { authRequired: true }, {
 	post() {
-		if (!this.bodyParams.topic || !this.bodyParams.topic.trim()) {
+		if (!this.bodyParams.hasOwnProperty('topic')) {
 			return API.v1.failure('The bodyParam "topic" is required');
 		}
 
