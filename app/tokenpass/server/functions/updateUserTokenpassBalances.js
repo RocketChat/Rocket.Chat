@@ -1,4 +1,4 @@
-import { Users } from 'meteor/rocketchat:models';
+import { Users } from '/app/models';
 import { getPublicTokenpassBalances } from './getPublicTokenpassBalances';
 import { getProtectedTokenpassBalances } from './getProtectedTokenpassBalances';
 import _ from 'underscore';

@@ -1,4 +1,4 @@
-import { Subscriptions, Users } from 'meteor/rocketchat:models';
+import { Subscriptions, Users } from '/app/models';
 
 export default function handleOnSaveMessage(message, to) {
 	let toIdentification = '';

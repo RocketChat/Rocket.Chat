@@ -1,4 +1,4 @@
-import { Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
+import { Users, Subscriptions, Rooms } from '/app/models';
 
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';

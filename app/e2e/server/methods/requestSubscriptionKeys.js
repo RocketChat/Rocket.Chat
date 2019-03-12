@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions, Rooms } from 'meteor/rocketchat:models';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Subscriptions, Rooms } from '/app/models';
+import { Notifications } from '/app/notifications';
 
 Meteor.methods({
 	'e2e.requestSubscriptionKeys'() {

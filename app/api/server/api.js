@@ -3,12 +3,12 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
-import { Logger } from 'meteor/rocketchat:logger';
-import { settings } from 'meteor/rocketchat:settings';
-import { metrics } from 'meteor/rocketchat:metrics';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Logger } from '/app/logger';
+import { settings } from '/app/settings';
+import { metrics } from '/app/metrics';
+import { hasPermission } from '/app/authorization';
 import { RateLimiter } from 'meteor/rate-limit';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { hasAllPermission } from '/app/authorization';
 import _ from 'underscore';
 
 const logger = new Logger('API', {});

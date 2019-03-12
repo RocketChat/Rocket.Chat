@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { t } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { t } from '/app/utils';
 import Bridge from '../irc-bridge';
 
 Meteor.methods({

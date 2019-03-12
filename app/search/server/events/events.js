@@ -1,5 +1,5 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Users, Rooms } from 'meteor/rocketchat:models';
+import { callbacks } from '/app/callbacks';
+import { Users, Rooms } from '/app/models';
 import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 

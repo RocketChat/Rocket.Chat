@@ -1,5 +1,5 @@
 import { changeCase } from 'meteor/konecty:change-case';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { callbacks } from '/app/callbacks';
 import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';

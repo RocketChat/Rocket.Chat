@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { Notifications } from '/app/notifications';
 import { CustomSounds } from '../lib/CustomSounds';
 
 Meteor.startup(() =>

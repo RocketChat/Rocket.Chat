@@ -1,4 +1,4 @@
-import { ImporterInfo } from 'meteor/rocketchat:importer';
+import { ImporterInfo } from '/app/importer';
 
 export class HipChatImporterInfo extends ImporterInfo {
 	constructor() {

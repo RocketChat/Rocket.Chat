@@ -1,8 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { DateFormat } from 'meteor/rocketchat:lib';
-import { t } from 'meteor/rocketchat:utils';
-import { popover } from 'meteor/rocketchat:ui-utils';
+import { DateFormat } from '/app/lib';
+import { t } from '/app/utils';
+import { popover } from '/app/ui-utils';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms } from 'meteor/rocketchat:models';
+import { Rooms } from '/app/models';
 import { Tokenpass } from '../Tokenpass';
 
 Meteor.methods({

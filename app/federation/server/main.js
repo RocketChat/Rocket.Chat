@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
-import { settings } from 'meteor/rocketchat:settings';
-import { FederationKeys } from 'meteor/rocketchat:models';
-import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
+import { settings } from '/app/settings';
+import { FederationKeys } from '/app/models';
+import { getWorkspaceAccessToken } from '/app/cloud';
 
 import './federation-settings';
 import './methods';

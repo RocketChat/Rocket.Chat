@@ -3,7 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 Template.cmsPage.onCreated(function() {
 	this.page = new ReactiveVar('');

@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import UAParser from 'ua-parser-js';
 import { UAParserMobile } from './UAParserMobile';
-import { Sessions } from 'meteor/rocketchat:models';
-import { Logger } from 'meteor/rocketchat:logger';
+import { Sessions } from '/app/models';
+import { Logger } from '/app/logger';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 const getDateObj = (dateTime = new Date()) => ({

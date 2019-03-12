@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { Subscriptions } from '/app/models';
 
 Meteor.methods({
 	'e2e.updateGroupKey'(rid, uid, key) {

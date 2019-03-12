@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { isSetNotNull } from '../lib/function-isSet';
-import { RoomManager, call } from 'meteor/rocketchat:ui-utils';
-import { emoji, EmojiPicker } from 'meteor/rocketchat:emoji';
-import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
+import { RoomManager, call } from '/app/ui-utils';
+import { emoji, EmojiPicker } from '/app/emoji';
+import { CachedCollectionManager } from '/app/ui-cached-collection';
 
 export const getEmojiUrlFromName = function(name, extension) {
 	Session.get;

@@ -1,4 +1,4 @@
-import { Users } from 'meteor/rocketchat:models';
+import { Users } from '/app/models';
 
 export default function handleNickChanged(args) {
 	const user = Users.findOne({

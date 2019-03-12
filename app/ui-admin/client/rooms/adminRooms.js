@@ -5,10 +5,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { SideNav, RocketChatTabBar, TabBar } from 'meteor/rocketchat:ui-utils';
-import { t, roomTypes } from 'meteor/rocketchat:utils';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
-import { ChannelSettings } from 'meteor/rocketchat:channel-settings';
+import { SideNav, RocketChatTabBar, TabBar } from '/app/ui-utils';
+import { t, roomTypes } from '/app/utils';
+import { hasAllPermission } from '/app/authorization';
+import { ChannelSettings } from '/app/channel-settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 

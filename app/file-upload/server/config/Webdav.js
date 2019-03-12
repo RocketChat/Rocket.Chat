@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import '../../ufs/Webdav/server.js';
 
 const get = function(file, req, res) {

@@ -9,9 +9,9 @@ import {
 	SelectionChannel,
 	SelectionUser,
 	Imports,
-} from 'meteor/rocketchat:importer';
-import { Messages, Users, Subscriptions, Rooms } from 'meteor/rocketchat:models';
-import { insertMessage } from 'meteor/rocketchat:lib';
+} from '/app/importer';
+import { Messages, Users, Subscriptions, Rooms } from '/app/models';
+import { insertMessage } from '/app/lib';
 import { Readable } from 'stream';
 import path from 'path';
 import fs from 'fs';

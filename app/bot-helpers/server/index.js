@@ -1,8 +1,8 @@
 import './settings';
 import { Meteor } from 'meteor/meteor';
-import { Users, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasRole } from 'meteor/rocketchat:authorization';
+import { Users, Rooms } from '/app/models';
+import { settings } from '/app/settings';
+import { hasRole } from '/app/authorization';
 import _ from 'underscore';
 
 /**

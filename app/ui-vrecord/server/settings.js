@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 settings.addGroup('Message', function() {
 	this.add('Message_VideoRecorderEnabled', true, {

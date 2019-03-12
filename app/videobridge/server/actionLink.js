@@ -1,4 +1,4 @@
-import { actionLinks } from 'meteor/rocketchat:action-links';
+import { actionLinks } from '/app/action-links';
 
 actionLinks.register('joinJitsiCall', function(/* message, params*/) {
 

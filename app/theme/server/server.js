@@ -1,7 +1,7 @@
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Logger } from 'meteor/rocketchat:logger';
+import { settings } from '/app/settings';
+import { Logger } from '/app/logger';
 import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import less from 'less';

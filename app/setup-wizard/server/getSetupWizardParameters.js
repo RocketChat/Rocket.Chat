@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasRole } from 'meteor/rocketchat:authorization';
-import { Settings } from 'meteor/rocketchat:models';
+import { hasRole } from '/app/authorization';
+import { Settings } from '/app/models';
 
 Meteor.methods({
 	getSetupWizardParameters() {

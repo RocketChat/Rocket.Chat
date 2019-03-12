@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Statistics } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Statistics } from '/app/models';
 import { API } from '../api';
 
 API.v1.addRoute('statistics', { authRequired: true }, {

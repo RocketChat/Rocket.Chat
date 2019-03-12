@@ -1,5 +1,5 @@
-import { settings } from 'meteor/rocketchat:settings';
-import { getUserPreference } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { getUserPreference } from '/app/utils';
 import { API } from '../api';
 
 const getInfoFromUserObject = (user) => {

@@ -1,7 +1,7 @@
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { actionLinks } from 'meteor/rocketchat:action-links';
-import { Rooms } from 'meteor/rocketchat:models';
+import { actionLinks } from '/app/action-links';
+import { Rooms } from '/app/models';
 import toastr from 'toastr';
 
 actionLinks.register('joinJitsiCall', function(message, params, instance) {

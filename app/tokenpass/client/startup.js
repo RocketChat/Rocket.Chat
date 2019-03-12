@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { ChannelSettings } from 'meteor/rocketchat:channel-settings';
-import { Rooms } from 'meteor/rocketchat:models';
+import { ChannelSettings } from '/app/channel-settings';
+import { Rooms } from '/app/models';
 
 Meteor.startup(function() {
 	ChannelSettings.addOption({

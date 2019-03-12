@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { Subscriptions } from '/app/models';
 
 Template.tokenChannelsList.helpers({
 	rooms() {

@@ -3,9 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
-import { modal } from 'meteor/rocketchat:ui-utils';
-import { t, handleError } from 'meteor/rocketchat:utils';
+import { hasAllPermission } from '/app/authorization';
+import { modal } from '/app/ui-utils';
+import { t, handleError } from '/app/utils';
 import { ChatOAuthApps } from '../collection';
 import toastr from 'toastr';
 

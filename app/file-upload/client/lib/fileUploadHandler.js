@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { FileUploadBase } from '../../lib/FileUploadBase';
-import { Uploads, Avatars } from 'meteor/rocketchat:models';
+import { Uploads, Avatars } from '/app/models';
 import { FileUpload } from '../../lib/FileUpload';
 
 new UploadFS.Store({

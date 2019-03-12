@@ -1,4 +1,4 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { callbacks } from '/app/callbacks';
 
 import { metrics } from './lib/metrics';
 import StatsTracker from './lib/statsTracker';

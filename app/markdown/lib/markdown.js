@@ -5,8 +5,8 @@
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 import { marked } from './parser/marked/marked.js';
 import { original } from './parser/original/original.js';
 

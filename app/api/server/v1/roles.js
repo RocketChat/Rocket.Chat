@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Roles } from 'meteor/rocketchat:models';
+import { Roles } from '/app/models';
 import { API } from '../api';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {

@@ -1,9 +1,9 @@
 import os from 'os';
 import { HTTP } from 'meteor/http';
-import { Settings } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { Info } from 'meteor/rocketchat:utils';
-import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
+import { Settings } from '/app/models';
+import { settings } from '/app/settings';
+import { Info } from '/app/utils';
+import { getWorkspaceAccessToken } from '/app/cloud';
 import { MongoInternals } from 'meteor/mongo';
 
 export default () => {

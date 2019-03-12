@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Rooms, Users } from 'meteor/rocketchat:models';
+import { Migrations } from '/app/migrations';
+import { Rooms, Users } from '/app/models';
 
 Migrations.add({
 	version: 77,

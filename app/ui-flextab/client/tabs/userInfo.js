@@ -6,11 +6,11 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
-import { DateFormat } from 'meteor/rocketchat:lib';
-import { popover } from 'meteor/rocketchat:ui-utils';
-import { templateVarHandler } from 'meteor/rocketchat:utils';
-import { RoomRoles, UserRoles, Roles } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { DateFormat } from '/app/lib';
+import { popover } from '/app/ui-utils';
+import { templateVarHandler } from '/app/utils';
+import { RoomRoles, UserRoles, Roles } from '/app/models';
+import { settings } from '/app/settings';
 import { getActions } from './userActions';
 
 const more = function() {

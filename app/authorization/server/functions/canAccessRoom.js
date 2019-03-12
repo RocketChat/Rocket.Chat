@@ -1,5 +1,5 @@
-import { settings } from 'meteor/rocketchat:settings';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Subscriptions } from '/app/models';
 import { hasPermission } from './hasPermission';
 
 export const roomAccessValidators = [

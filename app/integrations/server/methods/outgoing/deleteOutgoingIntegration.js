@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { IntegrationHistory, Integrations } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { IntegrationHistory, Integrations } from '/app/models';
 
 Meteor.methods({
 	deleteOutgoingIntegration(integrationId) {

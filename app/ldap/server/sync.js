@@ -1,15 +1,15 @@
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { RocketChatFile } from 'meteor/rocketchat:file';
-import { settings } from 'meteor/rocketchat:settings';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { Users } from 'meteor/rocketchat:models';
-import { Logger } from 'meteor/rocketchat:logger';
-import { _setRealName, _setUsername } from 'meteor/rocketchat:lib';
-import { templateVarHandler } from 'meteor/rocketchat:utils';
+import { RocketChatFile } from '/app/file';
+import { settings } from '/app/settings';
+import { Notifications } from '/app/notifications';
+import { Users } from '/app/models';
+import { Logger } from '/app/logger';
+import { _setRealName, _setUsername } from '/app/lib';
+import { templateVarHandler } from '/app/utils';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { FileUpload } from '/app/file-upload';
 import _ from 'underscore';
 import LDAP from './ldap';
 

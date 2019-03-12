@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
+import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '/app/models';
+import { hasPermission } from '/app/authorization';
+import { composeMessageObjectWithUser } from '/app/utils';
 import { API } from '../api';
 import _ from 'underscore';
 

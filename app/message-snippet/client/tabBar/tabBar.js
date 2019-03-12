@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from 'meteor/rocketchat:settings';
-import { TabBar } from 'meteor/rocketchat:ui-utils';
+import { settings } from '/app/settings';
+import { TabBar } from '/app/ui-utils';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

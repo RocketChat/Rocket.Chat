@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Subscriptions, Messages } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
+import { Subscriptions, Messages } from '/app/models';
+import { callbacks } from '/app/callbacks';
+import { settings } from '/app/settings';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { CachedCollectionManager } from '/app/ui-cached-collection';
 import _ from 'underscore';
 import mem from 'mem';
 

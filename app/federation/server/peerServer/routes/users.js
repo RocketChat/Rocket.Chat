@@ -1,5 +1,5 @@
-import { API } from 'meteor/rocketchat:api';
-import { Users } from 'meteor/rocketchat:models';
+import { API } from '/app/api';
+import { Users } from '/app/models';
 
 import { FederatedUser } from '../../federatedResources';
 import peerServer from '../peerServer';

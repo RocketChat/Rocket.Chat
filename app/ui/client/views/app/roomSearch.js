@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { roomTypes } from 'meteor/rocketchat:utils';
+import { roomTypes } from '/app/utils';
 
 Template.roomSearch.helpers({
 	roomIcon() {

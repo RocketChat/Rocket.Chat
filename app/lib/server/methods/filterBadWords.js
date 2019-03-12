@@ -1,6 +1,6 @@
 import Filter from 'bad-words';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 
 callbacks.add('beforeSaveMessage', function(message) {
 

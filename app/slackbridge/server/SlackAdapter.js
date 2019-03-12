@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
-import { Messages, Rooms, Users } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { getAvatarUrlFromUsername } from '/app/utils';
+import { Messages, Rooms, Users } from '/app/models';
+import { settings } from '/app/settings';
 import {
 	deleteMessage,
 	updateMessage,
@@ -11,9 +11,9 @@ import {
 	archiveRoom,
 	unarchiveRoom,
 	sendMessage,
-} from 'meteor/rocketchat:lib';
-import { saveRoomName, saveRoomTopic } from 'meteor/rocketchat:channel-settings';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
+} from '/app/lib';
+import { saveRoomName, saveRoomTopic } from '/app/channel-settings';
+import { FileUpload } from '/app/file-upload';
 import { logger } from './logger';
 import _ from 'underscore';
 import url from 'url';

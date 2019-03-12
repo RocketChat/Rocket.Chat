@@ -1,7 +1,7 @@
 
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Messages, Rooms } from 'meteor/rocketchat:models';
-import { deleteRoom } from 'meteor/rocketchat:lib';
+import { callbacks } from '/app/callbacks';
+import { Messages, Rooms } from '/app/models';
+import { deleteRoom } from '/app/lib';
 /**
  * We need to propagate the writing of new message in a thread to the linking
  * system message

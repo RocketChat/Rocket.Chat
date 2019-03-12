@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { LoggerManager } from 'meteor/rocketchat:logger';
-import { settings } from 'meteor/rocketchat:settings';
+import { LoggerManager } from '/app/logger';
+import { settings } from '/app/settings';
 
 settings.get('Log_Package', function(key, value) {
 	return LoggerManager.showPackage = value;

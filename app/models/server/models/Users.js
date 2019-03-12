@@ -22,7 +22,7 @@ export class Users extends Base {
 
 	loadSettings() {
 		Meteor.startup(async() => {
-			const { settings } = await import('meteor/rocketchat:settings');
+			const { settings } = await import('/app/settings');
 			this.settings = settings;
 		});
 	}

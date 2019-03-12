@@ -1,4 +1,4 @@
-import { OAuthApps } from 'meteor/rocketchat:models';
+import { OAuthApps } from '/app/models';
 
 if (!OAuthApps.findOne('zapier')) {
 	OAuthApps.insert({

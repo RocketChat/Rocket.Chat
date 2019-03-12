@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Messages } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Rooms, Messages } from '/app/models';
+import { callbacks } from '/app/callbacks';
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {

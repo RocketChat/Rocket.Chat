@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { MessageTypes } from '/app/ui-utils';
 
 Meteor.startup(function() {
 	MessageTypes.registerType({

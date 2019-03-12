@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasRole } from 'meteor/rocketchat:authorization';
-import * as Models from 'meteor/rocketchat:models';
+import { hasRole } from '/app/authorization';
+import * as Models from '/app/models';
 import _ from 'underscore';
 
 Meteor.methods({

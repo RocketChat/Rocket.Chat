@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 let usernameBlackList = [];
 

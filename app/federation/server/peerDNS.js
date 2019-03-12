@@ -1,6 +1,6 @@
 import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
-import { FederationDNSCache } from 'meteor/rocketchat:models';
+import { FederationDNSCache } from '/app/models';
 
 import { logger } from './logger';
 import peerHTTP from './peerHTTP';

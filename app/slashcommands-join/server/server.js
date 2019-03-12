@@ -7,9 +7,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { slashCommands } from 'meteor/rocketchat:utils';
+import { Rooms, Subscriptions } from '/app/models';
+import { Notifications } from '/app/notifications';
+import { slashCommands } from '/app/utils';
 
 slashCommands.add('join', function Join(command, params, item) {
 

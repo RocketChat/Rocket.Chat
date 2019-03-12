@@ -1,5 +1,5 @@
 import { Random } from 'meteor/random';
-import { Messages, Rooms, Users } from 'meteor/rocketchat:models';
+import { Messages, Rooms, Users } from '/app/models';
 
 export class AppMessagesConverter {
 	constructor(orch) {

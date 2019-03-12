@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
-import { Button } from 'meteor/rocketchat:ui';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { Button } from '/app/ui';
+import { callbacks } from '/app/callbacks';
 import _ from 'underscore';
 
 Template.username.onCreated(function() {

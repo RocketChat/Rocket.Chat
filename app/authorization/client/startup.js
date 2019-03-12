@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
+import { CachedCollectionManager } from '/app/ui-cached-collection';
 import { hasAllPermission } from './hasPermission';
 
 Meteor.startup(async() => {
-	const { AdminBox } = await import('meteor/rocketchat:ui-utils');
+	const { AdminBox } = await import('/app/ui-utils');
 
 	CachedCollectionManager.onLogin(() => Meteor.subscribe('roles'));
 

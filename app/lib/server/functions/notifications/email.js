@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { settings } from 'meteor/rocketchat:settings';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { metrics } from 'meteor/rocketchat:metrics';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import * as Mailer from '/app/mailer';
+import { settings } from '/app/settings';
+import { roomTypes } from '/app/utils';
+import { metrics } from '/app/metrics';
+import { callbacks } from '/app/callbacks';
 
 let advice = '';
 let goToMessage = '';

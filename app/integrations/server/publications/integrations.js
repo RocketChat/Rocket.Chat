@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Integrations } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Integrations } from '/app/models';
 
 Meteor.publish('integrations', function _integrationPublication() {
 	if (!this.userId) {

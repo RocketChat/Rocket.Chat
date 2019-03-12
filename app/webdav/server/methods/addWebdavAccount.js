@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
-import { WebdavAccounts } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { WebdavAccounts } from '/app/models';
 import { createClient } from 'webdav';
 
 Meteor.methods({

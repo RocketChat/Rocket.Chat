@@ -1,4 +1,4 @@
-import { Rooms } from 'meteor/rocketchat:models';
+import { Rooms } from '/app/models';
 import moment from 'moment';
 
 /**

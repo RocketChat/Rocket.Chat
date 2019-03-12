@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { ChatSubscription } from 'meteor/rocketchat:models';
-import { getUserPreference } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { ChatSubscription } from '/app/models';
+import { getUserPreference } from '/app/utils';
+import { settings } from '/app/settings';
 Template.ThreadList.helpers({
 	rooms() {
 		const user = Meteor.userId();

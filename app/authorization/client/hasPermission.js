@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import * as Models from 'meteor/rocketchat:models';
+import * as Models from '/app/models';
 import { ChatPermissions } from './lib/ChatPermissions';
 
 function atLeastOne(permissions = [], scope) {

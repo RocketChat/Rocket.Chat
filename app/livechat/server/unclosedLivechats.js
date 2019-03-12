@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
 import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
 import { Livechat } from './lib/Livechat';
 

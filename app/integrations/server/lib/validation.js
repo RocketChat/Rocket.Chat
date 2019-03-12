@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Babel } from 'meteor/babel-compiler';
-import { Rooms, Users, Subscriptions } from 'meteor/rocketchat:models';
-import { hasPermission, hasAllPermission } from 'meteor/rocketchat:authorization';
+import { Rooms, Users, Subscriptions } from '/app/models';
+import { hasPermission, hasAllPermission } from '/app/authorization';
 import { integrations } from '../../lib/rocketchat';
 import _ from 'underscore';
 import s from 'underscore.string';

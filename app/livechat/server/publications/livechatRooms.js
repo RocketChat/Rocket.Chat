@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Rooms } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Rooms } from '/app/models';
 
 Meteor.publish('livechat:rooms', function(filter = {}, offset = 0, limit = 20) {
 	if (!this.userId) {

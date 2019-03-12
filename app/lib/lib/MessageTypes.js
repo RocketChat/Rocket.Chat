@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { MessageTypes } from 'meteor/rocketchat:ui-utils';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { MessageTypes } from '/app/ui-utils';
+import { callbacks } from '/app/callbacks';
 
 Meteor.startup(function() {
 	MessageTypes.registerType({

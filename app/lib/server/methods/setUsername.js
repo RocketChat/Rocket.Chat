@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
+import { callbacks } from '/app/callbacks';
 import { setUsername, checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
 import _ from 'underscore';

@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
-import { getUserPreference, handleError, t } from 'meteor/rocketchat:utils';
-import { popover } from 'meteor/rocketchat:ui-utils';
-import { CustomSounds } from 'meteor/rocketchat:custom-sounds';
-import { ChatSubscription } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { getUserPreference, handleError, t } from '/app/utils';
+import { popover } from '/app/ui-utils';
+import { CustomSounds } from '/app/custom-sounds';
+import { ChatSubscription } from '/app/models';
 
 const notificationLabels = {
 	all: 'All_messages',

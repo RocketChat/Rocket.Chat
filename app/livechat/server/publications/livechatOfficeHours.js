@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { LivechatOfficeHour } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { LivechatOfficeHour } from '/app/models';
 
 Meteor.publish('livechat:officeHour', function() {
 	if (!hasPermission(this.userId, 'view-l-room')) {

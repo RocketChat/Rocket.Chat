@@ -1,4 +1,4 @@
-import { handleError } from 'meteor/rocketchat:utils';
+import { handleError } from '/app/utils';
 import moment from 'moment';
 
 

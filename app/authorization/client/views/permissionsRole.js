@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from 'meteor/rocketchat:utils';
-import { Roles } from 'meteor/rocketchat:models';
+import { t, handleError } from '/app/utils';
+import { Roles } from '/app/models';
 import { hasAllPermission } from '../hasPermission';
 import toastr from 'toastr';
 
@@ -114,7 +114,7 @@ Template.permissionsRole.helpers({
 Template.permissionsRole.events({
 	async 'click .remove-user'(e, instance) {
 		if (!_modal) {
-			const { modal } = await import('meteor/rocketchat:ui-utils');
+			const { modal } = await import('/app/ui-utils');
 			_modal = modal;
 		}
 		e.preventDefault();

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Slingshot } from 'meteor/edgee:slingshot';
-import { settings } from 'meteor/rocketchat:settings';
-import { fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { fileUploadIsValidContentType } from '/app/utils';
 
 import filesize from 'filesize';
 

@@ -1,10 +1,10 @@
-import { AccountsServer } from 'meteor/rocketchat:accounts';
-import { Users } from 'meteor/rocketchat:models';
+import { AccountsServer } from '/app/accounts';
+import { Users } from '/app/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { GrantError } from './error';
 import Providers from './providers';
-import { t } from 'meteor/rocketchat:utils';
+import { t } from '/app/utils';
 
 const setAvatarFromUrl = (userId, url) => new Promise((resolve, reject) => {
 	Meteor.runAsUser(userId, () => {

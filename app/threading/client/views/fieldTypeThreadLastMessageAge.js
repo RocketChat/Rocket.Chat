@@ -1,4 +1,4 @@
-import { registerFieldTemplate } from 'meteor/rocketchat:message-attachments';
+import { registerFieldTemplate } from '/app/message-attachments';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
 

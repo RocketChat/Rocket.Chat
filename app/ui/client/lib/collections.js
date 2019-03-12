@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from 'meteor/rocketchat:settings';
-import { CachedChatRoom, CachedChatSubscription } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { CachedChatRoom, CachedChatSubscription } from '/app/models';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

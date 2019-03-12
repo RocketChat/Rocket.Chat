@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { handleError } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { handleError } from '/app/utils';
+import { settings } from '/app/settings';
 
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {

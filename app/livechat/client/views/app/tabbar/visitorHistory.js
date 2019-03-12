@@ -1,4 +1,4 @@
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { ChatRoom } from '/app/models';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';

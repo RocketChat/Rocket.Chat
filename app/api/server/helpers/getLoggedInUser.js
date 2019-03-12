@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { Users } from 'meteor/rocketchat:models';
+import { Users } from '/app/models';
 import { API } from '../api';
 
 API.helperMethods.set('getLoggedInUser', function _getLoggedInUser() {

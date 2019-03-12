@@ -1,6 +1,6 @@
 /* eslint no-unused-vars: [2, { "args": "none" }]*/
 import SearchLogger from '../logger/logger';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 /**
  * Setting Object in order to manage settings loading for providers and admin ui display

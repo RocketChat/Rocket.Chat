@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { TabBar } from 'meteor/rocketchat:ui-utils';
+import { settings } from '/app/settings';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { TabBar } from '/app/ui-utils';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

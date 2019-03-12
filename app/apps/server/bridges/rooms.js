@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
+import { Rooms, Subscriptions, Users } from '/app/models';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 export class AppRoomBridge {
@@ -102,7 +102,7 @@ export class AppRoomBridge {
 		console.log(`The App ${ appId } is updating a room.`);
 
 		if (!this.addUserToRoom) {
-			const { addUserToRoom } = await import('meteor/rocketchat:lib');
+			const { addUserToRoom } = await import('/app/lib');
 			this.addUserToRoom = addUserToRoom;
 		}
 

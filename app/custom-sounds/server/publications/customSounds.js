@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { CustomSounds } from 'meteor/rocketchat:models';
+import { CustomSounds } from '/app/models';
 import s from 'underscore.string';
 
 Meteor.publish('customSounds', function(filter, limit) {

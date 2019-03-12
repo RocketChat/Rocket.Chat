@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Rooms, Messages } from 'meteor/rocketchat:models';
+import { Rooms, Messages } from '/app/models';
 
 export const saveRoomDescription = function(rid, roomDescription, user) {
 	if (!Match.test(rid, String)) {

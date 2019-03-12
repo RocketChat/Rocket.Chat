@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from 'meteor/rocketchat:utils';
+import { t, handleError } from '/app/utils';
 import { AgentUsers } from '../../collections/AgentUsers';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';

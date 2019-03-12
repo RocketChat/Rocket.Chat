@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { lazyloadtick } from 'meteor/rocketchat:lazy-load';
+import { lazyloadtick } from '/app/lazy-load';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { SideNav, menu } from 'meteor/rocketchat:ui-utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
-import { Users } from 'meteor/rocketchat:models';
+import { SideNav, menu } from '/app/ui-utils';
+import { settings } from '/app/settings';
+import { roomTypes, getUserPreference } from '/app/utils';
+import { Users } from '/app/models';
 
 Template.sideNav.helpers({
 	flexTemplate() {

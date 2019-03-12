@@ -3,9 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from 'meteor/rocketchat:utils';
-import { Roles } from 'meteor/rocketchat:models';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { t, handleError } from '/app/utils';
+import { Roles } from '/app/models';
+import { hasAtLeastOnePermission } from '/app/authorization';
 import toastr from 'toastr';
 import s from 'underscore.string';
 

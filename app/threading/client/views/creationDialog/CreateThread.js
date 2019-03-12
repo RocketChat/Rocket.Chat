@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { roomTypes } from '/app/utils';
+import { callbacks } from '/app/callbacks';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { ChatRoom, ChatSubscription } from 'meteor/rocketchat:models';
+import { ChatRoom, ChatSubscription } from '/app/models';
 import { Blaze } from 'meteor/blaze';
-import { call } from 'meteor/rocketchat:ui-utils';
+import { call } from '/app/ui-utils';
 
 import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { Message } from 'meteor/rocketchat:ui-utils';
+import { hasPermission } from '/app/authorization';
+import { Users, Messages } from '/app/models';
+import { settings } from '/app/settings';
+import { Message } from '/app/ui-utils';
 import _ from 'underscore';
 import moment from 'moment';
-import * as Mailer from 'meteor/rocketchat:mailer';
+import * as Mailer from '/app/mailer';
 
 Meteor.methods({
 	'mailMessages'(data) {

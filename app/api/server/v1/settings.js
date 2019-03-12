@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { Settings } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Settings } from '/app/models';
+import { hasPermission } from '/app/authorization';
 import { API } from '../api';
 import _ from 'underscore';
 

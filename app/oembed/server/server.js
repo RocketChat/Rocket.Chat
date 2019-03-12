@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTPInternals } from 'meteor/http';
 import { changeCase } from 'meteor/konecty:change-case';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { OEmbedCache, Messages } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { OEmbedCache, Messages } from '/app/models';
 import _ from 'underscore';
 import URL from 'url';
 import querystring from 'querystring';

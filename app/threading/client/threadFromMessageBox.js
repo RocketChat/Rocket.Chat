@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { messageBox, modal } from 'meteor/rocketchat:ui-utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { messageBox, modal } from '/app/ui-utils';
+import { settings } from '/app/settings';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {

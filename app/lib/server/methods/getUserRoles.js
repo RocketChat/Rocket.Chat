@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles, Users } from 'meteor/rocketchat:models';
+import { Roles, Users } from '/app/models';
 import _ from 'underscore';
 
 Meteor.methods({

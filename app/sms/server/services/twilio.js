@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { SMS } from '../SMS';
 import twilio from 'twilio';
 

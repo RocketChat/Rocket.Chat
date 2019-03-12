@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, roomTypes, handleError } from 'meteor/rocketchat:utils';
-import { TabBar, fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
-import { ChatSubscription, Rooms, ChatRoom } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { t, roomTypes, handleError } from '/app/utils';
+import { TabBar, fireGlobalEvent } from '/app/ui-utils';
+import { ChatSubscription, Rooms, ChatRoom } from '/app/models';
+import { settings } from '/app/settings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { emoji } from 'meteor/rocketchat:emoji';
-import { Markdown } from 'meteor/rocketchat:markdown';
+import { emoji } from '/app/emoji';
+import { Markdown } from '/app/markdown';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 

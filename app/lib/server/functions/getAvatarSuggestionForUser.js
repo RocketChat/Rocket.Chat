@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { HTTP } from 'meteor/http';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 export function getAvatarSuggestionForUser(user) {
 	check(user, Object);

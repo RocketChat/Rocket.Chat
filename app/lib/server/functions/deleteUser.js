@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { Users, Subscriptions, Messages, Rooms, Integrations } from 'meteor/rocketchat:models';
-import { hasRole, getUsersInRole } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { FileUpload } from '/app/file-upload';
+import { Users, Subscriptions, Messages, Rooms, Integrations } from '/app/models';
+import { hasRole, getUsersInRole } from '/app/authorization';
+import { settings } from '/app/settings';
+import { Notifications } from '/app/notifications';
 
 export const deleteUser = function(userId) {
 	const user = Users.findOneById(userId, {

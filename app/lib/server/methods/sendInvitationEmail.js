@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
+import * as Mailer from '/app/mailer';
+import { hasPermission } from '/app/authorization';
+import { settings } from '/app/settings';
 
 let html = '';
 Meteor.startup(() => {

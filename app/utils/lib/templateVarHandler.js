@@ -4,7 +4,7 @@ let logger;
 
 if (Meteor.isServer) {
 	Meteor.startup(async() => {
-		const { Logger } = await import('meteor/rocketchat:logger');
+		const { Logger } = await import('/app/logger');
 		logger = new Logger('TemplateVarHandler', {});
 	});
 }

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Messages, Subscriptions } from 'meteor/rocketchat:models';
-import { roomTypes, getValidRoomName } from 'meteor/rocketchat:utils';
+import { Rooms, Messages, Subscriptions } from '/app/models';
+import { roomTypes, getValidRoomName } from '/app/utils';
 
 export const saveRoomName = function(rid, displayName, user, sendMessage = true) {
 	const room = Rooms.findOneById(rid);

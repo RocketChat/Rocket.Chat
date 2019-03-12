@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { t } from 'meteor/rocketchat:utils';
-import { modal } from 'meteor/rocketchat:ui-utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasRole } from 'meteor/rocketchat:authorization';
+import { t } from '/app/utils';
+import { modal } from '/app/ui-utils';
+import { settings } from '/app/settings';
+import { hasRole } from '/app/authorization';
 
 Meteor.startup(function() {
 	Tracker.autorun(function(c) {

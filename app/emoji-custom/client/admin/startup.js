@@ -1,5 +1,5 @@
-import { AdminBox } from 'meteor/rocketchat:ui-utils';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { AdminBox } from '/app/ui-utils';
+import { hasPermission } from '/app/authorization';
 
 AdminBox.addOption({
 	href: 'emoji-custom',

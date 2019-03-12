@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { popover } from 'meteor/rocketchat:ui-utils';
-import { getUserPreference } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { popover } from '/app/ui-utils';
+import { getUserPreference } from '/app/utils';
+import { settings } from '/app/settings';
 
 const checked = function(prop, field) {
 	const userId = Meteor.userId();

@@ -3,12 +3,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from 'meteor/rocketchat:utils';
-import { call, modal } from 'meteor/rocketchat:ui-utils';
-import { hasAllPermission, hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { ChannelSettings } from 'meteor/rocketchat:channel-settings';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { t, handleError } from '/app/utils';
+import { call, modal } from '/app/ui-utils';
+import { hasAllPermission, hasAtLeastOnePermission } from '/app/authorization';
+import { ChannelSettings } from '/app/channel-settings';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 import { AdminChatRoom } from './adminRooms';
 import toastr from 'toastr';
 

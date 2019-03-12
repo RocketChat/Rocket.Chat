@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
-import * as Models from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from 'meteor/rocketchat:lib';
+import * as Models from '/app/models';
+import { settings } from '/app/settings';
+import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '/app/lib';
 import { logger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
 import _ from 'underscore';

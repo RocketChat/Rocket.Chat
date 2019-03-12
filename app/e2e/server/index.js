@@ -1,5 +1,5 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { callbacks } from '/app/callbacks';
+import { Notifications } from '/app/notifications';
 
 import './settings';
 import './methods/setUserPublicAndPivateKeys';

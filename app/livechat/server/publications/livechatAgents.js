@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission, getUsersInRole } from 'meteor/rocketchat:authorization';
+import { hasPermission, getUsersInRole } from '/app/authorization';
 
 Meteor.publish('livechat:agents', function() {
 	if (!this.userId) {

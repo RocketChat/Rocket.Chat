@@ -1,4 +1,4 @@
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { settings } from 'meteor/rocketchat:settings';
+import * as Mailer from '/app/mailer';
+import { settings } from '/app/settings';
 
 Mailer.setSettings(settings);

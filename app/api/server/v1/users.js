@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Users, Subscriptions } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
-import { getURL } from 'meteor/rocketchat:utils';
+import { Users, Subscriptions } from '/app/models';
+import { hasPermission } from '/app/authorization';
+import { settings } from '/app/settings';
+import { getURL } from '/app/utils';
 import {
 	validateCustomFields,
 	saveUser,
@@ -12,7 +12,7 @@ import {
 	checkUsernameAvailability,
 	setUserAvatar,
 	saveCustomFields,
-} from 'meteor/rocketchat:lib';
+} from '/app/lib';
 import { API } from '../api';
 import _ from 'underscore';
 import Busboy from 'busboy';

@@ -1,4 +1,4 @@
-import { Users } from 'meteor/rocketchat:models';
+import { Users } from '/app/models';
 
 import FederatedResource from './FederatedResource';
 

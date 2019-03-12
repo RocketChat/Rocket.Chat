@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
 import { deleteUser } from '../functions';
 import s from 'underscore.string';
 

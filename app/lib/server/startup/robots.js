@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 Meteor.startup(function() {
 	return WebApp.connectHandlers.use('/robots.txt', Meteor.bindEnvironment(function(req, res/* , next*/) {

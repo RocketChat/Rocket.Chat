@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
-import { t, handleError } from 'meteor/rocketchat:utils';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { t, handleError } from '/app/utils';
 import _ from 'underscore';
 import toastr from 'toastr';
 

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { MessageAction, modal } from 'meteor/rocketchat:ui-utils';
-import { t, handleError } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { MessageAction, modal } from '/app/ui-utils';
+import { t, handleError } from '/app/utils';
+import { settings } from '/app/settings';
+import { Subscriptions } from '/app/models';
+import { hasAtLeastOnePermission } from '/app/authorization';
 
 Meteor.startup(function() {
 	MessageAction.addButton({

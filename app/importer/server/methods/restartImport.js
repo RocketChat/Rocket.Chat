@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import {
 	Importers,
 	ProgressStep,
-} from 'meteor/rocketchat:importer';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+} from '/app/importer';
+import { hasPermission } from '/app/authorization';
 
 Meteor.methods({
 	restartImport(key) {

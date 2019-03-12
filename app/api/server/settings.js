@@ -1,4 +1,4 @@
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 
 settings.addGroup('General', function() {
 	this.section('REST API', function() {

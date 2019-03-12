@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
+import { getAvatarUrlFromUsername } from '/app/utils';
 
 Template.avatar.helpers({
 	src() {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms } from 'meteor/rocketchat:models';
+import { Rooms } from '/app/models';
 import { API } from '../api';
 
 API.v1.addRoute('video-conference/jitsi.update-timeout', { authRequired: true }, {

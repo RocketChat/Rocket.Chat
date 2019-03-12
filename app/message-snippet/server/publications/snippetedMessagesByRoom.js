@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Messages } from 'meteor/rocketchat:models';
+import { Users, Messages } from '/app/models';
 
 Meteor.publish('snippetedMessages', function(rid, limit = 50) {
 	if (typeof this.userId === 'undefined' || this.userId === null) {

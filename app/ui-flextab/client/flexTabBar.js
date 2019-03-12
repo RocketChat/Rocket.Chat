@@ -3,9 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
-import { popover, TabBar, Layout } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { hasAllPermission } from '/app/authorization';
+import { popover, TabBar, Layout } from '/app/ui-utils';
+import { t } from '/app/utils';
 import _ from 'underscore';
 
 const commonHelpers = {

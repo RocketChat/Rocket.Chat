@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
-import { API } from 'meteor/rocketchat:api';
-import { SMS } from 'meteor/rocketchat:sms';
+import { Rooms, LivechatVisitors } from '/app/models';
+import { API } from '/app/api';
+import { SMS } from '/app/sms';
 import { Livechat } from '../../../server/lib/Livechat';
 
 API.v1.addRoute('livechat/sms-incoming/:service', {

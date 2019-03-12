@@ -1,4 +1,4 @@
-import { Settings } from 'meteor/rocketchat:models';
+import { Settings } from '/app/models';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 
 export class AppSettingsConverter {

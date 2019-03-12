@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from 'meteor/rocketchat:settings';
-import { Rooms, Messages, Users, SmarshHistory } from 'meteor/rocketchat:models';
-import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { settings } from '/app/settings';
+import { Rooms, Messages, Users, SmarshHistory } from '/app/models';
+import { MessageTypes } from '/app/ui-utils';
 import { smarsh } from '../lib/rocketchat';
 import _ from 'underscore';
 import moment from 'moment';

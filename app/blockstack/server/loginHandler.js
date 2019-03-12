@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
-import { setUserAvatar } from 'meteor/rocketchat:lib';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
+import { setUserAvatar } from '/app/lib';
 import { updateOrCreateUser } from './userHandler';
 import { handleAccessToken } from './tokenHandler';
 import { logger } from './logger';

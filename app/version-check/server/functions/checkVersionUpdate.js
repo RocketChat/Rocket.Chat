@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from 'meteor/rocketchat:settings';
-import { Info } from 'meteor/rocketchat:utils';
-import { Roles, Users } from 'meteor/rocketchat:models';
+import { settings } from '/app/settings';
+import { Info } from '/app/utils';
+import { Roles, Users } from '/app/models';
 import semver from 'semver';
 import logger from '../logger';
 import getNewUpdates from './getNewUpdates';

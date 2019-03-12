@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { settings } from 'meteor/rocketchat:settings';
-import { modal, TabBar } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
+import { settings } from '/app/settings';
+import { modal, TabBar } from '/app/ui-utils';
+import { t } from '/app/utils';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Subscriptions, Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
+import { hasPermission } from '/app/authorization';
+import { Subscriptions, Messages } from '/app/models';
+import { settings } from '/app/settings';
+import { composeMessageObjectWithUser } from '/app/utils';
 import _ from 'underscore';
 
 Meteor.methods({

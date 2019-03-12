@@ -1,5 +1,5 @@
-import { Users, Rooms } from 'meteor/rocketchat:models';
-import { createRoom, addUserToRoom } from 'meteor/rocketchat:lib';
+import { Users, Rooms } from '/app/models';
+import { createRoom, addUserToRoom } from '/app/lib';
 
 export default function handleJoinedChannel(args) {
 	const user = Users.findOne({

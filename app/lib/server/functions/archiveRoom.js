@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Rooms, Subscriptions } from '/app/models';
+import { callbacks } from '/app/callbacks';
 
 export const archiveRoom = function(rid) {
 	Rooms.archiveById(rid);

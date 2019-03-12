@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { roomTypes } from 'meteor/rocketchat:utils';
-import { Rooms } from 'meteor/rocketchat:models';
-import { hasPermission, addRoomAccessValidator } from 'meteor/rocketchat:authorization';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { settings } from 'meteor/rocketchat:settings';
+import { roomTypes } from '/app/utils';
+import { Rooms } from '/app/models';
+import { hasPermission, addRoomAccessValidator } from '/app/authorization';
+import { callbacks } from '/app/callbacks';
+import { settings } from '/app/settings';
 
 Meteor.startup(() => {
 	roomTypes.setRoomFind('l', (_id) => Rooms.findLivechatById(_id).fetch());

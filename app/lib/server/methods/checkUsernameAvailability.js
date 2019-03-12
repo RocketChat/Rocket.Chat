@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import { checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
 

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Apps } from 'meteor/rocketchat:apps';
+import { Messages, Rooms } from '/app/models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { Apps } from '/app/apps';
 
 export const updateMessage = function(message, user, originalMessage) {
 	if (!originalMessage) {

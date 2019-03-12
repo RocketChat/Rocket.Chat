@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import s from 'underscore.string';
 
 /**

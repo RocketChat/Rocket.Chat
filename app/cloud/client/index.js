@@ -3,8 +3,8 @@ import './admin/cloud';
 
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { AdminBox } from 'meteor/rocketchat:ui-utils';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { AdminBox } from '/app/ui-utils';
+import { hasAtLeastOnePermission } from '/app/authorization';
 
 FlowRouter.route('/admin/cloud', {
 	name: 'cloud-config',

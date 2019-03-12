@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Rooms, Messages, Subscriptions } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Rooms, Messages, Subscriptions } from '/app/models';
 
 Meteor.methods({
 	'livechat:removeRoom'(rid) {

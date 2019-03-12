@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { menu } from 'meteor/rocketchat:ui-utils';
+import { menu } from '/app/ui-utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
 const emitter = new EventEmitter();

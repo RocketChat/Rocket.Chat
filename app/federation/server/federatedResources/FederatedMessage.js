@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { sendMessage, updateMessage } from 'meteor/rocketchat:lib';
-import { Messages, Rooms, Users } from 'meteor/rocketchat:models';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { sendMessage, updateMessage } from '/app/lib';
+import { Messages, Rooms, Users } from '/app/models';
+import { FileUpload } from '/app/file-upload';
 
 import FederatedResource from './FederatedResource';
 import FederatedRoom from './FederatedRoom';

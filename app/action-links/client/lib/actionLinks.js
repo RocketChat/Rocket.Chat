@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { handleError } from 'meteor/rocketchat:utils';
+import { handleError } from '/app/utils';
 import { actionLinks } from '../../both/lib/actionLinks';
 // Action Links Handler. This method will be called off the client.
 

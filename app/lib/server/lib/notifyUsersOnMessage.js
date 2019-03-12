@@ -1,9 +1,9 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
-import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Rooms, Subscriptions } from '/app/models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 
 /**
  * Chechs if a messages contains a user highlight

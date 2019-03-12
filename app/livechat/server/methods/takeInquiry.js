@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { hasPermission } from '/app/authorization';
+import { Users, Rooms, Subscriptions, Messages } from '/app/models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from '../lib/Livechat';
 

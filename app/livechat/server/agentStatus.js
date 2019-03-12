@@ -1,4 +1,4 @@
-import { hasRole } from 'meteor/rocketchat:authorization';
+import { hasRole } from '/app/authorization';
 import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
 import { Livechat } from './lib/Livechat';
 

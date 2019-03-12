@@ -3,13 +3,13 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { ChatSubscription } from 'meteor/rocketchat:models';
-import { KonchatNotification } from 'meteor/rocketchat:ui';
-import { settings } from 'meteor/rocketchat:settings';
-import { hasRole } from 'meteor/rocketchat:authorization';
-import { modal } from 'meteor/rocketchat:ui-utils';
-import { Users } from 'meteor/rocketchat:models';
-import { t, handleError, getUserPreference, roomTypes } from 'meteor/rocketchat:utils';
+import { ChatSubscription } from '/app/models';
+import { KonchatNotification } from '/app/ui';
+import { settings } from '/app/settings';
+import { hasRole } from '/app/authorization';
+import { modal } from '/app/ui-utils';
+import { Users } from '/app/models';
+import { t, handleError, getUserPreference, roomTypes } from '/app/utils';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 
 Template.livechat.helpers({

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { t, getURL } from 'meteor/rocketchat:utils';
-import { Subscriptions, WebdavAccounts } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { MessageAction, modal } from 'meteor/rocketchat:ui-utils';
+import { t, getURL } from '/app/utils';
+import { Subscriptions, WebdavAccounts } from '/app/models';
+import { settings } from '/app/settings';
+import { MessageAction, modal } from '/app/ui-utils';
 
 Meteor.startup(function() {
 
