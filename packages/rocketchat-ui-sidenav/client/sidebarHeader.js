@@ -163,7 +163,7 @@ const toolbarButtons = (user) => [{
 	},
 },
 {
-	name: t('Create_A_New_Channel'),
+	name: t('Create_new'),
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
 	action: (e) => {

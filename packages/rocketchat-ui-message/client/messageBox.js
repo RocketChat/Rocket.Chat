@@ -3,14 +3,20 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { settings } from 'meteor/rocketchat:settings';
-import { Markdown } from 'meteor/rocketchat:markdown';
 import { EmojiPicker } from 'meteor/rocketchat:emoji';
-import { KonchatNotification, fileUpload, chatMessages, ChatMessages } from 'meteor/rocketchat:ui';
-import { RoomManager, popover, messageBox, Layout } from 'meteor/rocketchat:ui-utils';
-import { ChatSubscription } from 'meteor/rocketchat:models';
-import { t, roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
 import { katex } from 'meteor/rocketchat:katex';
+import { Markdown } from 'meteor/rocketchat:markdown';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import {
+	AudioRecorder,
+	ChatMessages,
+	chatMessages,
+	fileUpload,
+	KonchatNotification,
+} from 'meteor/rocketchat:ui';
+import { Layout, messageBox, popover, RoomManager } from 'meteor/rocketchat:ui-utils';
+import { t, roomTypes, getUserPreference } from 'meteor/rocketchat:utils';
 import moment from 'moment';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
@@ -85,7 +91,7 @@ const formattingButtons = [
 
 function applyFormatting(event, instance) {
 	event.preventDefault();
-	const { input } = instance;
+	const { input } = chatMessages[RoomManager.openedRoom];
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 	const initText = input.value.slice(0, selectionStart);
 	const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -226,8 +232,7 @@ Template.messageBox.helpers({
 		return !Template.instance().sendIconDisabled.get();
 	},
 	isAudioMessageAllowed() {
-		return (navigator.mediaDevices || navigator.getUserMedia || navigator.webkitGetUserMedia ||
-			navigator.mozGetUserMedia || navigator.msGetUserMedia) &&
+		return AudioRecorder.isSupported() &&
 			settings.get('FileUpload_Enabled') &&
 			settings.get('Message_AudioRecorderEnabled') &&
 			(!settings.get('FileUpload_MediaTypeWhiteList') ||

@@ -125,8 +125,6 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 
 		const clearedObject = {
-			message: i.streamingOptions.get().message || '',
-			isAudioOnly:  i.streamingOptions.get().isAudioOnly || false,
 		};
 
 		Meteor.call('saveRoomSettings', this.rid, 'streamingOptions', clearedObject, function(err) {

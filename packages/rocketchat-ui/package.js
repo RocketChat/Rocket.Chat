@@ -40,4 +40,6 @@ Package.onUse(function(api) {
 		'rocketchat:emoji',
 	]);
 	api.mainModule('client/index.js', 'client');
+	api.addAssets('client/public/mp3-realtime-worker.js', 'client');
+	api.addAssets('client/public/lame.min.js', 'client');
 });

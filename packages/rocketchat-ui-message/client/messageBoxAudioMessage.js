@@ -1,167 +1,167 @@
-import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
-import { TAPi18n } from 'meteor/tap:i18n';
 import { Template } from 'meteor/templating';
 import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
 import { AudioRecorder, chatMessages } from 'meteor/rocketchat:ui';
-import { RoomManager } from 'meteor/rocketchat:ui-utils';
-import _ from 'underscore';
+import { call } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
 import './messageBoxAudioMessage.html';
 
+const startRecording = () => new Promise((resolve) => AudioRecorder.start(resolve));
 
-let audioMessageIntervalId;
+const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
+
+const registerUploadProgress = (upload) => {
+	const uploads = Session.get('uploading') || [];
+	Session.set('uploading', [...uploads, {
+		id: upload.id,
+		name: upload.getFileName(),
+		percentage: 0,
+	}]);
+};
+
+const updateUploadProgress = (upload, { progress, error: { message: error } = {} }) => {
+	const uploads = Session.get('uploading') || [];
+	const item = uploads.find(({ id }) => id === upload.id) || {
+		id: upload.id,
+		name: upload.getFileName(),
+	};
+	item.percentage = Math.round(progress * 100) || 0;
+	item.error = error;
+	Session.set('uploading', uploads);
+};
+
+const unregisterUploadProgress = (upload) => setTimeout(() => {
+	const uploads = Session.get('uploading') || [];
+	Session.set('uploading', uploads.filter(({ id }) => id !== upload.id));
+}, 2000);
+
+const uploadRecord = async({ rid, blob }) => {
+	const upload = fileUploadHandler('Uploads', {
+		name: `${ t('Audio record') }.mp3`,
+		size: blob.size,
+		type: 'audio/mpeg',
+		rid,
+		description: '',
+	}, blob);
+
+	upload.onProgress = (progress) => {
+		updateUploadProgress(upload, { progress });
+	};
+
+	registerUploadProgress(upload);
+
+	try {
+		const [file, storage] = await new Promise((resolve, reject) => {
+			upload.start((error, ...args) => (error ? reject(error) : resolve(args)));
+		});
+
+		await call('sendFileMessage', rid, storage, file);
+
+		unregisterUploadProgress(upload);
+	} catch (error) {
+		updateUploadProgress(upload, { error, progress: 0 });
+		unregisterUploadProgress(upload);
+	}
+
+	Tracker.autorun((c) => {
+		const cancel = Session.get(`uploading-cancel-${ upload.id }`);
+
+		if (!cancel) {
+			return;
+		}
+
+		upload.stop();
+		c.stop();
+
+		updateUploadProgress(upload, { progress: 0 });
+		unregisterUploadProgress(upload);
+	});
+};
+
+const recordingInterval = new ReactiveVar(null);
+const recordingRoomId = new ReactiveVar(null);
+
+Template.messageBoxAudioMessage.onCreated(function() {
+	this.state = new ReactiveVar(null);
+	this.time = new ReactiveVar('00:00');
+});
+
+Template.messageBoxAudioMessage.helpers({
+	stateClass() {
+		if (recordingRoomId.get() && (recordingRoomId.get() !== Template.currentData().rid)) {
+			return 'rc-message-box__audio-message--busy';
+		}
+
+		const state = Template.instance().state.get();
+		return state && `rc-message-box__audio-message--${ state }`;
+	},
+
+	time() {
+		return Template.instance().time.get();
+	},
+});
 
 Template.messageBoxAudioMessage.events({
-	'click .js-audio-message-record'(event, instance) {
+	async 'click .js-audio-message-record'(event, instance) {
 		event.preventDefault();
-		const recording_icons = instance.findAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
-		const timer = instance.find('.rc-message-box__timer');
-		const mic = instance.find('.rc-message-box__icon.mic');
 
-		chatMessages[RoomManager.openedRoom].recording = true;
-		AudioRecorder.start(() => {
-			const startTime = new Date;
-			timer.innerHTML = '00:00';
-			audioMessageIntervalId = setInterval(() => {
-				const now = new Date;
-				const distance = now - startTime;
-				let minutes = Math.floor(distance / (1000 * 60));
-				let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-				if (minutes < 10) { minutes = `0${ minutes }`; }
-				if (seconds < 10) { seconds = `0${ seconds }`; }
-				timer.innerHTML = `${ minutes }:${ seconds }`;
-			}, 1000);
-
-			mic.classList.remove('active');
-			recording_icons.forEach((e) => { e.classList.add('active'); });
-		});
-	},
-	'click .js-audio-message-cross'(event, instance) {
-		event.preventDefault();
-		const timer = instance.find('.rc-message-box__timer');
-		const mic = instance.find('.rc-message-box__icon.mic');
-		const recording_icons = instance.findAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
-
-		recording_icons.forEach((e) => { e.classList.remove('active'); });
-		mic.classList.add('active');
-		timer.innerHTML = '00:00';
-		if (audioMessageIntervalId) {
-			clearInterval(audioMessageIntervalId);
+		if (recordingRoomId.get() && (recordingRoomId.get() !== this.rid)) {
+			return;
 		}
 
-		AudioRecorder.stop();
-		chatMessages[RoomManager.openedRoom].recording = false;
-	},
-	'click .js-audio-message-check'(event, instance) {
-		event.preventDefault();
-		const timer = instance.find('.rc-message-box__timer');
-		const mic = instance.find('.rc-message-box__icon.mic');
-		const loader = instance.find('.js-audio-message-loading');
-		const recording_icons = instance.findAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
+		chatMessages[this.rid].recording = true;
+		instance.state.set('recording');
 
-		recording_icons.forEach((e) => { e.classList.remove('active'); });
-		loader.classList.add('active');
-		timer.innerHTML = '00:00';
-		if (audioMessageIntervalId) {
-			clearInterval(audioMessageIntervalId);
+		await startRecording();
+
+		const startTime = new Date;
+		recordingInterval.set(setInterval(() => {
+			const now = new Date;
+			const distance = (now.getTime() - startTime.getTime()) / 1000;
+			const minutes = Math.floor(distance / 60);
+			const seconds = Math.floor(distance % 60);
+			instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
+		}, 1000));
+		recordingRoomId.set(this.rid);
+	},
+
+	async 'click .js-audio-message-cancel'(event, instance) {
+		event.preventDefault();
+
+		if (recordingInterval.get()) {
+			clearInterval(recordingInterval.get());
+			recordingInterval.set(null);
+			recordingRoomId.set(null);
 		}
 
-		chatMessages[RoomManager.openedRoom].recording = false;
-		AudioRecorder.stop(function(blob) {
+		instance.time.set('00:00');
 
-			loader.classList.remove('active');
-			mic.classList.add('active');
-			const roomId = RoomManager.openedRoom;
-			const record = {
-				name: `${ TAPi18n.__('Audio record') }.mp3`,
-				size: blob.size,
-				type: 'audio/mp3',
-				rid: roomId,
-				description: '',
-			};
-			const upload = fileUploadHandler('Uploads', record, blob);
-			let uploading = Session.get('uploading') || [];
-			uploading.push({
-				id: upload.id,
-				name: upload.getFileName(),
-				percentage: 0,
-			});
-			Session.set('uploading', uploading);
-			upload.onProgress = function(progress) {
-				uploading = Session.get('uploading');
+		await stopRecording();
 
-				const item = _.findWhere(uploading, { id: upload.id });
-				if (item != null) {
-					item.percentage = Math.round(progress * 100) || 0;
-					return Session.set('uploading', uploading);
-				}
-			};
+		instance.state.set(null);
+		chatMessages[this.rid].recording = false;
+	},
 
-			upload.start(function(error, file, storage) {
-				if (error) {
-					let uploading = Session.get('uploading');
-					if (!Array.isArray(uploading)) {
-						uploading = [];
-					}
+	async 'click .js-audio-message-done'(event, instance) {
+		event.preventDefault();
 
-					const item = _.findWhere(uploading, { id: upload.id });
+		instance.state.set('loading');
 
-					if (_.isObject(item)) {
-						item.error = error.message;
-						item.percentage = 0;
-					} else {
-						uploading.push({
-							error: error.error,
-							percentage: 0,
-						});
-					}
+		if (recordingInterval.get()) {
+			clearInterval(recordingInterval.get());
+			recordingInterval.set(null);
+			recordingRoomId.set(null);
+		}
 
-					Session.set('uploading', uploading);
-					return;
-				}
+		instance.time.set('00:00');
 
-				if (file) {
-					Meteor.call('sendFileMessage', roomId, storage, file, () => {
-						Meteor.setTimeout(() => {
-							const uploading = Session.get('uploading');
-							if (uploading !== null) {
-								const item = _.findWhere(uploading, {
-									id: upload.id,
-								});
-								return Session.set('uploading', _.without(uploading, item));
-							}
-						}, 2000);
-					});
-				}
-			});
+		const blob = await stopRecording();
 
-			Tracker.autorun(function(c) {
-				const cancel = Session.get(`uploading-cancel-${ upload.id }`);
-				if (cancel) {
-					let item;
-					upload.stop();
-					c.stop();
+		instance.state.set(null);
+		chatMessages[this.rid].recording = false;
 
-					uploading = Session.get('uploading');
-					if (uploading != null) {
-						item = _.findWhere(uploading, { id: upload.id });
-						if (item != null) {
-							item.percentage = 0;
-						}
-						Session.set('uploading', uploading);
-					}
-
-					return Meteor.setTimeout(function() {
-						uploading = Session.get('uploading');
-						if (uploading != null) {
-							item = _.findWhere(uploading, { id: upload.id });
-							return Session.set('uploading', _.without(uploading, item));
-						}
-					}, 1000);
-				}
-			});
-		});
-		return false;
+		await uploadRecord({ rid: this.rid, blob });
 	},
 });
