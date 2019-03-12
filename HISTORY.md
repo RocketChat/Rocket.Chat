@@ -1,6 +1,58 @@
 
+# 1.0.0-beta.1
+`2019-03-12  ·  1 🚀  ·  7 🐛  ·  8 🔍  ·  10 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🚀 Improvements
+
+- Add decoding for commonName (cn) and displayName attributes for SAML ([#12347](https://github.com/RocketChat/Rocket.Chat/pull/12347) by [@pkolmann](https://github.com/pkolmann))
+
+### 🐛 Bug fixes
+
+- Audio message recording issues ([#13486](https://github.com/RocketChat/Rocket.Chat/pull/13486))
+- Legal pages' style ([#13677](https://github.com/RocketChat/Rocket.Chat/pull/13677))
+- Stop livestream ([#13676](https://github.com/RocketChat/Rocket.Chat/pull/13676))
+- Avatar fonts for PNG and JPG ([#13681](https://github.com/RocketChat/Rocket.Chat/pull/13681))
+- Block User Icon ([#13630](https://github.com/RocketChat/Rocket.Chat/pull/13630) by [@knrt10](https://github.com/knrt10))
+- Corrects UI background of forced F2A Authentication ([#13670](https://github.com/RocketChat/Rocket.Chat/pull/13670) by [@fliptrail](https://github.com/fliptrail))
+- Race condition on the loading of Apps on the admin page ([#13587](https://github.com/RocketChat/Rocket.Chat/pull/13587))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Prune Threads ([#13683](https://github.com/RocketChat/Rocket.Chat/pull/13683))
+- Regression: Fix icon for DMs ([#13679](https://github.com/RocketChat/Rocket.Chat/pull/13679))
+- Regression: Add missing translations used in Apps pages ([#13674](https://github.com/RocketChat/Rocket.Chat/pull/13674))
+- Regression: User thread join message ([#13656](https://github.com/RocketChat/Rocket.Chat/pull/13656) by [@bhardwajaditya](https://github.com/bhardwajaditya))
+- Regression: Sidebar create new channel hover text ([#13658](https://github.com/RocketChat/Rocket.Chat/pull/13658) by [@bhardwajaditya](https://github.com/bhardwajaditya))
+- Regression: Fix embedded layout ([#13574](https://github.com/RocketChat/Rocket.Chat/pull/13574))
+- Improve: Send cloud token to Federation Hub ([#13651](https://github.com/RocketChat/Rocket.Chat/pull/13651))
+- Regression: Threads - Invite users and DM ([#13646](https://github.com/RocketChat/Rocket.Chat/pull/13646))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@bhardwajaditya](https://github.com/bhardwajaditya)
+- [@fliptrail](https://github.com/fliptrail)
+- [@knrt10](https://github.com/knrt10)
+- [@pkolmann](https://github.com/pkolmann)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 1.0.0-beta.0
-`2019-03-08  ·  1 ️️️⚠️  ·  11 🎉  ·  15 🚀  ·  38 🐛  ·  63 🔍  ·  40 👩‍💻👨‍💻`
+`2019-03-08  ·  1 ️️️⚠️  ·  11 🎉  ·  12 🚀  ·  27 🐛  ·  61 🔍  ·  38 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `8.11.4`
@@ -32,10 +84,7 @@
 - Disable X-Powered-By header in all known express middlewares ([#13388](https://github.com/RocketChat/Rocket.Chat/pull/13388))
 - Allow custom rocketchat username for crowd users and enable login via email/crowd_username ([#12981](https://github.com/RocketChat/Rocket.Chat/pull/12981) by [@steerben](https://github.com/steerben))
 - Add department field on find guest method ([#13491](https://github.com/RocketChat/Rocket.Chat/pull/13491))
-- Open rooms quicker ([#13417](https://github.com/RocketChat/Rocket.Chat/pull/13417))
 - KaTeX and Autolinker message rendering ([#11698](https://github.com/RocketChat/Rocket.Chat/pull/11698))
-- Allow configure Prometheus port per process via Environment Variable ([#13436](https://github.com/RocketChat/Rocket.Chat/pull/13436))
-- Add API option "permissionsRequired" ([#13430](https://github.com/RocketChat/Rocket.Chat/pull/13430))
 - Update to MongoDB 4.0 in docker-compose file ([#13396](https://github.com/RocketChat/Rocket.Chat/pull/13396) by [@ngulden](https://github.com/ngulden))
 - Admin ui ([#13393](https://github.com/RocketChat/Rocket.Chat/pull/13393))
 - End to end tests ([#13401](https://github.com/RocketChat/Rocket.Chat/pull/13401))
@@ -68,20 +117,9 @@
 - Get next Livechat agent endpoint ([#13485](https://github.com/RocketChat/Rocket.Chat/pull/13485))
 - Sidenav mouse hover was slow ([#13482](https://github.com/RocketChat/Rocket.Chat/pull/13482))
 - Emoji detection at line breaks ([#13447](https://github.com/RocketChat/Rocket.Chat/pull/13447) by [@savish28](https://github.com/savish28))
-- Invalid condition on getting next livechat agent over REST API endpoint ([#13360](https://github.com/RocketChat/Rocket.Chat/pull/13360))
-- "Test Desktop Notifications" not triggering a notification ([#13457](https://github.com/RocketChat/Rocket.Chat/pull/13457))
-- Translated and incorrect i18n variables ([#13463](https://github.com/RocketChat/Rocket.Chat/pull/13463) by [@leonboot](https://github.com/leonboot))
-- Properly escape custom emoji names for pattern matching ([#13408](https://github.com/RocketChat/Rocket.Chat/pull/13408))
 - Small improvements on message box ([#13444](https://github.com/RocketChat/Rocket.Chat/pull/13444))
-- Not translated emails ([#13452](https://github.com/RocketChat/Rocket.Chat/pull/13452))
-- Update Russian localization ([#13244](https://github.com/RocketChat/Rocket.Chat/pull/13244) by [@BehindLoader](https://github.com/BehindLoader))
-- XML-decryption module not found ([#13437](https://github.com/RocketChat/Rocket.Chat/pull/13437))
-- Several Problems on HipChat Importer ([#13336](https://github.com/RocketChat/Rocket.Chat/pull/13336))
-- Invalid push gateway configuration, requires the uniqueId ([#13423](https://github.com/RocketChat/Rocket.Chat/pull/13423))
-- Misaligned upload progress bar "cancel" button ([#13407](https://github.com/RocketChat/Rocket.Chat/pull/13407))
 - Fixing rooms find by type and name ([#11451](https://github.com/RocketChat/Rocket.Chat/pull/11451) by [@hmagarotto](https://github.com/hmagarotto))
 - linear-gradient background on safari ([#13363](https://github.com/RocketChat/Rocket.Chat/pull/13363))
-- Notify private settings changes even on public settings changed ([#13369](https://github.com/RocketChat/Rocket.Chat/pull/13369))
 - Fixed text for "bulk-register-user" ([#11558](https://github.com/RocketChat/Rocket.Chat/pull/11558) by [@the4ndy](https://github.com/the4ndy))
 
 <details>
@@ -144,8 +182,6 @@
 - Remove dependency of RC namespace in rc-oauth2-server and message-star ([#13344](https://github.com/RocketChat/Rocket.Chat/pull/13344))
 -  Remove dependency of RC namespace in rc-message-pin and message-snippet ([#13343](https://github.com/RocketChat/Rocket.Chat/pull/13343))
 - Depackaging ([#13483](https://github.com/RocketChat/Rocket.Chat/pull/13483))
-- Room loading improvements ([#13471](https://github.com/RocketChat/Rocket.Chat/pull/13471))
-- Regression: Remove console.log on email translations ([#13456](https://github.com/RocketChat/Rocket.Chat/pull/13456))
 - Merge master into develop & Set version to 1.0.0-develop ([#13435](https://github.com/RocketChat/Rocket.Chat/pull/13435) by [@TkTech](https://github.com/TkTech) & [@theundefined](https://github.com/theundefined))
 - Regression: Table admin pages ([#13411](https://github.com/RocketChat/Rocket.Chat/pull/13411))
 - Regression: Template error ([#13410](https://github.com/RocketChat/Rocket.Chat/pull/13410))
@@ -155,7 +191,6 @@
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
-- [@BehindLoader](https://github.com/BehindLoader)
 - [@DeviaVir](https://github.com/DeviaVir)
 - [@Montel](https://github.com/Montel)
 - [@Mr-Linus](https://github.com/Mr-Linus)
@@ -165,7 +200,6 @@
 - [@hmagarotto](https://github.com/hmagarotto)
 - [@huydang284](https://github.com/huydang284)
 - [@knrt10](https://github.com/knrt10)
-- [@leonboot](https://github.com/leonboot)
 - [@localguru](https://github.com/localguru)
 - [@mjovanovic0](https://github.com/mjovanovic0)
 - [@ngulden](https://github.com/ngulden)
@@ -198,6 +232,58 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@timkinnane](https://github.com/timkinnane)
+
+# 0.74.3
+`2019-02-13  ·  3 🚀  ·  11 🐛  ·  3 🔍  ·  9 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🚀 Improvements
+
+- Open rooms quicker ([#13417](https://github.com/RocketChat/Rocket.Chat/pull/13417))
+- Allow configure Prometheus port per process via Environment Variable ([#13436](https://github.com/RocketChat/Rocket.Chat/pull/13436))
+- Add API option "permissionsRequired" ([#13430](https://github.com/RocketChat/Rocket.Chat/pull/13430))
+
+### 🐛 Bug fixes
+
+- Invalid condition on getting next livechat agent over REST API endpoint ([#13360](https://github.com/RocketChat/Rocket.Chat/pull/13360))
+- "Test Desktop Notifications" not triggering a notification ([#13457](https://github.com/RocketChat/Rocket.Chat/pull/13457))
+- Translated and incorrect i18n variables ([#13463](https://github.com/RocketChat/Rocket.Chat/pull/13463) by [@leonboot](https://github.com/leonboot))
+- Properly escape custom emoji names for pattern matching ([#13408](https://github.com/RocketChat/Rocket.Chat/pull/13408))
+- Not translated emails ([#13452](https://github.com/RocketChat/Rocket.Chat/pull/13452))
+- XML-decryption module not found ([#13437](https://github.com/RocketChat/Rocket.Chat/pull/13437))
+- Update Russian localization ([#13244](https://github.com/RocketChat/Rocket.Chat/pull/13244) by [@BehindLoader](https://github.com/BehindLoader))
+- Several Problems on HipChat Importer ([#13336](https://github.com/RocketChat/Rocket.Chat/pull/13336))
+- Invalid push gateway configuration, requires the uniqueId ([#13423](https://github.com/RocketChat/Rocket.Chat/pull/13423))
+- Notify private settings changes even on public settings changed ([#13369](https://github.com/RocketChat/Rocket.Chat/pull/13369))
+- Misaligned upload progress bar "cancel" button ([#13407](https://github.com/RocketChat/Rocket.Chat/pull/13407))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Release 0.74.3 ([#13474](https://github.com/RocketChat/Rocket.Chat/pull/13474) by [@BehindLoader](https://github.com/BehindLoader) & [@leonboot](https://github.com/leonboot))
+- Room loading improvements ([#13471](https://github.com/RocketChat/Rocket.Chat/pull/13471))
+- Regression: Remove console.log on email translations ([#13456](https://github.com/RocketChat/Rocket.Chat/pull/13456))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@BehindLoader](https://github.com/BehindLoader)
+- [@leonboot](https://github.com/leonboot)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@d-gubert](https://github.com/d-gubert)
+- [@graywolf336](https://github.com/graywolf336)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
 
 # 0.74.2
 `2019-02-05  ·  1 🚀  ·  3 🐛  ·  4 👩‍💻👨‍💻`
