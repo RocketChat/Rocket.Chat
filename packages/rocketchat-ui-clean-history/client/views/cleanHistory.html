@@ -69,6 +69,11 @@
 			<span class="rc-checkbox__text rc-text__small">{{_ "Exclude_pinned"}}</span>
 		</label>
 		<label class="rc-checkbox">
+			<input type="checkbox" name="ignoreThreads" class="rc-checkbox__input">
+			{{> icon icon="check" block="rc-checkbox__icon"}}
+			<span class="rc-checkbox__text rc-text__small">{{_ "RetentionPolicy_DoNotExcludeThreads"}}</span>
+		</label>
+		<label class="rc-checkbox">
 			<input type="checkbox" name="filesOnly" class="rc-checkbox__input">
 			{{> icon icon="check" block="rc-checkbox__icon"}}
 			<span class="rc-checkbox__text rc-text__small">{{_ "Files_only"}}</span>

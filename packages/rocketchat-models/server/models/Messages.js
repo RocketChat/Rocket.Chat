@@ -12,17 +12,17 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ rid: 1, ts: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
-		this.tryEnsureIndex({ editedAt: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ editedAt: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'editedBy._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ rid: 1, t: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
 		this.tryEnsureIndex({ msg: 'text' });
-		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ pinned: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ snippeted: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: true });
+		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
+		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ location: '2dsphere' });
-		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
 		// threads
@@ -171,7 +171,7 @@ export class Messages extends Base {
 			query.pinned = { $ne: true };
 		}
 
-		if (!ignoreThreads) {
+		if (ignoreThreads) {
 			query.trid = { $exists: 0 };
 		}
 
@@ -181,6 +181,25 @@ export class Messages extends Base {
 
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
+
+	findThreadByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
+		const query = {
+			rid,
+			ts,
+			trid: { $exists: 1 },
+		};
+
+		if (excludePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (users.length) {
+			query['u.username'] = { $in: users };
+		}
+
+		return this.find(query, options);
+	}
+
 	findVisibleByMentionAndRoomId(username, rid, options) {
 		const query = {
 			_hidden: { $ne: true },
@@ -849,25 +868,6 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampAndUsers(rid, pinned, ignoreThreads = true, ts, users = []) {
-		const query = {
-			rid,
-			ts,
-		};
-
-		if (pinned) {
-			query.pinned = { $ne: true };
-		}
-		if (!ignoreThreads) {
-			query.trid = { $exists: 0 };
-		}
-		if (users.length) {
-			query['u.username'] = { $in: users };
-		}
-
-		return this.remove(query);
-	}
-
 	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreThreads = true, ts, limit, users = []) {
 		const query = {
 			rid,
@@ -878,12 +878,16 @@ export class Messages extends Base {
 			query.pinned = { $ne: true };
 		}
 
-		if (!ignoreThreads) {
+		if (ignoreThreads) {
 			query.trid = { $exists: 0 };
 		}
 
 		if (users.length) {
 			query['u.username'] = { $in: users };
+		}
+
+		if (!limit) {
+			return this.remove(query);
 		}
 
 		const messagesToDelete = this.find(query, {
