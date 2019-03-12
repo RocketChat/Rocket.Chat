@@ -25,9 +25,11 @@
 						{{> loginLayout center="resetPassword"}}
 					{{else}}
 						{{#if require2faSetup}}
-							<div class="rc-old">
-								{{> Template.dynamic template="accountSecurity"}}
-							</div>
+							<main id="rocket-chat" class="{{embeddedVersion}}">
+								 <div class="rc-old main-content content-background-color">
+									{{> Template.dynamic template="accountSecurity"}}
+								</div>
+							</main>
 						{{else}}
 							{{> videoCall overlay=true}}
 							<div id="user-card-popover"></div>
