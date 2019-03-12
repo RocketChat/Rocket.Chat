@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Email } from 'meteor/email';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { settings } from 'meteor/rocketchat:settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
@@ -9,9 +13,15 @@ let Settings = {
 	get: () => {},
 };
 
-export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
+// define server language for email translations
+// @TODO: change TAPi18n.__ function to use the server language by default
+let lng = 'en';
+settings.get('Language', (key, value) => {
+	lng = value || 'en';
+});
 
-export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key));
+export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
+export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
 export const replace = function replace(str, data = {}) {
 	if (!str) {
 		return '';
@@ -30,8 +40,8 @@ export const replace = function replace(str, data = {}) {
 };
 
 export const replaceEscaped = (str, data = {}) => replace(str, {
-	Site_Name: s.escapeHTML(RocketChat.settings.get('Site_Name')),
-	Site_Url: s.escapeHTML(RocketChat.settings.get('Site_Url')),
+	Site_Name: s.escapeHTML(settings.get('Site_Name')),
+	Site_Url: s.escapeHTML(settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
 		ret[key] = s.escapeHTML(value);
 		return ret;
@@ -81,14 +91,14 @@ export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-
 
 export const checkAddressFormat = (from) => rfcMailPatternWithName.test(from);
 
-export const sendNoWrap = ({ to, from, subject, html }) => {
+export const sendNoWrap = ({ to, from, subject, html, headers }) => {
 	if (!checkAddressFormat(to)) {
 		return;
 	}
-	Meteor.defer(() => Email.send({ to, from, subject, html }));
+	Meteor.defer(() => Email.send({ to, from, subject, html, headers }));
 };
 
-export const send = ({ to, from, subject, html, data }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data) });
+export const send = ({ to, from, subject, html, data, headers }) => sendNoWrap({ to, from, subject: replace(subject, data), html: wrap(html, data), headers });
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {

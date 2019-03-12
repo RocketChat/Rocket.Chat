@@ -9,7 +9,7 @@
 
 				{{#if isReady}}
 					<h2>
-						<span class="room-title">{{_ "View_the_Logs_for"}}: "{{name}}"</span>
+						<span class="room-title">{{_ "View_the_Logs_for" name=name}}</span>
 					</h2>
 				{{/if}}
 				{{#if hasError}}
@@ -18,7 +18,7 @@
 					</h2>
 				{{/if}}
 			</header>
-			<div class="content background-transparent-dark">
+			<div class="content">
 				{{#if isReady}}
 					<div class="rocket-form">
 						{{#each log in logs}}

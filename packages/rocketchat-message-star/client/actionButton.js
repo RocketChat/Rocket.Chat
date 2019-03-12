@@ -1,8 +1,14 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { handleError } from 'meteor/rocketchat:utils';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { RoomHistoryManager, MessageAction } from 'meteor/rocketchat:ui-utils';
 import toastr from 'toastr';
 
 Meteor.startup(function() {
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'star-message',
 		icon: 'star',
 		label: 'Star_Message',
@@ -17,17 +23,17 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null && RocketChat.settings.get('Message_AllowStarring')) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return !_.findWhere(message.starred, { _id: Meteor.userId() });
+			return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
 		},
 		order: 10,
 		group: 'menu',
 	});
 
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'unstar-message',
 		icon: 'star',
 		label: 'Unstar_Message',
@@ -42,17 +48,17 @@ Meteor.startup(function() {
 			});
 		},
 		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null && RocketChat.settings.get('Message_AllowStarring')) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return Boolean(_.findWhere(message.starred, { _id: Meteor.userId() }));
+			return message.starred && message.starred.find((star) => star._id === Meteor.userId());
 		},
 		order: 10,
 		group: 'menu',
 	});
 
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
@@ -65,7 +71,7 @@ Meteor.startup(function() {
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
 			return true;
@@ -74,7 +80,7 @@ Meteor.startup(function() {
 		group: 'menu',
 	});
 
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'permalink-star',
 		icon: 'permalink',
 		label: 'Permalink',
@@ -82,11 +88,11 @@ Meteor.startup(function() {
 		context: ['starred'],
 		async action(event) {
 			const message = this._arguments[1];
-			$(event.currentTarget).attr('data-clipboard-text', await RocketChat.MessageAction.getPermaLink(message._id));
+			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid }) == null) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
 			return true;

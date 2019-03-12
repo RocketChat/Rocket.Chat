@@ -1,3 +1,4 @@
+import { callbacks } from 'meteor/rocketchat:callbacks';
 import Queue from 'queue-fifo';
 import * as servers from '../servers';
 import * as peerCommandHandlers from './peerHandlers';
@@ -116,18 +117,18 @@ class Bridge {
 	 */
 	setupLocalHandlers() {
 		// Auth
-		RocketChat.callbacks.add('afterValidateLogin', this.onMessageReceived.bind(this, 'local', 'onLogin'), RocketChat.callbacks.priority.LOW, 'irc-on-login');
-		RocketChat.callbacks.add('afterCreateUser', this.onMessageReceived.bind(this, 'local', 'onCreateUser'), RocketChat.callbacks.priority.LOW, 'irc-on-create-user');
+		callbacks.add('afterValidateLogin', this.onMessageReceived.bind(this, 'local', 'onLogin'), callbacks.priority.LOW, 'irc-on-login');
+		callbacks.add('afterCreateUser', this.onMessageReceived.bind(this, 'local', 'onCreateUser'), callbacks.priority.LOW, 'irc-on-create-user');
 		// Joining rooms or channels
-		RocketChat.callbacks.add('afterCreateChannel', this.onMessageReceived.bind(this, 'local', 'onCreateRoom'), RocketChat.callbacks.priority.LOW, 'irc-on-create-channel');
-		RocketChat.callbacks.add('afterCreateRoom', this.onMessageReceived.bind(this, 'local', 'onCreateRoom'), RocketChat.callbacks.priority.LOW, 'irc-on-create-room');
-		RocketChat.callbacks.add('afterJoinRoom', this.onMessageReceived.bind(this, 'local', 'onJoinRoom'), RocketChat.callbacks.priority.LOW, 'irc-on-join-room');
+		callbacks.add('afterCreateChannel', this.onMessageReceived.bind(this, 'local', 'onCreateRoom'), callbacks.priority.LOW, 'irc-on-create-channel');
+		callbacks.add('afterCreateRoom', this.onMessageReceived.bind(this, 'local', 'onCreateRoom'), callbacks.priority.LOW, 'irc-on-create-room');
+		callbacks.add('afterJoinRoom', this.onMessageReceived.bind(this, 'local', 'onJoinRoom'), callbacks.priority.LOW, 'irc-on-join-room');
 		// Leaving rooms or channels
-		RocketChat.callbacks.add('afterLeaveRoom', this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'), RocketChat.callbacks.priority.LOW, 'irc-on-leave-room');
+		callbacks.add('afterLeaveRoom', this.onMessageReceived.bind(this, 'local', 'onLeaveRoom'), callbacks.priority.LOW, 'irc-on-leave-room');
 		// Chatting
-		RocketChat.callbacks.add('afterSaveMessage', this.onMessageReceived.bind(this, 'local', 'onSaveMessage'), RocketChat.callbacks.priority.LOW, 'irc-on-save-message');
+		callbacks.add('afterSaveMessage', this.onMessageReceived.bind(this, 'local', 'onSaveMessage'), callbacks.priority.LOW, 'irc-on-save-message');
 		// Leaving
-		RocketChat.callbacks.add('afterLogoutCleanUp', this.onMessageReceived.bind(this, 'local', 'onLogout'), RocketChat.callbacks.priority.LOW, 'irc-on-logout');
+		callbacks.add('afterLogoutCleanUp', this.onMessageReceived.bind(this, 'local', 'onLogout'), callbacks.priority.LOW, 'irc-on-logout');
 	}
 
 	sendCommand(command, parameters) {

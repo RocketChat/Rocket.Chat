@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { handleError, Info } from 'meteor/rocketchat:utils';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { SideNav } from 'meteor/rocketchat:ui-utils';
 import s from 'underscore.string';
 import moment from 'moment';
 
@@ -46,10 +54,10 @@ Template.adminInfo.helpers({
 		return s.numberFormat(number, 2);
 	},
 	info() {
-		return RocketChat.Info;
+		return Info;
 	},
 	build() {
-		return RocketChat.Info && (RocketChat.Info.compile || RocketChat.Info.build);
+		return Info && (Info.compile || Info.build);
 	},
 });
 
@@ -79,7 +87,7 @@ Template.adminInfo.onCreated(function() {
 	this.statistics = new ReactiveVar({});
 	this.instances = new ReactiveVar({});
 	this.ready = new ReactiveVar(false);
-	if (RocketChat.authz.hasAllPermission('view-statistics')) {
+	if (hasAllPermission('view-statistics')) {
 		Meteor.call('getStatistics', function(error, statistics) {
 			instance.ready.set(true);
 			if (error) {

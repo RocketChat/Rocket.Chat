@@ -1,31 +1,37 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Settings, Rooms, LivechatVisitors } from 'meteor/rocketchat:models';
+import { fileUploadIsValidContentType } from 'meteor/rocketchat:utils';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { API } from 'meteor/rocketchat:api';
 import Busboy from 'busboy';
 import filesize from 'filesize';
-import LivechatVisitors from '../../../server/models/LivechatVisitors';
 let maxFileSize;
-RocketChat.settings.get('FileUpload_MaxFileSize', function(key, value) {
+
+settings.get('FileUpload_MaxFileSize', function(key, value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
-		maxFileSize = RocketChat.models.Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
 	}
 });
 
-RocketChat.API.v1.addRoute('livechat/upload/:rid', {
+API.v1.addRoute('livechat/upload/:rid', {
 	post() {
 		if (!this.request.headers['x-visitor-token']) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
 		const visitor = LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!visitor) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
-		const room = RocketChat.models.Rooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
+		const room = Rooms.findOneOpenByRoomIdAndVisitorToken(this.urlParams.rid, visitorToken);
 		if (!room) {
-			return RocketChat.API.v1.unauthorized();
+			return API.v1.unauthorized();
 		}
 
 		const busboy = new Busboy({ headers: this.request.headers });
@@ -54,24 +60,24 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 		})();
 
 		if (files.length === 0) {
-			return RocketChat.API.v1.failure('File required');
+			return API.v1.failure('File required');
 		}
 
 		if (files.length > 1) {
-			return RocketChat.API.v1.failure('Just 1 file is allowed');
+			return API.v1.failure('Just 1 file is allowed');
 		}
 
 		const file = files[0];
 
-		if (!RocketChat.fileUploadIsValidContentType(file.mimetype)) {
-			return RocketChat.API.v1.failure({
+		if (!fileUploadIsValidContentType(file.mimetype)) {
+			return API.v1.failure({
 				reason: 'error-type-not-allowed',
 			});
 		}
 
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && file.fileBuffer.length > maxFileSize) {
-			return RocketChat.API.v1.failure({
+			return API.v1.failure({
 				reason: 'error-size-not-allowed',
 				sizeAllowed: filesize(maxFileSize),
 			});
@@ -92,6 +98,6 @@ RocketChat.API.v1.addRoute('livechat/upload/:rid', {
 		uploadedFile.description = fields.description;
 
 		delete fields.description;
-		RocketChat.API.v1.success(Meteor.call('sendFileLivechatMessage', this.urlParams.rid, visitorToken, uploadedFile, fields));
+		API.v1.success(Meteor.call('sendFileLivechatMessage', this.urlParams.rid, visitorToken, uploadedFile, fields));
 	},
 });

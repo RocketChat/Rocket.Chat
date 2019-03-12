@@ -6,13 +6,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
 	api.use([
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:models',
+		'rocketchat:callbacks',
 		'ecmascript',
+		'rocketchat:authorization',
 	]);
-
-	api.use(['rocketchat:authorization'], ['client', 'server']);
-
-	api.addFiles('topic.js', ['client', 'server']);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

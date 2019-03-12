@@ -1,3 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { Roles } from 'meteor/rocketchat:models';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
@@ -7,7 +15,7 @@ Template.userEdit.helpers({
 		return cursor.count() === 0 ? 'disabled' : '';
 	},
 	canEditOrAdd() {
-		return (Template.instance().user && RocketChat.authz.hasAtLeastOnePermission('edit-other-user-info')) || (!Template.instance().user && RocketChat.authz.hasAtLeastOnePermission('create-user'));
+		return (Template.instance().user && hasAtLeastOnePermission('edit-other-user-info')) || (!Template.instance().user && hasAtLeastOnePermission('create-user'));
 	},
 
 	user() {
@@ -20,7 +28,7 @@ Template.userEdit.helpers({
 
 	role() {
 		const roles = Template.instance().roles.get();
-		return RocketChat.models.Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
+		return Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {

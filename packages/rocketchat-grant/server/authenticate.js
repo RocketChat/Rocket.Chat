@@ -1,16 +1,16 @@
 import { AccountsServer } from 'meteor/rocketchat:accounts';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users } from 'meteor/rocketchat:models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-
 import { GrantError } from './error';
 import Providers from './providers';
+import { t } from 'meteor/rocketchat:utils';
 
 const setAvatarFromUrl = (userId, url) => new Promise((resolve, reject) => {
 	Meteor.runAsUser(userId, () => {
 		Meteor.call('setAvatarFromService', url, '', 'url', (err) => {
 			if (err) {
-				if (err.details.timeToReset && err.details.timeToReset) {
+				if (err.details && err.details.timeToReset) {
 					reject((t('error-too-many-requests', {
 						seconds: parseInt(err.details.timeToReset / 1000),
 					})));
@@ -24,7 +24,7 @@ const setAvatarFromUrl = (userId, url) => new Promise((resolve, reject) => {
 	});
 });
 
-const findUserByOAuthId = (providerName, id) => RocketChat.models.Users.findOne({ [`settings.profile.oauth.${ providerName }`]: id });
+const findUserByOAuthId = (providerName, id) => Users.findOne({ [`settings.profile.oauth.${ providerName }`]: id });
 
 const addOAuthIdToUserProfile = (user, providerName, providerId) => {
 	const profile = Object.assign({}, user.settings.profile, {
@@ -34,7 +34,7 @@ const addOAuthIdToUserProfile = (user, providerName, providerId) => {
 		},
 	});
 
-	RocketChat.models.Users.setProfile(user.id, profile);
+	Users.setProfile(user.id, profile);
 };
 
 function getAccessToken(req) {
@@ -69,7 +69,7 @@ export async function authenticate(providerName, req) {
 	if (user) {
 		user.id = user._id;
 	} else {
-		user = RocketChat.models.Users.findOneByEmailAddress(userData.email);
+		user = Users.findOneByEmailAddress(userData.email);
 		if (user) {
 			user.id = user._id;
 		}
@@ -87,14 +87,14 @@ export async function authenticate(providerName, req) {
 			username: userData.username,
 		});
 
-		RocketChat.models.Users.setProfile(id, {
+		Users.setProfile(id, {
 			avatar: userData.avatar,
 			oauth: {
 				[providerName]: userData.id,
 			},
 		});
-		RocketChat.models.Users.setName(id, userData.name);
-		RocketChat.models.Users.setEmailVerified(id, userData.email);
+		Users.setName(id, userData.name);
+		Users.setEmailVerified(id, userData.email);
 
 		await setAvatarFromUrl(id, userData.avatar);
 

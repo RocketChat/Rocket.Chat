@@ -7,11 +7,11 @@ export class AppEnvironmentalVariableBridge {
 	async getValueByName(envVarName, appId) {
 		console.log(`The App ${ appId } is getting the environmental variable value ${ envVarName }.`);
 
-		if (this.isReadable(envVarName, appId)) {
-			return process.env[envVarName];
+		if (!(await this.isReadable(envVarName, appId))) {
+			throw new Error(`The environmental variable "${ envVarName }" is not readable.`);
 		}
 
-		throw new Error(`The environmental variable "${ envVarName }" is not readable.`);
+		return process.env[envVarName];
 	}
 
 	async isReadable(envVarName, appId) {
@@ -23,10 +23,10 @@ export class AppEnvironmentalVariableBridge {
 	async isSet(envVarName, appId) {
 		console.log(`The App ${ appId } is checking if the environmental variable is set ${ envVarName }.`);
 
-		if (this.isReadable(envVarName, appId)) {
-			return typeof process.env[envVarName] !== 'undefined';
+		if (!(await this.isReadable(envVarName, appId))) {
+			throw new Error(`The environmental variable "${ envVarName }" is not readable.`);
 		}
 
-		throw new Error(`The environmental variable "${ envVarName }" is not readable.`);
+		return typeof process.env[envVarName] !== 'undefined';
 	}
 }

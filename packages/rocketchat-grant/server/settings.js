@@ -1,4 +1,4 @@
-import { check } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 
 import { Storage } from './storage';
 

@@ -1,9 +1,17 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { settings } from 'meteor/rocketchat:settings';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { MessageAction } from 'meteor/rocketchat:ui-utils';
+import { Messages } from 'meteor/rocketchat:models';
+import { AutoTranslate } from './autotranslate';
+
 Meteor.startup(function() {
 	Tracker.autorun(function() {
-		if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
-			RocketChat.MessageAction.addButton({
+		if (settings.get('AutoTranslate_Enabled') && hasAtLeastOnePermission(['auto-translate'])) {
+			MessageAction.addButton({
 				id: 'toggle-language',
-				icon: 'icon-language',
+				icon: 'language',
 				label: 'Toggle_original_translated',
 				context: [
 					'message',
@@ -11,15 +19,15 @@ Meteor.startup(function() {
 				],
 				action() {
 					const message = this._arguments[1];
-					const language = RocketChat.AutoTranslate.getLanguage(message.rid);
+					const language = AutoTranslate.getLanguage(message.rid);
 					if ((!message.translations || !message.translations[language])) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
-						RocketChat.AutoTranslate.messageIdsToWait[message._id] = true;
-						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+						AutoTranslate.messageIdsToWait[message._id] = true;
+						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
 					} else if (message.autoTranslateShowInverse) {
-						RocketChat.models.Messages.update({ _id: message._id }, { $unset: { autoTranslateShowInverse: true } });
+						Messages.update({ _id: message._id }, { $unset: { autoTranslateShowInverse: true } });
 					} else {
-						RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true } });
+						Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true } });
 					}
 				},
 				condition(message) {
@@ -28,7 +36,7 @@ Meteor.startup(function() {
 				order: 90,
 			});
 		} else {
-			RocketChat.MessageAction.removeButton('toggle-language');
+			MessageAction.removeButton('toggle-language');
 		}
 	});
 });

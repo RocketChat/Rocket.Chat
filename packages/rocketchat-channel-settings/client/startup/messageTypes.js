@@ -1,7 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { MessageTypes } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
 import s from 'underscore.string';
 
 Meteor.startup(function() {
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'room_changed_privacy',
 		system: true,
 		message: 'room_changed_privacy',
@@ -13,7 +16,7 @@ Meteor.startup(function() {
 		},
 	});
 
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'room_changed_topic',
 		system: true,
 		message: 'room_changed_topic',
@@ -25,7 +28,7 @@ Meteor.startup(function() {
 		},
 	});
 
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'room_changed_announcement',
 		system: true,
 		message: 'room_changed_announcement',
@@ -37,7 +40,7 @@ Meteor.startup(function() {
 		},
 	});
 
-	RocketChat.MessageTypes.registerType({
+	MessageTypes.registerType({
 		id: 'room_changed_description',
 		system: true,
 		message: 'room_changed_description',

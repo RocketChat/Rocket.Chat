@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+
 Template.roomNotFound.helpers({
 	data() {
 		return Session.get('roomNotFound');

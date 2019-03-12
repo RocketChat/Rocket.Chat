@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Users, Rooms } from 'meteor/rocketchat:models';
+
 export default function handleOnCreateUser(newUser) {
 	if (!newUser) {
 		return this.log('Invalid handleOnCreateUser call');
@@ -20,13 +23,13 @@ export default function handleOnCreateUser(newUser) {
 		},
 	});
 
-	const user = RocketChat.models.Users.findOne({
+	const user = Users.findOne({
 		_id: newUser._id,
 	});
 
 	this.sendCommand('registerUser', user);
 
-	const rooms = RocketChat.models.Rooms.findBySubscriptionUserId(user._id).fetch();
+	const rooms = Rooms.findBySubscriptionUserId(user._id).fetch();
 
 	rooms.forEach((room) => this.sendCommand('joinedChannel', { room, user }));
 }

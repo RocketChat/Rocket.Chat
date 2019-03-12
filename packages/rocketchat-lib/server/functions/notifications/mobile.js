@@ -1,14 +1,20 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { PushNotification } from 'meteor/rocketchat:push-notifications';
+
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
 let alwaysNotifyMobileBoolean;
-RocketChat.settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
+settings.get('Notifications_Always_Notify_Mobile', (key, value) => {
 	alwaysNotifyMobileBoolean = value;
 });
 
 let SubscriptionRaw;
 Meteor.startup(() => {
-	SubscriptionRaw = RocketChat.models.Subscriptions.model.rawCollection();
+	SubscriptionRaw = Subscriptions.model.rawCollection();
 });
 
 async function getBadgeCount(userId) {
@@ -37,11 +43,11 @@ function enableNotificationReplyButton(room, username) {
 
 export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
 	let username = '';
-	if (RocketChat.settings.get('Push_show_username_room')) {
-		username = RocketChat.settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
+	if (settings.get('Push_show_username_room')) {
+		username = settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
 	}
 
-	RocketChat.PushNotification.send({
+	PushNotification.send({
 		roomId: message.rid,
 		payload: {
 			host: Meteor.absoluteUrl(),
@@ -49,10 +55,12 @@ export async function sendSinglePush({ room, message, userId, receiverUsername, 
 			sender: message.u,
 			type: room.t,
 			name: room.name,
+			messageType: message.t,
+			messageId: message._id,
 		},
-		roomName: RocketChat.settings.get('Push_show_username_room') && room.t !== 'd' ? `#${ RocketChat.roomTypes.getRoomName(room.t, room) }` : '',
+		roomName: settings.get('Push_show_username_room') && room.t !== 'd' ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
 		username,
-		message: RocketChat.settings.get('Push_show_message') ? notificationMessage : ' ',
+		message: settings.get('Push_show_message') ? notificationMessage : ' ',
 		badge: await getBadgeCount(userId),
 		usersTo: {
 			userId,
@@ -70,7 +78,7 @@ export function shouldNotifyMobile({
 	statusConnection,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && mobilePushNotifications == null) {
+	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser) {
 		return false;
 	}
 
@@ -83,10 +91,10 @@ export function shouldNotifyMobile({
 	}
 
 	if (!mobilePushNotifications) {
-		if (RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {
 			return true;
 		}
-		if (RocketChat.settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing') {
+		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing') {
 			return false;
 		}
 	}

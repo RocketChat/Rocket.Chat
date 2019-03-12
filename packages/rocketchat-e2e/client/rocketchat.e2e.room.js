@@ -5,8 +5,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
 import { TimeSync } from 'meteor/mizzao:timesync';
-
-import { RocketChat, call } from 'meteor/rocketchat:lib';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { call } from 'meteor/rocketchat:ui-utils';
 import { e2e } from './rocketchat.e2e';
 import {
 	Deferred,
@@ -38,7 +39,7 @@ export class E2ERoom {
 			this._ready.set(true);
 			this.establishing.set(false);
 
-			RocketChat.Notifications.onRoom(this.roomId, 'e2ekeyRequest', async(keyId) => {
+			Notifications.onRoom(this.roomId, 'e2ekeyRequest', async(keyId) => {
 				this.provideKeyToUser(keyId);
 			});
 		});
@@ -70,7 +71,7 @@ export class E2ERoom {
 		// Fetch encrypted session key from subscription model
 		let groupKey;
 		try {
-			groupKey = RocketChat.models.Subscriptions.findOne({ rid: this.roomId }).E2EKey;
+			groupKey = Subscriptions.findOne({ rid: this.roomId }).E2EKey;
 		} catch (error) {
 			return console.error('E2E -> Error fetching group key: ', error);
 		}
@@ -81,7 +82,7 @@ export class E2ERoom {
 			return true;
 		}
 
-		const room = RocketChat.models.Rooms.findOne({ _id: this.roomId });
+		const room = Rooms.findOne({ _id: this.roomId });
 
 		if (!room.e2eKeyId) {
 			await this.createGroupKey();
@@ -92,7 +93,7 @@ export class E2ERoom {
 		console.log('E2E -> Requesting room key');
 		// TODO: request group key
 
-		RocketChat.Notifications.notifyUsersOfRoom(this.roomId, 'e2ekeyRequest', this.roomId, room.e2eKeyId);
+		Notifications.notifyUsersOfRoom(this.roomId, 'e2ekeyRequest', this.roomId, room.e2eKeyId);
 	}
 
 	isSupportedRoomType(type) {
@@ -285,7 +286,7 @@ export class E2ERoom {
 
 		try {
 			const result = await decryptAES(vector, this.groupSessionKey, cipherText);
-			return EJSON.parse(toString(result));
+			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 		} catch (error) {
 			return console.error('E2E -> Error decrypting message: ', error, message);
 		}

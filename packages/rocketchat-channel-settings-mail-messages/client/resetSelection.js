@@ -1,3 +1,5 @@
+import { Blaze } from 'meteor/blaze';
+
 export default function resetSelection(reset) {
 	const [el] = $('.messages-box');
 	if (!el) {

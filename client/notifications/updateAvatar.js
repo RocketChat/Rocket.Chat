@@ -1,7 +1,9 @@
-/* globals updateAvatarOfUsername */
+import { Meteor } from 'meteor/meteor';
+import { updateAvatarOfUsername } from 'meteor/rocketchat:ui-utils';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 Meteor.startup(function() {
-	RocketChat.Notifications.onLogged('updateAvatar', function(data) {
+	Notifications.onLogged('updateAvatar', function(data) {
 		updateAvatarOfUsername(data.username);
 	});
 });

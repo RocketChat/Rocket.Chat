@@ -7,7 +7,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'email',
 		'ddp-rate-limiter',
+		'rocketchat:i18n',
+		'rocketchat:settings',
 	]);
 
 	api.mainModule('server/api.js', 'server');

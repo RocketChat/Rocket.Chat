@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { slashCommands } from 'meteor/rocketchat:utils';
+
 Meteor.methods({
 	getSlashCommandPreviews(command) {
 		if (!Meteor.userId()) {
@@ -6,19 +9,19 @@ Meteor.methods({
 			});
 		}
 
-		if (!command || !command.cmd || !RocketChat.slashCommands.commands[command.cmd]) {
+		if (!command || !command.cmd || !slashCommands.commands[command.cmd]) {
 			throw new Meteor.Error('error-invalid-command', 'Invalid Command Provided', {
 				method: 'executeSlashCommandPreview',
 			});
 		}
 
-		const theCmd = RocketChat.slashCommands.commands[command.cmd];
+		const theCmd = slashCommands.commands[command.cmd];
 		if (!theCmd.providesPreview) {
 			throw new Meteor.Error('error-invalid-command', 'Command Does Not Provide Previews', {
 				method: 'executeSlashCommandPreview',
 			});
 		}
 
-		return RocketChat.slashCommands.getPreviews(command.cmd, command.params, command.msg);
+		return slashCommands.getPreviews(command.cmd, command.params, command.msg);
 	},
 });

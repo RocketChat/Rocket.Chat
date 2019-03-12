@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Messages, Rooms, LivechatPageVisited } from 'meteor/rocketchat:models';
+
 let pageVisitedCollection;
 let messageCollection;
 let roomCollection;
@@ -71,12 +75,12 @@ async function migrateHistory(total, current) {
 }
 
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 123,
 	up() {
-		pageVisitedCollection = RocketChat.models.LivechatPageVisited.model.rawCollection();
-		messageCollection = RocketChat.models.Messages.model.rawCollection();
-		roomCollection = RocketChat.models.Rooms.model.rawCollection();
+		pageVisitedCollection = LivechatPageVisited.model.rawCollection();
+		messageCollection = Messages.model.rawCollection();
+		roomCollection = Rooms.model.rawCollection();
 
 		/*
 		 * Move visitor navigation history to messages

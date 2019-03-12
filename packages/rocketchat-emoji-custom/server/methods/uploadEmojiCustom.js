@@ -1,7 +1,12 @@
-/* globals RocketChatFileEmojiCustomInstance */
+import { Meteor } from 'meteor/meteor';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { RocketChatFile } from 'meteor/rocketchat:file';
+import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
+
 Meteor.methods({
 	uploadEmojiCustom(binaryContent, contentType, emojiData) {
-		if (!RocketChat.authz.hasPermission(this.userId, 'manage-emoji')) {
+		if (!hasPermission(this.userId, 'manage-emoji')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
@@ -13,7 +18,7 @@ Meteor.methods({
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
 		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`), contentType);
 		ws.on('end', Meteor.bindEnvironment(() =>
-			Meteor.setTimeout(() => RocketChat.Notifications.notifyLogged('updateEmojiCustom', { emojiData }), 500)
+			Meteor.setTimeout(() => Notifications.notifyLogged('updateEmojiCustom', { emojiData }), 500)
 		));
 
 		rs.pipe(ws);

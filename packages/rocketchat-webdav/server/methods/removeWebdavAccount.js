@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { WebdavAccounts } from 'meteor/rocketchat:models';
+
 Meteor.methods({
 	removeWebdavAccount(accountId) {
 		if (!Meteor.userId()) {
@@ -8,6 +12,6 @@ Meteor.methods({
 		// }
 		check(accountId, String);
 
-		return RocketChat.models.WebdavAccounts.removeByUserAndId(accountId, Meteor.userId());
+		return WebdavAccounts.removeByUserAndId(accountId, Meteor.userId());
 	},
 });

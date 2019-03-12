@@ -8,10 +8,11 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
+		'rocketchat:settings',
 		'rocketchat:lib',
+		'rocketchat:models',
 		'templating',
 	]);
 
-	api.addFiles('server/lib/RocketChat.ErrorHandler.js', 'server');
-	api.addFiles('server/startup/settings.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });

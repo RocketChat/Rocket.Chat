@@ -7,15 +7,17 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('rocketchat:lib');
-	api.use('rocketchat:logger');
-
-	api.addFiles('client/slackbridge_import.client.js', 'client');
-	api.addFiles('server/logger.js', 'server');
-	api.addFiles('server/settings.js', 'server');
-	api.addFiles('server/slackbridge.js', 'server');
-	api.addFiles('server/slackbridge_import.server.js', 'server');
-	api.addFiles('server/RocketAdapter.js', 'server');
-	api.addFiles('server/SlackAdapter.js', 'server');
+	api.use([
+		'ecmascript',
+		'rocketchat:settings',
+		'rocketchat:utils',
+		'rocketchat:lib',
+		'rocketchat:callbacks',
+		'rocketchat:channel-settings',
+		'rocketchat:models',
+		'rocketchat:logger',
+		'rocketchat:file-upload',
+	]);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

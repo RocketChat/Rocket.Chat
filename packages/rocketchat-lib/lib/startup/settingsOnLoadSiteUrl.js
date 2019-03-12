@@ -1,5 +1,10 @@
-/* globals WebAppInternals */
-RocketChat.settings.get('Site_Url', function(key, value) {
+import { Meteor } from 'meteor/meteor';
+import { WebAppInternals } from 'meteor/webapp';
+import { settings } from 'meteor/rocketchat:settings';
+
+export let hostname;
+
+settings.get('Site_Url', function(key, value) {
 	if (value == null || value.trim() === '') {
 		return;
 	}
@@ -16,7 +21,7 @@ RocketChat.settings.get('Site_Url', function(key, value) {
 		Meteor.absoluteUrl.defaultOptions.rootUrl = value;
 	}
 	if (Meteor.isServer) {
-		RocketChat.hostname = host.replace(/^https?:\/\//, '');
+		hostname = host.replace(/^https?:\/\//, '');
 		process.env.MOBILE_ROOT_URL = host;
 		process.env.MOBILE_DDP_URL = host;
 		if (typeof WebAppInternals !== 'undefined' && WebAppInternals.generateBoilerplate) {

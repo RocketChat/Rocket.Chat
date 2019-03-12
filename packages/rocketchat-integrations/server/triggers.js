@@ -1,14 +1,17 @@
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { integrations } from '../lib/rocketchat';
+
 const callbackHandler = function _callbackHandler(eventType) {
 	return function _wrapperFunction(...args) {
-		return RocketChat.integrations.triggerHandler.executeTriggers(eventType, ...args);
+		return integrations.triggerHandler.executeTriggers(eventType, ...args);
 	};
 };
 
-RocketChat.callbacks.add('afterSaveMessage', callbackHandler('sendMessage'), RocketChat.callbacks.priority.LOW);
-RocketChat.callbacks.add('afterCreateChannel', callbackHandler('roomCreated'), RocketChat.callbacks.priority.LOW);
-RocketChat.callbacks.add('afterCreatePrivateGroup', callbackHandler('roomCreated'), RocketChat.callbacks.priority.LOW);
-RocketChat.callbacks.add('afterCreateUser', callbackHandler('userCreated'), RocketChat.callbacks.priority.LOW);
-RocketChat.callbacks.add('afterJoinRoom', callbackHandler('roomJoined'), RocketChat.callbacks.priority.LOW);
-RocketChat.callbacks.add('afterLeaveRoom', callbackHandler('roomLeft'), RocketChat.callbacks.priority.LOW);
-RocketChat.callbacks.add('afterRoomArchived', callbackHandler('roomArchived'), RocketChat.callbacks.priority.LOW);
-RocketChat.callbacks.add('afterFileUpload', callbackHandler('fileUploaded'), RocketChat.callbacks.priority.LOW);
+callbacks.add('afterSaveMessage', callbackHandler('sendMessage'), callbacks.priority.LOW);
+callbacks.add('afterCreateChannel', callbackHandler('roomCreated'), callbacks.priority.LOW);
+callbacks.add('afterCreatePrivateGroup', callbackHandler('roomCreated'), callbacks.priority.LOW);
+callbacks.add('afterCreateUser', callbackHandler('userCreated'), callbacks.priority.LOW);
+callbacks.add('afterJoinRoom', callbackHandler('roomJoined'), callbacks.priority.LOW);
+callbacks.add('afterLeaveRoom', callbackHandler('roomLeft'), callbacks.priority.LOW);
+callbacks.add('afterRoomArchived', callbackHandler('roomArchived'), callbacks.priority.LOW);
+callbacks.add('afterFileUpload', callbackHandler('fileUploaded'), callbacks.priority.LOW);

@@ -1,4 +1,6 @@
-import LivechatVisitors from '../../server/models/LivechatVisitors';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { settings } from 'meteor/rocketchat:settings';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
 
 function validateMessage(message, room) {
 	// skips this callback if the message was edited
@@ -24,22 +26,22 @@ function validateMessage(message, room) {
 	return true;
 }
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+callbacks.add('afterSaveMessage', function(message, room) {
 	if (!validateMessage(message, room)) {
 		return message;
 	}
 
-	const phoneRegexp = new RegExp(RocketChat.settings.get('Livechat_lead_phone_regex'), 'g');
+	const phoneRegexp = new RegExp(settings.get('Livechat_lead_phone_regex'), 'g');
 	const msgPhones = message.msg.match(phoneRegexp);
 
-	const emailRegexp = new RegExp(RocketChat.settings.get('Livechat_lead_email_regex'), 'gi');
+	const emailRegexp = new RegExp(settings.get('Livechat_lead_email_regex'), 'gi');
 	const msgEmails = message.msg.match(emailRegexp);
 
 	if (msgEmails || msgPhones) {
 		LivechatVisitors.saveGuestEmailPhoneById(room.v._id, msgEmails, msgPhones);
 
-		RocketChat.callbacks.run('livechat.leadCapture', room);
+		callbacks.run('livechat.leadCapture', room);
 	}
 
 	return message;
-}, RocketChat.callbacks.priority.LOW, 'leadCapture');
+}, callbacks.priority.LOW, 'leadCapture');

@@ -1,20 +1,28 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { Accounts } from 'meteor/accounts-base';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from 'meteor/rocketchat:models';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { RateLimiter } from '../lib';
+import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
-RocketChat._setUsername = function(userId, u) {
+export const _setUsername = function(userId, u) {
 	const username = s.trim(u);
 	if (!userId || !username) {
 		return false;
 	}
 	let nameValidation;
 	try {
-		nameValidation = new RegExp(`^${ RocketChat.settings.get('UTF8_Names_Validation') }$`);
+		nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
 	} catch (error) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
 	if (!nameValidation.test(username)) {
 		return false;
 	}
-	const user = RocketChat.models.Users.findOneById(userId);
+	const user = Users.findOneById(userId);
 	// User already has desired username, return
 	if (user.username === username) {
 		return user;
@@ -22,27 +30,28 @@ RocketChat._setUsername = function(userId, u) {
 	const previousUsername = user.username;
 	// Check username availability or if the user already owns a different casing of the name
 	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
-		if (!RocketChat.checkUsernameAvailability(username)) {
+		if (!checkUsernameAvailability(username)) {
 			return false;
 		}
 	}
 	// If first time setting username, send Enrollment Email
 	try {
-		if (!previousUsername && user.emails && user.emails.length > 0 && RocketChat.settings.get('Accounts_Enrollment_Email')) {
+		if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
 			Accounts.sendEnrollmentEmail(user._id);
 		}
 	} catch (e) {
 		console.error(e);
 	}
-	/* globals getAvatarSuggestionForUser */
+	// Set new username*
+	Users.setUsername(user._id, username);
 	user.username = username;
-	if (!previousUsername && RocketChat.settings.get('Accounts_SetDefaultAvatar') === true) {
+	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = getAvatarSuggestionForUser(user);
 		let gravatar;
 		Object.keys(avatarSuggestions).some((service) => {
 			const avatarData = avatarSuggestions[service];
 			if (service !== 'gravatar') {
-				RocketChat.setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
+				setUserAvatar(user, avatarData.blob, avatarData.contentType, service);
 				gravatar = null;
 				return true;
 			}
@@ -50,23 +59,23 @@ RocketChat._setUsername = function(userId, u) {
 			return false;
 		});
 		if (gravatar != null) {
-			RocketChat.setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
+			setUserAvatar(user, gravatar.blob, gravatar.contentType, 'gravatar');
 		}
 	}
 	// Username is available; if coming from old username, update all references
 	if (previousUsername) {
-		RocketChat.models.Messages.updateAllUsernamesByUserId(user._id, username);
-		RocketChat.models.Messages.updateUsernameOfEditByUserId(user._id, username);
-		RocketChat.models.Messages.findByMention(previousUsername).forEach(function(msg) {
+		Messages.updateAllUsernamesByUserId(user._id, username);
+		Messages.updateUsernameOfEditByUserId(user._id, username);
+		Messages.findByMention(previousUsername).forEach(function(msg) {
 			const updatedMsg = msg.msg.replace(new RegExp(`@${ previousUsername }`, 'ig'), `@${ username }`);
-			return RocketChat.models.Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+			return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 		});
-		RocketChat.models.Rooms.replaceUsername(previousUsername, username);
-		RocketChat.models.Rooms.replaceMutedUsername(previousUsername, username);
-		RocketChat.models.Rooms.replaceUsernameOfUserByUserId(user._id, username);
-		RocketChat.models.Subscriptions.setUserUsernameByUserId(user._id, username);
-		RocketChat.models.Subscriptions.setNameForDirectRoomsWithOldName(previousUsername, username);
-		RocketChat.models.LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+		Rooms.replaceUsername(previousUsername, username);
+		Rooms.replaceMutedUsername(previousUsername, username);
+		Rooms.replaceUsernameOfUserByUserId(user._id, username);
+		Subscriptions.setUserUsernameByUserId(user._id, username);
+		Subscriptions.setNameForDirectRoomsWithOldName(previousUsername, username);
+		LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 		const fileStore = FileUpload.getStore('Avatars');
 		const file = fileStore.model.findOneByName(previousUsername);
@@ -74,13 +83,11 @@ RocketChat._setUsername = function(userId, u) {
 			fileStore.model.updateFileNameById(file._id, username);
 		}
 	}
-	// Set new username*
-	RocketChat.models.Users.setUsername(user._id, username);
 	return user;
 };
 
-RocketChat.setUsername = RocketChat.RateLimiter.limitFunction(RocketChat._setUsername, 1, 60000, {
-	[0](userId) {
-		return !userId || !RocketChat.authz.hasPermission(userId, 'edit-other-user-info');
+export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
+	[0]() {
+		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
 	},
 });

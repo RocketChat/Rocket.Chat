@@ -1,42 +1,22 @@
-
-/* global menu */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+import { menu } from 'meteor/rocketchat:ui-utils';
+import { toolbarSearch } from './sidebarHeader';
 import _ from 'underscore';
 
-let isLoading;
 let filterText = '';
 let usernamesFromClient;
 let resultsFromClient;
 
-const selectorSearch = '.toolbar__search .rc-input__element';
-Meteor.startup(() => {
-	isLoading = new ReactiveVar(false);
-});
-
-const toolbarSearch = {
-	shortcut: false,
-	clear() {
-		const $inputMessage = $('.js-input-message');
-
-		if (0 === $inputMessage.length) {
-			return;
-		}
-
-		$inputMessage.focus();
-		$(selectorSearch).val('');
-
-		if (this.shortcut) {
-			menu.close();
-		}
-	},
-	focus(fromShortcut) {
-		menu.open();
-		$('.toolbar').css('display', 'block');
-		$(selectorSearch).focus();
-		this.shortcut = fromShortcut;
-	},
-};
-
-this.toolbarSearch = toolbarSearch;
+const isLoading = new ReactiveVar(false);
 
 const getFromServer = (cb, type) => {
 	isLoading.set(true);
@@ -111,17 +91,9 @@ Template.toolbar.helpers({
 		return placeholder;
 	},
 	popupConfig() {
-		const open = new ReactiveVar(false);
-
-		Tracker.autorun(() => {
-			if (open.get() === false) {
-				toolbarSearch.clear();
-			}
-		});
-
 		const config = {
 			cls: 'search-results-list',
-			collection: Meteor.userId() ? RocketChat.models.Subscriptions : RocketChat.models.Rooms,
+			collection: Meteor.userId() ? Subscriptions : Rooms,
 			template: 'toolbarSearchList',
 			sidebar: true,
 			emptyTemplate: 'toolbarSearchListEmpty',
@@ -130,7 +102,7 @@ Template.toolbar.helpers({
 			closeOnEsc: true,
 			blurOnSelectItem: true,
 			isLoading,
-			open,
+			open: Template.instance().open,
 			getFilter(collection, filter, cb) {
 				filterText = filter;
 
@@ -194,7 +166,7 @@ Template.toolbar.helpers({
 			getValue(_id, collection, records) {
 				const doc = _.findWhere(records, { _id });
 
-				RocketChat.roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
+				roomTypes.openRouteLink(doc.t, doc, FlowRouter.current().queryParams);
 				menu.close();
 			},
 		};
@@ -209,32 +181,21 @@ Template.toolbar.events({
 		return false;
 	},
 
+	'click [role="search"] input'() {
+		toolbarSearch.shortcut = false;
+	},
+
 	'keyup [role="search"] input'(e) {
 		if (e.which === 27) {
 			e.preventDefault();
 			e.stopPropagation();
 
 			toolbarSearch.clear();
-			$('.toolbar').css('display', 'none');
 		}
 	},
 
-	'click [role="search"] input'() {
-		toolbarSearch.shortcut = false;
-	},
-
-	'click .toolbar__icon-search--right'() {
-		toolbarSearch.clear();
-		$('.toolbar').css('display', 'none');
-	},
-
-	'blur [role="search"] input'() {
-		toolbarSearch.clear();
-		$('.toolbar').css('display', 'none');
-	},
-
 	'click [role="search"] button, touchend [role="search"] button'(e) {
-		if (RocketChat.authz.hasAtLeastOnePermission(['create-c', 'create-p'])) {
+		if (hasAtLeastOnePermission(['create-c', 'create-p'])) {
 			// TODO: resolve this name menu/sidebar/sidebav/flex...
 			menu.close();
 			FlowRouter.go('create-channel');
@@ -242,4 +203,14 @@ Template.toolbar.events({
 			e.preventDefault();
 		}
 	},
+});
+
+Template.toolbar.onRendered(function() {
+	this.$('.js-search').select().focus();
+});
+
+Template.toolbar.onCreated(function() {
+	this.open = new ReactiveVar(true);
+
+	Tracker.autorun(() => !this.open.get() && toolbarSearch.close());
 });

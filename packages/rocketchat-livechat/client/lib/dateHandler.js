@@ -1,3 +1,4 @@
+import { handleError } from 'meteor/rocketchat:utils';
 import moment from 'moment';
 
 
@@ -13,7 +14,7 @@ export const checkDaterangeValue = (value, from, to) => {
 	if (moment().startOf('day').isSame(from) && moment().startOf('day').isSame(to)) {
 		return 'today';
 	}
-	if (moment().startOf('day').subtract(1, 'days').isSame(from) && moment().startOf('day').subtract(1, 'days').isSame(from)) {
+	if (moment().startOf('day').subtract(1, 'days').isSame(from) && moment().startOf('day').subtract(1, 'days').isSame(to)) {
 		return 'yesterday';
 	}
 	if (moment().startOf('week').isSame(from) && moment().endOf('week').isSame(to)) {

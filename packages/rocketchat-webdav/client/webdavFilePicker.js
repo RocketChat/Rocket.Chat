@@ -1,8 +1,13 @@
-/* global fileUploadHandler, Handlebars */
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import toastr from 'toastr';
 import { Session } from 'meteor/session';
-import { call } from 'meteor/rocketchat:lib';
+import { modal, call } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
+import { fileUploadHandler } from 'meteor/rocketchat:file-upload';
+import { Handlebars } from 'meteor/ui';
+
 Template.webdavFilePicker.rendered = async function() {
 	const { accountId } = this.data;
 	Session.set('webdavCurrentFolder', '/');
@@ -19,7 +24,7 @@ Template.webdavFilePicker.destroyed = function() {
 Template.webdavFilePicker.helpers({
 	iconType() {
 		// add icon for different types
-		let icon = 'file-generic';
+		let icon = 'clip';
 		let type = '';
 
 		let extension = this.basename.split('.').pop();

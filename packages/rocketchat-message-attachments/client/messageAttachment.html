@@ -12,25 +12,27 @@
 				{{#if author_link}}
 					<div class="attachment-author">
 						{{#if author_icon}}
-							<img src="{{fixCordova author_icon}}">
+							<img src="{{author_icon}}">
 						{{/if}}
-						<a href="{{fixCordova author_link}}" target="_blank" rel="noopener noreferrer">{{author_name}}</a>
+						<a href="{{author_link}}" target="_blank" rel="noopener noreferrer">{{author_name}}</a>
 						{{#if ts}}
 							{{#if message_link}}
 								<span class="time-link">
 									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
 								</span>
 							{{else}}
-								<span class="time">
-									{{time}}
-								</span>
+								{{#unless time}}
+									<span class="time">
+										{{time}}
+									</span>
+								{{/unless}}
 							{{/if}}
 						{{/if}}
 					</div>
 				{{else}}
 					<div class="attachment-author">
 						{{#if author_icon}}
-							<img src="{{fixCordova author_icon}}">
+							<img src="{{author_icon}}">
 						{{/if}}
 						{{author_name}}
 					{{#if ts}}
@@ -39,9 +41,11 @@
 								<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
 							</span>
 						{{else}}
-							<span class="time">
-								{{time}}
-							</span>
+							{{#unless time}}
+								<span class="time">
+									{{time}}
+								</span>
+							{{/unless}}
 						{{/if}}
 					{{/if}}
 					</div>
@@ -50,9 +54,9 @@
 			{{#if title}}
 				<div class="attachment-title">
 					{{#if title_link}}
-						<a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
+						<a href="{{title_link}}" target="_blank" rel="noopener noreferrer">{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}{{title}}</a>
 						{{#if title_link_download}}
-							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer"></a>
+							<a class="attachment-download-icon" href="{{title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
 						{{/if}}
 					{{else}}
 						{{title}}
@@ -69,7 +73,7 @@
 				<div class="attachment-flex">
 					{{#if thumb_url}}
 						<div class="attachment-thumb">
-							<img src="{{fixCordova thumb_url}}">
+							<img src="{{thumb_url}}">
 						</div>
 					{{/if}}
 
@@ -112,7 +116,7 @@
 				{{#unless mediaCollapsed}}
 					<div class="attachment-audio">
 						<audio controls>
-							<source src="{{fixCordova audio_url}}" type="{{audio_type}}" data-description="{{description}}">
+							<source src="{{audio_url}}" type="{{audio_type}}" data-description="{{description}}">
 							Your browser does not support the audio element.
 						</audio>
 					</div>
@@ -123,21 +127,26 @@
 				{{#unless mediaCollapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
-							<source src="{{fixCordova video_url}}" type="{{video_type}}" data-description="{{description}}">
+							<source src="{{video_url}}" type="{{video_type}}" data-description="{{description}}">
 							Your browser does not support the video element.
 						</video>
 					</div>
 				{{/unless}}
 			{{/if}}
 
+			{{#if isPDF}}
+				{{#unless collapsed}}
+					<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+						{{> icon block="rc-input__icon-svg" icon="loading"}}
+					</div>
+					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
+				{{/unless}}
+			{{/if}}
 			{{#if fields}}
 				{{#unless collapsed}}
 					<div class="attachment-fields">
-						{{#each fields}}
-							<div class="attachment-field{{# if short }} attachment-field-short{{/if}}">
-								<div class="attachment-field-title">{{title}}</div>
-								{{{RocketChatMarkdown value}}}
-							</div>
+						{{#each field in fields}}
+							{{> renderField field=field}}
 						{{/each}}
 					</div>
 				{{/unless}}
@@ -148,13 +157,15 @@
 					<div class="attachment-description">{{description}}</div>
 				{{/if}}
 			{{/unless}}
-					
+
 			{{#if actions}}
-				<div class="actions-container">
-					{{#each actions}}
-						{{> messageAction}}
-					{{/each}}
-				</div>
+				{{#unless collapsed}}
+					<div class="actions-container">
+						{{#each actions}}
+							{{> messageAction}}
+						{{/each}}
+					</div>
+				{{/unless}}
 			{{/if}}
 
 			{{#each attachments}}

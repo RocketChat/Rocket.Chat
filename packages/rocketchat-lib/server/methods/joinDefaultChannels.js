@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { addUserToDefaultChannels } from '../functions';
+
 Meteor.methods({
 	joinDefaultChannels(silenced) {
 		check(silenced, Match.Optional(Boolean));
@@ -7,6 +11,6 @@ Meteor.methods({
 		}
 
 		this.unblock();
-		return RocketChat.addUserToDefaultChannels(Meteor.user(), silenced);
+		return addUserToDefaultChannels(Meteor.user(), silenced);
 	},
 });

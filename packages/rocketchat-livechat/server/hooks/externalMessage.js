@@ -1,20 +1,25 @@
-/* globals HTTP, SystemLogger */
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { HTTP } from 'meteor/http';
+import { LivechatExternalMessage } from '../../lib/LivechatExternalMessage';
 import _ from 'underscore';
 
 let knowledgeEnabled = false;
 let apiaiKey = '';
 let apiaiLanguage = 'en';
-RocketChat.settings.get('Livechat_Knowledge_Enabled', function(key, value) {
+settings.get('Livechat_Knowledge_Enabled', function(key, value) {
 	knowledgeEnabled = value;
 });
-RocketChat.settings.get('Livechat_Knowledge_Apiai_Key', function(key, value) {
+settings.get('Livechat_Knowledge_Apiai_Key', function(key, value) {
 	apiaiKey = value;
 });
-RocketChat.settings.get('Livechat_Knowledge_Apiai_Language', function(key, value) {
+settings.get('Livechat_Knowledge_Apiai_Language', function(key, value) {
 	apiaiLanguage = value;
 });
 
-RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
+callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited
 	if (!message || message.editedAt) {
 		return message;
@@ -48,7 +53,7 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 			});
 
 			if (response.data && response.data.status.code === 200 && !_.isEmpty(response.data.result.fulfillment.speech)) {
-				RocketChat.models.LivechatExternalMessage.insert({
+				LivechatExternalMessage.insert({
 					rid: message.rid,
 					msg: response.data.result.fulfillment.speech,
 					orig: message._id,
@@ -61,4 +66,4 @@ RocketChat.callbacks.add('afterSaveMessage', function(message, room) {
 	});
 
 	return message;
-}, RocketChat.callbacks.priority.LOW, 'externalWebHook');
+}, callbacks.priority.LOW, 'externalWebHook');

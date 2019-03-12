@@ -1,5 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { MessageAction, modal } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { Subscriptions } from 'meteor/rocketchat:models';
+import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
+
 Meteor.startup(function() {
-	RocketChat.MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'snippeted-message',
 		icon: 'code',
 		label: 'Snippet',
@@ -44,17 +51,17 @@ Meteor.startup(function() {
 
 		},
 		condition(message) {
-			if (RocketChat.models.Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() }) === undefined) {
+			if (Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() }) === undefined) {
 				return false;
 			}
 
-			if (message.snippeted || ((RocketChat.settings.get('Message_AllowSnippeting') === undefined) ||
-				(RocketChat.settings.get('Message_AllowSnippeting') === null) ||
-				(RocketChat.settings.get('Message_AllowSnippeting')) === false)) {
+			if (message.snippeted || ((settings.get('Message_AllowSnippeting') === undefined) ||
+				(settings.get('Message_AllowSnippeting') === null) ||
+				(settings.get('Message_AllowSnippeting')) === false)) {
 				return false;
 			}
 
-			return RocketChat.authz.hasAtLeastOnePermission('snippet-message', message.rid);
+			return hasAtLeastOnePermission('snippet-message', message.rid);
 		},
 	});
 });

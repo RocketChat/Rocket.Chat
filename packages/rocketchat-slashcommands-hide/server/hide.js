@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { slashCommands } from 'meteor/rocketchat:utils';
 
 /*
 * Hide is a named function that will replace /hide commands
@@ -15,13 +22,13 @@ function Hide(command, param, item) {
 		const [strippedRoom] = room.replace(/#|@/, '').split(' ');
 		const [type] = room;
 
-		const roomObject = type === '#' ? RocketChat.models.Rooms.findOneByName(strippedRoom) : RocketChat.models.Rooms.findOne({
+		const roomObject = type === '#' ? Rooms.findOneByName(strippedRoom) : Rooms.findOne({
 			t: 'd',
 			usernames: { $all: [user.username, strippedRoom] },
 		});
 
 		if (!roomObject) {
-			return RocketChat.Notifications.notifyUser(user._id, 'message', {
+			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date,
@@ -32,8 +39,8 @@ function Hide(command, param, item) {
 			});
 		}
 
-		if (!RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
-			return RocketChat.Notifications.notifyUser(user._id, 'message', {
+		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
+			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date,
@@ -48,7 +55,7 @@ function Hide(command, param, item) {
 
 	Meteor.call('hideRoom', rid, (error) => {
 		if (error) {
-			return RocketChat.Notifications.notifyUser(user._id, 'message', {
+			return Notifications.notifyUser(user._id, 'message', {
 				_id: Random.id(),
 				rid: item.rid,
 				ts: new Date,
@@ -58,4 +65,4 @@ function Hide(command, param, item) {
 	});
 }
 
-RocketChat.slashCommands.add('hide', Hide, { description: 'Hide_room', params: '#room' });
+slashCommands.add('hide', Hide, { description: 'Hide_room', params: '#room' });

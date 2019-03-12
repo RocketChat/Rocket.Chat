@@ -10,21 +10,11 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'less',
-		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:ui-utils',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'client/lib/MentionedMessage.js',
-		'client/views/stylesheets/mentionsFlexTab.less',
-		'client/views/mentionsFlexTab.html',
-		'client/views/mentionsFlexTab.js',
-		'client/actionButton.js',
-		'client/tabBar.js',
-	], 'client');
-
-	api.addFiles([
-		'server/publications/mentionedMessages.js',
-	], 'server');
+	api.addFiles('client/views/stylesheets/mentionsFlexTab.less', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

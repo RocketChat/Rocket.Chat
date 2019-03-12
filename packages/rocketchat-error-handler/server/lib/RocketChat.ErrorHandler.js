@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users, Rooms } from 'meteor/rocketchat:models';
+import { sendMessage } from 'meteor/rocketchat:lib';
+
 class ErrorHandler {
 	constructor() {
 		this.reporting = false;
@@ -7,7 +12,7 @@ class ErrorHandler {
 		Meteor.startup(() => {
 			this.registerHandlers();
 
-			RocketChat.settings.get('Log_Exceptions_to_Channel', (key, value) => {
+			settings.get('Log_Exceptions_to_Channel', (key, value) => {
 				this.rid = null;
 				const roomName = value.trim();
 				if (roomName) {
@@ -44,7 +49,7 @@ class ErrorHandler {
 
 	getRoomId(roomName) {
 		roomName = roomName.replace('#');
-		const room = RocketChat.models.Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
+		const room = Rooms.findOneByName(roomName, { fields: { _id: 1, t: 1 } });
 		if (!room || (room.t !== 'c' && room.t !== 'p')) {
 			return;
 		}
@@ -56,14 +61,14 @@ class ErrorHandler {
 			return;
 		}
 		this.lastError = message;
-		const user = RocketChat.models.Users.findOneById('rocket.cat');
+		const user = Users.findOneById('rocket.cat');
 
 		if (stack) {
 			message = `${ message }\n\`\`\`\n${ stack }\n\`\`\``;
 		}
 
-		RocketChat.sendMessage(user, { msg: message }, { _id: this.rid });
+		sendMessage(user, { msg: message }, { _id: this.rid });
 	}
 }
 
-RocketChat.ErrorHandler = new ErrorHandler;
+export default new ErrorHandler;

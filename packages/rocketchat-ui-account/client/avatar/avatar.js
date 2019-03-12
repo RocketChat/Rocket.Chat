@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
+
 Template.avatar.helpers({
 	src() {
 		let { url } = Template.instance().data;

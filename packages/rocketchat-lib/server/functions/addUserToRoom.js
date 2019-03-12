@@ -1,22 +1,30 @@
-RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
+import { Meteor } from 'meteor/meteor';
+import { Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+
+export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
-	const room = RocketChat.models.Rooms.findOneById(rid);
+	const room = Rooms.findOneById(rid);
 
 	// Check if user is already in room
-	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	if (subscription) {
 		return;
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		RocketChat.callbacks.run('beforeJoinRoom', user, room);
+		// Add a new event, with an optional inviter
+		callbacks.run('beforeAddedToRoom', { user, inviter }, room);
+
+		// Keep the current event
+		callbacks.run('beforeJoinRoom', user, room);
 	}
 
 	if (room.ro) {
-		RocketChat.models.Rooms.muteUsernameByRoomId(rid, user.username);
+		Rooms.muteUsernameByRoomId(rid, user.username);
 	}
 
-	RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
+	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
 		open: true,
 		alert: true,
@@ -27,21 +35,27 @@ RocketChat.addUserToRoom = function(rid, user, inviter, silenced) {
 
 	if (!silenced) {
 		if (inviter) {
-			RocketChat.models.Messages.createUserAddedWithRoomIdAndUser(rid, user, {
+			Messages.createUserAddedWithRoomIdAndUser(rid, user, {
 				ts: now,
 				u: {
 					_id: inviter._id,
 					username: inviter.username,
 				},
 			});
+		} else if (room.prid) {
+			Messages.createUserJoinWithRoomIdAndUserThread(rid, user, { ts: now });
 		} else {
-			RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
+			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
 		}
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
 		Meteor.defer(function() {
-			RocketChat.callbacks.run('afterJoinRoom', user, room);
+			// Add a new event, with an optional inviter
+			callbacks.run('afterAddedToRoom', { user, inviter }, room);
+
+			// Keep the current event
+			callbacks.run('afterJoinRoom', user, room);
 		});
 	}
 

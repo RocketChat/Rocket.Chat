@@ -1,4 +1,7 @@
-/* globals Mailer */
+import { Meteor } from 'meteor/meteor';
+import { Mailer } from '../lib/Mailer';
+import { hasRole } from 'meteor/rocketchat:authorization';
+
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {
 		const userId = Meteor.userId();
@@ -7,7 +10,7 @@ Meteor.methods({
 				method: 'Mailer.sendMail',
 			});
 		}
-		if (RocketChat.authz.hasRole(userId, 'admin') !== true) {
+		if (hasRole(userId, 'admin') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'Mailer.sendMail',
 			});

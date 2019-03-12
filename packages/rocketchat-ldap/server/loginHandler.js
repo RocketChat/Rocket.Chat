@@ -1,5 +1,9 @@
-/* eslint new-cap: [2, {"capIsNewExceptions": ["SHA256"]}] */
-
+import { SHA256 } from 'meteor/sha';
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Logger } from 'meteor/rocketchat:logger';
 import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
 import LDAP from './ldap';
 
@@ -34,7 +38,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	logger.info('Init LDAP login', loginRequest.username);
 
-	if (RocketChat.settings.get('LDAP_Enable') !== true) {
+	if (settings.get('LDAP_Enable') !== true) {
 		return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.ldapPass);
 	}
 
@@ -65,7 +69,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	}
 
 	if (ldapUser === undefined) {
-		if (RocketChat.settings.get('LDAP_Login_Fallback') === true) {
+		if (settings.get('LDAP_Login_Fallback') === true) {
 			return fallbackDefaultAccountSystem(self, loginRequest.username, loginRequest.ldapPass);
 		}
 
@@ -91,7 +95,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	let username;
 
-	if (RocketChat.settings.get('LDAP_Username_Field') !== '') {
+	if (settings.get('LDAP_Username_Field') !== '') {
 		username = slug(getLdapUsername(ldapUser));
 	} else {
 		username = slug(loginRequest.username);
@@ -109,40 +113,31 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 
 	// Login user if they exist
 	if (user) {
-		if (user.ldap !== true && RocketChat.settings.get('LDAP_Merge_Existing_Users') !== true) {
+		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.info('User exists without "ldap: true"');
 			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeded, but there's already an existing user with provided username [${ username }] in Mongo.`);
 		}
 
 		logger.info('Logging user');
 
-		const stampedToken = Accounts._generateStampedLoginToken();
-
-		Meteor.users.update(user._id, {
-			$push: {
-				'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken),
-			},
-		});
-
 		syncUserData(user, ldapUser);
 
-		if (RocketChat.settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
+		if (settings.get('LDAP_Login_Fallback') === true && typeof loginRequest.ldapPass === 'string' && loginRequest.ldapPass.trim() !== '') {
 			Accounts.setPassword(user._id, loginRequest.ldapPass, { logout: false });
 		}
-
+		callbacks.run('afterLDAPLogin', { user, ldapUser, ldap });
 		return {
 			userId: user._id,
-			token: stampedToken.token,
 		};
 	}
 
 	logger.info('User does not exist, creating', username);
 
-	if (RocketChat.settings.get('LDAP_Username_Field') === '') {
+	if (settings.get('LDAP_Username_Field') === '') {
 		username = undefined;
 	}
 
-	if (RocketChat.settings.get('LDAP_Login_Fallback') !== true) {
+	if (settings.get('LDAP_Login_Fallback') !== true) {
 		loginRequest.ldapPass = undefined;
 	}
 
@@ -152,6 +147,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 	if (result instanceof Error) {
 		throw result;
 	}
+	callbacks.run('afterLDAPLogin', { user: result, ldapUser, ldap });
 
 	return result;
 });

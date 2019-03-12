@@ -9,10 +9,10 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'rocketchat:file',
-		'rocketchat:lib',
+		'rocketchat:file-upload',
+		'rocketchat:settings',
+		'rocketchat:models',
 		'webapp',
 	]);
-
-	api.addFiles('server/startup/settings.js', 'server');
-	api.addFiles('server/cronProcessDownloads.js', 'server');
+	api.mainModule('server/index.js', 'server');
 });

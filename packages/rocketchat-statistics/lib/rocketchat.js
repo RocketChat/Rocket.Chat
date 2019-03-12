@@ -1,1 +1,1 @@
-RocketChat.statistics = {};
+export const statistics = {};

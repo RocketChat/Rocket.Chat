@@ -1,11 +1,16 @@
-RocketChat.Migrations.add({
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { Migrations } from 'meteor/rocketchat:migrations';
+import { Uploads, Messages } from 'meteor/rocketchat:models';
+
+Migrations.add({
 	version: 15,
 	up() {
 		console.log('Starting file migration');
 		const oldFilesCollection = new Mongo.Collection('cfs.Files.filerecord');
 		const oldGridFSCollection = new Mongo.Collection('cfs_gridfs.files.files');
 		const oldChunkCollection = new Mongo.Collection('cfs_gridfs.files.chunks');
-		const newFilesCollection = RocketChat.models.Uploads;
+		const newFilesCollection = Uploads;
 		const newGridFSCollection = new Mongo.Collection('rocketchat_uploads.files');
 		const newChunkCollection = new Mongo.Collection('rocketchat_uploads.chunks');
 
@@ -68,7 +73,7 @@ RocketChat.Migrations.add({
 				});
 			});
 
-			RocketChat.models.Messages.find({
+			Messages.find({
 				$or: [{
 					'urls.url': `https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }`,
 				}, {
@@ -86,7 +91,7 @@ RocketChat.Migrations.add({
 					}
 				}
 
-				RocketChat.models.Messages.update({ _id: message._id }, {
+				Messages.update({ _id: message._id }, {
 					$set: {
 						urls: message.urls,
 						msg: message.msg,

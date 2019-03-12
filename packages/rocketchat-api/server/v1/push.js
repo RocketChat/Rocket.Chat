@@ -1,6 +1,9 @@
-/* globals Push */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { Push } from 'meteor/rocketchat:push';
+import { API } from '../api';
 
-RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
+API.v1.addRoute('push.token', { authRequired: true }, {
 	post() {
 		const { type, value, appName } = this.bodyParams;
 		let { id } = this.bodyParams;
@@ -32,7 +35,7 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 			userId: this.userId,
 		}));
 
-		return RocketChat.API.v1.success({ result });
+		return API.v1.success({ result });
 	},
 	delete() {
 		const { token } = this.bodyParams;
@@ -51,9 +54,9 @@ RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 		});
 
 		if (affectedRecords === 0) {
-			return RocketChat.API.v1.notFound();
+			return API.v1.notFound();
 		}
 
-		return RocketChat.API.v1.success();
+		return API.v1.success();
 	},
 });

@@ -1,3 +1,4 @@
-import LivechatRoomType from '../imports/LivechatRoomType';
+import { roomTypes } from 'meteor/rocketchat:utils';
+import LivechatRoomType from '../lib/LivechatRoomType';
 
-RocketChat.roomTypes.add(new LivechatRoomType());
+roomTypes.add(new LivechatRoomType());
