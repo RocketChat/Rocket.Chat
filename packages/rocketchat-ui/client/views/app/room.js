@@ -857,9 +857,9 @@ Template.room.events({
 	'click .pdf-open-in-modal'(event) {
 		event.preventDefault();
 		const isElectron = (navigator.userAgent.toLowerCase().indexOf(' electron/') > -1);
-		const relPdfLink = this._arguments[1].attachments[0].title_link;
-		const absPdfLink = Meteor.absoluteUrl().replace(/\/$/, '') + relPdfLink;
 		if (!isElectron) {
+			const relPdfLink = this._arguments[1].attachments[0].title_link;
+			const absPdfLink = Meteor.absoluteUrl().replace(/\/$/, '') + relPdfLink;
 			const absPdfLinkInline = `${ absPdfLink }?disposition=inline`;
 			modal.open({
 				showConfirmButton: false,
