@@ -20,10 +20,6 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 		callbacks.run('beforeJoinRoom', user, room);
 	}
 
-	if (room.ro) {
-		Rooms.muteUsernameByRoomId(rid, user.username);
-	}
-
 	Subscriptions.createWithRoomAndUser(room, user, {
 		ts: now,
 		open: true,
