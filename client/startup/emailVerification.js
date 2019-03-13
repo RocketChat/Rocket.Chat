@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from 'meteor/rocketchat:settings';
+import { settings } from '/app/settings';
 import toastr from 'toastr';
 
 Meteor.startup(function() {
