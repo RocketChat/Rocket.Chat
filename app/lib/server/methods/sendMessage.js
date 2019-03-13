@@ -85,7 +85,7 @@ Meteor.methods({
 				},
 			});
 
-			if (!userOwner && !hasPermission(Meteor.userId(), 'post-readonly')) {
+			if (!userOwner && !hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
 				Notifications.notifyUser(Meteor.userId(), 'message', {
 					_id: Random.id(),
 					rid: room._id,

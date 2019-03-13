@@ -73,7 +73,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 				return true;
 			}
 
-			return (room.ro === true && !hasAtLeastOnePermission('post-readonly'));
+			return (room.ro === true && !hasAtLeastOnePermission('post-readonly', room._id));
 		} else {
 			return false;
 		}
