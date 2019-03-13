@@ -31,7 +31,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	url() {
-		return getURL(`/file-upload/${ this._id }/${ this.name }`);
+		return `/file-upload/${ this._id }`;
 	},
 
 	fileTypeClass() {
