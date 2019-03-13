@@ -1,4 +1,11 @@
-/* globals KonchatNotification */
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Session } from 'meteor/session';
+import { KonchatNotification } from '/app/ui';
 import s from 'underscore.string';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
@@ -20,7 +27,7 @@ FlowRouter.subscriptions = function() {
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
+		BlazeLayout.render('main', { center: 'loading' });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -109,6 +116,15 @@ FlowRouter.route('/privacy-policy', {
 
 	action() {
 		Session.set('cmsPage', 'Layout_Privacy_Policy');
+		BlazeLayout.render('cmsPage');
+	},
+});
+
+FlowRouter.route('/legal-notice', {
+	name: 'legal-notice',
+
+	action() {
+		Session.set('cmsPage', 'Layout_Legal_Notice');
 		BlazeLayout.render('cmsPage');
 	},
 });

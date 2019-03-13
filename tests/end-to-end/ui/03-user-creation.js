@@ -1,6 +1,3 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import loginPage from '../../pageobjects/login.page';
 import mainContent from '../../pageobjects/main-content.page';
 

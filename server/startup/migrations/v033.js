@@ -1,9 +1,12 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Integrations } from '/app/models';
+
+Migrations.add({
 	version: 33,
 	up() {
 		const scriptAlert = '/**\n * This script is out-of-date, convert to the new format\n * (https://rocket.chat/docs/administrator-guides/integrations)\n**/\n\n';
 
-		const integrations = RocketChat.models.Integrations.find({
+		const integrations = Integrations.find({
 			$or: [
 				{
 					script: {
@@ -42,7 +45,7 @@ RocketChat.Migrations.add({
 				script += `${ integration.processOutgoingResponseScript }\n\n`;
 			}
 
-			return RocketChat.models.Integrations.update(integration._id, {
+			return Integrations.update(integration._id, {
 				$set: {
 					script: scriptAlert + script.replace(/^/gm, '// '),
 				},
@@ -57,7 +60,7 @@ RocketChat.Migrations.add({
 			},
 		};
 
-		RocketChat.models.Integrations.update({}, update, {
+		Integrations.update({}, update, {
 			multi: true,
 		});
 
@@ -67,7 +70,7 @@ RocketChat.Migrations.add({
 			},
 		};
 
-		RocketChat.models.Integrations.update({
+		Integrations.update({
 			enabled: {
 				$exists: false,
 			},

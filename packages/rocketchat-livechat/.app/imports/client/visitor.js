@@ -1,4 +1,9 @@
 /* globals Commands, Livechat, UserPresence */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Session } from 'meteor/session';
+
 const msgStream = new Meteor.Streamer('room-messages');
 
 export default {
@@ -130,6 +135,8 @@ export default {
 		if (this.roomSubscribed && this.roomSubscribed === roomId) {
 			return;
 		}
+
+		msgStream.unsubscribe(this.roomSubscribed);
 
 		this.roomSubscribed = roomId;
 

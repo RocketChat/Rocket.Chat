@@ -1,5 +1,4 @@
 /* eslint no-unused-vars: 0 */
-/* globals language_names: 1 */
 
 language_names = {
 	af: ['Afrikaans', 'Afrikaans'],
@@ -46,6 +45,8 @@ language_names = {
 	gl: ['Galician', 'Galego'],
 	ka: ['Georgian', 'ქართული'],
 	de: ['German', 'Deutsch'],
+	'de-AT': ['German (Austria)', 'Östereichisches Deutsch'],
+	'de-IN': ['German (informal)', 'Deutsch (informell)'],
 	el: ['Greek', 'Ελληνικά'],
 	gn: ['Guaraní', 'Avañe\'ẽ'],
 	haw: ['Hawaiian', 'Ōlelo Hawaiʻi'],

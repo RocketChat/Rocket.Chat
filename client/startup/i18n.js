@@ -1,5 +1,10 @@
-/* globals isRtl */
-
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { isRtl } from '/app/utils';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
 import moment from 'moment';
 
 const currentLanguage = new ReactiveVar();
@@ -63,11 +68,11 @@ Meteor.startup(() => {
 	};
 	window.setLanguage = setLanguage;
 
-	const defaultUserLanguage = () => RocketChat.settings.get('Language') || getBrowserLanguage() || 'en';
+	const defaultUserLanguage = () => settings.get('Language') || getBrowserLanguage() || 'en';
 	window.defaultUserLanguage = defaultUserLanguage;
 
 	Tracker.autorun(() => {
-		const user = RocketChat.models.Users.findOne(Meteor.userId(), { fields: { language: 1 } });
+		const user = Users.findOne(Meteor.userId(), { fields: { language: 1 } });
 
 		setLanguage((user && user.language) || defaultUserLanguage());
 	});
