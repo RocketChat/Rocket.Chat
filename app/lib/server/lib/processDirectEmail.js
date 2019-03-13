@@ -91,10 +91,13 @@ export const processDirectEmail = function(email) {
 			return false;
 		}
 
+		// room is readonly
 		if (room.ro === true) {
 			if (!hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
-				// room is readonly
-				return false;
+				// Check if the user was manually unmuted
+				if (!(room.unmuted || []).includes(user.username)) {
+					return false;
+				}
 			}
 		}
 

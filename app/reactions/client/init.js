@@ -15,7 +15,13 @@ Template.room.events({
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: data._arguments[1].rid });
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+		if (room.ro && !room.reactWhenReadOnly) {
+			if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
+				return false;
+			}
+		}
+
+		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 			return false;
 		}
 
@@ -62,11 +68,23 @@ Meteor.startup(function() {
 
 			if (!room) {
 				return false;
-			} else if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+			}
+
+			if (room.ro && !room.reactWhenReadOnly) {
+				if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
+					return false;
+				}
+			}
+
+			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 				return false;
-			} else if (!Subscriptions.findOne({ rid: message.rid })) {
+			}
+
+			if (!Subscriptions.findOne({ rid: message.rid })) {
 				return false;
-			} else if (message.private) {
+			}
+
+			if (message.private) {
 				return false;
 			}
 

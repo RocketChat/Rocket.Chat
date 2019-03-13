@@ -76,14 +76,17 @@ Meteor.methods({
 
 		if (room.ro === true) {
 			if (!hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
-				Notifications.notifyUser(Meteor.userId(), 'message', {
-					_id: Random.id(),
-					rid: room._id,
-					ts: new Date,
-					msg: TAPi18n.__('room_is_read_only', {}, user.language),
-				});
+				// Unless the user was manually unmuted
+				if (!(room.unmuted || []).includes(user.username)) {
+					Notifications.notifyUser(Meteor.userId(), 'message', {
+						_id: Random.id(),
+						rid: room._id,
+						ts: new Date,
+						msg: TAPi18n.__('room_is_read_only', {}, user.language),
+					});
 
-				throw new Meteor.Error('You can\'t send messages because the room is readonly.');
+					throw new Meteor.Error('You can\'t send messages because the room is readonly.');
+				}
 			}
 		}
 

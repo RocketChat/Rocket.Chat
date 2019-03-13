@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
-import { ChatRoom, ChatSubscription, RoomRoles } from '/app/models';
+import { ChatRoom, ChatSubscription } from '/app/models';
 import { hasAtLeastOnePermission } from '/app/authorization';
 import _ from 'underscore';
 
@@ -54,29 +54,26 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		if (!user) {
 			return room && room.ro;
 		}
-		const userOwner = RoomRoles.findOne({
-			rid: roomId,
-			'u._id': user._id,
-			roles: 'owner',
-		}, {
-			fields: {
-				_id: 1,
-			},
-		});
-
-		if (userOwner) {
-			return false;
-		}
 
 		if (room) {
 			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
 				return true;
 			}
 
-			return (room.ro === true && !hasAtLeastOnePermission('post-readonly', room._id));
-		} else {
-			return false;
+			if (room.ro === true) {
+				if (Array.isArray(room.unmuted) && room.unmuted.indexOf(user.username) !== -1) {
+					return false;
+				}
+
+				if (hasAtLeastOnePermission('post-readonly', room._id)) {
+					return false;
+				}
+
+				return true;
+			}
 		}
+
+		return false;
 	}
 	archived(roomId) {
 		const fields = {
