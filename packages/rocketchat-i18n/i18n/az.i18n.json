@@ -1127,6 +1127,8 @@
   "Favorites": "Sevimlilər",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Bu xüsusiyyət effektiv olmaq üçün \"Göndərmə Gezgisi Tarixini Göndərmə Mesajını Göndər\" e bağlıdır.",
   "Features_Enabled": "Xüsusiyyətləri Aktivləşdi",
+  "FEDERATION_Domain": "Domain",
+  "FEDERATION_Status": "Status",
   "Field": "Alan",
   "Field_removed": "Alan çıxarıldı",
   "Field_required": "Alan tələb olunur",

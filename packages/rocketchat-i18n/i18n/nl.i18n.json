@@ -1190,6 +1190,8 @@
   "Favorites": "Favorieten",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Deze functie is afhankelijk van 'Stuur bezoekersnavigatiegeschiedenis als bericht' om te worden ingeschakeld.",
   "Features_Enabled": "features Ingeschakeld",
+  "FEDERATION_Domain": "Domein",
+  "FEDERATION_Status": "Toestand",
   "Field": "Veld",
   "Field_removed": "Het gebied verwijderd",
   "Field_required": "Veld vereist",
