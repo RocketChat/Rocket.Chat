@@ -17,8 +17,8 @@ Meteor.startup(function() {
 				},
 				{
 					key: 'voxtelesys',
-					i18nLabel: 'Voxtelesys'
-				}
+					i18nLabel: 'Voxtelesys',
+				},
 			],
 			i18nLabel: 'Service',
 		});

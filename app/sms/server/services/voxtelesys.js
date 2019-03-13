@@ -1,6 +1,6 @@
 import { settings } from '/app/settings';
 import { SMS } from '../SMS';
-var http = require('request');
+const http = require('request');
 
 class Voxtelesys {
 	constructor() {
@@ -22,19 +22,23 @@ class Voxtelesys {
 		return returnData;
 	}
 	send(fromNumber, toNumber, message) {
-		var options = {
+		const options = {
 			timeout: 30000,
 			followRedirect: false,
 			url: 'https://servicelayer01.voxtelesys.net:3100/api/v1/sms',
-			auth: {bearer: this.authToken},
-			agentOptions: {ecdhCurve: 'auto'},
+			auth: {
+				bearer: this.authToken,
+			},
+			agentOptions: {
+				ecdhCurve: 'auto',
+			},
 			forever: true,
 			json: true,
 			body: {
 				to: [toNumber],
 				from: fromNumber,
-				body: message
-			}
+				body: message,
+			},
 		};
 		http.post(options, function(error, response, body) {
 			if (error) {
@@ -49,13 +53,15 @@ class Voxtelesys {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: {success: true},
+			body: {
+				success: true,
+			},
 		};
 	}
 	error(error) {
 		let message = '';
 		if (error.reason) {
-			message = error.reason
+			message = error.reason;
 		}
 		return {
 			headers: {
@@ -63,7 +69,7 @@ class Voxtelesys {
 			},
 			body: {
 				success: false,
-				error: message
+				error: message,
 			},
 		};
 	}
