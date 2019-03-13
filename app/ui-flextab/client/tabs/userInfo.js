@@ -203,6 +203,7 @@ Template.userInfo.events({
 
 		$(e.currentTarget).blur();
 		e.preventDefault();
+		e.stopPropagation();
 		const config = {
 			columns,
 			data: {
