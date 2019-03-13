@@ -1,7 +1,3 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import {
 	getCredentials,
 	api,

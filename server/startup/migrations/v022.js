@@ -1,10 +1,13 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Messages } from '/app/models';
+
+Migrations.add({
 	version: 22,
 	up() {
 		/*
 		 * Update message edit field
 		 */
-		RocketChat.models.Messages.upgradeEtsToEditAt();
+		Messages.upgradeEtsToEditAt();
 
 		return console.log('Updated old messages\' ets edited timestamp to new editedAt timestamp.');
 	},

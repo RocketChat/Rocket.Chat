@@ -1,5 +1,10 @@
-const msgStream = new Meteor.Streamer('room-messages');
-this.msgStream = msgStream;
+import { Meteor } from 'meteor/meteor';
+import { hasPermission } from '/app/authorization';
+import { settings } from '/app/settings';
+import { Subscriptions, Users, Messages } from '/app/models';
+import { msgStream } from '/app/lib';
+
+const MY_MESSAGE = '__my_messages__';
 
 msgStream.allowWrite('none');
 
@@ -11,20 +16,21 @@ msgStream.allowRead(function(eventName, args) {
 			return false;
 		}
 
-		if (room.t === 'c' && !RocketChat.authz.hasPermission(this.userId, 'preview-c-room') && !RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
+		if (room.t === 'c' && !hasPermission(this.userId, 'preview-c-room') && !Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } })) {
 			return false;
 		}
 
 		return true;
 	} catch (error) {
+
 		/* error*/
 		return false;
 	}
 });
 
-msgStream.allowRead('__my_messages__', 'all');
+msgStream.allowRead(MY_MESSAGE, 'all');
 
-msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
+msgStream.allowEmit(MY_MESSAGE, function(eventName, msg) {
 	try {
 		const room = Meteor.call('canAccessRoom', msg.rid, this.userId);
 
@@ -32,11 +38,12 @@ msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 			return false;
 		}
 
-		options.roomParticipant = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null;
-		options.roomType = room.t;
-		options.roomName = room.name;
+		return {
+			roomParticipant: Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId, { fields: { _id: 1 } }) != null,
+			roomType: room.t,
+			roomName: room.name,
+		};
 
-		return true;
 	} catch (error) {
 		/* error*/
 		return false;
@@ -46,29 +53,29 @@ msgStream.allowEmit('__my_messages__', function(eventName, msg, options) {
 Meteor.startup(function() {
 	function publishMessage(type, record) {
 		if (record._hidden !== true && (record.imported == null)) {
-			const UI_Use_Real_Name = RocketChat.settings.get('UI_Use_Real_Name') === true;
+			const UI_Use_Real_Name = settings.get('UI_Use_Real_Name') === true;
 
 			if (record.u && record.u._id && UI_Use_Real_Name) {
-				const user = RocketChat.models.Users.findOneById(record.u._id);
+				const user = Users.findOneById(record.u._id);
 				record.u.name = user && user.name;
 			}
 
 			if (record.mentions && record.mentions.length && UI_Use_Real_Name) {
 				record.mentions.forEach((mention) => {
-					const user = RocketChat.models.Users.findOneById(mention._id);
+					const user = Users.findOneById(mention._id);
 					mention.name = user && user.name;
 				});
 			}
-			msgStream.emitWithoutBroadcast('__my_messages__', record, {});
-			return msgStream.emitWithoutBroadcast(record.rid, record);
+			msgStream.mymessage(MY_MESSAGE, record);
+			msgStream.emitWithoutBroadcast(record.rid, record);
 		}
 	}
 
-	return RocketChat.models.Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
+	return Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
-				const message = data || RocketChat.models.Messages.findOne({ _id: id });
+				const message = data || Messages.findOne({ _id: id });
 				publishMessage(clientAction, message);
 				break;
 		}

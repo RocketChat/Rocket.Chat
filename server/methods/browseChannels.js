@@ -1,4 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { hasPermission } from '/app/authorization';
+import { Rooms, Users } from '/app/models';
 import s from 'underscore.string';
+
+import { Federation } from '/app/federation';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -23,7 +29,7 @@ const sortUsers = function(field, direction) {
 };
 
 Meteor.methods({
-	browseChannels({ text = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
+	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
 
 		if (!['channels', 'users'].includes(type)) {
@@ -52,47 +58,80 @@ Meteor.methods({
 		};
 
 		const user = Meteor.user();
-		if (type === 'channels') {
 
+		if (type === 'channels') {
 			const sort = sortChannels(sortBy, sortDirection);
-			if (!RocketChat.authz.hasPermission(user._id, 'view-c-room')) {
+			if (!hasPermission(user._id, 'view-c-room')) {
 				return;
 			}
+
+			const result = Rooms.findByNameAndType(regex, 'c', {
+				...options,
+				sort,
+				fields: {
+					description: 1,
+					topic: 1,
+					name: 1,
+					lastMessage: 1,
+					ts: 1,
+					archived: 1,
+					usersCount: 1,
+				},
+			});
+
 			return {
-				results: RocketChat.models.Rooms.findByNameAndType(regex, 'c', {
-					...options,
-					sort,
-					fields: {
-						description: 1,
-						topic: 1,
-						name: 1,
-						lastMessage: 1,
-						ts: 1,
-						archived: 1,
-						usersCount: 1,
-					},
-				}).fetch(),
-				total: RocketChat.models.Rooms.findByNameAndType(regex, 'c').count(),
+				total: result.count(), // count ignores the `skip` and `limit` options
+				results: result.fetch(),
 			};
 		}
 
 		// type === users
-		if (!RocketChat.authz.hasPermission(user._id, 'view-outside-room') || !RocketChat.authz.hasPermission(user._id, 'view-d-room')) {
+		if (!hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
 			return;
 		}
+
+		let exceptions = [user.username];
+
+		// Get exceptions
+		if (type === 'users' && workspace === 'all') {
+			const nonFederatedUsers = Users.find({
+				$or: [
+					{ federation: { $exists: false } },
+					{ 'federation.peer': Federation.localIdentifier },
+				],
+			}, { fields: { username: 1 } }).map((u) => u.username);
+
+			exceptions = exceptions.concat(nonFederatedUsers);
+		} else if (type === 'users' && workspace === 'local') {
+			const federatedUsers = Users.find({
+				$and: [
+					{ federation: { $exists: true } },
+					{ 'federation.peer': { $ne: Federation.localIdentifier } },
+				],
+			}, { fields: { username: 1 } }).map((u) => u.username);
+
+			exceptions = exceptions.concat(federatedUsers);
+		}
+
 		const sort = sortUsers(sortBy, sortDirection);
+
+		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
+
+		const result = Users.findByActiveUsersExcept(text, exceptions, {
+			...options,
+			sort,
+			fields: {
+				username: 1,
+				name: 1,
+				createdAt: 1,
+				emails: 1,
+				federation: 1,
+			},
+		}, forcedSearchFields);
+
 		return {
-			results: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username], {
-				...options,
-				sort,
-				fields: {
-					username: 1,
-					name: 1,
-					createdAt: 1,
-					emails: 1,
-				},
-			}).fetch(),
-			total: RocketChat.models.Users.findByActiveUsersExcept(text, [user.username]).count(),
+			total: result.count(), // count ignores the `skip` and `limit` options
+			results: result.fetch(),
 		};
 	},
 });

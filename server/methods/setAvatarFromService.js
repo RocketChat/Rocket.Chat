@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { settings } from '/app/settings';
+import { setUserAvatar } from '/app/lib';
+
 Meteor.methods({
 	setAvatarFromService(dataURI, contentType, service) {
 		check(dataURI, String);
@@ -10,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'setAvatarFromService',
 			});
@@ -18,7 +24,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		return RocketChat.setUserAvatar(user, dataURI, contentType, service);
+		return setUserAvatar(user, dataURI, contentType, service);
 	},
 });
 

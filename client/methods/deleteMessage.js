@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { ChatMessage } from '/app/models';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { settings } from '/app/settings';
 import _ from 'underscore';
 import moment from 'moment';
 
@@ -10,9 +15,9 @@ Meteor.methods({
 		// We're now only passed in the `_id` property to lower the amount of data sent to the server
 		message = ChatMessage.findOne({ _id: message._id });
 
-		const hasPermission = RocketChat.authz.hasAtLeastOnePermission('delete-message', message.rid);
-		const forceDelete = RocketChat.authz.hasAtLeastOnePermission('force-delete-message', message.rid);
-		const deleteAllowed = RocketChat.settings.get('Message_AllowDeleting');
+		const hasPermission = hasAtLeastOnePermission('delete-message', message.rid);
+		const forceDelete = hasAtLeastOnePermission('force-delete-message', message.rid);
+		const deleteAllowed = settings.get('Message_AllowDeleting');
 		let deleteOwn = false;
 
 		if (message && message.u && message.u._id) {
@@ -21,7 +26,7 @@ Meteor.methods({
 		if (!(forceDelete || hasPermission || (deleteAllowed && deleteOwn))) {
 			return false;
 		}
-		const blockDeleteInMinutes = RocketChat.settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
+		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (!forceDelete && _.isNumber(blockDeleteInMinutes) && blockDeleteInMinutes !== 0) {
 			const msgTs = moment(message.ts);
 			const currentTsDiff = moment().diff(msgTs, 'minutes');

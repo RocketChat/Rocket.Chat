@@ -1,15 +1,17 @@
 import { Meteor } from 'meteor/meteor';
+import { hasPermission } from '/app/authorization';
+import { Users } from '/app/models';
 
 Meteor.methods({
 	'personalAccessTokens:regenerateToken'({ tokenName }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:regenerateToken' });
 		}
-		if (!RocketChat.settings.get('API_Enable_Personal_Access_Tokens')) {
-			throw new Meteor.Error('error-personal-access-tokens-are-current-disabled', 'Personal Access Tokens are currently disabled', { method: 'personalAccessTokens:regenerateToken' });
+		if (!hasPermission(Meteor.userId(), 'create-personal-access-tokens')) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:regenerateToken' });
 		}
 
-		const tokenExist = RocketChat.models.Users.findPersonalAccessTokenByTokenNameAndUserId({
+		const tokenExist = Users.findPersonalAccessTokenByTokenNameAndUserId({
 			userId: Meteor.userId(),
 			tokenName,
 		});

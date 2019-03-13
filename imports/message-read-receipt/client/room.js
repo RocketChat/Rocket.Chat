@@ -1,4 +1,8 @@
-RocketChat.MessageAction.addButton({
+import { t } from '/app/utils';
+import { modal, MessageAction } from '/app/ui-utils';
+import { settings } from '/app/settings';
+
+MessageAction.addButton({
 	id: 'receipt-detail',
 	icon: 'info-circled',
 	label: 'Message_info',
@@ -17,7 +21,7 @@ RocketChat.MessageAction.addButton({
 		});
 	},
 	condition() {
-		return RocketChat.settings.get('Message_Read_Receipt_Store_Users');
+		return settings.get('Message_Read_Receipt_Store_Users');
 	},
 	order: 1,
 	group: 'menu',

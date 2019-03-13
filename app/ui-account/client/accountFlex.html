@@ -1,0 +1,35 @@
+<template name="accountFlex">
+	<aside class="sidebar-light sidebar--medium" role="navigation">
+		<header class="sidebar-flex__header">
+			<h1 class="sidebar-flex__title">{{_ "My_Account"}}</h1>
+			{{#unless embeddedVersion}}
+				<button class="sidebar-flex__close-button" data-action="close">
+					{{> icon block="sidebar-flex__close-icon" icon="cross"}}
+				</button>
+			{{/unless}}
+		</header>
+		<div class="rooms-list {{#if embeddedVersion}}rooms-list--embedded{{/if}}">
+			<ul class="rooms-list__list">
+				{{> sidebarItem menuItem "Preferences" "customize" "account" "preferences" }}
+
+				{{#if allowUserProfileChange}}
+					{{> sidebarItem menuItem "Profile" "user" "account" "profile" }}
+				{{/if}}
+
+				{{> sidebarItem menuItem "Security" "lock" "account" "security" }}
+
+				{{#if encryptionEnabled}}
+					{{> sidebarItem menuItem "Encryption" "key" "account" "encryption" }}
+				{{/if}}
+
+				{{#if webdavIntegrationEnabled}}
+					{{> sidebarItem menuItem "Integrations" "code" "account" "integrations" }}
+				{{/if}}
+
+				{{#if accessTokensEnabled}}
+					{{> sidebarItem menuItem "Personal_Access_Tokens" "key" "account" "tokens" }}
+				{{/if}}
+			</ul>
+		</div>
+	</aside>
+</template>

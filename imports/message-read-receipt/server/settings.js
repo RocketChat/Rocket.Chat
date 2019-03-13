@@ -1,10 +1,12 @@
-RocketChat.settings.add('Message_Read_Receipt_Enabled', false, {
+import { settings } from '/app/settings';
+
+settings.add('Message_Read_Receipt_Enabled', false, {
 	group: 'Message',
 	type: 'boolean',
 	public: true,
 });
 
-RocketChat.settings.add('Message_Read_Receipt_Store_Users', false, {
+settings.add('Message_Read_Receipt_Store_Users', false, {
 	group: 'Message',
 	type: 'boolean',
 	public: true,

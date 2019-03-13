@@ -1,3 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { settings } from '/app/settings';
+import { hasPermission } from '/app/authorization';
+import { Users, Rooms, Subscriptions } from '/app/models';
+import { getDefaultSubscriptionPref } from '/app/utils';
+import { RateLimiter } from '/app/lib';
+import { callbacks } from '/app/callbacks';
+
 Meteor.methods({
 	createDirectMessage(username) {
 		check(username, String);
@@ -16,19 +25,19 @@ Meteor.methods({
 			});
 		}
 
-		if (RocketChat.settings.get('Message_AllowDirectMessagesToYourself') === false && me.username === username) {
+		if (settings.get('Message_AllowDirectMessagesToYourself') === false && me.username === username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createDirectMessage',
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'create-d')) {
+		if (!hasPermission(Meteor.userId(), 'create-d')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'createDirectMessage',
 			});
 		}
 
-		const to = RocketChat.models.Users.findOneByUsername(username);
+		const to = Users.findOneByUsername(username);
 
 		if (!to) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -36,7 +45,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(to._id, 'view-d-room')) {
+		if (!hasPermission(to._id, 'view-d-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Target user not allowed to receive messages', {
 				method: 'createDirectMessage',
 			});
@@ -47,7 +56,7 @@ Meteor.methods({
 		const now = new Date();
 
 		// Make sure we have a room
-		RocketChat.models.Rooms.upsert({
+		const roomUpsertResult = Rooms.upsert({
 			_id: rid,
 		}, {
 			$set: {
@@ -61,12 +70,11 @@ Meteor.methods({
 			},
 		});
 
-		const myNotificationPref = RocketChat.getDefaultSubscriptionPref(me);
+		const myNotificationPref = getDefaultSubscriptionPref(me);
 
 		// Make user I have a subcription to this room
 		const upsertSubscription = {
 			$set: {
-				ts: now,
 				ls: now,
 				open: true,
 			},
@@ -83,6 +91,7 @@ Meteor.methods({
 					_id: me._id,
 					username: me.username,
 				},
+				ts: now,
 				...myNotificationPref,
 			},
 		};
@@ -91,19 +100,19 @@ Meteor.methods({
 			upsertSubscription.$set.archived = true;
 		}
 
-		RocketChat.models.Subscriptions.upsert({
+		Subscriptions.upsert({
 			rid,
 			$and: [{ 'u._id': me._id }], // work around to solve problems with upsert and dot
 		}, upsertSubscription);
 
-		const toNotificationPref = RocketChat.getDefaultSubscriptionPref(to);
+		const toNotificationPref = getDefaultSubscriptionPref(to);
 
-		RocketChat.models.Subscriptions.upsert({
+		Subscriptions.upsert({
 			rid,
 			$and: [{ 'u._id': to._id }], // work around to solve problems with upsert and dot
 		}, {
 			$setOnInsert: {
-				fname: me.username,
+				fname: me.name,
 				name: me.username,
 				t: 'd',
 				open: false,
@@ -116,9 +125,17 @@ Meteor.methods({
 					_id: to._id,
 					username: to.username,
 				},
+				ts: now,
 				...toNotificationPref,
 			},
 		});
+
+		// If the room is new, run a callback
+		if (roomUpsertResult.insertedId) {
+			const insertedRoom = Rooms.findOneById(rid);
+
+			callbacks.run('afterCreateDirectRoom', insertedRoom, { from: me, to });
+		}
 
 		return {
 			rid,
@@ -126,8 +143,8 @@ Meteor.methods({
 	},
 });
 
-RocketChat.RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
+RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
 	userId(userId) {
-		return !RocketChat.authz.hasPermission(userId, 'send-many-messages');
+		return !hasPermission(userId, 'send-many-messages');
 	},
 });

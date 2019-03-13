@@ -1,0 +1,31 @@
+<template name="header">
+<header class="rc-header">
+		<div class="rc-header__wrap">
+
+			<div class="rc-header__block rc-header--burger">
+				{{> burger}}
+			</div>
+
+			<span class="rc-header__block">{{_ sectionName}}</span>
+
+			{{#if Template.contentBlock}}
+				{{> Template.contentBlock}}
+			{{/if}}
+
+			{{# unless hideHelp}}
+				<div class="rc-header__section-help"></div>
+			{{/unless}}
+
+			{{#with toolbarButtons}}
+				<div class="iframe-toolbar">
+					{{#each buttons}}
+					<button class="{{id}}">
+						{{#if icon}}<i class="{{icon}}"></i>{{/if}}
+						{{label}}
+					</button>
+					{{/each}}
+				</div>
+			{{/with}}
+		</div>
+	</header>
+</template>

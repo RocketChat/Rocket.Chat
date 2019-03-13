@@ -1,0 +1,93 @@
+<template name="permissionsRole">
+	<div class="permissions-manager">
+		{{#if hasPermission}}
+			<a href="{{pathFor "admin-permissions"}}">{{_ "Back_to_permissions"}}</a>
+			<br>
+			<br>
+			{{#with role}}
+				<form id="form-role" class="inline form-role">
+					<label>{{_ "Role"}} :</label>
+					{{#if editing}}
+						<span>{{_id}}</span>
+					{{else}}
+						<input type="text" name="name" value="">
+					{{/if}}
+					<br>
+					<label>{{_ "Description"}} :</label>
+					<input type="text" name="description" value="{{description}}">
+					<br>
+					<label>{{_ "Scope"}} :</label>
+					<select name="scope" disabled="{{protected}}">
+						<option value="Users" selected="{{$eq scope 'Users'}}">{{_ "Global"}}</option>
+						<option value="Subscriptions" selected="{{$eq scope 'Subscriptions'}}">{{_ "Rooms"}}</option>
+					</select>
+
+					<br/>
+					<label for="mandatory2fa">{{_ "Users must use Two Factor Authentication"}} :</label>
+					<input type="checkbox" name="mandatory2fa" checked="{{mandatory2fa}}"> 
+
+					<div class="form-buttons">
+						{{#if editable}}
+							<button name="delete" class="button danger delete-role">{{_ "Delete"}}</button>
+						{{/if}}
+						<button name="save" class="button primary save">{{_ "Save"}}</button>
+					</div>
+				</form>
+			{{/with}}
+			{{#if editing}}
+				<h2 class="border-tertiary-background-color">{{_ "Users_in_role"}}</h2>
+				{{#if $eq role.scope 'Subscriptions'}}
+					<form id="form-search-room" class="inline">
+						<label>{{_ "Choose_a_room"}}</label>
+						{{> inputAutocomplete settings=autocompleteChannelSettings name="room" class="search" placeholder=(_ "Enter_a_room_name") autocomplete="off"}}
+					</form>
+				{{/if}}
+				{{#if $or ($eq role.scope 'Users') searchRoom}}
+					<form id="form-users" class="inline">
+						<label>{{_ "Add_user"}}</label>
+						{{> inputAutocomplete settings=autocompleteUsernameSettings name="username" class="search" placeholder=(_ "Enter_a_username") autocomplete="off"}}
+						<button name="add" class="button primary add">{{_ "Add"}}</button>
+					</form>
+					<div class="list">
+						<table>
+							<thead>
+								<tr>
+									<th>&nbsp;</th>
+									<th width="34%">{{_ "Name"}}</th>
+									<th width="33%">{{_ "Username"}}</th>
+									<th width="33%">{{_ "Email"}}</th>
+									<th>&nbsp;</th>
+								</tr>
+							</thead>
+							<tbody>
+								{{#unless hasUsers}}
+									<tr>
+										<td colspan="5" class="empty-role">{{_ "There_are_no_users_in_this_role"}}</td>
+									</tr>
+								{{/unless}}
+								{{#each userInRole}}
+									<tr class="user-info" data-id="{{_id}}">
+										<td>
+											<div class="user-image status-{{status}}">
+												{{> avatar username=username}}
+											</div>
+										</td>
+										<td>{{name}}</td>
+										<td>{{username}}</td>
+										<td>{{emailAddress}}</td>
+										<td><a href="#remove" class="remove-user"><i class="icon-block"></i></a></td>
+									</tr>
+								{{/each}}
+							</tbody>
+						</table>
+						{{#if hasMore}}
+							<button class="button secondary load-more {{isLoading}}">{{_ "Load_more"}}</button>
+						{{/if}}
+					</div>
+				{{/if}}
+			{{/if}}
+		{{else}}
+			{{_ "Not_authorized"}}
+		{{/if}}
+	</div>
+</template>
