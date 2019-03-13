@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import * as Mailer from '/app/mailer';
+import { hasPermission } from '/app/authorization';
+import { Users, Subscriptions } from '/app/models';
+import { settings } from '/app/settings';
 
 Meteor.methods({
 	setUserActiveStatus(userId, active) {
