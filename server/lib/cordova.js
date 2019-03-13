@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { SystemLogger } from 'meteor/rocketchat:logger';
-import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
+import { SystemLogger } from '/app/logger';
+import { getWorkspaceAccessToken } from '/app/cloud';
 import { Push } from 'meteor/rocketchat:push';
+import { hasRole } from '/app/authorization';
+import { settings } from '/app/settings';
 
 
 Meteor.methods({
@@ -20,7 +22,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.hasRole(user._id, 'admin')) {
+		if (!hasRole(user._id, 'admin')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'push_test',
 			});
@@ -77,6 +79,8 @@ Meteor.methods({
 });
 
 function sendPush(service, token, options, tries = 0) {
+	options.uniqueId = settings.get('uniqueID');
+
 	const data = {
 		data: {
 			token,
@@ -90,7 +94,7 @@ function sendPush(service, token, options, tries = 0) {
 		data.headers.Authorization = `Bearer ${ workspaceAccesstoken }`;
 	}
 
-	return HTTP.post(`${ RocketChat.settings.get('Push_gateway') }/push/${ service }/send`, data, function(error, response) {
+	return HTTP.post(`${ settings.get('Push_gateway') }/push/${ service }/send`, data, function(error, response) {
 		if (response && response.statusCode === 406) {
 			console.log('removing push token', token);
 			Push.appCollection.remove({
@@ -122,38 +126,38 @@ function sendPush(service, token, options, tries = 0) {
 }
 
 function configurePush() {
-	if (RocketChat.settings.get('Push_debug')) {
+	if (settings.get('Push_debug')) {
 		Push.debug = true;
 		console.log('Push: configuring...');
 	}
 
-	if (RocketChat.settings.get('Push_enable') === true) {
+	if (settings.get('Push_enable') === true) {
 		Push.allow({
 			send(userId/* , notification*/) {
-				return RocketChat.authz.hasRole(userId, 'admin');
+				return hasRole(userId, 'admin');
 			},
 		});
 
 		let apn;
 		let gcm;
 
-		if (RocketChat.settings.get('Push_enable_gateway') === false) {
+		if (settings.get('Push_enable_gateway') === false) {
 			gcm = {
-				apiKey: RocketChat.settings.get('Push_gcm_api_key'),
-				projectNumber: RocketChat.settings.get('Push_gcm_project_number'),
+				apiKey: settings.get('Push_gcm_api_key'),
+				projectNumber: settings.get('Push_gcm_project_number'),
 			};
 
 			apn = {
-				passphrase: RocketChat.settings.get('Push_apn_passphrase'),
-				keyData: RocketChat.settings.get('Push_apn_key'),
-				certData: RocketChat.settings.get('Push_apn_cert'),
+				passphrase: settings.get('Push_apn_passphrase'),
+				keyData: settings.get('Push_apn_key'),
+				certData: settings.get('Push_apn_cert'),
 			};
 
-			if (RocketChat.settings.get('Push_production') !== true) {
+			if (settings.get('Push_production') !== true) {
 				apn = {
-					passphrase: RocketChat.settings.get('Push_apn_dev_passphrase'),
-					keyData: RocketChat.settings.get('Push_apn_dev_key'),
-					certData: RocketChat.settings.get('Push_apn_dev_cert'),
+					passphrase: settings.get('Push_apn_dev_passphrase'),
+					keyData: settings.get('Push_apn_dev_key'),
+					certData: settings.get('Push_apn_dev_cert'),
 					gateway: 'gateway.sandbox.push.apple.com',
 				};
 			}
@@ -170,12 +174,12 @@ function configurePush() {
 		Push.Configure({
 			apn,
 			gcm,
-			production: RocketChat.settings.get('Push_production'),
+			production: settings.get('Push_production'),
 			sendInterval: 5000,
 			sendBatchSize: 10,
 		});
 
-		if (RocketChat.settings.get('Push_enable_gateway') === true) {
+		if (settings.get('Push_enable_gateway') === true) {
 			Push.serverSend = function(options = { badge: 0 }) {
 				if (options.from !== String(options.from)) {
 					throw new Error('Push.send: option "from" not a string');
@@ -186,7 +190,7 @@ function configurePush() {
 				if (options.text !== String(options.text)) {
 					throw new Error('Push.send: option "text" not a string');
 				}
-				if (RocketChat.settings.get('Push_debug')) {
+				if (settings.get('Push_debug')) {
 					console.log(`Push: send message "${ options.title }" via query`, options.query);
 				}
 
@@ -205,7 +209,7 @@ function configurePush() {
 				};
 
 				return Push.appCollection.find(query).forEach((app) => {
-					if (RocketChat.settings.get('Push_debug')) {
+					if (settings.get('Push_debug')) {
 						console.log('Push: send to token', app.token);
 					}
 

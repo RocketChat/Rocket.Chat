@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Users } from '/app/models';
+
+Migrations.add({
 	version: 124,
 	up() {
-		RocketChat.models.Users.update({
+		Users.update({
 			'settings.preferences.mergeChannels': true,
 		}, {
 			$unset: {
@@ -13,7 +16,7 @@ RocketChat.Migrations.add({
 		}, {
 			multi: true,
 		});
-		RocketChat.models.Users.update({
+		Users.update({
 			'settings.preferences.mergeChannels': false,
 		}, {
 			$unset: {

@@ -1,16 +1,19 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Settings } from '/app/models';
+
+Migrations.add({
 	version: 48,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
+		if (Settings) {
 
-			const RocketBot_Enabled = RocketChat.models.Settings.findOne({
+			const RocketBot_Enabled = Settings.findOne({
 				_id: 'RocketBot_Enabled',
 			});
 			if (RocketBot_Enabled) {
-				RocketChat.models.Settings.remove({
+				Settings.remove({
 					_id: 'RocketBot_Enabled',
 				});
-				RocketChat.models.Settings.upsert({
+				Settings.upsert({
 					_id: 'InternalHubot_Enabled',
 				}, {
 					$set: {
@@ -19,14 +22,14 @@ RocketChat.Migrations.add({
 				});
 			}
 
-			const RocketBot_Name = RocketChat.models.Settings.findOne({
+			const RocketBot_Name = Settings.findOne({
 				_id: 'RocketBot_Name',
 			});
 			if (RocketBot_Name) {
-				RocketChat.models.Settings.remove({
+				Settings.remove({
 					_id: 'RocketBot_Name',
 				});
-				RocketChat.models.Settings.upsert({
+				Settings.upsert({
 					_id: 'InternalHubot_Username',
 				}, {
 					$set: {

@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Settings } from '/app/models';
+
+Migrations.add({
 	version: 69,
 	up() {
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'theme-color-custom-scrollbar-color',
 			value: 'rgba(255, 255, 255, 0.05)',
 		}, {
@@ -10,7 +13,7 @@ RocketChat.Migrations.add({
 				value: '@transparent-darker',
 			},
 		});
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'theme-color-info-font-color',
 			value: '#aaaaaa',
 		}, {
@@ -19,7 +22,7 @@ RocketChat.Migrations.add({
 				value: '@secondary-font-color',
 			},
 		});
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'theme-color-link-font-color',
 			value: '#008ce3',
 		}, {
@@ -28,7 +31,7 @@ RocketChat.Migrations.add({
 				value: '@primary-action-color',
 			},
 		});
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'theme-color-status-away',
 			value: '#fcb316',
 		}, {
@@ -37,7 +40,7 @@ RocketChat.Migrations.add({
 				value: '@pending-color',
 			},
 		});
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'theme-color-status-busy',
 			value: '#d30230',
 		}, {
@@ -46,7 +49,7 @@ RocketChat.Migrations.add({
 				value: '@error-color',
 			},
 		});
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'theme-color-status-offline',
 			value: 'rgba(150, 150, 150, 0.50)',
 		}, {
@@ -55,7 +58,7 @@ RocketChat.Migrations.add({
 				value: '@transparent-darker',
 			},
 		});
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'theme-color-status-online',
 			value: '#35ac19',
 		}, {
@@ -64,7 +67,7 @@ RocketChat.Migrations.add({
 				value: '@success-color',
 			},
 		});
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'theme-color-tertiary-background-color',
 			value: '#eaeaea',
 		}, {
@@ -73,7 +76,7 @@ RocketChat.Migrations.add({
 				value: '@component-color',
 			},
 		});
-		return RocketChat.models.Settings.update({
+		return Settings.update({
 			_id: 'theme-color-tertiary-font-color',
 			value: 'rgba(255, 255, 255, 0.6)',
 		}, {

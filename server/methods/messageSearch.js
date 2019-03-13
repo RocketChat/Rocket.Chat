@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Subscriptions, Messages } from '/app/models';
+import { settings } from '/app/settings';
 import s from 'underscore.string';
 
 Meteor.methods({
@@ -27,7 +29,7 @@ Meteor.methods({
 			if (!Meteor.call('canAccessRoom', rid, currentUserId)) {
 				return result;
 			}
-		} else if (RocketChat.settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
+		} else if (settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
 			return result;
 		}
 
@@ -187,7 +189,7 @@ Meteor.methods({
 					$regex: r[1],
 					$options: r[2],
 				};
-			} else if (RocketChat.settings.get('Message_AlwaysSearchRegExp')) {
+			} else if (settings.get('Message_AlwaysSearchRegExp')) {
 				query.msg = {
 					$regex: text,
 					$options: 'i',
@@ -216,19 +218,19 @@ Meteor.methods({
 				query.rid = rid;
 			} else {
 				query.rid = {
-					$in: RocketChat.models.Subscriptions.findByUserId(user._id)
+					$in: Subscriptions.findByUserId(user._id)
 						.fetch()
 						.map((subscription) => subscription.rid),
 				};
 			}
 
-			if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+			if (!settings.get('Message_ShowEditedStatus')) {
 				options.fields = {
 					editedAt: 0,
 				};
 			}
 
-			result.message.docs = RocketChat.models.Messages.find(query, options).fetch();
+			result.message.docs = Messages.find(query, options).fetch();
 		}
 
 		return result;

@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Migrations } from '/app/migrations';
+import { hasPermission } from '/app/authorization';
 
 Meteor.methods({
 	migrateTo(version) {
@@ -13,7 +15,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (!user || RocketChat.authz.hasPermission(user._id, 'run-migration') !== true) {
+		if (!user || hasPermission(user._id, 'run-migration') !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'migrateTo',
 			});
@@ -21,7 +23,7 @@ Meteor.methods({
 
 		this.unblock();
 
-		RocketChat.Migrations.migrateTo(version);
+		Migrations.migrateTo(version);
 
 		return version;
 	},
@@ -33,6 +35,6 @@ Meteor.methods({
 			});
 		}
 
-		return RocketChat.Migrations.getVersion();
+		return Migrations.getVersion();
 	},
 });

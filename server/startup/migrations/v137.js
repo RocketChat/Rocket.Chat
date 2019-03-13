@@ -1,10 +1,14 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Users, Settings } from '/app/models';
+import { settings } from '/app/settings';
+
+Migrations.add({
 	version: 137,
 	up() {
-		const firstUser = RocketChat.models.Users.getOldest({ emails: 1 });
-		const reportStats = RocketChat.settings.get('Statistics_reporting');
+		const firstUser = Users.getOldest({ emails: 1 });
+		const reportStats = settings.get('Statistics_reporting');
 
-		RocketChat.models.Settings.updateValueById('Organization_Email', firstUser && firstUser.emails && firstUser.emails[0].address);
-		RocketChat.models.Settings.updateValueById('Register_Server', reportStats);
+		Settings.updateValueById('Organization_Email', firstUser && firstUser.emails && firstUser.emails[0].address);
+		Settings.updateValueById('Register_Server', reportStats);
 	},
 });

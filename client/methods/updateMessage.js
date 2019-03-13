@@ -1,8 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { t } from 'meteor/rocketchat:utils';
-import { ChatMessage, ChatRoom, Users } from 'meteor/rocketchat:models';
+import { t } from '/app/utils';
+import { ChatMessage, ChatRoom, Users } from '/app/models';
+import { hasAtLeastOnePermission } from '/app/authorization';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
@@ -17,13 +20,15 @@ Meteor.methods({
 		const room = ChatRoom.findOne(message.rid);
 		const userHasBeenMuted = room.muted && Array.isArray(room.muted) && room.muted.includes(Users.findOne({ _id: Meteor.userId() })._id);
 		if (!userHasBeenMuted) {
-			const hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid);
-			const editAllowed = RocketChat.settings.get('Message_AllowEditing');
+			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+			const editAllowed = settings.get('Message_AllowEditing');
 			let editOwn = false;
+			if (originalMessage.msg === message.msg) {
+				return;
+			}
 			if (originalMessage && originalMessage.u && originalMessage.u._id) {
 				editOwn = originalMessage.u._id === Meteor.userId();
 			}
-
 			const me = Meteor.users.findOne(Meteor.userId());
 
 			if (!(hasPermission || (editAllowed && editOwn))) {
@@ -31,7 +36,7 @@ Meteor.methods({
 				return false;
 			}
 
-			const blockEditInMinutes = RocketChat.settings.get('Message_AllowEditing_BlockEditInMinutes');
+			const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 			if (_.isNumber(blockEditInMinutes) && blockEditInMinutes !== 0) {
 				if (originalMessage.ts) {
 					const msgTs = moment(originalMessage.ts);
@@ -43,34 +48,35 @@ Meteor.methods({
 						}
 					}
 				}
-			}
 
-			Tracker.nonreactive(function() {
+				Tracker.nonreactive(function() {
 
-				if (isNaN(TimeSync.serverOffset())) {
-					message.editedAt = new Date();
-				} else {
-					message.editedAt = new Date(Date.now() + TimeSync.serverOffset());
-				}
-
-				message.editedBy = {
-					_id: Meteor.userId(),
-					username: me.username,
-				};
-
-				message = RocketChat.callbacks.run('beforeSaveMessage', message);
-				const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg };
-
-				if (originalMessage.attachments) {
-					if (originalMessage.attachments[0].description !== undefined) {
-						delete messageObject.$set.msg;
+					if (isNaN(TimeSync.serverOffset())) {
+						message.editedAt = new Date();
+					} else {
+						message.editedAt = new Date(Date.now() + TimeSync.serverOffset());
 					}
-				}
-				ChatMessage.update({
-					_id: message._id,
-					'u._id': Meteor.userId(),
-				}, { $set: messageObject });
-			});
+
+					message.editedBy = {
+						_id: Meteor.userId(),
+						username: me.username,
+					};
+
+					message = callbacks.run('beforeSaveMessage', message);
+					const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg };
+
+					if (originalMessage.attachments) {
+						if (originalMessage.attachments[0].description !== undefined) {
+							delete messageObject.$set.msg;
+						}
+					}
+					ChatMessage.update({
+						_id: message._id,
+						'u._id': Meteor.userId(),
+					}, { $set: messageObject });
+				});
+			}
 		}
 	},
 });
+

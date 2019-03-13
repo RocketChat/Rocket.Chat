@@ -1,19 +1,22 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Users, Settings } from '/app/models';
+
+Migrations.add({
 	version: 44,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Users) {
-			RocketChat.models.Users.find({ $or: [{ 'settings.preferences.disableNewRoomNotification': { $exists: 1 } }, { 'settings.preferences.disableNewMessageNotification': { $exists: 1 } }] }).forEach(function(user) {
+		if (Users) {
+			Users.find({ $or: [{ 'settings.preferences.disableNewRoomNotification': { $exists: 1 } }, { 'settings.preferences.disableNewMessageNotification': { $exists: 1 } }] }).forEach(function(user) {
 				const newRoomNotification = !(user && user.settings && user.settings.preferences && user.settings.preferences.disableNewRoomNotification);
 				const newMessageNotification = !(user && user.settings && user.settings.preferences && user.settings.preferences.disableNewMessageNotification);
-				RocketChat.models.Users.update({ _id: user._id }, { $unset: { 'settings.preferences.disableNewRoomNotification': 1, 'settings.preferences.disableNewMessageNotification': 1 }, $set: { 'settings.preferences.newRoomNotification': newRoomNotification, 'settings.preferences.newMessageNotification': newMessageNotification } });
+				Users.update({ _id: user._id }, { $unset: { 'settings.preferences.disableNewRoomNotification': 1, 'settings.preferences.disableNewMessageNotification': 1 }, $set: { 'settings.preferences.newRoomNotification': newRoomNotification, 'settings.preferences.newMessageNotification': newMessageNotification } });
 			});
 		}
 
-		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
-			const optOut = RocketChat.models.Settings.findOne({ _id: 'Statistics_opt_out' });
+		if (Settings) {
+			const optOut = Settings.findOne({ _id: 'Statistics_opt_out' });
 			if (optOut) {
-				RocketChat.models.Settings.remove({ _id: 'Statistics_opt_out' });
-				RocketChat.models.Settings.upsert({ _id: 'Statistics_reporting' }, {
+				Settings.remove({ _id: 'Statistics_opt_out' });
+				Settings.upsert({ _id: 'Statistics_reporting' }, {
 					$set: {
 						value: !optOut.value,
 						i18nDescription: 'Statistics_reporting_Description',
@@ -24,11 +27,11 @@ RocketChat.Migrations.add({
 			}
 		}
 
-		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
-			const favoriteRooms = RocketChat.models.Settings.findOne({ _id: 'Disable_Favorite_Rooms' });
+		if (Settings) {
+			const favoriteRooms = Settings.findOne({ _id: 'Disable_Favorite_Rooms' });
 			if (favoriteRooms) {
-				RocketChat.models.Settings.remove({ _id: 'Disable_Favorite_Rooms' });
-				RocketChat.models.Settings.upsert({ _id: 'Favorite_Rooms' }, {
+				Settings.remove({ _id: 'Disable_Favorite_Rooms' });
+				Settings.upsert({ _id: 'Favorite_Rooms' }, {
 					$set: {
 						value: !favoriteRooms.value,
 						i18nDescription: 'Favorite_Rooms_Description',
