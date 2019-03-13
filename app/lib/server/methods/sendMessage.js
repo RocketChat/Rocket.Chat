@@ -7,7 +7,7 @@ import { metrics } from '/app/metrics';
 import { settings } from '/app/settings';
 import { Notifications } from '/app/notifications';
 import { messageProperties } from '/app/ui-utils';
-import { Subscriptions, Users, Roles } from '/app/models';
+import { Subscriptions, Users } from '/app/models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import moment from 'moment';
@@ -75,17 +75,7 @@ Meteor.methods({
 		}
 
 		if (room.ro === true) {
-			const userOwner = Roles.findOne({
-				rid: room._id,
-				'u._id': user._id,
-				roles: 'owner',
-			}, {
-				fields: {
-					_id: 1,
-				},
-			});
-
-			if (!userOwner && !hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
+			if (!hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
 				Notifications.notifyUser(Meteor.userId(), 'message', {
 					_id: Random.id(),
 					rid: room._id,

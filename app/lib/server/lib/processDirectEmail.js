@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from '/app/settings';
-import { Rooms, Messages, Users, Subscriptions, Roles } from '/app/models';
+import { Rooms, Messages, Users, Subscriptions } from '/app/models';
 import { metrics } from '/app/metrics';
 import { hasPermission } from '/app/authorization';
 import { EmailReplyParser as reply } from 'emailreplyparser';
@@ -92,17 +92,7 @@ export const processDirectEmail = function(email) {
 		}
 
 		if (room.ro === true) {
-			const userOwner = Roles.findOne({
-				rid: room._id,
-				'u._id': user._id,
-				roles: 'owner',
-			}, {
-				fields: {
-					_id: 1,
-				},
-			});
-
-			if (!userOwner && !hasPermission(Meteor.userId(), 'post-readonly')) {
+			if (!hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
 				// room is readonly
 				return false;
 			}
