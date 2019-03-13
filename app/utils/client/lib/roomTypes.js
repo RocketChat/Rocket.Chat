@@ -45,6 +45,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		};
 		if (user) {
 			fields.muted = 1;
+			fields.unmuted = 1;
 		}
 		const room = ChatRoom.findOne({
 			_id: roomId,

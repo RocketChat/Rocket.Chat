@@ -76,11 +76,12 @@ Template.membersList.helpers({
 				}
 			}
 
+			const muted = (room.ro && !roomUnmuted.includes(user.username)) || roomMuted.includes(user.username);
+
 			return {
 				user,
 				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
-				muted: Array.from(roomMuted).includes(user.username),
-				unmuted: Array.from(roomUnmuted).includes(user.username),
+				muted,
 				utcOffset,
 			};
 		});

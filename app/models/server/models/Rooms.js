@@ -1143,6 +1143,9 @@ export class Rooms extends Base {
 			$addToSet: {
 				muted: username,
 			},
+			$pull: {
+				unmuted: username,
+			},
 		};
 
 		return this.update(query, update);
@@ -1154,6 +1157,9 @@ export class Rooms extends Base {
 		const update = {
 			$pull: {
 				muted: username,
+			},
+			$addToSet: {
+				unmuted: username,
 			},
 		};
 
