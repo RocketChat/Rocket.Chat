@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { OAuthApps } from '/app/models';
+
+Migrations.add({
 	version: 81,
 	up() {
-		RocketChat.models.OAuthApps.update({ _id: 'zapier' }, {
+		OAuthApps.update({ _id: 'zapier' }, {
 			$set: {
 				active: true,
 				redirectUri: 'https://zapier.com/dashboard/auth/oauth/return/App32270API/',

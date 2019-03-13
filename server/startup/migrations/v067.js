@@ -1,8 +1,11 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { LivechatDepartment } from '/app/models';
+
+Migrations.add({
 	version: 67,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.LivechatDepartment) {
-			RocketChat.models.LivechatDepartment.model.update({}, {
+		if (LivechatDepartment) {
+			LivechatDepartment.model.update({}, {
 				$set: {
 					showOnRegistration: true,
 				},

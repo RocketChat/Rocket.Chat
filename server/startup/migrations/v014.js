@@ -1,21 +1,24 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Settings } from '/app/models';
+
+Migrations.add({
 	version: 14,
 	up() {
 		// Remove unused settings
-		RocketChat.models.Settings.remove({ _id: 'API_Piwik_URL' });
-		RocketChat.models.Settings.remove({ _id: 'API_Piwik_ID' });
-		RocketChat.models.Settings.remove({ _id: 'Message_Edit' });
-		RocketChat.models.Settings.remove({ _id: 'Message_Delete' });
-		RocketChat.models.Settings.remove({ _id: 'Message_KeepStatusHistory' });
+		Settings.remove({ _id: 'API_Piwik_URL' });
+		Settings.remove({ _id: 'API_Piwik_ID' });
+		Settings.remove({ _id: 'Message_Edit' });
+		Settings.remove({ _id: 'Message_Delete' });
+		Settings.remove({ _id: 'Message_KeepStatusHistory' });
 
-		RocketChat.models.Settings.update({ _id: 'Message_ShowEditedStatus' }, {
+		Settings.update({ _id: 'Message_ShowEditedStatus' }, {
 			$set: {
 				type: 'boolean',
 				value: true,
 			},
 		});
 
-		RocketChat.models.Settings.update({ _id: 'Message_ShowDeletedStatus' }, {
+		Settings.update({ _id: 'Message_ShowDeletedStatus' }, {
 			$set: {
 				type: 'boolean',
 				value: false,
@@ -42,14 +45,14 @@ RocketChat.Migrations.add({
 		];
 
 		for (const oldAndNew of metaKeys) {
-			const oldSetting = RocketChat.models.Settings.findOne({ _id: oldAndNew.old });
+			const oldSetting = Settings.findOne({ _id: oldAndNew.old });
 			const oldValue = oldSetting && oldSetting.value;
 
-			const newSetting = RocketChat.models.Settings.findOne({ _id: oldAndNew.new });
+			const newSetting = Settings.findOne({ _id: oldAndNew.new });
 			const newValue = newSetting && newSetting.value;
 
 			if (oldValue && newValue) {
-				RocketChat.models.Settings.update({
+				Settings.update({
 					_id: oldAndNew.new,
 				}, {
 					$set: {
@@ -58,12 +61,12 @@ RocketChat.Migrations.add({
 				});
 			}
 
-			RocketChat.models.Settings.remove({
+			Settings.remove({
 				_id: oldAndNew.old,
 			});
 		}
 
-		RocketChat.models.Settings.remove({
+		Settings.remove({
 			_id: 'SMTP_Security',
 		});
 	},

@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Subscriptions } from '/app/models';
+import { hasPermission } from '/app/authorization';
 
 Meteor.methods({
 	async getUsersOfRoom(rid, showAll) {
@@ -12,15 +14,15 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		if (room.broadcast && !RocketChat.authz.hasPermission(userId, 'view-broadcast-member-list', rid)) {
+		if (room.broadcast && !hasPermission(userId, 'view-broadcast-member-list', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid);
+		const subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(rid);
 
 		return {
 			total: subscriptions.count(),
-			records: await RocketChat.models.Subscriptions.model.rawCollection().aggregate([
+			records: await Subscriptions.model.rawCollection().aggregate([
 				{ $match: { rid } },
 				{
 					$lookup:

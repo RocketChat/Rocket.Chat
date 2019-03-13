@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Users, Uploads } from '/app/models';
 
 export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
 	if (!pub.userId) {
@@ -9,14 +10,14 @@ export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
 		return this.ready();
 	}
 
-	const cursorFileListHandle = RocketChat.models.Uploads.findNotHiddenFilesOfRoom(rid, searchText, limit).observeChanges({
+	const cursorFileListHandle = Uploads.findNotHiddenFilesOfRoom(rid, searchText, limit).observeChanges({
 		added(_id, record) {
-			const { username, name } = record.userId ? RocketChat.models.Users.findOneById(record.userId) : {};
+			const { username, name } = record.userId ? Users.findOneById(record.userId) : {};
 			return pub.added('room_files', _id, { ...record, user: { username, name } });
 		},
 		changed(_id, recordChanges) {
 			if (!recordChanges.hasOwnProperty('user') && recordChanges.userId) {
-				recordChanges.user = RocketChat.models.Users.findOneById(recordChanges.userId);
+				recordChanges.user = Users.findOneById(recordChanges.userId);
 			}
 			return pub.changed('room_files', _id, recordChanges);
 		},

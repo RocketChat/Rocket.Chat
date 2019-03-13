@@ -1,10 +1,13 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Integrations } from '/app/models';
+
+Migrations.add({
 	version: 92,
 	up() {
-		const outgoingIntegrations = RocketChat.models.Integrations.find({ type: 'webhook-outgoing', event: 'sendMessage' }, { fields: { name: 1 } }).fetch();
+		const outgoingIntegrations = Integrations.find({ type: 'webhook-outgoing', event: 'sendMessage' }, { fields: { name: 1 } }).fetch();
 
 		outgoingIntegrations.forEach((i) => {
-			RocketChat.models.Integrations.update(i._id, { $set: { runOnEdits: true } });
+			Integrations.update(i._id, { $set: { runOnEdits: true } });
 		});
 	},
 });

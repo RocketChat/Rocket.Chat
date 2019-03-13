@@ -1,11 +1,13 @@
+import { Migrations } from '/app/migrations';
+import { Settings } from '/app/models';
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 134,
 	up() {
 		const updateIfDefault = (customized, idEmail, idSubject) => {
-			const setting = RocketChat.models.Settings.findOne({ _id: customized });
-			const newSettingEmail = RocketChat.models.Settings.findOne({ _id: idEmail });
-			const newSettingSubject = RocketChat.models.Settings.findOne({ _id: idSubject });
+			const setting = Settings.findOne({ _id: customized });
+			const newSettingEmail = Settings.findOne({ _id: idEmail });
+			const newSettingSubject = Settings.findOne({ _id: idSubject });
 
 			delete newSettingSubject._id;
 			delete newSettingSubject.enableQuery;
@@ -21,13 +23,13 @@ RocketChat.Migrations.add({
 				newSettingSubject.value = newSettingSubject.packageValue;
 			}
 
-			RocketChat.models.Settings.upsert({ _id: idEmail }, newSettingEmail);
-			RocketChat.models.Settings.upsert({ _id: idSubject }, newSettingSubject);
-			RocketChat.models.Settings.remove({ _id: customized });
+			Settings.upsert({ _id: idEmail }, newSettingEmail);
+			Settings.upsert({ _id: idSubject }, newSettingSubject);
+			Settings.remove({ _id: customized });
 		};
 		const rename = (oldId, newId) => {
-			const oldSetting = RocketChat.models.Settings.findOne({ _id: oldId });
-			const newSetting = RocketChat.models.Settings.findOne({ _id: newId });
+			const oldSetting = Settings.findOne({ _id: oldId });
+			const newSetting = Settings.findOne({ _id: newId });
 
 			delete oldSetting._id;
 			delete oldSetting.enableQuery;
@@ -36,8 +38,8 @@ RocketChat.Migrations.add({
 			oldSetting.packageValue = newSetting.packageValue;
 			oldSetting.value = newSetting.value || newSetting.packageValue;
 
-			RocketChat.models.Settings.upsert({ _id: newId }, oldSetting);
-			RocketChat.models.Settings.removeById(oldId);
+			Settings.upsert({ _id: newId }, oldSetting);
+			Settings.removeById(oldId);
 		};
 
 		updateIfDefault('Accounts_Enrollment_Customized', 'Accounts_Enrollment_Email', 'Accounts_Enrollment_Email_Subject');
@@ -55,9 +57,9 @@ RocketChat.Migrations.add({
 			Email_Footer: '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>',
 			Email_Footer_Direct_Reply: '</td></tr></table></td></tr><tr><td border="0" cellspacing="0" cellpadding="0" width="100%" style="font-family: Helvetica,Arial,sans-serif; max-width: 800px; margin: 0 auto; padding: 1.5em; text-align: center; font-size: 8pt; color: #999;">You can directly reply to this email.<br>Do not modify previous emails in the thread.<br>Powered by <a href="https://rocket.chat" target="_blank">Rocket.Chat</a></td></tr></table></td></tr></table></html>',
 		}).forEach(([_id, oldValue]) => {
-			const setting = RocketChat.models.Settings.findOne({ _id });
+			const setting = Settings.findOne({ _id });
 			if (setting.value === oldValue) {
-				RocketChat.models.Settings.updateValueById(_id, setting.packageValue);
+				Settings.updateValueById(_id, setting.packageValue);
 			}
 
 		});

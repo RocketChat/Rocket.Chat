@@ -1,33 +1,36 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Rooms, Subscriptions, Messages, Users } from '/app/models';
+
+Migrations.add({
 	version: 5,
 	up() {
 		console.log('Dropping test rooms with less than 2 messages');
 
-		RocketChat.models.Rooms.find({
+		Rooms.find({
 			msgs: {
 				$lt: 2,
 			},
 		}).forEach((room) => {
 			console.log('Dropped: ', room.name);
-			RocketChat.models.Rooms.removeById(room._id);
-			RocketChat.models.Messages.removeByRoomId(room._id);
-			return RocketChat.models.Subscriptions.removeByRoomId(room._id);
+			Rooms.removeById(room._id);
+			Messages.removeByRoomId(room._id);
+			return Subscriptions.removeByRoomId(room._id);
 		});
 
 		console.log('Dropping test rooms with less than 2 user');
-		RocketChat.models.Rooms.find({
+		Rooms.find({
 			usernames: {
 				$size: 1,
 			},
 		}).forEach((room) => {
 			console.log('Dropped: ', room.name);
-			RocketChat.models.Rooms.removeById(room._id);
-			RocketChat.models.Messages.removeByRoomId(room._id);
-			return RocketChat.models.Subscriptions.removeByRoomId(room._id);
+			Rooms.removeById(room._id);
+			Messages.removeByRoomId(room._id);
+			return Subscriptions.removeByRoomId(room._id);
 		});
 
 		console.log('Adding username to all users');
-		RocketChat.models.Users.find({
+		Users.find({
 			username: {
 				$exists: 0,
 			},
@@ -36,30 +39,30 @@ RocketChat.Migrations.add({
 			},
 		}).forEach((user) => {
 			let newUserName = user.emails[0].address.split('@')[0];
-			if (RocketChat.models.Users.findOneByUsername(newUserName)) {
+			if (Users.findOneByUsername(newUserName)) {
 				newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
-				if (RocketChat.models.Users.findOneByUsername(newUserName)) {
+				if (Users.findOneByUsername(newUserName)) {
 					newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
-					if (RocketChat.models.Users.findOneByUsername(newUserName)) {
+					if (Users.findOneByUsername(newUserName)) {
 						newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
 					}
 				}
 			}
 			console.log(`Adding: username ${ newUserName } to all user ${ user._id }`);
-			return RocketChat.models.Users.setUsername(user._id, newUserName);
+			return Users.setUsername(user._id, newUserName);
 		});
 
 		console.log('Fixing _id of direct messages rooms');
-		RocketChat.models.Rooms.findByType('d').forEach(function(room) {
+		Rooms.findByType('d').forEach(function(room) {
 			let newId = '';
-			const id0 = RocketChat.models.Users.findOneByUsername(room.usernames[0])._id;
-			const id1 = RocketChat.models.Users.findOneByUsername(room.usernames[1])._id;
+			const id0 = Users.findOneByUsername(room.usernames[0])._id;
+			const id1 = Users.findOneByUsername(room.usernames[1])._id;
 			const ids = [id0, id1];
 
 			newId = ids.sort().join('');
 			if (newId !== room._id) {
 				console.log(`Fixing: _id ${ room._id } to ${ newId }`);
-				RocketChat.models.Subscriptions.update({
+				Subscriptions.update({
 					rid: room._id,
 				}, {
 					$set: {
@@ -68,7 +71,7 @@ RocketChat.Migrations.add({
 				}, {
 					multi: 1,
 				});
-				RocketChat.models.Messages.update({
+				Messages.update({
 					rid: room._id,
 				}, {
 					$set: {
@@ -77,12 +80,12 @@ RocketChat.Migrations.add({
 				}, {
 					multi: 1,
 				});
-				RocketChat.models.Rooms.removeById(room._id);
+				Rooms.removeById(room._id);
 				room._id = newId;
-				RocketChat.models.Rooms.insert(room);
+				Rooms.insert(room);
 			}
 
-			RocketChat.models.Subscriptions.update({
+			Subscriptions.update({
 				rid: room._id,
 				'u._id': id0,
 			}, {
@@ -91,7 +94,7 @@ RocketChat.Migrations.add({
 				},
 			});
 
-			return RocketChat.models.Subscriptions.update({
+			return Subscriptions.update({
 				rid: room._id,
 				'u._id': id1,
 			}, {
@@ -102,11 +105,11 @@ RocketChat.Migrations.add({
 		});
 
 		console.log('Adding u.username to all documents');
-		RocketChat.models.Users.find({}, {
+		Users.find({}, {
 			username: 1,
 		}).forEach((user) => {
 			console.log(`Adding: u.username ${ user.username } to all document`);
-			RocketChat.models.Rooms.update({
+			Rooms.update({
 				'u._id': user._id,
 			}, {
 				$set: {
@@ -116,7 +119,7 @@ RocketChat.Migrations.add({
 				multi: 1,
 			});
 
-			RocketChat.models.Subscriptions.update({
+			Subscriptions.update({
 				'u._id': user._id,
 			}, {
 				$set: {
@@ -126,7 +129,7 @@ RocketChat.Migrations.add({
 				multi: 1,
 			});
 
-			RocketChat.models.Messages.update({
+			Messages.update({
 				'u._id': user._id,
 			}, {
 				$set: {
@@ -136,7 +139,7 @@ RocketChat.Migrations.add({
 				multi: 1,
 			});
 
-			RocketChat.models.Messages.update({
+			Messages.update({
 				uid: user._id,
 			}, {
 				$set: {
@@ -146,7 +149,7 @@ RocketChat.Migrations.add({
 				multi: 1,
 			});
 
-			RocketChat.models.Messages.update({
+			Messages.update({
 				by: user._id,
 			}, {
 				$set: {
@@ -156,7 +159,7 @@ RocketChat.Migrations.add({
 				multi: 1,
 			});
 
-			RocketChat.models.Messages.update({
+			Messages.update({
 				uid: {
 					$exists: 1,
 				},

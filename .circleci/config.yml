@@ -149,12 +149,9 @@ jobs:
       - run:
           name: Build Rocket.Chat
           environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=4096
+            TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
             if [[ $CIRCLE_TAG ]]; then meteor reset; fi
-            set +e
-            meteor add rocketchat:lib
-            set -e
             meteor build --server-only --directory /tmp/build-test
 
       - run:
@@ -414,20 +411,27 @@ workflows:
       - build:
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - test-with-oplog-mongo-3-2: &test-mongo
           requires:
             - build
           filters:
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
-      - test-with-oplog-mongo-3-4: *test-mongo
-      - test-with-oplog-mongo-3-6: *test-mongo
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - test-with-oplog-mongo-3-4: &test-mongo-no-pr
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
+      - test-with-oplog-mongo-3-6: *test-mongo-no-pr
       - test-with-oplog-mongo-4-0: *test-mongo
-      - test-without-oplog-mongo-3-2: *test-mongo
-      - test-without-oplog-mongo-3-4: *test-mongo
-      - test-without-oplog-mongo-3-6: *test-mongo
-      - test-without-oplog-mongo-4-0: *test-mongo
+      - test-without-oplog-mongo-3-2: *test-mongo-no-pr
+      - test-without-oplog-mongo-3-4: *test-mongo-no-pr
+      - test-without-oplog-mongo-3-6: *test-mongo-no-pr
+      - test-without-oplog-mongo-4-0: *test-mongo-no-pr
       - deploy:
           requires:
             - test-with-oplog-mongo-3-2
@@ -442,7 +446,7 @@ workflows:
             branches:
               only: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - image-build:
           requires:
             - deploy
@@ -450,7 +454,7 @@ workflows:
             branches:
               only: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - hold:
           type: approval
           requires:
@@ -459,7 +463,7 @@ workflows:
             branches:
               ignore: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
       - pr-image-build:
           requires:
             - hold
@@ -467,5 +471,5 @@ workflows:
             branches:
               ignore: develop
             tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|beta)\.[0-9]+)?$/
 

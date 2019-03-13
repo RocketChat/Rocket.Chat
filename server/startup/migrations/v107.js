@@ -1,11 +1,12 @@
+import { Migrations } from '/app/migrations';
+import { Users } from '/app/models';
 
-
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 107,
 	up() {
 
 
-		RocketChat.models.Users.update({
+		Users.update({
 			'preferences.roomsListExhibitionMode': 'activity',
 		}, {
 			$unset: {
@@ -17,7 +18,7 @@ RocketChat.Migrations.add({
 			},
 		});
 
-		RocketChat.models.Users.update({
+		Users.update({
 			'preferences.roomsListExhibitionMode': 'unread',
 		}, {
 			$unset: {
@@ -30,7 +31,7 @@ RocketChat.Migrations.add({
 			},
 		});
 
-		RocketChat.models.Users.update({
+		Users.update({
 			'preferences.roomsListExhibitionMode': 'category',
 		}, {
 			$unset: {
