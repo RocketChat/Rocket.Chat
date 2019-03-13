@@ -248,8 +248,7 @@ Template.channelSettingsEditing.onCreated(function() {
 						_id: room._id,
 						name: value,
 					});
-					// To update webhooks name
-					call('changeChannelNameInWebhook', room.name, value);
+
 					return toastr.success(t('Room_name_changed_successfully'));
 				});
 			},
