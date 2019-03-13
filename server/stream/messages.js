@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
-import { Subscriptions, Users, Messages } from 'meteor/rocketchat:models';
-import { msgStream } from 'meteor/rocketchat:lib';
+import { hasPermission } from '/app/authorization';
+import { settings } from '/app/settings';
+import { Subscriptions, Users, Messages } from '/app/models';
+import { msgStream } from '/app/lib';
 
 const MY_MESSAGE = '__my_messages__';
 

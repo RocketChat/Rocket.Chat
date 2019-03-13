@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { Users } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { saveCustomFields, validateEmailDomain, passwordPolicy } from 'meteor/rocketchat:lib';
+import * as Mailer from '/app/mailer';
+import { Users } from '/app/models';
+import { settings } from '/app/settings';
+import { saveCustomFields, validateEmailDomain, passwordPolicy } from '/app/lib';
 
 let verifyEmailTemplate = '';
 Meteor.startup(() => {

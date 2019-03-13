@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { isRtl } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
-import { Users } from 'meteor/rocketchat:models';
+import { isRtl } from '/app/utils';
+import { settings } from '/app/settings';
+import { Users } from '/app/models';
 import moment from 'moment';
 
 const currentLanguage = new ReactiveVar();

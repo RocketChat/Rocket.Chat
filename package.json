@@ -46,12 +46,12 @@
 	],
 	"mocha": {
 		"tests": [
-			"packages/**/*.tests.js"
+			"app/**/*.tests.js"
 		],
 		"files": [
-			"packages/**/*.mocks.js",
-			"packages/**/*.js",
-			"!packages/**/*.tests.js"
+			"app/**/*.mocks.js",
+			"app/**/*.js",
+			"!app/**/*.tests.js"
 		]
 	},
 	"keywords": [
@@ -65,13 +65,13 @@
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run jslint && meteor npm run stylelint",
 		"jslint": "eslint .",
-		"stylelint": "stylelint \"packages/**/*.css\"",
+		"stylelint": "stylelint \"app/**/*.css\"",
 		"test": "node .scripts/start.js",
 		"deploy": "npm run build && pm2 startOrRestart pm2.json",
 		"chimp-path": "chimp tests/chimp-config.js --path=$CHIMP_PATH",
 		"chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/end-to-end",
 		"chimp-test": "chimp tests/chimp-config.js",
-		"postinstall": "cd packages/rocketchat-katex && npm i",
+		"postinstall": "node .scripts/npm-postinstall.js",
 		"testunit-watch": "mocha --watch --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"coverage": "nyc -r html mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
 		"testunit": "mocha --opts ./mocha.opts \"`node -e \"console.log(require('./package.json').mocha.tests.join(' '))\"`\"",
@@ -177,6 +177,7 @@
 		"jquery": "^3.3.1",
 		"jschardet": "^1.6.0",
 		"juice": "^5.0.1",
+		"katex": "^0.9.0",
 		"ldapjs": "^1.0.2",
 		"less": "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6",
 		"less-plugin-autoprefix": "^2.0.0",
@@ -206,7 +207,7 @@
 		"queue-fifo": "^0.2.5",
 		"redis": "^2.8.0",
 		"semver": "^5.6.0",
-		"sharp": "^0.21.0",
+		"sharp": "^0.21.3",
 		"speakeasy": "^2.0.0",
 		"stream-buffers": "^3.0.2",
 		"subscriptions-transport-ws": "^0.9.11",
