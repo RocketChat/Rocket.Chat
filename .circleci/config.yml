@@ -149,12 +149,9 @@ jobs:
       - run:
           name: Build Rocket.Chat
           environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=4096
+            TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
             if [[ $CIRCLE_TAG ]]; then meteor reset; fi
-            set +e
-            meteor add rocketchat:lib
-            set -e
             meteor build --server-only --directory /tmp/build-test
 
       - run:
