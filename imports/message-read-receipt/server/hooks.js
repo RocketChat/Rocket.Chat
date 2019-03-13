@@ -1,5 +1,5 @@
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { callbacks } from '/app/callbacks';
+import { Subscriptions } from '/app/models';
 import { ReadReceipt } from './lib/ReadReceipt';
 
 callbacks.add('afterSaveMessage', (message, room) => {
@@ -14,4 +14,8 @@ callbacks.add('afterSaveMessage', (message, room) => {
 
 	// mark message as read as well
 	ReadReceipt.markMessageAsReadBySender(message, room._id, message.u._id);
+});
+
+callbacks.add('afterReadMessages', (rid, { userId, lastSeen }) => {
+	ReadReceipt.markMessagesAsRead(rid, userId, lastSeen);
 });

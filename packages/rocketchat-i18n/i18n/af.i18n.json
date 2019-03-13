@@ -1127,6 +1127,8 @@
   "Favorites": "Gunstelinge",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Hierdie kenmerk hang af van \"Stuur besoekersnavigasiegeskiedenis as 'n boodskap\" om geaktiveer te word.",
   "Features_Enabled": "Funksies aangeskakel",
+  "FEDERATION_Domain": "domein",
+  "FEDERATION_Status": "status",
   "Field": "veld",
   "Field_removed": "Veld verwyder",
   "Field_required": "Veld benodig",
