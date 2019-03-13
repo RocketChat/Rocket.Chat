@@ -1,12 +1,14 @@
-import { OEmbed } from 'meteor/rocketchat:oembed';
+import { OEmbed } from '/app/oembed';
+import { Migrations } from '/app/migrations';
+import { Messages } from '/app/models';
 import _ from 'underscore';
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 7,
 	up() {
 		console.log('Populate urls in messages');
 
-		const query = RocketChat.models.Messages.find({
+		const query = Messages.find({
 			'urls.0': {
 				$exists: true,
 			},

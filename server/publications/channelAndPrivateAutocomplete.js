@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { hasPermission } from '/app/authorization';
+import { Rooms } from '/app/models';
 
 Meteor.publish('channelAndPrivateAutocomplete', function(selector) {
 	if (!this.userId) {
 		return this.ready();
 	}
 
-	if (RocketChat.authz.hasPermission(this.userId, 'view-other-user-channels') !== true) {
+	if (hasPermission(this.userId, 'view-other-user-channels') !== true) {
 		return this.ready();
 	}
 
@@ -21,7 +23,7 @@ Meteor.publish('channelAndPrivateAutocomplete', function(selector) {
 		},
 	};
 
-	const cursorHandle = RocketChat.models.Rooms.findChannelAndPrivateByNameStarting(selector.name, options).observeChanges({
+	const cursorHandle = Rooms.findChannelAndPrivateByNameStarting(selector.name, options).observeChanges({
 		added(_id, record) {
 			return pub.added('autocompleteRecords', _id, record);
 		},

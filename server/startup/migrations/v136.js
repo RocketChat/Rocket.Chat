@@ -1,14 +1,18 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Settings, Roles, Permissions } from '/app/models';
+import { settings } from '/app/settings';
+
+Migrations.add({
 	version: 136,
 	up() {
-		const personalTokensEnabled = RocketChat.settings.get('API_Enable_Personal_Access_Tokens');
-		const roles = RocketChat.models.Roles.find({ scope: 'Users' }).fetch().map((role) => role._id);
+		const personalTokensEnabled = settings.get('API_Enable_Personal_Access_Tokens');
+		const roles = Roles.find({ scope: 'Users' }).fetch().map((role) => role._id);
 
 		if (personalTokensEnabled) {
-			RocketChat.models.Permissions.upsert({ _id: 'create-personal-access-tokens' }, { $set: { roles } });
+			Permissions.upsert({ _id: 'create-personal-access-tokens' }, { $set: { roles } });
 		}
 
-		RocketChat.models.Settings.remove({
+		Settings.remove({
 			_id: 'API_Enable_Personal_Access_Tokens',
 		});
 	},

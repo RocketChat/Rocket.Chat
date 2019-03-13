@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { Accounts } from 'meteor/accounts-base';
+import { Users } from '/app/models';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 
@@ -31,7 +32,7 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 	}
 
 	if (serviceData.email) {
-		const user = RocketChat.models.Users.findOneByEmailAddress(serviceData.email);
+		const user = Users.findOneByEmailAddress(serviceData.email);
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
@@ -39,11 +40,11 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 			};
 
 			if (!_.findWhere(user.emails, findQuery)) {
-				RocketChat.models.Users.resetPasswordAndSetRequirePasswordChange(user._id, true, 'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password');
+				Users.resetPasswordAndSetRequirePasswordChange(user._id, true, 'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password');
 			}
 
-			RocketChat.models.Users.setServiceId(user._id, serviceName, serviceData.id);
-			RocketChat.models.Users.setEmailVerified(user._id, serviceData.email);
+			Users.setServiceId(user._id, serviceName, serviceData.id);
+			Users.setEmailVerified(user._id, serviceData.email);
 		}
 	}
 

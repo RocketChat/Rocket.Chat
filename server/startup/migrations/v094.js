@@ -1,11 +1,14 @@
-RocketChat.Migrations.add({
+import { Migrations } from '/app/migrations';
+import { Users } from '/app/models';
+
+Migrations.add({
 	version: 94,
 	up() {
 		const query = {
 			'emails.address.address': { $exists: true },
 		};
 
-		RocketChat.models.Users.find(query, { 'emails.address.address': 1 }).forEach((user) => {
+		Users.find(query, { 'emails.address.address': 1 }).forEach((user) => {
 			let emailAddress;
 			user.emails.some((email) => {
 				if (email.address && email.address.address) {
@@ -14,9 +17,9 @@ RocketChat.Migrations.add({
 				}
 				return false;
 			});
-			const existingUser = RocketChat.models.Users.findOne({ 'emails.address': emailAddress }, { fields: { _id: 1 } });
+			const existingUser = Users.findOne({ 'emails.address': emailAddress }, { fields: { _id: 1 } });
 			if (existingUser) {
-				RocketChat.models.Users.update({
+				Users.update({
 					_id: user._id,
 					'emails.address.address': emailAddress,
 				}, {
@@ -25,7 +28,7 @@ RocketChat.Migrations.add({
 					},
 				});
 			} else {
-				RocketChat.models.Users.update({
+				Users.update({
 					_id: user._id,
 					'emails.address.address': emailAddress,
 				}, {
