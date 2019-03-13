@@ -5,10 +5,10 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { t, roomTypes } from 'meteor/rocketchat:utils';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { t, roomTypes } from '/app/utils';
+import { hasAllPermission } from '/app/authorization';
 import toastr from 'toastr';
 import _ from 'underscore';
 
@@ -268,6 +268,7 @@ Template.createChannel.events({
 		if (instance.invalid.get() || instance.inUse.get()) {
 			return e.target.name.focus();
 		}
+
 		if (instance.groupChat.get()) {
 			if (users.length < 2) {
 				instance.noUsers.set(true);
@@ -275,6 +276,7 @@ Template.createChannel.events({
 			}
 			name = users.sort().join('-');
 		}
+
 		if (!Object.keys(instance.extensions_validations).map((key) => instance.extensions_validations[key]).reduce((valid, fn) => fn(instance) && valid, true)) {
 			return instance.extensions_invalid.set(true);
 		}

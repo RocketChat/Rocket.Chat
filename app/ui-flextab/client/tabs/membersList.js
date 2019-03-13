@@ -3,11 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { RoomManager, popover } from 'meteor/rocketchat:ui-utils';
-import { ChatRoom, Subscriptions } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { t, isRtl, handleError, roomTypes } from 'meteor/rocketchat:utils';
-import { WebRTC } from 'meteor/rocketchat:webrtc';
+import { RoomManager, popover } from '/app/ui-utils';
+import { ChatRoom, Subscriptions } from '/app/models';
+import { settings } from '/app/settings';
+import { t, isRtl, handleError, roomTypes } from '/app/utils';
+import { WebRTC } from '/app/webrtc';
 import _ from 'underscore';
 import { getActions } from './userActions';
 
@@ -288,6 +288,7 @@ Template.membersList.onCreated(function() {
 
 	this.tabBar = Template.instance().tabBar;
 	this.numOfUsers = new ReactiveVar(0);
+
 
 	Tracker.autorun(() => {
 		if (this.data.rid == null) { return; }

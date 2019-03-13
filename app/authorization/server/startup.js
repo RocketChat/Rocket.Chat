@@ -1,6 +1,6 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
-import { Roles, Permissions } from 'meteor/rocketchat:models';
+import { Roles, Permissions } from '/app/models';
 
 Meteor.startup(function() {
 	// Note:
@@ -12,8 +12,8 @@ Meteor.startup(function() {
 		{ _id: 'add-oauth-service',             roles : ['admin'] },
 		{ _id: 'add-user-to-joined-room',       roles : ['admin', 'owner', 'moderator'] },
 		{ _id: 'add-user-to-any-c-room',        roles : ['admin'] },
-		{ _id: 'add-user-to-any-p-room',        roles : [] },
 		{ _id: 'add-user-to-any-g-room',        roles : [] },
+    { _id: 'add-user-to-any-p-room',        roles : [] },
 		{ _id: 'api-bypass-rate-limit',         roles : ['admin', 'bot'] },
 		{ _id: 'archive-room',                  roles : ['admin', 'owner'] },
 		{ _id: 'assign-admin-role',             roles : ['admin'] },
@@ -23,8 +23,8 @@ Meteor.startup(function() {
 		{ _id: 'bulk-register-user',            roles : ['admin'] },
 		{ _id: 'create-c',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-d',                      roles : ['admin', 'user', 'bot'] },
-		{ _id: 'create-p',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-g',                      roles : ['admin', 'user', 'bot'] },
+    { _id: 'create-p',                      roles : ['admin', 'user', 'bot'] },
 		{ _id: 'create-personal-access-tokens', roles : ['admin', 'user'] },
 		{ _id: 'create-user',                   roles : ['admin'] },
 		{ _id: 'clean-channel-history',         roles : ['admin'] },

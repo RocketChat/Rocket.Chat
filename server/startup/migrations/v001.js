@@ -1,6 +1,6 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Users } from 'meteor/rocketchat:models';
-import { generateUsernameSuggestion } from 'meteor/rocketchat:lib';
+import { Migrations } from '/app/migrations';
+import { Users } from '/app/models';
+import { generateUsernameSuggestion } from '/app/lib';
 
 Migrations.add({
 	version: 1,

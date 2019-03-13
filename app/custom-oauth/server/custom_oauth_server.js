@@ -4,8 +4,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { Logger } from 'meteor/rocketchat:logger';
-import { Users } from 'meteor/rocketchat:models';
+import { Logger } from '/app/logger';
+import { Users } from '/app/models';
 import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');
@@ -172,6 +172,8 @@ export class CustomOAuth {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
 			const accessToken = self.getAccessToken(query);
+			// console.log 'at:', accessToken
+
 			let identity = self.getIdentity(accessToken);
 
 			if (identity) {

@@ -1,7 +1,7 @@
 import { Session } from 'meteor/session';
-import { TabBar } from 'meteor/rocketchat:ui-utils';
-import { Rooms } from 'meteor/rocketchat:models';
-import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { TabBar } from '/app/ui-utils';
+import { Rooms } from '/app/models';
+import { hasAllPermission } from '/app/authorization';
 
 TabBar.addButton({
 	groups: ['channel', 'group', 'direct', 'groupchat'],

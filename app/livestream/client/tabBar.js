@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { TabBar } from 'meteor/rocketchat:ui-utils';
-import { Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import { TabBar } from '/app/ui-utils';
+import { Rooms } from '/app/models';
+import { settings } from '/app/settings';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Subscriptions } from '/app/models';
+import { Notifications } from '/app/notifications';
 
 const fields = {
 	t: 1,
