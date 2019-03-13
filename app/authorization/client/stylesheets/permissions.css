@@ -10,20 +10,39 @@
 	}
 
 	& .permission-grid {
-		& table {
-			display: block;
-			overflow-x: auto;
+		display: block;
+		overflow: auto;
 
-			white-space: nowrap;
-		}
+		white-space: nowrap;
 
-		& th {
-			position: relative;
+		& thead th {
+			position: sticky;
+			z-index: 1;
+			top: 0;
 
 			padding: 20px;
 
 			text-align: center;
 			white-space: nowrap;
+		}
+
+		& thead th:first-child {
+			z-index: 2;
+			left: 0;
+		}
+
+		& tbody .permission-name {
+			position: sticky;
+			left: 0;
+
+			cursor: default;
+			white-space: nowrap;
+
+			background-color: var(--color-gray-light);
+		}
+
+		& tbody tr:nth-of-type(even) .permission-name {
+			background-color: var(--color-gray-lightest);
 		}
 
 		& td {
@@ -43,11 +62,6 @@
 
 			font-size: 80%;
 		}
-
-		& .permission-name {
-			cursor: default;
-			white-space: nowrap;
-		}
 	}
 
 	& .empty-role {
@@ -66,10 +80,5 @@
 		& .form-buttons {
 			padding-left: 150px;
 		}
-	}
-
-	& thead {
-		position: sticky;
-		top: -25px;
 	}
 }

@@ -9,11 +9,11 @@
 
 			<div class="content">
 				<table border="1" class="permission-grid secondary-background-color">
-					<thead class="content-background-color">
+					<thead>
 						<tr>
-							<th class="border-component-color">&nbsp;</th>
+							<th class="border-component-color content-background-color">&nbsp;</th>
 							{{#each role}}
-							<th class="border-component-color" title="{{description}}">
+							<th class="border-component-color content-background-color" title="{{description}}">
 								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
 									{{_id}}
 									<i class="icon-edit"></i>
