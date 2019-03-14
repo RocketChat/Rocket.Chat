@@ -42,3 +42,15 @@ export const closeRoom = ({ type, roomId }) => {
 			.end(resolve);
 	});
 };
+
+export const archiveRoom = ({ type, roomId }) => request.post(api(`${ type }.archive`))
+	.set(credentials)
+	.send({
+		roomId,
+	});
+
+export const unarchiveRoom = ({ type, roomId }) => request.post(api(`${ type }.unarchive`))
+	.set(credentials)
+	.send({
+		roomId,
+	});

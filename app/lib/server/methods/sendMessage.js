@@ -1,13 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Random } from 'meteor/random';
-import { TAPi18n } from 'meteor/tap:i18n';
 import { hasPermission } from '/app/authorization';
 import { metrics } from '/app/metrics';
 import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { messageProperties } from '/app/ui-utils';
-import { Subscriptions, Users } from '/app/models';
+import { Users } from '/app/models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import moment from 'moment';
@@ -41,16 +37,6 @@ Meteor.methods({
 			message.ts = new Date();
 		}
 
-		if (message.msg) {
-			const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
-
-			if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
-				throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-					method: 'sendMessage',
-				});
-			}
-		}
-
 		const user = Users.findOneById(Meteor.userId(), {
 			fields: {
 				username: 1,
@@ -61,27 +47,6 @@ Meteor.methods({
 		const room = Meteor.call('canAccessRoom', message.rid, user._id);
 		if (!room) {
 			return false;
-		}
-
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId());
-		if (subscription && (subscription.blocked || subscription.blocker)) {
-			Notifications.notifyUser(Meteor.userId(), 'message', {
-				_id: Random.id(),
-				rid: room._id,
-				ts: new Date,
-				msg: TAPi18n.__('room_is_blocked', {}, user.language),
-			});
-			throw new Meteor.Error('You can\'t send messages because you are blocked');
-		}
-
-		if ((room.muted || []).includes(user.username)) {
-			Notifications.notifyUser(Meteor.userId(), 'message', {
-				_id: Random.id(),
-				rid: room._id,
-				ts: new Date,
-				msg: TAPi18n.__('You_have_been_muted', {}, user.language),
-			});
-			throw new Meteor.Error('You can\'t send messages because you have been muted');
 		}
 
 		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
