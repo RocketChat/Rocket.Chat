@@ -216,6 +216,9 @@ Template.messageBox.helpers({
 			},
 		};
 	},
+	thread() {
+		return roomTypes.isThread(this._id); // Check if the room is a thread
+	},
 	input() {
 		return Template.instance().find('.js-input-message');
 	},

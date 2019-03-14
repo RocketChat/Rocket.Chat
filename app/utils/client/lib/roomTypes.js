@@ -38,6 +38,13 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			rid: roomId,
 		}).count() > 0;
 	}
+	isThread(roomId) {
+		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1, prid: 1 } });
+		if (!room || !room.t) {
+			return;
+		}
+		return room && room.prid;
+	}
 	readOnly(roomId, user) {
 		const fields = {
 			ro: 1,

@@ -20,6 +20,12 @@ Template.messageBoxNotSubscribed.helpers({
 		const room = Session.get(`roomData${ this.rid }`);
 		return roomTypes.getRoomName(room.t, room);
 	},
+	thread() {
+		return roomTypes.isThread(this.rid); // check if the room is a thread
+	},
+	isThreadNotSubscribed() {
+		return !roomTypes.canSendMessage(this.rid); // check if the user has joined the thread
+	},
 	isJoinCodeRequired() {
 		const room = Session.get(`roomData${ this.rid }`);
 		return room && room.joinCodeRequired;
