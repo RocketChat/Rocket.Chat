@@ -238,5 +238,17 @@
 		"hooks": {
 			"pre-push": "meteor npm run lint && meteor npm run testunit"
 		}
+	},
+	"houston": {
+		"updateFiles": [
+			"package.json",
+			".sandstorm/sandstorm-pkgdef.capnp",
+			".travis/snap.sh",
+			".circleci/snap.sh",
+			".circleci/update-releases.sh",
+			".docker/Dockerfile",
+			".docker/Dockerfile.rhel",
+			"app/utils/rocketchat.info"
+		]
 	}
 }
