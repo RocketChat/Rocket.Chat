@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Messages, Subscriptions } from '/app/models';
+import { Rooms, Messages, Subscriptions, Integrations } from '/app/models';
 import { roomTypes, getValidRoomName } from '/app/utils';
 
 export const saveRoomName = function(rid, displayName, user, sendMessage = true) {
@@ -17,7 +17,13 @@ export const saveRoomName = function(rid, displayName, user, sendMessage = true)
 
 	const update = Rooms.setNameById(rid, slugifiedRoomName, displayName) && Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName);
 
-	if (update && sendMessage) {
+	if (!update) {
+		return;
+	}
+
+	Integrations.updateRoomName(room.name, displayName);
+
+	if (sendMessage) {
 		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
 	}
 	return displayName;
