@@ -1,4 +1,38 @@
 
+# 1.0.0-beta.2
+`2019-03-14  ·  3 🐛  ·  3 🔍  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Update bad-words to 3.0.2 ([#13705](https://github.com/RocketChat/Rocket.Chat/pull/13705) by [@trivoallan](https://github.com/trivoallan))
+- Changing Room name updates the webhook ([#13672](https://github.com/RocketChat/Rocket.Chat/pull/13672) by [@knrt10](https://github.com/knrt10))
+- Fix snap refresh hook ([#13702](https://github.com/RocketChat/Rocket.Chat/pull/13702))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Add Houston config ([#13707](https://github.com/RocketChat/Rocket.Chat/pull/13707))
+- Change the way to resolve DNS for Federation ([#13695](https://github.com/RocketChat/Rocket.Chat/pull/13695))
+- Update husky config ([#13687](https://github.com/RocketChat/Rocket.Chat/pull/13687))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@knrt10](https://github.com/knrt10)
+- [@trivoallan](https://github.com/trivoallan)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@LuluGO](https://github.com/LuluGO)
+- [@alansikora](https://github.com/alansikora)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 1.0.0-beta.1
 `2019-03-12  ·  1 🚀  ·  7 🐛  ·  8 🔍  ·  10 👩‍💻👨‍💻`
 
