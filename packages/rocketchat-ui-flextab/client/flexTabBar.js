@@ -96,6 +96,10 @@ const commonEvents = {
 			return t.tabBar.close();
 		}
 
+		if (this.action) {
+			return this.action();
+		}
+
 		$flexTab.attr('template', this.template);
 		t.tabBar.setData({
 			label: this.i18nTitle,
@@ -115,7 +119,9 @@ const action = function(e, t) {
 		$flexTab.attr('template', '');
 		return t.tabBar.close();
 	}
-
+	if (this.action) {
+		return this.action();
+	}
 	$flexTab.attr('template', this.template);
 	t.tabBar.setData({
 		label: this.i18nTitle,
@@ -172,7 +178,7 @@ Template.RoomsActionTab.events({
 		const buttons = TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
 		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => {
 			item.name = TAPi18n.__(item.i18nTitle);
-			item.action = action;
+			item.action = item.action || action;
 			return item;
 		}) }];
 		const columns = [groups];

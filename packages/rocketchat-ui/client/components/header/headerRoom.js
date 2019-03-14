@@ -3,16 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, roomTypes, handleError } from 'meteor/rocketchat:utils';
-import { TabBar, fireGlobalEvent } from 'meteor/rocketchat:ui-utils';
+import { t, roomTypes, handleError, RoomSettingsEnum } from 'meteor/rocketchat:utils';
+import { TabBar, fireGlobalEvent, call } from 'meteor/rocketchat:ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from 'meteor/rocketchat:models';
 import { settings } from 'meteor/rocketchat:settings';
 
-import { call, RoomSettingsEnum } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { emoji } from 'meteor/rocketchat:emoji';
 import { Markdown } from 'meteor/rocketchat:markdown';
-
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -108,7 +107,7 @@ Template.headerRoom.helpers({
 
 	canViewEncryption() {
 		const room = ChatRoom.findOne(this._id);
-		return room && RocketChat.roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E);
+		return room && roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E) && (room && room.encrypted);
 	},
 
 	encryptionState() {
@@ -160,19 +159,6 @@ Template.headerRoom.events({
 		);
 	},
 
-	'click .rc-header__toggle-encryption'(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		const room = ChatRoom.findOne(this._id);
-		if (RocketChat.authz.hasAllPermission('edit-room', this._id)) {
-			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
-				toastr.success(
-					t('Encrypted_setting_changed_successfully')
-				);
-			});
-		}
-	},
-
 	'click .edit-room-title'(event) {
 		event.preventDefault();
 		Session.set('editRoomTitle', true);
@@ -188,6 +174,18 @@ Template.headerRoom.events({
 		event.preventDefault();
 		const { prid } = t.currentChannel;
 		FlowRouter.goToRoomById(prid);
+	},
+	'click .js-toggle-encryption'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		const room = ChatRoom.findOne(this._id);
+		if (hasAllPermission('edit-room', this._id)) {
+			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
+				toastr.success(
+					t('Encrypted_setting_changed_successfully')
+				);
+			});
+		}
 	},
 });
 

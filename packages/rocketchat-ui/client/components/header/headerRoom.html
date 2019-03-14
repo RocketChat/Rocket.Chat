@@ -11,15 +11,10 @@
 					<span class="rc-header__first-icon">{{> icon block="rc-header__icon rc-header__icon" icon="back"}}</span>
 				</div>
 			{{/if}}
+
 			{{#if showToggleFavorite}}
 				<div class="rc-header__block rc-header__favorite rc-header__block--action">
 					<a href="#favorite" class="rc-header__toggle-favorite rc-header__first-icon {{state}}">{{> icon block="rc-header__icon" icon="star"}}</a>
-				</div>
-			{{/if}}
-
-			{{#if canViewEncryption}}
-				<div class="rc-header__block rc-header__encryption">
-					<a href="#encryption" class="rc-header__toggle-encryption {{encryptionState}}">{{> icon block="rc-header__icon" icon="key"}}</a>
 				</div>
 			{{/if}}
 
@@ -28,9 +23,6 @@
 				<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
 			{{/if}}
 
-			{{#if encryptedChannel}}
-				<i class="icon-key" aria-label="{{_ "Encrypted_Channel_Label"}}"></i>
-			{{/if}}
 			<div class="rc-header__content rc-header__block">
 				{{#if isDirect}}
 				<div class="rc-header__block">
@@ -69,26 +61,17 @@
 			<span class="rc-header__block">{{_ sectionName}}</span>
 			{{/if}}
 
-			{{#if Template.contentBlock}}
-			{{> Template.contentBlock}}
+			{{#if canViewEncryption}}
+			<div class="rc-header__block rc-header__block-action rc-header__encryption">
+				<div class="rc-room-actions">
+					<button aria-label="{{_ 'E2E_Enabled'}}" class="rc-tooltip rc-tooltip--down rc-room-actions__action tab-button rc-header__toggle-encryption js-toggle-encryption {{encryptionState}}">{{> icon icon="key"}}</button>
+				</div>
+			</div>
 			{{/if}}
 
-			{{#unless isChannel}}
-			{{# unless hideHelp}}
-			<div class="rc-header__section-help"></div>
-			{{/unless}}
-			{{/unless}}
-
-			{{#with toolbarButtons}}
-			<div class="iframe-toolbar">
-				{{#each buttons}}
-				<button class="{{id}}">
-					{{#if icon}}<i class="{{icon}}"></i>{{/if}}
-					{{label}}
-				</button>
-				{{/each}}
-			</div>
-			{{/with}}
+			{{#if Template.contentBlock}}
+				{{> Template.contentBlock}}
+			{{/if}}
 		</div>
 	</header>
 </template>
