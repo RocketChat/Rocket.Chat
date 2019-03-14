@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { hasPermission } from '/app/authorization';
-import { Users, Subscriptions, Messages } from '/app/models';
+import { Users, Subscriptions, Messages, Rooms } from '/app/models';
 import { settings } from '/app/settings';
 import { Notifications } from '/app/notifications';
 
@@ -24,6 +24,8 @@ Meteor.methods({
 
 		const user = Users.findOneById(userId);
 
+		const room = Rooms.findOneById(rid);
+
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'removeRoomModerator',
@@ -45,6 +47,10 @@ Meteor.methods({
 		}
 
 		Subscriptions.removeRoleById(subscription._id, 'moderator');
+
+		if (room && (room.ro || room.broadcast)) {
+			Rooms.muteUsernameByRoomId(rid, user.username);
+		}
 
 		const fromUser = Users.findOneById(Meteor.userId());
 

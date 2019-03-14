@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { hasPermission } from '/app/authorization';
-import { Users, Subscriptions, Messages } from '/app/models';
+import { Users, Subscriptions, Messages, Rooms, Permissions } from '/app/models';
 import { settings } from '/app/settings';
 import { Notifications } from '/app/notifications';
 
@@ -24,6 +24,8 @@ Meteor.methods({
 
 		const user = Users.findOneById(userId);
 
+		const room = Rooms.findOneById(rid);
+
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'addRoomModerator',
@@ -45,6 +47,13 @@ Meteor.methods({
 		}
 
 		Subscriptions.addRoleById(subscription._id, 'moderator');
+
+		if (room && (room.ro || room.broadcast)) {
+			const permission = Permissions.findOneById('post-readonly');
+			if (permission.roles.includes('moderator') === true) {
+				Rooms.unmuteUsernameByRoomId(rid, user.username);
+			}
+		}
 
 		const fromUser = Users.findOneById(Meteor.userId());
 
