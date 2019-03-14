@@ -119,7 +119,7 @@ language_names = {
 	gsw: ['Swiss German', 'Schwyzerdütsch'],
 	tl: ['Tagalog', 'Tagalog'],
 	tg: ['Tajik', 'тоҷикӣ'],
-	ta: ['Tamil', 'தமிழ்'],
+	'ta-IN': ['Tamil', 'தமிழ்'],
 	'ta-LK': ['Tamil (Sri Lanka)', 'தமிழ்'],
 	tt: ['Tatar', 'Татар теле'],
 	te: ['Telugu', 'తెలుగు'],
