@@ -123,7 +123,7 @@ language_names = {
 	'ta-LK': ['Tamil (Sri Lanka)', 'தமிழ்'],
 	tt: ['Tatar', 'Татар теле'],
 	te: ['Telugu', 'తెలుగు'],
-	th: ['Thai', 'ไทย'],
+	'th-TH': ['Thai', 'ไทย'],
 	bo: ['Tibetan', 'བོད་སྐད'],
 	tir: ['Tigrinya', 'ትግርኛ'],
 	tr: ['Turkish', 'Türkçe'],
