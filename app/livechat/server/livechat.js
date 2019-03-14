@@ -6,8 +6,8 @@ import _ from 'underscore';
 import url from 'url';
 
 const latestVersion = '1.0';
-const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('public/index.html'));
-const headHtmlWithServerURL = addServerUrlToHead(Assets.getText('public/head.html'));
+const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('../public/index.html'));
+const headHtmlWithServerURL = addServerUrlToHead(Assets.getText('../public/head.html'));
 const isLatestVersion = (version) => version && version === latestVersion;
 
 WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {

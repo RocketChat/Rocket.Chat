@@ -32,11 +32,5 @@ rm build.tar.gz
 
 cd $LIVECHAT_APP_DIR/public
 
-# change to lowercase so all injected junk from rocket.chat is not sent: https://github.com/meteorhacks/meteor-inject-initial/blob/master/lib/inject-core.js#L10
-# this is not harmful since doctype is case-insesitive: https://www.w3.org/TR/html5/syntax.html#the-doctype
-sed -i -e "s/<!DOCTYPE/<!doctype/" head.html
-sed -i -e "s/<!DOCTYPE/<!doctype/" $LIVECHAT_DIR/$LATEST_LIVECHAT_VERSION/index.html
-sed -i -e "s/<!DOCTYPE/<!doctype/" $LIVECHAT_DIR/$LATEST_LIVECHAT_VERSION/widget-demo.html
-
 cp $LIVECHAT_DIR/$LATEST_LIVECHAT_VERSION/index.html .
 cp $LIVECHAT_DIR/$LATEST_LIVECHAT_VERSION/widget-demo.html .
