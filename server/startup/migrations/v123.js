@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Messages, Rooms, LivechatPageVisited } from 'meteor/rocketchat:models';
+import { Migrations } from '/app/migrations';
+import { Messages, Rooms, LivechatPageVisited } from '/app/models';
 
 let pageVisitedCollection;
 let messageCollection;
