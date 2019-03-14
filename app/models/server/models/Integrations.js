@@ -21,8 +21,7 @@ export class Integrations extends Base {
 	updateRoomName(oldRoomName, newRoomName) {
 		const hashedOldRoomName = `#${ oldRoomName }`;
 		const hashedNewRoomName = `#${ newRoomName }`;
-		const changedNumber = Integrations.update({ channel: hashedOldRoomName }, { $set: { 'channel.$': hashedNewRoomName } }, { multi: true });
-		return changedNumber;
+		return this.update({ channel: hashedOldRoomName }, { $set: { 'channel.$': hashedNewRoomName } }, { multi: true });
 	}
 }
 
