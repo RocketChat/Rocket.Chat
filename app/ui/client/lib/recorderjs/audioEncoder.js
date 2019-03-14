@@ -10,7 +10,7 @@ class AudioEncoder extends EventEmitter {
 	} = {}) {
 		super();
 
-		const workerPath = Meteor.absoluteUrl('public/mp3-realtime-worker.js');
+		const workerPath = Meteor.absoluteUrl('mp3-realtime-worker.js');
 
 		this.worker = new Worker(workerPath);
 		this.worker.onmessage = this.handleWorkerMessage;
