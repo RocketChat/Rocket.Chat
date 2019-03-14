@@ -33,18 +33,20 @@ API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
 			} else {
 				updatedSinceDate = new Date(updatedSince);
 			}
+			return API.v1.success({
+				emojis: {
+					update: EmojiCustom.find(query, { _updatedAt: { $gt: updatedSinceDate } }).fetch(),
+					remove: EmojiCustom.trashFindDeletedAfter(updatedSinceDate).fetch(),
+				},
+			});
 		}
 
-		let emojis = Meteor.runAsUser(this.userId, () => Meteor.call('listEmojiCustom', query, updatedSinceDate));
-
-		if (Array.isArray(emojis)) {
-			emojis = {
-				update: emojis,
+		return API.v1.success({
+			emojis: {
+				update: EmojiCustom.find(query).fetch(),
 				remove: [],
-			};
-		}
-
-		return API.v1.success({ emojis });
+			},
+		});
 	},
 });
 
