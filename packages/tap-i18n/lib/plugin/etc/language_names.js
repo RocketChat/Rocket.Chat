@@ -102,7 +102,7 @@ language_names = {
 	sd: ['Sindhi', 'سندھ'],
 	si: ['Sinhala', 'සිංහල'],
 	'sk-SK': ['Slovak', 'Slovenčina'],
-	'sl-Sl': ['Slovenian', 'slovenščina'],
+	'sl-SI': ['Slovenian', 'slovenščina'],
 	so: ['Somali', 'Afsoomaali'],
 	azb: ['South Azerbaijani', 'گؤنئی آذربایجان'],
 	'es-AR': ['Spanish (Argentina)', 'Español de Argentina'],
