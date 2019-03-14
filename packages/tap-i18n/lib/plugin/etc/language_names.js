@@ -74,7 +74,7 @@ language_names = {
 	lb: ['Luxembourgish', 'Lëtzebuergesch'],
 	mk: ['Macedonian', 'македонски јазик'],
 	mg: ['Malagasy', 'Malagasy'],
-	ms: ['Malay', 'Bahasa Melayu'],
+	'ms-MY': ['Malay', 'Bahasa Melayu'],
 	ml: ['Malayalam', 'മലയാളം'],
 	mr: ['Marathi', 'मराठी'],
 	xmf: ['Mingrelian', 'მარგალური ნინა'],
@@ -134,7 +134,7 @@ language_names = {
 	uk: ['Ukrainian', 'Українська'],
 	ur: ['Urdu', 'اردو'],
 	uz: ['Uzbek', 'O‘zbekcha'],
-	vi: ['Vietnamese', 'Tiếng Việt'],
+	'vi-VN': ['Vietnamese', 'Tiếng Việt'],
 	wa: ['Walloon', 'Walon'],
 	cy: ['Welsh', 'Cymraeg'],
 };
