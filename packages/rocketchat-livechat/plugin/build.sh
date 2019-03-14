@@ -2,7 +2,7 @@ export NODE_ENV="production"
 export LIVECHAT_DIR="../../../public/livechat"
 export BUILD_DIR="../build"
 export BUNDLE_DIR="../build/bundle/programs/web.browser.legacy"
-export LIVECHAT_APP_DIR="../../../app/livechat"
+export LIVECHAT_ASSETS_DIR="../../../private/livechat"
 export LATEST_LIVECHAT_VERSION="1.0"
 
 cd packages/rocketchat-livechat/.app
@@ -14,10 +14,10 @@ mkdir -p $LIVECHAT_DIR
 cp $BUNDLE_DIR/*.css $LIVECHAT_DIR/livechat.css
 cp $BUNDLE_DIR/*.js $LIVECHAT_DIR/livechat.js
 
-rm -rf $LIVECHAT_APP_DIR/public
-mkdir $LIVECHAT_APP_DIR/public
+rm -rf $LIVECHAT_ASSETS_DIR
+mkdir $LIVECHAT_ASSETS_DIR
 
-cp $BUNDLE_DIR/head.html $LIVECHAT_APP_DIR/public/head.html
+cp $BUNDLE_DIR/head.html $LIVECHAT_ASSETS_DIR/head.html
 rm -rf $BUILD_DIR
 
 #NEW LIVECHAT#
@@ -30,7 +30,5 @@ curl -sOL https://github.com/RocketChat/Rocket.Chat.Livechat/releases/latest/dow
 tar -xf build.tar.gz
 rm build.tar.gz
 
-cd $LIVECHAT_APP_DIR/public
-
-cp $LIVECHAT_DIR/$LATEST_LIVECHAT_VERSION/index.html .
-cp $LIVECHAT_DIR/$LATEST_LIVECHAT_VERSION/widget-demo.html .
+cd $LIVECHAT_ASSETS_DIR
+cp ../../public/livechat/$LATEST_LIVECHAT_VERSION/index.html .
