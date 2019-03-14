@@ -48,25 +48,25 @@
 				{{/if}}
 			{{/if}}
 			{{#if title}}
-        <div class="attachment-title">
-            {{#if title_link}}
-				<a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer" class="{{#if isPDF}}pdf-open-in-modal{{/if}}">
-					{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}
-					{{title}}
-				</a>
-				{{#if title_link_download}}
-					<a class="attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
-				{{/if}}
+				<div class="attachment-title">
+					{{#if title_link}}
+						<a href="{{fixCordova title_link}}" target="_blank" rel="noopener noreferrer" class="{{#if isPDF}}pdf-open-in-modal{{/if}}">
+							{{#if isFile}} {{_ "Attachment_File_Uploaded"}}: {{/if}}
+							{{title}}
+						</a>
+						{{#if title_link_download}}
+							<a class="attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
+						{{/if}}
 
-            {{else}}
-                {{title}}
-            {{/if}}
-            {{#if collapsed}}
-                <span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-            {{else}}
-                <span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
-            {{/if}}
-        </div>
+					{{else}}
+						{{title}}
+					{{/if}}
+					{{#if collapsed}}
+						<span class="collapse-switch icon-right-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
+					{{else}}
+						<span class="collapse-switch icon-down-dir" data-index="{{index}}" data-collapsed="{{collapsed}}"></span>
+					{{/if}}
+				</div>
 			{{/if}}
 
 			{{#unless collapsed}}
