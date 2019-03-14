@@ -1,5 +1,5 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Settings } from 'meteor/rocketchat:models';
+import { Migrations } from '/app/migrations';
+import { Settings } from '/app/models';
 
 const fixURLs = (text) => text.replace(/: \/\//g, '://');
 

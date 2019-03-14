@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
+import { Migrations } from '/app/migrations';
+import { Rooms, Subscriptions, Messages } from '/app/models';
 
 Migrations.add({
 	version: 4,
