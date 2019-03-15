@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { RocketChatFile } from 'meteor/rocketchat:file';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { addUserRoles, getUsersInRole } from 'meteor/rocketchat:authorization';
-import { Users, Settings, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { checkUsernameAvailability, addUserToDefaultChannels } from 'meteor/rocketchat:lib';
+import { RocketChatFile } from '/app/file';
+import { FileUpload } from '/app/file-upload';
+import { addUserRoles, getUsersInRole } from '/app/authorization';
+import { Users, Settings, Rooms } from '/app/models';
+import { settings } from '/app/settings';
+import { checkUsernameAvailability, addUserToDefaultChannels } from '/app/lib';
 import _ from 'underscore';
 
 Meteor.startup(function() {

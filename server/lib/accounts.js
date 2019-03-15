@@ -4,11 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import { Roles, Users, Settings } from 'meteor/rocketchat:models';
-import { addUserRoles } from 'meteor/rocketchat:authorization';
+import * as Mailer from '/app/mailer';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
+import { Roles, Users, Settings } from '/app/models';
+import { addUserRoles } from '/app/authorization';
 
 const accountsConfig = {
 	forbidClientAccountCreation: true,
