@@ -16,7 +16,6 @@
 
 	& .permission-grid {
 
-
 		& th {
 			position: relative;
 
@@ -97,7 +96,6 @@
 			text-align: center;
 
 			vertical-align: middle;
-
 		}
 
 		.role-name {
