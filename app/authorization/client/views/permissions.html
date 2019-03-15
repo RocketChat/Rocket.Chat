@@ -16,9 +16,18 @@
 							<th class="border-component-color" title="{{description}}">
 								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
 									{{_id}}
-									<i class="icon-edit"></i>
 								</a>
 							</th>
+							{{/each}}
+						</tr>
+						<tr>
+							<th class="border-component-color"></th>
+							{{#each role}}
+								<th class="border-component-color" title="{{description}}">
+									<a href="{{pathFor "admin-permissions-edit" name=_id}}">
+										<i class="icon-edit"></i>
+									</a>
+								</th>
 							{{/each}}
 						</tr>
 					</thead>
