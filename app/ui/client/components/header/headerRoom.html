@@ -60,15 +60,13 @@
 			{{#if isSection}}
 			<span class="rc-header__block">{{_ sectionName}}</span>
 			{{/if}}
-
-			{{#if canViewEncryption}}
+			{{#if encryptionState}}
 			<div class="rc-header__block rc-header__block-action rc-header__encryption">
 				<div class="rc-room-actions">
 					<button aria-label="{{_ 'E2E_Enabled'}}" class="rc-tooltip rc-tooltip--down rc-room-actions__action tab-button rc-header__toggle-encryption js-toggle-encryption {{encryptionState}}">{{> icon icon="key"}}</button>
 				</div>
 			</div>
 			{{/if}}
-
 			{{#if Template.contentBlock}}
 				{{> Template.contentBlock}}
 			{{/if}}
