@@ -77,44 +77,56 @@
 */
 
 .permissions-manager {
-	
-	.permission-grid {
-		table-layout: fixed;
-	}
 	.content {
 		overflow-x: scroll;
 	}
+
 	.permission-grid {
+		table-layout: fixed;
+
 		tr {
 			height: 40px;
+
 			text-align: center;
 			vertical-align: middle;
 		}
+
 		td {
-			text-align: center;
-			vertical-align: middle;
 			overflow: hidden;
+
+			text-align: center;
+
+			vertical-align: middle;
+
 		}
+
 		.role-name {
 			width: 20vw;
 		}
+
 		.role-checkbox {
 			width: 10vw;
 		}
+
 		th {
 			padding: 0 8px;
 		}
+
 		.permission-name {
+
+			padding: 0 8px;
+
 			text-align: center;
 			vertical-align: middle;
-			padding: 0 8px;
 		}
+
 		tr th .icon-edit {
 			font-size: 1.2em;
 		}
+
 		.role-permission {
-			height: 15px;
 			width: 15px;
+			height: 15px;
 		}
 	}
 }
