@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Users, Rooms, Subscriptions, Messages } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Users, Rooms, Subscriptions, Messages } from '../../../models';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { Livechat } from '../lib/Livechat';
 

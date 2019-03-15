@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
+import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	setAdminStatus(userId, admin) {

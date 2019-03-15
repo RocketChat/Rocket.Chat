@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
-import { Rooms, Messages } from '/app/models';
+import { Rooms, Messages } from '../../../models';
 
 /**
  * Enables HTTP functions on Chatpal Backend

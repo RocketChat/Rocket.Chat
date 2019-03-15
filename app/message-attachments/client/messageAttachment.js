@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { DateFormat } from '/app/lib';
+import { DateFormat } from '../../lib';
 import { Template } from 'meteor/templating';
-import { getUserPreference } from '/app/utils';
-import { Users } from '/app/models';
-import { renderMessageBody } from '/app/ui-utils';
+import { getUserPreference } from '../../utils';
+import { Users } from '../../models';
+import { renderMessageBody } from '../../ui-utils';
 
 const colors = {
 	good: '#35AC19',

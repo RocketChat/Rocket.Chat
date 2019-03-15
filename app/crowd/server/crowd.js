@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { SHA256 } from 'meteor/sha';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
-import { Logger } from '/app/logger';
-import { _setRealName } from '/app/lib';
-import { Users } from '/app/models';
-import { settings } from '/app/settings';
-import { hasRole } from '/app/authorization';
+import { Logger } from '../../logger';
+import { _setRealName } from '../../lib';
+import { Users } from '../../models';
+import { settings } from '../../settings';
+import { hasRole } from '../../authorization';
 import _ from 'underscore';
 
 const logger = new Logger('CROWD', {});

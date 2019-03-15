@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Users, Rooms } from '/app/models';
-import { canAccessRoom } from '/app/authorization';
-import { settings } from '/app/settings';
+import { Users, Rooms } from '../../app/models';
+import { canAccessRoom } from '../../app/authorization';
+import { settings } from '../../app/settings';
 
 Meteor.methods({
 	canAccessRoom(rid, userId, extraData) {

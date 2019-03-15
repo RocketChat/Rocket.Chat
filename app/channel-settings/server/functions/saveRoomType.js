@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Subscriptions, Messages } from '/app/models';
-import { settings } from '/app/settings';
+import { Rooms, Subscriptions, Messages } from '../../../models';
+import { settings } from '../../../settings';
 
 export const saveRoomType = function(rid, roomType, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {

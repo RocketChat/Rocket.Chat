@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { ChatMessage } from '/app/models';
-import { Notifications } from '/app/notifications';
+import { ChatMessage } from '../../models';
+import { Notifications } from '../../notifications';
 
 Meteor.startup(function() {
 	Notifications.onLogged('Users:Deleted', ({ userId }) =>

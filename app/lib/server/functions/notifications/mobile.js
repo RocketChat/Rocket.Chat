@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Subscriptions } from '/app/models';
-import { roomTypes } from '/app/utils';
-import { PushNotification } from '/app/push-notifications';
+import { settings } from '../../../../settings';
+import { Subscriptions } from '../../../../models';
+import { roomTypes } from '../../../../utils';
+import { PushNotification } from '../../../../push-notifications';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { getUserPreference } from '/app/utils';
-import { callbacks } from '/app/callbacks';
+import { getUserPreference } from '../../utils';
+import { callbacks } from '../../callbacks';
 import { emoji } from '../lib/rocketchat';
 import { isSetNotNull } from './function-isSet';
 import s from 'underscore.string';

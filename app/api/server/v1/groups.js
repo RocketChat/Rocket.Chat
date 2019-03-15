@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { composeMessageObjectWithUser } from '/app/utils';
+import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { composeMessageObjectWithUser } from '../../../utils';
 import { API } from '../api';
 import _ from 'underscore';
 

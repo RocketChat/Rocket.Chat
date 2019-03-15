@@ -1,5 +1,5 @@
-import { API } from '/app/api';
-import { Users } from '/app/models';
+import { API } from '../../../../api';
+import { Users } from '../../../../models';
 
 import { FederatedUser } from '../../federatedResources';
 import peerServer from '../peerServer';

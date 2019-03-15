@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '/app/models';
+import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import _ from 'underscore';
 import { Livechat } from '../lib/Livechat';
 

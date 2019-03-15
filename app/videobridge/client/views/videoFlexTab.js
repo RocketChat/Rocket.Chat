@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { modal, TabBar } from '/app/ui-utils';
-import { t } from '/app/utils';
+import { settings } from '../../../settings';
+import { modal, TabBar } from '../../../ui-utils';
+import { t } from '../../../utils';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {

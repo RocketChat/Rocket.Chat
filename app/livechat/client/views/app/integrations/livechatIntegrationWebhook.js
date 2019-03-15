@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { modal } from '/app/ui-utils';
-import { t, handleError } from '/app/utils';
+import { modal } from '../../../../../ui-utils';
+import { t, handleError } from '../../../../../utils';
 import { LivechatIntegration } from '../../../collections/LivechatIntegration';
 import _ from 'underscore';
 import s from 'underscore.string';

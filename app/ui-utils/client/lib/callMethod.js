@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { handleError } from '/app/utils';
+import { handleError } from '../../../utils';
 
 /**
  * Wraps a Meteor method into a Promise.

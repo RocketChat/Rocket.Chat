@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Integrations, Users } from '/app/models';
+import { hasPermission } from '../../../../authorization';
+import { Integrations, Users } from '../../../../models';
 import { integrations } from '../../../lib/rocketchat';
 
 Meteor.methods({
