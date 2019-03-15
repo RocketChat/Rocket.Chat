@@ -15,6 +15,23 @@ import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
+const COMMENT_DISABLED = 'COMMENT_DISABLED';
+
+function closeRoom(message) {
+	Meteor.call('livechat:closeRoom', this.rid, message, function(error/* , result*/) {
+		if (error) {
+			return handleError(error);
+		}
+		modal.open({
+			title: t('Chat_closed'),
+			text: t('Chat_closed_successfully'),
+			type: 'success',
+			timer: 1000,
+			showConfirmButton: false,
+		});
+	});
+}
+
 Template.visitorInfo.helpers({
 	user() {
 		const user = Template.instance().user.get();
@@ -170,37 +187,29 @@ Template.visitorInfo.events({
 	},
 	'click .close-livechat'(event) {
 		event.preventDefault();
-
-		modal.open({
-			title: t('Closing_chat'),
-			type: 'input',
-			inputPlaceholder: t('Please_add_a_comment'),
-			showCancelButton: true,
-			closeOnConfirm: false,
-		}, (inputValue) => {
-			if (!inputValue) {
-				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
-
-			if (s.trim(inputValue) === '') {
-				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
-
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/* , result*/) {
-				if (error) {
-					return handleError(error);
+		if (settings.get('Livechat_show_conversastion_finished_message')) {
+			modal.open({
+				title: t('Closing_chat'),
+				type: 'input',
+				inputPlaceholder: t('Please_add_a_comment'),
+				showCancelButton: true,
+				closeOnConfirm: false,
+			}, (inputValue) => {
+				if (!inputValue) {
+					modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+					return false;
 				}
-				modal.open({
-					title: t('Chat_closed'),
-					text: t('Chat_closed_successfully'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
+
+				if (s.trim(inputValue) === '') {
+					modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+					return false;
+				}
+
+				closeRoom(inputValue);
 			});
-		});
+		} else {
+			closeRoom(COMMENT_DISABLED);
+		}
 	},
 
 	'click .return-inquiry'(event) {
