@@ -12,12 +12,12 @@ import { ChatSubscription } from '/app/models';
 import EventEmitter from 'wolfy87-eventemitter';
 
 const WEB_RTC_EVENTS = {
-	WEB_RTC: 'webrtc',
-	STATUS: 0,
-	CALL: 1,
-	JOIN: 2,
-	CANDIDATE: 3,
-	DESCRIPTION: 4,
+	WEB_RTC: 0,
+	STATUS: 1,
+	CALL: 2,
+	JOIN: 3,
+	CANDIDATE: 4,
+	DESCRIPTION: 5,
 };
 
 class WebRTCTransportClass extends EventEmitter {
@@ -508,9 +508,7 @@ class WebRTCClass {
 			this.videoEnabled.set(this.media.video === true);
 			this.audioEnabled.set(this.media.audio === true);
 			const { peerConnections } = this;
-			Object.entries(peerConnections).forEach(([, peerConnection]) => {
-				peerConnection.addStream(stream);
-			});
+			Object.entries(peerConnections).forEach(([, peerConnection]) => peerConnection.addStream(stream));
 			callback(null, this.localStream);
 		};
 		const onError = (error) => {
@@ -721,16 +719,13 @@ class WebRTCClass {
 		}, (isConfirm) => {
 			if (isConfirm) {
 				FlowRouter.goToRoomById(data.room);
-				Meteor.defer(() => {
-					this.joinCall({
-						to: data.from,
-						monitor: data.monitor,
-						media: data.media,
-					});
+				return this.joinCall({
+					to: data.from,
+					monitor: data.monitor,
+					media: data.media,
 				});
-			} else {
-				this.stop();
 			}
+			this.stop();
 		});
 	}
 

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Subscriptions, Rooms } from '/app/models';
 import { settings } from '/app/settings';
-
+import { WEB_RTC_EVENTS } from '/app/webrtc';
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
 		msg: 'changed',
@@ -175,7 +175,7 @@ const notifications = new Notifications();
 notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
 	const [roomId, e] = eventName.split('/');
 
-	if (e === 'webrtc') {
+	if (e === WEB_RTC_EVENTS.WEB_RTC) {
 		return true;
 	}
 	if (e === 'typing') {
