@@ -5,7 +5,7 @@ import { addServerUrlToIndex, addServerUrlToHead } from '../lib/Assets';
 import _ from 'underscore';
 import url from 'url';
 
-const latestVersion = '1.0';
+const latestVersion = '1.0.0';
 const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('livechat/index.html'));
 const headHtmlWithServerURL = addServerUrlToHead(Assets.getText('livechat/head.html'));
 const isLatestVersion = (version) => version && version === latestVersion;

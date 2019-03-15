@@ -17,6 +17,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
 		this.tryEnsureIndex({ open: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ ts: 1 });
 
 		// threads
 		this.tryEnsureIndex({ prid: 1 });

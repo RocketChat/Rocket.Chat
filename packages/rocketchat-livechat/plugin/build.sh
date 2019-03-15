@@ -3,7 +3,7 @@ export LIVECHAT_DIR="../../../public/livechat"
 export BUILD_DIR="../build"
 export BUNDLE_DIR="../build/bundle/programs/web.browser.legacy"
 export LIVECHAT_ASSETS_DIR="../../../private/livechat"
-export LATEST_LIVECHAT_VERSION="1.0"
+export LATEST_LIVECHAT_VERSION="1.0.0"
 
 cd packages/rocketchat-livechat/.app
 meteor npm install --production
@@ -26,7 +26,7 @@ cd $LIVECHAT_DIR
 mkdir -p $LATEST_LIVECHAT_VERSION
 cd $LATEST_LIVECHAT_VERSION
 
-curl -sOL https://github.com/RocketChat/Rocket.Chat.Livechat/releases/latest/download/build.tar.gz
+curl -sOL "https://github.com/RocketChat/Rocket.Chat.Livechat/releases/download/v${LATEST_LIVECHAT_VERSION}/build.tar.gz"
 tar -xf build.tar.gz
 rm build.tar.gz
 

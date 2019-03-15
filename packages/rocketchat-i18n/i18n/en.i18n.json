@@ -1062,6 +1062,7 @@
   "Duplicate_private_group_name": "A Private Group with name '%s' exists",
   "Duration": "Duration",
   "E2E Encryption": "E2E Encryption",
+  "E2E_Enabled": "E2E Enabled",
   "E2E_Enable_alert": "This feature is currently in beta! Please report bugs to github.com/RocketChat/Rocket.Chat/issues and be aware of:<br/>- Encrypted messages of encrypted rooms will not be found by search operations.<br/>- The mobile apps may not support the encypted messages (they are implementing it).<br/>- Bots may not be able to see encrypted messages until they implement support for it.<br/>- Uploads will not be encrypted in this version.",
   "E2E_Enable_description": "Enable option to create encrypted groups and be able to change groups and direct messages to be encrypted",
   "E2E_Encryption_Password_Explanation": "You can now create encrypted private groups and direct messages. You may also change existing private groups or DMs to encrypted.<br/><br/>This is end to end encryption so the key to encode/decode your messages will not be saved on the server. For that reason you need to store your password somewhere safe. You will be required to enter it on other devices you wish to use e2e encryption on.",

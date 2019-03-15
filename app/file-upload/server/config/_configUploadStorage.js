@@ -6,7 +6,6 @@ import './FileSystem.js';
 import './GoogleStorage.js';
 import './GridFS.js';
 import './Webdav.js';
-import './Slingshot_DEPRECATED.js';
 
 const configStore = _.debounce(() => {
 	const store = settings.get('FileUpload_Storage_Type');
