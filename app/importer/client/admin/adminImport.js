@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from '/app/importer';
+import { Importers } from '../..';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasRole } from '/app/authorization';
-import { t, handleError } from '/app/utils';
+import { hasRole } from '../../../authorization';
+import { t, handleError } from '../../../utils';
 
 Template.adminImport.helpers({
 	isAdmin() {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { IntegrationHistory, Integrations } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { IntegrationHistory, Integrations } from '../../../models';
 import { API } from '../api';
 
 API.v1.addRoute('integrations.create', { authRequired: true }, {

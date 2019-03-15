@@ -57,7 +57,7 @@ export class BaseDb extends EventEmitter {
 
 	listenSettings() {
 		Meteor.startup(async() => {
-			const { settings } = await import('/app/settings');
+			const { settings } = await import('../../../settings');
 			settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
 				isOplogEnabled = isOplogAvailable && value === false;
 			});

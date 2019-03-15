@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { CachedCollectionManager } from '../../../ui-cached-collection';
 import _ from 'underscore';
 
 class CustomSoundsClass {

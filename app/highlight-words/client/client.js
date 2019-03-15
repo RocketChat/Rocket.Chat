@@ -3,8 +3,8 @@
  * @param {Object} message - The message object
  */
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
-import { getUserPreference } from '/app/utils';
+import { callbacks } from '../../callbacks';
+import { getUserPreference } from '../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { highlightWords } from './helper';

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Settings } from '/app/models';
-import { settings } from '/app/settings';
-import { fileUploadIsValidContentType } from '/app/utils';
-import { canAccessRoom } from '/app/authorization';
+import { Rooms, Settings } from '../../models';
+import { settings } from '../../settings';
+import { fileUploadIsValidContentType } from '../../utils';
+import { canAccessRoom } from '../../authorization';
 import filesize from 'filesize';
 
 let maxFileSize = 0;

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { getAvatarUrlFromUsername } from '/app/utils';
-import { Messages, Rooms, Users } from '/app/models';
-import { settings } from '/app/settings';
+import { getAvatarUrlFromUsername } from '../../utils';
+import { Messages, Rooms, Users } from '../../models';
+import { settings } from '../../settings';
 import {
 	deleteMessage,
 	updateMessage,
@@ -11,9 +11,9 @@ import {
 	archiveRoom,
 	unarchiveRoom,
 	sendMessage,
-} from '/app/lib';
-import { saveRoomName, saveRoomTopic } from '/app/channel-settings';
-import { FileUpload } from '/app/file-upload';
+} from '../../lib';
+import { saveRoomName, saveRoomTopic } from '../../channel-settings';
+import { FileUpload } from '../../file-upload';
 import { logger } from './logger';
 import _ from 'underscore';
 import url from 'url';

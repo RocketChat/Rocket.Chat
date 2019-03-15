@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { t } from '/app/utils';
+import { settings } from '../../../settings';
+import { t } from '../../../utils';
 import Bridge from '../irc-bridge';
 
 Meteor.methods({

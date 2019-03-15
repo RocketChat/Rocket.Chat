@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Subscriptions } from '/app/models';
+import { Subscriptions } from '../../../models';
 import { API } from '../api';
 
 API.v1.addRoute('subscriptions.get', { authRequired: true }, {

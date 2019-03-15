@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Rooms, Subscriptions, Users } from '/app/models';
-import { getUserPreference } from '/app/utils';
-import { settings } from '/app/settings';
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Subscriptions, Users } from '../../app/models';
+import { getUserPreference } from '../../app/utils';
+import { settings } from '../../app/settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 

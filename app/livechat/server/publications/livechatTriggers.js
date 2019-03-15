@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { LivechatTrigger } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { LivechatTrigger } from '../../../models';
 
 Meteor.publish('livechat:triggers', function(_id) {
 	if (!this.userId) {
