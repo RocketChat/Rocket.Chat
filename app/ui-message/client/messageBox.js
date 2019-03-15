@@ -142,8 +142,17 @@ Template.messageBox.onCreated(function() {
 	EmojiPicker.init();
 	this.replyMessageData = new ReactiveVar();
 	this.isMessageFieldEmpty = new ReactiveVar(true);
+	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
 	messageBox.emit('created', this);
+
+	navigator.permissions.query({ name: 'microphone' })
+		.then((permissionStatus) => {
+			this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+			permissionStatus.onchange = () => {
+				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+			};
+		});
 });
 
 Template.messageBox.onRendered(function() {
@@ -233,6 +242,7 @@ Template.messageBox.helpers({
 	},
 	isAudioMessageAllowed() {
 		return AudioRecorder.isSupported() &&
+			!Template.instance().isMicrophoneDenied.get() &&
 			settings.get('FileUpload_Enabled') &&
 			settings.get('Message_AudioRecorderEnabled') &&
 			(!settings.get('FileUpload_MediaTypeWhiteList') ||

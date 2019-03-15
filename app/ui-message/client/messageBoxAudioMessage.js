@@ -8,7 +8,8 @@ import { call } from '../../ui-utils';
 import { t } from '../../utils';
 import './messageBoxAudioMessage.html';
 
-const startRecording = () => new Promise((resolve) => AudioRecorder.start(resolve));
+const startRecording = () => new Promise((resolve, reject) =>
+	AudioRecorder.start((result) => (result ? resolve() : reject())));
 
 const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
 
@@ -114,17 +115,22 @@ Template.messageBoxAudioMessage.events({
 		chatMessages[this.rid].recording = true;
 		instance.state.set('recording');
 
-		await startRecording();
+		try {
+			await startRecording();
 
-		const startTime = new Date;
-		recordingInterval.set(setInterval(() => {
-			const now = new Date;
-			const distance = (now.getTime() - startTime.getTime()) / 1000;
-			const minutes = Math.floor(distance / 60);
-			const seconds = Math.floor(distance % 60);
-			instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
-		}, 1000));
-		recordingRoomId.set(this.rid);
+			const startTime = new Date;
+			recordingInterval.set(setInterval(() => {
+				const now = new Date;
+				const distance = (now.getTime() - startTime.getTime()) / 1000;
+				const minutes = Math.floor(distance / 60);
+				const seconds = Math.floor(distance % 60);
+				instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
+			}, 1000));
+			recordingRoomId.set(this.rid);
+		} catch (error) {
+			instance.state.set(null);
+			chatMessages[this.rid].recording = false;
+		}
 	},
 
 	async 'click .js-audio-message-cancel'(event, instance) {
