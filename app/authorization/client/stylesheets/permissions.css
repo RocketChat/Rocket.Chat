@@ -76,49 +76,44 @@
 }
 */
 
-.permissions-manager .permission-grid {
-	table-layout:fixed;
+.permissions-manager {
+.permission-grid {
+	table-layout: fixed;
 }
-.permissions-manager .content {
+.content {
 	overflow-x: scroll;
 }
-
-.permissions-manager .permission-grid tr{
+.permission-grid {
+tr {
 	height: 40px;
 	text-align: center;
 	vertical-align: middle;
-
 }
-
-.permissions-manager .permission-grid td {
+td {
 	text-align: center;
 	vertical-align: middle;
 	overflow: hidden;
 }
-
-.permissions-manager .permission-grid .role-name {
+.role-name {
 	width: 20vw;
 }
-
-.permissions-manager .permission-grid .role-checkbox {
+.role-checkbox {
 	width: 10vw;
 }
-
-.permissions-manager .permission-grid th {
+th {
 	padding: 0 8px;
 }
-
-.permissions-manager .permission-grid .permission-name {
+.permission-name {
 	text-align: center;
 	vertical-align: middle;
 	padding: 0 8px;
 }
-
-.permissions-manager .permission-grid tr th .icon-edit {
+tr th .icon-edit {
 	font-size: 1.2em;
 }
-
-.permissions-manager .permission-grid .role-permission {
+.role-permission {
 	height: 15px;
 	width: 15px;
+}
+}
 }
