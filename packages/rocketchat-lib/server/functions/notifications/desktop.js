@@ -1,3 +1,7 @@
+import { metrics } from 'meteor/rocketchat:metrics';
+import { settings } from 'meteor/rocketchat:settings';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { roomTypes } from 'meteor/rocketchat:utils';
 /**
  * Send notification to user
  *
@@ -16,10 +20,10 @@ export function notifyDesktopUser({
 	duration,
 	notificationMessage,
 }) {
-	const { title, text } = RocketChat.roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
+	const { title, text } = roomTypes.getConfig(room.t).getNotificationDetails(room, user, notificationMessage);
 
-	RocketChat.metrics.notificationsSent.inc({ notification_type: 'desktop' });
-	RocketChat.Notifications.notifyUser(userId, 'notification', {
+	metrics.notificationsSent.inc({ notification_type: 'desktop' });
+	Notifications.notifyUser(userId, 'notification', {
 		title,
 		text,
 		duration,
@@ -40,6 +44,7 @@ export function notifyDesktopUser({
 export function shouldNotifyDesktop({
 	disableAllMessageNotifications,
 	status,
+	statusConnection,
 	desktopNotifications,
 	hasMentionToAll,
 	hasMentionToHere,
@@ -47,19 +52,19 @@ export function shouldNotifyDesktop({
 	hasMentionToUser,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && desktopNotifications == null) {
+	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser) {
 		return false;
 	}
 
-	if (status === 'busy' || desktopNotifications === 'nothing') {
+	if (statusConnection === 'offline' || status === 'busy' || desktopNotifications === 'nothing') {
 		return false;
 	}
 
 	if (!desktopNotifications) {
-		if (RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all') {
 			return true;
 		}
-		if (RocketChat.settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
+		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
 			return false;
 		}
 	}

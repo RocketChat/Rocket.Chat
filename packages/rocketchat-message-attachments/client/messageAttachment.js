@@ -1,14 +1,17 @@
+import { Meteor } from 'meteor/meteor';
 import { DateFormat } from 'meteor/rocketchat:lib';
-import { fixCordova } from 'meteor/rocketchat:lazy-load';
+import { Template } from 'meteor/templating';
+import { getUserPreference } from 'meteor/rocketchat:utils';
+import { Users } from 'meteor/rocketchat:models';
+import { renderMessageBody } from 'meteor/rocketchat:ui-utils';
+
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',
 	danger: '#D30230',
 };
 
-/* globals renderMessageBody*/
 Template.messageAttachment.helpers({
-	fixCordova,
 	parsedText() {
 		return renderMessageBody({
 			msg: this.text,
@@ -24,11 +27,11 @@ Template.messageAttachment.helpers({
 	},
 	loadImage() {
 		if (this.downloadImages !== true) {
-			const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad' : 1 } });
-			if (RocketChat.getUserPreference(user, 'autoImageLoad') === false) {
+			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad' : 1 } });
+			if (getUserPreference(user, 'autoImageLoad') === false) {
 				return false;
 			}
-			if (Meteor.Device.isPhone() && RocketChat.getUserPreference(user, 'saveMobileBandwidth') !== true) {
+			if (Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth') !== true) {
 				return false;
 			}
 		}
@@ -50,7 +53,7 @@ Template.messageAttachment.helpers({
 		if (this.collapsed != null) {
 			return this.collapsed;
 		} else {
-			return RocketChat.getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
+			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
 	},
 	time() {

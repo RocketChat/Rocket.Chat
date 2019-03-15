@@ -1,6 +1,3 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
@@ -25,7 +22,7 @@ describe('[Main Elements Render]', function() {
 			});
 
 			it('it should show the new channel button', () => {
-				sideNav.newChannelBtn.isVisible().should.be.true;
+				sideNav.newChannelBtnToolbar.isVisible().should.be.true;
 			});
 
 			it('it should show "general" channel', () => {

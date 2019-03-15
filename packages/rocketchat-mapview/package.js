@@ -7,11 +7,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'tap:i18n',
 	]);
-
-	api.addFiles('server/settings.js', 'server');
-
-	api.addFiles('client/mapview.js', 'client');
-
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

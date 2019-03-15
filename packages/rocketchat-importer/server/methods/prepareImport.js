@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import { Importers } from 'meteor/rocketchat:importer';
+import { hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
 	prepareImport(key, dataURI, contentType, fileName) {
@@ -6,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'prepareImport' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'run-import')) {
+		if (!hasPermission(Meteor.userId(), 'run-import')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'setupImporter' });
 		}
 

@@ -1,10 +1,13 @@
+import { Random } from 'meteor/random';
+import { Messages, Rooms, Users } from 'meteor/rocketchat:models';
+
 export class AppMessagesConverter {
 	constructor(orch) {
 		this.orch = orch;
 	}
 
 	convertById(msgId) {
-		const msg = RocketChat.models.Messages.getOneById(msgId);
+		const msg = Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
@@ -48,6 +51,7 @@ export class AppMessagesConverter {
 			groupable: msgObj.groupable,
 			attachments,
 			reactions: msgObj.reactions,
+			parseUrls: msgObj.parseUrls,
 		};
 	}
 
@@ -56,7 +60,7 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(message.room.id);
+		const room = Rooms.findOneById(message.room.id);
 
 		if (!room) {
 			throw new Error('Invalid room provided on the message.');
@@ -64,7 +68,7 @@ export class AppMessagesConverter {
 
 		let u;
 		if (message.sender && message.sender.id) {
-			const user = RocketChat.models.Users.findOneById(message.sender.id);
+			const user = Users.findOneById(message.sender.id);
 
 			if (user) {
 				u = {
@@ -83,7 +87,7 @@ export class AppMessagesConverter {
 
 		let editedBy;
 		if (message.editor) {
-			const editor = RocketChat.models.Users.findOneById(message.editor.id);
+			const editor = Users.findOneById(message.editor.id);
 			editedBy = {
 				_id: editor._id,
 				username: editor.username,
@@ -108,6 +112,7 @@ export class AppMessagesConverter {
 			groupable: message.groupable,
 			attachments,
 			reactions: message.reactions,
+			parseUrls: message.parseUrls,
 		};
 	}
 
@@ -120,7 +125,7 @@ export class AppMessagesConverter {
 			collapsed: attachment.collapsed,
 			color: attachment.color,
 			text: attachment.text,
-			ts: attachment.timestamp,
+			ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
 			message_link: attachment.timestampLink,
 			thumb_url: attachment.thumbnailUrl,
 			author_name: attachment.author ? attachment.author.name : undefined,
@@ -129,10 +134,19 @@ export class AppMessagesConverter {
 			title: attachment.title ? attachment.title.value : undefined,
 			title_link: attachment.title ? attachment.title.link : undefined,
 			title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
+			image_dimensions: attachment.imageDimensions,
+			image_preview: attachment.imagePreview,
 			image_url: attachment.imageUrl,
+			image_type: attachment.imageType,
+			image_size: attachment.imageSize,
 			audio_url: attachment.audioUrl,
+			audio_type: attachment.audioType,
+			audio_size: attachment.audioSize,
 			video_url: attachment.videoUrl,
+			video_type: attachment.videoType,
+			video_size: attachment.videoSize,
 			fields: attachment.fields,
+			button_alignment: attachment.actionButtonsAlignment,
 			actions: attachment.actions,
 			type: attachment.type,
 			description: attachment.description,
@@ -175,15 +189,24 @@ export class AppMessagesConverter {
 				collapsed: attachment.collapsed,
 				color: attachment.color,
 				text: attachment.text,
-				timestamp: attachment.ts,
+				timestamp: new Date(attachment.ts),
 				timestampLink: attachment.message_link,
 				thumbnailUrl: attachment.thumb_url,
 				author,
 				title,
+				imageDimensions: attachment.image_dimensions,
+				imagePreview: attachment.image_preview,
 				imageUrl: attachment.image_url,
+				imageType: attachment.image_type,
+				imageSize: attachment.image_size,
 				audioUrl: attachment.audio_url,
+				audioType: attachment.audio_type,
+				audioSize: attachment.audio_size,
 				videoUrl: attachment.video_url,
+				videoType: attachment.video_type,
+				videoSize: attachment.video_size,
 				fields: attachment.fields,
+				actionButtonsAlignment: attachment.button_alignment,
 				actions: attachment.actions,
 				type: attachment.type,
 				description: attachment.description,

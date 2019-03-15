@@ -15,11 +15,10 @@ Package.onUse(function(api) {
 		'mongo',
 		'ecmascript',
 		'templating',
+		'littledata:synced-cron',
 		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:settings',
 	]);
-
-	api.addFiles([
-		'server/startup/settings.js',
-		'server/cronPruneMessages.js',
-	], 'server');
+	api.mainModule('server/index.js', 'server');
 });

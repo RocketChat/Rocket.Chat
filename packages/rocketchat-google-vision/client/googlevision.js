@@ -1,4 +1,9 @@
-RocketChat.GoogleVision = {
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+
+const GoogleVision = {
 	getVisionAttributes(attachment) {
 		const attributes = {};
 		const labels = [];
@@ -48,8 +53,8 @@ RocketChat.GoogleVision = {
 
 	init() {
 		Tracker.autorun(() => {
-			if (RocketChat.settings.get('GoogleVision_Enable')) {
-				RocketChat.callbacks.add('renderMessage', (message) => {
+			if (settings.get('GoogleVision_Enable')) {
+				callbacks.add('renderMessage', (message) => {
 					if (message.attachments && message.attachments.length > 0) {
 						for (const index in message.attachments) {
 							if (message.attachments.hasOwnProperty(index)) {
@@ -59,9 +64,9 @@ RocketChat.GoogleVision = {
 						}
 					}
 					return message;
-				}, RocketChat.callbacks.priority.HIGH - 3, 'googlevision');
+				}, callbacks.priority.HIGH - 3, 'googlevision');
 
-				RocketChat.callbacks.add('streamMessage', (message) => {
+				callbacks.add('streamMessage', (message) => {
 					if (message.attachments && message.attachments.length > 0) {
 						for (const index in message.attachments) {
 							if (message.attachments.hasOwnProperty(index)) {
@@ -70,15 +75,15 @@ RocketChat.GoogleVision = {
 							}
 						}
 					}
-				}, RocketChat.callbacks.priority.HIGH - 3, 'googlevision-stream');
+				}, callbacks.priority.HIGH - 3, 'googlevision-stream');
 			} else {
-				RocketChat.callbacks.remove('renderMessage', 'googlevision');
-				RocketChat.callbacks.remove('streamMessage', 'googlevision-stream');
+				callbacks.remove('renderMessage', 'googlevision');
+				callbacks.remove('streamMessage', 'googlevision-stream');
 			}
 		});
 	},
 };
 
 Meteor.startup(function() {
-	RocketChat.GoogleVision.init();
+	GoogleVision.init();
 });

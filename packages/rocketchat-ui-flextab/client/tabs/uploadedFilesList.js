@@ -1,5 +1,9 @@
-import { fixCordova } from 'meteor/rocketchat:lazy-load';
+import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { DateFormat } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
+import { popover } from 'meteor/rocketchat:ui-utils';
+import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
 const roomFiles = new Mongo.Collection('room_files');
@@ -24,8 +28,6 @@ Template.uploadedFilesList.helpers({
 		return roomFiles.find({ rid: this.rid }, { sort: { uploadedAt: -1 } });
 	},
 
-	fixCordova,
-
 	url() {
 		return `/file-upload/${ this._id }/${ this.name }`;
 	},
@@ -39,7 +41,7 @@ Template.uploadedFilesList.helpers({
 
 	thumb() {
 		if (/image/.test(this.type)) {
-			return fixCordova(this.url);
+			return this.url;
 		}
 	},
 	format(timestamp) {
@@ -82,7 +84,7 @@ Template.uploadedFilesList.helpers({
 		}
 
 		return {
-			id: 'file-generic',
+			id: 'clip',
 			type: 'generic',
 			extension,
 		};
@@ -116,4 +118,40 @@ Template.uploadedFilesList.events({
 			return t.limit.set(t.limit.get() + 50);
 		}
 	}, 200),
+
+	'click .js-action'(e) {
+		e.currentTarget.parentElement.classList.add('active');
+
+		const config = {
+			columns: [
+				{
+					groups: [
+						{
+							items: [
+								{
+									icon: 'download',
+									name: t('Download'),
+									action: () => {
+										const a = document.createElement('a');
+										a.href = this.file.url;
+										a.download = this.file.name;
+										document.body.appendChild(a);
+										a.click();
+										window.URL.revokeObjectURL(this.file.url);
+										a.remove();
+									},
+								},
+							],
+						},
+					],
+				},
+			],
+			currentTarget: e.currentTarget,
+			onDestroyed:() => {
+				e.currentTarget.parentElement.classList.remove('active');
+			},
+		};
+
+		popover.open(config);
+	},
 });

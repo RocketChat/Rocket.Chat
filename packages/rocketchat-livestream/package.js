@@ -6,32 +6,19 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('templating', 'client');
 	api.use([
 		'ecmascript',
+		'rocketchat:utils',
+		'rocketchat:ui-utils',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:callbacks',
+		'rocketchat:authorization',
 		'rocketchat:lib',
+		'rocketchat:api',
+		'templating',
 	]);
-	api.addFiles([
-		'client/views/liveStreamTab.html',
-		'client/views/livestreamBroadcast.html',
-		'client/views/livestreamBroadcast.js',
-		'client/views/liveStreamTab.js',
-		'client/views/broadcastView.html',
-		'client/views/broadcastView.js',
-		'client/styles/liveStreamTab.css',
-		'client/views/liveStreamView.html',
-		'client/views/liveStreamView.js',
-		'client/tabBar.js',
-	], 'client');
-
-	api.addFiles([
-		'server/index.js',
-		'server/models/Rooms.js',
-		'server/functions/saveStreamingOptions.js',
-		'server/settings.js',
-	], 'server');
-
-	Npm.depends({
-		googleapis: '25.0.0',
-	});
+	api.addFiles('client/styles/liveStreamTab.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

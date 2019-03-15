@@ -1,3 +1,8 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+
 Template.customFieldsForm.helpers({
 	new() {
 		return this.new;
@@ -48,10 +53,10 @@ Template.customFieldsForm.onCreated(function() {
 	this.formData = (currentData && currentData.formData) || {};
 
 	Tracker.autorun(() => {
-		const Accounts_CustomFields = RocketChat.settings.get('Accounts_CustomFields');
+		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
 		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
 			try {
-				this.customFields.set(JSON.parse(RocketChat.settings.get('Accounts_CustomFields')));
+				this.customFields.set(JSON.parse(settings.get('Accounts_CustomFields')));
 			} catch (e) {
 				console.error('Invalid JSON for Accounts_CustomFields');
 			}

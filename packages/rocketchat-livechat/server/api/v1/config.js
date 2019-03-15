@@ -1,6 +1,9 @@
-import { findRoom, findGuest, settings, online } from '../lib/livechat';
+import { Users } from 'meteor/rocketchat:models';
+import { API } from 'meteor/rocketchat:api';
+import { findGuest, settings, online, findOpenRoom } from '../lib/livechat';
+import { Match, check } from 'meteor/check';
 
-RocketChat.API.v1.addRoute('livechat/config', {
+API.v1.addRoute('livechat/config', {
 	get() {
 		try {
 			check(this.queryParams, {
@@ -9,7 +12,7 @@ RocketChat.API.v1.addRoute('livechat/config', {
 
 			const config = settings();
 			if (!config.enabled) {
-				return RocketChat.API.v1.success({ config: { enabled: false } });
+				return API.v1.success({ config: { enabled: false } });
 			}
 
 			const status = online();
@@ -18,17 +21,19 @@ RocketChat.API.v1.addRoute('livechat/config', {
 			let room;
 			let agent;
 
-			if (this.queryParams.token) {
-				guest = findGuest(this.queryParams.token);
-				room = findRoom(this.queryParams.token);
-				agent = room && room.servedBy && RocketChat.models.Users.getAgentInfo(room.servedBy._id);
+			const { token } = this.queryParams;
+
+			if (token) {
+				guest = findGuest(token);
+				room = findOpenRoom(token);
+				agent = room && room.servedBy && Users.getAgentInfo(room.servedBy._id);
 			}
 
 			Object.assign(config, { online: status, guest, room, agent });
 
-			return RocketChat.API.v1.success({ config });
+			return API.v1.success({ config });
 		} catch (e) {
-			return RocketChat.API.v1.failure(e);
+			return API.v1.failure(e);
 		}
 	},
 });

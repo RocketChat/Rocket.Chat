@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { slashCommands } from 'meteor/rocketchat:utils';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { Utilities } from '../../lib/misc/Utilities';
 
@@ -15,7 +17,7 @@ export class AppCommandsBridge {
 		}
 
 		const cmd = command.toLowerCase();
-		return typeof RocketChat.slashCommands.commands[cmd] === 'object' || this.disabledCommands.has(cmd);
+		return typeof slashCommands.commands[cmd] === 'object' || this.disabledCommands.has(cmd);
 	}
 
 	enableCommand(command, appId) {
@@ -30,7 +32,7 @@ export class AppCommandsBridge {
 			throw new Error(`The command is not currently disabled: "${ cmd }"`);
 		}
 
-		RocketChat.slashCommands.commands[cmd] = this.disabledCommands.get(cmd);
+		slashCommands.commands[cmd] = this.disabledCommands.get(cmd);
 		this.disabledCommands.delete(cmd);
 
 		this.orch.getNotifier().commandUpdated(cmd);
@@ -49,12 +51,12 @@ export class AppCommandsBridge {
 			return;
 		}
 
-		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined') {
+		if (typeof slashCommands.commands[cmd] === 'undefined') {
 			throw new Error(`Command does not exist in the system currently: "${ cmd }"`);
 		}
 
-		this.disabledCommands.set(cmd, RocketChat.slashCommands.commands[cmd]);
-		delete RocketChat.slashCommands.commands[cmd];
+		this.disabledCommands.set(cmd, slashCommands.commands[cmd]);
+		delete slashCommands.commands[cmd];
 
 		this.orch.getNotifier().commandDisabled(cmd);
 	}
@@ -66,11 +68,11 @@ export class AppCommandsBridge {
 		this._verifyCommand(command);
 
 		const cmd = command.toLowerCase();
-		if (typeof RocketChat.slashCommands.commands[cmd] === 'undefined') {
+		if (typeof slashCommands.commands[cmd] === 'undefined') {
 			throw new Error(`Command does not exist in the system currently (or it is disabled): "${ cmd }"`);
 		}
 
-		const item = RocketChat.slashCommands.commands[cmd];
+		const item = slashCommands.commands[cmd];
 		item.params = command.paramsExample ? command.paramsExample : item.params;
 		item.description = command.i18nDescription ? command.i18nDescription : item.params;
 		item.callback = this._appCommandExecutor.bind(this);
@@ -78,7 +80,7 @@ export class AppCommandsBridge {
 		item.previewer = command.previewer ? this._appCommandPreviewer.bind(this) : item.previewer;
 		item.previewCallback = command.executePreviewItem ? this._appCommandPreviewExecutor.bind(this) : item.previewCallback;
 
-		RocketChat.slashCommands.commands[cmd] = item;
+		slashCommands.commands[cmd] = item;
 		this.orch.getNotifier().commandUpdated(cmd);
 	}
 
@@ -97,7 +99,7 @@ export class AppCommandsBridge {
 			previewCallback: !command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this),
 		};
 
-		RocketChat.slashCommands.commands[command.command.toLowerCase()] = item;
+		slashCommands.commands[command.command.toLowerCase()] = item;
 		this.orch.getNotifier().commandAdded(command.command.toLowerCase());
 	}
 
@@ -110,7 +112,7 @@ export class AppCommandsBridge {
 
 		const cmd = command.toLowerCase();
 		this.disabledCommands.delete(cmd);
-		delete RocketChat.slashCommands.commands[cmd];
+		delete slashCommands.commands[cmd];
 
 		this.orch.getNotifier().commandRemoved(cmd);
 	}

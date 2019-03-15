@@ -1,46 +1,54 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import { Info } from 'meteor/rocketchat:utils';
+import { Users } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { API } from '../api';
 
-RocketChat.API.v1.addRoute('info', { authRequired: false }, {
+API.v1.addRoute('info', { authRequired: false }, {
 	get() {
 		const user = this.getLoggedInUser();
 
-		if (user && RocketChat.authz.hasRole(user._id, 'admin')) {
-			return RocketChat.API.v1.success({
-				info: RocketChat.Info,
+		if (user && hasRole(user._id, 'admin')) {
+			return API.v1.success({
+				info: Info,
 			});
 		}
 
-		return RocketChat.API.v1.success({
+		return API.v1.success({
 			info: {
-				version: RocketChat.Info.version,
+				version: Info.version,
 			},
 		});
 	},
 });
 
-RocketChat.API.v1.addRoute('me', { authRequired: true }, {
+API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return RocketChat.API.v1.success(this.getUserInfo(RocketChat.models.Users.findOneById(this.userId)));
+		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId)));
 	},
 });
 
 let onlineCache = 0;
 let onlineCacheDate = 0;
 const cacheInvalid = 60000; // 1 minute
-RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
+API.v1.addRoute('shield.svg', { authRequired: false }, {
 	get() {
 		const { type, channel, name, icon } = this.queryParams;
-		if (!RocketChat.settings.get('API_Enable_Shields')) {
+		if (!settings.get('API_Enable_Shields')) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/shield.svg' });
 		}
 
-		const types = RocketChat.settings.get('API_Shield_Types');
+		const types = settings.get('API_Shield_Types');
 		if (type && (types !== '*' && !types.split(',').map((t) => t.trim()).includes(type))) {
 			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', { route: '/api/v1/shield.svg' });
 		}
 
 		const hideIcon = icon === 'false';
 		if (hideIcon && (!name || !name.trim())) {
-			return RocketChat.API.v1.failure('Name cannot be empty when icon is hidden');
+			return API.v1.failure('Name cannot be empty when icon is hidden');
 		}
 
 		let text;
@@ -48,7 +56,7 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 		switch (type) {
 			case 'online':
 				if (Date.now() - onlineCacheDate > cacheInvalid) {
-					onlineCache = RocketChat.models.Users.findUsersNotOffline().count();
+					onlineCache = Users.findUsersNotOffline().count();
 					onlineCacheDate = Date.now();
 				}
 
@@ -56,7 +64,7 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 				break;
 			case 'channel':
 				if (!channel) {
-					return RocketChat.API.v1.failure('Shield channel is required for type "channel"');
+					return API.v1.failure('Shield channel is required for type "channel"');
 				}
 
 				text = `#${ channel }`;
@@ -65,7 +73,7 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 				const user = this.getUserFromParams();
 
 				// Respect the server's choice for using their real names or not
-				if (user.name && RocketChat.settings.get('UI_Use_Real_Name')) {
+				if (user.name && settings.get('UI_Use_Real_Name')) {
 					text = `${ user.name }`;
 				} else {
 					text = `@${ user.username }`;
@@ -123,7 +131,7 @@ RocketChat.API.v1.addRoute('shield.svg', { authRequired: false }, {
 	},
 });
 
-RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
+API.v1.addRoute('spotlight', { authRequired: true }, {
 	get() {
 		check(this.queryParams, {
 			query: String,
@@ -135,18 +143,18 @@ RocketChat.API.v1.addRoute('spotlight', { authRequired: true }, {
 			Meteor.call('spotlight', query)
 		);
 
-		return RocketChat.API.v1.success(result);
+		return API.v1.success(result);
 	},
 });
 
-RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
+API.v1.addRoute('directory', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, query } = this.parseJsonQuery();
 
-		const { text, type } = query;
+		const { text, type, workspace = 'local' } = query;
 		if (sort && Object.keys(sort).length > 1) {
-			return RocketChat.API.v1.failure('This method support only one "sort" parameter');
+			return API.v1.failure('This method support only one "sort" parameter');
 		}
 		const sortBy = sort ? Object.keys(sort)[0] : undefined;
 		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
@@ -154,6 +162,7 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
 			text,
 			type,
+			workspace,
 			sortBy,
 			sortDirection,
 			offset: Math.max(0, offset),
@@ -161,9 +170,9 @@ RocketChat.API.v1.addRoute('directory', { authRequired: true }, {
 		}));
 
 		if (!result) {
-			return RocketChat.API.v1.failure('Please verify the parameters');
+			return API.v1.failure('Please verify the parameters');
 		}
-		return RocketChat.API.v1.success({
+		return API.v1.success({
 			result: result.results,
 			count: result.results.length,
 			offset,

@@ -1,8 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 const AccessTokenServices = {};
 
-RocketChat.registerAccessTokenService = function(serviceName, handleAccessTokenRequest) {
+export const registerAccessTokenService = function(serviceName, handleAccessTokenRequest) {
 	AccessTokenServices[serviceName] = {
 		serviceName,
 		handleAccessTokenRequest,

@@ -6,14 +6,16 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-	api.use('ecmascript');
-	api.use('templating', 'client');
-	api.use('rocketchat:theme');
-
-	api.addFiles('client/setupWizard.html', 'client');
-	api.addFiles('client/setupWizard.js', 'client');
-	api.addFiles('client/final.html', 'client');
-	api.addFiles('client/final.js', 'client');
-
-	api.addFiles('server/getSetupWizardParameters.js', 'server');
+	api.use([
+		'ecmascript',
+		'templating',
+		'rocketchat:utils',
+		'rocketchat:theme',
+		'rocketchat:settings',
+		'rocketchat:callbacks',
+		'rocketchat:models',
+		'rocketchat:authorization',
+	]);
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

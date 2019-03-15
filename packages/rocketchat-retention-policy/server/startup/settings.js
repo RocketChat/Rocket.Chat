@@ -1,4 +1,6 @@
-RocketChat.settings.addGroup('RetentionPolicy', function() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('RetentionPolicy', function() {
 
 	this.add('RetentionPolicy_Enabled', false, {
 		type: 'boolean',

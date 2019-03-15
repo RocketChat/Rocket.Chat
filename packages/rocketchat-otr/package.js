@@ -6,29 +6,19 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
 	api.use([
 		'ecmascript',
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:promises',
+		'rocketchat:settings',
+		'rocketchat:models',
+		'rocketchat:notifications',
+		'rocketchat:ui-utils',
 		'tracker',
 		'reactive-var',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'client/rocketchat.otr.js',
-		'client/rocketchat.otr.room.js',
-		'client/stylesheets/otr.css',
-		'client/views/otrFlexTab.html',
-		'client/views/otrFlexTab.js',
-		'client/tabBar.js',
-	], 'client');
-
-	api.addFiles([
-		'server/settings.js',
-		'server/models/Messages.js',
-		'server/methods/deleteOldOTRMessages.js',
-		'server/methods/updateOTRAck.js',
-	], 'server');
+	api.addFiles('client/stylesheets/otr.css', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

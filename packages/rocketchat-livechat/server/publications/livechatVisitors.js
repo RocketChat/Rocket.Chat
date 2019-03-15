@@ -1,11 +1,14 @@
-import LivechatVisitors from '../models/LivechatVisitors';
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { LivechatVisitors } from 'meteor/rocketchat:models';
 
 Meteor.publish('livechat:visitors', function(date) {
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitors' }));
 	}
 
-	if (!RocketChat.authz.hasPermission(this.userId, 'view-livechat-manager')) {
+	if (!hasPermission(this.userId, 'view-livechat-manager')) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitors' }));
 	}
 

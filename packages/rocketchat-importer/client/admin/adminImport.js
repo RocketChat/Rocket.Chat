@@ -1,8 +1,14 @@
+import { Meteor } from 'meteor/meteor';
 import { Importers } from 'meteor/rocketchat:importer';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { hasRole } from 'meteor/rocketchat:authorization';
+import { t, handleError } from 'meteor/rocketchat:utils';
 
 Template.adminImport.helpers({
 	isAdmin() {
-		return RocketChat.authz.hasRole(Meteor.userId(), 'admin');
+		return hasRole(Meteor.userId(), 'admin');
 	},
 	getDescription(importer) {
 		return TAPi18n.__('Importer_From_Description', { from: importer.name });
@@ -13,6 +19,10 @@ Template.adminImport.helpers({
 });
 
 Template.adminImport.events({
+	'click .import-history'() {
+		FlowRouter.go('/admin/import/history');
+	},
+
 	'click .start-import'() {
 		const importer = this;
 

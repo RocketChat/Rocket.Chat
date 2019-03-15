@@ -9,11 +9,11 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'check',
-		'rocketchat:lib',
+		'rocketchat:models',
+		'rocketchat:utils',
+		'rocketchat:notifications',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles('client/client.js', 'client');
-	api.addFiles(['server/server.js', 'server/messages.js'], 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

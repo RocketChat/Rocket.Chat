@@ -1,3 +1,7 @@
+import { Template } from 'meteor/templating';
+import { SideNav, Layout } from 'meteor/rocketchat:ui-utils';
+import { t } from 'meteor/rocketchat:utils';
+
 Template.livechatFlex.helpers({
 	menuItem(name, icon, section) {
 		return {
@@ -8,7 +12,7 @@ Template.livechatFlex.helpers({
 		};
 	},
 	embeddedVersion() {
-		return RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded();
 	},
 });
 

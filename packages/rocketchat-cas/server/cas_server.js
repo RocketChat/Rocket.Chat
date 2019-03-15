@@ -1,7 +1,13 @@
-/* globals RoutePolicy, logger */
-/* jshint newcap: false */
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Random } from 'meteor/random';
+import { WebApp } from 'meteor/webapp';
+import { settings } from 'meteor/rocketchat:settings';
+import { RoutePolicy } from 'meteor/routepolicy';
+import { Rooms, Subscriptions, CredentialTokens } from 'meteor/rocketchat:models';
+import { _setRealName } from 'meteor/rocketchat:lib';
+import { logger } from './cas_rocketchat';
 import _ from 'underscore';
-
 import fiber from 'fibers';
 import url from 'url';
 import CAS from 'cas';
@@ -17,7 +23,7 @@ const closePopup = function(res) {
 const casTicket = function(req, token, callback) {
 
 	// get configuration
-	if (!RocketChat.settings.get('CAS_enabled')) {
+	if (!settings.get('CAS_enabled')) {
 		logger.error('Got ticket validation request, but CAS is not enabled');
 		callback();
 	}
@@ -25,8 +31,8 @@ const casTicket = function(req, token, callback) {
 	// get ticket and validate.
 	const parsedUrl = url.parse(req.url, true);
 	const ticketId = parsedUrl.query.ticket;
-	const baseUrl = RocketChat.settings.get('CAS_base_url');
-	const cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
+	const baseUrl = settings.get('CAS_base_url');
+	const cas_version = parseFloat(settings.get('CAS_version'));
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug(`Using CAS_base_url: ${ baseUrl }`);
 
@@ -47,7 +53,7 @@ const casTicket = function(req, token, callback) {
 			if (details && details.attributes) {
 				_.extend(user_info, { attributes: details.attributes });
 			}
-			RocketChat.models.CredentialTokens.create(token, user_info);
+			CredentialTokens.create(token, user_info);
 		} else {
 			logger.error(`Unable to validate ticket: ${ ticketId }`);
 		}
@@ -111,16 +117,16 @@ Accounts.registerLoginHandler(function(options) {
 		return undefined;
 	}
 
-	const credentials = RocketChat.models.CredentialTokens.findOneById(options.cas.credentialToken);
+	const credentials = CredentialTokens.findOneById(options.cas.credentialToken);
 	if (credentials === undefined) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
 			'no matching login attempt found');
 	}
 
 	const result = credentials.userInfo;
-	const syncUserDataFieldMap = RocketChat.settings.get('CAS_Sync_User_Data_FieldMap').trim();
-	const cas_version = parseFloat(RocketChat.settings.get('CAS_version'));
-	const sync_enabled = RocketChat.settings.get('CAS_Sync_User_Data_Enabled');
+	const syncUserDataFieldMap = settings.get('CAS_Sync_User_Data_FieldMap').trim();
+	const cas_version = parseFloat(settings.get('CAS_version'));
+	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
 
 	// We have these
 	const ext_attrs = {
@@ -155,19 +161,35 @@ Accounts.registerLoginHandler(function(options) {
 		_.each(attr_map, function(source, int_name) {
 			// Source is our String to interpolate
 			if (_.isString(source)) {
+				let replacedValue = source;
 				_.each(ext_attrs, function(value, ext_name) {
-					source = source.replace(`%${ ext_name }%`, ext_attrs[ext_name]);
+					replacedValue = replacedValue.replace(`%${ ext_name }%`, ext_attrs[ext_name]);
 				});
 
-				int_attrs[int_name] = source;
-				logger.debug(`Sourced internal attribute: ${ int_name } = ${ source }`);
+				if (source !== replacedValue) {
+					int_attrs[int_name] = replacedValue;
+					logger.debug(`Sourced internal attribute: ${ int_name } = ${ replacedValue }`);
+				} else {
+					logger.debug(`Sourced internal attribute: ${ int_name } skipped.`);
+				}
 			}
 		});
 	}
 
 	// Search existing user by its external service id
 	logger.debug(`Looking up user by id: ${ result.username }`);
+	// First, look for a user that has logged in from CAS with this username before
 	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
+	if (!user) {
+		// If that user was not found, check if there's any CAS user that is currently using that username on Rocket.Chat
+		// With this, CAS login will continue to work if the user is renamed on both sides and also if the user is renamed only on Rocket.Chat.
+		const username = new RegExp(`^${ result.username }$`, 'i');
+		user = Meteor.users.findOne({ 'services.cas.external_id': { $exists: true }, username });
+		if (user) {
+			// Update the user's external_id to reflect this new username.
+			Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
+		}
+	}
 
 	if (user) {
 		logger.debug(`Using existing user for '${ result.username }' with id: ${ user._id }`);
@@ -175,7 +197,7 @@ Accounts.registerLoginHandler(function(options) {
 			logger.debug('Syncing user attributes');
 			// Update name
 			if (int_attrs.name) {
-				RocketChat._setRealName(user._id, int_attrs.name);
+				_setRealName(user._id, int_attrs.name);
 			}
 
 			// Update email
@@ -227,13 +249,13 @@ Accounts.registerLoginHandler(function(options) {
 		if (int_attrs.rooms) {
 			_.each(int_attrs.rooms.split(','), function(room_name) {
 				if (room_name) {
-					let room = RocketChat.models.Rooms.findOneByNameAndType(room_name, 'c');
+					let room = Rooms.findOneByNameAndType(room_name, 'c');
 					if (!room) {
-						room = RocketChat.models.Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
+						room = Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
 					}
 
-					if (!RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
-						RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
+					if (!Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
+						Subscriptions.createWithRoomAndUser(room, user, {
 							ts: new Date(),
 							open: true,
 							alert: true,

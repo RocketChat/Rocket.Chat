@@ -1,4 +1,6 @@
-RocketChat.settings.addGroup('Accounts', function() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('Accounts', function() {
 	this.section('Two Factor Authentication', function() {
 		this.add('Accounts_TwoFactorAuthentication_Enabled', true, {
 			type: 'boolean',

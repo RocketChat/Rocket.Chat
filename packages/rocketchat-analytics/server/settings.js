@@ -1,4 +1,6 @@
-RocketChat.settings.addGroup('Analytics', function addSettings() {
+import { settings } from 'meteor/rocketchat:settings';
+
+settings.addGroup('Analytics', function addSettings() {
 	this.section('Piwik', function() {
 		const enableQuery = { _id: 'PiwikAnalytics_enabled', value: true };
 		this.add('PiwikAnalytics_enabled', false, {

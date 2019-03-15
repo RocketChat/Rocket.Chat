@@ -1,14 +1,18 @@
+import { Meteor } from 'meteor/meteor';
+import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel, AppRealStorage, AppRealLogsStorage } from './storage';
-
+import { AppRealStorage, AppRealLogsStorage } from './storage';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+
+export let Apps;
 
 class AppServerOrchestrator {
 	constructor() {
-		if (RocketChat.models && RocketChat.models.Permissions) {
-			RocketChat.models.Permissions.createOrUpdate('manage-apps', ['admin']);
+		if (Permissions) {
+			Permissions.createOrUpdate('manage-apps', ['admin']);
 		}
 
 		this._model = new AppsModel();
@@ -66,7 +70,7 @@ class AppServerOrchestrator {
 	}
 
 	isEnabled() {
-		return RocketChat.settings.get('Apps_Framework_enabled');
+		return settings.get('Apps_Framework_enabled');
 	}
 
 	isLoaded() {
@@ -98,7 +102,7 @@ class AppServerOrchestrator {
 	}
 }
 
-RocketChat.settings.addGroup('General', function() {
+settings.addGroup('General', function() {
 	this.section('Apps', function() {
 		this.add('Apps_Framework_enabled', true, {
 			type: 'boolean',
@@ -107,23 +111,23 @@ RocketChat.settings.addGroup('General', function() {
 	});
 });
 
-RocketChat.settings.get('Apps_Framework_enabled', (key, isEnabled) => {
+settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`
-	if (!global.Apps) {
+	if (!Apps) {
 		return;
 	}
 
 	if (isEnabled) {
-		global.Apps.load();
+		Apps.load();
 	} else {
-		global.Apps.unload();
+		Apps.unload();
 	}
 });
 
 Meteor.startup(function _appServerOrchestrator() {
-	global.Apps = new AppServerOrchestrator();
+	Apps = new AppServerOrchestrator();
 
-	if (global.Apps.isEnabled()) {
-		global.Apps.load();
+	if (Apps.isEnabled()) {
+		Apps.load();
 	}
 });

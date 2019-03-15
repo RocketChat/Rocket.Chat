@@ -1,3 +1,4 @@
+import { Rooms } from 'meteor/rocketchat:models';
 import moment from 'moment';
 
 /**
@@ -118,14 +119,14 @@ export const Analytics = {
 		 * @returns {Integer}
 		 */
 		Total_conversations(date) {
-			return RocketChat.models.Rooms.getTotalConversationsBetweenDate('l', date);
+			return Rooms.getTotalConversationsBetweenDate('l', date);
 		},
 
 		Avg_chat_duration(date) {
 			let total = 0;
 			let count = 0;
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
 				if (metrics && metrics.chatDuration) {
 					total += metrics.chatDuration;
 					count++;
@@ -139,7 +140,7 @@ export const Analytics = {
 		Total_messages(date) {
 			let total = 0;
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ msgs }) => {
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ msgs }) => {
 				if (msgs) {
 					total += msgs;
 				}
@@ -157,7 +158,7 @@ export const Analytics = {
 		Avg_first_response_time(date) {
 			let frt = 0;
 			let count = 0;
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.ft) {
 					frt += metrics.response.ft;
 					count++;
@@ -177,7 +178,7 @@ export const Analytics = {
 		Best_first_response_time(date) {
 			let maxFrt;
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.ft) {
 					maxFrt = (maxFrt) ? Math.min(maxFrt, metrics.response.ft) : metrics.response.ft;
 				}
@@ -197,7 +198,7 @@ export const Analytics = {
 		Avg_response_time(date) {
 			let art = 0;
 			let count = 0;
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.avg) {
 					art += metrics.response.avg;
 					count++;
@@ -218,7 +219,7 @@ export const Analytics = {
 		Avg_reaction_time(date) {
 			let arnt = 0;
 			let count = 0;
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({ metrics }) => {
 				if (metrics && metrics.reaction && metrics.reaction.ft) {
 					arnt += metrics.reaction.ft;
 					count++;
@@ -283,7 +284,7 @@ export const Analytics = {
 					lt: moment(m).add(1, 'days'),
 				};
 
-				const result = RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date);
+				const result = Rooms.getAnalyticsMetricsBetweenDate('l', date);
 				totalConversations += result.count();
 
 				result.forEach(summarize(m));
@@ -301,7 +302,7 @@ export const Analytics = {
 						lt: moment(h).add(1, 'hours'),
 					};
 
-					RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+					Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 						msgs,
 					}) => {
 						const dayHour = h.format('H');		// @int : 0, 1, ... 23
@@ -353,7 +354,7 @@ export const Analytics = {
 				lt: to.add(1, 'days'),
 			};
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 				metrics,
 			}) => {
 				if (metrics && metrics.response && metrics.reaction) {
@@ -435,7 +436,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 				servedBy,
 			}) => {
 				if (servedBy) {
@@ -485,7 +486,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 				metrics,
 				servedBy,
 			}) => {
@@ -545,7 +546,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 				servedBy,
 				msgs,
 			}) => {
@@ -589,7 +590,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 				metrics,
 				servedBy,
 			}) => {
@@ -649,7 +650,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 				metrics,
 				servedBy,
 			}) => {
@@ -701,7 +702,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 				metrics,
 				servedBy,
 			}) => {
@@ -761,7 +762,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			RocketChat.models.Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
+			Rooms.getAnalyticsMetricsBetweenDate('l', date).forEach(({
 				metrics,
 				servedBy,
 			}) => {

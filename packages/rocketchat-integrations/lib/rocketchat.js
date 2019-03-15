@@ -1,4 +1,4 @@
-RocketChat.integrations = {
+export const integrations = {
 	outgoingEvents: {
 		sendMessage: {
 			label: 'Integrations_Outgoing_Type_SendMessage',

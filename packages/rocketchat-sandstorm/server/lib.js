@@ -1,8 +1,10 @@
-/* globals getHttpBridge, waitPromise, UploadFS */
-/* exported getHttpBridge, waitPromise */
 import Future from 'fibers/future';
+import { UploadFS } from 'meteor/jalik:ufs';
 
-RocketChat.Sandstorm = {};
+export const Sandstorm = {};
+
+export let getHttpBridge;
+export let waitPromise;
 
 if (process.env.SANDSTORM === '1') {
 	const Capnp = require('capnp');

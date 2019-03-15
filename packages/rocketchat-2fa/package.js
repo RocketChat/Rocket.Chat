@@ -11,25 +11,15 @@ Package.onUse(function(api) {
 		'accounts-base',
 		'ecmascript',
 		'templating',
-		'rocketchat:lib',
+		'rocketchat:settings',
 		'sha',
 		'random',
+		'rocketchat:ui-utils',
+		'rocketchat:utils',
+		'rocketchat:models',
+		'rocketchat:callbacks',
 	]);
 
-	api.addFiles('client/accountSecurity.html', 'client');
-	api.addFiles('client/accountSecurity.js', 'client');
-	api.addFiles('client/TOTPPassword.js', 'client');
-
-	api.addFiles('server/lib/totp.js', 'server');
-
-	api.addFiles('server/methods/checkCodesRemaining.js', 'server');
-	api.addFiles('server/methods/disable.js', 'server');
-	api.addFiles('server/methods/enable.js', 'server');
-	api.addFiles('server/methods/regenerateCodes.js', 'server');
-	api.addFiles('server/methods/validateTempToken.js', 'server');
-
-	api.addFiles('server/models/users.js', 'server');
-
-	api.addFiles('server/startup/settings.js', 'server');
-	api.addFiles('server/loginHandler.js', 'server');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

@@ -1,3 +1,5 @@
+import { Users, Rooms, Subscriptions } from 'meteor/rocketchat:models';
+import { sendMessage } from 'meteor/rocketchat:lib';
 /*
  *
  * Get direct chat room helper
@@ -7,7 +9,7 @@
 const getDirectRoom = (source, target) => {
 	const rid = [source._id, target._id].sort().join('');
 
-	RocketChat.models.Rooms.upsert({ _id: rid }, {
+	Rooms.upsert({ _id: rid }, {
 		$setOnInsert: {
 			t: 'd',
 			msgs: 0,
@@ -15,7 +17,7 @@ const getDirectRoom = (source, target) => {
 		},
 	});
 
-	RocketChat.models.Subscriptions.upsert({ rid, 'u._id': target._id }, {
+	Subscriptions.upsert({ rid, 'u._id': target._id }, {
 		$setOnInsert: {
 			name: source.username,
 			t: 'd',
@@ -29,7 +31,7 @@ const getDirectRoom = (source, target) => {
 		},
 	});
 
-	RocketChat.models.Subscriptions.upsert({ rid, 'u._id': source._id }, {
+	Subscriptions.upsert({ rid, 'u._id': source._id }, {
 		$setOnInsert: {
 			name: target.username,
 			t: 'd',
@@ -50,7 +52,7 @@ const getDirectRoom = (source, target) => {
 };
 
 export default function handleSentMessage(args) {
-	const user = RocketChat.models.Users.findOne({
+	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
 
@@ -61,9 +63,9 @@ export default function handleSentMessage(args) {
 	let room;
 
 	if (args.roomName) {
-		room = RocketChat.models.Rooms.findOneByName(args.roomName);
+		room = Rooms.findOneByName(args.roomName);
 	} else {
-		const recipientUser = RocketChat.models.Users.findOne({
+		const recipientUser = Users.findOne({
 			'profile.irc.nick': args.recipientNick,
 		});
 
@@ -75,5 +77,5 @@ export default function handleSentMessage(args) {
 		ts: new Date(),
 	};
 
-	RocketChat.sendMessage(user, message, room);
+	sendMessage(user, message, room);
 }

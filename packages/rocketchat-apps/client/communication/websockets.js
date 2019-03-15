@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { slashCommands, APIClient } from 'meteor/rocketchat:utils';
+import { CachedCollectionManager } from 'meteor/rocketchat:ui-cached-collection';
+
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
 	APP_REMOVED: 'app/removed',
@@ -15,7 +19,7 @@ export class AppWebsocketReceiver {
 		this.orch = orch;
 		this.streamer = new Meteor.Streamer('apps');
 
-		RocketChat.CachedCollectionManager.onLogin(() => {
+		CachedCollectionManager.onLogin(() => {
 			this.listenStreamerEvents();
 		});
 
@@ -47,7 +51,7 @@ export class AppWebsocketReceiver {
 	}
 
 	onAppAdded(appId) {
-		RocketChat.API.get(`apps/${ appId }/languages`).then((result) => {
+		APIClient.get(`apps/${ appId }/languages`).then((result) => {
 			this.orch.parseAndLoadLanguages(result.languages, appId);
 		});
 
@@ -71,18 +75,18 @@ export class AppWebsocketReceiver {
 	}
 
 	onCommandAdded(command) {
-		RocketChat.API.v1.get('commands.get', { command }).then((result) => {
-			RocketChat.slashCommands.commands[command] = result.command;
+		APIClient.v1.get('commands.get', { command }).then((result) => {
+			slashCommands.commands[command] = result.command;
 		});
 	}
 
 	onCommandDisabled(command) {
-		delete RocketChat.slashCommands.commands[command];
+		delete slashCommands.commands[command];
 	}
 
 	onCommandUpdated(command) {
-		RocketChat.API.v1.get('commands.get', { command }).then((result) => {
-			RocketChat.slashCommands.commands[command] = result.command;
+		APIClient.v1.get('commands.get', { command }).then((result) => {
+			slashCommands.commands[command] = result.command;
 		});
 	}
 }

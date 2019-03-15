@@ -1,11 +1,13 @@
+import { Subscriptions, Users } from 'meteor/rocketchat:models';
+
 export default function handleOnSaveMessage(message, to) {
 	let toIdentification = '';
 	// Direct message
 	if (to.t === 'd') {
-		const subscriptions = RocketChat.models.Subscriptions.findByRoomId(to._id);
+		const subscriptions = Subscriptions.findByRoomId(to._id);
 		subscriptions.forEach((subscription) => {
 			if (subscription.u.username !== to.username) {
-				const userData = RocketChat.models.Users.findOne({ username: subscription.u.username });
+				const userData = Users.findOne({ username: subscription.u.username });
 				if (userData) {
 					if (userData.profile && userData.profile.irc && userData.profile.irc.nick) {
 						toIdentification = userData.profile.irc.nick;
@@ -26,7 +28,7 @@ export default function handleOnSaveMessage(message, to) {
 		toIdentification = `#${ to.name }`;
 	}
 
-	const user = RocketChat.models.Users.findOne({ _id: message.u._id });
+	const user = Users.findOne({ _id: message.u._id });
 
 	this.sendCommand('sentMessage', { to: toIdentification, user, message: message.msg });
 }

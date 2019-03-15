@@ -1,5 +1,8 @@
+import { Template } from 'meteor/templating';
+import { roomTypes } from 'meteor/rocketchat:utils';
+
 Template.messagePopupChannel.helpers({
 	channelIcon() {
-		return RocketChat.roomTypes.getIcon(this.t);
+		return roomTypes.getIcon(this);
 	},
 });

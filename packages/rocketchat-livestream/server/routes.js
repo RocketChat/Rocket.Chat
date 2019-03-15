@@ -1,9 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { settings } from 'meteor/rocketchat:settings';
+import { Users } from 'meteor/rocketchat:models';
+import { API } from 'meteor/rocketchat:api';
 import google from 'googleapis';
 const { OAuth2 } = google.auth;
 
-RocketChat.API.v1.addRoute('livestream/oauth', {
+API.v1.addRoute('livestream/oauth', {
 	get: function functionName() {
-		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), `${ RocketChat.settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
+		const clientAuth = new OAuth2(settings.get('Broadcasting_client_id'), settings.get('Broadcasting_client_secret'), `${ settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
 		const { userId } = this.queryParams;
 		const url = clientAuth.generateAuthUrl({
 			access_type: 'offline',
@@ -22,17 +26,17 @@ RocketChat.API.v1.addRoute('livestream/oauth', {
 	},
 });
 
-RocketChat.API.v1.addRoute('livestream/oauth/callback', {
+API.v1.addRoute('livestream/oauth/callback', {
 	get: function functionName() {
 		const { code, state } = this.queryParams;
 
 		const { userId } = JSON.parse(state);
 
-		const clientAuth = new OAuth2(RocketChat.settings.get('Broadcasting_client_id'), RocketChat.settings.get('Broadcasting_client_secret'), `${ RocketChat.settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
+		const clientAuth = new OAuth2(settings.get('Broadcasting_client_id'), settings.get('Broadcasting_client_secret'), `${ settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
 
 		const ret = Meteor.wrapAsync(clientAuth.getToken.bind(clientAuth))(code);
 
-		RocketChat.models.Users.update({ _id: userId }, { $set: {
+		Users.update({ _id: userId }, { $set: {
 			'settings.livestream' : ret,
 		} });
 

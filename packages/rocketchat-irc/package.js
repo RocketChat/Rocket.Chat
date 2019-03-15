@@ -9,14 +9,11 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'underscore',
+		'rocketchat:utils',
 		'rocketchat:lib',
+		'rocketchat:callbacks',
+		'rocketchat:settings',
+		'rocketchat:models',
 	]);
-
-	api.addFiles('server/irc.js', 'server');
-	api.addFiles('server/methods/resetIrcConnection.js', 'server');
-	api.addFiles('server/irc-settings.js', 'server');
-});
-
-Npm.depends({
-	'queue-fifo': '0.2.4',
+	api.mainModule('server/index.js', 'server');
 });

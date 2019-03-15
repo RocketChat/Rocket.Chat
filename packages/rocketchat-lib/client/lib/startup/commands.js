@@ -1,13 +1,17 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { slashCommands, APIClient } from 'meteor/rocketchat:utils';
+
 // Track logins and when they login, get the commands
 (() => {
 	let oldUserId = null;
 
-	Meteor.autorun(() => {
+	Tracker.autorun(() => {
 		const newUserId = Meteor.userId();
 		if (oldUserId === null && newUserId) {
-			RocketChat.API.v1.get('commands.list').then(function _loadedCommands(result) {
+			APIClient.v1.get('commands.list').then(function _loadedCommands(result) {
 				result.commands.forEach((command) => {
-					RocketChat.slashCommands.commands[command.command] = command;
+					slashCommands.commands[command.command] = command;
 				});
 			});
 		}

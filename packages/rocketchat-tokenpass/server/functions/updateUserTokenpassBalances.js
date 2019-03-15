@@ -1,13 +1,16 @@
+import { Users } from 'meteor/rocketchat:models';
+import { getPublicTokenpassBalances } from './getPublicTokenpassBalances';
+import { getProtectedTokenpassBalances } from './getProtectedTokenpassBalances';
 import _ from 'underscore';
 
-RocketChat.updateUserTokenpassBalances = function(user) {
+export const updateUserTokenpassBalances = function(user) {
 	if (user && user.services && user.services.tokenpass) {
-		const tcaPublicBalances = RocketChat.getPublicTokenpassBalances(user.services.tokenpass.accessToken);
-		const tcaProtectedBalances = RocketChat.getProtectedTokenpassBalances(user.services.tokenpass.accessToken);
+		const tcaPublicBalances = getPublicTokenpassBalances(user.services.tokenpass.accessToken);
+		const tcaProtectedBalances = getProtectedTokenpassBalances(user.services.tokenpass.accessToken);
 
 		const balances = _.uniq(_.union(tcaPublicBalances, tcaProtectedBalances), false, (item) => item.asset);
 
-		RocketChat.models.Users.setTokenpassTcaBalances(user._id, balances);
+		Users.setTokenpassTcaBalances(user._id, balances);
 
 		return balances;
 	}

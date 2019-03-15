@@ -6,15 +6,13 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-
 	api.use([
 		'ecmascript',
 		'check',
-		'rocketchat:lib',
+		'rocketchat:utils',
+		'rocketchat:models',
 		'kadira:flow-router',
+		'templating',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles('client/client.js', 'client');
+	api.mainModule('client/index.js', 'client');
 });

@@ -1,8 +1,15 @@
-/* globals FileUpload */
-RocketChat.deleteMessage = function(message, user) {
-	const keepHistory = RocketChat.settings.get('Message_KeepHistory');
-	const showDeletedStatus = RocketChat.settings.get('Message_ShowDeletedStatus');
-	const deletedMsg = RocketChat.models.Messages.findOneById(message._id);
+import { Meteor } from 'meteor/meteor';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { settings } from 'meteor/rocketchat:settings';
+import { Messages, Uploads, Rooms } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Apps } from 'meteor/rocketchat:apps';
+
+export const deleteMessage = function(message, user) {
+	const keepHistory = settings.get('Message_KeepHistory');
+	const showDeletedStatus = settings.get('Message_ShowDeletedStatus');
+	const deletedMsg = Messages.findOneById(message._id);
 
 	if (deletedMsg && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
@@ -13,17 +20,17 @@ RocketChat.deleteMessage = function(message, user) {
 
 	if (keepHistory) {
 		if (showDeletedStatus) {
-			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
+			Messages.cloneAndSaveAsHistoryById(message._id);
 		} else {
-			RocketChat.models.Messages.setHiddenById(message._id, true);
+			Messages.setHiddenById(message._id, true);
 		}
 
 		if (message.file && message.file._id) {
-			RocketChat.models.Uploads.update(message.file._id, { $set: { _hidden: true } });
+			Uploads.update(message.file._id, { $set: { _hidden: true } });
 		}
 	} else {
 		if (!showDeletedStatus) {
-			RocketChat.models.Messages.removeById(message._id);
+			Messages.removeById(message._id);
 		}
 
 		if (message.file && message.file._id) {
@@ -31,22 +38,22 @@ RocketChat.deleteMessage = function(message, user) {
 		}
 	}
 
+	const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1, prid: 1, mid: 1 } });
 	Meteor.defer(function() {
-		RocketChat.callbacks.run('afterDeleteMessage', deletedMsg);
+		callbacks.run('afterDeleteMessage', deletedMsg);
 	});
 
 	// update last message
-	if (RocketChat.settings.get('Store_Last_Message')) {
-		const room = RocketChat.models.Rooms.findOneById(message.rid, { fields: { lastMessage: 1 } });
+	if (settings.get('Store_Last_Message')) {
 		if (!room.lastMessage || room.lastMessage._id === message._id) {
-			RocketChat.models.Rooms.resetLastMessageById(message.rid, message._id);
+			Rooms.resetLastMessageById(message.rid, message._id);
 		}
 	}
 
 	if (showDeletedStatus) {
-		RocketChat.models.Messages.setAsDeletedByIdAndUser(message._id, user);
+		Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {
-		RocketChat.Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
+		Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
 	}
 
 	if (Apps && Apps.isLoaded()) {

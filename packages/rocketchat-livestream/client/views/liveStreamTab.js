@@ -1,8 +1,18 @@
-/* globals popout */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import { auth } from '../oauth.js';
 import { RocketChatAnnouncement } from 'meteor/rocketchat:lib';
-
+import { popout } from 'meteor/rocketchat:ui-utils';
+import { t, handleError } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
+import { Users, Rooms } from 'meteor/rocketchat:models';
 
 export const call = (...args) => new Promise(function(resolve, reject) {
 	Meteor.call(...args, function(err, result) {
@@ -40,7 +50,7 @@ function optionsFromUrl(url) {
 
 Template.liveStreamTab.helpers({
 	broadcastEnabled() {
-		return !!RocketChat.settings.get('Broadcasting_enabled');
+		return !!settings.get('Broadcasting_enabled');
 	},
 	streamingSource() {
 		return Template.instance().streamingOptions.get() ? Template.instance().streamingOptions.get().url : '';
@@ -58,7 +68,7 @@ Template.liveStreamTab.helpers({
 		return !!Template.instance().streamingOptions.get() && !!Template.instance().streamingOptions.get().url && Template.instance().streamingOptions.get().url !== '';
 	},
 	canEdit() {
-		return RocketChat.authz.hasAllPermission('edit-room', this.rid);
+		return hasAllPermission('edit-room', this.rid);
 	},
 	editing() {
 		return Template.instance().editing.get() || Template.instance().streamingOptions.get() == null || (Template.instance().streamingOptions.get() != null && (Template.instance().streamingOptions.get().url == null || Template.instance().streamingOptions.get().url === ''));
@@ -94,7 +104,7 @@ Template.liveStreamTab.onCreated(function() {
 	this.popoutOpen = new ReactiveVar(popout.context != null);
 
 	this.autorun(() => {
-		const room = RocketChat.models.Rooms.findOne(this.data.rid, { fields: { streamingOptions : 1 } });
+		const room = Rooms.findOne(this.data.rid, { fields: { streamingOptions : 1 } });
 		this.streamingOptions.set(room.streamingOptions);
 	});
 });
@@ -240,7 +250,7 @@ Template.liveStreamTab.events({
 		e.preventDefault();
 		e.currentTarget.classList.add('loading');
 		try {
-			const user = RocketChat.models.Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.livestream': 1 } });
+			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.livestream': 1 } });
 			if (!user.settings || !user.settings.livestream) {
 				await auth();
 			}
@@ -263,7 +273,7 @@ Template.liveStreamTab.events({
 	},
 });
 
-RocketChat.callbacks.add('openBroadcast', (rid) => {
+callbacks.add('openBroadcast', (rid) => {
 	const roomData = Session.get(`roomData${ rid }`);
 	if (!roomData) { return; }
 	popout.open({

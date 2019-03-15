@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Rooms } from 'meteor/rocketchat:models';
+
 Meteor.methods({
 	getRoomJoinCode(rid) {
 		check(rid, String);
@@ -6,11 +11,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getJoinCode' });
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'view-join-code')) {
+		if (!hasPermission(Meteor.userId(), 'view-join-code')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'getJoinCode' });
 		}
 
-		const [room] = RocketChat.models.Rooms.findById(rid).fetch();
+		const [room] = Rooms.findById(rid).fetch();
 
 		return room && room.joinCode;
 	},

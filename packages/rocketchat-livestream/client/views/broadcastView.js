@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { handleError } from 'meteor/rocketchat:utils';
+import { settings } from 'meteor/rocketchat:settings';
+
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {
 	if (!'WebSocket' in window) { // eslint-disable-line no-negated-in-lhs
@@ -60,7 +67,7 @@ Template.broadcastView.helpers({
 });
 
 Template.broadcastView.onCreated(async function() {
-	const connection = createAndConnect(`${ RocketChat.settings.get('Broadcasting_media_server_url') }/${ this.data.id }`);
+	const connection = createAndConnect(`${ settings.get('Broadcasting_media_server_url') }/${ this.data.id }`);
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 	this.connection = new ReactiveVar(connection);

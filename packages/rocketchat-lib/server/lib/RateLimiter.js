@@ -1,7 +1,9 @@
-/* globals RateLimiter */
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-RocketChat.RateLimiter = new class {
+export const RateLimiterClass = new class {
 	limitFunction(fn, numRequests, timeInterval, matchers) {
 		if (process.env.TEST_MODE === 'true') {
 			return fn;

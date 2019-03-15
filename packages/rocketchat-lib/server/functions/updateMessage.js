@@ -1,6 +1,12 @@
-RocketChat.updateMessage = function(message, user, originalMessage) {
+import { Meteor } from 'meteor/meteor';
+import { Messages, Rooms } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { Apps } from 'meteor/rocketchat:apps';
+
+export const updateMessage = function(message, user, originalMessage) {
 	if (!originalMessage) {
-		originalMessage = RocketChat.models.Messages.findOneById(message._id);
+		originalMessage = Messages.findOneById(message._id);
 	}
 
 	// For the Rocket.Chat Apps :)
@@ -22,8 +28,8 @@ RocketChat.updateMessage = function(message, user, originalMessage) {
 	}
 
 	// If we keep history of edits, insert a new message to store history information
-	if (RocketChat.settings.get('Message_KeepHistory')) {
-		RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
+	if (settings.get('Message_KeepHistory')) {
+		Messages.cloneAndSaveAsHistoryById(message._id);
 	}
 
 	message.editedAt = new Date();
@@ -35,14 +41,14 @@ RocketChat.updateMessage = function(message, user, originalMessage) {
 	const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g) || [];
 	message.urls = urls.map((url) => ({ url }));
 
-	message = RocketChat.callbacks.run('beforeSaveMessage', message);
+	message = callbacks.run('beforeSaveMessage', message);
 
 	const tempid = message._id;
 	delete message._id;
 
-	RocketChat.models.Messages.update({ _id: tempid }, { $set: message });
+	Messages.update({ _id: tempid }, { $set: message });
 
-	const room = RocketChat.models.Rooms.findOneById(message.rid);
+	const room = Rooms.findOneById(message.rid);
 
 	if (Apps && Apps.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
@@ -51,6 +57,6 @@ RocketChat.updateMessage = function(message, user, originalMessage) {
 	}
 
 	Meteor.defer(function() {
-		RocketChat.callbacks.run('afterSaveMessage', RocketChat.models.Messages.findOneById(tempid), room, user._id);
+		callbacks.run('afterSaveMessage', Messages.findOneById(tempid), room, user._id);
 	});
 };

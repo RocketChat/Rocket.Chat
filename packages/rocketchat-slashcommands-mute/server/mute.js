@@ -1,9 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { slashCommands } from 'meteor/rocketchat:utils';
+import { Users, Subscriptions } from 'meteor/rocketchat:models';
+import { Notifications } from 'meteor/rocketchat:notifications';
 
 /*
 * Mute is a named function that will replace /mute commands
 */
 
-RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
+slashCommands.add('mute', function Mute(command, params, item) {
 	if (command !== 'mute' || !Match.test(params, String)) {
 		return;
 	}
@@ -13,9 +20,9 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 	}
 	const userId = Meteor.userId();
 	const user = Meteor.users.findOne(userId);
-	const mutedUser = RocketChat.models.Users.findOneByUsername(username);
+	const mutedUser = Users.findOneByUsername(username);
 	if (mutedUser == null) {
-		RocketChat.Notifications.notifyUser(userId, 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,
@@ -27,9 +34,9 @@ RocketChat.slashCommands.add('mute', function Mute(command, params, item) {
 		return;
 	}
 
-	const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(item.rid, mutedUser._id, { fields: { _id: 1 } });
+	const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, mutedUser._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		RocketChat.Notifications.notifyUser(userId, 'message', {
+		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
 			ts: new Date,

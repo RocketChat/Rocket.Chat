@@ -1,5 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
+import { Rooms, Messages } from 'meteor/rocketchat:models';
 
 /**
  * Enables HTTP functions on Chatpal Backend
@@ -277,11 +280,11 @@ export default class Index {
 	 * @private
 	 */
 	_existsDataOlderThan(date) {
-		return RocketChat.models.Messages.model.find({ ts:{ $lt: new Date(date) }, t:{ $exists:false } }, { limit:1 }).fetch().length > 0;
+		return Messages.model.find({ ts:{ $lt: new Date(date) }, t:{ $exists:false } }, { limit:1 }).fetch().length > 0;
 	}
 
 	_doesRoomCountDiffer() {
-		return RocketChat.models.Rooms.find({ t:{ $ne:'d' } }).count() !== this._backend.count('room');
+		return Rooms.find({ t:{ $ne:'d' } }).count() !== this._backend.count('room');
 	}
 
 	_doesUserCountDiffer() {
@@ -308,7 +311,7 @@ export default class Index {
 	 * @private
 	 */
 	_indexRooms() {
-		const cursor = RocketChat.models.Rooms.find({ t:{ $ne:'d' } });
+		const cursor = Rooms.find({ t:{ $ne:'d' } });
 
 		ChatpalLogger.debug(`Start indexing ${ cursor.count() } rooms`);
 
@@ -324,7 +327,7 @@ export default class Index {
 		const start = new Date(date - gap);
 		const end = new Date(date);
 
-		const cursor = RocketChat.models.Messages.model.find({ ts:{ $gt: start, $lt: end }, t:{ $exists:false } });
+		const cursor = Messages.model.find({ ts:{ $gt: start, $lt: end }, t:{ $exists:false } });
 
 		ChatpalLogger.debug(`Start indexing ${ cursor.count() } messages between ${ start.toString() } and ${ end.toString() }`);
 
