@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { LoggerManager } from '/app/logger';
-import { settings } from '/app/settings';
+import { LoggerManager } from '../../../logger';
+import { settings } from '../../../settings';
 
 settings.get('Log_Package', function(key, value) {
 	return LoggerManager.showPackage = value;

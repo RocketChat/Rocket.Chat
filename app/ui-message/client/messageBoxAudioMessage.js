@@ -2,10 +2,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { fileUploadHandler } from '/app/file-upload';
-import { AudioRecorder, chatMessages } from '/app/ui';
-import { call } from '/app/ui-utils';
-import { t } from '/app/utils';
+import { fileUploadHandler } from '../../file-upload';
+import { AudioRecorder, chatMessages } from '../../ui';
+import { call } from '../../ui-utils';
+import { t } from '../../utils';
 import './messageBoxAudioMessage.html';
 
 const startRecording = () => new Promise((resolve) => AudioRecorder.start(resolve));

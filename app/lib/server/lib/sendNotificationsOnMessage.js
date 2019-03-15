@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { hasPermission } from '/app/authorization';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Subscriptions } from '/app/models';
-import { roomTypes } from '/app/utils';
-import { Sandstorm } from '/app/sandstorm';
+import { hasPermission } from '../../../authorization';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { Subscriptions } from '../../../models';
+import { roomTypes } from '../../../utils';
+import { Sandstorm } from '../../../sandstorm';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
 import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Notifications } from '/app/notifications';
-import { EmojiCustom } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Notifications } from '../../../notifications';
+import { EmojiCustom } from '../../../models';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import _ from 'underscore';
 import s from 'underscore.string';

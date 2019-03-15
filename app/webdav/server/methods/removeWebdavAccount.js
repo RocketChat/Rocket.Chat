@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { WebdavAccounts } from '/app/models';
+import { WebdavAccounts } from '../../../models';
 
 Meteor.methods({
 	removeWebdavAccount(accountId) {

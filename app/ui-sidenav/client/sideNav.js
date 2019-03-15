@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { lazyloadtick } from '/app/lazy-load';
+import { lazyloadtick } from '../../lazy-load';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { SideNav, menu } from '/app/ui-utils';
-import { settings } from '/app/settings';
-import { roomTypes, getUserPreference } from '/app/utils';
-import { Users } from '/app/models';
+import { SideNav, menu } from '../../ui-utils';
+import { settings } from '../../settings';
+import { roomTypes, getUserPreference } from '../../utils';
+import { Users } from '../../models';
 
 Template.sideNav.helpers({
 	flexTemplate() {

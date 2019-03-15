@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { DateFormat } from '/app/lib';
+import { DateFormat } from '../../../lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { Markdown } from '/app/markdown';
+import { settings } from '../../../settings';
+import { Markdown } from '../../../markdown';
 import { SnippetedMessages } from '../lib/collections';
 import moment from 'moment';
 

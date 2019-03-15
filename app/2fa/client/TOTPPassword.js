@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { modal } from '/app/ui-utils';
-import { t } from '/app/utils';
+import { modal } from '../../ui-utils';
+import { t } from '../../utils';
 import toastr from 'toastr';
 
 function reportError(error, callback) {

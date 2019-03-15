@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 settings.add('HexColorPreview_Enabled', true, {
 	type: 'boolean',

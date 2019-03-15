@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { Button } from '/app/ui';
-import { callbacks } from '/app/callbacks';
+import { settings } from '../../../settings';
+import { Button } from '../../../ui';
+import { callbacks } from '../../../callbacks';
 import _ from 'underscore';
 
 Template.username.onCreated(function() {

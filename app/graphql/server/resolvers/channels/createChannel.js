@@ -1,4 +1,4 @@
-import { API } from '/app/api';
+import { API } from '../../../../api';
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/createChannel.graphqls';
 

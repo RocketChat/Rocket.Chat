@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { sendMessage, updateMessage } from '/app/lib';
-import { Messages, Rooms, Users } from '/app/models';
-import { FileUpload } from '/app/file-upload';
+import { sendMessage, updateMessage } from '../../../lib';
+import { Messages, Rooms, Users } from '../../../models';
+import { FileUpload } from '../../../file-upload';
 
 import FederatedResource from './FederatedResource';
 import FederatedRoom from './FederatedRoom';

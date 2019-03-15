@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { integrations } from '../../lib/rocketchat';
 import { ChatIntegrations } from '../collections';
 import moment from 'moment';

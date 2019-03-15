@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { WebdavAccounts } from '/app/models';
+import { WebdavAccounts } from '../../../models';
 
 Meteor.publish('webdavAccounts', function() {
 	if (!this.userId) {

@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { t, UiTextContext, roomTypes, handleError } from '/app/utils';
+import { t, UiTextContext, roomTypes, handleError } from '../../../utils';
 import { modal } from './modal';
 import { call } from './callMethod';
 import { RoomManager } from './RoomManager';

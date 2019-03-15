@@ -1,4 +1,4 @@
-import * as Mailer from '/app/mailer';
-import { settings } from '/app/settings';
+import * as Mailer from '../../mailer';
+import { settings } from '../../settings';
 
 Mailer.setSettings(settings);
