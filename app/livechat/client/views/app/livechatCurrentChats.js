@@ -5,7 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { modal } from '/app/ui-utils';
 import { t, handleError } from '/app/utils';
-import { AgentUsers } from '../../collections/AgentUsers';
+
 import _ from 'underscore';
 import moment from 'moment';
 
@@ -27,11 +27,26 @@ Template.livechatCurrentChats.helpers({
 	status() {
 		return this.open ? t('Opened') : t('Closed');
 	},
-	agents() {
-		return AgentUsers.find({}, { sort: { name: 1 } });
-	},
 	isClosed() {
 		return !this.open;
+	},
+	agentAutocompleteSettings() {
+		return {
+			limit: 10,
+			inputDelay: 300,
+			rules: [{
+				collection: 'UserAndRoom',
+				subscription: 'userAutocomplete',
+				field: 'username',
+				template: Template.userSearch,
+				noMatchTemplate: Template.userSearchEmpty,
+				matchAll: true,
+				selector(match) {
+					return { term: match };
+				},
+				sort: 'username',
+			}],
+		};
 	},
 });
 
@@ -62,6 +77,10 @@ Template.livechatCurrentChats.events({
 			filter.to = moment(filter.to, moment.localeData().longDateFormat('L')).toDate();
 		} else {
 			delete filter.to;
+		}
+
+		if (!_.isEmpty(instance.selectedAgent.get())) {
+			filter.agent = instance.selectedAgent.get();
 		}
 
 		instance.filter.set(filter);
@@ -95,14 +114,22 @@ Template.livechatCurrentChats.events({
 			});
 		});
 	},
+	'autocompleteselect input[id=agent]'(event, template, agent) {
+		template.selectedAgent.set(agent._id);
+	},
+
+	'input [id=agent]'(event, template) {
+		const input = event.currentTarget;
+		if (input.value === '') {
+			template.selectedAgent.set();
+		}
+	},
 });
 
 Template.livechatCurrentChats.onCreated(function() {
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
-
-	this.subscribe('livechat:agents');
-
+	this.selectedAgent = new ReactiveVar;
 	this.autorun(() => {
 		this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get());
 	});
