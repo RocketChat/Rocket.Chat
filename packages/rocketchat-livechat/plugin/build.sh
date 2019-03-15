@@ -30,5 +30,9 @@ curl -sOL "https://github.com/RocketChat/Rocket.Chat.Livechat/releases/download/
 tar -xf build.tar.gz
 rm build.tar.gz
 
+# change to lowercase so all injected junk from rocket.chat is not sent: https://github.com/meteorhacks/meteor-inject-initial/blob/master/lib/inject-core.js#L10
+# this is not harmful since doctype is case-insesitive: https://www.w3.org/TR/html5/syntax.html#the-doctype
+ex -s -c '%s/<!DOCTYPE/<!doctype/g|x' index.html
+
 cd $LIVECHAT_ASSETS_DIR
 cp ../../public/livechat/$LATEST_LIVECHAT_VERSION/index.html .
