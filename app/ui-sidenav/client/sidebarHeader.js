@@ -188,7 +188,7 @@ const toolbarButtons = (user) => [{
 											},
 											showConfirmButton: false,
 											showCancelButton: false,
-											// confirmButtonText: t('Close'),
+											confirmOnEnter: false,
 										});
 									},
 								},
@@ -207,7 +207,7 @@ const toolbarButtons = (user) => [{
 											},
 											showConfirmButton: false,
 											showCancelButton: false,
-											// confirmButtonText: t('Close'),
+											confirmOnEnter: false,
 										});
 									},
 								},
