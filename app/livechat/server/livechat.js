@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import { Autoupdate } from 'meteor/autoupdate';
 import _ from 'underscore';
 import url from 'url';

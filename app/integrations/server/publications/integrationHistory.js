@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { IntegrationHistory } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { IntegrationHistory } from '../../../models';
 
 Meteor.publish('integrationHistory', function _integrationHistoryPublication(integrationId, limit = 25) {
 	if (!this.userId) {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Users } from '/app/models';
+import { hasPermission } from '../../../../../app/authorization';
+import { Users } from '../../../../../app/models';
 
 Meteor.methods({
 	'personalAccessTokens:removeToken'({ tokenName }) {

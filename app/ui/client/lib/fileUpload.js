@@ -4,10 +4,10 @@ import { Session } from 'meteor/session';
 import s from 'underscore.string';
 
 import { mountReply } from './chatMessages';
-import { fileUploadHandler } from '/app/file-upload';
+import { fileUploadHandler } from '../../../file-upload';
 import { Handlebars } from 'meteor/ui';
-import { t, fileUploadIsValidContentType } from '/app/utils';
-import { modal } from '/app/ui-utils';
+import { t, fileUploadIsValidContentType } from '../../../utils';
+import { modal } from '../../../ui-utils';
 
 
 const readAsDataURL = (file, callback) => {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { roomTypes, RoomTypeConfig } from '/app/utils';
+import { roomTypes, RoomTypeConfig } from '../../utils';
 
 class TokenPassRoomType extends RoomTypeConfig {
 	constructor() {

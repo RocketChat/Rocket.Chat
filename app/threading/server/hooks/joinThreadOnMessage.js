@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
-import { Subscriptions } from '/app/models';
+import { callbacks } from '../../../callbacks';
+import { Subscriptions } from '../../../models';
 
 callbacks.add('beforeSaveMessage', (message, room) => {
 

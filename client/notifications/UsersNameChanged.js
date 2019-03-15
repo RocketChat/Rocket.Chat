@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Notifications } from '/app/notifications';
-import { Messages, Subscriptions } from '/app/models';
+import { Notifications } from '../../app/notifications';
+import { Messages, Subscriptions } from '../../app/models';
 
 Meteor.startup(function() {
 	Notifications.onLogged('Users:NameChanged', function({ _id, name, username }) {

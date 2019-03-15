@@ -3,20 +3,20 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { EmojiPicker } from '/app/emoji';
-import { katex } from '/app/katex';
-import { Markdown } from '/app/markdown';
-import { ChatSubscription } from '/app/models';
-import { settings } from '/app/settings';
+import { EmojiPicker } from '../../emoji';
+import { katex } from '../../katex';
+import { Markdown } from '../../markdown';
+import { ChatSubscription } from '../../models';
+import { settings } from '../../settings';
 import {
 	AudioRecorder,
 	ChatMessages,
 	chatMessages,
 	fileUpload,
 	KonchatNotification,
-} from '/app/ui';
-import { Layout, messageBox, popover, RoomManager } from '/app/ui-utils';
-import { t, roomTypes, getUserPreference } from '/app/utils';
+} from '../../ui';
+import { Layout, messageBox, popover, RoomManager } from '../../ui-utils';
+import { t, roomTypes, getUserPreference } from '../../utils';
 import moment from 'moment';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';

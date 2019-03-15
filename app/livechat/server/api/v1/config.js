@@ -1,5 +1,5 @@
-import { Users } from '/app/models';
-import { API } from '/app/api';
+import { Users } from '../../../../models';
+import { API } from '../../../../api';
 import { findGuest, settings, online, findOpenRoom } from '../lib/livechat';
 import { Match, check } from 'meteor/check';
 

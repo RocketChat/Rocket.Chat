@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
+import { settings } from '../../../../settings';
 import s from 'underscore.string';
 
 Template.livechatInstallation.helpers({

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 Meteor.startup(function() {
 	settings.addGroup('Bots', function() {

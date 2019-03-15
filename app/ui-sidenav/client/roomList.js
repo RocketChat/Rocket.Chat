@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
+import { callbacks } from '../../callbacks';
 import { Template } from 'meteor/templating';
-import { ChatSubscription, Rooms, Users, Subscriptions } from '/app/models';
-import { UiTextContext, getUserPreference, roomTypes } from '/app/utils';
-import { settings } from '/app/settings';
+import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
+import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
+import { settings } from '../../settings';
 
 Template.roomList.helpers({
 	rooms() {

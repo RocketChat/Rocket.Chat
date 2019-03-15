@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Users, Subscriptions } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { settings } from '/app/settings';
-import { getURL } from '/app/utils';
+import { Users, Subscriptions } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { settings } from '../../../settings';
+import { getURL } from '../../../utils';
 import {
 	validateCustomFields,
 	saveUser,
@@ -12,7 +12,7 @@ import {
 	checkUsernameAvailability,
 	setUserAvatar,
 	saveCustomFields,
-} from '/app/lib';
+} from '../../../lib';
 import { API } from '../api';
 import _ from 'underscore';
 import Busboy from 'busboy';

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { isTheLastMessage } from '/app/lib';
-import { Subscriptions, Rooms, Messages } from '/app/models';
+import { settings } from '../../settings';
+import { isTheLastMessage } from '../../lib';
+import { Subscriptions, Rooms, Messages } from '../../models';
 
 Meteor.methods({
 	starMessage(message) {

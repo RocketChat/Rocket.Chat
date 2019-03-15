@@ -1,4 +1,4 @@
-import { callbacks } from '/app/callbacks';
+import { callbacks } from '../../callbacks';
 
 import { metrics } from './lib/metrics';
 import StatsTracker from './lib/statsTracker';

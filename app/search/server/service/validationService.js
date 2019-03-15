@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import SearchLogger from '../logger/logger';
-import { Users } from '/app/models';
+import { Users } from '../../../models';
 
 class ValidationService {
 	constructor() {}

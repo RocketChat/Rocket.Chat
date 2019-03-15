@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Subscriptions, Messages } from '/app/models';
-import { settings } from '/app/settings';
-import { composeMessageObjectWithUser } from '/app/utils';
+import { hasPermission } from '../../../authorization';
+import { Subscriptions, Messages } from '../../../models';
+import { settings } from '../../../settings';
+import { composeMessageObjectWithUser } from '../../../utils';
 import _ from 'underscore';
 
 Meteor.methods({

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { Messages, Rooms, LivechatVisitors } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { API } from '/app/api';
-import { loadMessageHistory } from '/app/lib';
+import { Messages, Rooms, LivechatVisitors } from '../../../../models';
+import { hasPermission } from '../../../../authorization';
+import { API } from '../../../../api';
+import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
