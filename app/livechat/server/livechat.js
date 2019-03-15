@@ -1,15 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from '../../settings';
-import { Autoupdate } from 'meteor/autoupdate';
+import { settings } from '/app/settings';
+import { addServerUrlToIndex, addServerUrlToHead } from '../lib/Assets';
 import _ from 'underscore';
 import url from 'url';
+
+const latestVersion = '1.0.0';
+const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('livechat/index.html'));
+const headHtmlWithServerURL = addServerUrlToHead(Assets.getText('livechat/head.html'));
+const isLatestVersion = (version) => version && version === latestVersion;
 
 WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) => {
 	const reqUrl = url.parse(req.url);
 	if (reqUrl.pathname !== '/') {
 		return next();
 	}
+
+	const { version } = req.query;
+	const html = isLatestVersion(version) ? indexHtmlWithServerURL : headHtmlWithServerURL;
+
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
 	let domainWhiteList = settings.get('Livechat_AllowedDomainsList');
@@ -26,34 +35,6 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 
 		res.setHeader('X-FRAME-OPTIONS', `ALLOW-FROM ${ referer.protocol }//${ referer.host }`);
 	}
-
-	const head = Assets.getText('public/head.html');
-
-	let baseUrl;
-	if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX && __meteor_runtime_config__.ROOT_URL_PATH_PREFIX.trim() !== '') {
-		baseUrl = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-	} else {
-		baseUrl = '/';
-	}
-	if (/\/$/.test(baseUrl) === false) {
-		baseUrl += '/';
-	}
-
-	const html = `<html>
-		<head>
-			<link rel="stylesheet" type="text/css" class="__meteor-css__" href="${ baseUrl }livechat/livechat.css?_dc=${ Autoupdate.autoupdateVersion }">
-			<script type="text/javascript">
-				__meteor_runtime_config__ = ${ JSON.stringify(__meteor_runtime_config__) };
-			</script>
-
-			<base href="${ baseUrl }">
-
-			${ head }
-		</head>
-		<body>
-			<script type="text/javascript" src="${ baseUrl }livechat/livechat.js?_dc=${ Autoupdate.autoupdateVersion }"></script>
-		</body>
-	</html>`;
 
 	res.write(html);
 	res.end();
