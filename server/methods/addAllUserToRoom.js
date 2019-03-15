@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasRole } from 'meteor/rocketchat:authorization';
-import { Users, Rooms, Subscriptions, Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { hasRole } from '/app/authorization';
+import { Users, Rooms, Subscriptions, Messages } from '/app/models';
+import { settings } from '/app/settings';
+import { callbacks } from '/app/callbacks';
 
 Meteor.methods({
 	addAllUserToRoom(rid, activeUsersOnly = false) {
