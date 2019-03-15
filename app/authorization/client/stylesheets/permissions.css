@@ -1,3 +1,4 @@
+/*
 .permissions-manager {
 	& h2 {
 		margin-top: 1em !important;
@@ -9,27 +10,31 @@
 		font-weight: bold !important;
 	}
 
-	& .permission-grid {
-		& table {
-			display: block;
-			overflow-x: auto;
+	  .permission-grid{
+		  overflow-x: scroll;
+	  }
 
-			white-space: nowrap;
-		}
+	& .permission-grid {
+
 
 		& th {
 			position: relative;
 
-			padding: 20px;
+			padding: 15px 20px;
 
 			text-align: center;
 			white-space: nowrap;
 		}
 
+		& tr {
+			height: 40px;
+		}
+
 		& td {
-			width: 10%;
+			width: 8%;
 
 			text-align: center;
+			vertical-align: middle;
 		}
 
 		& .icon-edit {
@@ -48,6 +53,7 @@
 			cursor: default;
 			white-space: nowrap;
 		}
+
 	}
 
 	& .empty-role {
@@ -67,4 +73,34 @@
 			padding-left: 150px;
 		}
 	}
+}
+*/
+
+
+.permissions-manager .content {
+	overflow-x: scroll;
+}
+
+.permissions-manager .permission-grid tr{
+	height: 40px;
+	text-align: center;
+	vertical-align: middle;
+
+}
+
+.permissions-manager .permission-grid td {
+	width: 10%;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.permissions-manager .permission-grid th {
+	width: 10%;
+}
+
+.permissions-manager .permission-grid .permission-name {
+	width: 20%;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0 8px;
 }
