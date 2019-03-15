@@ -9,6 +9,7 @@
 
 			<div class="content">
 				<table class="permission-grid secondary-background-color">
+
 					<thead class="content-background-color">
 						<tr>
 							<th class="border-component-color"></th>
@@ -31,6 +32,10 @@
 							{{/each}}
 						</tr>
 					</thead>
+					<col class = "role-name"/>
+					{{#each role}}
+						<col class = "role-checkbox"/>
+					{{/each}}
 					<tbody>
 						{{#each permission}}
 						<tr class="admin-table-row">
