@@ -117,7 +117,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	userDetailShowAll(/* room */) {
-		return false;
+		return true;
 	}
 
 	getUiText(context) {
