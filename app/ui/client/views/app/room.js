@@ -824,19 +824,12 @@ Template.room.events({
 	'click .announcement'() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return false; }
-		let announcementText = roomData.announcement;
-		const markdownLink = announcementText.match(/\[.+\]\((https\:\/\/.+\))|(http\:\/\/).+\)/ig)[0];
-		const markdownUrl = markdownLink.match(/\(.+\)/ig)[0].slice(1, -1);
-		const markdownText = markdownLink.match(/\[.+\]/ig)[0].slice(1, -1);
-		let linkTemplate = '<a href=\'%s1\'>%s2</a>'.replace(/%s1/, markdownUrl);
-		linkTemplate = linkTemplate.replace(/%s2/, markdownText);
-		announcementText = announcementText.replace(/\[.+\]\((https\:\/\/.+\))|(http\:\/\/).+\)/ig, linkTemplate);
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return callbacks.run(roomData.announcementDetails.callback, this._id);
 		} else {
 			modal.open({
 				title: t('Announcement'),
-				text: announcementText,
+				text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
 				html: true,
 				showConfirmButton: false,
 				showCancelButton: true,
