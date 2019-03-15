@@ -32,11 +32,23 @@
 		justify-content: center;
 	}
 
+	&--modal {
+		width: 640px;
+		max-width: 100%;
+	}
+
+	&--modal &__title {
+		font-size: 1.375rem;
+		font-weight: 500;
+	}
+
 	&__title {
 		flex: 1 1 auto;
 
-		font-size: 16px;
+		font-size: 1rem;
 	}
+
+
 
 	&__close {
 		cursor: pointer;
@@ -142,14 +154,13 @@
 
 @media (width <= 400px) {
 	.rc-modal {
-		top: initial !important;
+		top: 0 !important;
 		bottom: 0;
 		left: 0 !important;
 
 		width: 100%;
 		min-width: 100%;
 		max-width: 100%;
-		margin: 0 16px;
 
 		animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}

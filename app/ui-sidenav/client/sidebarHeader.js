@@ -179,13 +179,14 @@ const toolbarButtons = (user) => [{
 									action: (e) => {
 										e.preventDefault();
 										modal.open({
-											// title: t('Message_info'),
+											title: t('Create_A_New_Channel'),
 											content: 'createChannel',
 											data: {
 												onCreate() {
 													modal.close();
 												},
 											},
+											modalClass: 'modal',
 											showConfirmButton: false,
 											showCancelButton: false,
 											confirmOnEnter: false,
@@ -198,13 +199,14 @@ const toolbarButtons = (user) => [{
 									action: (e) => {
 										e.preventDefault();
 										modal.open({
-											// title: t('Message_info'),
+											title: t('Threading_title'),
 											content: 'CreateThread',
 											data: {
 												onCreate() {
 													modal.close();
 												},
 											},
+											modalClass: 'modal',
 											showConfirmButton: false,
 											showCancelButton: false,
 											confirmOnEnter: false,

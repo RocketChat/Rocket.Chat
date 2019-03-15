@@ -2,10 +2,7 @@
 
 	<section class="create-channel">
 		<div class="create-channel__wrapper">
-			<header class="create-channel__header">
-				<h1 class="create-channel__title">{{_ "Threading_title"}}</h1>
-				<p class="create-channel__description">{{_ "Threading_description"}}</p>
-			</header>
+			<p class="create-channel__description">{{_ "Threading_description"}}</p>
 			<form id="create-thread" class="create-channel__content">
 				{{#unless disabled}}
 				{{> SearchCreateThread
@@ -35,12 +32,31 @@
 						</label>
 					</div>
 				{{/unless}}
-
+				{{> SearchCreateThread
+					onClickTag=onClickTagUser
+					deleteLastItem=deleteLastItemUser
+					list=selectedUsers
+					onSelect=onSelectUser
+					collection='UserAndRoom'
+					subscription='userAutocomplete'
+					field='username'
+					sort='username'
+					label="Invite_Users"
+					placeholder="Username_Placeholder"
+					name="users"
+					icon="at"
+					noMatchTemplate="userSearchEmpty"
+					templateItem="popupList_item_default"
+					modifier=userModifier
+				}}
 				<div class="create-channel__inputs">
 					<div class="rc-input">
 						<label class="rc-input__label">
 							<div class="rc-input__title">{{_ "Thread_name"}}</div>
 							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+									{{> icon block="rc-input__icon-svg" icon="thread"}}
+								</div>
 								<input name="thread_name" id="thread_name" class="rc-input__element" placeholder="{{_ 'New_thread_name'}}"
 									maxlength="{{maxMessageLength}}" value="{{channelName}}"/>
 							</div>
@@ -55,23 +71,6 @@
 							</div>
 						</label>
 					</div>
-					{{> SearchCreateThread
-						onClickTag=onClickTagUser
-						deleteLastItem=deleteLastItemUser
-						list=selectedUsers
-						onSelect=onSelectUser
-						collection='UserAndRoom'
-						subscription='userAutocomplete'
-						field='username'
-						sort='username'
-						label="Invite_Users"
-						placeholder="Username_Placeholder"
-						name="users"
-						icon="at"
-						noMatchTemplate="userSearchEmpty"
-						templateItem="popupList_item_default"
-						modifier=userModifier
-					}}
 				</div>
 			</form>
 			<div class="rc-input">
