@@ -403,7 +403,7 @@ API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 	get() {
 		const user = Users.findOneById(this.userId);
 		if (user.settings) {
-			const { preferences } = user.settings;
+			const { preferences = {} } = user.settings;
 			preferences.language = user.language;
 
 			return API.v1.success({
