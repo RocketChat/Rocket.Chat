@@ -114,6 +114,10 @@
 	}
 }
 
+.dropdown-in {
+	animation: dropdown-in 0.3;
+}
+
 @keyframes dropdown-in {
 	0% {
 		display: none;

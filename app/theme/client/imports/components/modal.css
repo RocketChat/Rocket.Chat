@@ -48,8 +48,6 @@
 		font-size: 1rem;
 	}
 
-
-
 	&__close {
 		cursor: pointer;
 		transform: rotate(45deg);

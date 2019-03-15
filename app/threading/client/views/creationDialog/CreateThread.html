@@ -96,8 +96,10 @@
 				</div>
 			</div>
 			{{#with config}} {{#if autocomplete 'isShowing'}}
-			<div class="fadeInDown">
-				{{> popupList data=config items=items}}
+			<div class="dropdown-in">
+				{{#if autocomplete 'isLoaded'}}
+					{{> popupList data=config items=items}}
+				{{/if}}
 			</div>
 			{{/if}} {{/with}}
 		</label>
