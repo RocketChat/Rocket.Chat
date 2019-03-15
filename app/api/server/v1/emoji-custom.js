@@ -35,7 +35,7 @@ API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
 			}
 			return API.v1.success({
 				emojis: {
-					update: EmojiCustom.find(query, { _updatedAt: { $gt: updatedSinceDate } }).fetch(),
+					update: EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).fetch(),
 					remove: EmojiCustom.trashFindDeletedAfter(updatedSinceDate).fetch(),
 				},
 			});

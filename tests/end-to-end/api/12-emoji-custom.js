@@ -30,66 +30,6 @@ describe('[EmojiCustom]', function() {
 		});
 	});
 
-	describe('[/emoji-custom.list]', () => {
-		it('should return emojis', (done) => {
-			request.get(api('emoji-custom.list'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('emojis').and.to.be.a('object');
-					expect(res.body.emojis).to.have.property('update').and.to.be.a('array');
-					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array');
-				})
-				.end(done);
-		});
-		it('should return emojis when use "query" query parameter', (done) => {
-			request.get(api('emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "2018-11-27T13:52:01Z" } }}'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('emojis').and.to.be.a('object');
-					expect(res.body.emojis).to.have.property('update').and.to.be.a('array');
-					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array');
-				})
-				.end(done);
-		});
-		it('should return emojis when use "updateSince" query parameter', (done) => {
-			request.get(api('emoji-custom.list?updatedSince=2019-02-25T15:08:17.248Z'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('emojis').and.to.be.a('object');
-					expect(res.body.emojis).to.have.property('update').and.to.be.a('array');
-					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array');
-				})
-				.end(done);
-		});
-		it('should return emojis when use both, "updateSince" and "query" query parameter', (done) => {
-			request.get(api('emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "2018-11-27T13:52:01Z" } }}&updatedSince=2019-02-25T15:08:17.248Z'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('emojis').and.to.be.a('object');
-					expect(res.body.emojis).to.have.property('update').and.to.be.a('array');
-					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array');
-				})
-				.end(done);
-		});
-		it('should return an error when the "updateSince" query parameter is a invalid date', (done) => {
-			request.get(api('emoji-custom.list?updatedSince=invalid-date'))
-				.set(credentials)
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-roomId-param-invalid');
-				})
-				.end(done);
-		});
-	});
-
 	describe('[/emoji-custom.create]', () => {
 		it('should create new custom emoji', (done) => {
 			request.post(api('emoji-custom.create'))
@@ -243,6 +183,66 @@ describe('[EmojiCustom]', function() {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[/emoji-custom.list]', () => {
+		it('should return emojis', (done) => {
+			request.get(api('emoji-custom.list'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.not.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+		it('should return emojis when use "query" query parameter', (done) => {
+			request.get(api(`emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "${ new Date().toISOString() }" } } }`))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+		it('should return emojis when use "updateSince" query parameter', (done) => {
+			request.get(api(`emoji-custom.list?updatedSince=${ new Date().toISOString() }`))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+		it('should return emojis when use both, "updateSince" and "query" query parameter', (done) => {
+			request.get(api(`emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "${ new Date().toISOString() }" } }}&updatedSince=${ new Date().toISOString() }`))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('emojis').and.to.be.a('object');
+					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.have.lengthOf(0);
+					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+		it('should return an error when the "updateSince" query parameter is a invalid date', (done) => {
+			request.get(api('emoji-custom.list?updatedSince=invalid-date'))
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-roomId-param-invalid');
+				})
+				.end(done);
 		});
 	});
 
