@@ -259,6 +259,7 @@ OTR.Room = class {
 						title: TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
 						html: true,
+						confirmButtonText: TAPi18n.__('OK'),
 					});
 				}
 				break;

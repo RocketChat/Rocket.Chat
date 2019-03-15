@@ -2176,6 +2176,7 @@
   "others": "others",
   "OTR": "OTR",
   "OTR_is_only_available_when_both_users_are_online": "OTR is only available when both users are online",
+  "OTR_is_only_available_between_users_not_bots":"OTR is only available between users not bots",
   "Outgoing_WebHook": "Outgoing WebHook",
   "Outgoing_WebHook_Description": "Get data out of Rocket.Chat in real-time.",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Override URL to which files are uploaded. This url also used for downloads unless a CDN is given",
