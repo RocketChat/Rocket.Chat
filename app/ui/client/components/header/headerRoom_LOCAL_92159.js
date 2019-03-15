@@ -3,15 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, roomTypes, handleError } from '/app/utils';
-import { TabBar, fireGlobalEvent } from '/app/ui-utils';
-import { ChatSubscription, Rooms, ChatRoom } from '/app/models';
-import { settings } from '/app/settings';
+import { t, roomTypes, handleError, RoomSettingsEnum } from 'meteor/rocketchat:utils';
+import { TabBar, fireGlobalEvent, call } from 'meteor/rocketchat:ui-utils';
+import { ChatSubscription, Rooms, ChatRoom } from 'meteor/rocketchat:models';
+import { settings } from 'meteor/rocketchat:settings';
+
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { emoji } from '/app/emoji';
-import { Markdown } from '/app/markdown';
-import { hasAllPermission } from '/app/authorization';
-import { call } from '/app/ui-utils';
+import { emoji } from 'meteor/rocketchat:emoji';
+import { Markdown } from 'meteor/rocketchat:markdown';
+import { hasAllPermission } from 'meteor/rocketchat:authorization';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -104,9 +104,15 @@ Template.headerRoom.helpers({
 	tokenAccessChannel() {
 		return Template.instance().hasTokenpass.get();
 	},
+
+	canViewEncryption() {
+		const room = ChatRoom.findOne(this._id);
+		return room && roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E) && (room && room.encrypted);
+	},
+
 	encryptionState() {
 		const room = ChatRoom.findOne(this._id);
-		return (room && room.encrypted) && 'encrypted';
+		return (room && room.encrypted) ? 'encrypted' : 'empty';
 	},
 
 	userStatus() {

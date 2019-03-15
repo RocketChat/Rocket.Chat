@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, roomTypes, handleError } from '/app/utils';
+import { t, roomTypes, handleError, RoomSettingsEnum } from '/app/utils';
 import { TabBar, fireGlobalEvent } from '/app/ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from '/app/models';
 import { settings } from '/app/settings';
@@ -104,9 +104,15 @@ Template.headerRoom.helpers({
 	tokenAccessChannel() {
 		return Template.instance().hasTokenpass.get();
 	},
+
+	canViewEncryption() {
+		const room = ChatRoom.findOne(this._id);
+		return room && roomTypes.roomTypes[room.t].allowRoomSettingChange(room, RoomSettingsEnum.E2E) && (room && room.encrypted);
+	},
+
 	encryptionState() {
 		const room = ChatRoom.findOne(this._id);
-		return (room && room.encrypted) && 'encrypted';
+		return (room && room.encrypted) ? 'encrypted' : 'empty';
 	},
 
 	userStatus() {

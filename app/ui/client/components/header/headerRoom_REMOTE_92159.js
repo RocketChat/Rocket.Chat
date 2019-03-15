@@ -1,4 +1,3 @@
-import toastr from 'toastr';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
@@ -10,8 +9,6 @@ import { settings } from '/app/settings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { emoji } from '/app/emoji';
 import { Markdown } from '/app/markdown';
-import { hasAllPermission } from '/app/authorization';
-import { call } from '/app/ui-utils';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -104,9 +101,10 @@ Template.headerRoom.helpers({
 	tokenAccessChannel() {
 		return Template.instance().hasTokenpass.get();
 	},
-	encryptionState() {
-		const room = ChatRoom.findOne(this._id);
-		return (room && room.encrypted) && 'encrypted';
+
+	encryptedChannel() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		return roomData && roomData.encrypted;
 	},
 
 	userStatus() {
@@ -168,18 +166,6 @@ Template.headerRoom.events({
 		event.preventDefault();
 		const { prid } = t.currentChannel;
 		FlowRouter.goToRoomById(prid);
-	},
-	'click .js-toggle-encryption'(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		const room = ChatRoom.findOne(this._id);
-		if (hasAllPermission('edit-room', this._id)) {
-			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
-				toastr.success(
-					t('Encrypted_setting_changed_successfully')
-				);
-			});
-		}
 	},
 });
 
