@@ -115,7 +115,7 @@
 }
 
 .dropdown-in {
-	animation: dropdown-in 0.3;
+	animation: dropdown-in 0.3s;
 }
 
 @keyframes dropdown-in {
