@@ -858,7 +858,9 @@ Template.room.events({
 		event.preventDefault();
 		const isElectron = (navigator.userAgent.toLowerCase().indexOf(' electron/') > -1);
 		if (!isElectron) {
-			const relPdfLink = this._arguments[1].attachments[0].title_link;
+			const attachments = this._arguments[1].attachments[0];
+			const isMessageReplyWithAttachment = attachments.hasOwnProperty('attachments');
+			const relPdfLink = (isMessageReplyWithAttachment) ? attachments.attachments[0].title_link : attachments.title_link;
 			const absPdfLink = Meteor.absoluteUrl().replace(/\/$/, '') + relPdfLink;
 			const absPdfLinkInline = `${ absPdfLink }?disposition=inline`;
 			modal.open({
