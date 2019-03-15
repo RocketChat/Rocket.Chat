@@ -96,6 +96,10 @@ const commonEvents = {
 			return t.tabBar.close();
 		}
 
+		if (this.action) {
+			return this.action();
+		}
+
 		$flexTab.attr('template', this.template);
 		t.tabBar.setData({
 			label: this.i18nTitle,
@@ -111,11 +115,13 @@ const action = function(e, t) {
 	e.preventDefault();
 	const $flexTab = $('.flex-tab-container .flex-tab');
 
+	if (this.actionDefault) {
+		return this.actionDefault();
+	}
 	if (t.tabBar.getState() === 'opened' && t.tabBar.getTemplate() === this.template) {
 		$flexTab.attr('template', '');
 		return t.tabBar.close();
 	}
-
 	$flexTab.attr('template', this.template);
 	t.tabBar.setData({
 		label: this.i18nTitle,
@@ -170,11 +176,12 @@ Template.RoomsActionTab.events({
 		$(e.currentTarget).blur();
 		e.preventDefault();
 		const buttons = TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
-		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => {
-			item.name = TAPi18n.__(item.i18nTitle);
-			item.action = action;
-			return item;
-		}) }];
+		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => ({
+			...item,
+			name: TAPi18n.__(item.i18nTitle),
+			actionDefault: item.action !== action && item.action,
+			action,
+		})) }];
 		const columns = [groups];
 		columns[0] = { groups };
 		const config = {

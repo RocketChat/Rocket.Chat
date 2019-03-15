@@ -28,6 +28,7 @@ import {
 
 import './events.js';
 import './accountEncryption.html';
+import './tabbar';
 import './accountEncryption.js';
 
 let failedToDecodeKey = false;
