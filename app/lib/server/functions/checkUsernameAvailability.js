@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 let usernameBlackList = [];
 

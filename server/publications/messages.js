@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { composeMessageObjectWithUser } from '/app/utils';
-import { Messages } from '/app/models';
+import { composeMessageObjectWithUser } from '../../app/utils';
+import { Messages } from '../../app/models';
 
 Meteor.publish('messages', function(rid/* , start*/) {
 	if (!this.userId) {

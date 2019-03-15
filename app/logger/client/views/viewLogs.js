@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ansispan } from '../ansispan';
 import { stdout } from '../viewLogs';
-import { readMessage } from '/app/ui-utils';
-import { hasAllPermission } from '/app/authorization';
+import { readMessage } from '../../../ui-utils';
+import { hasAllPermission } from '../../../authorization';
 import _ from 'underscore';
 import moment from 'moment';
 

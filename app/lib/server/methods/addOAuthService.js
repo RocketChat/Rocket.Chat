@@ -2,8 +2,8 @@
 /* eslint comma-spacing: 0 */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from '/app/settings';
-import { hasPermission } from '/app/authorization';
+import { settings } from '../../../settings';
+import { hasPermission } from '../../../authorization';
 import s from 'underscore.string';
 
 Meteor.methods({

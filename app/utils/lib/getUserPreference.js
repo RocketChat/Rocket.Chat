@@ -1,5 +1,5 @@
-import { Users } from '/app/models';
-import { settings } from '/app/settings';
+import { Users } from '../../models';
+import { settings } from '../../settings';
 
 export const getUserPreference = (user, key, defaultValue = undefined) => {
 	let preference;

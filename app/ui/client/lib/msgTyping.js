@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
+import { settings } from '../../../settings';
+import { Notifications } from '../../../notifications';
 import _ from 'underscore';
 
 export const MsgTyping = (function() {

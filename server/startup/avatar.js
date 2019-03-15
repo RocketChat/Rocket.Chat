@@ -3,10 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
-import { FileUpload } from '/app/file-upload';
-import { getAvatarColor } from '/app/utils';
-import { Users, Avatars } from '/app/models';
-import { settings } from '/app/settings';
+import { FileUpload } from '../../app/file-upload';
+import { getAvatarColor } from '../../app/utils';
+import { Users, Avatars } from '../../app/models';
+import { settings } from '../../app/settings';
 
 const cookie = new Cookies();
 

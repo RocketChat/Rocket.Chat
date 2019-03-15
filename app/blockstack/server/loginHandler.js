@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from '/app/settings';
-import { Users } from '/app/models';
-import { setUserAvatar } from '/app/lib';
+import { settings } from '../../settings';
+import { Users } from '../../models';
+import { setUserAvatar } from '../../lib';
 import { updateOrCreateUser } from './userHandler';
 import { handleAccessToken } from './tokenHandler';
 import { logger } from './logger';

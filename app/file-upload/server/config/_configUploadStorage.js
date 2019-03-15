@@ -1,5 +1,5 @@
 import { UploadFS } from 'meteor/jalik:ufs';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import _ from 'underscore';
 import './AmazonS3.js';
 import './FileSystem.js';

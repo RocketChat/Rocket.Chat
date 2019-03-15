@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '/app/models';
-import { settings } from '/app/settings';
+import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
+import { settings } from '../../settings';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';

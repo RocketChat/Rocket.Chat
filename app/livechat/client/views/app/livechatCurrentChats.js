@@ -5,7 +5,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { modal } from '/app/ui-utils';
 import { t, handleError } from '/app/utils';
-
 import _ from 'underscore';
 import moment from 'moment';
 
