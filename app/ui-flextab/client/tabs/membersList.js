@@ -199,7 +199,7 @@ Template.membersList.events({
 		}
 
 	},
-	'click .js-action'(e, instance) {
+	'click .js-more'(e, instance) {
 		e.currentTarget.parentElement.classList.add('active');
 		const room = Session.get(`roomData${ instance.data.rid }`);
 		const _actions = getActions({
