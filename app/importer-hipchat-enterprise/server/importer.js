@@ -9,9 +9,9 @@ import {
 	SelectionChannel,
 	SelectionUser,
 	Imports,
-} from '/app/importer';
-import { Messages, Users, Subscriptions, Rooms } from '/app/models';
-import { insertMessage } from '/app/lib';
+} from '../../importer';
+import { Messages, Users, Subscriptions, Rooms } from '../../models';
+import { insertMessage } from '../../lib';
 import { Readable } from 'stream';
 import path from 'path';
 import fs from 'fs';

@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from '/app/settings';
-import { hasPermission } from '/app/authorization';
-import { Users, Rooms, Subscriptions } from '/app/models';
-import { getDefaultSubscriptionPref } from '/app/utils';
-import { RateLimiter } from '/app/lib';
-import { callbacks } from '/app/callbacks';
+import { settings } from '../../app/settings';
+import { hasPermission } from '../../app/authorization';
+import { Users, Rooms, Subscriptions } from '../../app/models';
+import { getDefaultSubscriptionPref } from '../../app/utils';
+import { RateLimiter } from '../../app/lib';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	createDirectMessage(username) {

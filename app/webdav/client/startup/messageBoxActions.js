@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { t } from '/app/utils';
-import { settings } from '/app/settings';
-import { messageBox, modal } from '/app/ui-utils';
-import { WebdavAccounts } from '/app/models';
+import { t } from '../../../utils';
+import { settings } from '../../../settings';
+import { messageBox, modal } from '../../../ui-utils';
+import { WebdavAccounts } from '../../../models';
 
 messageBox.actions.add('WebDAV', 'Add Server', {
 	id: 'add-webdav',

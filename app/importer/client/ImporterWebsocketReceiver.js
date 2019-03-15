@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { CachedCollectionManager } from '../../ui-cached-collection';
 
 class ImporterWebsocketReceiverDef {
 	constructor() {

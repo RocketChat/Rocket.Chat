@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { AdminBox } from '/app/ui-utils';
-import { hasAllPermission } from '/app/authorization';
-import { t } from '/app/utils';
+import { AdminBox } from '../../ui-utils';
+import { hasAllPermission } from '../../authorization';
+import { t } from '../../utils';
 
 export const stdout = new Mongo.Collection('stdout');
 

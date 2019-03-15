@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms } from '/app/models';
+import { Rooms } from '../../../../models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/channels/leaveChannel.graphqls';

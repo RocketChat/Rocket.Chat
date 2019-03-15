@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { Rooms, Subscriptions } from '../../../models';
+import { callbacks } from '../../../callbacks';
 
 export const archiveRoom = function(rid) {
 	Rooms.archiveById(rid);

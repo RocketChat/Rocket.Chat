@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { settings } from '/app/settings';
-import { Settings } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { settings } from '../../../settings';
+import { Settings } from '../../../models';
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {

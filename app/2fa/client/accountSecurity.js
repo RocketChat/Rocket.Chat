@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { modal } from '/app/ui-utils';
-import { settings } from '/app/settings';
-import { t } from '/app/utils';
+import { modal } from '../../ui-utils';
+import { settings } from '../../settings';
+import { t } from '../../utils';
 import toastr from 'toastr';
 import qrcode from 'yaqrcode';
 

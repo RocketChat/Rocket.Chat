@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { hasRole } from '/app/authorization';
+import { hasRole } from '../../../authorization';
 
 Meteor.methods({
 	restart_server() {

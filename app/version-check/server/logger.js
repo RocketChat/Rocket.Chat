@@ -1,3 +1,3 @@
-import { Logger } from '/app/logger';
+import { Logger } from '../../logger';
 
 export default new Logger('VersionCheck');

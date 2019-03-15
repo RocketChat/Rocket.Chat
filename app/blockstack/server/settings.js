@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { logger } from './logger';
 

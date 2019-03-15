@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { LivechatCustomField } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { LivechatCustomField } from '../../../models';
 
 Meteor.methods({
 	'livechat:removeCustomField'(_id) {

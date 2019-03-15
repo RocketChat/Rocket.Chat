@@ -4,9 +4,9 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { timeAgo } from './helpers';
-import { t, roomTypes } from '/app/utils';
-import { settings } from '/app/settings';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { t, roomTypes } from '../../../../utils';
+import { settings } from '../../../../settings';
+import { hasAtLeastOnePermission } from '../../../../authorization';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {

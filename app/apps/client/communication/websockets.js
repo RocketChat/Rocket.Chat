@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands, APIClient } from '/app/utils';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { slashCommands, APIClient } from '../../../utils';
+import { CachedCollectionManager } from '../../../ui-cached-collection';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
