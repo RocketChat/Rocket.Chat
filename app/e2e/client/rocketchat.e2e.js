@@ -147,8 +147,9 @@ class E2E {
 			});
 		}
 
+		const { saved } = await call('e2e.fetchSavedState');
 		const randomPassword = localStorage.getItem('e2e.randomPassword');
-		if (randomPassword) {
+		if (!saved) {
 			const passwordRevealText = TAPi18n.__('E2E_password_reveal_text', {
 				postProcess: 'sprintf',
 				sprintf: [randomPassword],
@@ -173,7 +174,7 @@ class E2E {
 						if (!confirm) {
 							return;
 						}
-						localStorage.removeItem('e2e.randomPassword');
+						call('e2e.updateSavedKeyUser');
 						this.closeAlert();
 					});
 				},

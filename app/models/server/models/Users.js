@@ -257,6 +257,14 @@ export class Users extends Base {
 		});
 	}
 
+	updateSavedKeyUserState(userId) {
+		this.update({ _id: userId }, {
+			$set: {
+				'e2e.saved': true,
+			},
+		});
+	}
+
 	rocketMailUnsubscribe(_id, createdAt) {
 		const query = {
 			_id,
@@ -282,6 +290,18 @@ export class Users extends Base {
 		return {
 			public_key: user.e2e.public_key,
 			private_key: user.e2e.private_key,
+		};
+	}
+
+	fetchSavedStateForKeys(userId) {
+		const user = this.findOne({ _id: userId }, { fields: { e2e: 1 } });
+
+		if (!user || !user.e2e) {
+			return {};
+		}
+
+		return {
+			saved: user.e2e.saved,
 		};
 	}
 
