@@ -9,6 +9,7 @@ import { t, roomTypes } from '/app/utils';
 import { settings } from '/app/settings';
 import { modal, call } from '/app/ui-utils';
 import moment from 'moment';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -215,25 +216,25 @@ Template.cleanHistory.onRendered(function() {
 		const filesOrMessages = t(metaCleanHistoryFilesOnly ? 'files' : 'messages', {});
 
 		if (metaFromDate && metaToDate) {
-			this.warningBox.set(t('Prune_Warning_between', {
+			this.warningBox.set(TAPi18n.__('Prune_Warning_between', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
+			}, TAPi18n.getLanguage()) + exceptPinned + ifFrom);
 		} else if (metaFromDate) {
-			this.warningBox.set(t('Prune_Warning_after', {
+			this.warningBox.set(TAPi18n.__('Prune_Warning_after', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
+			}, TAPi18n.getLanguage()) + exceptPinned + ifFrom);
 		} else if (metaToDate) {
-			this.warningBox.set(t('Prune_Warning_before', {
+			this.warningBox.set(TAPi18n.__('Prune_Warning_before', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
+			}, TAPi18n.getLanguage()) + exceptPinned + ifFrom);
 		} else {
-			this.warningBox.set(t('Prune_Warning_all', {
+			this.warningBox.set(TAPi18n.__('Prune_Warning_all', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName()],
-			}) + exceptPinned + ifFrom);
+			}, TAPi18n.getLanguage()) + exceptPinned + ifFrom);
 		}
 
 		if (fromDate > toDate) {
