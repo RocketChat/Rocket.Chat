@@ -357,5 +357,6 @@ Template.cleanHistory.onRendered(function () {
 
 		}
 
+		
 	});
 });
