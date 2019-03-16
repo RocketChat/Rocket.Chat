@@ -24,7 +24,7 @@ Meteor.methods({
 
 		const user = Users.findOneById(userId);
 
-		const room = Rooms.findOneById(rid);
+		const room = Rooms.findOneByIdOrName(rid);
 
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

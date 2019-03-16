@@ -33,7 +33,7 @@ export class AppsRestApi {
 	}
 
 	async loadAPI() {
-		const { API } = await import('/app/api');
+		const { API } = await import('../../../api');
 		_API = API;
 		this.api = new API.ApiClass({
 			version: 'apps',

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Settings } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { Notifications } from '/app/notifications';
+import { Settings } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { Notifications } from '../../../notifications';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {

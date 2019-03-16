@@ -3,10 +3,10 @@ import connect from 'connect';
 import http from 'http';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { Info } from '/app/utils';
-import { Migrations } from '/app/migrations';
-import { settings } from '/app/settings';
-import { Statistics } from '/app/models';
+import { Info } from '../../../utils';
+import { Migrations } from '../../../migrations';
+import { settings } from '../../../settings';
+import { Statistics } from '../../../models';
 
 client.collectDefaultMetrics();
 

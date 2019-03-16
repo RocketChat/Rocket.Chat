@@ -33,7 +33,7 @@ export class Messages extends Base {
 
 	loadSettings() {
 		Meteor.startup(async() => {
-			const { settings } = await import('/app/settings');
+			const { settings } = await import('../../../settings');
 			this.settings = settings;
 		});
 	}
@@ -912,7 +912,7 @@ export class Messages extends Base {
 
 	async removeFilesByRoomId(roomId) {
 		if (!this.FileUpload) {
-			const { FileUpload } = await import('/app/file-upload');
+			const { FileUpload } = await import('../../../file-upload');
 			this.FileUpload = FileUpload;
 		}
 		this.find({

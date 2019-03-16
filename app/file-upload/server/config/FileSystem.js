@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import _ from 'underscore';
 import fs from 'fs';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';

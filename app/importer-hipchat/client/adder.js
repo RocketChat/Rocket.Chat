@@ -1,4 +1,4 @@
-import { Importers } from '/app/importer';
+import { Importers } from '../../importer';
 import { HipChatImporterInfo } from '../lib/info';
 
 Importers.add(new HipChatImporterInfo());

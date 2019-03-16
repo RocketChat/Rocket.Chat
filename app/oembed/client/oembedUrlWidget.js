@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { getUserPreference } from '/app/utils';
+import { getUserPreference } from '../../utils';
 import _ from 'underscore';
 
 const getTitle = function(self) {

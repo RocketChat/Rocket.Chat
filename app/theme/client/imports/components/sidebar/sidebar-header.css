@@ -65,7 +65,10 @@
 	display: flex;
 	flex: 1 1 100%;
 
-	margin: 0 10px;
+	margin: 0 -10px;
+
+	padding: 0 10px;
+
 	justify-content: space-between;
 
 	&-button {

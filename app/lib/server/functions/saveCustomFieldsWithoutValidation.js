@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Users, Subscriptions } from '/app/models';
+import { settings } from '../../../settings';
+import { Users, Subscriptions } from '../../../models';
 import s from 'underscore.string';
 
 export const saveCustomFieldsWithoutValidation = function(userId, formData) {

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from '/app/custom-oauth';
-import { callbacks } from '/app/callbacks';
-import { Settings } from '/app/models';
+import { CustomOAuth } from '../../custom-oauth';
+import { callbacks } from '../../callbacks';
+import { Settings } from '../../models';
 
 const config = {
 	serverURL: '',

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { EmojiCustom } from '/app/models';
+import { EmojiCustom } from '../../../models';
 import s from 'underscore.string';
 
 Meteor.publish('fullEmojiData', function(filter, limit) {

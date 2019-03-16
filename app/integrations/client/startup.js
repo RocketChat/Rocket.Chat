@@ -1,5 +1,5 @@
-import { AdminBox } from '/app/ui-utils';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { AdminBox } from '../../ui-utils';
+import { hasAtLeastOnePermission } from '../../authorization';
 
 AdminBox.addOption({
 	href: 'admin-integrations',

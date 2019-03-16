@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 settings.addGroup('LDAP', function() {
 	const enableQuery = { _id: 'LDAP_Enable', value: true };

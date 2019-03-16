@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { hasPermission } from '/app/authorization';
+import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	createToken(userId) {

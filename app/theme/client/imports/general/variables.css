@@ -60,6 +60,7 @@
 	--status-bullet-radius: 50%;
 	--account-username-weight: 700;
 	--status-name-weight: 400;
+	--default-font-weight-header: 500;
 
 	/*
 	* General Typography
@@ -213,7 +214,7 @@
 	/*
 	* Modal - Create Channel
 	*/
-	--create-channel-gap-between-elements: 2.5rem;
+	--create-channel-gap-between-elements: 1rem;
 	--create-channel-title-color: var(--color-darkest);
 	--create-channel-title-text-size: 1.375rem;
 	--create-channel-description-color: var(--color-gray);
@@ -279,6 +280,8 @@
 	--header-padding: 16px;
 	--header-toggle-favorite-color: var(--color-gray-medium);
 	--header-toggle-favorite-star-color: var(--rc-color-alert-light);
+	--header-toggle-encryption-off-color: var(--color-gray-medium);
+	--header-toggle-encryption-on-color: var(--rc-color-alert-message-secondary);
 	--header-title-username-color-darker: var(--color-dark);
 	--header-title-font-size: var(--text-default-size);
 	--header-title-font-size--subtitle: var(--text-small-size);

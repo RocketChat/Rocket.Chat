@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { MessageAction } from '/app/ui-utils';
-import { Messages } from '/app/models';
+import { settings } from '../../../settings';
+import { hasAtLeastOnePermission } from '../../../authorization';
+import { MessageAction } from '../../../ui-utils';
+import { Messages } from '../../../models';
 import { AutoTranslate } from './autotranslate';
 
 Meteor.startup(function() {

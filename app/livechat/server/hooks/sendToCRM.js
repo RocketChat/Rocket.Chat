@@ -1,6 +1,6 @@
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Messages, Rooms } from '/app/models';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { Messages, Rooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 const msgNavType = 'livechat_navigation_history';

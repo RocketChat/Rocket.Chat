@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 settings.addGroup('OAuth', function() {
 	return this.section('WordPress', function() {
