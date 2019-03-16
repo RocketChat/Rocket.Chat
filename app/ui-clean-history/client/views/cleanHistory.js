@@ -9,7 +9,6 @@ import { t, roomTypes } from '/app/utils';
 import { settings } from '/app/settings';
 import { modal, call } from '/app/ui-utils';
 import moment from 'moment';
-import { TAPi18n } from 'meteor/tap:i18n';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -37,6 +36,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 	});
 };
 
+
 const getTimeZoneOffset = function() {
 	const offset = new Date().getTimezoneOffset();
 	const absOffset = Math.abs(offset);
@@ -49,54 +49,6 @@ const filterNames = (old) => {
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
-Template.cleanHistory.onCreated(function() {
-	this.warningBox = new ReactiveVar('');
-	this.validate = new ReactiveVar('');
-	this.selectedUsers = new ReactiveVar([]);
-	this.userFilter = new ReactiveVar('');
-
-	this.cleanHistoryFromDate = new ReactiveVar('');
-	this.cleanHistoryFromTime = new ReactiveVar('');
-	this.cleanHistoryToDate = new ReactiveVar('');
-	this.cleanHistoryToTime = new ReactiveVar('');
-	this.cleanHistorySelectedUsers = new ReactiveVar([]);
-	this.cleanHistoryInclusive = new ReactiveVar(false);
-	this.cleanHistoryExcludePinned = new ReactiveVar(false);
-	this.cleanHistoryFilesOnly = new ReactiveVar(false);
-
-	this.ignoreThreads = new ReactiveVar(false);
-
-	this.cleanHistoryBusy = new ReactiveVar(false);
-	this.cleanHistoryFinished = new ReactiveVar(false);
-	this.cleanHistoryPrunedCount = new ReactiveVar(0);
-
-	this.ac = new AutoComplete(
-		{
-			selector:{
-				item: '.rc-popup-list__item',
-				container: '.rc-popup-list__list',
-			},
-
-			limit: 10,
-			inputDelay: 300,
-			rules: [
-				{
-					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
-					field: 'username',
-					matchAll: true,
-					doNotChangeWidth: false,
-					selector(match) {
-						return { term: match };
-					},
-					sort: 'username',
-				},
-			],
-
-		});
-	this.ac.tmplInst = this;
-});
-
 Template.cleanHistory.helpers({
 	roomId() {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -105,22 +57,22 @@ Template.cleanHistory.helpers({
 	roomName() {
 		return getRoomName();
 	},
-	warningBox: function () {
+	warningBox() {
 		return Template.instance().warningBox.get();
 	},
-	validate: function() {
+	validate() {
 		return Template.instance().validate.get();
 	},
-	filesOnly: function() {
+	filesOnly() {
 		return Template.instance().cleanHistoryFilesOnly.get();
 	},
-	busy: function() {
+	busy() {
 		return Template.instance().cleanHistoryBusy.get();
 	},
-	finished: function() {
+	finished() {
 		return Template.instance().cleanHistoryFinished.get();
 	},
-	prunedCount: function() {
+	prunedCount() {
 		return Template.instance().cleanHistoryPrunedCount.get();
 	},
 	config() {
@@ -171,6 +123,133 @@ Template.cleanHistory.helpers({
 	items() {
 		return Template.instance().ac.filteredList();
 	},
+});
+
+Template.cleanHistory.onCreated(function() {
+	this.warningBox = new ReactiveVar('');
+	this.validate = new ReactiveVar('');
+	this.selectedUsers = new ReactiveVar([]);
+	this.userFilter = new ReactiveVar('');
+
+	this.cleanHistoryFromDate = new ReactiveVar('');
+	this.cleanHistoryFromTime = new ReactiveVar('');
+	this.cleanHistoryToDate = new ReactiveVar('');
+	this.cleanHistoryToTime = new ReactiveVar('');
+	this.cleanHistorySelectedUsers = new ReactiveVar([]);
+	this.cleanHistoryInclusive = new ReactiveVar(false);
+	this.cleanHistoryExcludePinned = new ReactiveVar(false);
+	this.cleanHistoryFilesOnly = new ReactiveVar(false);
+
+	this.ignoreThreads = new ReactiveVar(false);
+
+
+	this.cleanHistoryBusy = new ReactiveVar(false);
+	this.cleanHistoryFinished = new ReactiveVar(false);
+	this.cleanHistoryPrunedCount = new ReactiveVar(0);
+
+	this.ac = new AutoComplete(
+		{
+			selector:{
+				item: '.rc-popup-list__item',
+				container: '.rc-popup-list__list',
+			},
+
+			limit: 10,
+			inputDelay: 300,
+			rules: [
+				{
+					collection: 'UserAndRoom',
+					subscription: 'userAutocomplete',
+					field: 'username',
+					matchAll: true,
+					doNotChangeWidth: false,
+					selector(match) {
+						return { term: match };
+					},
+					sort: 'username',
+				},
+			],
+
+		});
+	this.ac.tmplInst = this;
+});
+
+Template.cleanHistory.onRendered(function() {
+	const users = this.selectedUsers;
+	const selUsers = this.cleanHistorySelectedUsers;
+
+	this.ac.element = this.firstNode.parentElement.querySelector('[name="users"]');
+	this.ac.$element = $(this.ac.element);
+	this.ac.$element.on('autocompleteselect', function(e, { item }) {
+		const usersArr = users.get();
+		usersArr.push(item);
+		users.set(usersArr);
+		selUsers.set(usersArr);
+	});
+
+	Tracker.autorun(() => {
+		const metaFromDate = this.cleanHistoryFromDate.get();
+		const metaFromTime = this.cleanHistoryFromTime.get();
+		const metaToDate = this.cleanHistoryToDate.get();
+		const metaToTime = this.cleanHistoryToTime.get();
+		const metaSelectedUsers = this.cleanHistorySelectedUsers.get();
+		const metaCleanHistoryExcludePinned = this.cleanHistoryExcludePinned.get();
+		const metaCleanHistoryFilesOnly = this.cleanHistoryFilesOnly.get();
+
+		let fromDate = new Date('0001-01-01T00:00:00Z');
+		let toDate = new Date('9999-12-31T23:59:59Z');
+
+		if (metaFromDate) {
+			fromDate = new Date(`${ metaFromDate }T${ metaFromTime || '00:00' }:00${ getTimeZoneOffset() }`);
+		}
+
+		if (metaToDate) {
+			toDate = new Date(`${ metaToDate }T${ metaToTime || '00:00' }:00${ getTimeZoneOffset() }`);
+		}
+
+		const exceptPinned = metaCleanHistoryExcludePinned ? ` ${ t('except_pinned', {}) }` : '';
+		const ifFrom = metaSelectedUsers.length ? ` ${ t('if_they_are_from', {
+			postProcess: 'sprintf',
+			sprintf: [metaSelectedUsers.map((element) => element.username).join(', ')],
+		}) }` : '';
+		const filesOrMessages = t(metaCleanHistoryFilesOnly ? 'files' : 'messages', {});
+
+		if (metaFromDate && metaToDate) {
+			this.warningBox.set(t('Prune_Warning_between', {
+				postProcess: 'sprintf',
+				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
+			}) + exceptPinned + ifFrom);
+		} else if (metaFromDate) {
+			this.warningBox.set(t('Prune_Warning_after', {
+				postProcess: 'sprintf',
+				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')],
+			}) + exceptPinned + ifFrom);
+		} else if (metaToDate) {
+			this.warningBox.set(t('Prune_Warning_before', {
+				postProcess: 'sprintf',
+				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')],
+			}) + exceptPinned + ifFrom);
+		} else {
+			this.warningBox.set(t('Prune_Warning_all', {
+				postProcess: 'sprintf',
+				sprintf: [filesOrMessages, getRoomName()],
+			}) + exceptPinned + ifFrom);
+		}
+
+		if (fromDate > toDate) {
+			return this.validate.set(t('Newer_than_may_not_exceed_Older_than', {
+				postProcess: 'sprintf',
+				sprintf: [],
+			}));
+		}
+		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+			return this.validate.set(t('error-invalid-date', {
+				postProcess: 'sprintf',
+				sprintf: [],
+			}));
+		}
+		this.validate.set('');
+	});
 });
 
 Template.cleanHistory.events({
@@ -285,78 +364,4 @@ Template.cleanHistory.events({
 	'blur [name="users"]'(e, t) {
 		t.ac.onBlur(e);
 	},
-});
-
-
-Template.cleanHistory.onRendered(function () {
-	const users = this.selectedUsers;
-	const selUsers = this.cleanHistorySelectedUsers;
-
-	this.ac.element = this.firstNode.parentElement.querySelector('[name="users"]');
-	this.ac.$element = $(this.ac.element);
-	this.ac.$element.on('autocompleteselect', function(e, { item }) {
-		const usersArr = users.get();
-		usersArr.push(item);
-		users.set(usersArr);
-		selUsers.set(usersArr);
-	});
-	
-	Tracker.autorun(function () {
-		console.log('Hello');
-		const metaFromDate = Template.instance().cleanHistoryFromDate.get();
-		const metaFromTime = Template.instance().cleanHistoryFromTime.get();
-		const metaToDate = Template.instance().cleanHistoryToDate.get();
-		const metaToTime = Template.instance().cleanHistoryToTime.get();
-		const metaSelectedUsers = Template.instance().cleanHistorySelectedUsers.get();
-		const metaCleanHistoryExcludePinned = Template.instance().cleanHistoryExcludePinned.get();
-		const metaCleanHistoryFilesOnly = Template.instance().cleanHistoryFilesOnly.get();
-
-		let fromDate = new Date('0001-01-01T00:00:00Z');
-		let toDate = new Date('9999-12-31T23:59:59Z');
-
-		if (metaFromDate) {
-			fromDate = new Date(`${ metaFromDate }T${ metaFromTime || '00:00' }:00${ getTimeZoneOffset() }`);
-		}
-
-		if (metaToDate) {
-			toDate = new Date(`${ metaToDate }T${ metaToTime || '00:00' }:00${ getTimeZoneOffset() }`);
-		}
-
-		const exceptPinned = metaCleanHistoryExcludePinned ? ` ${ t('except_pinned', {}) }` : '';
-		const ifFrom = metaSelectedUsers.length ? ` ${ t('if_they_are_from', {
-			postProcess: 'sprintf',
-			sprintf: [metaSelectedUsers.map((element) => element.username).join(', ')],
-		}) }` : '';
-		const filesOrMessages = t(metaCleanHistoryFilesOnly ? 'files' : 'messages', {});
-
-		console.log(metaFromDate);
-
-
-		if (metaFromDate && metaToDate) {
-			Template.instance().warningBox.set(TAPi18n.__('Prune_Warning_between', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
-		}
-		else if (metaFromDate) {
-			Template.instance().warningBox.set(TAPi18n.__('Prune_Warning_after', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
-		} else if (metaToDate) {
-			Template.instance().warningBox.set(TAPi18n.__('Prune_Warning_before', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
-		}
-		else{
-			Template.instance().warningBox.set(TAPi18n.__('Prune_Warning_all', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName()],
-			}) + exceptPinned + ifFrom);
-
-		}
-
-		
-	});
 });
