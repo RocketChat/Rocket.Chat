@@ -2042,7 +2042,7 @@
   "Prune_finished": "Poda finalizada",
   "Prune_Messages": "Podar mensajes",
   "Prune_Modal": "¿Estás seguro de que deseas podar estos mensajes? Los mensajes borrados no se pueden recuperar.",
-  "Prune_Warning_all": "¡Esto eliminará todos los% s en% s!",
+  "Prune_Warning_all": "¡Esto eliminará todos los %s en %s!",
   "Prune_Warning_before": "Esto eliminará todos los% s en% s antes de% s.",
   "Prune_Warning_after": "Esto eliminará todos los% s en% s después de% s.",
   "Prune_Warning_between": "Esto eliminará todos los% s en% s entre% s y% s.",

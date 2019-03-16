@@ -9,7 +9,6 @@ import { t, roomTypes } from '/app/utils';
 import { settings } from '/app/settings';
 import { modal, call } from '/app/ui-utils';
 import moment from 'moment';
-import { TAPi18n } from 'meteor/tap:i18n';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -49,7 +48,7 @@ const filterNames = (old) => {
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
-Template.cleanHistory.onCreated(function() {
+Template.cleanHistory.onCreated(() => {
 	this.warningBox = new ReactiveVar('');
 	this.validate = new ReactiveVar('');
 	this.selectedUsers = new ReactiveVar([]);
@@ -287,8 +286,7 @@ Template.cleanHistory.events({
 	},
 });
 
-
-Template.cleanHistory.onRendered(function () {
+Template.cleanHistory.onRendered(function() {
 	const users = this.selectedUsers;
 	const selUsers = this.cleanHistorySelectedUsers;
 
@@ -300,16 +298,15 @@ Template.cleanHistory.onRendered(function () {
 		users.set(usersArr);
 		selUsers.set(usersArr);
 	});
-	
-	Tracker.autorun(function () {
-		console.log('Hello');
-		const metaFromDate = Template.instance().cleanHistoryFromDate.get();
-		const metaFromTime = Template.instance().cleanHistoryFromTime.get();
-		const metaToDate = Template.instance().cleanHistoryToDate.get();
-		const metaToTime = Template.instance().cleanHistoryToTime.get();
-		const metaSelectedUsers = Template.instance().cleanHistorySelectedUsers.get();
-		const metaCleanHistoryExcludePinned = Template.instance().cleanHistoryExcludePinned.get();
-		const metaCleanHistoryFilesOnly = Template.instance().cleanHistoryFilesOnly.get();
+
+	Tracker.autorun(() => {
+		const metaFromDate = this.cleanHistoryFromDate.get();
+		const metaFromTime = this.cleanHistoryFromTime.get();
+		const metaToDate = this.cleanHistoryToDate.get();
+		const metaToTime = this.cleanHistoryToTime.get();
+		const metaSelectedUsers = this.cleanHistorySelectedUsers.get();
+		const metaCleanHistoryExcludePinned = this.cleanHistoryExcludePinned.get();
+		const metaCleanHistoryFilesOnly = this.cleanHistoryFilesOnly.get();
 
 		let fromDate = new Date('0001-01-01T00:00:00Z');
 		let toDate = new Date('9999-12-31T23:59:59Z');
@@ -329,33 +326,42 @@ Template.cleanHistory.onRendered(function () {
 		}) }` : '';
 		const filesOrMessages = t(metaCleanHistoryFilesOnly ? 'files' : 'messages', {});
 
-		console.log(metaFromDate);
-
-
 		if (metaFromDate && metaToDate) {
-			Template.instance().warningBox.set(TAPi18n.__('Prune_Warning_between', {
+			this.warningBox.set(t('Prune_Warning_between', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
 			}) + exceptPinned + ifFrom);
-		}
-		else if (metaFromDate) {
-			Template.instance().warningBox.set(TAPi18n.__('Prune_Warning_after', {
+		} else if (metaFromDate) {
+			this.warningBox.set(t('Prune_Warning_after', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')],
 			}) + exceptPinned + ifFrom);
 		} else if (metaToDate) {
-			Template.instance().warningBox.set(TAPi18n.__('Prune_Warning_before', {
+			this.warningBox.set(t('Prune_Warning_before', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')],
 			}) + exceptPinned + ifFrom);
-		}
-		else{
-			Template.instance().warningBox.set(TAPi18n.__('Prune_Warning_all', {
+		} else {
+			this.warningBox.set(t('Prune_Warning_all', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName()],
 			}) + exceptPinned + ifFrom);
-
+			this.warningBox.set(this.warningBox.get().substr(0, this.warningBox.get().length - 1) );
+			this.warningBox.set(this.warningBox.get() + exceptPinned + ifFrom);
 		}
 
+		if (fromDate > toDate) {
+			return this.validate.set(t('Newer_than_may_not_exceed_Older_than', {
+				postProcess: 'sprintf',
+				sprintf: [],
+			}));
+		}
+		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+			return this.validate.set(t('error-invalid-date', {
+				postProcess: 'sprintf',
+				sprintf: [],
+			}));
+		}
+		this.validate.set('');
 	});
 });
