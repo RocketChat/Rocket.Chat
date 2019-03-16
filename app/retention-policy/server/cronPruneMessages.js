@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Rooms, Settings } from '/app/models';
-import { cleanRoomHistory } from '/app/lib';
+import { settings } from '../../settings';
+import { Rooms, Settings } from '../../models';
+import { cleanRoomHistory } from '../../lib';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 let types = [];

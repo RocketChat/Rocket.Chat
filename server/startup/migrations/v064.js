@@ -1,5 +1,5 @@
-import { Migrations } from '/app/migrations';
-import { Messages } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { Messages } from '../../../app/models';
 import s from 'underscore.string';
 
 Migrations.add({

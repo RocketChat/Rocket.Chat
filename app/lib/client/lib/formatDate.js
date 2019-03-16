@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { getUserPreference } from '/app/utils';
-import { settings } from '/app/settings';
+import { getUserPreference } from '../../../utils';
+import { settings } from '../../../settings';
 import moment from 'moment';
 
 export const formatTime = (time) => {

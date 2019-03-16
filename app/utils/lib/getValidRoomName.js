@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
-import { settings } from '/app/settings';
-import { Rooms } from '/app/models';
+import { settings } from '../../settings';
+import { Rooms } from '../../models';
 
 export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;

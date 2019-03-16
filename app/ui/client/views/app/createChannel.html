@@ -6,10 +6,7 @@
 			</div>
 		{{/each}}
 		<div class="create-channel__wrapper">
-			<header class="create-channel__header">
-				<h1 class="create-channel__title">{{_ "Create_A_New_Channel"}}</h1>
-				<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
-			</header>
+			<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
 			<form id="create-channel" name="create-channel" class="create-channel__content">
 				<div class="create-channel__switches">
 					<div class="rc-switch">
@@ -105,7 +102,7 @@
 							</div>
 							{{#with config}}
 								{{#if autocomplete 'isShowing'}}
-									<div class="fadeInDown">
+									<div class="dropdown-in">
 
 										{{> popupList data=config items=items}}
 

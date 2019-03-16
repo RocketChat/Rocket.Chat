@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions, Users } from '/app/models';
+import { Subscriptions, Users } from '../../../models';
 
 Meteor.methods({
 	'e2e.getUsersOfRoomWithoutKey'(rid) {

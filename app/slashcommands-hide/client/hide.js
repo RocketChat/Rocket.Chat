@@ -1,4 +1,4 @@
-import { slashCommands } from '/app/utils';
+import { slashCommands } from '../../utils';
 
 slashCommands.add('hide', undefined, {
 	description: 'Hide_room',

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Messages, Users, Subscriptions } from '/app/models';
-import { Notifications } from '/app/notifications';
+import { Messages, Users, Subscriptions } from '../../../models';
+import { Notifications } from '../../../notifications';
 
 export class AppMessageBridge {
 	constructor(orch) {
@@ -29,7 +29,7 @@ export class AppMessageBridge {
 	async update(message, appId) {
 		console.log(`The App ${ appId } is updating a message.`);
 		if (!this.updateMessage) {
-			const { updateMessage } = await import('/app/lib');
+			const { updateMessage } = await import('../../../lib');
 			this.updateMessage = updateMessage;
 		}
 

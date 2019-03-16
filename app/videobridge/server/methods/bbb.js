@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import BigBlueButtonApi from '/app/bigbluebutton';
-import { settings } from '/app/settings';
-import { Rooms, Users } from '/app/models';
-import { saveStreamingOptions } from '/app/channel-settings';
-import { API } from '/app/api';
+import BigBlueButtonApi from '../../../bigbluebutton';
+import { settings } from '../../../settings';
+import { Rooms, Users } from '../../../models';
+import { saveStreamingOptions } from '../../../channel-settings';
+import { API } from '../../../api';
 import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 

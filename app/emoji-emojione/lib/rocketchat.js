@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { emoji } from '/app/emoji';
-import { getUserPreference } from '/app/utils';
+import { emoji } from '../../emoji';
+import { getUserPreference } from '../../utils';
 import { emojione } from 'meteor/emojione:emojione';
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 

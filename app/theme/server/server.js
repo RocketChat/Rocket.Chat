@@ -1,7 +1,7 @@
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Logger } from '/app/logger';
+import { settings } from '../../settings';
+import { Logger } from '../../logger';
 import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import less from 'less';

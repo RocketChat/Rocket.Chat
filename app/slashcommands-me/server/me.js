@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from '/app/utils';
+import { slashCommands } from '../../utils';
 import s from 'underscore.string';
 
 /*

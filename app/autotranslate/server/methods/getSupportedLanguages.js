@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { hasPermission } from '/app/authorization';
+import { hasPermission } from '../../../authorization';
 import AutoTranslate from '../autotranslate';
 
 Meteor.methods({

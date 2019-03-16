@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { Accounts } from 'meteor/accounts-base';
-import { Users } from '/app/models';
+import { Users } from '../../app/models';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 

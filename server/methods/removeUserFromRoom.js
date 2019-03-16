@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '/app/authorization';
-import { Users, Subscriptions, Rooms, Messages } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization';
+import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	removeUserFromRoom(data) {

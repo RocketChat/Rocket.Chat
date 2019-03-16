@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasRole } from '/app/authorization';
-import { Info } from '/app/utils';
-import { Users } from '/app/models';
-import { settings } from '/app/settings';
+import { hasRole } from '../../../authorization';
+import { Info } from '../../../utils';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import { API } from '../api';
 
 API.v1.addRoute('info', { authRequired: false }, {

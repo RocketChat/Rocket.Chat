@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Messages, Subscriptions, Integrations } from '/app/models';
-import { roomTypes, getValidRoomName } from '/app/utils';
+import { Rooms, Messages, Subscriptions, Integrations } from '../../../models';
+import { roomTypes, getValidRoomName } from '../../../utils';
 
 export const saveRoomName = function(rid, displayName, user, sendMessage = true) {
 	const room = Rooms.findOneById(rid);

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
+import { hasPermission } from '../../../authorization';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
