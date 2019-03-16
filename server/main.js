@@ -1,3 +1,4 @@
+import './importPackages';
 import '../imports/startup/server';
 
 import '../lib/RegExp';
@@ -28,6 +29,7 @@ import './methods/deleteFileMessage';
 import './methods/deleteUser';
 import './methods/eraseRoom';
 import './methods/getAvatarSuggestion';
+import './methods/getRoomById';
 import './methods/getRoomIdByNameOrId';
 import './methods/getRoomNameById';
 import './methods/getTotalChannels';

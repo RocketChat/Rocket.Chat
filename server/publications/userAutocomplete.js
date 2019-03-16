@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from 'meteor/rocketchat:models';
+import { Users } from '../../app/models';
 import _ from 'underscore';
 
 Meteor.publish('userAutocomplete', function(selector) {

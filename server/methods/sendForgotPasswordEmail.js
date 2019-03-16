@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
-import * as Mailer from 'meteor/rocketchat:mailer';
-import { Users } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
+import * as Mailer from '../../app/mailer';
+import { Users } from '../../app/models';
+import { settings } from '../../app/settings';
 
 let template = '';
 

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { saveCustomFields, passwordPolicy } from 'meteor/rocketchat:lib';
-import { Users } from 'meteor/rocketchat:models';
-import { settings as rcSettings } from 'meteor/rocketchat:settings';
+import { saveCustomFields, passwordPolicy } from '../../app/lib';
+import { Users } from '../../app/models';
+import { settings as rcSettings } from '../../app/settings';
 
 Meteor.methods({
 	saveUserProfile(settings, customFields) {

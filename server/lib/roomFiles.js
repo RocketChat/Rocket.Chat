@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Uploads } from 'meteor/rocketchat:models';
+import { Users, Uploads } from '../../app/models';
 
 export const roomFiles = (pub, { rid, searchText, limit = 50 }) => {
 	if (!pub.userId) {
