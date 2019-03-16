@@ -1,4 +1,4 @@
-import { callbacks } from '/app/callbacks';
+import { callbacks } from '../../callbacks';
 import { integrations } from '../lib/rocketchat';
 
 const callbackHandler = function _callbackHandler(eventType) {

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { hasPermission } from '/app/authorization';
-import { Rooms, Users } from '/app/models';
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Users } from '../../app/models';
 import s from 'underscore.string';
 
-import { Federation } from '/app/federation';
+import { Federation } from '../../app/federation';
 
 const sortChannels = function(field, direction) {
 	switch (field) {

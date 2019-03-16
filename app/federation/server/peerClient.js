@@ -1,8 +1,8 @@
 import qs from 'querystring';
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
-import { settings } from '/app/settings';
-import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '/app/models';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
+import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
 
 import { Federation } from './main';
 import peerDNS from './peerDNS';

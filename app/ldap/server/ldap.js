@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Logger } from '/app/logger';
+import { settings } from '../../settings';
+import { Logger } from '../../logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 

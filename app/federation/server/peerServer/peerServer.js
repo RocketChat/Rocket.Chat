@@ -1,7 +1,7 @@
-import { callbacks } from '/app/callbacks';
-import { setReaction } from '/app/reactions';
-import { addUserToRoom, removeUserFromRoom, deleteMessage } from '/app/lib';
-import { Rooms, Subscriptions } from '/app/models';
+import { callbacks } from '../../../callbacks';
+import { setReaction } from '../../../reactions';
+import { addUserToRoom, removeUserFromRoom, deleteMessage } from '../../../lib';
+import { Rooms, Subscriptions } from '../../../models';
 
 import { FederatedMessage, FederatedRoom, FederatedUser } from '../federatedResources';
 import { logger } from '../logger.js';

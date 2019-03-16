@@ -1,5 +1,5 @@
-import { callbacks } from '/app/callbacks';
-import { Notifications } from '/app/notifications';
+import { callbacks } from '../../callbacks';
+import { Notifications } from '../../notifications';
 
 import './settings';
 import './methods/setUserPublicAndPivateKeys';

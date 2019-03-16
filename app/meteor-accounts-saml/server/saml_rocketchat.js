@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Logger } from '/app/logger';
+import { Logger } from '../../logger';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 const logger = new Logger('steffo:meteor-accounts-saml', {
 	methods: {

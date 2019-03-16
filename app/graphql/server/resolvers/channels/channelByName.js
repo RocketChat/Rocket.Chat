@@ -1,4 +1,4 @@
-import { Rooms } from '/app/models';
+import { Rooms } from '../../../../models';
 
 import { authenticated } from '../../helpers/authenticated';
 import { roomPublicFields } from './settings';

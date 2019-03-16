@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { popover } from '/app/ui-utils';
-import { t, getUserPreference, handleError } from '/app/utils';
-import { AccountBox, menu, SideNav } from '/app/ui-utils';
-import { callbacks } from '/app/callbacks';
-import { settings } from '/app/settings';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { modal } from '/app/ui-utils';
+import { popover } from '../../ui-utils';
+import { t, getUserPreference, handleError } from '../../utils';
+import { AccountBox, menu, SideNav } from '../../ui-utils';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
+import { hasAtLeastOnePermission } from '../../authorization';
+import { modal } from '../../ui-utils';
 const setStatus = (status) => {
 	AccountBox.setStatus(status);
 	callbacks.run('userStatusManuallySet', status);
@@ -179,16 +179,17 @@ const toolbarButtons = (user) => [{
 									action: (e) => {
 										e.preventDefault();
 										modal.open({
-											// title: t('Message_info'),
+											title: t('Create_A_New_Channel'),
 											content: 'createChannel',
 											data: {
 												onCreate() {
 													modal.close();
 												},
 											},
+											modalClass: 'modal',
 											showConfirmButton: false,
 											showCancelButton: false,
-											// confirmButtonText: t('Close'),
+											confirmOnEnter: false,
 										});
 									},
 								},
@@ -198,16 +199,17 @@ const toolbarButtons = (user) => [{
 									action: (e) => {
 										e.preventDefault();
 										modal.open({
-											// title: t('Message_info'),
+											title: t('Threading_title'),
 											content: 'CreateThread',
 											data: {
 												onCreate() {
 													modal.close();
 												},
 											},
+											modalClass: 'modal',
 											showConfirmButton: false,
 											showCancelButton: false,
-											// confirmButtonText: t('Close'),
+											confirmOnEnter: false,
 										});
 									},
 								},

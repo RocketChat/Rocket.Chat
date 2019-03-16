@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Subscriptions } from '/app/models';
-import { hasPermission } from '/app/authorization';
+import { Users, Subscriptions } from '../../../models';
+import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	'e2e.resetUserE2EKey'(userId) {

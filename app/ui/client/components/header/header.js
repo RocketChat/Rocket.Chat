@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { TabBar, fireGlobalEvent } from '/app/ui-utils';
+import { TabBar, fireGlobalEvent } from '../../../../ui-utils';
 
 Template.header.helpers({
 	back() {

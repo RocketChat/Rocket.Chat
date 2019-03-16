@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { isTheLastMessage } from '/app/lib';
-import { getAvatarUrlFromUsername } from '/app/utils';
-import { hasPermission } from '/app/authorization';
-import { Subscriptions, Messages, Users, Rooms } from '/app/models';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { isTheLastMessage } from '../../lib';
+import { getAvatarUrlFromUsername } from '../../utils';
+import { hasPermission } from '../../authorization';
+import { Subscriptions, Messages, Users, Rooms } from '../../models';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {

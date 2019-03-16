@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { FileUpload } from '/app/file-upload';
-import { Users, Subscriptions, Messages, Rooms, Integrations } from '/app/models';
-import { hasRole, getUsersInRole } from '/app/authorization';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
+import { FileUpload } from '../../../file-upload';
+import { Users, Subscriptions, Messages, Rooms, Integrations } from '../../../models';
+import { hasRole, getUsersInRole } from '../../../authorization';
+import { settings } from '../../../settings';
+import { Notifications } from '../../../notifications';
 
 export const deleteUser = function(userId) {
 	const user = Users.findOneById(userId, {

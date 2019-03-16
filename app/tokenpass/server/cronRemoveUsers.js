@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions, Users } from '/app/models';
+import { Rooms, Subscriptions, Users } from '../../models';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
 import { Tokenpass } from './Tokenpass';
 
 async function removeUsersFromTokenChannels() {
 	const rooms = {};
-	const { removeUserFromRoom } = await import('/app/lib');
+	const { removeUserFromRoom } = await import('../../lib');
 
 	Rooms.findAllTokenChannels().forEach((room) => {
 		rooms[room._id] = room.tokenpass;

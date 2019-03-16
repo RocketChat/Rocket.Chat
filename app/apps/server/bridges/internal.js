@@ -1,4 +1,4 @@
-import { Subscriptions } from '/app/models';
+import { Subscriptions } from '../../../models';
 
 export class AppInternalBridge {
 	constructor(orch) {

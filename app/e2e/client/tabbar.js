@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { hasAllPermission } from '/app/authorization';
-import { call, TabBar } from '/app/ui-utils';
-import { ChatRoom } from '/app/models';
+import { hasAllPermission } from '../../authorization';
+import { call, TabBar } from '../../ui-utils';
+import { ChatRoom } from '../../models';
 
 Meteor.startup(() => {
 	TabBar.addButton({

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms } from '/app/models';
+import { Rooms } from '../../../models';
 
-import { hasPermission } from '/app/authorization';
+import { hasPermission } from '../../../authorization';
 
 Meteor.publish('threadParentAutocomplete', function(selector) {
 	if (!this.userId) {

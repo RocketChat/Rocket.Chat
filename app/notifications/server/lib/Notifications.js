@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
-import { Subscriptions, Rooms } from '/app/models';
-import { settings } from '/app/settings';
+import { Subscriptions, Rooms } from '../../../models';
+import { settings } from '../../../settings';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({

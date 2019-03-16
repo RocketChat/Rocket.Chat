@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { TabBar } from '/app/ui-utils';
+import { TabBar } from '../../ui-utils';
 
 Meteor.startup(function() {
 	TabBar.addButton({

@@ -1,7 +1,7 @@
 // If the count query param is higher than the "API_Upper_Count_Limit" setting, then we limit that
 // If the count query param isn't defined, then we set it to the "API_Default_Count" setting
 // If the count is zero, then that means unlimited and is only allowed if the setting "API_Allow_Infinite_Count" is true
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import { API } from '../api';
 
 API.helperMethods.set('getPaginationItems', function _getPaginationItems() {

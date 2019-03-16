@@ -1,4 +1,4 @@
-import { Users } from '/app/models';
+import { Users } from '../../../../models';
 
 export default function handleOnCreateRoom(user, room) {
 	const users = Users.findByRoomId(room._id);

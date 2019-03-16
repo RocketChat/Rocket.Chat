@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Logger } from '/app/logger';
-import { getWorkspaceAccessToken } from '/app/cloud';
+import { Logger } from '../../app/logger';
+import { getWorkspaceAccessToken } from '../../app/cloud';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { statistics } from '/app/statistics';
-import { settings } from '/app/settings';
+import { statistics } from '../../app/statistics';
+import { settings } from '../../app/settings';
 
 const logger = new Logger('SyncedCron');
 

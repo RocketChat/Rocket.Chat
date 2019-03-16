@@ -1,8 +1,8 @@
 import './settings';
 import { Meteor } from 'meteor/meteor';
-import { Users, Rooms } from '/app/models';
-import { settings } from '/app/settings';
-import { hasRole } from '/app/authorization';
+import { Users, Rooms } from '../../models';
+import { settings } from '../../settings';
+import { hasRole } from '../../authorization';
 import _ from 'underscore';
 
 /**

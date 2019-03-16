@@ -1,5 +1,5 @@
-import { Migrations } from '/app/migrations';
-import { Settings } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
 
 const majorColors = {
 	'content-background-color': '#FFFFFF',

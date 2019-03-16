@@ -39,5 +39,4 @@ Package.onUse(function(api) {
 	// DEPRECATED
 	api.addAssets('assets/rocket-livechat.js', 'client'); // this file is still added to not break currently installed livechat widgets
 	api.addAssets('assets/rocketchat-livechat.min.js', 'client');
-	api.addAssets('public/head.html', 'server');
 });
