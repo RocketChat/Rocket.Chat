@@ -112,27 +112,6 @@ class E2E {
 			public_key = this.db_public_key;
 		}
 
-		if (!private_key && this.db_private_key) {
-			try {
-				private_key = await this.decodePrivateKey(this.db_private_key);
-			} catch (error) {
-				this.started = false;
-				failedToDecodeKey = true;
-				this.openAlert({
-					title: TAPi18n.__('Wasn\'t possible to decode your encryption key to be imported.'),
-					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
-					modifiers: ['large', 'danger'],
-					closable: true,
-					icon: 'key',
-					action: () => {
-						this.startClient();
-						this.closeAlert();
-					},
-				});
-				return;
-			}
-		}
-
 		if (public_key && private_key) {
 			await this.loadKeys({ public_key, private_key });
 		} else {
@@ -174,11 +153,31 @@ class E2E {
 						if (!confirm) {
 							return;
 						}
+						localStorage.removeItem('e2e.randomPassword');
 						call('e2e.updateSavedKeyUser');
 						this.closeAlert();
 					});
 				},
 			});
+		}	else if (!private_key && this.db_private_key) {
+			try {
+				private_key = await this.decodePrivateKey(this.db_private_key);
+			} catch (error) {
+				this.started = false;
+				failedToDecodeKey = true;
+				this.openAlert({
+					title: TAPi18n.__('Wasn\'t possible to decode your encryption key to be imported.'),
+					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
+					modifiers: ['large', 'danger'],
+					closable: true,
+					icon: 'key',
+					action: () => {
+						this.startClient();
+						this.closeAlert();
+					},
+				});
+				return;
+			}
 		}
 
 		this.readyPromise.resolve();
