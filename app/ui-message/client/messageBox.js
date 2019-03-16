@@ -292,7 +292,7 @@ Template.messageBox.events({
 		}
 
 		EmojiPicker.open(event.currentTarget, (emoji) => {
-			const emojiValue = `:${ emoji }:`;
+			const emojiValue = `:${ emoji }: `;
 			const { input } = chatMessages[RoomManager.openedRoom];
 
 			const caretPos = input.selectionStart;
