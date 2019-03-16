@@ -15,9 +15,11 @@ import {
 	fileUpload,
 	KonchatNotification,
 } from '../../ui';
-import { Layout, messageBox, popover, RoomManager } from '../../ui-utils';
+import { Layout, messageBox, popover, RoomManager, RoomHistoryManager } from '../../ui-utils';
 import { t, roomTypes, getUserPreference } from '../../utils';
 import moment from 'moment';
+import { hasAllPermission } from '../../authorization';
+import toastr from 'toastr';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
@@ -253,6 +255,10 @@ Template.messageBox.helpers({
 		return Object.values(actionGroups)
 			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
+	isAnonymousOrJoinCode() {
+		const room = Session.get(`roomData${ this._id }`);
+		return Meteor.userId || (room && room.joinCodeRequired);
+	},
 	showFormattingTips() {
 		return settings.get('Message_ShowFormattingTips');
 	},
@@ -278,6 +284,26 @@ Template.messageBox.helpers({
 });
 
 Template.messageBox.events({
+	async 'click .js-join'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		const joinCodeInput = Template.instance().find('[name=joinCode]');
+		const joinCode = joinCodeInput && joinCodeInput.value;
+
+		try {
+			await Meteor.call('joinRoom', this._id, joinCode);
+			if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this._id).loaded === 0) {
+				RoomManager.getOpenedRoomByRid(this._id).streamActive = false;
+				RoomManager.getOpenedRoomByRid(this._id).ready = false;
+				RoomHistoryManager.getRoom(this._id).loaded = null;
+				RoomManager.computation.invalidate();
+			}
+		} catch (error) {
+			toastr.error(t(error.reason));
+		}
+	},
+
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();
 		event.preventDefault();

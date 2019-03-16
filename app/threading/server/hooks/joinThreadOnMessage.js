@@ -4,12 +4,11 @@ import { Subscriptions } from '../../../models';
 
 callbacks.add('beforeSaveMessage', (message, room) => {
 
-	// abort if room is not a thread
-	if (!room || !room.prid) {
+	if (!room) {
 		return message;
 	}
 
-	// check if user already joined the thread
+	// check if user already joined
 	const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, { fields: { _id: 1 } });
 	if (sub) {
 		return message;

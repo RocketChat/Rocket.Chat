@@ -71,9 +71,6 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	canSendMessage(roomId) {
 		const room = ChatRoom.findOne({ _id: roomId, t: 'p' }, { fields: { prid: 1 } });
-		if (room.prid) {
-			return true;
-		}
 
 		// TODO: remove duplicated code
 		return ChatSubscription.find({
