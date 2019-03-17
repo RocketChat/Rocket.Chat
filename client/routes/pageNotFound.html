@@ -1,5 +1,7 @@
 <template name="pageNotFound">
-  <h1>{{_ "Error_404"}}</h1>
-  <h3>{{_ "Oops_page_not_found"}}</h3>
-  <p>{{_ "Sorry_page_you_requested_does_not_exists_or_was_deleted"}}</p>
+	<section class = "page-not-found-container">
+		<span class = "error-404">{{errorcode}}</span>
+		<span class = "page-not-found-message">{{_ "Oops_page_not_found"}}</span>
+		<span class = "page-not-found-description">{{_ "Sorry_page_you_requested_does_not_exists_or_was_deleted"}}</span>
+	</section>
 </template>
