@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatVisitors, Rooms } from '../../../models';
+import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -24,20 +24,8 @@ Meteor.methods({
 			},
 		});
 
-		const fields = {
-			t: 1,
-			closedAt: 1,
-			open: 1,
-		};
-
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
-		}
-
-		// Check if conversation is closed or not.
-		const closed = Rooms.findOneLivechatById(rid, fields);
-		if (closed && closed.closedAt) {
-			throw new Meteor.Error('chat-closed');
 		}
 
 		return Livechat.sendMessage({
