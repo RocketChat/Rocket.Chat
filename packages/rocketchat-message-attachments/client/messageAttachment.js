@@ -74,9 +74,11 @@ Template.messageAttachment.helpers({
 		return this.type === 'file';
 	},
 	isPDF() {
-		const isMessageReplyWithAttachment = this.index !== 0;
-		if (this.type === 'file' && this.title_link.endsWith('.pdf') && (Template.parentData().file || isMessageReplyWithAttachment)) {
-			this.fileId = !isMessageReplyWithAttachment ? Template.parentData().file._id : this.title_link.match(/\/file-upload\/(.*)\//)[1];
+		const isReplyMessageWithAttachment = this.index !== 0;
+		if (this.type === 'file' && this.title_link.endsWith('.pdf') && (Template.parentData().file || isReplyMessageWithAttachment)) {
+			this.fileId = isReplyMessageWithAttachment
+				? this.title_link.match(/\/file-upload\/(.*)\//)[1]
+				: Template.parentData().file._id;
 			return true;
 		}
 		return false;
