@@ -12,6 +12,10 @@ export const _setStatusMessage = function(userId, statusMessage) {
 		return false;
 	}
 
+	if (statusMessage.length > 120) {
+		throw new Meteor.Error('error-status-message-too-long', 'Status message too long.');
+	}
+
 	const user = Users.findOneById(userId);
 
 	// User already has desired statusMessage, return

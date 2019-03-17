@@ -25,6 +25,13 @@ function Status(command, params, item) {
 								ts: new Date,
 								msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
 							});
+						} else if (err.error === 'error-status-message-too-long') {
+							Notifications.notifyUser(Meteor.userId(), 'message', {
+								_id: Random.id(),
+								rid: item.rid,
+								ts: new Date,
+								msg: TAPi18n.__('StatusMessage_Too_Long', null, user.language),
+							});
 						}
 						throw err;
 					}
