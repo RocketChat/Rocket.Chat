@@ -91,6 +91,15 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		return Session.get(`user_${ subscription.name }_status`);
 	}
 
+	getUserStatusMessage(roomId) {
+		const subscription = Subscriptions.findOne({ rid: roomId });
+		if (subscription == null) {
+			return;
+		}
+
+		return Session.get(`user_${ subscription.name }_status_message`);
+	}
+
 	getDisplayName(room) {
 		return room.usernames.join(' x ');
 	}
