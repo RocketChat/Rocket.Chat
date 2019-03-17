@@ -1,5 +1,4 @@
 .page-not-found-container {
-	background-color: white;
 	text-align: center;
 	padding:10%;
 	height: 100%;
@@ -7,7 +6,6 @@
 
 	.error-404 {
 		display: block;
-		color: red;
 		font-size: 6em;
 		padding:30px;
 	}
@@ -21,5 +19,6 @@
 	.page-not-found-description {
 		display: block;
 		font-size: 1.5em;
+		padding:15px;
 	}
 }
