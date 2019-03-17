@@ -1,24 +1,31 @@
 .page-not-found-container {
-	text-align: center;
-	padding:10%;
+	width: 100%;
 	height: 100%;
-	width:100%;
+	padding: 10%;
+
+	text-align: center;
 
 	.error-404 {
 		display: block;
+
+		padding: 30px;
+
 		font-size: 6em;
-		padding:30px;
 	}
 
 	.page-not-found-message {
-		display:block;
+		display: block;
+
+		padding: 15px;
+
 		font-size: 2.5em;
-		padding:15px;
 	}
 
 	.page-not-found-description {
 		display: block;
+
+		padding: 15px;
+
 		font-size: 1.5em;
-		padding:15px;
 	}
 }
