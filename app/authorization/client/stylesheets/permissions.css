@@ -76,55 +76,69 @@
 */
 
 .permissions-manager {
-	.content {
-		overflow-x: scroll;
-	}
+
 
 	.permission-grid {
 		table-layout: fixed;
+		border-collapse: collapse;
+		overflow-x: scroll;
 
-		tr {
-			height: 40px;
+		.role-name {
+
+			text-align: left;
+			border-left: 1px solid black;
+			border-right: 1px solid	black;
+
+			vertical-align: middle;
+			width: 70px;
+			height: 80px;
+		}
+
+		.role-name-edit-icon {
 
 			text-align: center;
+			border-left: 1px solid black;
+			border-right: 1px solid	black;
+
 			vertical-align: middle;
+			width: 70px;
+			height: 70px;
+		}
+
+		.rotator {
+				transform: rotate(-90deg);
+		}
+		.admin-table-row {
+			height: 40px;
+
 		}
 
 		td {
 			overflow: hidden;
-
-			text-align: center;
-
-			vertical-align: middle;
 		}
 
-		.role-name {
-			width: 20vw;
-		}
-
-		.role-checkbox {
-			width: 10vw;
-		}
-
-		th {
-			padding: 0 8px;
-		}
 
 		.permission-name {
-
-			padding: 0 8px;
-
-			text-align: center;
 			vertical-align: middle;
+			width: 25%;
+			padding-left: 14px;
 		}
 
-		tr th .icon-edit {
-			font-size: 1.2em;
+		.admin-table-row .permission-name {
+			border-top: 1px solid black;
+			border-bottom: 1px solid black;
+		}
+		.permission-checkbox {
+			border: 1px solid black;
+			text-align: center;
 		}
 
-		.role-permission {
-			width: 15px;
-			height: 15px;
+
+		.icon-edit {
+			font-size: 1.5em;
 		}
+
 	}
 }
+
+
