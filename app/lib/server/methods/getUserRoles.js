@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles, Users } from '/app/models';
+import { Roles, Users } from '../../../models';
 import _ from 'underscore';
 
 Meteor.methods({

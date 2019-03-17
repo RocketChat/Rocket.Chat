@@ -4,7 +4,7 @@ let logger;
 
 if (Meteor.isServer) {
 	Meteor.startup(async() => {
-		const { Logger } = await import('/app/logger');
+		const { Logger } = await import('../../logger');
 		logger = new Logger('TemplateVarHandler', {});
 	});
 }

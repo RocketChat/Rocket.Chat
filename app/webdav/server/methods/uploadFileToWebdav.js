@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { WebdavAccounts } from '/app/models';
+import { settings } from '../../../settings';
+import { WebdavAccounts } from '../../../models';
 import Future from 'fibers/future';
 import { createClient } from 'webdav';
 import stream from 'stream';

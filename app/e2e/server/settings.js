@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 settings.addGroup('E2E Encryption', function() {
 	this.add('E2E_Enable', false, {

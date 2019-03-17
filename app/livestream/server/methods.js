@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Rooms } from '/app/models';
+import { settings } from '../../settings';
+import { Rooms } from '../../models';
 import { createLiveStream, statusLiveStream, statusStreamLiveStream, getBroadcastStatus, setBroadcastStatus } from './functions/livestream';
 
 const selectLivestreamSettings = (user) => user && user.settings && user.settings.livestream;

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '/app/settings';
-import { handleError } from '/app/utils';
+import { settings } from '../../../settings';
+import { handleError } from '../../../utils';
 import toastr from 'toastr';
 
 Template.mailer.helpers({

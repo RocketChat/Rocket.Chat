@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Notifications } from '/app/notifications';
-import { Uploads, Settings, Users, Messages } from '/app/models';
-import { FileUpload } from '/app/file-upload';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { Notifications } from '../../notifications';
+import { Uploads, Settings, Users, Messages } from '../../models';
+import { FileUpload } from '../../file-upload';
 
 class GoogleVision {
 	constructor() {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from '/app/models';
+import { Users } from '../../../models';
 
 Meteor.methods({
 	'e2e.setUserPublicAndPivateKeys'({ public_key, private_key }) {

@@ -1,4 +1,4 @@
-import { Statistics } from '/app/models';
+import { Statistics } from '../../../models';
 import { statistics } from '../../lib/rocketchat';
 
 statistics.save = function() {

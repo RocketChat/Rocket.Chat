@@ -4,11 +4,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Rooms, Subscriptions, Messages } from '/app/models';
-import { promises } from '/app/promises';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { Layout, call, modal, alerts } from '/app/ui-utils';
+import { Rooms, Subscriptions, Messages } from '../../models';
+import { promises } from '../../promises';
+import { settings } from '../../settings';
+import { Notifications } from '../../notifications';
+import { Layout, call, modal, alerts } from '../../ui-utils';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
@@ -28,6 +28,7 @@ import {
 
 import './events.js';
 import './accountEncryption.html';
+import './tabbar';
 import './accountEncryption.js';
 
 let failedToDecodeKey = false;

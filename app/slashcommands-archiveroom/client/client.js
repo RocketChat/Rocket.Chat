@@ -1,4 +1,4 @@
-import { slashCommands } from '/app/utils';
+import { slashCommands } from '../../utils';
 
 slashCommands.add('archive', null, {
 	description: 'Archive',

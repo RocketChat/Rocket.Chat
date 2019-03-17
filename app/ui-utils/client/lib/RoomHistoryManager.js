@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
-import { UserRoles, RoomRoles, ChatMessage, ChatSubscription, ChatRoom } from '/app/models';
+import { UserRoles, RoomRoles, ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import _ from 'underscore';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';

@@ -1,7 +1,7 @@
 import { Session } from 'meteor/session';
-import { TabBar } from '/app/ui-utils';
-import { Rooms } from '/app/models';
-import { hasAllPermission } from '/app/authorization';
+import { TabBar } from '../../ui-utils';
+import { Rooms } from '../../models';
+import { hasAllPermission } from '../../authorization';
 
 TabBar.addButton({
 	groups: ['channel', 'group', 'direct'],

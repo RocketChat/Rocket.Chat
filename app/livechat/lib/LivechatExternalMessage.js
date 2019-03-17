@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Base } from '/app/models';
+import { Base } from '../../models';
 
 class LivechatExternalMessageClass extends Base {
 	constructor() {

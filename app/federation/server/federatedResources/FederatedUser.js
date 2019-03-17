@@ -1,4 +1,4 @@
-import { Users } from '/app/models';
+import { Users } from '../../../models';
 
 import FederatedResource from './FederatedResource';
 
