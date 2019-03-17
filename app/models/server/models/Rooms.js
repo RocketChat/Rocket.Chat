@@ -94,6 +94,21 @@ export class Rooms extends Base {
 		return this.find(query, options);
 	}
 
+	findOneLivechatById(_id, fields) {
+		const options = {};
+
+		if (fields) {
+			options.fields = fields;
+		}
+
+		const query = {
+			t: 'l',
+			_id,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findLivechatByIdAndVisitorToken(_id, visitorToken, fields) {
 		const options = {};
 
