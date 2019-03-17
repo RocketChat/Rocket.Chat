@@ -1,144 +1,67 @@
-/*
 .permissions-manager {
-	& h2 {
-		margin-top: 1em !important;
-		margin-bottom: 1em !important;
-
-		border-bottom-width: 1px;
-
-		font-size: 16px;
-		font-weight: bold !important;
-	}
-
-	  .permission-grid{
-		  overflow-x: scroll;
-	  }
-
-	& .permission-grid {
-
-		& th {
-			position: relative;
-
-			padding: 15px 20px;
-
-			text-align: center;
-			white-space: nowrap;
-		}
-
-		& tr {
-			height: 40px;
-		}
-
-		& td {
-			width: 8%;
-
-			text-align: center;
-			vertical-align: middle;
-		}
-
-		& .icon-edit {
-			position: absolute;
-			top: 0;
-			left: 50%;
-
-			padding-left: 2px;
-
-			transform: translateX(-50%);
-
-			font-size: 80%;
-		}
-
-		& .permission-name {
-			cursor: default;
-			white-space: nowrap;
-		}
-
-	}
-
-	& .empty-role {
-		padding: 0.5em !important;
-	}
-
-	& .form-role {
-		& label {
-			display: inline-block;
-
-			width: 150px;
-
-			text-align: right;
-		}
-
-		& .form-buttons {
-			padding-left: 150px;
-		}
-	}
-}
-*/
-
-.permissions-manager {
-
-
 	.permission-grid {
-		table-layout: fixed;
-		border-collapse: collapse;
 		overflow-x: scroll;
 
+		table-layout: fixed;
+
+		border-collapse: collapse;
+
 		.role-name {
-
-			text-align: left;
-			border-left: 1px solid black;
-			border-right: 1px solid	black;
-
-			vertical-align: middle;
 			width: 70px;
 			height: 80px;
+
+			text-align: left;
+
+			vertical-align: middle;
+
+			border-right: 1px solid	black;
+			border-left: 1px solid black;
 		}
 
 		.role-name-edit-icon {
-
-			text-align: center;
-			border-left: 1px solid black;
-			border-right: 1px solid	black;
-
-			vertical-align: middle;
 			width: 70px;
 			height: 70px;
+
+			text-align: center;
+
+			vertical-align: middle;
+
+			border-right: 1px solid	black;
+			border-left: 1px solid black;
 		}
 
 		.rotator {
-				transform: rotate(-90deg);
+			transform: rotate(-90deg);
 		}
+
 		.admin-table-row {
 			height: 40px;
-
 		}
 
 		td {
 			overflow: hidden;
 		}
 
-
 		.permission-name {
-			vertical-align: middle;
 			width: 25%;
 			padding-left: 14px;
+
+			vertical-align: middle;
 		}
 
 		.admin-table-row .permission-name {
 			border-top: 1px solid black;
 			border-bottom: 1px solid black;
 		}
-		.permission-checkbox {
-			border: 1px solid black;
-			text-align: center;
-		}
 
+		.permission-checkbox {
+			text-align: center;
+
+			border: 1px solid black;
+		}
 
 		.icon-edit {
 			font-size: 1.5em;
 		}
-
 	}
 }
-
-
