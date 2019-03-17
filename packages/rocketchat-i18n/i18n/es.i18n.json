@@ -2432,6 +2432,7 @@
   "Status": "Estado",
   "StatusMessage": "Mensaje de estado",
   "StatusMessage_Change_Disabled": "Tu administrador de Rocket.Chat ha desactivado el cambio de mensajes de estado",
+  "StatusMessage_Changed_Successfully": "Mensaje de estado cambiado correctamente.",
   "StatusMessage_Placeholder": "¿Qué estás haciendo ahora?",
   "StatusMessage_Too_Long": "El mensaje de estado debe tener menos de 120 caracteres.",
   "Step": "Paso",

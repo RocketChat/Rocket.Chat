@@ -2682,6 +2682,7 @@
   "Status": "Status",
   "StatusMessage": "Status Message",
   "StatusMessage_Change_Disabled": "Your Rocket.Chat administrator has disabled the changing of status messages",
+  "StatusMessage_Changed_Successfully": "Status message changed successfully.",
   "StatusMessage_Placeholder": "What are you doing right now?",
   "StatusMessage_Too_Long": "Status message must be shorter than 120 characters.",
   "Step": "Step",
