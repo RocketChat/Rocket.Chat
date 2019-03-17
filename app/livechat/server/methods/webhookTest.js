@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import { HTTP } from 'meteor/http';
 
 const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {

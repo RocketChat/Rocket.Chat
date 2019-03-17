@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { hasPermission } from '/app/authorization';
+import { settings } from '../../../settings';
+import { hasPermission } from '../../../authorization';
 
 const waitToLoad = function(orch) {
 	return new Promise((resolve) => {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Roles } from '/app/models';
+import { Roles } from '../../../models';
 import { API } from '../api';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {

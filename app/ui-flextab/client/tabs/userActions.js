@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { WebRTC } from '/app/webrtc';
-import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '/app/models';
-import { modal } from '/app/ui-utils';
-import { t, handleError } from '/app/utils';
-import { settings } from '/app/settings';
-import { hasAllPermission, hasRole } from '/app/authorization';
+import { WebRTC } from '../../../webrtc';
+import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
+import { modal } from '../../../ui-utils';
+import { t, handleError } from '../../../utils';
+import { settings } from '../../../settings';
+import { hasAllPermission, hasRole } from '../../../authorization';
 import _ from 'underscore';
 import toastr from 'toastr';
 

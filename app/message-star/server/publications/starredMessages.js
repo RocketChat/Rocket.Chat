@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Messages } from '/app/models';
+import { Users, Messages } from '../../../models';
 
 Meteor.publish('starredMessages', function(rid, limit = 50) {
 	if (!this.userId) {

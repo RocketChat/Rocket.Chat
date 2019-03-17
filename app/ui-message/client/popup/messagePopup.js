@@ -4,9 +4,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { toolbarSearch } from '/app/ui-sidenav';
+import { toolbarSearch } from '../../../ui-sidenav';
 import _ from 'underscore';
-import { lazyloadtick } from '/app/lazy-load';
+import { lazyloadtick } from '../../../lazy-load';
 
 const keys = {
 	TAB: 9,

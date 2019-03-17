@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { smarsh } from './lib/rocketchat';
 import _ from 'underscore';

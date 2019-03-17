@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { hasAllPermission } from '/app/authorization';
-import { SideNav, Layout } from '/app/ui-utils';
-import { t } from '/app/utils';
+import { settings } from '../../settings';
+import { hasAllPermission } from '../../authorization';
+import { SideNav, Layout } from '../../ui-utils';
+import { t } from '../../utils';
 
 Template.accountFlex.events({
 	'click [data-action="close"]'() {

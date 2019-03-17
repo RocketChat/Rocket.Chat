@@ -5,7 +5,6 @@ import s from 'underscore.string';
 import './client.mocks.js';
 import { original } from '../lib/parser/original/original';
 import { Markdown } from '../lib/markdown';
-// import {marked} from '../parser/marked/marked';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${ text }</strong>`, '*');

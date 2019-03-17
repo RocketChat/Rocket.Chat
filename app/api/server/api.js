@@ -3,12 +3,12 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
-import { Logger } from '/app/logger';
-import { settings } from '/app/settings';
-import { metrics } from '/app/metrics';
-import { hasPermission } from '/app/authorization';
+import { Logger } from '../../logger';
+import { settings } from '../../settings';
+import { metrics } from '../../metrics';
+import { hasPermission } from '../../authorization';
 import { RateLimiter } from 'meteor/rate-limit';
-import { hasAllPermission } from '/app/authorization';
+import { hasAllPermission } from '../../authorization';
 import _ from 'underscore';
 
 const logger = new Logger('API', {});

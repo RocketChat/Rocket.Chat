@@ -1,6 +1,6 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
-import { Roles, Permissions } from '/app/models';
+import { Roles, Permissions } from '../../models';
 
 Meteor.startup(function() {
 	// Note:

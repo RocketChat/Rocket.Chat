@@ -60,6 +60,7 @@
 	--status-bullet-radius: 50%;
 	--account-username-weight: 700;
 	--status-name-weight: 400;
+	--default-font-weight-header: 500;
 
 	/*
 	* General Typography
@@ -213,7 +214,7 @@
 	/*
 	* Modal - Create Channel
 	*/
-	--create-channel-gap-between-elements: 2.5rem;
+	--create-channel-gap-between-elements: 1rem;
 	--create-channel-title-color: var(--color-darkest);
 	--create-channel-title-text-size: 1.375rem;
 	--create-channel-description-color: var(--color-gray);

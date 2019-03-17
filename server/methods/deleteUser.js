@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Users } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { deleteUser } from '/app/lib';
+import { Users } from '../../app/models';
+import { hasPermission } from '../../app/authorization';
+import { deleteUser } from '../../app/lib';
 
 Meteor.methods({
 	deleteUser(userId) {

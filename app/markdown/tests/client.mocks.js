@@ -15,7 +15,7 @@ mock('meteor/blaze', {
 	Blaze: {},
 });
 
-mock('/app/settings', {
+mock('../../settings', {
 	settings: {
 		get(setting) {
 			switch (setting) {
@@ -38,7 +38,7 @@ mock('/app/settings', {
 	},
 });
 
-mock('/app/callbacks', {
+mock('../../callbacks', {
 	callbacks: {
 		add() {
 

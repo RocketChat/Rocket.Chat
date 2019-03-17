@@ -1198,7 +1198,7 @@ export class Subscriptions extends Base {
 	// INSERT
 	async createWithRoomAndUser(room, user, extraData) {
 		if (!this.getDefaultSubscriptionPref) {
-			const Utils = await import('/app/utils');
+			const Utils = await import('../../../utils');
 			this.getDefaultSubscriptionPref = Utils.getDefaultSubscriptionPref;
 		}
 		const subscription = {

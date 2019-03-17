@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { hasPermission } from '/app/authorization';
-import { Users, Subscriptions, Rooms } from '/app/models';
-import { settings } from '/app/settings';
-import { roomTypes } from '/app/utils';
+import { hasPermission } from '../../app/authorization';
+import { Users, Subscriptions, Rooms } from '../../app/models';
+import { settings } from '../../app/settings';
+import { roomTypes } from '../../app/utils';
 import s from 'underscore.string';
 
 function fetchRooms(userId, rooms) {

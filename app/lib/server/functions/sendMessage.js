@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Messages } from '/app/models';
-import { Apps } from '/app/apps';
-import { Markdown } from '/app/markdown';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { Messages } from '../../../models';
+import { Apps } from '../../../apps';
+import { Markdown } from '../../../markdown';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {

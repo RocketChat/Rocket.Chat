@@ -1,4 +1,4 @@
-import { slashCommands } from '/app/utils';
+import { slashCommands } from '../../utils';
 
 slashCommands.add('kick', function(command, params) {
 	const username = params.trim();

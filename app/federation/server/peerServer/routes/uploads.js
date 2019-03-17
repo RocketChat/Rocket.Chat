@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { API } from '/app/api';
-import { Uploads } from '/app/models';
-import { FileUpload } from '/app/file-upload';
+import { API } from '../../../../api';
+import { Uploads } from '../../../../models';
+import { FileUpload } from '../../../../file-upload';
 
 import peerServer from '../peerServer';
 

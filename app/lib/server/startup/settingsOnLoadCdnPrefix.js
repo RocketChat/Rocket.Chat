@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebAppInternals } from 'meteor/webapp';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import _ from 'underscore';
 
 function testWebAppInternals(fn) {

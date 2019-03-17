@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Rooms } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Rooms } from '../../../models';
 import _ from 'underscore';
 import s from 'underscore.string';
 

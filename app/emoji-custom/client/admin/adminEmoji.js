@@ -1,7 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChatTabBar, SideNav, TabBar } from '/app/ui-utils';
+import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 import { Tracker } from 'meteor/tracker';
-import { EmojiCustom } from '/app/models';
+import { EmojiCustom } from '../../../models';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import s from 'underscore.string';

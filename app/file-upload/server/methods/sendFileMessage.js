@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { Uploads } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { Uploads } from '../../../models';
+import { callbacks } from '../../../callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import _ from 'underscore';
 

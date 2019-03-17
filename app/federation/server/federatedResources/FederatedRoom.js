@@ -1,5 +1,5 @@
-import { createRoom } from '/app/lib';
-import { Rooms, Subscriptions, Users } from '/app/models';
+import { createRoom } from '../../../lib';
+import { Rooms, Subscriptions, Users } from '../../../models';
 
 import FederatedResource from './FederatedResource';
 import FederatedUser from './FederatedUser';
