@@ -7,8 +7,8 @@ import { Gravatar } from 'meteor/jparker:gravatar';
 import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import PasswordPolicy from '../lib/PasswordPolicyClass';
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername } from '.';
-import { validateEmailDomain, setStatusMessage } from '../lib';
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusMessage } from '.';
+import { validateEmailDomain } from '../lib';
 
 const passwordPolicy = new PasswordPolicy();
 
