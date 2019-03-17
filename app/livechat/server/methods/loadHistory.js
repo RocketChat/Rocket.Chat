@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { loadMessageHistory } from '/app/lib';
-import { LivechatVisitors } from '/app/models';
+import { loadMessageHistory } from '../../../lib';
+import { LivechatVisitors } from '../../../models';
 
 Meteor.methods({
 	'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {

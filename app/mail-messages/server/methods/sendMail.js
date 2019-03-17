@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Mailer } from '../lib/Mailer';
-import { hasRole } from '/app/authorization';
+import { hasRole } from '../../../authorization';
 
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {

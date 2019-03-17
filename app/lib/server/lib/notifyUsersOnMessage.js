@@ -1,9 +1,9 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
-import { Rooms, Subscriptions } from '/app/models';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
+import { Rooms, Subscriptions } from '../../../models';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
 
 /**
  * Chechs if a messages contains a user highlight

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { t } from '/app/utils';
-import { modal } from '/app/ui-utils';
-import { settings } from '/app/settings';
-import { hasRole } from '/app/authorization';
+import { t } from '../../../utils';
+import { modal } from '../../../ui-utils';
+import { settings } from '../../../settings';
+import { hasRole } from '../../../authorization';
 
 Meteor.startup(function() {
 	Tracker.autorun(function(c) {

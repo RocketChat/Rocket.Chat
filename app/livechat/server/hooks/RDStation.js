@@ -1,6 +1,6 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
 import { Livechat } from '../lib/Livechat';
 
 function sendToRDStation(room) {

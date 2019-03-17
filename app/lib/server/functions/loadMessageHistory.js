@@ -1,6 +1,6 @@
-import { settings } from '/app/settings';
-import { Messages } from '/app/models';
-import { composeMessageObjectWithUser } from '/app/utils';
+import { settings } from '../../../settings';
+import { Messages } from '../../../models';
+import { composeMessageObjectWithUser } from '../../../utils';
 
 const hideMessagesOfType = [];
 

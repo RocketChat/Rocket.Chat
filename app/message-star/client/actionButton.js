@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { handleError } from '/app/utils';
-import { Subscriptions } from '/app/models';
-import { settings } from '/app/settings';
-import { RoomHistoryManager, MessageAction } from '/app/ui-utils';
+import { handleError } from '../../utils';
+import { Subscriptions } from '../../models';
+import { settings } from '../../settings';
+import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import toastr from 'toastr';
 
 Meteor.startup(function() {

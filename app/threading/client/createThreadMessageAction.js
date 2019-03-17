@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Subscriptions } from '/app/models';
-import { settings } from '/app/settings';
-import { hasPermission } from '/app/authorization';
-import { MessageAction, modal } from '/app/ui-utils';
+import { Subscriptions } from '../../models';
+import { settings } from '../../settings';
+import { hasPermission } from '../../authorization';
+import { MessageAction, modal } from '../../ui-utils';
 
 
 const condition = (rid, uid) => {

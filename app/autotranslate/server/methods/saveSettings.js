@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Subscriptions } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Subscriptions } from '../../../models';
 
 Meteor.methods({
 	'autoTranslate.saveSettings'(rid, field, value, options) {

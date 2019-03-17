@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 Template.loginLayout.onRendered(function() {
 	$('#initial-page-loading').remove();

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
-import { settings } from '/app/settings';
-import { FederationKeys } from '/app/models';
-import { getWorkspaceAccessToken } from '/app/cloud';
+import { settings } from '../../settings';
+import { FederationKeys } from '../../models';
+import { getWorkspaceAccessToken } from '../../cloud';
 
 import './federation-settings';
 import './methods';

@@ -5,9 +5,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { Notifications } from '/app/notifications';
-import { Rooms, Subscriptions } from '/app/models';
-import { call } from '/app/ui-utils';
+import { Notifications } from '../../notifications';
+import { Rooms, Subscriptions } from '../../models';
+import { call } from '../../ui-utils';
 import { e2e } from './rocketchat.e2e';
 import {
 	Deferred,

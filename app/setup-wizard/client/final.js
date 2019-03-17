@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { Users } from '/app/models';
-import { hasRole } from '/app/authorization';
+import { settings } from '../../settings';
+import { Users } from '../../models';
+import { hasRole } from '../../authorization';
 
 Template.setupWizardFinal.onCreated(function() {
 	const isSetupWizardDone = localStorage.getItem('wizardFinal');

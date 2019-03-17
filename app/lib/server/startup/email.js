@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 settings.addGroup('Email', function() {
 	this.section('Style', function() {

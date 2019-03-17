@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { MessageAction, modal } from '/app/ui-utils';
-import { t, handleError } from '/app/utils';
-import { settings } from '/app/settings';
-import { Subscriptions } from '/app/models';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { MessageAction, modal } from '../../ui-utils';
+import { t, handleError } from '../../utils';
+import { settings } from '../../settings';
+import { Subscriptions } from '../../models';
+import { hasAtLeastOnePermission } from '../../authorization';
 
 Meteor.startup(function() {
 	MessageAction.addButton({

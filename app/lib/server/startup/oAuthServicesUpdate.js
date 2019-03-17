@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from '/app/custom-oauth';
-import { Logger } from '/app/logger';
-import { settings } from '/app/settings';
+import { CustomOAuth } from '../../../custom-oauth';
+import { Logger } from '../../../logger';
+import { settings } from '../../../settings';
 import _ from 'underscore';
 
 const logger = new Logger('rocketchat:lib', {

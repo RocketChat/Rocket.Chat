@@ -66,6 +66,11 @@ class AudioRecorder {
 	}
 
 	destroyEncoder() {
+		if (!this.encoder) {
+			return;
+		}
+
+		this.encoder.close();
 		delete this.encoder;
 	}
 
@@ -77,7 +82,6 @@ class AudioRecorder {
 			cb && cb.call(this, true);
 		} catch (error) {
 			console.error(error);
-			this.encoder.close();
 			this.destroyEncoder();
 			this.destroyStream();
 			this.destroyAudioContext();

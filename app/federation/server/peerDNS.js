@@ -1,6 +1,6 @@
 import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
-import { FederationDNSCache } from '/app/models';
+import { FederationDNSCache } from '../../models';
 
 import { logger } from './logger';
 import peerHTTP from './peerHTTP';
