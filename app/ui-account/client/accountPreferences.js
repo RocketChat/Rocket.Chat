@@ -8,7 +8,7 @@ import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
 import { settings } from '../../settings';
-import { CustomSounds } from '../../custom-sounds';
+import { CustomSounds } from '../../custom-sounds/client';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
