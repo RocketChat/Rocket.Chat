@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Subscriptions } from 'meteor/rocketchat:models';
+import { hasPermission } from '../../app/authorization';
+import { Subscriptions } from '../../app/models';
 
 Meteor.publish('userChannels', function(userId) {
 	if (!this.userId) {

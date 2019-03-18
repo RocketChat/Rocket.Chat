@@ -1,6 +1,6 @@
-import { t } from 'meteor/rocketchat:utils';
-import { modal, MessageAction } from 'meteor/rocketchat:ui-utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { t } from '../../../app/utils';
+import { modal, MessageAction } from '../../../app/ui-utils';
+import { settings } from '../../../app/settings';
 
 MessageAction.addButton({
 	id: 'receipt-detail',

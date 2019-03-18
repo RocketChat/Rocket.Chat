@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Rooms, Subscriptions, Messages, Settings, OEmbedCache } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Rooms, Subscriptions, Messages, Settings, OEmbedCache } from '../../../app/models';
 
 Migrations.add({
 	version: 9,

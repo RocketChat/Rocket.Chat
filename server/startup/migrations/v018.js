@@ -1,6 +1,6 @@
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Settings } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
 
 Migrations.add({
 	version: 18,

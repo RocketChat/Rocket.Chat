@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { settings } from 'meteor/rocketchat:settings';
-import { setUserAvatar } from 'meteor/rocketchat:lib';
+import { settings } from '../../app/settings';
+import { setUserAvatar } from '../../app/lib';
 
 Meteor.methods({
 	setAvatarFromService(dataURI, contentType, service) {

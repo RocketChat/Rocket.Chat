@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Rooms, Users } from 'meteor/rocketchat:models';
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Users } from '../../app/models';
 import s from 'underscore.string';
 
-import { Federation } from 'meteor/rocketchat:federation';
+import { Federation } from '../../app/federation';
 
 const sortChannels = function(field, direction) {
 	switch (field) {

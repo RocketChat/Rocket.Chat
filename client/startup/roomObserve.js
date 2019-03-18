@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { ChatRoom } from 'meteor/rocketchat:models';
+import { ChatRoom } from '../../app/models';
 
 Meteor.startup(function() {
 	ChatRoom.find().observe({
