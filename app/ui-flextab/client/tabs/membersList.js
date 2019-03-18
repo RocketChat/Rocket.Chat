@@ -93,7 +93,7 @@ Template.membersList.helpers({
 			};
 		});
 
-		if (settings.get('UI_Use_Real_Name')) {console.log('returning false');
+		if (settings.get('UI_Use_Real_Name')) {
 			users = _.sortBy(users, (u) => u.user.name);
 		} else {
 			users = _.sortBy(users, (u) => u.user.username);
