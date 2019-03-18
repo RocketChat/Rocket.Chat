@@ -157,9 +157,7 @@ new FileUploadClass({
 		file = FileUpload.addExtensionTo(file);
 
 		const disposition = req.query && req.query.hasOwnProperty('disposition') ? req.query.disposition : 'attachment';
-		if (disposition === 'inline') {
-			res.removeHeader('Content-Security-Policy');
-		}
+		res.setHeader('Content-Security-Policy', "default-src 'self'");
 		res.setHeader('Content-Disposition', `${ disposition }; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
@@ -180,9 +178,7 @@ new FileUploadClass({
 		file = FileUpload.addExtensionTo(file);
 
 		const disposition = req.query && req.query.hasOwnProperty('disposition') ? req.query.disposition : 'attachment';
-		if (disposition === 'inline') {
-			res.removeHeader('Content-Security-Policy');
-		}
+		res.setHeader('Content-Security-Policy', "default-src 'self'");
 		res.setHeader('Content-Disposition', `${ disposition }; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
 		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type);
