@@ -177,6 +177,9 @@ Template.message.helpers({
 	body() {
 		return Template.instance().body;
 	},
+	bodyClass() {
+		return MessageTypes.isSystemMessage(this) ? 'color-info-font-color' : 'color-primary-font-color';
+	},
 	system(returnClass) {
 		if (MessageTypes.isSystemMessage(this)) {
 			if (returnClass) {

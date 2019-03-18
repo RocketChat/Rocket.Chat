@@ -18,6 +18,11 @@ const fields = [
 	},
 ];
 
+const getParentRoom = (rid) => {
+	const room = Rooms.findOne(rid);
+	return room && (room.prid ? Rooms.findOne(room.prid, { fields: { _id: 1 } }) : room);
+};
+
 export const createThreadMessage = (rid, user, trid, msg, message_embedded) => {
 	const welcomeMessage = {
 		msg,
@@ -47,7 +52,7 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 	if (pmid) {
 		message = Messages.findOne({ _id: pmid });
 		if (prid) {
-			if (prid !== message.rid) {
+			if (prid !== getParentRoom(message.rid)._id) {
 				throw new Meteor.Error('error-invalid-arguments', { method: 'ThreadCreation' });
 			}
 		} else {
@@ -58,6 +63,7 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 	if (!prid) {
 		throw new Meteor.Error('error-invalid-arguments', { method: 'ThreadCreation' });
 	}
+
 	const p_room = Rooms.findOne(prid);
 
 	if (p_room.prid) {
@@ -110,7 +116,7 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 			trid: thread._id,
 		});
 
-		mentionThreadMessage(thread._id, user, reply, attachMessage(message, p_room));
+		mentionThreadMessage(thread._id, user, t_name, attachMessage(message, p_room));
 
 		// check if the message is in the latest 10 messages sent to the room
 		// if not creates a new message saying about the thread creation
@@ -125,13 +131,13 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 		}).fetch();
 
 		if (!lastMessageIds.find((msg) => msg._id === message._id)) {
-			createThreadMessage(message.rid, user, thread._id, reply, attachMessage(message, p_room));
+			createThreadMessage(message.rid, user, thread._id, t_name, attachMessage(message, p_room));
 		}
 	} else {
-		createThreadMessage(prid, user, thread._id, reply);
-		if (reply) {
-			sendMessage(user, { msg: reply }, thread);
-		}
+		createThreadMessage(prid, user, thread._id, t_name);
+	}
+	if (reply) {
+		sendMessage(user, { msg: reply }, thread);
 	}
 	return thread;
 };

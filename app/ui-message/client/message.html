@@ -58,7 +58,7 @@
 		{{#if isIgnored}}
 			<span class="toggle-hidden icon-right-dir" data-message="{{_id}}"> {{_ "Message_Ignored"}} </span>
 		{{/if}}
-		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
+		<div class="body {{bodyClass}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 			{{#if isSnippet}}
 				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 			{{/if}}
