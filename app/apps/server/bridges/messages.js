@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Messages, Users, Subscriptions } from '../../../models';
 import { Notifications } from '../../../notifications';
+import { updateMessage } from '../../../lib/server/functions/updateMessage';
 
 export class AppMessageBridge {
 	constructor(orch) {
@@ -28,10 +29,6 @@ export class AppMessageBridge {
 
 	async update(message, appId) {
 		console.log(`The App ${ appId } is updating a message.`);
-		if (!this.updateMessage) {
-			const { updateMessage } = await import('../../../lib');
-			this.updateMessage = updateMessage;
-		}
 
 		if (!message.editor) {
 			throw new Error('Invalid editor assigned to the message for the update.');
@@ -44,7 +41,7 @@ export class AppMessageBridge {
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 		const editor = Users.findOneById(message.editor.id);
 
-		this.updateMessage(msg, editor);
+		updateMessage(msg, editor);
 	}
 
 	async notifyUser(user, message, appId) {

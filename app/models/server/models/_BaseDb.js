@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import { EventEmitter } from 'events';
+import { settings } from '../../../settings/server/functions/settings';
 
 const baseName = 'rocketchat_';
 
@@ -56,11 +56,8 @@ export class BaseDb extends EventEmitter {
 	}
 
 	listenSettings() {
-		Meteor.startup(async() => {
-			const { settings } = await import('../../../settings');
-			settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
-				isOplogEnabled = isOplogAvailable && value === false;
-			});
+		settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
+			isOplogEnabled = isOplogAvailable && value === false;
 		});
 	}
 
