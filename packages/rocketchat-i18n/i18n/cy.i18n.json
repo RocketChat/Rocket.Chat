@@ -815,7 +815,7 @@
   "Create_new": "Creu newydd",
   "Create_unique_rules_for_this_channel": "Creu rheolau unigryw ar gyfer y sianel hon",
   "Created_at": "Wedi'i greu yn",
-  "Created_at_s_by_s": "Crëwyd yn <strong> %s</strong>gan <strong> %s</strong>",
+  "Created_at_s_by_s": "Crëwyd yn <strong>%s</strong> gan <strong>%s</strong>",
   "Created_at_s_by_s_triggered_by_s": "Crëwyd yn <strong> %s</strong>gan <strong> %s</strong>a achoswyd gan <strong> %s</strong>",
   "CRM_Integration": "Integreiddio CRM",
   "CROWD_Reject_Unauthorized": "Gwrthod heb awdurdod",
