@@ -10,10 +10,11 @@ API.v1.addRoute('livechat/offline.message', {
 				name: String,
 				email: String,
 				message: String,
+				department: String,
 			});
 
-			const { name, email, message } = this.bodyParams;
-			if (!Livechat.sendOfflineMessage({ name, email, message })) {
+			const { name, email, message, department } = this.bodyParams;
+			if (!Livechat.sendOfflineMessage({ name, email, message, department })) {
 				return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_offline_message') });
 			}
 
