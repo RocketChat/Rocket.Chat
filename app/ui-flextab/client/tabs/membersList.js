@@ -187,8 +187,28 @@ Template.membersList.events({
 		instance.filter.set(e.target.value.trim());
 	},
 	'change .js-type'(e, instance) {
-		const seeAll = instance.showAllUsers.get();
-		instance.showAllUsers.set(!seeAll);
+		// const seeAll = instance.showAllUsers.get();
+		// instance.showAllUsers.set(!seeAll);
+
+		switch (document.getElementById('status-type').selectedIndex) {
+			case 0:
+				console.log('Online');
+				instance.showAllUsers.set(false);
+				break;
+			case 1:
+				console.log('All Users');
+				instance.showAllUsers.set(true);
+				break;
+			case 2:
+				console.log('Most Active');
+				instance.showAllUsers.set(true);
+				Meteor.call('userActivityCounter.incrementMessageCount', 'GENERAL', 'ioHuJTzSna9ZQPKHG');
+				break;
+		
+			default:
+				break;
+		}
+		
 	},
 	'click .see-all'(e, instance) {
 		const seeAll = instance.showAllUsers.get();

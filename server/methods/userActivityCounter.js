@@ -26,5 +26,35 @@ Meteor.methods({
 		Subscriptions.updateCustomFieldsByRoomId(roomId, roomCustomFields);
 
 		return ret;
+    },
+
+    'userActivityCounter.update' : (roomId, userActivity) => {
+		const now = new Date();
+		console.log(userActivity);
+		const roomCustomFields = {
+			userActivityCounterFlag : true,
+			lastUpdated : now,
+			userActivity,
+		};
+
+		const ret = Rooms.setCustomFieldsById(roomId, roomCustomFields);
+		Subscriptions.updateCustomFieldsByRoomId(roomId, roomCustomFields);
+
+		return ret;
+	},
+
+	'userActivityCounter.incrementMessageCount' : (roomId, userId) => {
+		console.log('updating Count');
+		const room = Rooms.findOne(roomId);
+		let { userActivity } = room.customFields;
+		userActivity = userActivity.map((userObject) => {
+            console.log(userObject);
+			if (userObject._id === userId) {
+				userObject.messageCount += 1;
+			}
+			return userObject;
+        });
+
+		Meteor.call('userActivityCounter.update', roomId, userActivity);
 	},
 });
