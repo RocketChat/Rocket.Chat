@@ -56,8 +56,7 @@ export class AppsRestApi {
 
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				// const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
-				const baseUrl = 'http://localhost:7488';
+				const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
 
 				// Gets the Apps from the marketplace
 				if (this.queryParams.marketplace) {
