@@ -330,7 +330,6 @@ Template.membersList.onCreated(function() {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
 		if (Meteor.call('userActivityCounter.isSet', this.data.rid)) {
-			console.log('inside if');
 			Meteor.call('userActivityCounter.set', this.data.rid);
 		}
 		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) => {

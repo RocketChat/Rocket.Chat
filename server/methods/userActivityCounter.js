@@ -28,7 +28,6 @@ Meteor.methods({
 
 	'userActivityCounter.update' : (roomId, userActivity) => {
 		const now = new Date();
-		console.log(userActivity);
 		const roomCustomFields = {
 			userActivityCounterFlag : true,
 			lastUpdated : now,
@@ -42,7 +41,6 @@ Meteor.methods({
 	},
 
 	'userActivityCounter.incrementMessageCount' : (roomId, userId) => {
-		console.log('updating Count');
 		const room = Rooms.findOne(roomId);
 		let { userActivity } = room.customFields;
 		userActivity = userActivity.map((userObject) => {
@@ -58,17 +56,14 @@ Meteor.methods({
 	'userActivityCounter.isSet' : (roomId) => {
 		const room = Rooms.findOne(roomId);
 		if (!room.customFields) {
-			console.log('returning false');
 			return false;
 		}
 
 		const { userActivity } = room.customFields;
 		if (!userActivity) {
-			console.log('returning false');
 			return false;
 		}
 
-		console.log('no set');
 		return true;
 	},
 });
