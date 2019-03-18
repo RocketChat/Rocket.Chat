@@ -4,12 +4,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { ChatRoom } from '/app/models';
-import { t, roomTypes } from '/app/utils';
-import { settings } from '/app/settings';
-import { modal, call } from '/app/ui-utils';
+import { ChatRoom } from '../../../models';
+import { t, roomTypes } from '../../../utils';
+import { settings } from '../../../settings';
+import { modal, call } from '../../../ui-utils';
 import moment from 'moment';
-import { TAPi18n } from 'meteor/tap:i18n';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));
@@ -216,25 +215,25 @@ Template.cleanHistory.onRendered(function() {
 		const filesOrMessages = t(metaCleanHistoryFilesOnly ? 'files' : 'messages', {});
 
 		if (metaFromDate && metaToDate) {
-			this.warningBox.set(TAPi18n.__('Prune_Warning_between', {
+			this.warningBox.set(t('Prune_Warning_between', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
-			}, TAPi18n.getLanguage()) + exceptPinned + ifFrom);
+			}) + exceptPinned + ifFrom);
 		} else if (metaFromDate) {
-			this.warningBox.set(TAPi18n.__('Prune_Warning_after', {
+			this.warningBox.set(t('Prune_Warning_after', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')],
-			}, TAPi18n.getLanguage()) + exceptPinned + ifFrom);
+			}) + exceptPinned + ifFrom);
 		} else if (metaToDate) {
-			this.warningBox.set(TAPi18n.__('Prune_Warning_before', {
+			this.warningBox.set(t('Prune_Warning_before', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')],
-			}, TAPi18n.getLanguage()) + exceptPinned + ifFrom);
+			}) + exceptPinned + ifFrom);
 		} else {
-			this.warningBox.set(TAPi18n.__('Prune_Warning_all', {
+			this.warningBox.set(t('Prune_Warning_all', {
 				postProcess: 'sprintf',
 				sprintf: [filesOrMessages, getRoomName()],
-			}, TAPi18n.getLanguage()) + exceptPinned + ifFrom);
+			}) + exceptPinned + ifFrom);
 		}
 
 		if (fromDate > toDate) {
