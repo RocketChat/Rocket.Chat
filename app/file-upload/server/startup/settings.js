@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 settings.addGroup('FileUpload', function() {
 	this.add('FileUpload_Enabled', true, {

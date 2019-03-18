@@ -5,11 +5,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { hasRole } from '/app/authorization';
-import { Users } from '/app/models';
-import { t, handleError } from '/app/utils';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { hasRole } from '../../authorization';
+import { Users } from '../../models';
+import { t, handleError } from '../../utils';
 import toastr from 'toastr';
 
 const cannotSetup = () => {

@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
+import { settings } from '../../../app/settings';
 
 Template.message.helpers({
 	readReceipt() {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from '/app/models';
+import { Users } from '../../../models';
 
 import { logger } from '../logger';
 import peerClient from '../peerClient';

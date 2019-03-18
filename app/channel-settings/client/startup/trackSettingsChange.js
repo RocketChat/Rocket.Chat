@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { callbacks } from '/app/callbacks';
-import { RoomManager } from '/app/ui-utils';
-import { roomTypes } from '/app/utils';
-import { ChatRoom, ChatSubscription } from '/app/models';
+import { callbacks } from '../../../callbacks';
+import { RoomManager } from '../../../ui-utils';
+import { roomTypes } from '../../../utils';
+import { ChatRoom, ChatSubscription } from '../../../models';
 
 Meteor.startup(function() {
 	const roomSettingsChangedCallback = (msg) => {

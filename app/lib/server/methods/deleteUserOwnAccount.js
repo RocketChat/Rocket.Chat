@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from '/app/settings';
-import { Users } from '/app/models';
+import { settings } from '../../../settings';
+import { Users } from '../../../models';
 import { deleteUser } from '../functions';
 import s from 'underscore.string';
 

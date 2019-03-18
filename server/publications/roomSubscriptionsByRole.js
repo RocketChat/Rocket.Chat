@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Subscriptions } from '/app/models';
+import { hasPermission } from '../../app/authorization';
+import { Subscriptions } from '../../app/models';
 
 Meteor.publish('roomSubscriptionsByRole', function(rid, role) {
 	if (!this.userId) {

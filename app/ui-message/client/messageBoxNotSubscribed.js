@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { RoomHistoryManager, RoomManager, call } from '/app/ui-utils';
-import { t, roomTypes } from '/app/utils';
-import { hasAllPermission } from '/app/authorization';
+import { settings } from '../../settings';
+import { RoomHistoryManager, RoomManager, call } from '../../ui-utils';
+import { t, roomTypes } from '../../utils';
+import { hasAllPermission } from '../../authorization';
 import toastr from 'toastr';
 import './messageBoxNotSubscribed.html';
 

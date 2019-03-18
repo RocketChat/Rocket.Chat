@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '/app/settings';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations } from '/app/models';
-import { FileUpload } from '/app/file-upload';
+import { settings } from '../../settings';
+import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations } from '../../models';
+import { FileUpload } from '../../file-upload';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
-import * as Mailer from '/app/mailer';
+import * as Mailer from '../../mailer';
 
 let zipFolder = '/tmp/zipFiles';
 if (settings.get('UserData_FileSystemZipPath') != null) {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles } from '/app/models';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
+import { Roles } from '../../../models';
+import { settings } from '../../../settings';
+import { Notifications } from '../../../notifications';
 import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({

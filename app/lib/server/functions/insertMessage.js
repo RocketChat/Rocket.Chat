@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
-import { Markdown } from '/app/markdown';
-import { Messages } from '/app/models';
+import { Markdown } from '../../../markdown';
+import { Messages } from '../../../models';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {

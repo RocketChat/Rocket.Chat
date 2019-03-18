@@ -3,11 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { RoomManager, popover } from '/app/ui-utils';
-import { ChatRoom, Subscriptions } from '/app/models';
-import { settings } from '/app/settings';
-import { t, isRtl, handleError, roomTypes } from '/app/utils';
-import { WebRTC } from '/app/webrtc';
+import { RoomManager, popover } from '../../../ui-utils';
+import { ChatRoom, Subscriptions } from '../../../models';
+import { settings } from '../../../settings';
+import { t, isRtl, handleError, roomTypes } from '../../../utils';
+import { WebRTC } from '../../../webrtc';
 import _ from 'underscore';
 import { getActions } from './userActions';
 
@@ -199,7 +199,7 @@ Template.membersList.events({
 		}
 
 	},
-	'click .js-action'(e, instance) {
+	'click .js-more'(e, instance) {
 		e.currentTarget.parentElement.classList.add('active');
 		const room = Session.get(`roomData${ instance.data.rid }`);
 		const _actions = getActions({

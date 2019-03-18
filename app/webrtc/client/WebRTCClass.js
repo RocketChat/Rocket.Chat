@@ -3,12 +3,12 @@ import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router' ;
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t } from '/app/utils';
+import { t } from '../../utils';
 import { ChromeScreenShare } from './screenShare';
-import { Notifications } from '/app/notifications';
-import { settings } from '/app/settings';
-import { modal } from '/app/ui-utils';
-import { ChatSubscription } from '/app/models';
+import { Notifications } from '../../notifications';
+import { settings } from '../../settings';
+import { modal } from '../../ui-utils';
+import { ChatSubscription } from '../../models';
 
 class WebRTCTransportClass {
 	constructor(webrtcInstance) {
@@ -260,7 +260,7 @@ class WebRTCClass {
 			peerConnection.getRemoteStreams().forEach((remoteStream) => {
 				const item = {
 					id,
-					url: URL.createObjectURL(remoteStream),
+					url: remoteStream,
 					state: peerConnection.iceConnectionState,
 				};
 				switch (peerConnection.iceConnectionState) {
@@ -404,7 +404,7 @@ class WebRTCClass {
 	}
 
 	_getUserMedia(media, onSuccess, onError) {
-		const onSuccessLocal = function(stream) {
+		const onSuccessLocal = (stream) => {
 			if (AudioContext && stream.getAudioTracks().length > 0) {
 				const audioContext = new AudioContext;
 				const source = audioContext.createMediaStreamSource(stream);
@@ -535,7 +535,7 @@ class WebRTCClass {
 		}
 		const onSuccess = (stream) => {
 			this.localStream = stream;
-			this.localUrl.set(URL.createObjectURL(stream));
+			this.localUrl.set(stream);
 			this.videoEnabled.set(this.media.video === true);
 			this.audioEnabled.set(this.media.audio === true);
 			const { peerConnections } = this;

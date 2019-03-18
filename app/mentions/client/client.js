@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
-import { settings } from '/app/settings';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
 import Mentions from '../lib/Mentions';
 
 const MentionsClient = new Mentions({

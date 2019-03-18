@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Info } from '/app/utils';
+import { Info } from '../../../utils';
 
 Meteor.methods({
 	getServerInfo() {

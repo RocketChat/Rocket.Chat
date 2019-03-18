@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { SystemLogger } from '/app/logger';
-import { settings } from '/app/settings';
-import { Info } from '/app/utils';
+import { SystemLogger } from '../../app/logger';
+import { settings } from '../../app/settings';
+import { Info } from '../../app/utils';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';

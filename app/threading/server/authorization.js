@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { addRoomAccessValidator, canAccessRoom } from '/app/authorization';
-import { Rooms } from '/app/models';
+import { addRoomAccessValidator, canAccessRoom } from '../../authorization';
+import { Rooms } from '../../models';
 
 Meteor.startup(() => {
 	addRoomAccessValidator(function(room, user) {

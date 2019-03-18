@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { placeholders } from '/app/utils';
+import { placeholders } from '../../../utils';
 import s from 'underscore.string';
-import * as Mailer from '/app/mailer';
+import * as Mailer from '../../../mailer';
 
 export const sendMail = function(from, subject, body, dryrun, query) {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');

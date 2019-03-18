@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Subscriptions, Messages } from '/app/models';
-import { Markdown } from '/app/markdown';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { Subscriptions, Messages } from '../../models';
+import { Markdown } from '../../markdown';
 import _ from 'underscore';
 import s from 'underscore.string';
 

@@ -1,4 +1,4 @@
-import { roomTypes } from '/app/utils';
+import { roomTypes } from '../../utils';
 import {
 	ConversationRoomType,
 	DirectMessageRoomType,
