@@ -1,5 +1,5 @@
-import { settings } from '/app/settings';
-import { getUserPreference } from '/app/utils';
+import { settings } from '../../../settings';
+import { getUserPreference } from '../../../utils';
 import { API } from '../api';
 
 const getInfoFromUserObject = (user) => {

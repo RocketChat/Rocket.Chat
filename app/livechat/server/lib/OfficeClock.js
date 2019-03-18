@@ -1,7 +1,7 @@
 // Every minute check if office closed
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Users, LivechatOfficeHour } from '/app/models';
+import { settings } from '../../../settings';
+import { Users, LivechatOfficeHour } from '../../../models';
 
 Meteor.setInterval(function() {
 	if (settings.get('Livechat_enable_office_hours')) {

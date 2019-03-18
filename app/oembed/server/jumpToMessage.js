@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '/app/models';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { getAvatarUrlFromUsername } from '/app/utils';
+import { Messages } from '../../models';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { getAvatarUrlFromUsername } from '../../utils';
 import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';

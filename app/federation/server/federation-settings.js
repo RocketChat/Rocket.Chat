@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { FederationKeys } from '/app/models';
+import { settings } from '../../settings';
+import { FederationKeys } from '../../models';
 
 Meteor.startup(function() {
 	// const federationUniqueId = FederationKeys.getUniqueId();

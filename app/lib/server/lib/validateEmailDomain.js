@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
 import _ from 'underscore';
 import dns from 'dns';

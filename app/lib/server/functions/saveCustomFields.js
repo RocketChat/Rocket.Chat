@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import { validateCustomFields, saveCustomFieldsWithoutValidation } from '.';
 import s from 'underscore.string';
 

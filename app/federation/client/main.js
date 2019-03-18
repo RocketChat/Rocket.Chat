@@ -1,4 +1,4 @@
-import { MessageTypes } from '/app/ui-utils';
+import { MessageTypes } from '../../ui-utils/client';
 
 // Register message types
 MessageTypes.registerType({

@@ -10,7 +10,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { APIClient } from '/app/utils';
+import { APIClient } from '../../../utils';
 
 Template.appInstall.helpers({
 	appFile() {

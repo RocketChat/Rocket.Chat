@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, getUserPreference, roomTypes } from '/app/utils';
+import { t, getUserPreference, roomTypes } from '../../utils';
 import moment from 'moment';
-import { popover, renderMessageBody } from '/app/ui-utils';
-import { Users, ChatSubscription } from '/app/models';
-import { settings } from '/app/settings';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { menu } from '/app/ui-utils';
+import { popover, renderMessageBody } from '../../ui-utils';
+import { Users, ChatSubscription } from '../../models';
+import { settings } from '../../settings';
+import { hasAtLeastOnePermission } from '../../authorization';
+import { menu } from '../../ui-utils';
 
 Template.sidebarItem.helpers({
 	or(...args) {

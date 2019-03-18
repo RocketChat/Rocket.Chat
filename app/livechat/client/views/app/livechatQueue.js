@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { hasRole } from '/app/authorization';
-import { Users } from '/app/models';
+import { settings } from '../../../../settings';
+import { hasRole } from '../../../../authorization';
+import { Users } from '../../../../models';
 import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatQueueUser } from '../../collections/LivechatQueueUser';
 import { AgentUsers } from '../../collections/AgentUsers';

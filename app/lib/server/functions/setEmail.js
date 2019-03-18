@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from '/app/models';
-import { hasPermission } from '/app/authorization';
+import { Users } from '../../../models';
+import { hasPermission } from '../../../authorization';
 import { RateLimiter, validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from '.';
 import s from 'underscore.string';

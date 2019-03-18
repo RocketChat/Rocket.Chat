@@ -1,4 +1,4 @@
-import { registerFieldTemplate } from '/app/message-attachments';
+import { registerFieldTemplate } from '../../../message-attachments';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
