@@ -21,8 +21,8 @@ settings.get(/Message_HideType_.+/, function(key, value) {
 	});
 });
 
-export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
-	const options = {
+export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls, parentMessageId }) {
+	let options = {
 		sort: {
 			ts: -1,
 		},
@@ -36,7 +36,10 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 	}
 
 	let records;
-	if (end != null) {
+	if (parentMessageId) {
+		options.sort = { ts: 1 };
+		records = Messages.findReplies(rid, hideMessagesOfType, options, parentMessageId).fetch();
+	} else if (end != null) {
 		records = Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
 	} else {
 		records = Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();

@@ -75,6 +75,16 @@
 			{{#each attachments}}
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
+			{{#if hasReplies}}
+			{{#unless inReplyView}}
+			<div>
+				<button type="button" class="rc-button rc-button--outline rc-button--primary rc-button-broadcast js-open-replies"
+					name="openReplies">{{numberOfReplies}}
+					{{_'replies'}}
+				</button>
+			</div>
+			{{/unless}}
+			{{/if}}
 		</div>
 		{{#with readReceipt}}
 		<div class="read-receipt {{readByEveryone}}">
@@ -85,6 +95,18 @@
 			<div class="message-actions">
 				{{#if messageActions 'message'}}
 					<div class="message-actions__buttons">
+						{{#unless inReplyView}}
+						<button type="button" class="actions__button js-open-replies" name="openRepliesAction">
+							{{> icon block="message-actions__button-icon" icon=action.icon}}
+							{{numberOfReplies}}
+							{{#if numberOfReplies}}
+							{{_'replies'}}
+							{{/if}}
+							{{#unless numberOfReplies}}
+							{{_ 'start thread'}}
+							{{/unless}}
+						</button>
+						{{/unless}}
 						{{#each action in messageActions 'message'}}
 							<button class="message-actions__button" data-message-action="{{action.id}}">
 									{{> icon block="message-actions__button-icon" icon=action.icon}}

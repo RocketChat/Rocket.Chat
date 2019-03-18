@@ -27,5 +27,6 @@ export { setUserAvatar } from './setUserAvatar';
 export { _setUsername, setUsername } from './setUsername';
 export { unarchiveRoom } from './unarchiveRoom';
 export { updateMessage } from './updateMessage';
+export { addMessageReply } from './addMessageReply';
 export { validateCustomFields } from './validateCustomFields';
 export { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';

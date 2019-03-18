@@ -212,3 +212,5 @@ rocketchat:notifications
 rocketchat:promises
 rocketchat:ui-utils
 rocketchat:ui-cached-collection
+
+rocketchat:replies

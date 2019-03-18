@@ -1,8 +1,11 @@
 import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { chatMessages } from 'meteor/rocketchat:ui';
 
 Template.contextualBar.events({
 	'click .js-close'(e, t) {
 		t.tabBar.close();
+		chatMessages[Session.get('openedRoom')].$input.focus();
 	},
 });
 

@@ -37,22 +37,23 @@ export const getPermaLinks = async(replies) => {
 	return Promise.all(promises);
 };
 
-export const mountReply = async(msg, input) => {
+export const mountReply = async (msg, input, originalMessage, customFields) => {
 	const replies = $(input).data('reply');
+
 	const mentionUser = $(input).data('mention-user') || false;
 
 	if (replies && replies.length) {
-		const permalinks = await getPermaLinks(replies);
 
 		replies.forEach(async(reply, replyIndex) => {
 			if (reply !== undefined) {
-				msg += `[ ](${ permalinks[replyIndex] }) `;
-
-				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
-					msg += `@${ reply.u.username } `;
-				}
+				Object.assign(originalMessage, ChatMessage.findOne({ _id: reply._id }));
+				Object.assign(customFields, { ref: reply._id });
+			} else {
+				$(input)
+					.removeData('reply')
+					.trigger('dataChange');
 			}
+			
 		});
 	}
 
@@ -238,14 +239,18 @@ export const ChatMessages = class ChatMessages {
 	* * @param {function?} done callback
 	*/
 	async send(rid, input, done = function() {}) {
+		const replies = $(input).data('reply');
+
 		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
 
 			let msg = '';
+			let originalMessage = {};
+			let customFields = {};
 
-			msg += await mountReply(msg, input);
+			msg += await mountReply(msg, input, originalMessage, customFields);
 
 			msg += input.value;
 			$(input)
@@ -265,7 +270,7 @@ export const ChatMessages = class ChatMessages {
 			}
 
 			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg });
+			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg, customFields });
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
@@ -294,6 +299,16 @@ export const ChatMessages = class ChatMessages {
 			}
 
 			Meteor.call('sendMessage', msgObject);
+
+			let replyMessage = msgObject;
+			let parentMessage = originalMessage;
+
+			if (replies !== undefined) {
+				this.addMessageReply(
+					parentMessage,
+					replyMessage
+				);
+			}
 
 			this.saveTextMessageBox(rid, '');
 
@@ -406,8 +421,12 @@ export const ChatMessages = class ChatMessages {
 			}
 		}
 
-		return Meteor.call('deleteMessage', { _id: message._id }, function(error) {
-			if (error) {
+		let ref;
+		if (message.customFields && message.customFields.ref) {
+			ref = message.customFields.ref;
+		}
+		return Meteor.call('deleteMessage', { _id: message._id, ref }, function (error) {
+				if (error) {
 				return handleError(error);
 			}
 		});
@@ -437,6 +456,13 @@ export const ChatMessages = class ChatMessages {
 			this.clearEditing();
 			return this.stopTyping(rid);
 		}
+	}
+
+	addMessageReply(parentMessage, replyMessage) {
+		if (!parentMessage.customFields.replyIds) parentMessage.customFields.replyIds = [];
+		parentMessage.customFields.replyIds.push(replyMessage._id);
+		let replyIds = parentMessage.customFields.replyIds;
+		Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
 	}
 
 	startTyping(rid, input) {

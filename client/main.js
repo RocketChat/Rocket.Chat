@@ -13,6 +13,7 @@ import './methods/openRoom';
 import './methods/setUserActiveStatus';
 import './methods/toggleFavorite';
 import './methods/updateMessage';
+import './methods/addMessageReply';
 import './notifications/notification';
 import './notifications/updateAvatar';
 import './notifications/updateUserState';

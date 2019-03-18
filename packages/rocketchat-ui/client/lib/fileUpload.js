@@ -139,7 +139,7 @@ const getUploadPreview = async(file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-export const fileUpload = async(files, input) => {
+export const fileUpload = async (files, input, isInReplyView) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');
@@ -232,8 +232,23 @@ export const fileUpload = async(files, input) => {
 				if (!file) {
 					return;
 				}
+				if (!file.customFields) {
+					file.customFields = {};
+				}
 
+				let parentMessage;
+				if (isInReplyView) {
+					parentMessage = $('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea').data('reply');
+					file.customFields = { ref: parentMessage._id };
+				}
+				
 				Meteor.call('sendFileMessage', roomId, storage, file, { msg }, () => {
+					if (isInReplyView) {
+						if (!parentMessage.customFields.replyIds) parentMessage.customFields.replyIds = [];
+						parentMessage.customFields.replyIds.push(file._id);
+						let replyIds = parentMessage.customFields.replyIds;
+						Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
+					}
 					$(input)
 						.removeData('reply')
 						.trigger('dataChange');

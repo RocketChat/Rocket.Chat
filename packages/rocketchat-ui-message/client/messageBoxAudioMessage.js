@@ -15,14 +15,24 @@ let audioMessageIntervalId;
 Template.messageBoxAudioMessage.events({
 	'click .js-audio-message-record'(event, instance) {
 		event.preventDefault();
-		const recording_icons = instance.findAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
-		const timer = instance.find('.rc-message-box__timer');
-		const mic = instance.find('.rc-message-box__icon.mic');
+		let isInReplyView;
+		if (instance.parentTemplate(2)) {
+			isInReplyView = instance.parentTemplate(2).data.template === 'RocketReplies';
+		}
+		let recording_icons = $('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box').not('.contextual-bar .rc-message-box__icon.check, .contextual-bar .rc-message-box__icon.cross, .contextual-bar .rc-message-box__timer-box');
+		let timer = $('.rc-message-box__timer').not('.contextual-bar .rc-message-box__timer');
+		let mic = $('.rc-message-box__icon.mic').not('.contextual-bar .rc-message-box__icon.mic');
+
+		if (isInReplyView) {
+			recording_icons = $('.contextual-bar .rc-message-box__icon.check, .contextual-bar .rc-message-box__icon.cross, .contextual-bar .rc-message-box__timer-box');
+			timer = $('.contextual-bar .rc-message-box__timer');
+			mic = $('.contextual-bar .rc-message-box__icon.mic');
+		} 
 
 		chatMessages[RoomManager.openedRoom].recording = true;
 		AudioRecorder.start(() => {
 			const startTime = new Date;
-			timer.innerHTML = '00:00';
+			timer.html = '00:00';
 			audioMessageIntervalId = setInterval(() => {
 				const now = new Date;
 				const distance = now - startTime;
@@ -30,11 +40,12 @@ Template.messageBoxAudioMessage.events({
 				let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 				if (minutes < 10) { minutes = `0${ minutes }`; }
 				if (seconds < 10) { seconds = `0${ seconds }`; }
-				timer.innerHTML = `${ minutes }:${ seconds }`;
+				timer.html = `${ minutes }:${ seconds }`;
 			}, 1000);
 
-			mic.classList.remove('active');
-			recording_icons.forEach((e) => { e.classList.add('active'); });
+			mic.removeClass('active');
+			recording_icons.each(function () { $(this).addClass('active'); });
+
 		});
 	},
 	'click .js-audio-message-cross'(event, instance) {
@@ -55,14 +66,26 @@ Template.messageBoxAudioMessage.events({
 	},
 	'click .js-audio-message-check'(event, instance) {
 		event.preventDefault();
-		const timer = instance.find('.rc-message-box__timer');
-		const mic = instance.find('.rc-message-box__icon.mic');
-		const loader = instance.find('.js-audio-message-loading');
-		const recording_icons = instance.findAll('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box');
+		let isInReplyView;
+		if (instance.parentTemplate(2)) {
+			isInReplyView = instance.parentTemplate(2).data.template === 'RocketReplies';
+		}
 
-		recording_icons.forEach((e) => { e.classList.remove('active'); });
-		loader.classList.add('active');
-		timer.innerHTML = '00:00';
+		let timer = $('.rc-message-box__timer').not('.contextual-bar .rc-message-box__timer');
+		let mic = $('.rc-message-box__icon.mic').not('.contextual-bar .rc-message-box__icon.mic');
+		let loader = $('.js-audio-message-loading').not('.contextual-bar .js-audio-message-loading');
+		let recording_icons = $('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box').not('.contextual-bar .rc-message-box__icon.check, .contextual-bar  .rc-message-box__icon.cross, .contextual-bar .rc-message-box__timer-box');
+
+		if (isInReplyView) {
+			timer = $('.contextual-bar .rc-message-box__timer');
+			mic = $('.contextual-bar .rc-message-box__icon.mic');
+			loader = $('.contextual-bar .js-audio-message-loading');
+			recording_icons = $('.contextual-bar .rc-message-box__icon.check, .contextual-bar  .rc-message-box__icon.cross, .contextual-bar .rc-message-box__timer-box');
+		}
+
+		recording_icons.each(function () { $(this).removeClass('active'); });
+		loader.addClass('active');
+		timer.html('00:00');
 		if (audioMessageIntervalId) {
 			clearInterval(audioMessageIntervalId);
 		}
@@ -70,8 +93,8 @@ Template.messageBoxAudioMessage.events({
 		chatMessages[RoomManager.openedRoom].recording = false;
 		AudioRecorder.stop(function(blob) {
 
-			loader.classList.remove('active');
-			mic.classList.add('active');
+			loader.removeClass('active');
+			mic.addClass('active');
 			const roomId = RoomManager.openedRoom;
 			const record = {
 				name: `${ TAPi18n.__('Audio record') }.mp3`,
@@ -120,9 +143,23 @@ Template.messageBoxAudioMessage.events({
 					Session.set('uploading', uploading);
 					return;
 				}
+				if (!file.customFields) {
+					file.customFields = {};
+				}
 
+				let parentMessage;
+				if (isInReplyView) {
+					parentMessage = $('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea').data('reply');
+					file.customFields = { ref: parentMessage._id };
+				}
 				if (file) {
 					Meteor.call('sendFileMessage', roomId, storage, file, () => {
+						if (isInReplyView) {
+							if (!parentMessage.customFields.replyIds) parentMessage.customFields.replyIds = [];
+							parentMessage.customFields.replyIds.push(file._id);
+							let replyIds = parentMessage.customFields.replyIds;
+							Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
+						}
 						Meteor.setTimeout(() => {
 							const uploading = Session.get('uploading');
 							if (uploading !== null) {

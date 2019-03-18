@@ -38,7 +38,12 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 
 		$(document.body).append($input);
 
-		$input.one('change', function(e) {
+		let isInReplyView = false;
+		if (Template.instance()) {
+			isInReplyView = $(Template.instance().data.activeElement).parents('.contextual-bar').length > 0;
+		}
+
+		$input.one('change', function (e) {
 			const filesToUpload = [...e.target.files].map((file) => {
 				Object.defineProperty(file, 'type', {
 					value: mime.lookup(file.name),
@@ -49,7 +54,52 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.rc-message-box__textarea.js-input-message'));
+			fileUpload(filesToUpload, isInReplyView);
+			$input.remove();
+		});
+
+		$input.click();
+
+		// Simple hack for cordova aka codegueira
+		if ((typeof device !== 'undefined' && device.platform && device.platform.toLocaleLowerCase() === 'ios') || navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+			$input.click();
+		}
+	},
+});
+
+messageBox.actions.add('Add', 'Prescription', {
+	id: 'prescription-upload',
+	icon: 'cube',
+	condition: () => settings.get('FileUpload_Enabled'),
+	action({ event }) {
+		event.preventDefault();
+		const $input = $(document.createElement('input'));
+		$input.css('display', 'none');
+		$input.attr({
+			id: 'fileupload-input',
+			type: 'file',
+			multiple: 'multiple',
+		});
+
+		$(document.body).append($input);
+
+		let isInReplyView = false;
+		if (Template.instance()) {
+			isInReplyView = $(Template.instance().data.activeElement).parents('.contextual-bar').length > 0;
+		}
+		$input.one('change', function(e) {
+			const filesToUpload = [...e.target.files].map((file) => {
+				Object.defineProperty(file, 'type', {
+					value: mime.lookup(file.name),
+				});
+				return {
+					file,
+					name: file.name,
+				};
+			});
+			
+			prescriptionUpload(filesToUpload, isInReplyView);
+
 			$input.remove();
 		});
 

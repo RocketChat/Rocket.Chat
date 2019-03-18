@@ -67,4 +67,5 @@ import './methods/setUsername';
 import './methods/unarchiveRoom';
 import './methods/unblockUser';
 import './methods/updateMessage';
+import './methods/addMessageReply';
 import './publications/settings';

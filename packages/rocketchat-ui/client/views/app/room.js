@@ -252,7 +252,7 @@ Template.room.helpers({
 		});
 
 		const query =
-			{ rid: this._id };
+			{ rid: this._id, 'customFields.ref': { $exists: false } };
 
 		if (hideMessagesOfType.length > 0) {
 			query.t =
@@ -494,8 +494,24 @@ Template.room.events({
 		const message = this._arguments[1];
 		roomTypes.openRouteLink('d', { name: this._arguments[1].u.username }, { ...FlowRouter.current().queryParams, reply: message._id });
 	},
+	'click .js-open-replies'() {
+		const message = this._arguments[1];
+		const tabBar = Template.instance().tabBar;
+		if (tabBar.state.get() === 'opened') {
+			tabBar.setTemplate('');
+			setTimeout(() => {
+				tabBar.setTemplate('RocketReplies');
+				tabBar.open();
+				tabBar.setData({ message: message, icon: "reply", label: "Thread" });
+			}, 0);
+		} else {
+			tabBar.setTemplate('RocketReplies');
+			tabBar.open();
+			tabBar.setData({ message: message, icon: "reply", label: "Thread" });
+		}
+	},
 	'click, touchend'(e, t) {
-		Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
+		// Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
 	},
 
 	'click .messages-container-main'() {
@@ -787,7 +803,7 @@ Template.room.events({
 	},
 
 	'load img'(e, template) {
-		return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
+		// return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
 	},
 
 	'click .jump-recent button'(e, template) {

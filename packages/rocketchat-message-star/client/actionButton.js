@@ -27,7 +27,12 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
+			if (message.customFields.ref) {
+				return false;
+			}
+
+			// return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
+			return false;
 		},
 		order: 10,
 		group: 'menu',
@@ -93,6 +98,9 @@ Meteor.startup(function() {
 		},
 		condition(message) {
 			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+				return false;
+			}
+			if (message.customFields.ref) {
 				return false;
 			}
 			return true;

@@ -2,13 +2,7 @@ html.rtl .attachment {
 	direction: rtl;
 
 	& .attachment-block {
-		padding-right: 15px;
 		padding-left: 0;
-
-		& .attachment-block-border {
-			right: 0;
-			left: auto;
-		}
 	}
 
 	& .attachment-thumb {
@@ -25,20 +19,7 @@ html.rtl .attachment {
 .attachment {
 	& .attachment-block {
 		position: relative;
-
 		margin: 5px 0;
-		padding-left: 15px;
-
-		& .attachment-block-border {
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			left: 0;
-
-			width: 2px;
-
-			border-radius: 8px;
-		}
 	}
 
 	& .attachment-author {
