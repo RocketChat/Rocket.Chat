@@ -4,6 +4,7 @@ import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
 import { settings } from '../../../settings/server/functions/settings';
+import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
 import _ from 'underscore';
 
 export class Messages extends Base {
@@ -903,10 +904,6 @@ export class Messages extends Base {
 	}
 
 	async removeFilesByRoomId(roomId) {
-		if (!this.FileUpload) {
-			const { FileUpload } = await import('../../../file-upload');
-			this.FileUpload = FileUpload;
-		}
 		this.find({
 			rid: roomId,
 			'file._id': {
@@ -916,7 +913,7 @@ export class Messages extends Base {
 			fields: {
 				'file._id': 1,
 			},
-		}).fetch().forEach((document) => this.FileUpload.getStore('Uploads').deleteById(document.file._id));
+		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {

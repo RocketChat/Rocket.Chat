@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Rooms, Settings } from '../../models';
 import { settings } from '../../settings';
-import { fileUploadIsValidContentType } from '../../utils';
+import { fileUploadIsValidContentType } from '../../utils/lib/fileUploadRestrictions';
 import { canAccessRoom } from '../../authorization';
 import filesize from 'filesize';
 

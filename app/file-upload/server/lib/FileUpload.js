@@ -8,9 +8,12 @@ import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { settings } from '../../../settings';
-import * as Models from '../../../models';
+import Uploads from '../../../models/server/models/Uploads';
+import UserDataFiles from '../../../models/server/models/UserDataFiles';
+import Avatars from '../../../models/server/models/Avatars';
+import Users from '../../../models/server/models/Users';
 import { FileUpload as _FileUpload } from '../../lib/FileUpload';
-import { roomTypes } from '../../../utils';
+import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization';
 
 const cookie = new Cookies();
@@ -30,7 +33,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 
 	defaultUploads() {
 		return {
-			collection: Models.Uploads.model,
+			collection: Uploads.model,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateFileUpload,
 			}),
@@ -52,7 +55,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 
 	defaultAvatars() {
 		return {
-			collection: Models.Avatars.model,
+			collection: Avatars.model,
 			// filter: new UploadFS.Filter({
 			// 	onCheck: FileUpload.validateFileUpload
 			// }),
@@ -66,7 +69,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 
 	defaultUserDataFiles() {
 		return {
-			collection: Models.UserDataFiles.model,
+			collection: UserDataFiles.model,
 			getPath(file) {
 				return `${ settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
 			},
@@ -140,7 +143,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 	},
 
 	resizeImagePreview(file) {
-		file = Models.Uploads.findOneById(file._id);
+		file = Uploads.findOneById(file._id);
 		file = FileUpload.addExtensionTo(file);
 		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
@@ -215,12 +218,12 @@ export const FileUpload = Object.assign(_FileUpload, {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 		// update file record to match user's username
-		const user = Models.Users.findOneById(file.userId);
-		const oldAvatar = Models.Avatars.findOneByName(user.username);
+		const user = Users.findOneById(file.userId);
+		const oldAvatar = Avatars.findOneByName(user.username);
 		if (oldAvatar) {
-			Models.Avatars.deleteFile(oldAvatar._id);
+			Avatars.deleteFile(oldAvatar._id);
 		}
-		Models.Avatars.updateFileNameById(file._id, user.username);
+		Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
 	},
 
@@ -238,8 +241,8 @@ export const FileUpload = Object.assign(_FileUpload, {
 			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		const isAuthorizedByCookies = rc_uid && rc_token && Models.Users.findOneByIdAndLoginToken(rc_uid, rc_token);
-		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Models.Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
+		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
+		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
 		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
 		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom;
 	},
@@ -345,7 +348,16 @@ export class FileUploadClass {
 	}
 
 	getModelFromName() {
-		return Models[this.name.split(':')[1]];
+		const modelsAvailable = {
+			Avatars,
+			Uploads,
+			UserDataFiles,
+		};
+		const modelName = this.name.split(':')[1];
+		if (!Object.keys(modelsAvailable).includes(modelName)) {
+			throw new Error('Invalid Model for FileUpload');
+		}
+		return modelsAvailable[modelName];
 	}
 
 	delete(fileId) {
