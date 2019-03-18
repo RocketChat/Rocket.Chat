@@ -290,6 +290,7 @@ Template.membersList.onCreated(function() {
 	Tracker.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
+		Meteor.call('userActivityCounter.set', this.data.rid);
 		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) => {
 			this.users.set(users.records);
 			this.total.set(users.total);
