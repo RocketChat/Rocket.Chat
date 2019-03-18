@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { deleteRoom } from '/app/lib';
-import { hasPermission } from '/app/authorization';
-import { Rooms } from '/app/models';
-import { Apps } from '/app/apps';
-import { roomTypes } from '/app/utils';
+import { deleteRoom } from '../../app/lib';
+import { hasPermission } from '../../app/authorization';
+import { Rooms } from '../../app/models';
+import { Apps } from '../../app/apps';
+import { roomTypes } from '../../app/utils';
 
 Meteor.methods({
 	eraseRoom(rid) {

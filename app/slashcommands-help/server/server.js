@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { slashCommands } from '/app/utils';
-import { Notifications } from '/app/notifications';
+import { slashCommands } from '../../utils';
+import { Notifications } from '../../notifications';
 
 /*
 * Help is a named function that will replace /join commands

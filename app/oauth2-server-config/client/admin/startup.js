@@ -1,5 +1,5 @@
-import { AdminBox } from '/app/ui-utils';
-import { hasAllPermission } from '/app/authorization';
+import { AdminBox } from '../../../ui-utils';
+import { hasAllPermission } from '../../../authorization';
 
 AdminBox.addOption({
 	href: 'admin-oauth-apps',

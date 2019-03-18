@@ -7,11 +7,11 @@ import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { settings } from '/app/settings';
-import * as Models from '/app/models';
+import { settings } from '../../../settings';
+import * as Models from '../../../models';
 import { FileUpload as _FileUpload } from '../../lib/FileUpload';
-import { roomTypes } from '/app/utils';
-import { hasPermission } from '/app/authorization';
+import { roomTypes } from '../../../utils';
+import { hasPermission } from '../../../authorization';
 
 const cookie = new Cookies();
 

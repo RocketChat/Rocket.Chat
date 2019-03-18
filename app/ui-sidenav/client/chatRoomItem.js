@@ -1,11 +1,11 @@
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t } from '/app/utils';
-import { settings } from '/app/settings';
-import { roomTypes } from '/app/utils';
-import { Rooms } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { t } from '../../utils';
+import { settings } from '../../settings';
+import { roomTypes } from '../../utils';
+import { Rooms } from '../../models';
+import { callbacks } from '../../callbacks';
 
 Template.chatRoomItem.helpers({
 	roomData() {

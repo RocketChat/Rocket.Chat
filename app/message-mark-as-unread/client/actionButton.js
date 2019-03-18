@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { RoomManager, MessageAction } from '/app/ui-utils';
-import { handleError } from '/app/utils';
-import { ChatSubscription } from '/app/models';
+import { RoomManager, MessageAction } from '../../ui-utils';
+import { handleError } from '../../utils';
+import { ChatSubscription } from '../../models';
 
 Meteor.startup(() => {
 	MessageAction.addButton({

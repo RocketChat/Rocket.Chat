@@ -1,5 +1,5 @@
 import { Random } from 'meteor/random';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import './email';
 
 // Insert server unique id if it doesn't exist

@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Messages, EmojiCustom, Subscriptions, Rooms } from '/app/models';
-import { Notifications } from '/app/notifications';
-import { callbacks } from '/app/callbacks';
-import { emoji } from '/app/emoji';
-import { isTheLastMessage, msgStream } from '/app/lib';
+import { Messages, EmojiCustom, Subscriptions, Rooms } from '../../models';
+import { Notifications } from '../../notifications';
+import { callbacks } from '../../callbacks';
+import { emoji } from '../../emoji';
+import { isTheLastMessage, msgStream } from '../../lib';
 import _ from 'underscore';
 
 const removeUserReaction = (message, reaction, username) => {

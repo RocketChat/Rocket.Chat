@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { t, getURL } from '/app/utils';
-import { Subscriptions, WebdavAccounts } from '/app/models';
-import { settings } from '/app/settings';
-import { MessageAction, modal } from '/app/ui-utils';
+import { t, getURL } from '../../utils';
+import { Subscriptions, WebdavAccounts } from '../../models';
+import { settings } from '../../settings';
+import { MessageAction, modal } from '../../ui-utils';
 
 Meteor.startup(function() {
 

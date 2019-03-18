@@ -1,7 +1,7 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { handleError } from '/app/utils';
-import { fireGlobalEvent, Layout } from '/app/ui-utils';
+import { handleError } from '../../utils';
+import { fireGlobalEvent, Layout } from '../../ui-utils';
 import { actionLinks } from '../both/lib/actionLinks';
 
 Template.room.events({

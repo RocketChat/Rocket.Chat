@@ -22,7 +22,7 @@ export class Users extends Base {
 
 	loadSettings() {
 		Meteor.startup(async() => {
-			const { settings } = await import('/app/settings');
+			const { settings } = await import('../../../settings');
 			this.settings = settings;
 		});
 	}

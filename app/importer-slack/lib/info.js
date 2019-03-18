@@ -1,4 +1,4 @@
-import { ImporterInfo } from '/app/importer';
+import { ImporterInfo } from '../../importer';
 
 export class SlackImporterInfo extends ImporterInfo {
 	constructor() {

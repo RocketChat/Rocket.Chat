@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { TabBar } from '/app/ui-utils';
+import { TabBar } from '../../../ui-utils';
 
 Meteor.startup(() => {
 	TabBar.addButton({
-		groups: ['channel', 'group', 'direct'],
+		groups: ['channel', 'group'],
 		id: 'channel-settings',
 		anonymous: true,
 		i18nTitle: 'Room_Info',

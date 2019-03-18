@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Rooms } from '/app/models';
+import { Users, Rooms } from '../../../../models';
 
 export default function handleOnLogin(login) {
 	if (login.user === null) {

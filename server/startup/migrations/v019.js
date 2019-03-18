@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Migrations } from '/app/migrations';
-import { addUserRoles } from '/app/authorization';
-import { Rooms, Subscriptions, Messages } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { addUserRoles } from '../../../app/authorization';
+import { Rooms, Subscriptions, Messages } from '../../../app/models';
 import _ from 'underscore';
 
 Migrations.add({

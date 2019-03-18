@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Rooms, Messages } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Rooms, Messages } from '../../../models';
 
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
 
