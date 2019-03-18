@@ -22,6 +22,15 @@
 		</ul>
 		<span class="rc-popover__divider"></span>
 		<ul class="rc-popover__list">
+			<li class="rc-popover__item {{bold 'sidebarShowThreads'}}">
+				<label class="rc-popover__label">
+					<input type="checkbox" name="sidebarShowThreads" class="hidden" checked="{{checked 'sidebarShowThreads'}}" />
+					<span class="rc-popover__icon">
+						{{> icon block="rc-popover__icon-element" icon='thread' }}
+					</span>
+					<span class="rc-popover__item-text">{{_ "Threads_in_sidebar"}}</span>
+				</label>
+			</li>
 			<li class="rc-popover__item {{bold 'sidebarGroupByType'}}">
 				<label class="rc-popover__label">
 					<input type="checkbox" name="sidebarGroupByType" class="hidden" checked="{{checked 'sidebarGroupByType'}}"/>

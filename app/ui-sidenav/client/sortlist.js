@@ -6,6 +6,10 @@ import { settings } from '../../settings';
 
 const checked = function(prop, field) {
 	const userId = Meteor.userId();
+
+	if (prop === 'sidebarShowThreads') {
+		return getUserPreference(userId, 'sidebarShowThreads');
+	}
 	if (prop === 'sidebarShowFavorites') {
 		return getUserPreference(userId, 'sidebarShowFavorites');
 	}
