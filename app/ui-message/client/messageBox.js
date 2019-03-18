@@ -4,8 +4,8 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
-import { katex } from '../../katex';
-import { Markdown } from '../../markdown';
+import { katex } from '../../katex/client';
+import { Markdown } from '../../markdown/client';
 import { ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import {

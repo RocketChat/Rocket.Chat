@@ -10,10 +10,10 @@ import { renderEmoji } from '../../emoji';
 import { renderMessageBody, MessageTypes, MessageAction } from '../../ui-utils';
 import { settings } from '../../settings';
 import { RoomRoles, UserRoles, Roles, Subscriptions, Rooms } from '../../models';
-import { AutoTranslate } from '../../autotranslate';
+import { AutoTranslate } from '../../autotranslate/client';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { callbacks } from '../../callbacks';
-import { Markdown } from '../../markdown';
+import { Markdown } from '../../markdown/client';
 import { t, getUserPreference, roomTypes } from '../../utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
