@@ -67,15 +67,6 @@ Meteor.startup(function() {
 			username = username.replace(/\.jpg$/, '');
 
 			if (username[0] !== '@') {
-				if (Meteor.settings && Meteor.settings.public && Meteor.settings.public.sandstorm) {
-					const user = Users.findOneByUsername(username);
-					if (user && user.services && user.services.sandstorm && user.services.sandstorm.picture) {
-						res.setHeader('Location', user.services.sandstorm.picture);
-						res.writeHead(302);
-						res.end();
-						return;
-					}
-				}
 				file = Avatars.findOneByName(username);
 			}
 
