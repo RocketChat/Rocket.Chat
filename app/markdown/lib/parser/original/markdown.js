@@ -77,7 +77,7 @@ const parseNotEscaped = function(msg, message) {
 		let escapedUrl = s.escapeHTML(url);
 		escapedUrl = escapedUrl.replace(/&amp;/g, '&');
 
-		return addAsToken(`<a href="${ escapedUrl }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.escapeHTML(title) }</a>`);
+		return addAsToken(`<a href="${ escapedUrl }" target="${ s.escapeHTML(target) }" rel="noopener noreferrer">${ s.unescapeHTML(title) }</a>`);
 	});
 
 	// Support <http://link|Text>
