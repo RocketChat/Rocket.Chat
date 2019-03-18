@@ -141,16 +141,15 @@
 }
 
 .recognized-term {
+	
 	cursor: pointer;
-
-	color: #00403a;
 }
 
-.recognized-term .text {
-	border-bottom: 1px dashed;
+.recognized-term .text {	
+	
+	color: #008378;	
 }
 
 .recognized-term .text:hover {
-	color: #006b61;
-	border-style: solid;
+	border-bottom: 1px dashed;
 }
