@@ -62,6 +62,7 @@
 
 		.permission-checkbox {
 			text-align: center;
+			vertical-align: middle;
 
 			border: 1px solid black;
 		}
