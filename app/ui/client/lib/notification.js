@@ -19,7 +19,7 @@ export const KonchatNotification = {
 
 	// notificacoes HTML5
 	getDesktopPermission() {
-		if (window.Notification && (Notification.permission !== 'granted') && !Meteor.settings.public.sandstorm) {
+		if (window.Notification && (Notification.permission !== 'granted')) {
 			return Notification.requestPermission(function(status) {
 				KonchatNotification.notificationStatus.set(status);
 				if (Notification.permission !== status) {
@@ -79,7 +79,7 @@ export const KonchatNotification = {
 			return;
 		}
 
-		if ((Meteor.user().status === 'busy') || (Meteor.settings.public.sandstorm != null)) {
+		if (Meteor.user().status === 'busy') {
 			return;
 		}
 

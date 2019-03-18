@@ -66,7 +66,6 @@ import '../app/otr/server';
 import '../app/push-notifications/server';
 import '../app/retention-policy';
 import '../app/apps/server';
-import '../app/sandstorm/server';
 import '../app/setup-wizard/server';
 import '../app/slackbridge/server';
 import '../app/slashcommands-archiveroom/server';
