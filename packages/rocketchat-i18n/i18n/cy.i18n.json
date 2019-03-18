@@ -943,7 +943,7 @@
   "Duplicate_archived_channel_name": "Mae Sianel archif gydag enw `# %s` yn bodoli",
   "Duplicate_archived_private_group_name": "Mae Grŵp Preifat archif gydag enw ' %s' yn bodoli",
   "Duplicate_channel_name": "Mae Sianel gydag enw ' %s' yn bodoli",
-  "Duplicate_private_group_name": "Mae Grŵp Preifat gyda'r enw ' %s' yn bodoli",
+  "Duplicate_private_group_name": "Mae Grŵp Preifat gyda'r enw '%s' yn bodoli",
   "Duration": "Hyd",
   "Edit": "Golygu",
   "edit-message": "Golygu Neges",
