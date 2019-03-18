@@ -24,6 +24,7 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 	const tagged = apps.map((app) =>
 		({
 			price: app.price,
+			isPurchased: app.isPurchased,
 			latest: {
 				...app.latest,
 				_installed: installedIds.includes(app.latest.id),
