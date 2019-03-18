@@ -1,5 +1,4 @@
 import limax from 'limax';
-import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 
@@ -24,10 +23,6 @@ const name = (username) => (settings.get('UTF8_Names_Slugify') ? slug(username) 
 
 export function generateUsernameSuggestion(user) {
 	let usernames = [];
-
-	if (Meteor.settings.public.sandstorm) {
-		usernames.push(user.services.sandstorm.preferredHandle);
-	}
 
 	if (user.name) {
 
