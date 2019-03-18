@@ -2194,7 +2194,7 @@
   "Prune_Warning_all": "Это удалит все %s в %s!",
   "Prune_Warning_before": "Это приведет к удалению всех %s в %s до %s.",
   "Prune_Warning_after": "Это приведет к удалению всех %s в %s после %s.",
-  " %srning_between": "Это приведет к удалению всех %s в %s между %s и %s.",
+  "Prune_Warning_between": "Это приведет к удалению всех %s в %s между %s и %s.",
   "Pruning_messages": "Обрезка сообщений ...",
   "Pruning_files": "Обрезка файлов ...",
   "messages_pruned": "обрезанные сообщения",
