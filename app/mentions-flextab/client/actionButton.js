@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { MessageAction, RoomHistoryManager } from '/app/ui-utils';
+import { MessageAction, RoomHistoryManager } from '../../ui-utils';
 
 Meteor.startup(function() {
 	MessageAction.addButton({

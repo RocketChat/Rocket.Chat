@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages, Rooms, Subscriptions, EmojiCustom } from '/app/models';
-import { callbacks } from '/app/callbacks';
-import { emoji } from '/app/emoji';
+import { Messages, Rooms, Subscriptions, EmojiCustom } from '../../../models';
+import { callbacks } from '../../../callbacks';
+import { emoji } from '../../../emoji';
 import _ from 'underscore';
 
 Meteor.methods({

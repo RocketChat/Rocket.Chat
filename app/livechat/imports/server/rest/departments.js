@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
-import { API } from '/app/api';
-import { hasPermission } from '/app/authorization';
-import { LivechatDepartment, LivechatDepartmentAgents } from '/app/models';
+import { API } from '../../../../api';
+import { hasPermission } from '../../../../authorization';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {

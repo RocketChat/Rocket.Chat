@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { popover } from '/app/ui-utils';
+import { popover } from '../../../../../ui-utils';
 import moment from 'moment';
 import { setDateRange } from '../../../lib/dateHandler';
 

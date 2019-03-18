@@ -1,5 +1,5 @@
 import { createJSAccountsGraphQL } from '@accounts/graphql-api';
-import { AccountsServer } from '/app/accounts';
+import { AccountsServer } from '../../../../accounts';
 import { mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 
 // queries

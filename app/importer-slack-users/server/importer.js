@@ -6,9 +6,9 @@ import {
 	ProgressStep,
 	Selection,
 	SelectionUser,
-} from '/app/importer';
-import { RocketChatFile } from '/app/file';
-import { Users } from '/app/models';
+} from '../../importer';
+import { RocketChatFile } from '../../file';
+import { Users } from '../../models';
 
 export class SlackUsersImporter extends Base {
 	constructor(info) {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
 import { TOTP } from './lib/totp';
 
 Accounts.registerLoginHandler('totp', function(options) {

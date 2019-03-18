@@ -1,7 +1,7 @@
-import { callbacks } from '/app/callbacks';
-import { settings } from '/app/settings';
-import { SMS } from '/app/sms';
-import { LivechatVisitors } from '/app/models';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
+import { SMS } from '../../sms';
+import { LivechatVisitors } from '../../models';
 
 callbacks.add('afterSaveMessage', function(message, room) {
 	// skips this callback if the message was edited

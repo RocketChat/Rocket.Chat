@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from '/app/settings';
-import { Subscriptions, Users, Roles } from '/app/models';
+import { settings } from '../../../settings';
+import { Subscriptions, Users, Roles } from '../../../models';
 import _ from 'underscore';
 
 Meteor.methods({

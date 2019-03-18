@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '/app/settings';
-import { hasRole } from '/app/authorization';
+import { settings } from '../../../settings';
+import { hasRole } from '../../../authorization';
 import toastr from 'toastr';
 
 Template.ChatpalAdmin.onCreated(function() {

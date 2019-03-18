@@ -4,10 +4,10 @@ import { Utilities } from '../lib/misc/Utilities';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { TAPi18next } from 'meteor/tap:i18n';
-import { APIClient } from '/app/utils';
-import { AdminBox } from '/app/ui-utils';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { APIClient } from '../../utils';
+import { AdminBox } from '../../ui-utils';
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import { hasAtLeastOnePermission } from '../../authorization';
 
 export let Apps;
 

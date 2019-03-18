@@ -1,5 +1,5 @@
 import { Session } from 'meteor/session';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 export const getAvatarUrlFromUsername = function(username) {
 	const externalSource = (settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');

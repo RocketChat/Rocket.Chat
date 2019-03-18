@@ -1,4 +1,4 @@
-import { hostname } from '/app/lib';
+import { hostname } from '../../lib';
 import Providers from './providers';
 import Settings from './settings';
 import { path, generateCallback, generateAppCallback } from './routes';

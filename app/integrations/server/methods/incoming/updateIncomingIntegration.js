@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasAllPermission, hasPermission } from '/app/authorization';
-import { Integrations, Rooms, Users, Roles, Subscriptions } from '/app/models';
+import { hasAllPermission, hasPermission } from '../../../../authorization';
+import { Integrations, Rooms, Users, Roles, Subscriptions } from '../../../../models';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';

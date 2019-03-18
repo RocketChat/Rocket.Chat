@@ -1,6 +1,6 @@
 import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
-import { FederationDNSCache } from '/app/models';
+import { FederationDNSCache } from '../../models';
 
 import { logger } from './logger';
 import peerHTTP from './peerHTTP';
@@ -89,24 +89,17 @@ class PeerDNS {
 		const [srvEntry] = srvEntries;
 
 		// Get the public key from the TXT record
-		const txtRecords = dnsResolveTXT(domain);
+		const txtRecords = dnsResolveTXT(`rocketchat-public-key.${ domain }`);
 
-		let publicKey;
+		// Get the first TXT record, this subdomain should have only a single record
+		const txtRecord = txtRecords[0];
 
-		for (const txtRecord of txtRecords) {
-			const joinedTxtRecord = txtRecord.join('');
-
-			if (joinedTxtRecord.indexOf('rocketchat-public-key=') === 0) {
-				publicKey = joinedTxtRecord;
-				break;
-			}
-		}
-
-		if (!publicKey) {
+		// If there is no record, skip
+		if (!txtRecord) {
 			throw new Meteor.Error('ENOTFOUND', 'Could not find public key entry on TXT records');
 		}
 
-		publicKey = publicKey.replace('rocketchat-public-key=', '');
+		const publicKey = txtRecord.join('');
 
 		const protocol = srvEntry.name === 'localhost' ? 'http' : 'https';
 
@@ -139,7 +132,7 @@ class PeerDNS {
 		try {
 			peer = this.getPeerUsingDNS(domain);
 		} catch (err) {
-			if (err.code !== 'ENOTFOUND') {
+			if (['ENODATA', 'ENOTFOUND'].indexOf(err.code) === -1) {
 				this.log(err);
 
 				throw new Error(`Error trying to fetch SRV DNS entries for ${ domain }`);

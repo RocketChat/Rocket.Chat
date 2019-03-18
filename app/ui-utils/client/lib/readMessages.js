@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { ChatSubscription, ChatMessage } from '/app/models';
+import { ChatSubscription, ChatMessage } from '../../../models';
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
 import _ from 'underscore';

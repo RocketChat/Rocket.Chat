@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { roomTypes } from '/app/utils';
+import { roomTypes } from '../../../../utils';
 
 Template.roomSearch.helpers({
 	roomIcon() {

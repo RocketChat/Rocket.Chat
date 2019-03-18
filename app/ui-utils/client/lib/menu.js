@@ -1,8 +1,8 @@
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
-import { lazyloadtick } from '/app/lazy-load';
-import { isRtl } from '/app/utils';
+import { lazyloadtick } from '../../../lazy-load';
+import { isRtl } from '../../../utils';
 
 const sideNavW = 280;
 const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;

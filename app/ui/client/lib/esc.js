@@ -1,5 +1,6 @@
-import { SideNav } from '/app/ui-utils';
+import { SideNav } from '../../../ui-utils';
 import { VideoRecorder } from './recorderjs/videoRecorder';
+import { VRecDialog } from '../../../ui-vrecord/client/VRecDialog';
 
 const escapify = {
 	init() {
@@ -9,7 +10,7 @@ const escapify = {
 			if (keyName === 'Escape') {
 				that.sideNavIcon();
 				that.flextTabButton();
-				that.videoDialog().then();
+				that.videoDialog();
 				that.sweetAlerts();
 			}
 		}, false);
@@ -39,8 +40,7 @@ const escapify = {
 		}
 	},
 
-	async videoDialog() {
-		const { VRecDialog } = await import('/app/ui-vrecord');
+	videoDialog() {
 		const vrecDialog = document.querySelector('.vrec-dialog');
 		if (vrecDialog && Number(window.getComputedStyle(vrecDialog).opacity) === 1) {
 			VideoRecorder.stop();

@@ -1,3 +1,3 @@
-import { AuthzCachedCollection } from '/app/models';
+import { AuthzCachedCollection } from '../../../models';
 
 export const ChatPermissions = AuthzCachedCollection.collection;

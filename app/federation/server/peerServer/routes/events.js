@@ -1,5 +1,5 @@
-import { API } from '/app/api';
-import { FederationKeys } from '/app/models';
+import { API } from '../../../../api';
+import { FederationKeys } from '../../../../models';
 
 import { Federation } from '../../main';
 

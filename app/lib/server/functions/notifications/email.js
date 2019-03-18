@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
-import * as Mailer from '/app/mailer';
-import { settings } from '/app/settings';
-import { roomTypes } from '/app/utils';
-import { metrics } from '/app/metrics';
-import { callbacks } from '/app/callbacks';
+import * as Mailer from '../../../../mailer';
+import { settings } from '../../../../settings';
+import { roomTypes } from '../../../../utils';
+import { metrics } from '../../../../metrics';
+import { callbacks } from '../../../../callbacks';
 
 let advice = '';
 let goToMessage = '';
@@ -54,7 +54,7 @@ function getEmailContent({ message, user, room }) {
 			lng,
 		});
 
-		let content = `${ TAPi18n.__('Attachment_File_Uploaded') }: ${ s.escapeHTML(message.file.name) }`;
+		let content = `${ s.escapeHTML(message.file.name) }`;
 
 		if (message.attachments && message.attachments.length === 1 && message.attachments[0].description !== '') {
 			content += `<br/><br/>${ s.escapeHTML(message.attachments[0].description) }`;

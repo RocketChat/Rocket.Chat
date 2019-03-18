@@ -5,7 +5,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import localforage from 'localforage';
-import { callbacks } from '/app/callbacks';
+import { callbacks } from '../../../callbacks';
+import Notifications from '../../../notifications/client/lib/Notifications';
 import _ from 'underscore';
 
 class CachedCollectionManagerClass {
@@ -346,9 +347,8 @@ export class CachedCollection {
 
 	async setupListener(eventType, eventName) {
 		Meteor.startup(async() => {
-			const { Notifications } = await import('/app/notifications');
-			const { RoomManager } = await import('/app/ui-utils');
-			const { ChatRoom, CachedChatRoom } = await import('/app/models');
+			const { RoomManager } = await import('../../../ui-utils');
+			const { ChatRoom, CachedChatRoom } = await import('../../../models');
 			Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 				this.log('record received', t, record);
 				callbacks.run(`cachedCollection-received-${ this.name }`, record, t);

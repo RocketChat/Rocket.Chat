@@ -21,27 +21,16 @@
 		flex-direction: column;
 
 		height: 100%;
-
-		padding: 0 25px;
 	}
 
-	&__header,
 	&__switches,
-	&__inputs:not(:last-child),
-	& .rc-input:not(:last-child) {
+	&__inputs:not(:only-child),
+	& .rc-input:not(:only-child) {
 		margin-bottom: var(--create-channel-gap-between-elements);
 	}
 
-	&__title {
-		padding: 0.25rem 0;
-
-		color: var(--create-channel-title-color);
-
-		font-size: var(--create-channel-title-text-size);
-	}
-
 	&__description {
-		padding: 0.25rem 0;
+		padding: var(--create-channel-gap-between-elements) 0;
 
 		color: var(--create-channel-description-color);
 
