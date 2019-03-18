@@ -2516,6 +2516,8 @@
   "This_is_a_push_test_messsage": "Toto je testovací notifikace",
   "This_room_has_been_archived_by__username_": "Tato místnost byla archivována uživatelem __username__",
   "This_room_has_been_unarchived_by__username_": "Tato místnost byla úspěšně odarchivována uživatelem __username__",
+  "Thread_slash_command_params": "vaše zpráva",
+  "Threading_context_menu_none": "Neviditelný",
   "Thursday": "Čtvrtek",
   "Time_in_seconds": "Čas v sekundách",
   "Title": "Název",

@@ -2513,6 +2513,8 @@
   "This_is_a_push_test_messsage": "ນີ້ເປັນ messsage ການທົດສອບການຊຸກຍູ້",
   "This_room_has_been_archived_by__username_": "ຫ້ອງນີ້ໄດ້ຮັບການຮັກສາໄວ້ໂດຍ __username__",
   "This_room_has_been_unarchived_by__username_": "ຫ້ອງນີ້ໄດ້ຮັບການ unarchived ໂດຍ __username__",
+  "Thread_slash_command_params": "ຂໍ້​ຄວາມ​ຂອງ​ເຈົ້າ",
+  "Threading_context_menu_none": "ທີ່ເບິ່ງບໍ່ເຫັນ",
   "Thursday": "ວັນພະຫັດ",
   "Time_in_seconds": "ທີ່ໃຊ້ເວລາໃນວິນາທີ",
   "Title": "Title",

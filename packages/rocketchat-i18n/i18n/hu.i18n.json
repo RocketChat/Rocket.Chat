@@ -2513,6 +2513,8 @@
   "This_is_a_push_test_messsage": "Ez egy push teszt messsage",
   "This_room_has_been_archived_by__username_": "Ez a szoba már archiválásra __username__",
   "This_room_has_been_unarchived_by__username_": "Ez a szoba már nem archivált által __username__",
+  "Thread_slash_command_params": "az üzeneted",
+  "Threading_context_menu_none": "Láthatatlan",
   "Thursday": "csütörtök",
   "Time_in_seconds": "Az az idő másodpercben",
   "Title": "Cím",

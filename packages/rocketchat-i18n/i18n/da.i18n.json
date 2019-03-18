@@ -2631,6 +2631,8 @@
   "This_is_a_push_test_messsage": "Dette er en push test besked",
   "This_room_has_been_archived_by__username_": "Dette værelse er blevet arkiveret af __username__",
   "This_room_has_been_unarchived_by__username_": "Dette værelse er blevet arkiveret af __username__",
+  "Thread_slash_command_params": "din besked",
+  "Threading_context_menu_none": "Usynlig",
   "Thursday": "torsdag",
   "Time_in_seconds": "Tid i sekunder",
   "Title": "Titel",

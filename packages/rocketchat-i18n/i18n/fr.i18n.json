@@ -2514,6 +2514,8 @@
   "This_is_a_push_test_messsage": "Ceci est une notification de test",
   "This_room_has_been_archived_by__username_": "Ce salon a été archivé par __username__",
   "This_room_has_been_unarchived_by__username_": "Ce salon a été désarchivé par __username__",
+  "Thread_slash_command_params": "votre message",
+  "Threading_context_menu_none": "Invisible",
   "Thursday": "Jeudi",
   "Time_in_seconds": "Temps en secondes",
   "Title": "Titre",

@@ -2741,6 +2741,8 @@
   "This_month": "Bu Ay",
   "This_room_has_been_archived_by__username_": "Bu oda __username__ tarafından arşivlenmiştir.",
   "This_room_has_been_unarchived_by__username_": "Bu oda __username__ tarafından arşivden kaldırıldılmıştır.",
+  "Thread_slash_command_params": "iletiniz",
+  "Threading_context_menu_none": "Görünmez",
   "This_week": "Bu Hafta",
   "Thursday": "Perşembe",
   "Time_in_seconds": "Zaman, saniye olarak",

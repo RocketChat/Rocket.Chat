@@ -2504,6 +2504,8 @@
   "This_is_a_push_test_messsage": "Đây là một thông báo thử nghiệm đẩy",
   "This_room_has_been_archived_by__username_": "Phòng này đã được lưu trữ bởi __username__",
   "This_room_has_been_unarchived_by__username_": "Phòng này đã được hủy lưu trữ bởi __username__",
+  "Thread_slash_command_params": "tin nhắn của bạn",
+  "Threading_context_menu_none": "Vô hình",
   "Thursday": "Thứ năm",
   "Time_in_seconds": "Thời gian tính bằng giây",
   "Title": "Tiêu đề",

@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "นี่เป็นข้อความทดสอบแบบกด",
   "This_room_has_been_archived_by__username_": "ห้องนี้ได้รับการเก็บถาวรโดย __ ชื่อผู้ใช้__",
   "This_room_has_been_unarchived_by__username_": "ห้องนี้ได้ยกเลิกการเก็บถาวรโดย __ ชื่อผู้ใช้",
+  "Thread_slash_command_params": "ข้อความของคุณ",
+  "Threading_context_menu_none": "มองไม่เห็น",
   "Thursday": "วันพฤหัสบดี",
   "Time_in_seconds": "เวลาเป็นวินาที",
   "Title": "หัวข้อ",

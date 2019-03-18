@@ -2675,6 +2675,8 @@
   "This_month": "이번 달",
   "This_room_has_been_archived_by__username_": "__username__님이 이 대화방을 보관처리 했습니다.",
   "This_room_has_been_unarchived_by__username_": "__username__님이 이 대화방의 보관처리를 취소했습니다.",
+  "Thread_slash_command_params": "메시지",
+  "Threading_context_menu_none": "보이지 않음",
   "This_week": "이번 주",
   "Thursday": "목요일",
   "Time_in_seconds": "시간 (초)",

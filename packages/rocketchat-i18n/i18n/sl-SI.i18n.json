@@ -2511,6 +2511,8 @@
   "This_is_a_push_test_messsage": "To je testno potisno sporočilo",
   "This_room_has_been_archived_by__username_": "To sobo je arhiviral __username__",
   "This_room_has_been_unarchived_by__username_": "To sobo je odarhiviral __username__",
+  "Thread_slash_command_params": "vaše sporočilo",
+  "Threading_context_menu_none": "Neviden",
   "Thursday": "Četrtek",
   "Time_in_seconds": "Čas v sekundah",
   "Title": "Naslov",

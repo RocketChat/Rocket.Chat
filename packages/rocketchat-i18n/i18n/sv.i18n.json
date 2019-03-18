@@ -2571,6 +2571,8 @@
   "This_is_a_push_test_messsage": "Detta är ett testpushmeddelande",
   "This_room_has_been_archived_by__username_": "Detta rum har arkiverats av __username__",
   "This_room_has_been_unarchived_by__username_": "Detta rum har avarkiverats av __username__",
+  "Thread_slash_command_params": "ditt meddelande",
+  "Threading_context_menu_none": "Osynlig",
   "Thursday": "Torsdag",
   "Time_in_seconds": "Tid i sekunder",
   "Title": "Titel",

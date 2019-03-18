@@ -2513,6 +2513,8 @@
   "This_is_a_push_test_messsage": "Tämä on testi-pushviesti",
   "This_room_has_been_archived_by__username_": "Tämä huone on arkistoitu käyttäjän __username__ toimesta",
   "This_room_has_been_unarchived_by__username_": "Tämä huone on palautettu arkistosta käyttäjän __username__ toimesta",
+  "Thread_slash_command_params": "viestisi",
+  "Threading_context_menu_none": "Näkymätön",
   "Thursday": "torstai",
   "Time_in_seconds": "Aika sekunneissa",
   "Title": "Otsikko",

@@ -2513,6 +2513,8 @@
   "This_is_a_push_test_messsage": "Acesta este un test de notificare Push",
   "This_room_has_been_archived_by__username_": "Această cameră a fost arhivate de __username__",
   "This_room_has_been_unarchived_by__username_": "Această cameră a fost dezarhivată de __username__",
+  "Thread_slash_command_params": "mesajul tau",
+  "Threading_context_menu_none": "Invizibil",
   "Thursday": "Joi",
   "Time_in_seconds": "Timpul în secunde",
   "Title": "Titlu",

@@ -2513,6 +2513,8 @@
   "This_is_a_push_test_messsage": "Това е съобщение за пробно изпитание",
   "This_room_has_been_archived_by__username_": "Тази стая е архивирана от __username__",
   "This_room_has_been_unarchived_by__username_": "Тази стая е деархивирана от __username__",
+  "Thread_slash_command_params": "твоето съобщение",
+  "Threading_context_menu_none": "невидим",
   "Thursday": "четвъртък",
   "Time_in_seconds": "Времето в секунди",
   "Title": "Заглавие",

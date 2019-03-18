@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "Toto je tlačová skúšobná správa",
   "This_room_has_been_archived_by__username_": "Táto miestnosť bola archivovaná __username__",
   "This_room_has_been_unarchived_by__username_": "Táto miestnosť bola zrušená archivovaním __username__",
+  "Thread_slash_command_params": "tvoja správa",
+  "Threading_context_menu_none": "neviditeľný",
   "Thursday": "štvrtok",
   "Time_in_seconds": "Čas v sekundách",
   "Title": "Nadpis",

@@ -2513,6 +2513,8 @@
   "This_is_a_push_test_messsage": "Це поштовх тест messsage",
   "This_room_has_been_archived_by__username_": "Цей номер був архівуються __username__",
   "This_room_has_been_unarchived_by__username_": "Цей номер був Розархівувати по __username__",
+  "Thread_slash_command_params": "Ваше повідомлення",
+  "Threading_context_menu_none": "Прихований",
   "Thursday": "четвер",
   "Time_in_seconds": "Час в секундах",
   "Title": "назва",

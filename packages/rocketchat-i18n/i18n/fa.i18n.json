@@ -2520,6 +2520,8 @@
   "This_is_a_push_test_messsage": "این messsage آزمون فشار است",
   "This_room_has_been_archived_by__username_": "این اتاق شده است _نام کاربری_ آرشیو",
   "This_room_has_been_unarchived_by__username_": "این اتاق شده است _نام کاربری_ از بایگانی خارج شد",
+  "Thread_slash_command_params": "پیام شما",
+  "Threading_context_menu_none": "پنهان",
   "Thursday": "پنج شنبه",
   "Time_in_seconds": "زمان در ثانیه",
   "Title": "عنوان",
