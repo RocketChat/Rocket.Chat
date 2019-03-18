@@ -44,6 +44,7 @@ Template.membersList.helpers({
 		const room = ChatRoom.findOne(this.rid);
 		const roomMuted = (room != null ? room.muted : undefined) || [];
 		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
+		const { userActivity } = room.customFields;
 		let totalOnline = 0;
 		let users = roomUsers;
 
@@ -75,22 +76,41 @@ Template.membersList.helpers({
 				}
 			}
 
+			let messageCount;
+			let i;
+			for (i in userActivity) {
+				if (userActivity[i]._id === user._id) {
+					messageCount = userActivity[i].messageCount;
+				}
+			}
+
 			return {
 				user,
 				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
 				muted: Array.from(roomMuted).includes(user.username),
 				utcOffset,
+				messageCount,
 			};
 		});
 
-		if (settings.get('UI_Use_Real_Name')) {
+		if (settings.get('UI_Use_Real_Name')) {console.log('returning false');
 			users = _.sortBy(users, (u) => u.user.name);
 		} else {
 			users = _.sortBy(users, (u) => u.user.username);
 		}
-		// show online users first.
-		// sortBy is stable, so we can do this
-		users = _.sortBy(users, (u) => u.status === 'offline');
+
+		switch (Template.instance().sortingMode.get()) {
+			case 0:
+				users = _.sortBy(users, (u) => u.status === 'offline');
+				break;
+			case 1:
+				break;
+			case 2:
+				users = _.sortBy(users, (u) => (-1) * u.messageCount);
+				break;
+			default:
+				break;
+		}
 
 		let hasMore = undefined;
 		const usersLimit = Template.instance().usersLimit.get();
@@ -190,7 +210,8 @@ Template.membersList.events({
 		// const seeAll = instance.showAllUsers.get();
 		// instance.showAllUsers.set(!seeAll);
 
-		switch (document.getElementById('status-type').selectedIndex) {
+		instance.sortingMode.set(document.getElementById('status-type').selectedIndex);
+		switch (instance.sortingMode.get()) {
 			case 0:
 				console.log('Online');
 				instance.showAllUsers.set(false);
@@ -202,13 +223,10 @@ Template.membersList.events({
 			case 2:
 				console.log('Most Active');
 				instance.showAllUsers.set(true);
-				Meteor.call('userActivityCounter.incrementMessageCount', 'GENERAL', 'ioHuJTzSna9ZQPKHG');
 				break;
-		
 			default:
 				break;
 		}
-		
 	},
 	'click .see-all'(e, instance) {
 		const seeAll = instance.showAllUsers.get();
@@ -299,6 +317,7 @@ Template.membersList.onCreated(function() {
 	this.userDetail = new ReactiveVar;
 	this.showDetail = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
+	this.sortingMode = new ReactiveVar(0);
 
 
 	this.users = new ReactiveVar([]);
@@ -310,7 +329,10 @@ Template.membersList.onCreated(function() {
 	Tracker.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
-		Meteor.call('userActivityCounter.set', this.data.rid);
+		if (Meteor.call('userActivityCounter.isSet', this.data.rid)) {
+			console.log('inside if');
+			Meteor.call('userActivityCounter.set', this.data.rid);
+		}
 		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), (error, users) => {
 			this.users.set(users.records);
 			this.total.set(users.total);
