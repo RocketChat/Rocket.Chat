@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { AccountBox } from '/app/ui-utils';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
+import { AccountBox } from '../../../ui-utils';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
 import s from 'underscore.string';
 
 const commands = {

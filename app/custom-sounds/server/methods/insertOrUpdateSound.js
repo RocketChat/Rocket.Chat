@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { CustomSounds } from '/app/models';
-import { Notifications } from '/app/notifications';
+import { hasPermission } from '../../../authorization';
+import { CustomSounds } from '../../../models';
+import { Notifications } from '../../../notifications';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 import s from 'underscore.string';
 

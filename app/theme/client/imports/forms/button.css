@@ -189,6 +189,15 @@
 			margin: 0 5px;
 		}
 
+		&--wrap {
+			margin: 5px -5px;
+			flex-wrap: wrap;
+
+			& > .rc-button {
+				margin: 5px;
+			}
+		}
+
 		&--stretch {
 			justify-content: stretch;
 

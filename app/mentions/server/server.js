@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Notifications } from '/app/notifications';
-import { Users, Subscriptions, Rooms } from '/app/models';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { Notifications } from '../../notifications';
+import { Users, Subscriptions, Rooms } from '../../models';
 import _ from 'underscore';
 import MentionsServer from './Mentions';
 

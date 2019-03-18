@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { ChatMessage } from '/app/models';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { settings } from '/app/settings';
+import { ChatMessage } from '../../app/models';
+import { hasAtLeastOnePermission } from '../../app/authorization';
+import { settings } from '../../app/settings';
 import _ from 'underscore';
 import moment from 'moment';
 

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
-import { getUserPreference } from '/app/utils';
-import { Subscriptions, Users } from '/app/models';
+import { settings } from '../../../settings';
+import { getUserPreference } from '../../../utils';
+import { Subscriptions, Users } from '../../../models';
 
 let audio = null;
 

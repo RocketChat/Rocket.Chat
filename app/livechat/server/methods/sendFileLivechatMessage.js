@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { Rooms, LivechatVisitors } from '/app/models';
-import { FileUpload } from '/app/file-upload';
+import { Rooms, LivechatVisitors } from '../../../models';
+import { FileUpload } from '../../../file-upload';
 
 Meteor.methods({
 	async 'sendFileLivechatMessage'(roomId, visitorToken, file, msgData = {}) {

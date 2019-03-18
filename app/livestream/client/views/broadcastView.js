@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { handleError } from '/app/utils';
-import { settings } from '/app/settings';
+import { handleError } from '../../../utils';
+import { settings } from '../../../settings';
 
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {

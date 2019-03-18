@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from '/app/custom-oauth';
+import { CustomOAuth } from '../../custom-oauth';
 import _ from 'underscore';
 
 const config = {

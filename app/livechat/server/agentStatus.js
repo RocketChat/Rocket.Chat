@@ -1,4 +1,4 @@
-import { hasRole } from '/app/authorization';
+import { hasRole } from '../../authorization';
 import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
 import { Livechat } from './lib/Livechat';
 

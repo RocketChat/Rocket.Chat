@@ -1,4 +1,4 @@
-import { Settings } from '/app/models';
+import { Settings } from '../../models';
 
 let nextStatus;
 

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { getRoomByNameOrIdWithOptionToJoin } from '/app/lib';
-import { Subscriptions, Uploads, Users, Messages, Rooms } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { composeMessageObjectWithUser } from '/app/utils';
-import { settings } from '/app/settings';
+import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib';
+import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { composeMessageObjectWithUser } from '../../../utils';
+import { settings } from '../../../settings';
 import { API } from '../api';
 
 function findDirectMessageRoom(params, user) {

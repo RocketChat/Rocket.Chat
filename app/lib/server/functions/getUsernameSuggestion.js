@@ -1,7 +1,7 @@
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
-import { Users } from '/app/models';
-import { settings } from '/app/settings';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 
 function slug(text) {
 	return limax(text, { replacement: '.' }).replace(/[^0-9a-z-_.]/g, '');

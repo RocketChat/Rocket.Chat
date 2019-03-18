@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Rooms, LivechatVisitors, LivechatCustomField } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { API } from '/app/api';
+import { Rooms, LivechatVisitors, LivechatCustomField } from '../../../../models';
+import { hasPermission } from '../../../../authorization';
+import { API } from '../../../../api';
 import { findGuest } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 

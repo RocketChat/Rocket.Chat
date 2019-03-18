@@ -1,5 +1,5 @@
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { Base } from '/app/models';
+import { Base } from '../../../models';
 
 class ImportsModel extends Base {
 	constructor() {

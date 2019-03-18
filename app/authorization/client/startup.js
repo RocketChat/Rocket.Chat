@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAllPermission } from './hasPermission';
+import { AdminBox } from '../../ui-utils/client/lib/AdminBox';
 
-Meteor.startup(async() => {
-	const { AdminBox } = await import('/app/ui-utils');
+Meteor.startup(() => {
 
 	CachedCollectionManager.onLogin(() => Meteor.subscribe('roles'));
 

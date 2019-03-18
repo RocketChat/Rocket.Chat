@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
-import * as Models from '/app/models';
+import * as Models from '../../../models';
 import { Restivus } from 'meteor/nimble:restivus';
-import { API } from '/app/api';
+import { API } from '../../../api';
 import { Livechat } from 'meteor/rocketchat:livechat';
-import { processWebhookMessage } from '/app/lib';
+import { processWebhookMessage } from '../../../lib';
 import { logger } from '../logger';
 import Fiber from 'fibers';
 import Future from 'fibers/future';

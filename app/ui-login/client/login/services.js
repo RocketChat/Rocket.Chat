@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { CustomOAuth } from '/app/custom-oauth';
+import { CustomOAuth } from '../../../custom-oauth';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
