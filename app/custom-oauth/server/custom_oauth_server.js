@@ -6,6 +6,7 @@ import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
+import { mapRolesFromSSO } from './oauth_helpers';
 import _ from 'underscore';
 
 const logger = new Logger('CustomOAuth');
@@ -241,6 +242,8 @@ export class CustomOAuth {
 				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
 					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 				}
+				const user = Users.findOneByEmailAddress(identity.email);
+				mapRolesFromSSO(user, identity);
 			}
 
 			// console.log 'id:', JSON.stringify identity, null, '  '
