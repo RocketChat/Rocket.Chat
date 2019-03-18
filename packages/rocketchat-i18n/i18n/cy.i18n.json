@@ -1111,7 +1111,7 @@
   "every_six_hours": "Unwaith bob chwe awr",
   "every_day": "Unwaith bob dydd",
   "Everyone_can_access_this_channel": "Gall pawb gael mynediad i'r sianel hon",
-  "Example_s": "Enghraifft: <code class = \"inline\" > %s</code>",
+  "Example_s": "Enghraifft: <code class = \"inline\" >%s</code>",
   "Exclude_Botnames": "Eithrio Bots",
   "Exclude_Botnames_Description": "Peidiwch â chynyddu'r negeseuon o botiau y mae eu henw yn cyfateb â'r mynegiant rheolaidd uchod. Os bydd yn wag, bydd yr holl negeseuon o bots yn cael eu lluosogi.",
   "Exclude_pinned": "Eithrio negeseuon wedi'u pinnio",
