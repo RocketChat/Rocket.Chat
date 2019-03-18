@@ -9,10 +9,9 @@ Meteor.methods({
 		const userActivity = roomUsers.records.map(function(user) {
 			return {
 				_id : user._id,
+				name : user.name,
+				username: user.username,
 				messageCount : 0,
-				reactions : 0,
-				topicsCreated : 0,
-				replies : 0,
 			};
 		});
 
@@ -21,14 +20,13 @@ Meteor.methods({
 			lastUpdated : now,
 			userActivity,
 		};
-
 		const ret = Rooms.setCustomFieldsById(roomId, roomCustomFields);
 		Subscriptions.updateCustomFieldsByRoomId(roomId, roomCustomFields);
 
 		return ret;
-    },
+	},
 
-    'userActivityCounter.update' : (roomId, userActivity) => {
+	'userActivityCounter.update' : (roomId, userActivity) => {
 		const now = new Date();
 		console.log(userActivity);
 		const roomCustomFields = {
@@ -48,13 +46,29 @@ Meteor.methods({
 		const room = Rooms.findOne(roomId);
 		let { userActivity } = room.customFields;
 		userActivity = userActivity.map((userObject) => {
-            console.log(userObject);
 			if (userObject._id === userId) {
 				userObject.messageCount += 1;
 			}
 			return userObject;
-        });
+		});
 
 		Meteor.call('userActivityCounter.update', roomId, userActivity);
+	},
+
+	'userActivityCounter.isSet' : (roomId) => {
+		const room = Rooms.findOne(roomId);
+		if (!room.customFields) {
+			console.log('returning false');
+			return false;
+		}
+
+		const { userActivity } = room.customFields;
+		if (!userActivity) {
+			console.log('returning false');
+			return false;
+		}
+
+		console.log('no set');
+		return true;
 	},
 });
