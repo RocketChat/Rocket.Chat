@@ -2029,7 +2029,7 @@
   "Prune_Messages": "Prerežte Správy",
   "Prune_Modal": "Naozaj chcete tieto správy prerezávať? Prerezané správy nie je možné obnoviť.",
   "Prune_Warning_all": "Tým sa odstránia všetky %s v %s!",
-  " %srning_before": "Tým sa odstráni všetky% s v% s pred% s.",
+  "Prune_Warning_before": "Tým sa odstráni všetky %s v %s pred %s.",
   " %srning_after": "Tým sa odstráni všetky% s v% s po% s.",
   "Prune_Warning_between": "Tým sa odstránia všetky %s v %s medzi %s a %s.",
   "Pruning_messages": "Prerezávanie správ ...",
