@@ -5,27 +5,35 @@
 
 	text-align: center;
 
+	color: white;
+	background-image: url("/images/404.svg");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+
 	.error-404 {
 		display: block;
 
-		padding: 30px;
+		padding: 10px;
 
-		font-size: 6em;
+		font-size: 4em;
+		font-weight: bold;
 	}
 
 	.page-not-found-message {
 		display: block;
 
-		padding: 15px;
+		padding: 10px;
 
-		font-size: 2.5em;
+		font-size: 2em;
+		font-weight: bold;
 	}
 
 	.page-not-found-description {
 		display: block;
 
-		padding: 15px;
+		padding: 10px;
 
-		font-size: 1.5em;
+		font-size: 1em;
 	}
 }

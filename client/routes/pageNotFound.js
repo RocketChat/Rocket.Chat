@@ -4,6 +4,6 @@ import './pageNotFound.html';
 
 Template.pageNotFound.helpers({
 	errorcode() {
-		return '#404';
+		return '404';
 	},
 });
