@@ -1086,7 +1086,7 @@
   "error-invalid-user": "Ungültiger Benutzer",
   "error-invalid-username": "Ungültiger Benutzername",
   "error-invalid-webhook-response": "Die Webhook-URL antwortete mit einem anderen Status als 200",
-  "error-logged-user-not-in-room": "Du bist nicht im Raum ` %s`",
+  "error-logged-user-not-in-room": "Du bist nicht im Raum `%s`",
   "error-message-deleting-blocked": "Nachrichten löschen ist gesperrt",
   "error-message-editing-blocked": "Nachrichten bearbeiten ist gesperrt",
   "error-message-size-exceeded": "Nachrichtengröße überschreitet Message_MaxAllowedSize",

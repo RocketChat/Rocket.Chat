@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "Korisnik nije aktiviran",
   "error-user-limit-exceeded": "Broj korisnika koje pokušavate pozvati u #channel_name premašuje ograničenje koje je odredio administrator",
   "error-user-not-in-room": "Korisnik nije u ovoj sobi",
-  "error-logged-user-not-in-room": "Niste u sobi ` %s`",
+  "error-logged-user-not-in-room": "Niste u sobi `%s`",
   "error-user-registration-disabled": "Registracija korisnika je onemogućena",
   "error-user-registration-secret": "Registracija korisnika je dopuštena samo preko tajnog URLa",
   "error-you-are-last-owner": "Vi ste zadnji vlasnik. Postavite novog vlasnika prije izlaska iz sobe.",

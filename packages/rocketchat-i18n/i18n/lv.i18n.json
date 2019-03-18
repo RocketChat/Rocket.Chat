@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "Lietotājs nav aktivizēts",
   "error-user-limit-exceeded": "Lietotāju skaits, kuru jūs mēģināt ielūgt uz #channel_name, pārsniedz administratora noteikto ierobežojumu",
   "error-user-not-in-room": "Lietotājs nav šajā istabā",
-  "error-logged-user-not-in-room": "Jūs neatrodaties istabā ` %s`",
+  "error-logged-user-not-in-room": "Jūs neatrodaties istabā `%s`",
   "error-user-registration-disabled": "Lietotāja reģistrācija ir atspējota",
   "error-user-registration-secret": "Lietotāja reģistrācija ir atļauta tikai ar slepenu URL",
   "error-you-are-last-owner": "Jūs esat pēdējais īpašnieks. Pirms atstāt istabu, lūdzu, iestatiet jaunu īpašnieku.",

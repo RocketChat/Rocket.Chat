@@ -1093,7 +1093,7 @@
   "error-user-is-not-activated": "Brukeren er ikke aktivert",
   "error-user-limit-exceeded": "Antall brukere du prøver å invitere til #kanalnavn overskrider grensen satt av administratoren",
   "error-user-not-in-room": "Brukeren er ikke i dette rommet",
-  "error-logged-user-not-in-room": "Du er ikke på rommet ` %s`",
+  "error-logged-user-not-in-room": "Du er ikke på rommet `%s`",
   "error-user-registration-disabled": "Brukerregistrering er deaktivert",
   "error-user-registration-secret": "Brukerregistrering er bare tillatt via hemmelig URL",
   "error-you-are-last-owner": "Du er den siste eieren. Vennligst sett inn ny eier før du forlater rommet.",

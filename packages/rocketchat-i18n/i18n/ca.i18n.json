@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "L'usuari no ha estat activat",
   "error-user-limit-exceeded": "El nombre d'usuaris per invitar al canal #channel_name supera el límit establert per l'administrador",
   "error-user-not-in-room": "L'usuari no es troba en aquesta sala",
-  "error-logged-user-not-in-room": "No esteu a la sala ` %s`",
+  "error-logged-user-not-in-room": "No esteu a la sala `%s`",
   "error-user-registration-disabled": "El registre d'usuaris està desactivat",
   "error-user-registration-secret": "El registre d'usuaris només es permet a través d'URL secret",
   "error-you-are-last-owner": "Ets l'últim propietari. Si us plau, estableix un nou propietari abans de sortir de la sala.",

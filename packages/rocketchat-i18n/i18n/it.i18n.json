@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "L'utente non è stato attivato",
   "error-user-limit-exceeded": "Il numero di utenti che stai provando ad invitare a #channel_name eccede il limite impostato dall'amministratore",
   "error-user-not-in-room": "L'utente non è in questo canale",
-  "error-logged-user-not-in-room": "Non sei nella stanza ` %s`",
+  "error-logged-user-not-in-room": "Non sei nella stanza `%s`",
   "error-user-registration-disabled": "La registrazione utente è disattivata",
   "error-user-registration-secret": "La registrazione utente è consentita solo tramite URL segreto",
   "error-you-are-last-owner": "Tu sei l'ultimo proprietario. Si prega di impostare il nuovo proprietario prima di lasciare il canale.",

@@ -1108,7 +1108,7 @@
   "error-user-is-not-activated": "Карыстальнік не актываваны",
   "error-user-limit-exceeded": "Колькасць карыстальнікаў, якія вы спрабуеце запрасіць #channel_name перавышае ліміт, усталяваны адміністратарам",
   "error-user-not-in-room": "Карыстальнік не ў гэтым пакоі",
-  "error-logged-user-not-in-room": "Вы не ў пакоі ` %s`",
+  "error-logged-user-not-in-room": "Вы не ў пакоі `%s`",
   "error-user-registration-disabled": "Рэгістрацыя карыстальнікаў адключаная",
   "error-user-registration-secret": "рэгістрацыя карыстальніка дазволена толькі з дапамогай сакрэтнай URL",
   "error-you-are-last-owner": "Вы апошні ўладальнік. Калі ласка, усталюйце новы ўладальнік, перш чым пакінуць пакой.",

@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "Uzanto ne aktivigas",
   "error-user-limit-exceeded": "La nombro da uzantoj, kiujn vi provas inviti al #channel_name, superas la limigiton de la administranto",
   "error-user-not-in-room": "Uzanto ne estas en ĉi tiu ĉambro",
-  "error-logged-user-not-in-room": "Vi ne estas en la ĉambro ` %s`",
+  "error-logged-user-not-in-room": "Vi ne estas en la ĉambro `%s`",
   "error-user-registration-disabled": "Uzanto-registriĝo estas malŝaltita",
   "error-user-registration-secret": "Uzanto-registrado nur rajtas per Sekreta URL",
   "error-you-are-last-owner": "Vi estas la lasta posedanto. Bonvolu meti novan posedanton antaŭ forlasi la ĉambron.",

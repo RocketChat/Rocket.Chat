@@ -1155,7 +1155,7 @@
   "error-user-is-not-activated": "Gebruiker is niet geactiveerd",
   "error-user-limit-exceeded": "Het aantal gebruikers dat u probeert te uitnodigen voor #kanaalnaam overschrijdt de limiet die is ingesteld door de beheerder",
   "error-user-not-in-room": "Gebruiker is niet in deze kamer",
-  "error-logged-user-not-in-room": "Je bent niet in de kamer ` %s`",
+  "error-logged-user-not-in-room": "Je bent niet in de kamer `%s`",
   "error-user-registration-disabled": "Gebruikers registratie is uitgeschakeld",
   "error-user-registration-secret": "Gebruikers registratie is alleen toegestaan ​​via Secret URL",
   "error-you-are-last-owner": "Jij bent de laatste eigenaar. Stel nieuwe eigenaar voor het verlaten van de kamer.",

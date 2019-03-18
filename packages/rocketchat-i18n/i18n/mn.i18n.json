@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "Хэрэглэгч идэвхжээгүй байна",
   "error-user-limit-exceeded": "#channel_name руу урихыг оролдож байгаа хэрэглэгчийн тоо администраторын тогтоосон хязгаараас давсан байна",
   "error-user-not-in-room": "Хэрэглэгч энэ өрөөнд байхгүй байна",
-  "error-logged-user-not-in-room": "Та ` %s` гэсэн өрөөнд ороогүй байна",
+  "error-logged-user-not-in-room": "Та `%s` гэсэн өрөөнд ороогүй байна",
   "error-user-registration-disabled": "Хэрэглэгчийн бүртгэлийг идэвхгүй болгосон байна",
   "error-user-registration-secret": "Хэрэглэгчийн бүртгэлийг зөвхөн нууц URL-ээр дамжуулан зөвшөөрдөг",
   "error-you-are-last-owner": "Та бол сүүлчийн эзэмшигч. Өрөөнөөс гарахын өмнө шинэ эзэмшигчийг тавьна уу.",

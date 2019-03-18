@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "Pengguna tidak diaktifkan",
   "error-user-limit-exceeded": "Bilangan pengguna yang ingin anda jemput ke #channel_name melebihi batas yang ditetapkan oleh pentadbir",
   "error-user-not-in-room": "Pengguna tidak ada di dalam bilik ini",
-  "error-logged-user-not-in-room": "Anda tidak berada di ruangan ` %s`",
+  "error-logged-user-not-in-room": "Anda tidak berada di ruangan `%s`",
   "error-user-registration-disabled": "Pendaftaran Pengguna dilumpuhkan",
   "error-user-registration-secret": "Pendaftaran Pengguna hanya dibenarkan melalui URL Secret",
   "error-you-are-last-owner": "Anda pemilik terakhir. Sila menetapkan pemilik baru sebelum meninggalkan bilik.",

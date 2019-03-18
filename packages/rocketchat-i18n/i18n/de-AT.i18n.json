@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "Benutzer*in ist nicht aktiviert.",
   "error-user-limit-exceeded": "Die Anzahl der Nutzer, die Sie zu #channel_name einladen möchten, überschreitet das vom Administrator festgelegte Limit",
   "error-user-not-in-room": "Benutzer*in ist nicht in diesem Raum.",
-  "error-logged-user-not-in-room": "Du bist nicht im Raum ` %s`",
+  "error-logged-user-not-in-room": "Du bist nicht im Raum `%s`",
   "error-user-registration-disabled": "Benutzerregistrierung ist deaktiviert",
   "error-user-registration-secret": "Benutzerregistrierung ist nur über geheime URL erlaubt",
   "error-you-are-last-owner": "Sie sind der letzte Besitzer. Bitte bestimmen Sie einen neuen Besitzer, bevor Sie den Raum verlassen.",

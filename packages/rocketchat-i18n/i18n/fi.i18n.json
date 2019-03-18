@@ -1092,7 +1092,7 @@
   "error-user-is-not-activated": "Käyttäjää ei ole aktivoitu",
   "error-user-limit-exceeded": "Käyttäjä, jonka yrität kutsua #channel_nimiin, ylittää ylläpitäjän määrittämän rajan",
   "error-user-not-in-room": "Käyttäjä ei ole tässä huoneessa",
-  "error-logged-user-not-in-room": "Et ole huoneessa ` %s`",
+  "error-logged-user-not-in-room": "Et ole huoneessa `%s`",
   "error-user-registration-disabled": "Käyttäjän rekisteröinti on poissa käytöstä",
   "error-user-registration-secret": "Käyttäjän rekisteröinti on sallittu ainoastaan Salaisen URL:n kautta",
   "error-you-are-last-owner": "Olet viimeinen huoneen omistaja. Aseta uusi omistaja ennen huoneesta lähtöä.",

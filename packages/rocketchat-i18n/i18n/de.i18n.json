@@ -1206,7 +1206,7 @@
   "error-user-is-not-activated": "Benutzer*in ist nicht aktiviert.",
   "error-user-limit-exceeded": "Die Anzahl der Benutzer, die Sie hinzufügen wollen, übersteigt das vom Administrator gesetzte Limit.",
   "error-user-not-in-room": "Benutzer*in ist nicht in diesem Raum.",
-  "error-logged-user-not-in-room": "Sie sind nicht im Raum ` %s`",
+  "error-logged-user-not-in-room": "Sie sind nicht im Raum `%s`",
   "error-user-registration-disabled": "Benutzerregistrierung ist deaktiviert",
   "error-user-registration-secret": "Benutzerregistrierung ist nur über geheime URL erlaubt",
   "error-you-are-last-owner": "Du bist der letzte Besitzer. Bitte bestimme einen neuen Besitzer, bevor Du den Raum verlässt.",

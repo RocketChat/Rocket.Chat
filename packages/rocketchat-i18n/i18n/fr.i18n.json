@@ -1093,7 +1093,7 @@
   "error-user-is-not-activated": "L'utilisateur n'est pas activé",
   "error-user-limit-exceeded": "Le nombre d'utilisateurs que vous essayez d'inviter pour #channel_name dépasse le nombre autorisé par l'administrateur",
   "error-user-not-in-room": "L'utilisateur n'est pas dans ce salon.",
-  "error-logged-user-not-in-room": "Vous n'êtes pas dans la pièce ` %s`",
+  "error-logged-user-not-in-room": "Vous n'êtes pas dans la pièce `%s`",
   "error-user-registration-disabled": "L'inscription des nouveaux utilisateurs est désactivée",
   "error-user-registration-secret": "L'inscription des utilisateurs n'est autorisée que depuis une URL Secrète",
   "error-you-are-last-owner": "Vous êtes le dernier propriétaire. Veuillez choisir un nouveau propriétaire avant de quitter le salon.",

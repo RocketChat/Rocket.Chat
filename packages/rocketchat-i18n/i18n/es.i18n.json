@@ -1105,7 +1105,7 @@
   "error-user-is-not-activated": "El usuario no ha sido activado",
   "error-user-limit-exceeded": "La cantidad de usuarios a los que intenta invitar #canal_name supera el límite establecido por el administrador",
   "error-user-not-in-room": "El usuario no se encuentra en esta sala",
-  "error-logged-user-not-in-room": "No estás en la sala ` %s`",
+  "error-logged-user-not-in-room": "No estás en la sala `%s`",
   "error-user-registration-disabled": "El registro de usuarios está desactivado",
   "error-user-registration-secret": "El registro de usuario sólo se permite a través de URL Secreta",
   "error-you-are-last-owner": "Usted es el último propietario. Por favor, establezca un nuevo propietario antes de salir de la Sala.",

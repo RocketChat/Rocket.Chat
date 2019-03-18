@@ -1167,7 +1167,7 @@
   "error-user-is-not-activated": "Bruger er ikke aktiveret",
   "error-user-limit-exceeded": "Antallet af brugere, du forsøger at invitere til #kanalenavn, overstiger grænsen angivet af administratoren",
   "error-user-not-in-room": "Brugeren er ikke i dette rum",
-  "error-logged-user-not-in-room": "Du er ikke i rummet ` %s`",
+  "error-logged-user-not-in-room": "Du er ikke i rummet `%s`",
   "error-user-registration-disabled": "Brugerregistrering er deaktiveret",
   "error-user-registration-secret": "Brugerregistrering er kun tilladt via hemmelig URL",
   "error-you-are-last-owner": "Du er den sidste ejer. Venligst indstil ny ejer før du forlader værelset.",
