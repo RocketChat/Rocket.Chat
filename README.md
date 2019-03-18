@@ -397,22 +397,45 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 
 # Development
 
-## Quick start for code developers
-Prerequisites:
+## Setting up Development Environment
 
-* [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-* [Meteor](https://www.meteor.com/install)
-
+**1. Install required tools**
+```sh
+$ sudo apt install g++ build-essential git mongodb curl python-minimal capnproto libcapnp-dev
+```
+**2. Install Meteor**
+```sh
+$ curl https://install.meteor.com/ | sh
+```
 > Meteor automatically installs a hidden [NodeJS v8](https://nodejs.org/download/release/v8.9.3/), [Python v2.7](https://www.python.org/downloads/release/python-270/) and [MongoDB v3.6](https://www.mongodb.com/mongodb-3.6) to be used when you run your app in development mode using the `meteor` command.
 
-Now just clone and start the app:
-
+**3. Clone Rocket.Chat repository**
 ```sh
-git clone https://github.com/RocketChat/Rocket.Chat.git
-cd Rocket.Chat
-meteor npm install
-meteor npm start
+$ git clone https://github.com/RocketChat/Rocket.Chat.git
 ```
+**4. Install the required modules**
+To navigate to the project directory
+```sh
+$ cd Rocket.Chat
+```
+To install the required modules
+```sh
+ $ meteor npm install
+```
+**5. Postinstall**
+```sh
+$ meteor npm run postinstall
+$ meteor npm install sharp chai webpack postcss postcss-syntax postcss-load-config fibers capnp
+```
+**6. Start Rocket.Chat**
+```sh
+$ meteor npm start
+```
+To specify a particular port, use
+```sh
+$ meteor run port --[port number]
+```
+
 
 In order to debug the server part use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
 
