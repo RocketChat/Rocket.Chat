@@ -762,6 +762,8 @@ export const Livechat = {
 			name: String,
 			description: Match.Optional(String),
 			showOnRegistration: Boolean,
+			email: String,
+			showOnOfflineForm: Boolean,
 		});
 
 		check(departmentAgents, [
@@ -905,12 +907,17 @@ export const Livechat = {
 			}
 		}
 
-		const to = settings.get('Livechat_offline_email');
+		let emailTo = settings.get('Livechat_offline_email');
+		if (data.department) {
+			const dep = LivechatDepartment.findOneByIdOrName(data.department);
+			emailTo = dep.email || emailTo;
+		}
+
 		const from = `${ data.name } - ${ data.email } <${ fromEmail }>`;
 		const replyTo = `${ data.name } <${ data.email }>`;
 		const subject = `Livechat offline message from ${ data.name }: ${ (`${ data.message }`).substring(0, 20) }`;
 
-		this.sendEmail(from, to, replyTo, subject, html);
+		this.sendEmail(from, emailTo, replyTo, subject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.offlineMessage', data);

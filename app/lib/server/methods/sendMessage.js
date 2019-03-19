@@ -88,10 +88,6 @@ Meteor.methods({
 			message.alias = user.name;
 		}
 
-		if (Meteor.settings.public.sandstorm) {
-			message.sandstormSessionId = this.connection.sandstormSessionId();
-		}
-
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room);
 	},
