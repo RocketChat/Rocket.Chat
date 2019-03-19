@@ -1,4 +1,4 @@
-import { check } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { API } from '../../../../api';
 import { Livechat } from '../../lib/Livechat';
@@ -10,7 +10,7 @@ API.v1.addRoute('livechat/offline.message', {
 				name: String,
 				email: String,
 				message: String,
-				department: String,
+				department: Match.Maybe(String),
 			});
 
 			const { name, email, message, department } = this.bodyParams;
