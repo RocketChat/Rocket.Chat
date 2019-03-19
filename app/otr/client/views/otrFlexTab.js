@@ -25,7 +25,7 @@ Template.otrFlexTab.helpers({
 	userIsBot() {
 		const peerId = this.rid.replace(Meteor.userId(), '');
 		const user = Meteor.users.findOne(peerId);
-		if (user.username === 'rocket.cat') {
+		if (user.username === 'rocket.cat' || user.type === 'bot') {
 			return true;
 		}
 		return false;
