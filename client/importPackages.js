@@ -54,7 +54,6 @@ import '../app/oembed';
 import '../app/otr';
 import '../app/push-notifications';
 import '../app/apps';
-import '../app/sandstorm';
 import '../app/setup-wizard';
 import '../app/slackbridge';
 import '../app/slashcommands-archiveroom';

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 
 export class AppRoomBridge {
 	constructor(orch) {
@@ -101,11 +102,6 @@ export class AppRoomBridge {
 	async update(room, members = [], appId) {
 		console.log(`The App ${ appId } is updating a room.`);
 
-		if (!this.addUserToRoom) {
-			const { addUserToRoom } = await import('../../../lib');
-			this.addUserToRoom = addUserToRoom;
-		}
-
 		if (!room.id || !Rooms.findOneById(room.id)) {
 			throw new Error('A room must exist to update.');
 		}
@@ -121,7 +117,7 @@ export class AppRoomBridge {
 				continue;
 			}
 
-			this.addUserToRoom(rm._id, member);
+			addUserToRoom(rm._id, member);
 		}
 	}
 }

@@ -27,6 +27,10 @@ Template.livechatDepartmentForm.helpers({
 		const department = Template.instance().department.get();
 		return department.showOnRegistration === value || (department.showOnRegistration === undefined && value === true);
 	},
+	showOnOfflineForm(value) {
+		const department = Template.instance().department.get();
+		return department.showOnOfflineForm === value || (department.showOnOfflineForm === undefined && value === true);
+	},
 });
 
 Template.livechatDepartmentForm.events({
@@ -39,6 +43,8 @@ Template.livechatDepartmentForm.events({
 		const name = instance.$('input[name=name]').val();
 		const description = instance.$('textarea[name=description]').val();
 		const showOnRegistration = instance.$('input[name=showOnRegistration]:checked').val();
+		const email = instance.$('input[name=email]').val();
+		const showOnOfflineForm = instance.$('input[name=showOnOfflineForm]:checked').val();
 
 		if (enabled !== '1' && enabled !== '0') {
 			return toastr.error(t('Please_select_enabled_yes_or_no'));
@@ -46,6 +52,10 @@ Template.livechatDepartmentForm.events({
 
 		if (name.trim() === '') {
 			return toastr.error(t('Please_fill_a_name'));
+		}
+
+		if (email.trim() === '' && showOnOfflineForm === '1') {
+			return toastr.error(t('Please_fill_an_email'));
 		}
 
 		const oldBtnValue = $btn.html();
@@ -56,6 +66,8 @@ Template.livechatDepartmentForm.events({
 			name: name.trim(),
 			description: description.trim(),
 			showOnRegistration: showOnRegistration === '1',
+			showOnOfflineForm: showOnOfflineForm === '1',
+			email: email.trim(),
 		};
 
 		const departmentAgents = [];
