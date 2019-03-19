@@ -27,11 +27,11 @@ OTR.Room = class {
 		this.sessionKey = null;
 	}
 
-	handshake(refresh) {
+	handshake(refresh, timeout) {
 		this.establishing.set(true);
 		this.firstPeer = true;
 		this.generateKeyPair().then(() => {
-			Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh });
+			Notifications.notifyUser(this.peerId, 'otr', 'handshake', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey), refresh, timeout });
 		});
 	}
 
@@ -39,9 +39,9 @@ OTR.Room = class {
 		Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', { roomId: this.roomId, userId: this.userId, publicKey: EJSON.stringify(this.exportedPublicKey) });
 	}
 
-	deny() {
+	deny(timeout) {
 		this.reset();
-		Notifications.notifyUser(this.peerId, 'otr', 'deny', { roomId: this.roomId, userId: this.userId });
+		Notifications.notifyUser(this.peerId, 'otr', 'deny', { roomId: this.roomId, userId: this.userId, timeout });
 	}
 
 	end() {
@@ -219,10 +219,9 @@ OTR.Room = class {
 					}, (isConfirm) => {
 						if (isConfirm) {
 							establishConnection();
-						} else {
-							Meteor.clearTimeout(timeout);
-							this.deny();
 						}
+					}, () => {
+						this.deny(data.timeout);
 					});
 				}
 
@@ -242,11 +241,13 @@ OTR.Room = class {
 			case 'deny':
 				if (this.establishing.get()) {
 					this.reset();
+					Meteor.clearTimeout(data.timeout);
 					const user = Meteor.users.findOne(this.peerId);
 					modal.open({
 						title: TAPi18n.__('OTR'),
 						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
 						html: true,
+						confirmButtonText: TAPi18n.__('OK'),
 					});
 				}
 				break;

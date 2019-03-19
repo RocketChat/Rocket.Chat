@@ -38,7 +38,6 @@ Template.otrFlexTab.events({
 		e.preventDefault();
 		const otr = OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
-			otr.handshake();
 			instance.timeout = Meteor.setTimeout(() => {
 				modal.open({
 					title: t('Timeout'),
@@ -47,6 +46,7 @@ Template.otrFlexTab.events({
 				});
 				otr.establishing.set(false);
 			}, 10000);
+			otr.handshake(false, instance.timeout);
 		}
 	},
 	'click button.refresh'(e, instance) {
