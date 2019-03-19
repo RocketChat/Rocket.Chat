@@ -4237,7 +4237,7 @@ body:not(.is-cordova) {
 			font-weight: 400;
 
 			&:focus {
-				border-color: #13679a !important;
+				border-color: #1d74f5 !important;
 			}
 		}
 
