@@ -7,7 +7,7 @@ import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:transfer'(transferData) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
+		if (!transferData.userLoggedIn || !hasPermission(transferData.userLoggedIn, 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });
 		}
 
@@ -15,6 +15,9 @@ Meteor.methods({
 			roomId: String,
 			userId: Match.Optional(String),
 			departmentId: Match.Optional(String),
+			userLoggedIn: Match.Optional(String),
+			timeout: Match.Optional(Match.Integer),
+			timeoutAgent: Match.Optional(Match.Integer),
 		});
 
 		const room = LivechatRooms.findOneById(transferData.roomId);

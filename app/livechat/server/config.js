@@ -408,6 +408,25 @@ Meteor.startup(function() {
 		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'External' } },
 	});
 
+	settings.add('Livechat_ask_for_forward', false, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		section: 'Routing',
+		i18nLabel: 'Ask_for_confirmation_before_forwarding',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'External' } },
+	});
+
+	settings.add('Livechat_forward_timeout_second', 10, {
+		type: 'int',
+		group: 'Livechat',
+		public: true,
+		section: 'Routing',
+		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'External' } },
+		i18nLabel: 'How_long_to_wait_for_agent_response',
+		i18nDescription: 'Time_in_seconds',
+	});
+
 	settings.add('Livechat_External_Queue_URL', '', {
 		type: 'string',
 		group: 'Livechat',
