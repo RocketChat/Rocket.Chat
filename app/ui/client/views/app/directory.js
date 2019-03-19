@@ -243,7 +243,7 @@ Template.directory.onRendered(function() {
 
 			// If there is no result, searching every workspace and
 			// the search text is an email address, try to find a federated user
-			if (this.searchWorkspace.get() === 'all' && this.searchText.get().indexOf('@') !== -1) {
+			if (this.searchWorkspace.get() === 'external' && this.searchText.get().indexOf('@') !== -1) {
 				const email = this.searchText.get();
 
 				Meteor.call('federationSearchUsers', email, (error, federatedUsers) => {
