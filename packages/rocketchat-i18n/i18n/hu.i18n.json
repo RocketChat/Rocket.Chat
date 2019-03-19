@@ -1315,7 +1315,7 @@
   "Importer_CSV_Information": "A CSV-importőrnek meghatározott formátumra van szüksége, kérjük, olvassa el a zip fájl felépítésének dokumentációját:",
   "Importer_done": "Importálása befejeződött!",
   "Importer_finishing": "Utolsó simítások az import.",
-  "Importer_From_Description": "__from __  adatok importálása Rocket.Chat-be.",
+  "Importer_From_Description": "__from__  adatok importálása Rocket.Chat-be.",
   "Importer_HipChatEnterprise_BetaWarning": "Kérjük, vegye figyelembe, hogy ez az importálás még mindig folyamatban lévő munka, kérjük, jelezze a GitHub hibáit:",
   "Importer_HipChatEnterprise_Information": "A feltöltött fájlnak visszafejtett tar.gz-nek kell lennie, olvassa el a dokumentációt további információkért:",
   "Importer_import_cancelled": "Import törölték.",

@@ -1315,7 +1315,7 @@
   "Importer_CSV_Information": "Для імпортера CSV потрібен певний формат, будь ласка, прочитайте документацію про те, як структурувати файл zip:",
   "Importer_done": "Імпорт завершено!",
   "Importer_finishing": "Завершення імпорту.",
-  "Importer_From_Description": "Імпорт даних __from __ 's в Rocket.Chat.",
+  "Importer_From_Description": "Імпорт даних __from__ 's в Rocket.Chat.",
   "Importer_HipChatEnterprise_BetaWarning": "Будь ласка, пам'ятайте, що цей імпорт все ще працює, повідомте про всі помилки, які виникають в GitHub:",
   "Importer_HipChatEnterprise_Information": "Завантажений файл повинен бути розшифрованим tar.gz, будь ласка, ознайомтеся з документацією для отримання додаткової інформації:",
   "Importer_import_cancelled": "Імпорт скасований.",

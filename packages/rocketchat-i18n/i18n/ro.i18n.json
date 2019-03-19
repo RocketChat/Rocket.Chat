@@ -1315,7 +1315,7 @@
   "Importer_CSV_Information": "Importatorul CSV necesită un format specific, citiți documentația pentru structura fișierului dvs. zip:",
   "Importer_done": "Import complet!",
   "Importer_finishing": "Se finalizează import.",
-  "Importer_From_Description": "Importuri __from __ 's date în Rocket.Chat.",
+  "Importer_From_Description": "Importuri __from__ 's date în Rocket.Chat.",
   "Importer_HipChatEnterprise_BetaWarning": "Rețineți că acest import este încă o operațiune în curs, vă rugăm să raportați orice erori apărute în GitHub:",
   "Importer_HipChatEnterprise_Information": "Fișierul încărcat trebuie să fie un tar.gz decriptat, citiți documentația pentru mai multe informații:",
   "Importer_import_cancelled": "Import anulat.",
