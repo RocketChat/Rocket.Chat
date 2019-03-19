@@ -36,4 +36,13 @@
 
 		font-size: 1em;
 	}
+
+	.page-not-found-button {
+		display: inline-block;
+
+		margin: 20px 10px 0;
+		padding: 8px 16px;
+
+		font-size: 1em;
+	}
 }
