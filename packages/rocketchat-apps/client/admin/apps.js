@@ -242,7 +242,7 @@ Template.apps.events({
 		const rl = this;
 
 		if (rl && rl.latest && rl.latest.id) {
-			FlowRouter.go(`/admin/apps/${ rl.latest.id }`);
+			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
 		}
 	},
 	'click [data-button="install"]'() {
@@ -251,19 +251,28 @@ Template.apps.events({
 	'click .js-install'(e) {
 		e.stopPropagation();
 
-		// play animation
-		e.currentTarget.parentElement.classList.add('loading');
+		const rl = this;
 
-		APIClient.get(`apps?buildBuyUrl=true&appId=${ this.latest.id }`)
+		// play animation
+		const elm = e.currentTarget.parentElement;
+		elm.classList.add('loading');
+
+		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.latest.id }`)
 			.then((data) => {
-				// TODO: Add a listener for when it is closed, remove the animation
 				modal.open({
 					allowOutsideClick: false,
 					data,
 					template: 'iframeModal',
+				}, () => {
+					FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
+				}, () => {
+					elm.classList.remove('loading');
 				});
 			})
-			.catch((e) => toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message));
+			.catch((e) => {
+				elm.classList.remove('loading');
+				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+			});
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);

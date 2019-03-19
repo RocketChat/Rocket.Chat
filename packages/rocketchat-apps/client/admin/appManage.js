@@ -4,9 +4,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { TAPi18next } from 'meteor/tap:i18n';
-import { isEmail, Info, APIClient } from 'meteor/rocketchat:utils';
+import { isEmail, APIClient } from 'meteor/rocketchat:utils';
 import { settings } from 'meteor/rocketchat:settings';
 import { Markdown } from 'meteor/rocketchat:markdown';
+import { modal } from 'meteor/rocketchat:ui-utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -16,50 +17,61 @@ import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
 import semver from 'semver';
 
-const HOST = 'https://marketplace.rocket.chat'; // TODO move this to inside RocketChat.API
-
 function getApps(instance) {
 	const id = instance.id.get();
 
-	return Promise.all([
-		fetch(`${ HOST }/v1/apps/${ id }?version=${ Info.marketplaceApiVersion }`).then((data) => data.json()),
-		APIClient.get('apps/').then((result) => result.apps.filter((app) => app.id === id)),
-	]).then(([remoteApps, [localApp]]) => {
-		remoteApps = remoteApps.sort((a, b) => {
-			if (semver.gt(a.version, b.version)) {
-				return -1;
+	const appInfo = { remote: undefined, local: undefined };
+	return APIClient.get(`apps/${ id }?marketplace=true&version=${ FlowRouter.getQueryParam('version') }`)
+		.then((remote) => {
+			appInfo.remote = remote.app;
+			return APIClient.get(`apps/${ id }`);
+		})
+		.then((local) => {
+			appInfo.local = local.app;
+			return Apps.getAppApis(id);
+		})
+		.then((apis) => instance.apis.set(apis))
+		.catch((e) => {
+			if (appInfo.remote || appInfo.local) {
+				return Promise.resolve(true);
 			}
-			if (semver.lt(a.version, b.version)) {
-				return 1;
-			}
-			return 0;
-		});
 
-		const remoteApp = remoteApps[0];
-		if (localApp) {
-			localApp.installed = true;
-			if (remoteApp) {
-				localApp.categories = remoteApp.categories;
-				if (semver.gt(remoteApp.version, localApp.version)) {
-					localApp.newVersion = remoteApp.version;
+			instance.hasError.set(true);
+			instance.theError.set(e.message);
+		}).then((goOn) => {
+			if (!goOn) {
+				return;
+			}
+
+			if (appInfo.remote) {
+				appInfo.remote.displayPrice = parseFloat(appInfo.remote.price).toFixed(2);
+			}
+
+			if (appInfo.local) {
+				appInfo.local.installed = true;
+
+				if (appInfo.remote) {
+					appInfo.local.categories = appInfo.remote.categories;
+					appInfo.local.isPurchased = appInfo.remote.isPurchased;
+					appInfo.local.price = appInfo.remote.price;
+					appInfo.local.displayPrice = appInfo.remote.displayPrice;
+
+					if (semver.gt(appInfo.remote.version, appInfo.local.version) && (appInfo.remote.isPurchased || appInfo.remote.price <= 0)) {
+						appInfo.local.newVersion = appInfo.remote.version;
+					}
 				}
+
+				instance.onSettingUpdated({ appId: id });
+
+				Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+				Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
+				Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
+				Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
 			}
 
-			instance.onSettingUpdated({ appId: id });
-
-			Apps.getWsListener().unregisterListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-			Apps.getWsListener().unregisterListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
-			Apps.getWsListener().registerListener(AppEvents.APP_STATUS_CHANGE, instance.onStatusChanged);
-			Apps.getWsListener().registerListener(AppEvents.APP_SETTING_UPDATED, instance.onSettingUpdated);
-		}
-
-		instance.app.set(localApp || remoteApp);
-
-		instance.ready.set(true);
-	}).catch((e) => {
-		instance.hasError.set(true);
-		instance.theError.set(e.message);
-	});
+			instance.app.set(appInfo.local || appInfo.remote);
+			instance.ready.set(true);
+		});
 }
 
 Template.appManage.onCreated(function() {
@@ -76,12 +88,7 @@ Template.appManage.onCreated(function() {
 	this.loading = new ReactiveVar(false);
 
 	const id = this.id.get();
-
-	this.getApis = async() => {
-		this.apis.set(await Apps.getAppApis(id));
-	};
-
-	this.getApis();
+	getApps(instance);
 
 	this.__ = (key, options, lang_tag) => {
 		const appKey = Utilities.getI18nKeyForApp(key, id);
@@ -98,8 +105,6 @@ Template.appManage.onCreated(function() {
 
 		instance.settings.set(settings);
 	}
-
-	getApps(instance);
 
 	instance.onStatusChanged = function _onStatusChanged({ appId, status }) {
 		if (appId !== id) {
@@ -218,6 +223,11 @@ Template.appManage.helpers({
 
 		return instance.app.get().installed === true;
 	},
+	hasPurchased() {
+		const instance = Template.instance();
+
+		return instance.app.get().isPurchased === true;
+	},
 	app() {
 		return Template.instance().app.get();
 	},
@@ -318,26 +328,47 @@ Template.appManage.events({
 		el.addClass('loading');
 
 		const app = t.app.get();
+		console.log(app);
 
-		const url = `${ HOST }/v1/apps/${ t.id.get() }/download/${ app.version }`;
+		// const url = `${ HOST }/v1/apps/${ t.id.get() }/download/${ app.version }`;
 
-		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
+		// const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
 
-		APIClient.post(api, { url }).then(() => {
-			getApps(t).then(() => {
-				el.prop('disabled', false);
-				el.removeClass('loading');
-			});
-		}).catch((e) => {
-			el.prop('disabled', false);
-			el.removeClass('loading');
-			t.hasError.set(true);
-			t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-		});
+		// APIClient.post(api, { url }).then(() => {
+		// 	getApps(t).then(() => {
+		// 		el.prop('disabled', false);
+		// 		el.removeClass('loading');
+		// 	});
+		// }).catch((e) => {
+		// 	el.prop('disabled', false);
+		// 	el.removeClass('loading');
+		// 	t.hasError.set(true);
+		// 	t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+		// });
 
 		// play animation
 		// TODO this icon and animation are not working
 		$(e.currentTarget).find('.rc-icon').addClass('play');
+	},
+
+	'click .js-purchase': (e, t) => {
+		const rl = t.app.get();
+
+		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.id }`)
+			.then((data) => {
+				modal.open({
+					allowOutsideClick: false,
+					data,
+					template: 'iframeModal',
+				}, () => {
+					console.log('success');
+					getApps(t); // TODO: determine how to do this smoother
+					// FlowRouter.go(`/admin/apps/${ rl.id }?version=${ rl.version }`);
+				});
+			})
+			.catch((e) => {
+				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+			});
 	},
 
 	'click .js-update': (e, t) => {

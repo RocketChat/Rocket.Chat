@@ -2269,6 +2269,8 @@
   "Push_show_message": "Show Message in Notification",
   "Push_show_username_room": "Show Channel/Group/Username in Notification",
   "Push_test_push": "Test",
+  "Purchase_for_free": "Purchase for FREE",
+  "Purchase_for_price": "Purchase for $%s",
   "Query": "Query",
   "Query_description": "Additional conditions for determining which users to send the email to. Unsubscribed users are automatically removed from the query. It must be a valid JSON. Example: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
   "Queue": "Queue",
