@@ -161,7 +161,26 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log('Getting:', this.urlParams.id);
+				if (this.queryParams.marketplace && this.queryParams.version) {
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }?appVersion=${ this.queryParams.version }`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200 || result.data.length === 0) {
+						return _API.v1.failure();
+					}
+
+					return _API.v1.success({ app: result.data[0] });
+				}
+
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -174,7 +193,6 @@ export class AppsRestApi {
 				}
 			},
 			post() {
-				console.log('Updating:', this.urlParams.id);
 				// TODO: Verify permissions
 
 				let buff;
@@ -212,7 +230,6 @@ export class AppsRestApi {
 				});
 			},
 			delete() {
-				console.log('Uninstalling:', this.urlParams.id);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -230,7 +247,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/icon', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log('Getting the App\'s Icon:', this.urlParams.id);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -245,7 +261,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/languages', { authRequired: false }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s languages..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -260,7 +275,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/logs', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s logs..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -286,7 +300,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/settings', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s settings..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -304,7 +317,6 @@ export class AppsRestApi {
 				}
 			},
 			post() {
-				console.log(`Updating ${ this.urlParams.id }'s settings..`);
 				if (!this.bodyParams || !this.bodyParams.settings) {
 					return API.v1.failure('The settings to update must be present.');
 				}
@@ -332,8 +344,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/settings/:settingId', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting the App ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
-
 				try {
 					const setting = manager.getSettingsManager().getAppSetting(this.urlParams.id, this.urlParams.settingId);
 
@@ -349,8 +359,6 @@ export class AppsRestApi {
 				}
 			},
 			post() {
-				console.log(`Updating the App ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
-
 				if (!this.bodyParams.setting) {
 					return API.v1.failure('Setting to update to must be present on the posted body.');
 				}
@@ -373,7 +381,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/apis', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s apis..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -388,7 +395,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/status', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s status..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -402,7 +408,6 @@ export class AppsRestApi {
 					return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 				}
 
-				console.log(`Updating ${ this.urlParams.id }'s status...`, this.bodyParams.status);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {

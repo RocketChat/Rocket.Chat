@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { modal } from 'meteor/rocketchat:ui-utils';
 
 function iframeMsgListener(e) {
@@ -11,10 +10,9 @@ function iframeMsgListener(e) {
 	}
 
 	if (data.result) {
-		modal.close();
-		FlowRouter.go(`/admin/apps/${ data.appId }`);
+		modal.confirm(data);
 	} else {
-		modal.close();
+		modal.cancel();
 	}
 }
 
