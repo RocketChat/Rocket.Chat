@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { TabBar } from '/app/ui-utils';
-import { Rooms } from '/app/models';
-import { settings } from '/app/settings';
+import { TabBar } from '../../ui-utils';
+import { Rooms } from '../../models';
+import { settings } from '../../settings';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

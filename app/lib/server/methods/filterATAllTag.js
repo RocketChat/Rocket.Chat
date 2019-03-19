@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasPermission } from '/app/authorization';
-import { callbacks } from '/app/callbacks';
-import { Notifications } from '/app/notifications';
-import { Users } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { callbacks } from '../../../callbacks';
+import { Notifications } from '../../../notifications';
+import { Users } from '../../../models';
 import _ from 'underscore';
 import moment from 'moment';
 

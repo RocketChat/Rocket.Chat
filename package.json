@@ -136,7 +136,7 @@
 		"atlassian-crowd": "^0.5.0",
 		"autolinker": "^1.8.1",
 		"aws-sdk": "^2.368.0",
-		"bad-words": "^3.0.0",
+		"bad-words": "^3.0.2",
 		"bcrypt": "^3.0.2",
 		"blockstack": "18.1.0",
 		"body-parser": "1.18.3",
@@ -238,5 +238,16 @@
 		"hooks": {
 			"pre-push": "meteor npm run lint && meteor npm run testunit"
 		}
+	},
+	"houston": {
+		"updateFiles": [
+			"package.json",
+			".travis/snap.sh",
+			".circleci/snap.sh",
+			".circleci/update-releases.sh",
+			".docker/Dockerfile",
+			".docker/Dockerfile.rhel",
+			"app/utils/rocketchat.info"
+		]
 	}
 }

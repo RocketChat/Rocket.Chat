@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { ChatRoom } from '/app/models';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { ChatRoom } from '../../models';
 import { Tracker } from 'meteor/tracker';
 
 function trackEvent(category, action, label) {

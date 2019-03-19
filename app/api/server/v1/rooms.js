@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { FileUpload } from '/app/file-upload';
-import { Rooms } from '/app/models';
+import { FileUpload } from '../../../file-upload';
+import { Rooms } from '../../../models';
 import Busboy from 'busboy';
 import { API } from '../api';
 

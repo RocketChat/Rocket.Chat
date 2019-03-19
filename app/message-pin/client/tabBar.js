@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
-import { TabBar } from '/app/ui-utils';
+import { settings } from '../../settings';
+import { TabBar } from '../../ui-utils';
 
 Meteor.startup(function() {
 	return Tracker.autorun(function() {

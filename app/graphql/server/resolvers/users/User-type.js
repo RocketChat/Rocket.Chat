@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Avatars, Rooms } from '/app/models';
+import { Avatars, Rooms } from '../../../../models';
 import property from 'lodash.property';
 
 import schema from '../../schemas/users/User-type.graphqls';

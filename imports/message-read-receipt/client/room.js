@@ -1,6 +1,6 @@
-import { t } from '/app/utils';
-import { modal, MessageAction } from '/app/ui-utils';
-import { settings } from '/app/settings';
+import { t } from '../../../app/utils';
+import { modal, MessageAction } from '../../../app/ui-utils';
+import { settings } from '../../../app/settings';
 
 MessageAction.addButton({
 	id: 'receipt-detail',

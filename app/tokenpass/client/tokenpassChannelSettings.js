@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, handleError } from '/app/utils';
-import { ChatRoom } from '/app/models';
+import { t, handleError } from '../../utils';
+import { ChatRoom } from '../../models';
 import toastr from 'toastr';
 
 Template.channelSettings__tokenpass.helpers({

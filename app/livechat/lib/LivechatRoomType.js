@@ -1,9 +1,9 @@
 import { Session } from 'meteor/session';
-import { ChatRoom } from '/app/models';
-import { settings } from '/app/settings';
-import { hasPermission } from '/app/authorization';
-import { openRoom } from '/app/ui-utils';
-import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '/app/utils';
+import { ChatRoom } from '../../models';
+import { settings } from '../../settings';
+import { hasPermission } from '../../authorization';
+import { openRoom } from '../../ui-utils';
+import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
 import { LivechatInquiry } from './LivechatInquiry';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {

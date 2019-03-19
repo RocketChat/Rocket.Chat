@@ -3,6 +3,7 @@ import { Match } from 'meteor/check';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
+import { settings } from '../../../settings/server/functions/settings';
 import _ from 'underscore';
 
 export class Messages extends Base {
@@ -27,15 +28,6 @@ export class Messages extends Base {
 
 		// threads
 		this.tryEnsureIndex({ trid: 1 }, { sparse: true });
-
-		this.loadSettings();
-	}
-
-	loadSettings() {
-		Meteor.startup(async() => {
-			const { settings } = await import('/app/settings');
-			this.settings = settings;
-		});
 	}
 
 	setReactions(messageId, reactions) {
@@ -727,7 +719,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (this.settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -756,7 +748,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (this.settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -912,7 +904,7 @@ export class Messages extends Base {
 
 	async removeFilesByRoomId(roomId) {
 		if (!this.FileUpload) {
-			const { FileUpload } = await import('/app/file-upload');
+			const { FileUpload } = await import('../../../file-upload');
 			this.FileUpload = FileUpload;
 		}
 		this.find({

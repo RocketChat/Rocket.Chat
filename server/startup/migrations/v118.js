@@ -1,5 +1,5 @@
-import { Migrations } from '/app/migrations';
-import { Subscriptions, Settings, Users } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { Subscriptions, Settings, Users } from '../../../app/models';
 
 Migrations.add({
 	version: 118,

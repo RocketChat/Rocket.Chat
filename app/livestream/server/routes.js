@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Users } from '/app/models';
-import { API } from '/app/api';
+import { settings } from '../../settings';
+import { Users } from '../../models';
+import { API } from '../../api';
 import google from 'googleapis';
 const { OAuth2 } = google.auth;
 

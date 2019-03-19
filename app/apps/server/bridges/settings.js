@@ -1,4 +1,4 @@
-import { Settings } from '/app/models';
+import { Settings } from '../../../models';
 
 export class AppSettingBridge {
 	constructor(orch) {

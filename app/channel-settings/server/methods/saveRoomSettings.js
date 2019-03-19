@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Rooms } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { hasPermission } from '../../../authorization';
+import { Rooms } from '../../../models';
+import { callbacks } from '../../../callbacks';
 
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';

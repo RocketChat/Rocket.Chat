@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChatAssets } from '/app/assets';
+import { RocketChatAssets } from '../../../assets';
 import Busboy from 'busboy';
 import { API } from '../api';
 

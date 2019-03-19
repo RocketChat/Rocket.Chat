@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { settings } from '/app/settings';
-import { Messages } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { settings } from '../../../settings';
+import { Messages } from '../../../models';
 import { deleteMessage } from '../functions';
 import moment from 'moment';
 

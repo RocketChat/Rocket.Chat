@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { Messages, Rooms, LivechatVisitors } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { API } from '/app/api';
-import { loadMessageHistory } from '/app/lib';
+import { Messages, Rooms, LivechatVisitors } from '../../../../models';
+import { hasPermission } from '../../../../authorization';
+import { API } from '../../../../api';
+import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
@@ -32,6 +32,10 @@ API.v1.addRoute('livechat/message', {
 			const room = findRoom(token, rid);
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
+			}
+
+			if (!room.open) {
+				throw new Meteor.Error('room-closed');
 			}
 
 			const _id = this.bodyParams._id || Random.id();

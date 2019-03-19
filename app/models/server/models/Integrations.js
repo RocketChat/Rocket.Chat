@@ -17,6 +17,12 @@ export class Integrations extends Base {
 	disableByUserId(userId) {
 		return this.update({ userId }, { $set: { enabled: false } }, { multi: true });
 	}
+
+	updateRoomName(oldRoomName, newRoomName) {
+		const hashedOldRoomName = `#${ oldRoomName }`;
+		const hashedNewRoomName = `#${ newRoomName }`;
+		return this.update({ channel: hashedOldRoomName }, { $set: { 'channel.$': hashedNewRoomName } }, { multi: true });
+	}
 }
 
 export default new Integrations();

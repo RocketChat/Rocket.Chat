@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 settings.addGroup('Accounts', function() {
 	this.section('Two Factor Authentication', function() {

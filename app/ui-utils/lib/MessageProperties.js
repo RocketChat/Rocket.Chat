@@ -1,4 +1,4 @@
-import { emoji } from '/app/emoji';
+import { emoji } from '../../emoji';
 import GraphemeSplitter from 'grapheme-splitter';
 
 const splitter = new GraphemeSplitter();
