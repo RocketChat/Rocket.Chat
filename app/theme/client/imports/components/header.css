@@ -159,6 +159,8 @@
 
 	&__topic,
 	&__status {
+		padding: 0.25rem 0;
+
 		color: var(--header-title-status-color);
 
 		font-size: var(--header-title-font-size--subtitle);

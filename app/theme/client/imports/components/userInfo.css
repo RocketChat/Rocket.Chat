@@ -85,6 +85,8 @@
 	}
 
 	&__username {
+		padding-top: 0.1rem;
+
 		color: var(--color-gray);
 
 		font-size: 14px;
