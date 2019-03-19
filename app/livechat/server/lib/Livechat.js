@@ -397,7 +397,7 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return RocketChat.models.Rooms.setNameById(roomData._id, guestData.name, guestData.name) && RocketChat.models.Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return Rooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
