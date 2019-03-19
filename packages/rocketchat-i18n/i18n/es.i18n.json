@@ -1328,7 +1328,7 @@
   "Importer_CSV_Information": "El importador de CSV requiere un formato específico; lea la documentación sobre cómo estructurar su archivo zip:",
   "Importer_done": "¡Importación terminada!",
   "Importer_finishing": "Finalizando la importación.",
-  "Importer_From_Description": "Las importaciones __from datos__ 's en Rocket.Chat.",
+  "Importer_From_Description": "Las importaciones __from__ datos 's en Rocket.Chat.",
   "Importer_HipChatEnterprise_BetaWarning": "Tenga en cuenta que esta importación sigue siendo un trabajo en progreso. Informe cualquier error que ocurra en GitHub:",
   "Importer_HipChatEnterprise_Information": "El archivo cargado debe ser un tar.gz descifrado, lea la documentación para obtener más información:",
   "Importer_import_cancelled": "Importación cancelada.",

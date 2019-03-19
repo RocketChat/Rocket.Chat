@@ -1864,7 +1864,7 @@
   "No_results_found_for": "இந்த முடிவுகள் எதுவும் கிடைக்கவில்லை:",
   "No_snippet_messages": "இல்லை துணுக்கு",
   "No_starred_messages": "குறியிடப்பட்ட மின்னஞ்சலும் இல்லை",
-  "No_such_command": "அத்தகைய கட்டளை இல்லை: `/ __கட்டளை__`",
+  "No_such_command": "அத்தகைய கட்டளை இல்லை: `/ __command__`",
   "No_user_with_username_%s_was_found": "பயனர் பெயர் <strong>\" %s\" பதில்</strong> பயனர் எவரையும் கண்டுபிடிக்கப்பட்டது!",
   "Nobody_available": "யாரும் கிடைக்கவில்லை",
   "Node_version": "முனை பதிப்பு",
