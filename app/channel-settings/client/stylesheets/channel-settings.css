@@ -131,3 +131,23 @@ html.rtl .flex-tab {
 		}
 	}
 }
+
+.rc-input__textarea {
+	width: 100%;
+	padding: 0 1rem;
+
+	text-overflow: ellipsis;
+
+	color: #414852;
+	color: var(--input-text-color);
+	border-width: 2px;
+	border-width: var(--input-border-width);
+	border-color: #e1e5e8;
+	border-color: var(--input-border-color);
+	border-radius: 2px;
+	border-radius: var(--input-border-radius);
+	background-color: transparent;
+
+	font-size: 1rem;
+	line-height: 2.25rem;
+}
