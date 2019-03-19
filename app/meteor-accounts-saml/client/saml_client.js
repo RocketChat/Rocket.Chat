@@ -95,14 +95,12 @@ Accounts.saml.initiateLogin = function(options, callback, dimensions) {
 
 Meteor.loginWithSaml = function(options, callback) {
 	options = options || {};
-	const credentialToken = `id-${ Random.id() }`;
-	options.credentialToken = credentialToken;
+	options.credentialToken = Meteor.default_connection._lastSessionId;
 
 	Accounts.saml.initiateLogin(options, function(/* error, result*/) {
 		Accounts.callLoginMethod({
 			methodArguments: [{
 				saml: true,
-				credentialToken,
 			}],
 			userCallback: callback,
 		});
