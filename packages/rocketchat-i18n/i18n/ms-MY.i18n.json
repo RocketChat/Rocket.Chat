@@ -1315,7 +1315,7 @@
   "Importer_CSV_Information": "Pengimport CSV memerlukan format tertentu, sila baca dokumentasi untuk membina fail zip anda:",
   "Importer_done": "Mengimport lengkap!",
   "Importer_finishing": "Hampir selesai import.",
-  "Importer_From_Description": "Import __from data __ 's ke dalam Rocket.Chat.",
+  "Importer_From_Description": "Import __from__ data's ke dalam Rocket.Chat.",
   "Importer_HipChatEnterprise_BetaWarning": "Harap maklum bahawa import ini masih merupakan kerja yang sedang berjalan, sila laporkan kesilapan yang berlaku di GitHub:",
   "Importer_HipChatEnterprise_Information": "Fail yang dimuat naik mestilah tar.gz disahsulit, sila baca dokumentasi untuk maklumat lanjut:",
   "Importer_import_cancelled": "Import dibatalkan.",

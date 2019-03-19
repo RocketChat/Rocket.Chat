@@ -290,7 +290,7 @@
   "API_Personal_Access_Tokens_To_REST_API": "REST API에 대한 개인 액세스 토큰",
   "API_Personal_Access_Tokens_Remove_Modal": "이 개인 액세스 토큰을 제거 하시겠습니까?",
   "API_Personal_Access_Token_Generated": "개인 액세스 토큰이 생성되었습니다.",
-  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "나중에 토큰을 볼 수 없으므로 주의해서 토큰을 저장하십시오. <br/>토큰 : <strong>__token __ </strong><br/>사용자 ID : <strong>__userId __ </strong>",
+  "API_Personal_Access_Token_Generated_Text_Token_s_UserId_s": "나중에 토큰을 볼 수 없으므로 주의해서 토큰을 저장하십시오. <br/>토큰 : <strong>__token__ </strong><br/>사용자 ID : <strong>__userId__ </strong>",
   "API_Personal_Access_Tokens_Regenerate_Modal": "토큰을 분실했거나 잊어 버린 경우 다시 생성 할 수 있지만, 이 토큰을 사용하는 모든 응용 프로그램에서 업데이트 해야합니다",
   "API_Personal_Access_Tokens_Regenerate_It": "토큰 재생성",
   "API_Shield_Types": "쉴드 타입",
