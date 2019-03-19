@@ -1,4 +1,4 @@
-import { callbacks } from '/app/callbacks';
+import { callbacks } from '../../../callbacks';
 import s from 'underscore.string';
 
 export const renderMessageBody = (message) => {

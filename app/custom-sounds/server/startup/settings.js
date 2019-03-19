@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 settings.addGroup('CustomSoundsFilesystem', function() {
 	this.add('CustomSounds_Storage_Type', 'GridFS', {

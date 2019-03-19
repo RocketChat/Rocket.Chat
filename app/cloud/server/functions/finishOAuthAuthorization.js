@@ -2,8 +2,8 @@ import querystring from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { settings } from '/app/settings';
-import { Settings, Users } from '/app/models';
+import { settings } from '../../../settings';
+import { Settings, Users } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
 

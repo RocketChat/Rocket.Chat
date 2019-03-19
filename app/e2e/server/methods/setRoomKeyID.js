@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms } from '/app/models';
+import { Rooms } from '../../../models';
 
 Meteor.methods({
 	'e2e.setRoomKeyID'(rid, keyID) {

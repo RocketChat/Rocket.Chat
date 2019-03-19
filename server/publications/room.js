@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { roomTypes } from '/app/utils';
-import { hasPermission } from '/app/authorization';
-import { Rooms, Subscriptions } from '/app/models';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
+import { roomTypes } from '../../app/utils';
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Subscriptions } from '../../app/models';
+import { settings } from '../../app/settings';
+import { Notifications } from '../../app/notifications';
 import _ from 'underscore';
 
 const fields = {

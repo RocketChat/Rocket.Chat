@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from '/app/settings';
-import { Users } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { settings } from '../../../settings';
+import { Users } from '../../../models';
+import { callbacks } from '../../../callbacks';
 import { setUsername, checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
 import _ from 'underscore';

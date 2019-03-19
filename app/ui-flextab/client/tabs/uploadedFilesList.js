@@ -1,8 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { DateFormat } from '/app/lib';
-import { t } from '/app/utils';
-import { popover } from '/app/ui-utils';
+import { DateFormat } from '../../../lib';
+import { t } from '../../../utils';
+import { popover } from '../../../ui-utils';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 

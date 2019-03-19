@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Migrations } from '/app/migrations';
-import { Settings } from '/app/models';
-import { RocketChatAssets } from '/app/assets';
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
+import { RocketChatAssets } from '../../../app/assets';
 import url from 'url';
 
 Migrations.add({

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { OAuthApps } from '/app/models';
+import { hasPermission } from '../../../../authorization';
+import { OAuthApps } from '../../../../models';
 
 Meteor.publish('oauthApps', function() {
 	if (!this.userId) {

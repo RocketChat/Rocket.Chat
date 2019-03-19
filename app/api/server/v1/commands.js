@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { slashCommands } from '/app/utils';
-import { Rooms } from '/app/models';
+import { slashCommands } from '../../../utils';
+import { Rooms } from '../../../models';
 import { API } from '../api';
 
 API.v1.addRoute('commands.get', { authRequired: true }, {

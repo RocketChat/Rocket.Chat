@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
+import { settings } from '../../../app/settings';
 import moment from 'moment';
 
 import './readReceipts.css';

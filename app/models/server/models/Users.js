@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
+import { settings } from '../../../settings/server/functions/settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -17,14 +18,6 @@ export class Users extends Base {
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
-		this.loadSettings();
-	}
-
-	loadSettings() {
-		Meteor.startup(async() => {
-			const { settings } = await import('/app/settings');
-			this.settings = settings;
-		});
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -219,7 +212,7 @@ export class Users extends Base {
 			},
 		};
 
-		if (this.settings.get('Livechat_show_agent_email')) {
+		if (settings.get('Livechat_show_agent_email')) {
 			options.fields.emails = 1;
 		}
 
@@ -496,7 +489,7 @@ export class Users extends Base {
 
 		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
 
-		const searchFields = forcedSearchFields || this.settings.get('Accounts_SearchFields').trim().split(',');
+		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
 		const orStmt = _.reduce(searchFields, function(acc, el) {
 			acc.push({ [el.trim()]: termRegex });
@@ -844,13 +837,13 @@ export class Users extends Base {
 	}
 
 	setPreferences(_id, preferences) {
-		const settings = Object.assign(
+		const settingsObject = Object.assign(
 			{},
 			...Object.keys(preferences).map((key) => ({ [`settings.preferences.${ key }`]: preferences[key] }))
 		);
 
 		const update = {
-			$set: settings,
+			$set: settingsObject,
 		};
 		if (parseInt(preferences.clockMode) === 0) {
 			delete update.$set['settings.preferences.clockMode'];

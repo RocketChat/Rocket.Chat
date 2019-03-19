@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import s from 'underscore.string';
 
 export const validateCustomFields = function(fields) {

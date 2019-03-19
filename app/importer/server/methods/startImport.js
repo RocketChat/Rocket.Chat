@@ -4,8 +4,8 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '/app/importer';
-import { hasPermission } from '/app/authorization';
+} from '../..';
+import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	startImport(key, input) {

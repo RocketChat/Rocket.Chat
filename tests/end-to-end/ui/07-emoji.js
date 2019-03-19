@@ -89,7 +89,7 @@ describe('[Emoji]', () => {
 			});
 
 			it('it should be that the value on the message input is the same as the emoji clicked', () => {
-				mainContent.messageInput.getValue().should.equal(':grinning:');
+				mainContent.messageInput.getValue().should.equal(':grinning: ');
 			});
 
 			it('it should send the emoji', () => {

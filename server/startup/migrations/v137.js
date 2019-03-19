@@ -1,6 +1,6 @@
-import { Migrations } from '/app/migrations';
-import { Users, Settings } from '/app/models';
-import { settings } from '/app/settings';
+import { Migrations } from '../../../app/migrations';
+import { Users, Settings } from '../../../app/models';
+import { settings } from '../../../app/settings';
 
 Migrations.add({
 	version: 137,

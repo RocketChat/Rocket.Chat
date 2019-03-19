@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import moment from 'moment';
 import 'moment-timezone';
 

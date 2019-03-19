@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Messages } from '/app/models';
-import { Apps } from '/app/apps';
-import { Markdown } from '/app/markdown';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { Messages } from '../../../models';
+import { Apps } from '../../../apps';
+import { Markdown } from '../../../markdown';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
@@ -163,13 +163,6 @@ export const sendMessage = function(user, message, room, upsert = false) {
 
 	message = callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
-		// Avoid saving sandstormSessionId to the database
-		let sandstormSessionId = null;
-		if (message.sandstormSessionId) {
-			sandstormSessionId = message.sandstormSessionId;
-			delete message.sandstormSessionId;
-		}
-
 		if (message._id && upsert) {
 			const { _id } = message;
 			delete message._id;
@@ -191,11 +184,8 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		/*
 		Defer other updates as their return is not interesting to the user
 		*/
-		Meteor.defer(() => {
-			// Execute all callbacks
-			message.sandstormSessionId = sandstormSessionId;
-			return callbacks.run('afterSaveMessage', message, room, user._id);
-		});
+		// Execute all callbacks
+		Meteor.defer(() => callbacks.run('afterSaveMessage', message, room, user._id));
 		return message;
 	}
 };

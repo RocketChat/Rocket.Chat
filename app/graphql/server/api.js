@@ -4,7 +4,7 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';

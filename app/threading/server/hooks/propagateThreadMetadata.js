@@ -1,7 +1,7 @@
 
-import { callbacks } from '/app/callbacks';
-import { Messages, Rooms } from '/app/models';
-import { deleteRoom } from '/app/lib';
+import { callbacks } from '../../../callbacks';
+import { Messages, Rooms } from '../../../models';
+import { deleteRoom } from '../../../lib';
 /**
  * We need to propagate the writing of new message in a thread to the linking
  * system message
