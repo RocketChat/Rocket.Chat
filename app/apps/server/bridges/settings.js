@@ -18,7 +18,7 @@ export class AppSettingBridge {
 			'Accounts_OAuth_Wordpress_secret', 'Push_apn_passphrase', 'Push_apn_key', 'Push_apn_cert', 'Push_apn_dev_passphrase',
 			'Push_apn_dev_key', 'Push_apn_dev_cert', 'Push_gcm_api_key', 'Push_gcm_project_number', 'SAML_Custom_Default_cert',
 			'SAML_Custom_Default_private_key', 'SlackBridge_APIToken', 'Smarsh_Email', 'SMS_Twilio_Account_SID', 'SMS_Twilio_authToken',
-			'SMS_Voxtelesys_authToken',
+			'SMS_Voxtelesys_authToken', 'SMS_Voxtelesys_URL',
 		];
 	}
 

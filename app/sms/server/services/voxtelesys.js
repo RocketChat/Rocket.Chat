@@ -5,6 +5,7 @@ const http = require('request');
 class Voxtelesys {
 	constructor() {
 		this.authToken = settings.get('SMS_Voxtelesys_authToken');
+		this.URL = settings.get('SMS_Voxtelesys_URL');
 	}
 	parse(data) {
 		const returnData = {
@@ -25,7 +26,7 @@ class Voxtelesys {
 		const options = {
 			timeout: 30000,
 			followRedirect: false,
-			url: 'https://servicelayer01.voxtelesys.net:3100/api/v1/sms',
+			url: this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms',
 			auth: {
 				bearer: this.authToken,
 			},
