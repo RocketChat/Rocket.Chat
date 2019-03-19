@@ -1448,7 +1448,7 @@
   "I_saved_my_password_close_this_message": "Eu salvei minha senha, feche esta mensagem",
   "Idle_Time_Limit": "Tempo limite de ausência",
   "Idle_Time_Limit_Description": "Período de tempo até que o status mude para longe. O valor precisa estar em segundos.",
-  "if_they_are_from": "(se eles são de% s)",
+  "if_they_are_from": "(se eles são de %s)",
   "If_this_email_is_registered": "Se este e-mail estiver cadastrado, vamos enviar instruções de como pode redefinir a sua senha. Se não receber um e-mail em breve, volte e tente novamente.",
   "If_you_are_sure_type_in_your_password": "Se tem certeza, digite sua senha:",
   "If_you_are_sure_type_in_your_username": "Se tem certeza, digite seu nome de utilizador:",
