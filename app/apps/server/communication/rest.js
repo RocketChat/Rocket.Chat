@@ -1,13 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { API } from '../../../api/server/api';
+import { API } from '../../../api/server';
 import Busboy from 'busboy';
 
 import { getWorkspaceAccessToken } from '../../../cloud';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
-
-let _API;
 
 export class AppsRestApi {
 	constructor(orch, manager) {
@@ -70,10 +68,10 @@ export class AppsRestApi {
 					});
 
 					if (result.statusCode !== 200) {
-						return _API.v1.failure();
+						return API.v1.failure();
 					}
 
-					return _API.v1.success(result.data);
+					return API.v1.success(result.data);
 				}
 
 				if (this.queryParams.categories) {
@@ -88,15 +86,15 @@ export class AppsRestApi {
 					});
 
 					if (result.statusCode !== 200) {
-						return _API.v1.failure();
+						return API.v1.failure();
 					}
 
-					return _API.v1.success(result.data);
+					return API.v1.success(result.data);
 				}
 
 				if (this.queryParams.buildBuyUrl && this.queryParams.appId) {
 					const workspaceId = settings.get('Cloud_Workspace_Id');
-					return _API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }` });
+					return API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }` });
 				}
 
 				const apps = manager.get().map((prl) => {
@@ -135,11 +133,11 @@ export class AppsRestApi {
 					});
 
 					if (result.statusCode !== 200) {
-						return _API.v1.failure();
+						return API.v1.failure();
 					}
 
 					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
-						return _API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
 					buff = Buffer.from(result.content, 'base64');
@@ -196,10 +194,10 @@ export class AppsRestApi {
 					});
 
 					if (result.statusCode !== 200 || result.data.length === 0) {
-						return _API.v1.failure();
+						return API.v1.failure();
 					}
 
-					return _API.v1.success({ app: result.data[0] });
+					return API.v1.success({ app: result.data[0] });
 				}
 
 				const prl = manager.getOneById(this.urlParams.id);
@@ -241,11 +239,11 @@ export class AppsRestApi {
 					});
 
 					if (result.statusCode !== 200) {
-						return _API.v1.failure();
+						return API.v1.failure();
 					}
 
 					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
-						return _API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
 					buff = Buffer.from(result.content, 'base64');
