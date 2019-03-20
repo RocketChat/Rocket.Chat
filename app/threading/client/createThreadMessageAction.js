@@ -4,7 +4,7 @@ import { Subscriptions } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { MessageAction, modal } from '../../ui-utils';
-
+import { t } from '../../utils';
 
 const condition = (rid, uid) => {
 	if (!Subscriptions.findOne({ rid })) {
@@ -28,6 +28,8 @@ Meteor.startup(function() {
 				const [, message] = this._arguments;
 
 				modal.open({
+					title: t('Threading_title'),
+					modifier: 'modal',
 					content: 'CreateThread',
 					data: { rid: message.rid, message, onCreate() {
 						modal.close();

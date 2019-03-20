@@ -186,7 +186,7 @@ const toolbarButtons = (user) => [{
 													modal.close();
 												},
 											},
-											modalClass: 'modal',
+											modifier: 'modal',
 											showConfirmButton: false,
 											showCancelButton: false,
 											confirmOnEnter: false,
@@ -206,7 +206,7 @@ const toolbarButtons = (user) => [{
 													modal.close();
 												},
 											},
-											modalClass: 'modal',
+											modifier: 'modal',
 											showConfirmButton: false,
 											showCancelButton: false,
 											confirmOnEnter: false,

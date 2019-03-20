@@ -1,6 +1,6 @@
 <template name="rc_modal">
 	<div class="rc-modal-wrapper">
-		<dialog class="rc-modal rc-modal--{{modalClass}}" data-modal="modal">
+		<dialog class="rc-modal rc-modal--{{modifier}}" data-modal="modal">
 			{{#if template}}
 				{{> Template.dynamic template=template data=data}}
 			{{else}}

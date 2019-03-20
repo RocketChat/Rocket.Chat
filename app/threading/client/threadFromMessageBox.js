@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { messageBox, modal } from '../../ui-utils';
+import { t } from '../../utils';
 import { settings } from '../../settings';
 
 Meteor.startup(function() {
@@ -14,7 +15,8 @@ Meteor.startup(function() {
 			condition: () => true,
 			action(data) {
 				modal.open({
-					// title: t('Message_info'),
+					title: t('Threading_title'),
+					modifier: 'modal',
 					content: 'CreateThread',
 					data: {
 						...data,
