@@ -34,6 +34,7 @@ Meteor.startup(function() {
 					data: { rid: message.rid, message, onCreate() {
 						modal.close();
 					} },
+					confirmOnEnter: false,
 					showConfirmButton: false,
 					showCancelButton: false,
 				});

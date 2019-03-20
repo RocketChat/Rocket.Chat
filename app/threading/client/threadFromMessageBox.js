@@ -26,7 +26,7 @@ Meteor.startup(function() {
 					},
 					showConfirmButton: false,
 					showCancelButton: false,
-					// confirmButtonText: t('Close'),
+					confirmOnEnter: false,
 				});
 			},
 		});
