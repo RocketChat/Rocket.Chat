@@ -708,7 +708,7 @@ Template.room.events({
 
 		e.preventDefault();
 
-		var cursorLocationDiv = $('<div class = "cursor-location">')
+		const cursorLocationDiv = $('<div class = "cursor-location">')
 			.css({
 				"left": e.clientX + 'px',
 				"top": e.clientY + 'px',
@@ -716,7 +716,6 @@ Template.room.events({
 			})
 			.appendTo(document.body);
 
-		console.log(`${e.clientX} ${e.clientY}`);
 
 		let context = $(e.target).parents('.message').data('context');
 		if (!context) {
@@ -738,6 +737,9 @@ Template.room.events({
 			groups.push({ items: deleteItem });
 		}
 
+		console.log($('body').find('.cursor-location')[0]);
+		console.log($(e.currentTarget).parents('body')[0]);
+
 		const config = {
 			columns: [
 				{
@@ -746,7 +748,7 @@ Template.room.events({
 			],
 			instance: i,
 			data: this,
-			currentTarget: $(e.currentTarget).parents('body')[0],
+			currentTarget: $('body').find('.cursor-location')[0],
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item'),
 		};
