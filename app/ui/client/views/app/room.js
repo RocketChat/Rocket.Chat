@@ -708,6 +708,10 @@ Template.room.events({
 
 		e.preventDefault();
 
+		if($('.cursor-location').length !== 0){
+			$('.cursor-location').remove();
+		}
+		
 		const cursorLocationDiv = $('<div class = "cursor-location">')
 			.css({
 				"left": e.clientX + 'px',
@@ -736,9 +740,6 @@ Template.room.events({
 		if (deleteItem.length) {
 			groups.push({ items: deleteItem });
 		}
-
-		console.log($('body').find('.cursor-location')[0]);
-		console.log($(e.currentTarget).parents('body')[0]);
 
 		const config = {
 			columns: [
