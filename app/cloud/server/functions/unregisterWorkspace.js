@@ -8,12 +8,12 @@ export function unregisterWorkspace() {
 		return true;
 	}
 
-	Settings.removeById('Cloud_Workspace_Id');
-	Settings.removeById('Cloud_Workspace_Name');
-	Settings.removeById('Cloud_Workspace_Client_Id');
-	Settings.removeById('Cloud_Workspace_Client_Secret');
-	Settings.removeById('Cloud_Workspace_Client_Secret_Expires_At');
-	Settings.removeById('Cloud_Workspace_Registration_Client_Uri');
+	Settings.updateValueById('Cloud_Workspace_Id', null);
+	Settings.updateValueById('Cloud_Workspace_Name', null);
+	Settings.updateValueById('Cloud_Workspace_Client_Id', null);
+	Settings.updateValueById('Cloud_Workspace_Client_Secret', null);
+	Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', null);
+	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', null);
 
 	// So doesn't try to register again automatically
 	Settings.updateValueById('Register_Server', false);

@@ -8,7 +8,7 @@ import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
 
-export function getWorkspaceAccessToken() {
+export function getWorkspaceAccessToken(forceNew = false) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
@@ -23,7 +23,7 @@ export function getWorkspaceAccessToken() {
 	const expires = Settings.findOneById('Cloud_Workspace_Access_Token_Expires_At');
 	const now = new Date();
 
-	if (now < expires.value) {
+	if (now < expires.value && !forceNew) {
 		return settings.get('Cloud_Workspace_Access_Token');
 	}
 

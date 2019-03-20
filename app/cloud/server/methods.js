@@ -9,7 +9,7 @@ import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
 import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
 import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
 import { disconnectWorkspace } from './functions/disconnectWorkspace';
-import { settings } from '../../settings/server';
+import { syncWorkspace } from './functions/syncWorkspace';
 
 Meteor.methods({
 	'cloud:checkRegisterStatus'() {
@@ -45,15 +45,20 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:updateEmail' });
 		}
 
-		const existingEmail = settings.get('Organization_Email');
+		Settings.updateValueById('Organization_Email', email);
 
-		if (email !== existingEmail) {
-			Settings.updateValueById('Organization_Email', email);
-
-			return startRegisterWorkspace();
+		return startRegisterWorkspace();
+	},
+	'cloud:syncWorkspace'() {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:updateEmail' });
 		}
 
-		return;
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:updateEmail' });
+		}
+
+		return syncWorkspace();
 	},
 	'cloud:connectWorkspace'(token) {
 		check(token, String);
@@ -79,6 +84,7 @@ Meteor.methods({
 
 		return disconnectWorkspace();
 	},
+	// Currently unused but will link local account to Rocket.Chat Cloud account.
 	'cloud:getOAuthAuthorizationUrl'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:connectServer' });

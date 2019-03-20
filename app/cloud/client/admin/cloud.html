@@ -19,23 +19,38 @@
 						{{#if info.connectToCloud}}
 							{{#if info.workspaceRegistered}}
 								<div class="section-content border-component-color">
-									<button type="button" class="rc-button rc-button--danger action login-btn">Disconnect</button>
-									{{#if info.userAssociated}}
-										<p>{{_ "Cloud_workspace_connected_plus_account"}}</p>
-									{{else}}
-										<p>{{_ "Cloud_workspace_connected_without_account"}}</p>
+									<p>{{_ "Cloud_workspace_connected"}}</p>
+									<div class="input-line double-col">
+										<label class="setting-label" title=""></label>
+										<div class="setting-field">
+											<a href="https://cloud.rocket.chat" class="rc-button rc-button--primary" target="_blank">{{_ "Cloud_login_to_cloud"}}</a>
+										</div>
+									</div>
+								</div>
+
+								<div class="section-content border-component-color">
+										<p>{{_ "Cloud_workspace_support"}}</p>
 										<div class="input-line double-col">
 											<label class="setting-label" title=""></label>
 											<div class="setting-field">
-												<button type="button" class="rc-button rc-button--primary action login-btn">{{_ "Cloud_login_to_cloud"}}</button>
+												<button type="button" class="rc-button rc-button--danger action sync-btn">{{_ "Sync"}}</button>
 											</div>
 										</div>
-									{{/if}}
+									</div>
+
+								<div class="section-content border-component-color">
+									<p>{{_ "Cloud_workspace_disconnect"}}</p>
+									<div class="input-line double-col">
+										<label class="setting-label" title=""></label>
+										<div class="setting-field">
+											<button type="button" class="rc-button rc-button--danger action disconnect-btn">{{_ "Disconnect"}}</button>
+										</div>
+									</div>
 								</div>
 							{{else}}
 								<div class="section-content border-component-color">
 									<div class="input-line double-col">
-										<label class="setting-label" title="cloudEmail">Email</label>
+										<label class="setting-label" title="cloudEmail">{{_ "Email"}}</label>
 										<div class="setting-field">
 											<input class="input-monitor rc-input__element" type="text" name="cloudEmail" value="{{ info.email }}">
 											<div class="settings-description secondary-font-color">{{_ "Cloud_address_to_send_registration_to"}}</div>

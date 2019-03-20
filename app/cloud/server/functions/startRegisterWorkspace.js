@@ -7,12 +7,16 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { statistics } from '../../../statistics';
 
 export function startRegisterWorkspace() {
-	const { workspaceConnected } = retrieveRegistrationStatus();
-	if (workspaceConnected || process.env.TEST_MODE) {
+	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
+	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
 		return true;
 	}
 
-	Settings.updateValueById('Register_Server', true);
+	settings.updateById('Register_Server', true);
+
+	if (workspaceRegistered) {
+		return true;
+	}
 
 	const stats = statistics.get();
 
@@ -33,8 +37,6 @@ export function startRegisterWorkspace() {
 		deploymentPlatform: stats.deploy.platform,
 		version: stats.version,
 	};
-
-	console.log(regInfo);
 
 	const cloudUrl = settings.get('Cloud_Url');
 
