@@ -154,6 +154,10 @@ Meteor.methods({
 	*/
 	createThread({ prid, pmid, t_name, reply, users }) {
 
+		if (!settings.get('Thread_enabled')) {
+			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a thread', { method: 'createThread' });
+		}
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'ThreadCreation' });

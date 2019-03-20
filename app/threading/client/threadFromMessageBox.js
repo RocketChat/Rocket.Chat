@@ -6,7 +6,7 @@ import { settings } from '../../settings';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
-		if (settings.get('Thread_from_context_menu') !== 'button') {
+		if (!settings.get('Thread_enabled')) {
 			return messageBox.actions.remove('Create_new', /start-thread/);
 		}
 		messageBox.actions.add('Create_new', 'Thread', {

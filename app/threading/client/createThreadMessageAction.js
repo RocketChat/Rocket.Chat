@@ -15,7 +15,7 @@ const condition = (rid, uid) => {
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
-		if (settings.get('Thread_from_context_menu') !== 'button') {
+		if (!settings.get('Thread_enabled')) {
 			return MessageAction.removeButton('start-thread');
 		}
 
