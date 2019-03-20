@@ -239,15 +239,15 @@ export const fileUpload = async (files, input, isInReplyView) => {
 				let parentMessage;
 				if (isInReplyView) {
 					parentMessage = $('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea').data('reply');
-					file.customFields = { ref: parentMessage._id };
+					file.customFields = { ref: parentMessage[0]._id };
 				}
 				
 				Meteor.call('sendFileMessage', roomId, storage, file, { msg }, () => {
 					if (isInReplyView) {
-						if (!parentMessage.customFields.replyIds) parentMessage.customFields.replyIds = [];
-						parentMessage.customFields.replyIds.push(file._id);
-						let replyIds = parentMessage.customFields.replyIds;
-						Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
+						if (!parentMessage[0].customFields.replyIds) parentMessage[0].customFields.replyIds = [];
+						parentMessage[0].customFields.replyIds.push(file._id);
+						let replyIds = parentMessage[0].customFields.replyIds;
+						Meteor.call('addMessageReply', { _id: parentMessage[0]._id, customFields: { replyIds } });
 					}
 					$(input)
 						.removeData('reply')

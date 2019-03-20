@@ -331,10 +331,16 @@ Template.messageBox.events({
 				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
 			}))
 			.filter(({ file }) => file !== null);
+		
+		let isInReplyView = false;
+
+		if (instance.parentTemplate(2)) {
+			isInReplyView = instance.parentTemplate(2).data.template === 'RocketReplies';
+		}
 
 		if (files.length) {
 			event.preventDefault();
-			fileUpload(files, input);
+			fileUpload(files, input, isInReplyView);
 			return;
 		}
 

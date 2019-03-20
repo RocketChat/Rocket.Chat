@@ -57,8 +57,8 @@ Template.RocketReplies.onCreated(function () {
 });
 
 Template.RocketReplies.onRendered(function () {
-    const { input } = chatMessages[this.data.tabBar.data.curValue.message.rid];
-    $(input)
+    const { input } = chatMessages[RoomManager.openedRoom];
+    $('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea')
         .focus()
         .data('mention-user', true)
         .data('reply',[Template.instance().data.tabBar.data.curValue.message])

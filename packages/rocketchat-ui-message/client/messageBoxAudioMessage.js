@@ -16,8 +16,8 @@ Template.messageBoxAudioMessage.events({
 	'click .js-audio-message-record'(event, instance) {
 		event.preventDefault();
 		let isInReplyView;
-		if (instance.parentTemplate(2)) {
-			isInReplyView = instance.parentTemplate(2).data.template === 'RocketReplies';
+		if (instance.parentTemplate(2) && instance.parentTemplate(2).data.tabBar) {
+			isInReplyView = instance.parentTemplate(2).data.tabBar.template.curValue === 'RocketReplies';
 		}
 		let recording_icons = $('.rc-message-box__icon.check, .rc-message-box__icon.cross, .rc-message-box__timer-box').not('.contextual-bar .rc-message-box__icon.check, .contextual-bar .rc-message-box__icon.cross, .contextual-bar .rc-message-box__timer-box');
 		let timer = $('.rc-message-box__timer').not('.contextual-bar .rc-message-box__timer');
@@ -67,8 +67,8 @@ Template.messageBoxAudioMessage.events({
 	'click .js-audio-message-check'(event, instance) {
 		event.preventDefault();
 		let isInReplyView;
-		if (instance.parentTemplate(2)) {
-			isInReplyView = instance.parentTemplate(2).data.template === 'RocketReplies';
+		if (instance.parentTemplate(2) && instance.parentTemplate(2).data.tabBar) {
+			isInReplyView = instance.parentTemplate(2).data.tabBar.template.curValue === 'RocketReplies';
 		}
 
 		let timer = $('.rc-message-box__timer').not('.contextual-bar .rc-message-box__timer');
@@ -150,15 +150,15 @@ Template.messageBoxAudioMessage.events({
 				let parentMessage;
 				if (isInReplyView) {
 					parentMessage = $('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea').data('reply');
-					file.customFields = { ref: parentMessage._id };
+					file.customFields = { ref: parentMessage[0]._id };
 				}
 				if (file) {
 					Meteor.call('sendFileMessage', roomId, storage, file, () => {
 						if (isInReplyView) {
-							if (!parentMessage.customFields.replyIds) parentMessage.customFields.replyIds = [];
-							parentMessage.customFields.replyIds.push(file._id);
-							let replyIds = parentMessage.customFields.replyIds;
-							Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
+							if (!parentMessage[0].customFields.replyIds) parentMessage[0].customFields.replyIds = [];
+							parentMessage[0].customFields.replyIds.push(file._id);
+							let replyIds = parentMessage[0].customFields.replyIds;
+							Meteor.call('addMessageReply', { _id: parentMessage[0]._id, customFields: { replyIds } });
 						}
 						Meteor.setTimeout(() => {
 							const uploading = Session.get('uploading');

@@ -463,6 +463,11 @@ export const ChatMessages = class ChatMessages {
 		parentMessage.customFields.replyIds.push(replyMessage._id);
 		let replyIds = parentMessage.customFields.replyIds;
 		Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
+		$('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea')
+			.focus()
+			.data('mention-user', true)
+			.data('reply', [parentMessage])
+			.trigger('dataChange');
 	}
 
 	startTyping(rid, input) {

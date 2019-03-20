@@ -54,7 +54,8 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, isInReplyView);
+			fileUpload(filesToUpload, null, isInReplyView);
+
 			$input.remove();
 		});
 

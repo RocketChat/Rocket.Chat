@@ -42,7 +42,13 @@ Meteor.methods({
 		let replyIds;
 		if (ref) {
 			parentMessage = ChatMessage.findOne({ _id: ref });
-			replyIds = _.without(parentMessage.customFields.replyIds, message._id);
+			let _id = message._id;
+			if (message.file && message.file._id) {
+				if (message.attachments && message.attachments[0] && message.attachments[0].title_link) {
+					_id = message.attachments[0].title_link.split("/")[2];
+				}
+			}
+			replyIds = _.without(parentMessage.customFields.replyIds, _id);
 			Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
 		}
 
