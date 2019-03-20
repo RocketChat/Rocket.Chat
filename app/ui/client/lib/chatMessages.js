@@ -19,6 +19,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+import { fileUpload } from './fileUpload';
 
 let sendOnEnter = '';
 
@@ -269,7 +270,32 @@ export const ChatMessages = class ChatMessages {
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
-				return toastr.error(t('Message_too_long'));
+				if (settings.get('Message_AllowConvertLongMessagesToAttachment') && !this.editing.id) {
+					return modal.open({
+						text: t('Message_too_long_as_an_attachment_question'),
+						title: '',
+						type: 'warning',
+						showCancelButton: true,
+						confirmButtonText: t('Yes'),
+						cancelButtonText: t('No'),
+						closeOnConfirm: true,
+					}, () => {
+						const contentType = 'text/plain';
+						const messageBlob = new Blob([msgObject.msg], { type: contentType });
+						const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
+						const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
+						fileUpload([{ file, name: fileName }]);
+						this.clearCurrentDraft();
+						input.value = '';
+						$(input).trigger('change').trigger('input');
+						this.hasValue.set(false);
+						this.stopTyping(rid);
+						this.saveTextMessageBox(rid, '');
+						return done();
+					});
+				} else {
+					return toastr.error(t('Message_too_long'));
+				}
 			}
 
 			this.clearCurrentDraft();
