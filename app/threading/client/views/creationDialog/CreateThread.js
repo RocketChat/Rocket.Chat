@@ -41,7 +41,7 @@ Template.CreateThread.helpers({
 	selectedUsers() {
 		const myUsername = Meteor.user().username;
 		const { message } = this;
-		const users = Template.instance().selectedUsers.get();
+		const users = Template.instance().selectedUsers.get().map((e) => e);
 		if (message) {
 			users.unshift(message.u);
 		}
@@ -182,6 +182,9 @@ Template.CreateThread.onCreated(function() {
 			return;
 		}
 
+		if (user.username === Meteor.user().username) {
+			return;
+		}
 		const users = this.selectedUsers.get();
 		if (!users.find((u) => user.username === u.username)) {
 			this.selectedUsers.set([...users, user]);
