@@ -704,6 +704,46 @@ Template.room.events({
 
 		popover.open(config);
 	},
+	'contextmenu .message-wrapper'(e, i) {
+
+		e.preventDefault();
+		
+		let context = $(e.target).parents('.message').data('context');
+		if (!context) {
+			context = 'message';
+		}
+
+		const [, message] = this._arguments;
+		const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
+			icon: item.icon,
+			name: t(item.label),
+			type: 'message-action',
+			id: item.id,
+			modifier: item.color,
+		}));
+		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+		const groups = [{ items }];
+
+		if (deleteItem.length) {
+			groups.push({ items: deleteItem });
+		}
+
+		const config = {
+			columns: [
+				{
+					groups,
+				},
+			],
+			instance: i,
+			data: this,
+			currentTarget: e.currentTarget,
+			activeElement: $(e.currentTarget).parents('.message')[0],
+			onRendered: () => new Clipboard('.rc-popover__item'),
+		};
+
+		popover.open(config);
+	},
+
 	'click .time a'(e) {
 		e.preventDefault();
 		const repliedMessageId = this._arguments[1].attachments[0].message_link.split('?msg=')[1];
