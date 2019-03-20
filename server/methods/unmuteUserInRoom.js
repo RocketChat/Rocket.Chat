@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Rooms, Subscriptions, Users, Messages } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
-import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
 import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({

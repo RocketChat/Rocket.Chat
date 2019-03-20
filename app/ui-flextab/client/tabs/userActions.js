@@ -7,13 +7,14 @@ import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../m
 import { modal } from '../../../ui-utils';
 import { t, handleError } from '../../../utils';
 import { settings } from '../../../settings';
-import { hasAllPermission, hasRole } from '../../../authorization';
+import { hasAllPermission, hasRole, userHasAllPermission } from '../../../authorization';
 import _ from 'underscore';
 import toastr from 'toastr';
 
 export const getActions = function({ user, directActions, hideAdminControls }) {
-
 	const hasPermission = hasAllPermission;
+	const userHasPermission = userHasAllPermission;
+
 	const isIgnored = () => {
 		const sub = Subscriptions.findOne({ rid : Session.get('openedRoom') });
 		return sub && sub.ignored && sub.ignored.indexOf(user._id) > -1;
@@ -61,6 +62,19 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 	const canMuteUser = () => hasAllPermission('mute-user', Session.get('openedRoom'));
 	const userMuted = () => {
 		const room = ChatRoom.findOne(Session.get('openedRoom'));
+
+		if (room && room.ro) {
+			if (_.isArray(room.unmuted) && room.unmuted.indexOf(user && user.username) !== -1) {
+				return false;
+			}
+
+			if (userHasPermission(user._id, 'post-readonly', room)) {
+				return _.isArray(room.muted) && (room.muted.indexOf(user && user.username) !== -1);
+			}
+
+			return true;
+		}
+
 		return _.isArray(room && room.muted) && (room.muted.indexOf(user && user.username) !== -1);
 	};
 	const isSelf = (username) => {

@@ -52,7 +52,9 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}, {
 			fields,
 		});
+
 		if (!user) {
+
 			return room && room.ro;
 		}
 
