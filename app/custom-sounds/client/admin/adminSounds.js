@@ -144,20 +144,21 @@ Template.adminSounds.events({
 		if ($audio && $audio[0] && $audio[0].play) {
 			$audio[0].play();
 		}
-	}, 'click .icon-pause-circled'(e) {
+	},
+	'click .icon-pause-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		const $audio = $(`audio#${ this._id }`);
-		console.log($audio);
-		if ($audio && $audio[0] && $audio[0].pause) {
-			$audio[0].pause();
+		const audio = document.getElementById(this._id);
+		if (audio && !audio.paused) {
+			audio.pause();
 		}
-	}, 'click .icon-reset-circled'(e) {
+	},
+	'click .icon-reset-circled'(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		const $audio = $(`audio#${ this._id }`);
-		if ($audio && $audio[0] && $audio[0].pause) {
-			$audio[0].currentTime = 0;
+		const audio = document.getElementById(this._id);
+		if (audio) {
+			audio.currentTime = 0;
 		}
 	},
 });
