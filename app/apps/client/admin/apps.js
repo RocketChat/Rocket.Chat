@@ -261,9 +261,6 @@ Template.apps.events({
 			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
 		}
 	},
-	'click [data-button="install"]'() {
-		FlowRouter.go('/admin/app/install');
-	},
 	'click .js-install'(e) {
 		e.stopPropagation();
 

@@ -15,6 +15,8 @@ class AppServerOrchestrator {
 			Permissions.createOrUpdate('manage-apps', ['admin']);
 		}
 
+		this._inDebug = process.env.NODE_ENV !== 'production';
+
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
 		this._persistModel = new AppsPersistenceModel();
@@ -75,6 +77,17 @@ class AppServerOrchestrator {
 
 	isLoaded() {
 		return this.getManager().areAppsLoaded();
+	}
+
+	isDebugging() {
+		return this._inDebug;
+	}
+
+	debugLog() {
+		if (this._inDebug) {
+			// eslint-disable-next-line
+			console.log(...arguments);
+		}
 	}
 
 	load() {
