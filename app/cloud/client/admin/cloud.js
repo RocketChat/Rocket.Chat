@@ -45,6 +45,26 @@ Template.cloud.onCreated(function() {
 		});
 	};
 
+	instance.registerWorkspace = function _registerWorkspace() {
+		Meteor.call('cloud:registerWorkspace', (error, success) => {
+			if (error) {
+				toastr.error(error);
+				instance.loadRegStatus();
+				return;
+			}
+
+			if (!success) {
+				toastr.error('An error occured');
+				instance.loadRegStatus();
+				return;
+			}
+
+			toastr.success(t('Connected'));
+
+			instance.loadRegStatus();
+		});
+	};
+
 	const params = queryString.parse(location.search);
 
 	if (params.token) {
@@ -89,5 +109,9 @@ Template.cloud.events({
 		const token = $('input[name=cloudToken]').val();
 
 		i.connectWorkspace(token);
+	},
+
+	'click .register-btn'(e, i) {
+		i.registerWorkspace();
 	},
 });

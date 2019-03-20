@@ -5,9 +5,13 @@ import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { unregisterWorkspace } from './unregisterWorkspace';
 
 export function getWorkspaceAccessToken() {
-	if (!settings.get('Register_Server')) {
+	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+
+	if (!connectToCloud || !workspaceRegistered) {
 		return '';
 	}
 
@@ -39,6 +43,11 @@ export function getWorkspaceAccessToken() {
 			}),
 		});
 	} catch (e) {
+		if (e.response && e.response.data && e.response.data.errorCode === 'oauth_invalid_client_credentials') {
+			console.error('Server has been unregistered from cloud');
+			unregisterWorkspace();
+		}
+
 		return '';
 	}
 
@@ -47,7 +56,6 @@ export function getWorkspaceAccessToken() {
 
 	Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
 	Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
-
 
 	return authTokenResult.data.access_token;
 }

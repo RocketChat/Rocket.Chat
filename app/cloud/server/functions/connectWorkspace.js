@@ -8,9 +8,9 @@ import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export function connectWorkspace(token) {
-	const { registeredWithWizard } = retrieveRegistrationStatus();
-	if (!registeredWithWizard) {
-		return false;
+	const { connectToCloud } = retrieveRegistrationStatus();
+	if (!connectToCloud) {
+		Settings.updateValueById('Register_Server', true);
 	}
 
 	const redirectUri = getRedirectUri();

@@ -20,6 +20,7 @@ const wizardFields = [
 	'Language',
 	'Server_Type',
 	'Allow_Marketing_Emails',
+	'Register_Server',
 ];
 
 statistics.get = function _getStatistics() {

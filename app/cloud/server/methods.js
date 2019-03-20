@@ -7,6 +7,9 @@ import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStat
 import { connectWorkspace } from './functions/connectWorkspace';
 import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
 import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
+import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
+import { disconnectWorkspace } from './functions/disconnectWorkspace';
+import { settings } from '../../settings/server';
 
 Meteor.methods({
 	'cloud:checkRegisterStatus'() {
@@ -20,6 +23,17 @@ Meteor.methods({
 
 		return retrieveRegistrationStatus();
 	},
+	'cloud:registerWorkspace'() {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:startRegister' });
+		}
+
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:startRegister' });
+		}
+
+		return startRegisterWorkspace();
+	},
 	'cloud:updateEmail'(email) {
 		check(email, String);
 
@@ -31,7 +45,15 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:updateEmail' });
 		}
 
-		Settings.updateValueById('Organization_Email', email);
+		const existingEmail = settings.get('Organization_Email');
+
+		if (email !== existingEmail) {
+			Settings.updateValueById('Organization_Email', email);
+
+			return startRegisterWorkspace();
+		}
+
+		return;
 	},
 	'cloud:connectWorkspace'(token) {
 		check(token, String);
@@ -45,6 +67,17 @@ Meteor.methods({
 		}
 
 		return connectWorkspace(token);
+	},
+	'cloud:disconnectWorkspace'() {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:connectServer' });
+		}
+
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:connectServer' });
+		}
+
+		return disconnectWorkspace();
 	},
 	'cloud:getOAuthAuthorizationUrl'() {
 		if (!Meteor.userId()) {
