@@ -708,15 +708,15 @@ Template.room.events({
 
 		e.preventDefault();
 
-		if($('.cursor-location').length !== 0){
+		if ($('.cursor-location').length !== 0) {
 			$('.cursor-location').remove();
 		}
-		
-		const cursorLocationDiv = $('<div class = "cursor-location">')
+
+		$('<div class = "cursor-location">')
 			.css({
-				"left": e.clientX + 'px',
-				"top": e.clientY + 'px',
-				"position": 'absolute',
+				left: `${ e.clientX }px`,
+				top: `${ e.clientY }px`,
+				position: 'absolute',
 			})
 			.appendTo(document.body);
 
