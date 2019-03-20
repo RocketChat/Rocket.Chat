@@ -2890,14 +2890,6 @@ rc-old select,
 		line-height: 40px;
 	}
 
-	& button {
-		font-weight: 400;
-
-		&:hover {
-			text-decoration: underline;
-		}
-	}
-
 	& .body {
 		transition: opacity 1s linear;
 
@@ -4251,7 +4243,7 @@ body:not(.is-cordova) {
 			font-weight: 400;
 
 			&:focus {
-				border-color: #13679a !important;
+				border-color: #1d74f5 !important;
 			}
 		}
 

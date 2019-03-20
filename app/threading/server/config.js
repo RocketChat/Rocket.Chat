@@ -22,7 +22,7 @@ Meteor.startup(() => {
 		section: 'Accounts_Default_User_Preferences',
 		type: 'boolean',
 		public: true,
-		i18nLabel: 'Threads_in_sidebar',
+		i18nLabel: 'Group_threads',
 	});
 
 	const globalQuery = {
