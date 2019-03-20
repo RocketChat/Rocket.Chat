@@ -34,6 +34,10 @@ API.v1.addRoute('livechat/message', {
 				throw new Meteor.Error('invalid-room');
 			}
 
+			if (!room.open) {
+				throw new Meteor.Error('room-closed');
+			}
+
 			const _id = this.bodyParams._id || Random.id();
 
 			const sendMessage = {

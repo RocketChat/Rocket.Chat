@@ -2943,20 +2943,6 @@ rc-old select,
 			line-height: 1em;
 		}
 
-		& blockquote.sandstorm-grain {
-			& img {
-				width: 50px;
-			}
-
-			& label {
-				cursor: pointer;
-			}
-
-			& button {
-				display: block;
-			}
-		}
-
 		& ul,
 		& ol {
 			padding: 0 0 0 24px;
@@ -4251,7 +4237,7 @@ body:not(.is-cordova) {
 			font-weight: 400;
 
 			&:focus {
-				border-color: #13679a !important;
+				border-color: #1d74f5 !important;
 			}
 		}
 
