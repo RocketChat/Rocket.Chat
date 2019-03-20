@@ -2,15 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { emoji } from '../../emoji';
 import { getUserPreference } from '../../utils';
-import { emojione } from 'meteor/emojione:emojione';
+import emojione from 'emojione';
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 
 emoji.packages.emojione = emojione;
-emoji.packages.emojione.imageType = 'png';
 emoji.packages.emojione.sprites = true;
 emoji.packages.emojione.emojisByCategory = emojisByCategory;
 emoji.packages.emojione.emojiCategories = emojiCategories;
 emoji.packages.emojione.toneList = toneList;
+emoji.packages.emojione.emojiSize = 64;
+emoji.packages.emojione.spriteSize = 64;
 
 emoji.packages.emojione.render = function(emoji) {
 	return emojione.toImage(emoji);
