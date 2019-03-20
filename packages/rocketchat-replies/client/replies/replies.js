@@ -1,26 +1,24 @@
 /* globals ReactiveVar, TAPi18n */
 import { Template } from 'meteor/templating';
-import _ from 'underscore';
 import { ChatMessage } from 'meteor/rocketchat:models';
-import { chatMessages } from 'meteor/rocketchat:ui';
-import { RoomManager } from 'meteor/rocketchat:ui-utils';
+import { Session } from 'meteor/session';
 
 Template.RocketReplies.events = {};
 
 Template.RocketReplies.helpers({
 	getroomData() {
-		const roomData = Session.get(`roomData${Template.instance().data.tabBar.data.curValue.message.rid}`);
+		const roomData = Session.get(`roomData${ Template.instance().data.tabBar.data.curValue.message.rid }`);
 		return roomData;
 	},
 	parentMessage() {
 
 		const query =
-			{ '_id': Template.instance().data.tabBar.data.curValue.message._id };
+			{ _id : Template.instance().data.tabBar.data.curValue.message._id };
 
 		const options = {
 			sort: {
 				ts: 1,
-			},
+			}
 		};
 
 		return ChatMessage.find(query, options);
@@ -41,8 +39,8 @@ Template.RocketReplies.helpers({
 
 Template.RocketReplies.onCreated(function () {
 
-	let rid = Template.instance().data.tabBar.data.curValue.message.rid;
-	let parentMessage = Template.instance().data.tabBar.data.curValue.message._id;
+	const rid = Template.instance().data.tabBar.data.curValue.message.rid;
+	const parentMessage = Template.instance().data.tabBar.data.curValue.message._id;
 
 	Meteor.call('loadReplyHistory', rid, parentMessage, (err, result) => {
 		if (err) {
@@ -57,7 +55,6 @@ Template.RocketReplies.onCreated(function () {
 });
 
 Template.RocketReplies.onRendered(function () {
-	const { input } = chatMessages[RoomManager.openedRoom];
 	$('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea')
 		.focus()
 		.data('mention-user', true)
