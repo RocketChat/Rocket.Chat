@@ -101,7 +101,6 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 
 		const sendCreationMessage = settings.get('Thread_send_creation_message');
 
-		console.log(sendCreationMessage)
 		mentionThreadMessage(thread._id, user, attachMessage(message, p_room));
 
 		switch (sendCreationMessage) {
