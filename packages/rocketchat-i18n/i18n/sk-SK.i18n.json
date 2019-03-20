@@ -1863,7 +1863,7 @@
   "No_results_found_for": "Neboli nájdené žiadne výsledky pre:",
   "No_snippet_messages": "Žiadny útržok",
   "No_starred_messages": "Žiadne správy označené hviezdičkou",
-  "No_such_command": "Žiadny taký príkaz: `/ __ príkaz__ '",
+  "No_such_command": "Žiadny taký príkaz: `/ __command__ '",
   "No_user_with_username_%s_was_found": "Žiaden používateľ s používateľským menom <strong>\"%s\"</strong>nebol nájdený!",
   "Nobody_available": "Nikto nie je k dispozícii",
   "Node_version": "Verzia uzla",

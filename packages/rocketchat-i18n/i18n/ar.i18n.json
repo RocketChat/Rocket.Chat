@@ -1315,7 +1315,7 @@
   "Importer_CSV_Information": "يتطلب مستورد كسف تنسيقا محددا، يرجى قراءة الوثائق عن كيفية تنظيم ملف مضغوط:",
   "Importer_done": "استيراد كاملة!",
   "Importer_finishing": "حتى الانتهاء من الاستيراد.",
-  "Importer_From_Description": "واردات __from البيانات __ الصورة في Rocket.Chat.",
+  "Importer_From_Description": "واردات __from__ البيانات الصورة في Rocket.Chat.",
   "Importer_HipChatEnterprise_BetaWarning": "يرجى العلم بأن هذا الاستيراد لا يزال عملا جاريا، يرجى الإبلاغ عن أية أخطاء تحدث في جيثب:",
   "Importer_HipChatEnterprise_Information": "يجب أن يكون الملف الذي تم تحميله tar.gz مفكك، يرجى قراءة الوثائق للحصول على مزيد من المعلومات:",
   "Importer_import_cancelled": "إلغيَ الاستيراد.",

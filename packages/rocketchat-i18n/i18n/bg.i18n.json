@@ -1864,7 +1864,7 @@
   "No_results_found_for": "Няма намерени резултати за:",
   "No_snippet_messages": "Няма фрагмент",
   "No_starred_messages": "Няма съобщения със звезда",
-  "No_such_command": "Няма такава команда: `/ __ команда__ '",
+  "No_such_command": "Няма такава команда: `/ __command__ '",
   "No_user_with_username_%s_was_found": "Няма намерен потребител с потребителско име <strong>\"%s\"</strong>!",
   "Nobody_available": "Няма никой",
   "Node_version": "Версия на възел",
