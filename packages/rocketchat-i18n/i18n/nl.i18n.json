@@ -1378,7 +1378,7 @@
   "Importer_CSV_Information": "De CSV-importeur vereist een specifiek formaat, lees de documentatie voor het structureren van uw zipbestand:",
   "Importer_done": "Importeren compleet!",
   "Importer_finishing": "Afwerking van de import.",
-  "Importer_From_Description": "Invoer __from __ 's gegevens in Rocket.Chat.",
+  "Importer_From_Description": "Invoer __from__ 's gegevens in Rocket.Chat.",
   "Importer_HipChatEnterprise_BetaWarning": "Houd er rekening mee dat deze import nog steeds in uitvoering is. Rapporteer eventuele fouten in GitHub:",
   "Importer_HipChatEnterprise_Information": "Het geüploade bestand moet een gedecodeerde tar.gz zijn. Lees de documentatie voor meer informatie:",
   "Importer_import_cancelled": "Importeren geannuleerd.",
