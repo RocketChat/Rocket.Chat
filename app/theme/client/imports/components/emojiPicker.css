@@ -102,11 +102,15 @@
 }
 
 .emoji-footer {
-	text-align: center;
-	font-size: 12px;
-	color: var(--rc-color-primary-light);
-	font-weight: 500;
 	padding-top: 5px;
+
+	text-align: center;
+
+	color: var(--rc-color-primary-light);
+
+	font-size: 12px;
+
+	font-weight: 500;
 }
 
 .emoji-top {
