@@ -1,12 +1,15 @@
 .message-thread {
 	display: flex;
-	align-items: center;
+
 	padding: 0.5rem 0;
+	align-items: center;
 }
 
 .thread-reply-lm {
 	padding: 4px 8px;
-	color: #9EA2A8;
+
+	color: #9ea2a8;
+
 	font-size: 12px;
 }
 

@@ -120,9 +120,10 @@
 	}
 
 	&--small {
-		font-size: var(--button-text-size-small);
-		padding: var(--button-padding-small);
 		height: var(--button-height-small);
+		padding: var(--button-padding-small);
+
+		font-size: var(--button-text-size-small);
 	}
 
 	&--square {

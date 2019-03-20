@@ -12,5 +12,3 @@ import './oembedUrlWidget.html';
 import './oembedUrlWidget';
 import './oembedFrameWidget.html';
 import './oembedFrameWidget';
-import './oembedSandstormGrain.html';
-import './oembedSandstormGrain';
