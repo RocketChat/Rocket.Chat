@@ -1,5 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { FileUpload } from '../../app/file-upload';
+import { Users } from '../../app/models';
+import { settings } from '../../app/settings';
+import { Notifications } from '../../app/notifications';
 
 Meteor.methods({
 	resetAvatar() {
@@ -9,7 +13,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'resetAvatar',
 			});
@@ -17,8 +21,8 @@ Meteor.methods({
 
 		const user = Meteor.user();
 		FileUpload.getStore('Avatars').deleteByName(user.username);
-		RocketChat.models.Users.unsetAvatarOrigin(user._id);
-		RocketChat.Notifications.notifyLogged('updateAvatar', {
+		Users.unsetAvatarOrigin(user._id);
+		Notifications.notifyLogged('updateAvatar', {
 			username: user.username,
 		});
 	},

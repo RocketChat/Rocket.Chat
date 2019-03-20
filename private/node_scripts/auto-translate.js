@@ -3,7 +3,7 @@ const fs = require('fs');
 const _ = require('underscore');
 
 if (!process.argv[2]) {
-	console.error('\You must inform you Google API key: node auto-translate.js [google-api-key]\n');
+	console.error('\You must inform your Google API key: node auto-translate.js [google-api-key]\n');
 	process.exit();
 }
 

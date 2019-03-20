@@ -1,22 +1,12 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
-	apiEmail,
-	apiUsername,
-	targetUser,
-	log,
 	apiPublicChannelName,
 	channel,
 } from '../../data/api-data.js';
-import { adminEmail, password, adminUsername } from '../../data/user.js';
-import supertest from 'supertest';
+import { adminUsername } from '../../data/user.js';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -593,6 +583,35 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
+			})
+			.end(done);
+	});
+
+	it('/channels.addLeader', (done) => {
+		request.post(api('channels.addLeader'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', true);
+			})
+			.end(done);
+	});
+	it('/channels.removeLeader', (done) => {
+		request.post(api('channels.removeLeader'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
 			})
 			.end(done);
 	});
