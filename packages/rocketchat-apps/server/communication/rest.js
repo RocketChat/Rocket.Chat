@@ -121,8 +121,29 @@ export class AppsRestApi {
 					}
 
 					buff = Buffer.from(result.content, 'base64');
-				} else if (this.bodyParams.appId && this.bodyParams.version) {
-					// TODO: Figure it out
+				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+						headers,
+						npmRequestOptions: { encoding: 'base64' },
+					});
+
+					if (result.statusCode !== 200) {
+						return _API.v1.failure();
+					}
+
+					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						return _API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+					}
+
+					buff = Buffer.from(result.content, 'base64');
 				} else {
 					buff = fileHandler(this.request, 'app');
 				}
@@ -202,6 +223,29 @@ export class AppsRestApi {
 					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						return _API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+					}
+
+					buff = Buffer.from(result.content, 'base64');
+				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+						headers,
+						npmRequestOptions: { encoding: 'base64' },
+					});
+
+					if (result.statusCode !== 200) {
+						return _API.v1.failure();
+					}
+
+					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return _API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 

@@ -39,7 +39,7 @@ function getApps(instance) {
 			instance.hasError.set(true);
 			instance.theError.set(e.message);
 		}).then((goOn) => {
-			if (!goOn) {
+			if (typeof goOn !== 'undefined' && !goOn) {
 				return;
 			}
 
@@ -328,23 +328,22 @@ Template.appManage.events({
 		el.addClass('loading');
 
 		const app = t.app.get();
-		console.log(app);
 
-		// const url = `${ HOST }/v1/apps/${ t.id.get() }/download/${ app.version }`;
+		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
 
-		// const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
-
-		// APIClient.post(api, { url }).then(() => {
-		// 	getApps(t).then(() => {
-		// 		el.prop('disabled', false);
-		// 		el.removeClass('loading');
-		// 	});
-		// }).catch((e) => {
-		// 	el.prop('disabled', false);
-		// 	el.removeClass('loading');
-		// 	t.hasError.set(true);
-		// 	t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-		// });
+		APIClient.post(api, {
+			appId: app.id,
+			marketplace: true,
+			version: app.version,
+		}).then(() => getApps(t)).then(() => {
+			el.prop('disabled', false);
+			el.removeClass('loading');
+		}).catch((e) => {
+			el.prop('disabled', false);
+			el.removeClass('loading');
+			t.hasError.set(true);
+			t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+		});
 
 		// play animation
 		// TODO this icon and animation are not working
@@ -356,14 +355,12 @@ Template.appManage.events({
 
 		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.id }`)
 			.then((data) => {
+				data.successCallback = () => getApps(t);
+
 				modal.open({
 					allowOutsideClick: false,
 					data,
 					template: 'iframeModal',
-				}, () => {
-					console.log('success');
-					getApps(t); // TODO: determine how to do this smoother
-					// FlowRouter.go(`/admin/apps/${ rl.id }?version=${ rl.version }`);
 				});
 			})
 			.catch((e) => {
