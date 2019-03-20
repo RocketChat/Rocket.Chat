@@ -40,11 +40,11 @@ export const getPermaLinks = async(replies) => {
 export const mountReply = async (msg, input, originalMessage, customFields) => {
 	const replies = $(input).data('reply');
 
-	const mentionUser = $(input).data('mention-user') || false;
+	// const mentionUser = $(input).data('mention-user') || false;
 
 	if (replies && replies.length) {
 
-		replies.forEach(async(reply, replyIndex) => {
+		replies.forEach(async(reply) => {
 			if (reply !== undefined) {
 				Object.assign(originalMessage, ChatMessage.findOne({ _id: reply._id }));
 				Object.assign(customFields, { ref: reply._id });
@@ -53,7 +53,6 @@ export const mountReply = async (msg, input, originalMessage, customFields) => {
 					.removeData('reply')
 					.trigger('dataChange');
 			}
-			
 		});
 	}
 
@@ -247,8 +246,8 @@ export const ChatMessages = class ChatMessages {
 			$('.message.first-unread').removeClass('first-unread');
 
 			let msg = '';
-			let originalMessage = {};
-			let customFields = {};
+			const originalMessage = {};
+			const customFields = {};
 
 			msg += await mountReply(msg, input, originalMessage, customFields);
 
@@ -300,8 +299,8 @@ export const ChatMessages = class ChatMessages {
 
 			Meteor.call('sendMessage', msgObject);
 
-			let replyMessage = msgObject;
-			let parentMessage = originalMessage;
+			const replyMessage = msgObject;
+			const parentMessage = originalMessage;
 
 			if (replies !== undefined) {
 				this.addMessageReply(
@@ -461,7 +460,7 @@ export const ChatMessages = class ChatMessages {
 	addMessageReply(parentMessage, replyMessage) {
 		if (!parentMessage.customFields.replyIds) parentMessage.customFields.replyIds = [];
 		parentMessage.customFields.replyIds.push(replyMessage._id);
-		let replyIds = parentMessage.customFields.replyIds;
+		const replyIds = parentMessage.customFields.replyIds;
 		Meteor.call('addMessageReply', { _id: parentMessage._id, customFields: { replyIds } });
 		$('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea')
 			.focus()

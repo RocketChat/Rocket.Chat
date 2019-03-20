@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Messages, Rooms } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
 import { callbacks } from 'meteor/rocketchat:callbacks';
 import { Apps } from 'meteor/rocketchat:apps';
 

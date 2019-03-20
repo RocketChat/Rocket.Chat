@@ -244,9 +244,11 @@ export const fileUpload = async (files, input, isInReplyView) => {
 				
 				Meteor.call('sendFileMessage', roomId, storage, file, { msg }, () => {
 					if (isInReplyView) {
-						if (!parentMessage[0].customFields.replyIds) parentMessage[0].customFields.replyIds = [];
+						if (!parentMessage[0].customFields.replyIds) {
+							parentMessage[0].customFields.replyIds = [];
+						};
 						parentMessage[0].customFields.replyIds.push(file._id);
-						let replyIds = parentMessage[0].customFields.replyIds;
+						const replyIds = parentMessage[0].customFields.replyIds;
 						Meteor.call('addMessageReply', { _id: parentMessage[0]._id, customFields: { replyIds } });
 					}
 					$(input)

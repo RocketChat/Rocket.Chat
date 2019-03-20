@@ -510,9 +510,9 @@ Template.room.events({
 			tabBar.setData({ message: message, icon: "reply", label: "Thread" });
 		}
 	},
-	'click, touchend'(e, t) {
-		// Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
-	},
+	// 'click, touchend'(e, t) {
+	// 	// Meteor.setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
+	// },
 
 	'click .messages-container-main'() {
 		if (Template.instance().tabBar.getState() === 'opened' && getUserPreference(Meteor.userId(), 'hideFlexTab')) {
@@ -802,9 +802,9 @@ Template.room.events({
 		fileUpload(filesToUpload, input);
 	},
 
-	'load img'(e, template) {
-		// return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
-	},
+	// 'load img'(e, template) {
+	// 	// return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
+	// },
 
 	'click .jump-recent button'(e, template) {
 		e.preventDefault();
