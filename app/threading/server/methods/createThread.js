@@ -29,6 +29,8 @@ export const mentionThreadMessage = (rid, { _id, username, name }, message_embed
 	const welcomeMessage = {
 		rid,
 		u: { _id, username, name },
+		ts: new Date(),
+		_updatedAt: new Date(),
 		attachments: [message_embedded].filter((e) => e),
 	};
 
@@ -114,6 +116,7 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 						...fields,
 					},
 				});
+
 				// check if the message is in the latest 10 messages sent to the room
 				// if not creates a new message saying about the thread creation
 				const lastMessageIds = Messages.findByRoomId(message.rid, {

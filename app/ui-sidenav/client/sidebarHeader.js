@@ -167,6 +167,29 @@ const toolbarButtons = (user) => [{
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
 	action: (e) => {
+
+
+		const createChannel = (e) => {
+			e.preventDefault();
+			modal.open({
+				title: t('Create_A_New_Channel'),
+				content: 'createChannel',
+				data: {
+					onCreate() {
+						modal.close();
+					},
+				},
+				modifier: 'modal',
+				showConfirmButton: false,
+				showCancelButton: false,
+				confirmOnEnter: false,
+			});
+		};
+
+		const threadEnabled = settings.get('Thread_enabled');
+		if (!threadEnabled) {
+			return createChannel(e);
+		}
 		const config = {
 			columns: [
 				{
@@ -176,22 +199,7 @@ const toolbarButtons = (user) => [{
 								{
 									icon: 'hashtag',
 									name: t('Channel'),
-									action: (e) => {
-										e.preventDefault();
-										modal.open({
-											title: t('Create_A_New_Channel'),
-											content: 'createChannel',
-											data: {
-												onCreate() {
-													modal.close();
-												},
-											},
-											modifier: 'modal',
-											showConfirmButton: false,
-											showCancelButton: false,
-											confirmOnEnter: false,
-										});
-									},
+									action: createChannel,
 								},
 								{
 									icon: 'thread',
