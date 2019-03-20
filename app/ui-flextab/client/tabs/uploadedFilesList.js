@@ -4,7 +4,6 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { DateFormat } from '../../../lib';
-import { Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { t, handleError } from '../../../utils';
 import { popover } from '../../../ui-utils';
