@@ -707,7 +707,17 @@ Template.room.events({
 	'contextmenu .message-wrapper'(e, i) {
 
 		e.preventDefault();
-		
+
+		var cursorLocationDiv = $('<div class = "cursor-location">')
+			.css({
+				"left": e.clientX + 'px',
+				"top": e.clientY + 'px',
+				"position": 'absolute',
+			})
+			.appendTo(document.body);
+
+		console.log(`${e.clientX} ${e.clientY}`);
+
 		let context = $(e.target).parents('.message').data('context');
 		if (!context) {
 			context = 'message';
@@ -736,7 +746,7 @@ Template.room.events({
 			],
 			instance: i,
 			data: this,
-			currentTarget: e.currentTarget,
+			currentTarget: $(e.currentTarget).parents('body')[0],
 			activeElement: $(e.currentTarget).parents('.message')[0],
 			onRendered: () => new Clipboard('.rc-popover__item'),
 		};
