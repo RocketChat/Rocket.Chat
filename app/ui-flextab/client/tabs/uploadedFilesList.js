@@ -2,10 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { modal } from '../../../ui-utils';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { DateFormat } from '../../../lib';
-import { t } from '../../../utils';
+import { Subscriptions } from '../../../models';
+import { settings } from '../../../settings';
+import { t, handleError } from '../../../utils';
 import { popover } from '../../../ui-utils';
 import { Template } from 'meteor/templating';
+import moment from 'moment';
 import _ from 'underscore';
 
 const roomFiles = new Mongo.Collection('room_files');
@@ -143,32 +147,6 @@ Template.uploadedFilesList.events({
 										a.remove();
 									},
 								},
-								{
-									icon: 'trash',
-									name: t('Delete'),
-									action: () => {
-										modal.open({
-											title: t('Are_you_sure'),
-											text: t('You_will_not_be_able_to_recover_file'),
-											type: 'warning',
-											showCancelButton: true,
-											confirmButtonColor: '#DD6B55',
-											confirmButtonText: t('Yes_delete_it'),
-											cancelButtonText: t('Cancel'),
-											html: false,
-										}, () => {
-											modal.open({
-												title: t('Deleted'),
-												text: t('Your_entry_has_been_deleted'),
-												type: 'success',
-												timer: 1000,
-												showConfirmButton: false,
-											});
-
-											Meteor.call('deleteFileMessage', this.file._id);
-										});
-									},
-								},
 							],
 						},
 					],
@@ -179,6 +157,71 @@ Template.uploadedFilesList.events({
 				e.currentTarget.parentElement.classList.remove('active');
 			},
 		};
+
+		const canDelete = () => {
+			console.log(2);
+			const forceDelete = hasAtLeastOnePermission('force-delete-message', this.rid);
+			const hasPermission = hasAtLeastOnePermission('delete-message', this.rid);
+			const isDeleteAllowed = settings.get('Message_AllowDeleting');
+			const deleteOwn = this.file.userId === Meteor.userId();
+			if (!(hasPermission || (isDeleteAllowed && deleteOwn) || forceDelete)) {
+				return;
+			}
+			console.log(3);
+			const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
+			if (forceDelete) {
+				return true;
+			}
+			console.log(4);
+			if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) {
+				let msgTs;
+				if (this.file.uploadedAt != null) {
+					msgTs = moment(this.file.uploadedAt);
+				}
+				let currentTsDiff;
+				if (msgTs != null) {
+					currentTsDiff = moment().diff(msgTs, 'minutes');
+				}
+				console.log(5);
+				return currentTsDiff < blockDeleteInMinutes;
+			} else {
+				console.log(6);
+				return true;
+			}
+		};
+
+		if (canDelete()) {
+			config.columns[0].groups[0].items.push({
+				icon: 'trash',
+				name: t('Delete'),
+				action: () => {
+					modal.open({
+						title: t('Are_you_sure'),
+						text: t('You_will_not_be_able_to_recover_file'),
+						type: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#DD6B55',
+						confirmButtonText: t('Yes_delete_it'),
+						cancelButtonText: t('Cancel'),
+						html: false,
+					}, () => {
+						Meteor.call('deleteFileMessage', this.file._id, (error) => {
+							if (error) {
+								handleError(error);
+							} else {
+								modal.open({
+									title: t('Deleted'),
+									text: t('Your_entry_has_been_deleted'),
+									type: 'success',
+									timer: 1000,
+									showConfirmButton: false,
+								});
+							}
+						});
+					});
+				},
+			});
+		}
 
 		popover.open(config);
 	},
