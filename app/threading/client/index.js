@@ -5,10 +5,6 @@ import './views/ThreadList.html';
 import './views/ThreadList';
 import './views/ThreadsTabbar.html';
 import './views/ThreadsTabbar';
-import './views/fieldTypeThreadReplyCounter.html';
-import './views/fieldTypeThreadReplyCounter';
-import './views/fieldTypeThreadLastMessageAge.html';
-import './views/fieldTypeThreadLastMessageAge';
 
 // Other UI extensions
 import './lib/messageTypes/threadMessage';

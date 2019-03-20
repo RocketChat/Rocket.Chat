@@ -1,15 +1,16 @@
-.attachment-fields button {
-	min-height: auto;
-	padding: 3px;
-
-	font-weight: normal;
+.message-thread {
+	display: flex;
+	align-items: center;
+	padding: 0.5rem 0;
 }
 
-.attachment-fields button:hover {
-	text-decoration: none;
+.thread-reply-lm {
+	padding: 4px 8px;
+	color: #9EA2A8;
+	font-size: 12px;
 }
 
-.attachment-fields button.no-replies {
+.no-replies {
 	opacity: 0.4;
 }
 

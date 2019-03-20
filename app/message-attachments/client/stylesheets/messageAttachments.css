@@ -91,6 +91,8 @@ html.rtl .attachment {
 		margin-top: 4px;
 		flex-wrap: wrap;
 
+		align-items: center;
+
 		& .attachment-field {
 			flex: 1 0 100%;
 

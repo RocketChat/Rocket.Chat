@@ -18,8 +18,8 @@
 
 	display: flex;
 
-	min-height: 40px;
-	max-height: 40px;
+	height: 40px;
+
 	padding: 0 1.5rem;
 
 	cursor: pointer;
@@ -120,7 +120,9 @@
 	}
 
 	&--small {
+		font-size: var(--button-text-size-small);
 		padding: var(--button-padding-small);
+		height: var(--button-height-small);
 	}
 
 	&--square {

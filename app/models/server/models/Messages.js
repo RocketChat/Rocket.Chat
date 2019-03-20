@@ -983,7 +983,7 @@ export class Messages extends Base {
 		if (!rid) {
 			return false;
 		}
-		const { lm, msgs: count } = Rooms.findOneById(rid, {
+		const { lm: tlm, msgs: tcount } = Rooms.findOneById(rid, {
 			fields: {
 				msgs: 1,
 				lm: 1,
@@ -996,16 +996,8 @@ export class Messages extends Base {
 
 		return this.update(query, {
 			$set: {
-				'attachments.0.fields': [
-					{
-						type: 'messageCounter',
-						count,
-					},
-					{
-						type: 'lastMessageAge',
-						lm,
-					},
-				],
+				tcount,
+				tlm,
 			},
 		}, { multi: 1 });
 	}

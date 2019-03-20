@@ -29,10 +29,7 @@ Template.CreateThread.helpers({
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
-		if (instance.reply.get() && instance.parentChannel.get()) {
-			return '';
-		}
-		return 'disabled';
+		return instance.parentChannel.get() ? '' : 'disabled';
 	},
 	parentChannel() {
 		const instance = Template.instance();

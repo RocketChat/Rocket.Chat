@@ -38,8 +38,8 @@ Meteor.startup(function() {
 					showCancelButton: false,
 				});
 			},
-			condition({ rid, u: { _id: uid }, attachments }) {
-				if (attachments && attachments[0] && attachments[0].fields && attachments[0].fields[0].type === 'messageCounter') {
+			condition({ rid, u: { _id: uid }, trid, tcount }) {
+				if (trid || !isNaN(tcount)) {
 					return false;
 				}
 				return condition(rid, uid);

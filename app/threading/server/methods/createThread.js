@@ -7,16 +7,8 @@ import { hasAtLeastOnePermission, canAccessRoom } from '../../../authorization';
 import { Messages, Rooms } from '../../../models';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib';
 
-const fields = [
-	{
-		type: 'messageCounter',
-		count: 0,
-	},
-	{
-		type: 'lastMessageAge',
-		lm: null,
-	},
-];
+import { settings } from '../../../settings';
+import { Threads } from '../constants';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);
@@ -28,23 +20,20 @@ export const createThreadMessage = (rid, user, trid, msg, message_embedded) => {
 		msg,
 		rid,
 		trid,
-		attachments: [{
-			fields,
-		}, message_embedded].filter((e) => e),
-	};
-	return Messages.createWithTypeRoomIdMessageAndUser('thread-created', trid, '', user, welcomeMessage);
-};
-
-export const mentionThreadMessage = (rid, user, msg, message_embedded) => {
-	const welcomeMessage = {
-		msg,
-		rid,
 		attachments: [message_embedded].filter((e) => e),
 	};
 	return Messages.createWithTypeRoomIdMessageAndUser('thread-created', rid, '', user, welcomeMessage);
 };
 
-const cloneMessage = ({ _id, ...msg }) => ({ ...msg });
+export const mentionThreadMessage = (rid, { _id, username, name }, message_embedded) => {
+	const welcomeMessage = {
+		rid,
+		u: { _id, username, name },
+		attachments: [message_embedded].filter((e) => e),
+	};
+
+	return Messages.insert(welcomeMessage);
+};
 
 export const create = ({ prid, pmid, t_name, reply, users }) => {
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
@@ -102,40 +91,67 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 		prid,
 	});
 
+	const fields = {
+		tcount: 0,
+		tlm: null,
+	};
+
+
 	if (pmid) {
-		const clonedMessage = cloneMessage(message);
 
-		Messages.update({
-			_id: message._id,
-		}, {
-			...clonedMessage,
-			attachments: [
-				{ fields },
-				...(message.attachments || []),
-			],
-			trid: thread._id,
-		});
+		const sendCreationMessage = settings.get('Thread_send_creation_message');
 
-		mentionThreadMessage(thread._id, user, t_name, attachMessage(message, p_room));
+		console.log(sendCreationMessage)
+		mentionThreadMessage(thread._id, user, attachMessage(message, p_room));
 
-		// check if the message is in the latest 10 messages sent to the room
-		// if not creates a new message saying about the thread creation
-		const lastMessageIds = Messages.findByRoomId(message.rid, {
-			sort: {
-				ts: -1,
-			},
-			limit: 15,
-			fields: {
-				_id: 1,
-			},
-		}).fetch();
+		switch (sendCreationMessage) {
+			default:
+			case Threads.SEND_CREATION_MESSAGE.OLD_MESSAGES:
+				Messages.update({
+					_id: message._id,
+				}, {
+					$set: {
+						trid: thread._id,
+						...fields,
+					},
+				});
+				// check if the message is in the latest 10 messages sent to the room
+				// if not creates a new message saying about the thread creation
+				const lastMessageIds = Messages.findByRoomId(message.rid, {
+					sort: {
+						ts: -1,
+					},
+					limit: 15,
+					fields: {
+						_id: 1,
+					},
+				}).fetch();
 
-		if (!lastMessageIds.find((msg) => msg._id === message._id)) {
-			createThreadMessage(message.rid, user, thread._id, t_name, attachMessage(message, p_room));
+				if (!lastMessageIds.find((msg) => msg._id === message._id)) {
+					createThreadMessage(message.rid, user, thread._id, t_name, attachMessage(message, p_room));
+				}
+				break;
+			case Threads.SEND_CREATION_MESSAGE.NEVER:
+
+				Messages.update({
+					_id: message._id,
+				}, {
+					$set : {
+						trid: thread._id,
+						...fields,
+					},
+				});
+				break;
+			case Threads.SEND_CREATION_MESSAGE.ALWAYS:
+				createThreadMessage(message.rid, user, thread._id, t_name, attachMessage(message, p_room));
+				break;
 		}
+
+
 	} else {
 		createThreadMessage(prid, user, thread._id, t_name);
 	}
+
 	if (reply) {
 		sendMessage(user, { msg: reply }, thread);
 	}
