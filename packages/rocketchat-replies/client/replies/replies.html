@@ -1,13 +1,13 @@
 <template name="RocketReplies">
-    <ul class="replies">
-        {{#each parentMessage}}
-        {{#nrr nrrargs 'message' .}}{{/nrr}}
-        {{/each}}
-        {{#each replies}}
-        {{#nrr nrrargs 'message' .}}{{/nrr}}
-        {{/each}}
-    </ul>
-    <footer class="footer border-component-color">
-        {{> messageBox getroomData}}
-    </footer>
+	<ul class="replies">
+		{{#each parentMessage}}
+		{{#nrr nrrargs 'message' .}}{{/nrr}}
+		{{/each}}
+		{{#each replies}}
+		{{#nrr nrrargs 'message' .}}{{/nrr}}
+		{{/each}}
+	</ul>
+	<footer class="footer border-component-color">
+		{{> messageBox getroomData}}
+	</footer>
 </template>

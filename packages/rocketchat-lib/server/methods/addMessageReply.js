@@ -5,21 +5,21 @@ import { Messages } from 'meteor/rocketchat:models';
 import { addMessageReply } from '../functions';
 
 Meteor.methods({
-    addMessageReply(message) {
-        check(message, Match.ObjectIncluding({ _id: String }));
+	addMessageReply(message) {
+		check(message, Match.ObjectIncluding({ _id: String }));
 
-        if (!Meteor.userId()) {
-            throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addMessageReply' });
-        }
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addMessageReply' });
+		}
 
-        const originalMessage = Messages.findOneById(message._id);
+		const originalMessage = Messages.findOneById(message._id);
 
-        if (!originalMessage || !originalMessage._id) {
-            return;
-        }
+		if (!originalMessage || !originalMessage._id) {
+			return;
+		}
 
-        message.u = originalMessage.u;
+		message.u = originalMessage.u;
 
-        return addMessageReply(message, Meteor.user(), originalMessage);
-    },
+		return addMessageReply(message, Meteor.user(), originalMessage);
+	},
 });
