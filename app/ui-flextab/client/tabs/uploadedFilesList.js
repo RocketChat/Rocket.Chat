@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { modal } from '../../../ui-utils';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { DateFormat } from '../../../lib';
@@ -139,6 +141,32 @@ Template.uploadedFilesList.events({
 										a.click();
 										window.URL.revokeObjectURL(this.file.url);
 										a.remove();
+									},
+								},
+								{
+									icon: 'trash',
+									name: t('Delete'),
+									action: () => {
+										modal.open({
+											title: t('Are_you_sure'),
+											text: t('You_will_not_be_able_to_recover_file'),
+											type: 'warning',
+											showCancelButton: true,
+											confirmButtonColor: '#DD6B55',
+											confirmButtonText: t('Yes_delete_it'),
+											cancelButtonText: t('Cancel'),
+											html: false,
+										}, () => {
+											modal.open({
+												title: t('Deleted'),
+												text: t('Your_entry_has_been_deleted'),
+												type: 'success',
+												timer: 1000,
+												showConfirmButton: false,
+											});
+
+											Meteor.call('deleteFileMessage', this.file._id);
+										});
 									},
 								},
 							],
