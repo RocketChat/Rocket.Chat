@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { FileUpload } from '../../../file-upload';
-import { Rooms } from '../../../models';
+import { Rooms, Uploads } from '../../../models';
 import Busboy from 'busboy';
 import { API } from '../api';
 
@@ -110,6 +110,8 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			userId: this.userId,
 		};
 
+		let fileData = {};
+
 		Meteor.runAsUser(this.userId, () => {
 			const uploadedFile = Meteor.wrapAsync(fileStore.insert.bind(fileStore))(details, file.fileBuffer);
 
@@ -118,11 +120,15 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			delete fields.description;
 
 			API.v1.success(Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields));
+
+			fileData = uploadedFile;
 		});
 
-		return API.v1.success();
+		return API.v1.success({ file: Uploads.findFileByIdAndUserId(fileData._id, this.userId) });
 	},
 });
+
+
 
 API.v1.addRoute('rooms.saveNotification', { authRequired: true }, {
 	post() {

@@ -15,6 +15,28 @@ export class Uploads extends Base {
 		this.tryEnsureIndex({ uploadedAt: 1 });
 	}
 
+	findFileByIdAndUserId(_id, userId) {
+		const query = {
+			_id,
+			userId,
+		};
+
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+				size: 1,
+				type: 1,
+				rid: 1,
+				userId: 1,
+				_updatedAt: 1,
+				description: 1,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findNotHiddenFilesOfRoom(roomId, searchText, limit) {
 		const fileQuery = {
 			rid: roomId,
