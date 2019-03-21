@@ -2511,6 +2511,8 @@
   "This_is_a_push_test_messsage": "Toto je tlačová skúšobná správa",
   "This_room_has_been_archived_by__username_": "Táto miestnosť bola archivovaná __username__",
   "This_room_has_been_unarchived_by__username_": "Táto miestnosť bola zrušená archivovaním __username__",
+  "Thread_slash_command_params": "tvoja správa",
+  "Threading_context_menu_none": "neviditeľný",
   "Thursday": "štvrtok",
   "Time_in_seconds": "Čas v sekundách",
   "Title": "Nadpis",
@@ -2836,7 +2838,5 @@
   "Your_password_is_wrong": "Vaše heslo je nesprávne!",
   "Your_push_was_sent_to_s_devices": "Posun bol odoslaný na zariadenia%s",
   "Your_server_link": "Váš odkaz na server",
-  "Your_workspace_is_ready": "Váš pracovný priestor je pripravený na použitie 🎉",
-  "Thread_slash_command_params": "tvoja správa",
-  "Threading_context_menu_none": "neviditeľný"
+  "Your_workspace_is_ready": "Váš pracovný priestor je pripravený na použitie 🎉"
 }

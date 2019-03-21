@@ -2513,6 +2513,8 @@
   "This_is_a_push_test_messsage": "Dies ist eine Test-Push-Nachricht.",
   "This_room_has_been_archived_by__username_": "Dieser Raum wurde von __username__ archiviert",
   "This_room_has_been_unarchived_by__username_": "Dieser Raum wurde von __username__ unarchiviert",
+  "Thread_slash_command_params": "ihre Nachricht",
+  "Threading_context_menu_none": "Unsichtbar",
   "Thursday": "Donnerstag",
   "Time_in_seconds": "Zeit in Sekunden",
   "Title": "Titel",
@@ -2838,7 +2840,5 @@
   "Your_password_is_wrong": "Falsches Passwort",
   "Your_push_was_sent_to_s_devices": "Die Push-Nachricht wurde an %s Geräte gesendet.",
   "Your_server_link": "Ihre Serververbindung",
-  "Your_workspace_is_ready": "Ihr Arbeitsbereich ist einsatzbereit 🎉",
-  "Thread_slash_command_params": "ihre Nachricht",
-  "Threading_context_menu_none": "Unsichtbar"
+  "Your_workspace_is_ready": "Ihr Arbeitsbereich ist einsatzbereit 🎉"
 }

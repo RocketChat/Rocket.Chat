@@ -284,6 +284,8 @@
   "API_Enable_CORS": "បើកដំណើរការ CORS",
   "API_Enable_Direct_Message_History_EndPoint": "បើកដំណើរការ Endpoint ប្រវត្តិសាស្រ្តសារផ្ទាល់",
   "API_Enable_Direct_Message_History_EndPoint_Description": "វាអនុញ្ញាតឱ្យ `/ api / v1 / im.history.others` ដែលអនុញ្ញាតឱ្យមើលសារផ្ទាល់ដែលផ្ញើដោយអ្នកប្រើផ្សេងទៀតដែលអ្នកហៅចូលមិនមែនជាផ្នែកមួយ។",
+  "API_Enable_Rate_Limiter_Limit_Calls_Default": "ការហៅលេខលំនាំដើមទៅឧបករណ៍កំណត់អត្រា",
+  "API_Enable_Rate_Limiter_Limit_Time_Default": "ដែនកំណត់ពេលវេលាលំនាំដើមសម្រាប់ឧបករណ៍កំណត់អត្រា (គិតជា ms)",
   "API_Enable_Personal_Access_Tokens": "បើកនិមិត្តសញ្ញាផ្ទាល់ខ្លួនដើម្បី REST API",
   "API_Enable_Personal_Access_Tokens_Description": "បើកនិមិត្តសញ្ញាផ្ទាល់ខ្លួនសំរាប់ប្រើប្រាស់ជាមួយ REST API",
   "API_Enable_Shields": "បើកវាំងនន",
@@ -351,6 +353,7 @@
   "assign-admin-role": "ផ្ដល់តួនាទីគ្រប់គ្រង",
   "assign-admin-role_description": "សិទ្ធិដើម្បីកំណត់តួនាទីគ្រប់គ្រងទៅអ្នកប្រើផ្សេងទៀត",
   "Assign_admin": "ចាត់ឱ្យអ្នកគ្រប់គ្រង",
+  "assign-roles": "ចាត់តាំងតួនាទី",
   "at": "នៅ",
   "At_least_one_added_token_is_required_by_the_user": "យ៉ាងហោចណាស់តួលេខបន្ថែមត្រូវបានតម្រូវដោយអ្នកប្រើ",
   "AtlassianCrowd": "ហ្វូងមនុស្ស Atlassian",
@@ -2680,6 +2683,8 @@
   "This_month": "ខែ​នេះ",
   "This_room_has_been_archived_by__username_": "បន្ទប់នេះត្រូវបានទុកក្នុងប័ណ្ណសារដោយ __username__",
   "This_room_has_been_unarchived_by__username_": "បន្ទប់នេះត្រូវបាន unarchived ដោយ __username__",
+  "Thread_slash_command_params": "សារ​របស់​អ្នក",
+  "Threading_context_menu_none": "មិន​បង្ហាញ",
   "This_week": "ស​ប្តា​ហ៍​នេះ",
   "Thursday": "ព្រហស្បតិ៍",
   "Time_in_seconds": "ពេលវេលានៅក្នុងវិនាទី",
@@ -3028,10 +3033,5 @@
   "Your_password_is_wrong": "ពាក្យសម្ងាត់របស់អ្នកគឺខុស!",
   "Your_push_was_sent_to_s_devices": "ការជំរុញរបស់អ្នកត្រូវបានបញ្ជូនទៅកាន់ឧបករណ៍ %s បាន",
   "Your_server_link": "តំណភ្ជាប់ម៉ាស៊ីនមេរបស់អ្នក",
-  "Your_workspace_is_ready": "កន្លែងធ្វើការរបស់អ្នករួចរាល់ដើម្បីប្រើ🎉",
-  "API_Enable_Rate_Limiter_Limit_Calls_Default": "ការហៅលេខលំនាំដើមទៅឧបករណ៍កំណត់អត្រា",
-  "API_Enable_Rate_Limiter_Limit_Time_Default": "ដែនកំណត់ពេលវេលាលំនាំដើមសម្រាប់ឧបករណ៍កំណត់អត្រា (គិតជា ms)",
-  "assign-roles": "ចាត់តាំងតួនាទី",
-  "Thread_slash_command_params": "សារ​របស់​អ្នក",
-  "Threading_context_menu_none": "មិន​បង្ហាញ"
+  "Your_workspace_is_ready": "កន្លែងធ្វើការរបស់អ្នករួចរាល់ដើម្បីប្រើ🎉"
 }

@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "هذا هو بإرسال رسالة اختبار الضغط",
   "This_room_has_been_archived_by__username_": "تم أرشفة هذه الغرفة التي __username__",
   "This_room_has_been_unarchived_by__username_": "تم إلغاء أرشفة هذه الغرفة التي __username__",
+  "Thread_slash_command_params": "رسالتك",
+  "Threading_context_menu_none": "خفي",
   "Thursday": "الخميس",
   "Time_in_seconds": "الوقت بالثواني",
   "Title": "العنوان",
@@ -2837,7 +2839,5 @@
   "Your_password_is_wrong": "كلمة السر خاطئة",
   "Your_push_was_sent_to_s_devices": "وقد أرسلت دفعك إلى أجهزة٪ الصورة",
   "Your_server_link": "رابط الخادم الخاص بك",
-  "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة لاستخدام 🎉",
-  "Thread_slash_command_params": "رسالتك",
-  "Threading_context_menu_none": "خفي"
+  "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة لاستخدام 🎉"
 }

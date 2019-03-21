@@ -2510,6 +2510,8 @@
   "This_is_a_push_test_messsage": "To je testno potisno sporočilo",
   "This_room_has_been_archived_by__username_": "To sobo je arhiviral __username__",
   "This_room_has_been_unarchived_by__username_": "To sobo je odarhiviral __username__",
+  "Thread_slash_command_params": "vaše sporočilo",
+  "Threading_context_menu_none": "Neviden",
   "Thursday": "Četrtek",
   "Time_in_seconds": "Čas v sekundah",
   "Title": "Naslov",
@@ -2835,7 +2837,5 @@
   "Your_password_is_wrong": "Napačno geslo!",
   "Your_push_was_sent_to_s_devices": "Vaš potisk je bil poslan v naprave %s",
   "Your_server_link": "Povezava strežnika",
-  "Your_workspace_is_ready": "Vaš delovni prostor je pripravljen za uporabo 🎉",
-  "Thread_slash_command_params": "vaše sporočilo",
-  "Threading_context_menu_none": "Neviden"
+  "Your_workspace_is_ready": "Vaš delovni prostor je pripravljen za uporabo 🎉"
 }
