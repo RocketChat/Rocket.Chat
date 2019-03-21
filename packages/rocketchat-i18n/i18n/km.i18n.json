@@ -1430,7 +1430,7 @@
   "Importer_CSV_Information": "អ្នកនាំចូល CSV ត្រូវការទ្រង់ទ្រាយជាក់លាក់សូមអានឯកសារសម្រាប់របៀបរចនាសម្ព័ន្ធឯកសារ zip របស់អ្នក:",
   "Importer_done": "ការនាំចូលបានបញ្ចប់!",
   "Importer_finishing": "បញ្ចប់ការនាំចូល។",
-  "Importer_From_Description": "ការនាំចូល __from ទិន្នន័យ __ 's បានចូលទៅក្នុង Rocket.Chat ។",
+  "Importer_From_Description": "ការនាំចូល __from__ ទិន្នន័យ's បានចូលទៅក្នុង Rocket.Chat ។",
   "Importer_HipChatEnterprise_BetaWarning": "សូមជ្រាបថាការនាំចូលនេះនៅតែជាការងារកំពុងដំណើរការសូមរាយការណ៍កំហុសទាំងឡាយដែលកើតឡើងនៅក្នុង GitHub:",
   "Importer_HipChatEnterprise_Information": "ឯកសារដែលបានផ្ទុកឡើងត្រូវតែជាឌីជីថលដែលបានឌិគ្រីបសូមអានឯកសារសម្រាប់ព័ត៌មានបន្ថែម:",
   "Importer_import_cancelled": "នាំចូលលុបចោល។",
