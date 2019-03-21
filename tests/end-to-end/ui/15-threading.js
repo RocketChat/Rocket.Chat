@@ -5,14 +5,14 @@ quotes, prefer-template, no-undef, no-unused-vars*/
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import { sendEscape } from '../../pageobjects/keyboard';
-import { threading } from '../../pageobjects/threading.page';
+import { discussioning } from '../../pageobjects/discussioning.page';
 import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
 const parentChannelName = 'unit-testing';
-const threadName = 'Lorem ipsum dolor sit amet';
+const discussionName = 'Lorem ipsum dolor sit amet';
 const message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
-describe('[Threading]', function () {
+describe('[Discussioning]', function () {
 
 	before(function () {
 		checkIfUserIsValid(username, email, password);
@@ -30,8 +30,8 @@ describe('[Threading]', function () {
 	});
 
 	describe('via creation screen', function() {
-		it('Create a thread', function () {
-			threading.createThread(parentChannelName, threadName, message);
+		it('Create a discussion', function () {
+			discussioning.createDiscussion(parentChannelName, discussionName, message);
 		});
 	});
 
@@ -41,9 +41,9 @@ describe('[Threading]', function () {
 			mainContent.sendMessage(message);
 		});
 
-		it('it should show a dialog for starting a thread', () => {
+		it('it should show a dialog for starting a discussion', () => {
 			mainContent.openMessageActionMenu();
-			threading.startThreadContextItem.click();
+			discussioning.startDiscussionContextItem.click();
 		});
 
 		it('it should have create a new room', function () {
@@ -57,7 +57,7 @@ describe('[Threading]', function () {
 
 	after(function () {
 		it('remove parent channel', () => {
-			threading.deleteRoom(parentChannelName);
+			discussioning.deleteRoom(parentChannelName);
 		});
 	});
 

@@ -18,12 +18,12 @@ import { mainReady } from './mainReady';
 const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
 const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
-const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreThreads, users }) => {
+const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
 	const query = { rid, ts };
 	if (excludePinned) {
 		query.pinned = { $ne: true };
 	}
-	if (ignoreThreads) {
+	if (ignoreDiscussion) {
 		query.trid = { $exists: false };
 	}
 	if (users && users.length) {

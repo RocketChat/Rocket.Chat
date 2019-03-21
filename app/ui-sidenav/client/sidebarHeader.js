@@ -186,8 +186,8 @@ const toolbarButtons = (user) => [{
 			});
 		};
 
-		const threadEnabled = settings.get('Thread_enabled');
-		if (!threadEnabled) {
+		const discussionEnabled = settings.get('Discussion_enabled');
+		if (!discussionEnabled) {
 			return createChannel(e);
 		}
 		const config = {
@@ -202,13 +202,13 @@ const toolbarButtons = (user) => [{
 									action: createChannel,
 								},
 								{
-									icon: 'thread',
-									name: t('Thread'),
+									icon: 'discussion',
+									name: t('Discussion'),
 									action: (e) => {
 										e.preventDefault();
 										modal.open({
-											title: t('Threading_title'),
-											content: 'CreateThread',
+											title: t('Discussioning_title'),
+											content: 'CreateDiscussion',
 											data: {
 												onCreate() {
 													modal.close();

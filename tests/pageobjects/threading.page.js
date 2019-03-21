@@ -4,10 +4,10 @@ import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
 
-class Threading extends Page {
+class Discussioning extends Page {
 	// Sidebar - this should actually be part of the sidebar-file - leaving it here for mergability
-	get newThreadButton() {
-		return browser.element('.menu-nav .js-create-thread');
+	get newDiscussionButton() {
+		return browser.element('.menu-nav .js-create-discussion');
 	}
 
 	// Global - this should actually be part of the global-file - leaving it here for mergability
@@ -22,39 +22,39 @@ class Threading extends Page {
 	}
 
 	// Action Menu
-	get startThreadContextItem() { return browser.element('[data-id="start-thread"][data-type="message-action"]'); }
+	get startDiscussionContextItem() { return browser.element('[data-id="start-discussion"][data-type="message-action"]'); }
 
 	// Modal
-	get createThreadModal() {
-		return browser.element('#create-thread');
+	get createDiscussionModal() {
+		return browser.element('#create-discussion');
 	}
 
-	get threadName() {
-		return browser.element('#create-thread #thread_name');
+	get discussionName() {
+		return browser.element('#create-discussion #discussion_name');
 	}
 
-	get threadMessage() {
-		return browser.element('#create-thread #thread_message');
+	get discussionMessage() {
+		return browser.element('#create-discussion #discussion_message');
 	}
 
 	get parentChannelName() {
-		return browser.element('#create-thread #parentChannel');
+		return browser.element('#create-discussion #parentChannel');
 	}
 
-	get saveThreadButton() {
-		return browser.element('.js-save-thread');
+	get saveDiscussionButton() {
+		return browser.element('.js-save-discussion');
 	}
 
 	// Sequences
 
-	createThread(parentChannelName, name, message) {
+	createDiscussion(parentChannelName, name, message) {
 		sideNav.newChannelBtnToolbar.waitForVisible(1000);
 		sideNav.newChannelBtnToolbar.click();
-		sideNav.newThreadBtn.waitForVisible(1000);
-		sideNav.newThreadBtn.click();
-		this.createThreadModal.waitForVisible(1000);
-		this.threadName.setValue(name);
-		this.threadMessage.setValue(message);
+		sideNav.newDiscussionBtn.waitForVisible(1000);
+		sideNav.newDiscussionBtn.click();
+		this.createDiscussionModal.waitForVisible(1000);
+		this.discussionName.setValue(name);
+		this.discussionMessage.setValue(message);
 		this.parentChannelName.waitForVisible(1000);
 		this.parentChannelName.setValue(parentChannelName);
 
@@ -65,13 +65,13 @@ class Threading extends Page {
 		list.element('.rc-popup-list__item').click();
 
 		browser.waitUntil(function() {
-			return browser.isEnabled('.js-save-thread');
+			return browser.isEnabled('.js-save-discussion');
 		}, 5000);
 
-		this.saveThreadButton.click();
+		this.saveDiscussionButton.click();
 	}
 }
 
-const threading = new Threading();
+const discussioning = new Discussioning();
 
-export { threading };
+export { discussioning };
