@@ -63,7 +63,7 @@
 								</td>
 								<td class="rc-apps-marketplace-price">
 									{{#if $eq latest._installed true}}
-										<button class="js-install apps-installer" data-app="{{appId}}">
+										<button class="apps-installer" data-app="{{appId}}">
 											{{_ "Purchased"}}
 											{{> icon icon="menu" block="rc-icon--default-size"}}
 										</button>
@@ -73,7 +73,7 @@
 											<button class="js-install apps-installer" data-app="{{appId}}">
 												{{#if $eq isPurchased true}}
 													{{_ "Purchased"}}
-													{{> icon block="installer rc-icon--default-size" icon="cloud-plus"}}
+													{{> icon block="installer rc-icon--default-size" icon="download"}}
 												{{else}}
 													<span class="rc-app-price">
 														{{#if $eq price 0}}

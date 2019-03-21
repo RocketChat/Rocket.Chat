@@ -200,6 +200,22 @@
 			}
 		}
 	}
+
+	.arrow-up {
+		transform: rotate(180deg);
+	}
+
+	&.page-settings {
+		.section {
+			padding: 0 !important;
+
+			border-bottom: none !important;
+
+			&:hover {
+				background-color: var(--rc-color-primary-lightest);
+			}
+		}
+	}
 }
 
 @keyframes play90 {

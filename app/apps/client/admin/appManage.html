@@ -45,7 +45,7 @@
 											<button class="rc-button rc-button--nude js-view-logs">{{> icon icon="list-alt"}} {{_ "View_Logs" }}</button>
 										{{else}}
 											{{#if hasPurchased}}
-												<button class="rc-button rc-button--primary js-install">{{> icon icon="circled-arrow-down"}} {{_ "Purchased"}}</button>
+												<button class="rc-button rc-button--primary js-install">{{> icon icon="download"}} {{_ "Purchased"}}</button>
 											{{else}}
 												{{#if $eq price 0}}
 													<button class="rc-button rc-button--primary js-purchase">{{> icon icon="circled-arrow-down"}} {{_ "Free"}}</button>

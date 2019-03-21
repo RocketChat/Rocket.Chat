@@ -373,7 +373,7 @@ Template.appManage.events({
 	},
 
 	'click .js-view-logs': (e, t) => {
-		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`);
+		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`, {}, { version: FlowRouter.getQueryParam('version') });
 	},
 
 	'click .js-cancel-editing': async(e, t) => {
