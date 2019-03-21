@@ -20,7 +20,6 @@ import '../app/integrations/client/stylesheets/integrations.css';
 import '../app/katex/client/style.css';
 import '../app/livechat/client/stylesheets/livechat.less';
 import '../app/livestream/client/styles/liveStreamTab.css';
-import '../app/mentions-flextab/client/views/stylesheets/mentionsFlexTab.less';
 import '../app/message-action/client/stylesheets/messageAction.css';
 import '../app/message-attachments/client/stylesheets/messageAttachments.css';
 import '../app/message-pin/client/views/stylesheets/messagepin.css';
