@@ -207,7 +207,7 @@ const toolbarButtons = (user) => [{
 									action: (e) => {
 										e.preventDefault();
 										modal.open({
-											title: t('Discussioning_title'),
+											title: t('Discussion_title'),
 											content: 'CreateDiscussion',
 											data: {
 												onCreate() {

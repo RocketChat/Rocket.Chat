@@ -28,8 +28,8 @@ Template.CreateDiscussion.helpers({
 		return parentChannel && `${ TAPi18n.__('Discussion_target_channel_prefix') } "${ parentChannel }"`;
 	},
 	createIsDisabled() {
-		const instance = Template.instance();
-		return instance.parentChannel.get() ? '' : 'disabled';
+		const { parentChannel, discussionName } = Template.instance();
+		return parentChannel.get() && discussionName.get() ? '' : 'disabled';
 	},
 	parentChannel() {
 		const instance = Template.instance();
@@ -109,7 +109,7 @@ Template.CreateDiscussion.events({
 			const errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
 			return toastr.error(errorText);
 		}
-		const result = await call('createDiscussion	', { prid, pmid, t_name, reply, users });
+		const result = await call('createDiscussion', { prid, pmid, t_name, reply, users });
 		// callback to enable tracking
 		callbacks.run('afterDiscussion', Meteor.user(), result);
 

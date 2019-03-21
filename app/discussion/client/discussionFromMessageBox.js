@@ -15,7 +15,7 @@ Meteor.startup(function() {
 			condition: () => true,
 			action(data) {
 				modal.open({
-					title: t('Discussioning_title'),
+					title: t('Discussion_title'),
 					modifier: 'modal',
 					content: 'CreateDiscussion',
 					data: {
