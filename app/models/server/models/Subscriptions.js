@@ -3,6 +3,7 @@ import { Base } from './_Base';
 import { Match } from 'meteor/check';
 import Rooms from './Rooms';
 import Users from './Users';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import _ from 'underscore';
 
 export class Subscriptions extends Base {
@@ -795,6 +796,7 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				fname,
+				name: fname,
 			},
 		};
 
@@ -1196,11 +1198,7 @@ export class Subscriptions extends Base {
 	}
 
 	// INSERT
-	async createWithRoomAndUser(room, user, extraData) {
-		if (!this.getDefaultSubscriptionPref) {
-			const Utils = await import('../../../utils');
-			this.getDefaultSubscriptionPref = Utils.getDefaultSubscriptionPref;
-		}
+	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {
 			open: false,
 			alert: false,
@@ -1218,7 +1216,7 @@ export class Subscriptions extends Base {
 				username: user.username,
 				name: user.name,
 			},
-			...this.getDefaultSubscriptionPref(user),
+			...getDefaultSubscriptionPref(user),
 			...extraData,
 		};
 
