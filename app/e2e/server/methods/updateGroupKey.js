@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from '/app/models';
+import { Subscriptions } from '../../../models';
 
 Meteor.methods({
 	'e2e.updateGroupKey'(rid, uid, key) {

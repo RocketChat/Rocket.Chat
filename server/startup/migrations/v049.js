@@ -1,5 +1,5 @@
-import { Migrations } from '/app/migrations';
-import { Rooms, Subscriptions, Settings } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { Rooms, Subscriptions, Settings } from '../../../app/models';
 
 Migrations.add({
 	version: 49,

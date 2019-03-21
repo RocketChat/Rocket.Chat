@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { UserRoles, RoomRoles, ChatMessage } from '/app/models';
-import { handleError } from '/app/utils';
-import { Notifications } from '/app/notifications';
+import { UserRoles, RoomRoles, ChatMessage } from '../../../models';
+import { handleError } from '../../../utils';
+import { Notifications } from '../../../notifications';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

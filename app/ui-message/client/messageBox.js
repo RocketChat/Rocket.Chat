@@ -3,20 +3,20 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { EmojiPicker } from '/app/emoji';
-import { katex } from '/app/katex';
-import { Markdown } from '/app/markdown';
-import { ChatSubscription } from '/app/models';
-import { settings } from '/app/settings';
+import { EmojiPicker } from '../../emoji';
+import { katex } from '../../katex';
+import { Markdown } from '../../markdown';
+import { ChatSubscription } from '../../models';
+import { settings } from '../../settings';
 import {
 	AudioRecorder,
 	ChatMessages,
 	chatMessages,
 	fileUpload,
 	KonchatNotification,
-} from '/app/ui';
-import { Layout, messageBox, popover, RoomManager } from '/app/ui-utils';
-import { t, roomTypes, getUserPreference } from '/app/utils';
+} from '../../ui';
+import { Layout, messageBox, popover, RoomManager } from '../../ui-utils';
+import { t, roomTypes, getUserPreference } from '../../utils';
 import moment from 'moment';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
@@ -142,8 +142,17 @@ Template.messageBox.onCreated(function() {
 	EmojiPicker.init();
 	this.replyMessageData = new ReactiveVar();
 	this.isMessageFieldEmpty = new ReactiveVar(true);
+	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
 	messageBox.emit('created', this);
+
+	navigator.permissions.query({ name: 'microphone' })
+		.then((permissionStatus) => {
+			this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+			permissionStatus.onchange = () => {
+				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+			};
+		});
 });
 
 Template.messageBox.onRendered(function() {
@@ -233,6 +242,7 @@ Template.messageBox.helpers({
 	},
 	isAudioMessageAllowed() {
 		return AudioRecorder.isSupported() &&
+			!Template.instance().isMicrophoneDenied.get() &&
 			settings.get('FileUpload_Enabled') &&
 			settings.get('Message_AudioRecorderEnabled') &&
 			(!settings.get('FileUpload_MediaTypeWhiteList') ||
@@ -282,7 +292,7 @@ Template.messageBox.events({
 		}
 
 		EmojiPicker.open(event.currentTarget, (emoji) => {
-			const emojiValue = `:${ emoji }:`;
+			const emojiValue = `:${ emoji }: `;
 			const { input } = chatMessages[RoomManager.openedRoom];
 
 			const caretPos = input.selectionStart;

@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import { theme } from './server';
 // TODO: Define registers/getters/setters for packages to work with established
 // 			heirarchy of colors instead of making duplicate definitions
@@ -31,7 +31,7 @@ const majorColors = {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': '#04436A',
 	'primary-font-color': '#444444',
-	'primary-action-color': '#13679A', // was action-buttons-color
+	'primary-action-color': '#1d74f5', // was action-buttons-color
 	'secondary-background-color': '#F4F4F4',
 	'secondary-font-color': '#A0A0A0',
 	'secondary-action-color': '#DDDDDD',

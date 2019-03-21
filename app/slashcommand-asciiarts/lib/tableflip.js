@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from '/app/utils';
+import { slashCommands } from '../../utils';
 /*
 * Tableflip is a named function that will replace /Tableflip commands
 * @param {Object} message - The message object

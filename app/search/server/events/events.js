@@ -1,5 +1,5 @@
-import { callbacks } from '/app/callbacks';
-import { Users, Rooms } from '/app/models';
+import { callbacks } from '../../../callbacks';
+import { Users, Rooms } from '../../../models';
 import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 

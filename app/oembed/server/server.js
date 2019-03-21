@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTPInternals } from 'meteor/http';
 import { changeCase } from 'meteor/konecty:change-case';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { OEmbedCache, Messages } from '/app/models';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { OEmbedCache, Messages } from '../../models';
 import _ from 'underscore';
 import URL from 'url';
 import querystring from 'querystring';
@@ -252,15 +252,6 @@ OEmbed.rocketUrlParser = function(message) {
 		let changed = false;
 		message.urls.forEach(function(item) {
 			if (item.ignoreParse === true) {
-				return;
-			}
-			if (item.url.startsWith('grain://')) {
-				changed = true;
-				item.meta = {
-					sandstorm: {
-						grain: item.sandstormViewInfo,
-					},
-				};
 				return;
 			}
 			if (!/^https?:\/\//i.test(item.url)) {

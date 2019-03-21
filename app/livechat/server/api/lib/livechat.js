@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '/app/models';
+import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import _ from 'underscore';
 import { Livechat } from '../../lib/Livechat';
 
@@ -13,7 +13,7 @@ export function findTriggers() {
 }
 
 export function findDepartments() {
-	return LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration'));
+	return LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration', 'showOnOfflineForm'));
 }
 
 export function findGuest(token) {

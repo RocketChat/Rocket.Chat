@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from '/app/utils';
+import { slashCommands } from '../../utils';
 /*
 * Lenny is a named function that will replace /lenny commands
 * @param {Object} message - The message object

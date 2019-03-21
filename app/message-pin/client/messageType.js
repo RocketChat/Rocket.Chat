@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { MessageTypes } from '/app/ui-utils';
+import { MessageTypes } from '../../ui-utils';
 
 Meteor.startup(function() {
 	MessageTypes.registerType({

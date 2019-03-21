@@ -1,8 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { HTTP } from 'meteor/http';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 export function getAvatarSuggestionForUser(user) {
 	check(user, Object);
@@ -48,13 +47,6 @@ export function getAvatarSuggestionForUser(user) {
 		avatars.push({
 			service: 'gitlab',
 			url: user.services.gitlab.avatar_url,
-		});
-	}
-
-	if (user.services.sandstorm && user.services.sandstorm.picture && Meteor.settings.public.sandstorm) {
-		avatars.push({
-			service: 'sandstorm',
-			url: user.services.sandstorm.picture,
 		});
 	}
 

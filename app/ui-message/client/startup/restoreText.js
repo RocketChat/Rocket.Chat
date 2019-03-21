@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { RoomManager } from '/app/ui-utils';
-import { chatMessages } from '/app/ui';
-import { callbacks } from '/app/callbacks';
+import { RoomManager } from '../../../ui-utils';
+import { chatMessages } from '../../../ui';
+import { callbacks } from '../../../callbacks';
 
 
 Meteor.startup(() => {

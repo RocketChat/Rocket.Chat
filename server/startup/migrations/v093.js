@@ -1,5 +1,5 @@
-import { Migrations } from '/app/migrations';
-import { Settings, Permissions } from '/app/models';
+import { Migrations } from '../../../app/migrations';
+import { Settings, Permissions } from '../../../app/models';
 
 Migrations.add({
 	version: 93,

@@ -2,8 +2,8 @@
 /* eslint comma-spacing: 0 */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { settings } from '/app/settings';
-import { hasPermission } from '/app/authorization';
+import { settings } from '../../../settings';
+import { hasPermission } from '../../../authorization';
 import s from 'underscore.string';
 
 Meteor.methods({
@@ -34,7 +34,7 @@ Meteor.methods({
 		settings.add(`Accounts_OAuth_Custom-${ name }-login_style`            , 'popup'           , { type: 'select' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Login_Style', persistent: true, values: [{ key: 'redirect', i18nLabel: 'Redirect' }, { key: 'popup', i18nLabel: 'Popup' }, { key: '', i18nLabel: 'Default' }] });
 		settings.add(`Accounts_OAuth_Custom-${ name }-button_label_text`      , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-button_label_color`     , '#FFFFFF'         , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color', persistent: true });
-		settings.add(`Accounts_OAuth_Custom-${ name }-button_color`           , '#13679A'         , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Button_Color', persistent: true });
+		settings.add(`Accounts_OAuth_Custom-${ name }-button_color`           , '#1d74f5'         , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Button_Color', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-username_field`         , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Username_Field', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-merge_users`            , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Users', persistent: true });
 	} });

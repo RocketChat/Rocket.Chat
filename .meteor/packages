@@ -59,7 +59,6 @@ jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
 keepnox:perfect-scrollbar
-kenton:accounts-sandstorm
 mizzao:autocomplete
 mizzao:timesync
 mrt:reactive-store
@@ -102,5 +101,4 @@ webapp
 webapp-hashing
 rocketchat:oauth2-server
 rocketchat:i18n
-
 rocketchat:failed-login-audit
