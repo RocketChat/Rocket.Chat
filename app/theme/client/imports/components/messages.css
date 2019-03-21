@@ -13,6 +13,8 @@
 
 	font-size: 1rem;
 
+	user-select: none;
+
 	&__buttons {
 		display: flex;
 	}
