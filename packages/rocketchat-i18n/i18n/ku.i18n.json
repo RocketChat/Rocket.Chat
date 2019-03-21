@@ -2511,6 +2511,8 @@
   "This_is_a_push_test_messsage": "Ev messsage test push e",
   "This_room_has_been_archived_by__username_": "Vê odeyê hatiye dîtin by __username__ arşîvkirin",
   "This_room_has_been_unarchived_by__username_": "Vê odeyê hatiye dîtin by __username__ unarchived",
+  "Thread_slash_command_params": "peyama we",
+  "Threading_context_menu_none": "Nedît",
   "Thursday": "Pêncşem",
   "Time_in_seconds": "Time in seconds",
   "Title": "Nav",
@@ -2836,7 +2838,5 @@
   "Your_password_is_wrong": "Te şîfreya xwe ji xelet e!",
   "Your_push_was_sent_to_s_devices": "push xwe ji bo cîhazên %s hate şandin",
   "Your_server_link": "Girêdana serverê",
-  "Your_workspace_is_ready": "Karên te yên amadekar e amade ye",
-  "Thread_slash_command_params": "peyama we",
-  "Threading_context_menu_none": "Nedît"
+  "Your_workspace_is_ready": "Karên te yên amadekar e amade ye"
 }

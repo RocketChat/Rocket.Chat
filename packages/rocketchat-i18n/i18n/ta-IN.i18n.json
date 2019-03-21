@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "இந்த ஒரு உந்துதல் சோதனை செய்தியையும் ஆகும்",
   "This_room_has_been_archived_by__username_": "இந்த அறையில் __username__ மூலம் கடந்தவையில்",
   "This_room_has_been_unarchived_by__username_": "இந்த அறையில் __username__ மூலம் மீட்டெடுக்கப்பட்டது வருகிறது",
+  "Thread_slash_command_params": "உங்கள் தகவல்",
+  "Threading_context_menu_none": "கண்ணுக்கு தெரியாத",
   "Thursday": "வியாழக்கிழமை",
   "Time_in_seconds": "வினாடிகளில் நேரம்",
   "Title": "தலைப்பு",
@@ -2837,7 +2839,5 @@
   "Your_password_is_wrong": "உங்கள் கடவுச்சொல் தவறு!",
   "Your_push_was_sent_to_s_devices": "உங்கள் மிகுதி% கள் சாதனங்கள் அனுப்பப்பட்டது",
   "Your_server_link": "உங்கள் சர்வர் இணைப்பு",
-  "Your_workspace_is_ready": "உங்கள் பணியிடம் use பயன்படுத்த தயாராக உள்ளது",
-  "Thread_slash_command_params": "உங்கள் தகவல்",
-  "Threading_context_menu_none": "கண்ணுக்கு தெரியாத"
+  "Your_workspace_is_ready": "உங்கள் பணியிடம் use பயன்படுத்த தயாராக உள்ளது"
 }

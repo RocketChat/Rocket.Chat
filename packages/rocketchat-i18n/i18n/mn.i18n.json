@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "Энэ нь түлхэх туршилтын зурвас юм",
   "This_room_has_been_archived_by__username_": "Энэ өрөөг __усername__ архивласан байна.",
   "This_room_has_been_unarchived_by__username_": "Энэ өрөөг ___хэрэглэгчийн нэрээр андуураагүй байна.",
+  "Thread_slash_command_params": "таны зурвас",
+  "Threading_context_menu_none": "Далд",
   "Thursday": "Пүрэв гарагт",
   "Time_in_seconds": "Секундын дотор",
   "Title": "Гарчиг",
@@ -2837,7 +2839,5 @@
   "Your_password_is_wrong": "Таны нууц үг буруу байна!",
   "Your_push_was_sent_to_s_devices": "Таны түлхэлт %s төхөөрөмж рүү илгээгдсэн",
   "Your_server_link": "Таны серверийн холбоос",
-  "Your_workspace_is_ready": "Таны ажлын талбарыг ашиглахад бэлэн байна",
-  "Thread_slash_command_params": "таны зурвас",
-  "Threading_context_menu_none": "Далд"
+  "Your_workspace_is_ready": "Таны ажлын талбарыг ашиглахад бэлэн байна"
 }

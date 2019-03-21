@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "Ky është një test i messsage shtytje",
   "This_room_has_been_archived_by__username_": "Kjo dhomë është arkivuar nga __username__",
   "This_room_has_been_unarchived_by__username_": "Kjo dhomë është paarkivuar nga __username__",
+  "Thread_slash_command_params": "Mesazhi juaj",
+  "Threading_context_menu_none": "I padukshëm",
   "Thursday": "e enjte",
   "Time_in_seconds": "Koha në sekonda",
   "Title": "titull",
@@ -2837,7 +2839,5 @@
   "Your_password_is_wrong": "Fjalëkalimi juaj është e gabuar!",
   "Your_push_was_sent_to_s_devices": "shtytje juaj u dërgua në pajisjet %s",
   "Your_server_link": "Lidhjet e serverit tuaj",
-  "Your_workspace_is_ready": "Hapësira e punës tënde është e gatshme të përdorë 🎉",
-  "Thread_slash_command_params": "Mesazhi juaj",
-  "Threading_context_menu_none": "I padukshëm"
+  "Your_workspace_is_ready": "Hapësira e punës tënde është e gatshme të përdorë 🎉"
 }

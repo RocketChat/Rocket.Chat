@@ -2511,6 +2511,8 @@
   "This_is_a_push_test_messsage": "Šis ir push testa ziņojums",
   "This_room_has_been_archived_by__username_": "Šo istabu ir arhivē lietotājvārds",
   "This_room_has_been_unarchived_by__username_": "Šo istabu ir atkārtoti izņēma no arhīva lietotājvārds",
+  "Thread_slash_command_params": "Jūsu ziņojums",
+  "Threading_context_menu_none": "Neredzams",
   "Thursday": "Ceturtdiena",
   "Time_in_seconds": "Laiks sekundēs",
   "Title": "Virsraksts",
@@ -2836,7 +2838,5 @@
   "Your_password_is_wrong": "Jūsu parole ir nepareiza!",
   "Your_push_was_sent_to_s_devices": "Jūsu push tika nosūtīts uz %s ierīcēm",
   "Your_server_link": "Jūsu servera saite",
-  "Your_workspace_is_ready": "Jūsu darbastacija ir gatava lietošanai 🎉",
-  "Thread_slash_command_params": "Jūsu ziņojums",
-  "Threading_context_menu_none": "Neredzams"
+  "Your_workspace_is_ready": "Jūsu darbastacija ir gatava lietošanai 🎉"
 }
