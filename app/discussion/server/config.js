@@ -4,11 +4,11 @@ import { settings } from '../../settings';
 import { Discussion } from './constants';
 
 Meteor.startup(() => {
-	settings.addGroup('Discussioning', function() {
+	settings.addGroup('Discussion', function() {
 		// the channel for which discussions are created if none is explicitly chosen
 
 		this.add('Discussion_enabled', true, {
-			group: 'Discussioning',
+			group: 'Discussion',
 			i18nLabel: 'Enable',
 			type: 'boolean',
 			public: true,
@@ -18,7 +18,7 @@ Meteor.startup(() => {
 
 
 		this.add('Discussion_send_creation_message', Discussion.SEND_CREATION_MESSAGE.ALWAYS, {
-			group: 'Discussioning',
+			group: 'Discussion',
 			i18nLabel: 'Send creation message',
 			type: 'select',
 			values: [

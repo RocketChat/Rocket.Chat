@@ -4,7 +4,7 @@ import sideNav from './side-nav.page';
 import flexTab from './flex-tab.page';
 import global from './global';
 
-class Discussioning extends Page {
+class Discussion extends Page {
 	// Sidebar - this should actually be part of the sidebar-file - leaving it here for mergability
 	get newDiscussionButton() {
 		return browser.element('.menu-nav .js-create-discussion');
@@ -72,6 +72,6 @@ class Discussioning extends Page {
 	}
 }
 
-const discussioning = new Discussioning();
+const discussion = new Discussion();
 
-export { discussioning };
+export { discussion };
