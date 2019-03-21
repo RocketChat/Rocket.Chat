@@ -2841,5 +2841,7 @@
   "Your_password_is_wrong": "你的密码错了！",
   "Your_push_was_sent_to_s_devices": "您的推送已发送到％s设备",
   "Your_server_link": "您的服务器链接",
-  "Your_workspace_is_ready": "您的工作区已准备好使用🎉"
+  "Your_workspace_is_ready": "您的工作区已准备好使用🎉",
+  "Thread_slash_command_params": "你的信息",
+  "Threading_context_menu_none": "隐身"
 }
