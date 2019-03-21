@@ -923,6 +923,25 @@ export class Messages extends Base {
 		return this.findOne({ 'file._id': fileID });
 	}
 
+	getMessageByFileIdAndUsername(fileID, userId) {
+
+		const query = {
+			'file._id': fileID,
+			'u._id':userId,
+		};
+
+		const options = {
+			fields: {
+				unread: 0,
+				mentions: 0,
+				channels: 0,
+				groupable: 0,
+			},
+		};
+
+		return this.findOne(query, options);
+	}
+
 	setAsRead(rid, until) {
 		return this.update({
 			rid,

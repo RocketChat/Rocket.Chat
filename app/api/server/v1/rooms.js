@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { FileUpload } from '../../../file-upload';
-import { Rooms, Uploads } from '../../../models';
+import { Rooms, Messages } from '../../../models';
 import Busboy from 'busboy';
 import { API } from '../api';
 
@@ -124,7 +124,7 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			fileData = uploadedFile;
 		});
 
-		return API.v1.success({ file: Uploads.findFileByIdAndUserId(fileData._id, this.userId) });
+		return API.v1.success({ file: Messages.getMessageByFileIdAndUsername(fileData._id, this.userId) });
 	},
 });
 
