@@ -2962,7 +2962,7 @@
   "Username_ended_the_OTR_session": "__username__ zakończył sesję OTR",
   "Username_invalid": "<strong>%s</strong> nie jest prawidłową nazwą użytkownika,<br/> dozwolone są jedynie litery, cyfry, kropki i kreski",
   "Username_is_already_in_here": "`@%s` już tutaj jest.",
-  "Username_is_not_in_this_room": "Użytkownik `# %s` nie jest w tym pokoju.",
+  "Username_is_not_in_this_room": "Użytkownik `#%s` nie jest w tym pokoju.",
   "Username_Placeholder": "Wprowadź nazwy użytkowników ...",
   "Username_title": "Utwórz nazwę użytkownika",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ chce rozpocząć OTR. Czy chcesz zaakceptować?",

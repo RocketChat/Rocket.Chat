@@ -520,7 +520,7 @@
   "Chatpal_AdminPage": "聊天管理员页面",
   "Chatpal_All_Results": "全部",
   "Chatpal_API_Key": "API密钥",
-  "Chatpal_API_Key_Description": "您还没有</strong>API密钥<strong>？<a class=\"chatpal-admin-link\" href=\"./admin/chatpal\">获取一个！</a>",
+  "Chatpal_API_Key_Description": "您还没有</strong> API密钥<strong>？<a class=\"chatpal-admin-link\" href=\"./admin/chatpal\">获取一个！</a>",
   "Chatpal_Backend": "后端类型",
   "Chatpal_Backend_Description": "选择是否要使用 Chatpal 作为服务或现场安装",
   "Chatpal_Base_URL": "Base URL",

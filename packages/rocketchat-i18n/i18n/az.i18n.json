@@ -1384,7 +1384,7 @@
   "Integration_Word_Trigger_Placement": "Hər yerdə Word Yerləşdirmə",
   "Integration_Word_Trigger_Placement_Description": "Sözün başlanğıcdan başqa yerə yerləşdirdiyi zaman Word tetiklenmeli mi?",
   "Integrations": "İnteqrasiya",
-  "Integrations_for_all_channels": "Daxil edin <strong>all_public_channels</strong>Bütün ictimai kanalları qulaq asmaq üçün <strong>all_private_groups</strong>Bütün xüsusi qruplar qulaq asmaq və <strong>all_direct_messages</strong> bütün birbaşa mesajları dinləmək.",
+  "Integrations_for_all_channels": "Daxil edin <strong>all_public_channels</strong> Bütün ictimai kanalları qulaq asmaq üçün <strong>all_private_groups</strong> Bütün xüsusi qruplar qulaq asmaq və <strong>all_direct_messages</strong> bütün birbaşa mesajları dinləmək.",
   "Integrations_Outgoing_Type_FileUploaded": "Fayl yükləndi",
   "Integrations_Outgoing_Type_RoomArchived": "Otaq Arşivlendi",
   "Integrations_Outgoing_Type_RoomCreated": "Otaq yaradılıb (dövlət və özəl)",

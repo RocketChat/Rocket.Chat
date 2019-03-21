@@ -443,7 +443,7 @@
   "Channel_already_Unarchived": "Il canale con nome `#%s` è già in stato Disarchiviato",
   "Channel_Archived": "Il canale con nome `#%s` è stato archiviato con successo",
   "Channel_created": "Canale `#%s` creato.",
-  "Channel_doesnt_exist": "Il canale `# %s` non esiste.",
+  "Channel_doesnt_exist": "Il canale `#%s` non esiste.",
   "Channel_name": "nome del canale",
   "Channel_Name_Placeholder": "Per favore inserisci il nome del canale ...",
   "Channel_to_listen_on": "Canale da seguire su",

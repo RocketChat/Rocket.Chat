@@ -1447,7 +1447,7 @@
   "Integration_Word_Trigger_Placement": "Word plaatsing overal",
   "Integration_Word_Trigger_Placement_Description": "Moet het Woord worden getriggerd wanneer het ergens anders dan in het begin in de zin wordt geplaatst?",
   "Integrations": "Integraties",
-  "Integrations_for_all_channels": "Voer <strong>all_public_channels</strong>Publieke zenders te luisteren, <strong>all_private_groups</strong> om op alle particuliere groepen luisteren, en <strong>all_direct_messages</strong> om alle rechtstreekse berichten te beluisteren.",
+  "Integrations_for_all_channels": "Voer <strong>all_public_channels</strong> Publieke zenders te luisteren, <strong>all_private_groups</strong> om op alle particuliere groepen luisteren, en <strong>all_direct_messages</strong> om alle rechtstreekse berichten te beluisteren.",
   "Integrations_Outgoing_Type_FileUploaded": "Bestand geüpload",
   "Integrations_Outgoing_Type_RoomArchived": "Kamer gearchiveerd",
   "Integrations_Outgoing_Type_RoomCreated": "Kamer gemaakt (openbaar en privé)",

@@ -2334,7 +2334,7 @@
   "Show_room_counter_on_sidebar": "Mostrar contador de salas en la barra lateral",
   "Show_the_keyboard_shortcut_list": "Mostrar la lista de atajos de teclado",
   "Showing_archived_results": "<p> Mostrando resultados <b>archivados %s</b> </p>",
-  "Showing_online_users": "Mostrando: <b>__total_showing__</b>En linea: __online__ Total:__total__ ",
+  "Showing_online_users": "Mostrando: <b>__total_showing__</b> En linea: __online__ Total:__total__ ",
   "Showing_results": "<p>Mostrando <b>%s</b> resultados</p>",
   "Sidebar": "Barra lateral",
   "Sidebar_list_mode": "Modo de lista de canales de la barra lateral",

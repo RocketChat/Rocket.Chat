@@ -444,7 +444,7 @@
   "Channel_already_Unarchived": "Místnost `#%s` je již v odarchivovaném stavu",
   "Channel_Archived": "Místnost `#%s` byla úspěšně archivována",
   "Channel_created": "Místnost `#%s` byla vytvořena.",
-  "Channel_doesnt_exist": "Místnost `# %s` neexistuje.",
+  "Channel_doesnt_exist": "Místnost `#%s` neexistuje.",
   "Channel_name": "Název místnosti",
   "Channel_Name_Placeholder": "Zadejte název místnosti...",
   "Channel_to_listen_on": "Poslouchat místnost",

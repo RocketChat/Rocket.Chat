@@ -1384,7 +1384,7 @@
   "I_saved_my_password_close_this_message": "비밀번호를 저장했습니다. 이 메시지를 닫습니다.",
   "Idle_Time_Limit": "유휴 시간 제한",
   "Idle_Time_Limit_Description": "상태가 사라질 때까지의 시간. 값은 초 단위 여야합니다.",
-  "if_they_are_from": "(그들이 % s 출신 인 경우)",
+  "if_they_are_from": "(그들이 %s 출신 인 경우)",
   "If_this_email_is_registered": "이 이메일이 등록되면 비밀번호 재설정 방법에 대한 안내가 전송됩니다. 잠시 이메일을받지 못하면 다시 돌아와 다시 시도하십시오.",
   "If_you_are_sure_type_in_your_password": "계속 진행하려면 비밀번호를 입력해주세요:",
   "If_you_are_sure_type_in_your_username": "계속 진행하려면 사용자명을 입력해주세요:",

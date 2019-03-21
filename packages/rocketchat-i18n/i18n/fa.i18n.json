@@ -450,7 +450,7 @@
   "Channel_already_Unarchived": "کانال `#%s` در حال حاضر آرشیو نشده است",
   "Channel_Archived": "کانال `#%s` با موفقیت آرشیو شد",
   "Channel_created": "کانال #٪ s ایجاد شده است.",
-  "Channel_doesnt_exist": "کانال `# %s` وجود ندارد.",
+  "Channel_doesnt_exist": "کانال `#%s` وجود ندارد.",
   "Channel_name": "نام کانال",
   "Channel_Name_Placeholder": "لطفا نام کانال را وارد کنید...",
   "Channel_to_listen_on": "کانال برای گوش دادن",
