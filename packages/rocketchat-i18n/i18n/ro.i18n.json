@@ -1022,7 +1022,7 @@
   "error-delete-protected-role": "Nu se poate șterge un rol protejat",
   "error-department-not-found": "Departamentul nu a fost găsit",
   "error-direct-message-file-upload-not-allowed": "Schimbul de fișiere nu este permis în mesajele directe",
-  "error-duplicate-channel-name": "Un canal cu numele \" %s\" există deja",
+  "error-duplicate-channel-name": "Un canal cu numele \"%s\" există deja",
   "error-edit-permissions-not-allowed": "Permisiunile de editare nu sunt permise",
   "error-email-domain-blacklisted": "Domeniul de e-mail este pe lista neagră",
   "error-email-send-failed": "Eroare la încercarea de a trimite e-mail: __message__",
