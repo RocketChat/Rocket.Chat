@@ -6,7 +6,7 @@ import peerClient from '../peerClient';
 import peerServer from '../peerClient';
 
 Meteor.methods({
-	federationAddUser(emailAddress, domainOverride) {
+	federationAddUser(identifier) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'federationAddUser' });
 		}
@@ -16,7 +16,7 @@ Meteor.methods({
 		}
 
 		// Make sure the federated user still exists, and get the unique one, by email address
-		const [federatedUser] = peerClient.findUsers(emailAddress, { domainOverride, emailOnly: true });
+		const [federatedUser] = peerClient.findUsers(identifier, { usernameOnly: true });
 
 		if (!federatedUser) {
 			throw new Meteor.Error('federation-invalid-user', 'There is no user to add.');

@@ -4,7 +4,7 @@ import { hasPermission } from '../../app/authorization';
 import { Rooms, Users } from '../../app/models';
 import s from 'underscore.string';
 
-import { Federation } from '../../app/federation/server';
+import { Federation, PeerClient } from '../../app/federation';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -115,9 +115,34 @@ Meteor.methods({
 			result = Users.findByActiveLocalUsersExcept(text, exceptions, options, forcedSearchFields, Federation.localIdentifier);
 		}
 
+		const total = result.count(); // count ignores the `skip` and `limit` options
+		const results = result.fetch();
+
+		// Try to find federated users, when appliable
+		if (PeerClient.enabled && type === 'users' && workspace === 'all' && text.indexOf('@') !== -1) {
+			const federatedUsers = Meteor.call('federationSearchUsers', text);
+
+			for (const federatedUser of federatedUsers) {
+				const { user } = federatedUser;
+
+				const exists = results.findIndex((e) => e.domain === user.federation.peer && e.username === user.username) !== -1;
+
+				if (exists) { continue; }
+
+				// Add the federated user to the results
+				results.unshift({
+					username: user.username,
+					name: user.name,
+					createdAt: user.createdAt,
+					emails: user.emails,
+					federation: user.federation,
+				});
+			}
+		}
+
 		return {
-			total: result.count(), // count ignores the `skip` and `limit` options
-			results: result.fetch(),
+			total,
+			results,
 		};
 	},
 });

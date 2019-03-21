@@ -242,8 +242,8 @@ class PeerClient {
 	// Users
 	//
 	// #####
-	findUsers(email, options = {}) {
-		const [username, domain] = email.split('@');
+	findUsers(identifier, options = {}) {
+		const [username, domain] = identifier.split('@');
 
 		const { peer: { domain: localPeerDomain } } = this;
 
@@ -257,7 +257,7 @@ class PeerClient {
 		}
 
 		try {
-			const { data: { federatedUsers: remoteFederatedUsers } } = peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, emailOnly: options.emailOnly }) }`);
+			const { data: { federatedUsers: remoteFederatedUsers } } = peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, usernameOnly: options.usernameOnly }) }`);
 
 			const federatedUsers = [];
 
@@ -268,7 +268,7 @@ class PeerClient {
 			return federatedUsers;
 		} catch (err) {
 			this.log(`Could not find user:${ username } at ${ peer.domain }`);
-			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ email } at ${ peer.domain }`);
+			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ identifier } at ${ peer.domain }`);
 		}
 	}
 

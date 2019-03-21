@@ -22,6 +22,8 @@ export const Federation = {
 	uniqueId: null,
 	localIdentifier: null,
 };
+export const PeerClient = peerClient;
+export const PeerServer = peerServer;
 
 // Generate keys
 

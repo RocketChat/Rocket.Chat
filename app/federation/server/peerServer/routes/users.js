@@ -12,7 +12,7 @@ API.v1.addRoute('federation.users', { authRequired: false }, {
 
 		const { peer: { domain: localPeerDomain } } = peerServer.config;
 
-		const { username, domain, emailOnly } = this.requestParams();
+		const { username, domain, usernameOnly } = this.requestParams();
 
 		const email = `${ username }@${ domain }`;
 
@@ -22,8 +22,8 @@ API.v1.addRoute('federation.users', { authRequired: false }, {
 			type: 'user',
 		};
 
-		if (emailOnly === 'true') {
-			query['emails.address'] = email;
+		if (usernameOnly === 'true') {
+			query.username = username;
 		} else {
 			query.$or = [
 				{ name: username },

@@ -144,7 +144,7 @@ class FederatedRoom extends FederatedResource {
 		}
 	}
 
-	create() {
+	create(alertAndOpen = false) {
 		this.log('create');
 
 		// Get the local room object (with or without suffixes)
@@ -195,8 +195,8 @@ class FederatedRoom extends FederatedResource {
 
 			let createRoomOptions = {
 				subscriptionExtra: {
-					alert: true,
-					open: true,
+					alert: alertAndOpen,
+					open: alertAndOpen,
 				},
 			};
 

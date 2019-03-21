@@ -75,7 +75,7 @@ class PeerServer {
 		federatedRoom.createUsers();
 
 		// Then, create the room, if needed
-		federatedRoom.create();
+		federatedRoom.create(true);
 	}
 
 	handleUserJoinedEvent(e) {
