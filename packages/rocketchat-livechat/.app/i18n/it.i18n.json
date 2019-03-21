@@ -7,6 +7,7 @@
   "Cancel": "Annulla",
   "Change": "Cambia",
   "Chat_ended": "Chat terminata!",
+  "Connecting_to_an_Agent": "Collegamento con un agente",
   "Choose_a_new_department": "Seleziona un nuovo dipartimento",
   "Close_menu": "Chiudi menu",
   "Conversation_finished": "Conversazione terminata",
@@ -17,6 +18,7 @@
   "How_satisfied_were_you_with_this_chat": "Quanto sei soddisfatto di questa chat?",
   "Installation": "Installazione",
   "New_messages": "Nuovi messaggi",
+  "New_livechat_in_queue": "Nuova chat in coda",
   "No": "No",
   "Options": "Opzioni",
   "Please_answer_survey": "Dedicaci un momento per rispondere a un veloce sondaggio su questa chat",
@@ -45,7 +47,5 @@
   "We_are_offline_Sorry_for_the_inconvenience": "Siamo offline. Ci dispiace per l'inconveniente.",
   "Yes": "Sì",
   "You": "Tu",
-  "You_must_complete_all_fields": "È necessario completare tutti i campi",
-  "Connecting_to_an_Agent": "Collegamento con un agente",
-  "New_livechat_in_queue": "Nuova chat in coda"
+  "You_must_complete_all_fields": "È necessario completare tutti i campi"
 }

@@ -2633,6 +2633,8 @@
   "This_month": "Deze maand",
   "This_room_has_been_archived_by__username_": "Deze kamer is gearchiveerd door __username__",
   "This_room_has_been_unarchived_by__username_": "Deze kamer is uit het archief gehaald door __username__",
+  "Thread_slash_command_params": "jouw bericht",
+  "Threading_context_menu_none": "Onzichtbaar",
   "This_week": "Deze week",
   "Thursday": "Donderdag",
   "Time_in_seconds": "Tijd in seconden",
@@ -2985,7 +2987,5 @@
   "Your_password_is_wrong": "Je wachtwoord is verkeerd!",
   "Your_push_was_sent_to_s_devices": "Je push werd verzonden naar %s apparaten",
   "Your_server_link": "Uw serverlink",
-  "Your_workspace_is_ready": "Uw werkruimte is klaar voor gebruik 🎉",
-  "Thread_slash_command_params": "jouw bericht",
-  "Threading_context_menu_none": "Onzichtbaar"
+  "Your_workspace_is_ready": "Uw werkruimte is klaar voor gebruik 🎉"
 }

@@ -2515,6 +2515,8 @@
   "This_is_a_push_test_messsage": "Toto je testovací notifikace",
   "This_room_has_been_archived_by__username_": "Tato místnost byla archivována uživatelem __username__",
   "This_room_has_been_unarchived_by__username_": "Tato místnost byla úspěšně odarchivována uživatelem __username__",
+  "Thread_slash_command_params": "vaše zpráva",
+  "Threading_context_menu_none": "Neviditelný",
   "Thursday": "Čtvrtek",
   "Time_in_seconds": "Čas v sekundách",
   "Title": "Název",
@@ -2841,7 +2843,5 @@
   "Your_password_is_wrong": "Vaše heslo je špatně!",
   "Your_push_was_sent_to_s_devices": "Vaše notifikace byla odeslána do %s zařízení",
   "Your_server_link": "Odkaz na Váš server",
-  "Your_workspace_is_ready": "Váš prostředí je připraveno k použití 🎉",
-  "Thread_slash_command_params": "vaše zpráva",
-  "Threading_context_menu_none": "Neviditelný"
+  "Your_workspace_is_ready": "Váš prostředí je připraveno k použití 🎉"
 }

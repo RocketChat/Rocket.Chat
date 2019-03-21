@@ -2511,6 +2511,8 @@
   "This_is_a_push_test_messsage": "Mae hwn yn neges prawf gwthio",
   "This_room_has_been_archived_by__username_": "Archifwyd yr ystafell hon gan __username__",
   "This_room_has_been_unarchived_by__username_": "Anfonwyd yr ystafell hon gan __username__",
+  "Thread_slash_command_params": "dy neges",
+  "Threading_context_menu_none": "Anweledig",
   "Thursday": "Dydd Iau",
   "Time_in_seconds": "Amser mewn eiliadau",
   "Title": "Teitl",
@@ -2836,7 +2838,5 @@
   "Your_password_is_wrong": "Mae'ch cyfrinair yn anghywir!",
   "Your_push_was_sent_to_s_devices": "Anfonwyd eich gwthio i ddyfeisiau %s",
   "Your_server_link": "Dolen eich gweinydd",
-  "Your_workspace_is_ready": "Mae'ch gweithle yn barod i ddefnyddio 🎉",
-  "Thread_slash_command_params": "dy neges",
-  "Threading_context_menu_none": "Anweledig"
+  "Your_workspace_is_ready": "Mae'ch gweithle yn barod i ddefnyddio 🎉"
 }

@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "Це поштовх тест messsage",
   "This_room_has_been_archived_by__username_": "Цей номер був архівуються __username__",
   "This_room_has_been_unarchived_by__username_": "Цей номер був Розархівувати по __username__",
+  "Thread_slash_command_params": "Ваше повідомлення",
+  "Threading_context_menu_none": "Прихований",
   "Thursday": "четвер",
   "Time_in_seconds": "Час в секундах",
   "Title": "назва",
@@ -2837,7 +2839,5 @@
   "Your_password_is_wrong": "Ваш невірний пароль!",
   "Your_push_was_sent_to_s_devices": "Ваш поштовх був відправлений в %s пристроїв",
   "Your_server_link": "Ваш серверний зв'язок",
-  "Your_workspace_is_ready": "Ваша робоча область готова до використання 🎉",
-  "Thread_slash_command_params": "Ваше повідомлення",
-  "Threading_context_menu_none": "Прихований"
+  "Your_workspace_is_ready": "Ваша робоча область готова до використання 🎉"
 }
