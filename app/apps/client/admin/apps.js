@@ -213,6 +213,9 @@ Template.apps.helpers({
 	formatPrice(price) {
 		return `$${ Number.parseFloat(price).toFixed(2) }`;
 	},
+	formatCategories(categories = []) {
+		return categories.join(', ');
+	},
 	tabsData() {
 		const instance = Template.instance();
 
