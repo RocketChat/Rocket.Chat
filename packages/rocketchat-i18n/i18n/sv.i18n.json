@@ -2570,6 +2570,8 @@
   "This_is_a_push_test_messsage": "Detta är ett testpushmeddelande",
   "This_room_has_been_archived_by__username_": "Detta rum har arkiverats av __username__",
   "This_room_has_been_unarchived_by__username_": "Detta rum har avarkiverats av __username__",
+  "Thread_slash_command_params": "ditt meddelande",
+  "Threading_context_menu_none": "Osynlig",
   "Thursday": "Torsdag",
   "Time_in_seconds": "Tid i sekunder",
   "Title": "Titel",
@@ -2901,7 +2903,5 @@
   "Your_password_is_wrong": "Ditt lösenord är fel!",
   "Your_push_was_sent_to_s_devices": "Din push skickades till %s enheter",
   "Your_server_link": "Din serverlänk",
-  "Your_workspace_is_ready": "Din arbetsyta är redo att använda 🎉",
-  "Thread_slash_command_params": "ditt meddelande",
-  "Threading_context_menu_none": "Osynlig"
+  "Your_workspace_is_ready": "Din arbetsyta är redo att använda 🎉"
 }

@@ -1069,6 +1069,7 @@
   "This_is_a_push_test_messsage": "بۇ بىر سىناق ئۇچۇر",
   "This_room_has_been_archived_by__username_": "بۇ ياتاق پېچەتلەندى ، __username__تەرىپىدىن",
   "This_room_has_been_unarchived_by__username_": "تەرىپىدىن بۇ ياتاق پېچەتلەشتىن بىكار قىلىندى _username__",
+  "Threading_context_menu_none": "يوشۇرۇن",
   "Time_in_seconds": "ۋاقىت ()سېكۇنت",
   "Title": "ماۋزۇ",
   "Title_bar_color": "ماۋزۇ بۆلىكى رەڭگى",
@@ -1228,6 +1229,5 @@
   "Your_file_has_been_deleted": "سىزنىڭ ھۆججىتىڭىز ئاللىبۇرۇن يۇيۇۋېتىلدى .",
   "Your_mail_was_sent_to_s": "يوللاندى %s سىزنىڭ ئىلخىتىڭىز ئاللىبۇرۇن",
   "Your_password_is_wrong": "پارول خاتا !",
-  "Your_push_was_sent_to_s_devices": "ئۈسكىنىگە يوللاندى %s سىزنىڭ ئىتتىرگىنىڭىز",
-  "Threading_context_menu_none": "يوشۇرۇن"
+  "Your_push_was_sent_to_s_devices": "ئۈسكىنىگە يوللاندى %s سىزنىڭ ئىتتىرگىنىڭىز"
 }

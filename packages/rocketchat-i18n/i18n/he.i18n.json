@@ -1271,6 +1271,7 @@
   "This_is_a_push_test_messsage": "זוהי הודעת בדיקה של ה-push",
   "This_room_has_been_archived_by__username_": "חדר זה כבר בארכיון ידי __שם משתמש__",
   "This_room_has_been_unarchived_by__username_": "חדר זה הוסר מארכיון ידי __שם משתמש__",
+  "Threading_context_menu_none": "בלתי נראה",
   "Thursday": "יום חמישי",
   "Time_in_seconds": "זמן בשניות",
   "Title": "כותרת",
@@ -1446,6 +1447,5 @@
   "Your_file_has_been_deleted": "הקובץ שלך נמחק.",
   "Your_mail_was_sent_to_s": "הדואר שלך נשלח אל %s",
   "Your_password_is_wrong": "הסיסמה שלך היא לא בסדר!",
-  "Your_push_was_sent_to_s_devices": "הודעת ה-push נשלח בהצלחה ל-%s מכשירים",
-  "Threading_context_menu_none": "בלתי נראה"
+  "Your_push_was_sent_to_s_devices": "הודעת ה-push נשלח בהצלחה ל-%s מכשירים"
 }

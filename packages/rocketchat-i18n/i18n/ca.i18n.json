@@ -2511,6 +2511,8 @@
   "This_is_a_push_test_messsage": "Això és un missatge push de prova",
   "This_room_has_been_archived_by__username_": "__username__ ha arxivat aquesta sala.",
   "This_room_has_been_unarchived_by__username_": "__username__ ha desarxivat aquesta sala.",
+  "Thread_slash_command_params": "el teu missatge",
+  "Threading_context_menu_none": "Invisible",
   "Thursday": "dijous",
   "Time_in_seconds": "Temps en segons",
   "Title": "Títol",
@@ -2836,7 +2838,5 @@
   "Your_password_is_wrong": "La contrasenya és incorrecta!",
   "Your_push_was_sent_to_s_devices": "La notificació push s'ha enviat a %s dispositius",
   "Your_server_link": "Enllaç del servidor",
-  "Your_workspace_is_ready": "El vostre espai de treball està a punt per utilitzar 🎉",
-  "Thread_slash_command_params": "el teu missatge",
-  "Threading_context_menu_none": "Invisible"
+  "Your_workspace_is_ready": "El vostre espai de treball està a punt per utilitzar 🎉"
 }
