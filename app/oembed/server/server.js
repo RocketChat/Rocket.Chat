@@ -254,15 +254,6 @@ OEmbed.rocketUrlParser = function(message) {
 			if (item.ignoreParse === true) {
 				return;
 			}
-			if (item.url.startsWith('grain://')) {
-				changed = true;
-				item.meta = {
-					sandstorm: {
-						grain: item.sandstormViewInfo,
-					},
-				};
-				return;
-			}
 			if (!/^https?:\/\//i.test(item.url)) {
 				return;
 			}

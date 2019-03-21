@@ -6,18 +6,33 @@
 					<label for="name">{{_ "Name"}}</label>
 					<input type="text" class="rc-input__element" name="name">
 				</div>
-
 				<div class="form-group">
-					<label for="agent">{{_ "Served_By"}}</label>
-					{{> inputAutocomplete settings=agentAutocompleteSettings id="agent" class="rc-input__element" autocomplete="off"}}
+					{{> SearchSelect
+						onClickTag=onClickTagAgent
+						list=selectedAgents
+						onSelect=onSelectAgents
+						collection='UserAndRoom'
+						subscription='userAutocomplete'
+						field='username'
+						sort='username'
+						label="Served_By"
+						placeholder="Served_By"
+						name="agent"
+						icon="at"
+						noMatchTemplate="userSearchEmpty"
+						templateItem="popupList_item_default"
+						modifier=agentModifier
+					}}
 				</div>
 				<div class="form-group">
-					<label for="status">{{_ "Status"}}</label>
-					<select name="status">
-						<option value=""></option>
-						<option value="opened">{{_ "Opened"}}</option>
-						<option value="closed">{{_ "Closed"}}</option>
-					</select>
+					<div class="rc-select">
+						<select class="rc-select__element" name="status">
+							<option class="rc-select__option" value="">{{_ "All"}}</option>
+							<option class="rc-select__option" value="opened">{{_ "Opened"}}</option>
+							<option class="rc-select__option" value="closed">{{_ "Closed"}}</option>
+						</select>
+						{{> icon block="rc-select__arrow" icon="arrow-down" }}
+					</div>
 				</div>
 				<div class="form-group input-daterange">
 					<span class="input-group-addon">{{_ "Date_From"}}</span>
@@ -67,3 +82,28 @@
 		</div>
 	{{/requiresPermission}}
 </template>
+
+<template name="SearchSelect">
+		<div class="rc-input" id='search-{{name}}' {{disabled}}>
+			<label class="rc-input__label">
+				<div class="rc-input__wrapper">
+					{{# if icon}}
+					<div class="rc-input__icon">
+						{{> icon block="rc-input__icon-svg" icon=icon}}
+					</div>
+					{{/if}}
+					<div class="rc-tags{{# unless icon}} rc-tags--no-icon{{/unless}}">
+						{{#each item in list}} {{> tag item}} {{/each}}
+						<input type="text" id="{{name}}" class="rc-tags__input" placeholder="{{_ placeholder}}" name="{{name}}" autocomplete="off" {{disabled}} />
+					</div>
+				</div>
+				{{#with config}} {{#if autocomplete 'isShowing'}}
+				<div class="dropdown-in">
+					{{#if autocomplete 'isLoaded'}}
+						{{> popupList data=config items=items}}
+					{{/if}}
+				</div>
+				{{/if}} {{/with}}
+			</label>
+		</div>
+	</template>

@@ -13,7 +13,7 @@ export function findTriggers() {
 }
 
 export function findDepartments() {
-	return LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration'));
+	return LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration', 'showOnOfflineForm'));
 }
 
 export function findGuest(token) {

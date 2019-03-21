@@ -3,10 +3,12 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
 import { modal } from '/app/ui-utils';
 import { t, handleError } from '/app/utils';
 import _ from 'underscore';
 import moment from 'moment';
+import { Blaze } from 'meteor/blaze';
 
 const LivechatRoom = new Mongo.Collection('livechatRoom');
 
@@ -29,23 +31,20 @@ Template.livechatCurrentChats.helpers({
 	isClosed() {
 		return !this.open;
 	},
-	agentAutocompleteSettings() {
-		return {
-			limit: 10,
-			inputDelay: 300,
-			rules: [{
-				collection: 'UserAndRoom',
-				subscription: 'userAutocomplete',
-				field: 'username',
-				template: Template.userSearch,
-				noMatchTemplate: Template.userSearchEmpty,
-				matchAll: true,
-				selector(match) {
-					return { term: match };
-				},
-				sort: 'username',
-			}],
+	onSelectAgents() {
+		return Template.instance().onSelectAgents;
+	},
+	agentModifier() {
+		return (filter, text = '') => {
+			const f = filter.get();
+			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
 		};
+	},
+	selectedAgents() {
+		return Template.instance().selectedAgents.get();
+	},
+	onClickTagAgent() {
+		return Template.instance().onClickTagAgent;
 	},
 });
 
@@ -78,8 +77,9 @@ Template.livechatCurrentChats.events({
 			delete filter.to;
 		}
 
-		if (!_.isEmpty(instance.selectedAgent.get())) {
-			filter.agent = instance.selectedAgent.get();
+		const agents = instance.selectedAgents.get();
+		if (agents && agents.length > 0) {
+			filter.agent = agents[0]._id;
 		}
 
 		instance.filter.set(filter);
@@ -113,22 +113,21 @@ Template.livechatCurrentChats.events({
 			});
 		});
 	},
-	'autocompleteselect input[id=agent]'(event, template, agent) {
-		template.selectedAgent.set(agent._id);
-	},
-
-	'input [id=agent]'(event, template) {
-		const input = event.currentTarget;
-		if (input.value === '') {
-			template.selectedAgent.set();
-		}
-	},
 });
 
 Template.livechatCurrentChats.onCreated(function() {
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
-	this.selectedAgent = new ReactiveVar;
+	this.selectedAgents = new ReactiveVar([]);
+
+	this.onSelectAgents = ({ item: agent }) => {
+		this.selectedAgents.set([agent]);
+	};
+
+	this.onClickTagAgent = (({ username }) => {
+		this.selectedAgents.set(this.selectedAgents.get().filter((user) => user.username !== username));
+	});
+
 	this.autorun(() => {
 		this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get());
 	});
@@ -141,3 +140,105 @@ Template.livechatCurrentChats.onRendered(function() {
 		format: moment.localeData().longDateFormat('L').toLowerCase(),
 	});
 });
+
+Template.SearchSelect.helpers({
+	list() {
+		return this.list;
+	},
+	items() {
+		return Template.instance().ac.filteredList();
+	},
+	config() {
+		const { filter } = Template.instance();
+		const { noMatchTemplate, templateItem, modifier } = Template.instance().data;
+		return {
+			filter: filter.get(),
+			template_item: templateItem,
+			noMatchTemplate,
+			modifier(text) {
+				return modifier(filter, text);
+			},
+		};
+	},
+	autocomplete(key) {
+		const instance = Template.instance();
+		const param = instance.ac[key];
+		return typeof param === 'function' ? param.apply(instance.ac) : param;
+	},
+});
+
+Template.SearchSelect.events({
+	'input input'(e, t) {
+		const input = e.target;
+		const position = input.selectionEnd || input.selectionStart;
+		const { length } = input.value;
+		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
+		t.filter.set(input.value);
+	},
+	'click .rc-popup-list__item'(e, t) {
+		t.ac.onItemClick(this, e);
+	},
+	'keydown input'(e, t) {
+		t.ac.onKeyDown(e);
+		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
+			const { deleteLastItem } = t;
+			return deleteLastItem && deleteLastItem();
+		}
+
+	},
+	'keyup input'(e, t) {
+		t.ac.onKeyUp(e);
+	},
+	'focus input'(e, t) {
+		t.ac.onFocus(e);
+	},
+	'blur input'(e, t) {
+		t.ac.onBlur(e);
+	},
+	'click .rc-tags__tag'({ target }, t) {
+		const { onClickTag } = t;
+		return onClickTag & onClickTag(Blaze.getData(target));
+	},
+});
+
+Template.SearchSelect.onRendered(function() {
+
+	const { name } = this.data;
+
+	this.ac.element = this.firstNode.querySelector(`[name=${ name }]`);
+	this.ac.$element = $(this.ac.element);
+});
+
+Template.SearchSelect.onCreated(function() {
+	this.filter = new ReactiveVar('');
+	this.selected = new ReactiveVar([]);
+	this.onClickTag = this.data.onClickTag;
+
+	const { collection, subscription, field, sort, onSelect, selector = (match) => ({ term: match }) } = this.data;
+	this.ac = new AutoComplete(
+		{
+			selector: {
+				anchor: '.rc-input__label',
+				item: '.rc-popup-list__item',
+				container: '.rc-popup-list__list',
+			},
+			onSelect,
+			position: 'fixed',
+			limit: 10,
+			inputDelay: 300,
+			rules: [
+				{
+					collection,
+					subscription,
+					field,
+					matchAll: true,
+					doNotChangeWidth: false,
+					selector,
+					sort,
+				},
+			],
+
+		});
+	this.ac.tmplInst = this;
+});
+
