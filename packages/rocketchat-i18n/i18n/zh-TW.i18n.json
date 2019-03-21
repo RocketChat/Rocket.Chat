@@ -250,7 +250,7 @@
   "Analytics_Google": "谷歌分析",
   "Analytics_Google_id": "跟踪號碼",
   "and": "和",
-  "And_more": "而更多的__length __",
+  "And_more": "而更多的__length__",
   "Animals_and_Nature": "動物與自然",
   "Announcement": "公告",
   "API": "API",
@@ -1319,7 +1319,7 @@
   "Importer_CSV_Information": "CSV導入程序需要特定的格式，請閱讀文檔以了解如何構建您的zip文件：",
   "Importer_done": "導入完成！",
   "Importer_finishing": "完成了進口。",
-  "Importer_From_Description": "進口__from __的數據轉換成Rocket.Chat。",
+  "Importer_From_Description": "進口__from__的數據轉換成Rocket.Chat。",
   "Importer_HipChatEnterprise_BetaWarning": "請注意，此導入仍在進行中，請報告GitHub中發生的任何錯誤：",
   "Importer_HipChatEnterprise_Information": "上傳的文件必須是解密的tar.gz，請閱讀文檔以獲取更多信息：",
   "Importer_import_cancelled": "導入已取消。",
@@ -2842,5 +2842,7 @@
   "Your_password_is_wrong": "您的密碼有誤！",
   "Your_push_was_sent_to_s_devices": "您的推播已發送到 %s 裝置",
   "Your_server_link": "您的服務器鏈接",
-  "Your_workspace_is_ready": "您的工作區已準備好使用🎉"
+  "Your_workspace_is_ready": "您的工作區已準備好使用🎉",
+  "Thread_slash_command_params": "您的訊息",
+  "Threading_context_menu_none": "隱藏"
 }

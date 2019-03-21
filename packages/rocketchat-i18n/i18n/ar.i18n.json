@@ -246,7 +246,7 @@
   "Analytics_Google": "تحليلات الغوغول",
   "Analytics_Google_id": "رمز تتبع تحليلات الغوغل",
   "and": "و",
-  "And_more": "وأكثر من ذلك __length __",
+  "And_more": "وأكثر من ذلك __length__",
   "Animals_and_Nature": "حيوانات و طبيعة",
   "Announcement": "إعلان",
   "API": "API",
@@ -1055,7 +1055,7 @@
   "error-invalid-redirectUri": "redirectUri غير صالح",
   "error-invalid-role": "دور غير صالح",
   "error-invalid-room": "غرفة غير صالحة",
-  "error-invalid-room-name": "<strong> %s</strong> ليس اسما غرفة صحيح، <br/> استخدام حروف أو أرقام أو الواصلات والشرطات",
+  "error-invalid-room-name": "<strong>%s</strong> ليس اسما غرفة صحيح، <br/> استخدام حروف أو أرقام أو الواصلات والشرطات",
   "error-invalid-room-type": "<strong>__type__</strong> ليس نوع الغرفة صالح.",
   "error-invalid-settings": "إعدادات غير صحيحة المقدمة",
   "error-invalid-subscription": "الاشتراك غير صالح",
@@ -2692,7 +2692,7 @@
   "Username_doesnt_exist": "عدم وجود اسم المستخدم `%s`.",
   "Username_ended_the_OTR_session": "__username__ أنهى جلسة المحادثة السرية",
   "Username_invalid": "<strong>%s</strong> لا يصلح كإسم مستخدم،<br/> استخدم فقط حروفا وأرقاما وشرطات",
-  "Username_is_already_in_here": "`@ %s` بالفعل هنا.",
+  "Username_is_already_in_here": "`@%s` بالفعل هنا.",
   "Username_is_not_in_this_room": "المستخدم `#%s` غير موجود في الغرفة",
   "Username_Placeholder": "الرجاء إدخال أسماء المستخدمين ...",
   "Username_title": "تسجيل اسم المستخدم",
@@ -2837,5 +2837,7 @@
   "Your_password_is_wrong": "كلمة السر خاطئة",
   "Your_push_was_sent_to_s_devices": "وقد أرسلت دفعك إلى أجهزة٪ الصورة",
   "Your_server_link": "رابط الخادم الخاص بك",
-  "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة لاستخدام 🎉"
+  "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة لاستخدام 🎉",
+  "Thread_slash_command_params": "رسالتك",
+  "Threading_context_menu_none": "خفي"
 }
