@@ -1,3 +1,5 @@
+/* globals JitsiCallHandler */
+
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -45,6 +47,10 @@ Template.videoFlexTab.onRendered(function() {
 	};
 
 	this.tryRunJitsiConnection = async() => {
+		setTimeout(function() {
+			// additional protection against simultaneous calls
+			JitsiCallHandler.rejectCallGlobal();
+		}, 250);
 		this.api = null;
 
 		const width = 'auto';
