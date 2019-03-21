@@ -516,11 +516,7 @@ RocketChat.Livechat = {
 		const agentIds = [];
 		// get the agents of the department
 		if (departmentId) {
-			let agents = RocketChat.Livechat.getOnlineAgents(departmentId);
-
-			if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
-				agents = RocketChat.Livechat.getAgents(departmentId);
-			}
+			const agents = RocketChat.Livechat.getAgents(departmentId);
 
 			if (agents.count() === 0) {
 				return false;

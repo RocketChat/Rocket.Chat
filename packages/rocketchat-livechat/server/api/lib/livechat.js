@@ -2,7 +2,8 @@ import _ from 'underscore';
 import LivechatVisitors from '../../models/LivechatVisitors';
 
 export function online() {
-	return RocketChat.models.Users.findOnlineAgents().count() > 0;
+	const onlineAgents = RocketChat.models.Livechat.getOnlineAgents();
+	return (onlineAgents && onlineAgents.count() > 0) || RocketChat.settings.get('Livechat_guest_pool_with_no_agents');
 }
 
 export function findTriggers() {

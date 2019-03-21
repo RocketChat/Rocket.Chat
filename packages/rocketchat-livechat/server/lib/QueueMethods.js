@@ -85,14 +85,17 @@ RocketChat.QueueMethods = {
 	 * only the client until paired with an agent
 	 */
 	'Guest_Pool'(guest, message, roomInfo) {
-		let agents = RocketChat.Livechat.getOnlineAgents(guest.department);
-
-		if (agents.count() === 0 && RocketChat.settings.get('Livechat_guest_pool_with_no_agents')) {
-			agents = RocketChat.Livechat.getAgents(guest.department);
+		if (RocketChat.settings.get('Livechat_guest_pool_with_no_agents') === false) {
+			const onlineAgents = RocketChat.Livechat.getOnlineAgents(guest.department);
+			if (!onlineAgents || onlineAgents.count() === 0) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
 		}
 
+		const agents = RocketChat.Livechat.getAgents(guest.department);
+
 		if (agents.count() === 0) {
-			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			throw new Meteor.Error('no-agent-available', 'Sorry, no available agents.');
 		}
 
 		RocketChat.models.Rooms.updateLivechatRoomCount();
