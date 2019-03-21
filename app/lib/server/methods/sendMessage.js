@@ -88,10 +88,6 @@ Meteor.methods({
 			message.alias = user.name;
 		}
 
-		if (Meteor.settings.public.sandstorm) {
-			message.sandstormSessionId = this.connection.sandstormSessionId();
-		}
-
 		Meteor.call('userActivityCounter.incrementMessageCount', room._id, user._id);
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736

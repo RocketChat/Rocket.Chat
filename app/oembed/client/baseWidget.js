@@ -22,9 +22,6 @@ Template.oembedBaseWidget.helpers({
 		if (this.meta && this.meta.oembedHtml) {
 			return 'oembedFrameWidget';
 		}
-		if (this.meta && this.meta.sandstorm && this.meta.sandstorm.grain) {
-			return 'oembedSandstormGrain';
-		}
 		return 'oembedUrlWidget';
 	},
 });
