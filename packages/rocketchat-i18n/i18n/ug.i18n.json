@@ -1228,5 +1228,6 @@
   "Your_file_has_been_deleted": "سىزنىڭ ھۆججىتىڭىز ئاللىبۇرۇن يۇيۇۋېتىلدى .",
   "Your_mail_was_sent_to_s": "يوللاندى %s سىزنىڭ ئىلخىتىڭىز ئاللىبۇرۇن",
   "Your_password_is_wrong": "پارول خاتا !",
-  "Your_push_was_sent_to_s_devices": "ئۈسكىنىگە يوللاندى %s سىزنىڭ ئىتتىرگىنىڭىز"
+  "Your_push_was_sent_to_s_devices": "ئۈسكىنىگە يوللاندى %s سىزنىڭ ئىتتىرگىنىڭىز",
+  "Threading_context_menu_none": "يوشۇرۇن"
 }

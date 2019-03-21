@@ -1,3 +1,8 @@
+textarea.rc-input__element {
+	font-family: inherit;
+	line-height: 0.5rem 1rem;
+}
+
 .rc-input {
 	position: relative;
 
@@ -43,11 +48,6 @@
 			right: 1rem;
 			left: auto;
 		}
-	}
-
-	textarea.&__element {
-		font-family: inherit;
-		line-height: 2rem;
 	}
 
 	&__element {

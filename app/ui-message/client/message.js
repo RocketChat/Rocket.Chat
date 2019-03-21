@@ -68,6 +68,14 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 }
 
 Template.message.helpers({
+	i18nKeyReply() {
+		return this.tcount > 1
+			? 'messages'
+			: 'message';
+	},
+	tlm() {
+		return this.tlm && moment(this.tlm).format('LLL');
+	},
 	encodeURI(text) {
 		return encodeURI(text);
 	},

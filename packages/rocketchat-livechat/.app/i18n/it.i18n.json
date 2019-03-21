@@ -45,5 +45,7 @@
   "We_are_offline_Sorry_for_the_inconvenience": "Siamo offline. Ci dispiace per l'inconveniente.",
   "Yes": "Sì",
   "You": "Tu",
-  "You_must_complete_all_fields": "È necessario completare tutti i campi"
+  "You_must_complete_all_fields": "È necessario completare tutti i campi",
+  "Connecting_to_an_Agent": "Collegamento con un agente",
+  "New_livechat_in_queue": "Nuova chat in coda"
 }

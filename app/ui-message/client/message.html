@@ -76,6 +76,23 @@
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
+
+		{{#if trid}}
+			<div class="message-discussion">
+				{{#if $gt tcount 0}}
+					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
+						<!-- {{> icon icon="discussion"}} -->
+						<span class='reply-counter'>{{tcount}}</span>&nbsp;{{_ i18nKeyReply}}
+					</button>
+				{{else}}
+					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small no-replies" data-rid={{roomId}}>
+						{{_ "No_messages_yet" }}
+					</button>
+				{{/if}}
+				<span class="discussion-reply-lm">{{tlm}}</span>
+			</div>
+		{{/if}}
+
 		{{#with readReceipt}}
 		<div class="read-receipt {{readByEveryone}}">
 			{{> icon icon="check" }}
