@@ -3,6 +3,13 @@
 	{{#with app}}
 		<section class="page-container page-home page-static page-settings rc-apps-marketplace">
 			{{# header sectionName='App_Details' fixedHeight=true hideHelp=true fullpage=true}}
+				<div class="rc-header__section-button">
+					{{#unless disabled}}
+						<button class="rc-button rc-button--cancel js-cancel-editing">{{_ "Cancel" }}</button>
+					{{/unless}}
+					<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save_changes" }}</button>
+				</div>
+
 				<div class="rc-header__block rc-header__block-action">
 					<button class="rc-button rc-button--nude js-cancel">{{> icon icon="cross"}}</button>
 				</div>
@@ -462,10 +469,6 @@
 
 											</div>
 										{{/each}}
-										<div class="rc-button-group">
-											<button class="rc-button rc-button--outline js-cancel-editing" disabled='{{disabled}}'>{{_ "Cancel" }}</button>
-											<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save" }}</button>
-										</div>
 									</div>
 								{{/if}}
 							</div>
