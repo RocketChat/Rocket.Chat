@@ -14,15 +14,13 @@ import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);
 
-const reloadUsersFromRoomMessages = (userId, rid) => {
-	const user = Meteor.users.findOne(userId, { fields: { username: 1 } });
-
+const reloadUsersFromRoomMessages = (fromUsername, rid) => {
 	usersFromRoomMessages.remove({});
 	const uniqueMessageUsersControl = {};
 
 	Messages.find({
 		rid,
-		'u.username': { $ne: user.username },
+		'u.username': { $ne: fromUsername },
 		t: { $exists: false },
 	},
 	{
@@ -56,7 +54,12 @@ Meteor.startup(function() {
 			return;
 		}
 
-		reloadUsersFromRoomMessages(userId, rid);
+		const user = Meteor.users.findOne(userId, { fields: { username: 1 } });
+		if (!user || !user.username) {
+			return;
+		}
+
+		reloadUsersFromRoomMessages(user.username, rid);
 	});
 });
 
