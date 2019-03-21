@@ -21,7 +21,7 @@ Grain location in your server:
 /opt/sandstorm/var/sandstorm/grains/JHbcuaBi6J2hCJjNQdECHQ
 ```
 
-<img src="migration01.jpg" width='100%'>
+<img src="migration1.jpg" width='100%'>
 
 
 
@@ -87,4 +87,4 @@ Setting old user's email or reset password. (By enabling EMAIL service, let user
 
 
 
-<img src="migration02.jpg" width='100%'>
+<img src="./migration2.jpg" width='100%'>
