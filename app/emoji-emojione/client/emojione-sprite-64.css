@@ -1,21 +1,5 @@
-/* stylelint-disable */
-
-.emojione {
-	image-rendering: -webkit-optimize-contrast;
-	image-rendering: optimizeQuality;
-	zoom: 0.3;
-	-moz-transform: scale(0.3);
-	-moz-transform-origin: left center;
-}
-
-.emojione.big {
-	zoom: 0.8;
-	-moz-transform: scale(0.8);
-	-moz-transform-origin: left center;
-}
-
 .emojione-64-people {
-	text-indent: -9999em;
+    text-indent: -9999em;
     image-rendering: optimizeQuality;
     font-size: inherit;
     height: 64px;
