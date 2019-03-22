@@ -5,7 +5,6 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Subscriptions } from '../../../models';
 import { roomTypes } from '../../../utils';
-import { Sandstorm } from '../../../sandstorm';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
 import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
@@ -55,8 +54,6 @@ const sendNotification = async({
 		emailNotifications,
 	} = subscription;
 
-	let notificationSent = false;
-
 	// busy users don't receive audio notification
 	if (shouldNotifyAudio({
 		disableAllMessageNotifications,
@@ -84,7 +81,6 @@ const sendNotification = async({
 		hasMentionToUser,
 		roomType,
 	})) {
-		notificationSent = true;
 		notifyDesktopUser({
 			notificationMessage,
 			userId: subscription.u._id,
@@ -104,8 +100,6 @@ const sendNotification = async({
 		statusConnection: receiver.statusConnection,
 		roomType,
 	})) {
-		notificationSent = true;
-
 		sendSinglePush({
 			notificationMessage,
 			room,
@@ -134,10 +128,6 @@ const sendNotification = async({
 			}
 			return false;
 		});
-	}
-
-	if (notificationSent) {
-		Sandstorm.notify(message, [subscription.u._id], `@${ sender.username }: ${ message.msg }`, room.t === 'p' ? 'privateMessage' : 'message');
 	}
 };
 
