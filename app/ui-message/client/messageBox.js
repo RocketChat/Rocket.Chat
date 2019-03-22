@@ -235,7 +235,7 @@ Template.messageBox.helpers({
 		return getUserPreference(Meteor.userId(), 'useEmojis');
 	},
 	maxMessageLength() {
-		return settings.get('Message_MaxAllowedSize');
+		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
 	},
 	isSendIconDisabled() {
 		return !Template.instance().sendIconDisabled.get();
