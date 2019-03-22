@@ -9,6 +9,8 @@
 
 	display: none;
 
+	user-select: none;
+
 	color: var(--color-darkest);
 
 	font-size: 1rem;
