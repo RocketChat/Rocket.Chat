@@ -98,8 +98,8 @@ export const QueueMethods = {
 			}
 		}
 
-		const agents = Livechat.getAgents(guest.department);
-		if (agents.count() === 0) {
+		const allAgents = Livechat.getAgents(guest.department);
+		if (allAgents.count() === 0) {
 			throw new Meteor.Error('no-agent-available', 'Sorry, no available agents.');
 		}
 
@@ -107,7 +107,7 @@ export const QueueMethods = {
 
 		const agentIds = [];
 
-		agents.forEach((agent) => {
+		allAgents.forEach((agent) => {
 			if (guest.department) {
 				agentIds.push(agent.agentId);
 			} else {
