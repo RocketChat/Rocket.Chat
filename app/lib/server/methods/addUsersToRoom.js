@@ -3,6 +3,7 @@ import { Match } from 'meteor/check';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
+import { Notifications } from '../../../notifications';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -65,14 +66,20 @@ Meteor.methods({
 					method: 'addUsersToRoom',
 				});
 			}
-			
+
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
 				addUserToRoom(data.rid, newUser, user);
 			}
 			else {
-				throw new Meteor.Error('Username_already_exist', 'Username already exists. Please try another username.', {
-					method: 'addUsersToRoom',
+				Notifications.notifyUser(userId, 'message', {
+					_id: Random.id(),
+					rid: data.rid,
+					ts: new Date,
+					msg: TAPi18n.__('Username_is_already_in_here', {
+						postProcess: 'sprintf',
+						sprintf: [newUser.username],
+					}, user.language),
 				});
 			}
 		});
