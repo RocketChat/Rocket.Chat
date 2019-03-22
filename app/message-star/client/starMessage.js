@@ -18,10 +18,9 @@ Meteor.methods({
 			toastr.error(TAPi18n.__('error-starring-message'));
 			return false;
 		}
-		if(message.starred) {
+		if (message.starred) {
 			toastr.success(TAPi18n.__('Message_has_been_starred'));
-		}
-		else{
+		} else {
 			toastr.success(TAPi18n.__('Message_has_been_unstarred'));
 		}
 		return ChatMessage.update({
