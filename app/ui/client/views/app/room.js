@@ -704,7 +704,7 @@ Template.room.events({
 
 		popover.open(config);
 	},
-	'contextmenu .message'(e, i) {
+	'contextmenu .message-wrapper'(e, i) {
 
 		e.preventDefault();
 
