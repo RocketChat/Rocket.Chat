@@ -2516,6 +2516,8 @@
   "This_is_a_push_test_messsage": "这是一个推测信息",
   "This_room_has_been_archived_by__username_": "这个房间已被__username__存档",
   "This_room_has_been_unarchived_by__username_": "这个房间已被__username__存档",
+  "Thread_slash_command_params": "你的信息",
+  "Threading_context_menu_none": "隐身",
   "Thursday": "星期四",
   "Time_in_seconds": "时间以秒为单位",
   "Title": "标题",
@@ -2841,7 +2843,5 @@
   "Your_password_is_wrong": "你的密码错了！",
   "Your_push_was_sent_to_s_devices": "您的推送已发送到％s设备",
   "Your_server_link": "您的服务器链接",
-  "Your_workspace_is_ready": "您的工作区已准备好使用🎉",
-  "Thread_slash_command_params": "你的信息",
-  "Threading_context_menu_none": "隐身"
+  "Your_workspace_is_ready": "您的工作区已准备好使用🎉"
 }

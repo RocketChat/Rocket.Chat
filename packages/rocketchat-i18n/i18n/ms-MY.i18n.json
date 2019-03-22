@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "Ini adalah mesej supaya ujian push",
   "This_room_has_been_archived_by__username_": "Bilik ini telah diarkibkan oleh __nama pengguna__",
   "This_room_has_been_unarchived_by__username_": "Bilik ini telah dinyaharkibkan oleh __nama pengguna__",
+  "Thread_slash_command_params": "mesej anda",
+  "Threading_context_menu_none": "Tidak dapat dilihat",
   "Thursday": "Khamis",
   "Time_in_seconds": "Masa dalam saat",
   "Title": "Title",
@@ -2837,7 +2839,5 @@
   "Your_password_is_wrong": "Kata laluan anda adalah salah!",
   "Your_push_was_sent_to_s_devices": "push anda telah dihantar ke peranti %s",
   "Your_server_link": "Pautan pelayan anda",
-  "Your_workspace_is_ready": "Ruang kerja anda sedia untuk menggunakan 🎉",
-  "Thread_slash_command_params": "mesej anda",
-  "Threading_context_menu_none": "Tidak dapat dilihat"
+  "Your_workspace_is_ready": "Ruang kerja anda sedia untuk menggunakan 🎉"
 }
