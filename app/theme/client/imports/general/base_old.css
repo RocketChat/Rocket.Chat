@@ -2510,10 +2510,6 @@ rc-old select,
 	overflow: hidden;
 	flex-grow: 1;
 
-	& .message-cog-container .message-action.jump-to-search-message {
-		display: none !important;
-	}
-
 	& .wrapper.has-more-next {
 		padding-bottom: 24px;
 	}
@@ -2694,14 +2690,6 @@ rc-old select,
 
 	&:hover:not(.system) .message-action {
 		display: block;
-	}
-
-	& .message-cog-container {
-		position: relative;
-
-		display: none;
-
-		cursor: pointer;
 	}
 
 	& .message-dropdown {
@@ -3037,24 +3025,6 @@ rc-old select,
 	line-height: 1;
 }
 
-body:not(.is-cordova) {
-	& .message:hover:not(.system) .message-cog-container {
-		display: inline-block;
-	}
-
-	& .message {
-		& .body,
-		& .user.user-card-message,
-		& .time {
-			user-select: text;
-
-			& * {
-				user-select: text;
-			}
-		}
-	}
-}
-
 .rc-old .cozy {
 	& .message {
 		padding: 4px 20px 4px 70px;
@@ -3069,10 +3039,6 @@ body:not(.is-cordova) {
 	& .message {
 		min-height: 26px;
 		padding: 5px 15px 0 37px;
-
-		&:not(.system) .message-cog-container {
-			display: inline-block;
-		}
 
 		& .body {
 			display: inline;
@@ -4237,7 +4203,7 @@ body:not(.is-cordova) {
 			font-weight: 400;
 
 			&:focus {
-				border-color: #13679a !important;
+				border-color: #1d74f5 !important;
 			}
 		}
 
@@ -4932,16 +4898,6 @@ body:not(.is-cordova) {
 		flex: 1 1 auto;
 	}
 
-	& .message-cog-container {
-		& .message-action {
-			display: none !important;
-
-			&.jump-to-star-message {
-				display: block !important;
-			}
-		}
-	}
-
 	& .no-results {
 		text-align: center;
 	}
@@ -5165,10 +5121,6 @@ body:not(.is-cordova) {
 	float: right;
 
 	width: auto;
-
-	& .message-cog-container {
-		float: left;
-	}
 
 	& .message-dropdown {
 		right: -2px;
