@@ -2,7 +2,6 @@ import './importPackages';
 import '../imports/startup/server';
 
 import '../lib/RegExp';
-import '../lib/francocatena_fix';
 
 import './lib/accounts';
 import './lib/cordova';
