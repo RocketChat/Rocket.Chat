@@ -4,6 +4,8 @@ import { Template } from 'meteor/templating';
 import { settings } from '../../settings';
 import { call } from '../../ui-utils';
 import { roomTypes } from '../../utils';
+import { RoomManager, RoomHistoryManager } from '../../ui-utils';
+import { hasAllPermission } from '../../authorization';
 import './messageBoxNotSubscribed.html';
 
 
@@ -34,6 +36,24 @@ Template.messageBoxNotSubscribed.helpers({
 });
 
 Template.messageBoxNotSubscribed.events({
+	async 'click .js-join-code'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		const joinCodeInput = Template.instance().find('[name=joinCode]');
+		const joinCode = joinCodeInput && joinCodeInput.value;
+
+		await call('joinRoom', this._id, joinCode);
+
+		if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this._id).loaded === 0) {
+			RoomManager.getOpenedRoomByRid(this._id).streamActive = false;
+			RoomManager.getOpenedRoomByRid(this._id).ready = false;
+			RoomHistoryManager.getRoom(this._id).loaded = null;
+			RoomManager.computation.invalidate();
+		}
+
+
+	},
 	'click .js-register'(event) {
 		event.stopPropagation();
 		event.preventDefault();

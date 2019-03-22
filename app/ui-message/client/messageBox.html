@@ -1,6 +1,6 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
-		{{#if isAnonymousOrJoinCode}}
+		{{#unless isAnonymousOrJoinCode}}
 			{{> messageBoxTyping rid=_id}}
 
 			{{#if canSend}}
@@ -82,6 +82,6 @@
 			{{/if}}
 		{{else}}
 			{{> messageBoxNotSubscribed _id=_id}}
-		{{/if}}
+		{{/unless}}
 	</div>
 </template>

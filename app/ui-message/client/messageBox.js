@@ -15,11 +15,10 @@ import {
 	fileUpload,
 	KonchatNotification,
 } from '../../ui';
-import { Layout, messageBox, popover, RoomManager, RoomHistoryManager } from '../../ui-utils';
+import { Layout, messageBox, popover, RoomManager, call } from '../../ui-utils';
 import { t, roomTypes, getUserPreference } from '../../utils';
 import moment from 'moment';
-import { hasAllPermission } from '../../authorization';
-import toastr from 'toastr';
+
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
@@ -257,7 +256,9 @@ Template.messageBox.helpers({
 	},
 	isAnonymousOrJoinCode() {
 		const room = Session.get(`roomData${ this._id }`);
-		return Meteor.userId || (room && room.joinCodeRequired);
+		return !Meteor.userId() || (!ChatSubscription.findOne({
+			rid: this._id,
+		}) && room && room.joinCodeRequired);
 	},
 	showFormattingTips() {
 		return settings.get('Message_ShowFormattingTips');
@@ -284,24 +285,14 @@ Template.messageBox.helpers({
 });
 
 Template.messageBox.events({
-	async 'click .js-join'(event) {
+	'click .js-join'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
 		const joinCodeInput = Template.instance().find('[name=joinCode]');
 		const joinCode = joinCodeInput && joinCodeInput.value;
 
-		try {
-			await Meteor.call('joinRoom', this._id, joinCode);
-			if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this._id).loaded === 0) {
-				RoomManager.getOpenedRoomByRid(this._id).streamActive = false;
-				RoomManager.getOpenedRoomByRid(this._id).ready = false;
-				RoomHistoryManager.getRoom(this._id).loaded = null;
-				RoomManager.computation.invalidate();
-			}
-		} catch (error) {
-			toastr.error(t(error.reason));
-		}
+		call('joinRoom', this._id, joinCode);
 	},
 
 	'click .emoji-picker-icon'(event) {
@@ -399,7 +390,7 @@ Template.messageBox.events({
 			chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 		}
 	},
-	'click .js-send'(event, instance) {
+	async 'click .js-send'(event, instance) {
 		const { input } = chatMessages[RoomManager.openedRoom];
 		chatMessages[this._id].send(this._id, input, () => {
 			input.updateAutogrow();
