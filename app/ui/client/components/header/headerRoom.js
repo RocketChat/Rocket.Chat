@@ -17,7 +17,7 @@ const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
-const isThread = ({ _id }) => {
+const isDiscussion = ({ _id }) => {
 	const room = ChatRoom.findOne({ _id });
 	return !!(room && room.prid);
 };
@@ -36,8 +36,8 @@ Template.headerRoom.helpers({
 		return TabBar.getButtons();
 	},
 
-	isThread() {
-		return isThread(Template.instance().data);
+	isDiscussion() {
+		return isDiscussion(Template.instance().data);
 	},
 
 	isTranslated() {
@@ -120,7 +120,7 @@ Template.headerRoom.helpers({
 	},
 
 	showToggleFavorite() {
-		return !isThread(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
+		return !isDiscussion(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
 	},
 
 	fixedHeight() {

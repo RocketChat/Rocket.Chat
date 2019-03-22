@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
+import { hasAllPermission } from '../../../../authorization/client';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { timeAgo } from './helpers';
@@ -187,6 +187,11 @@ Template.directory.helpers({
 			sortDirection.set('asc');
 		};
 	},
+	canViewOtherUserInfo() {
+		const { canViewOtherUserInfo } = Template.instance();
+
+		return canViewOtherUserInfo.get();
+	},
 });
 
 Template.directory.events({
@@ -217,8 +222,7 @@ Template.directory.onRendered(function() {
 		return this.results.set(result);
 	}
 
-	Tracker.autorun(() => {
-
+	this.autorun(() => {
 		const searchConfig = {
 			text: this.searchText.get(),
 			workspace: this.searchWorkspace.get(),
@@ -243,7 +247,7 @@ Template.directory.onRendered(function() {
 
 			// If there is no result, searching every workspace and
 			// the search text is an email address, try to find a federated user
-			if (this.searchWorkspace.get() === 'all' && this.searchText.get().indexOf('@') !== -1) {
+			if (this.searchWorkspace.get() === 'external' && this.searchText.get().indexOf('@') !== -1) {
 				const email = this.searchText.get();
 
 				Meteor.call('federationSearchUsers', email, (error, federatedUsers) => {
@@ -297,6 +301,12 @@ Template.directory.onCreated(function() {
 	this.results = new ReactiveVar([]);
 
 	this.isLoading = new ReactiveVar(false);
+
+	this.canViewOtherUserInfo = new ReactiveVar(false);
+
+	this.autorun(() => {
+		this.canViewOtherUserInfo.set(hasAllPermission('view-full-other-user-info'));
+	});
 });
 
 Template.directory.onRendered(function() {

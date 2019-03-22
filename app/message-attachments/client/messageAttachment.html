@@ -6,7 +6,8 @@
 		{{else}}
 			{{pretext}}
 		{{/if}}
-		<div class="attachment-block">
+		<div class="color-primary-font-color {{# unless $eq color 'none'}}attachment-block{{/unless}}">
+
 			<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
 			{{#if author_name}}
 				{{#if author_link}}
@@ -56,7 +57,7 @@
 					{{#if title_link}}
 						<a href="{{title_link}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
 						{{#if title_link_download}}
-							<a class="attachment-download-icon" href="{{title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
+							<a class="attachment-download-icon rc-tooltip" aria-label="{{_ 'Download'}}" href="{{title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
 						{{/if}}
 					{{else}}
 						{{title}}
