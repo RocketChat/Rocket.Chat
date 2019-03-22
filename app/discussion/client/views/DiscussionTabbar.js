@@ -1,16 +1,15 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { DiscussionOfRoom } from '../lib/discussionsOfRoom';
+
+import './DiscussionTabbar.html';
 
 Template.discussionsTabbar.helpers({
 	hasMessages() {
 		return DiscussionOfRoom.find({
 			rid: this.rid,
-		}, {
-			sort: {
-				ts: -1,
-			},
 		}).count() > 0;
 	},
 	messages() {
@@ -47,7 +46,7 @@ Template.discussionsTabbar.onCreated(function() {
 
 Template.discussionsTabbar.events({
 	'scroll .js-list': _.throttle(function(e, instance) {
-		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
+		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight - 10 && instance.hasMore.get()) {
 			return instance.limit.set(instance.limit.get() + 50);
 		}
 	}, 200),

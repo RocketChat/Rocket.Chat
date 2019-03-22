@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { messageBox, modal } from '../../ui-utils';
-import { t } from '../../utils';
-import { settings } from '../../settings';
+
+import { messageBox, modal } from '../../ui-utils/client';
+import { t } from '../../utils/client';
+import { settings } from '../../settings/client';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {

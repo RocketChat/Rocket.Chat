@@ -1,8 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { ChatSubscription } from '../../../models';
-import { getUserPreference } from '../../../utils';
-import { settings } from '../../../settings';
+
+import { ChatSubscription } from '../../../models/client';
+import { getUserPreference } from '../../../utils/client';
+import { settings } from '../../../settings/client';
+
+import './DiscussionList.html';
+
 Template.DiscussionList.helpers({
 	rooms() {
 		const user = Meteor.userId();

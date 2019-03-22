@@ -8,17 +8,9 @@
 .discussion-reply-lm {
 	padding: 4px 8px;
 
-	color: #9ea2a8;
+	color: var(--color-gray);
 
 	font-size: 12px;
-}
-
-.discussions-list .empty {
-	margin-top: 60px;
-
-	text-align: center;
-
-	color: #7f7f7f;
 }
 
 .discussions-list .load-more {
@@ -27,8 +19,4 @@
 
 	font-style: italic;
 	line-height: 40px;
-}
-
-.discussions-list .load-more .load-more-loading {
-	color: #aaaaaa;
 }
