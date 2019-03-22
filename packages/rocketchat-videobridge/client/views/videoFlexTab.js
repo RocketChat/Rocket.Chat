@@ -1,5 +1,3 @@
-/* globals JitsiCallHandler */
-
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -48,8 +46,10 @@ Template.videoFlexTab.onRendered(function() {
 
 	this.tryRunJitsiConnection = async() => {
 		setTimeout(function() {
+			// todo this function is static JitsiCallHandler.rejectCallGlobal() need import them instead
 			// additional protection against simultaneous calls
-			JitsiCallHandler.rejectCallGlobal();
+			document.getElementById('jitsi-sound').pause();
+			modal.close();
 		}, 250);
 		this.api = null;
 
