@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Messages, Permissions, Settings } from '../../../app/models/server';
+import { Messages, Permissions, Rooms, Settings } from '../../../app/models/server';
 
 const getField = (msg, fieldType, fieldName) => {
 	if (!msg.attachments) {
@@ -26,7 +26,7 @@ Migrations.add({
 				return;
 			}
 
-			Messages.update({ _id: msg._id }, {
+			const update = {
 				$set: {
 					t: 'discussion-created',
 					dlm,
@@ -35,7 +35,16 @@ Migrations.add({
 				$unset: {
 					attachments: 1,
 				},
-			});
+			};
+
+			if (msg.t) {
+				const room = Rooms.findOne({ _id: msg.trid }, { fields: { fname: 1 } });
+				if (room) {
+					update.$set.msg = room.fname;
+				}
+			}
+
+			Messages.update({ _id: msg._id }, update);
 		});
 
 		Messages.update({ t: 'thread-created' }, {
