@@ -74,6 +74,34 @@ function getApps(instance) {
 		});
 }
 
+function installAppFromEvent(e, t) {
+	const el = $(e.currentTarget);
+	el.prop('disabled', true);
+	el.addClass('loading');
+
+	const app = t.app.get();
+
+	const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
+
+	APIClient.post(api, {
+		appId: app.id,
+		marketplace: true,
+		version: app.version,
+	}).then(() => getApps(t)).then(() => {
+		el.prop('disabled', false);
+		el.removeClass('loading');
+	}).catch((e) => {
+		el.prop('disabled', false);
+		el.removeClass('loading');
+		t.hasError.set(true);
+		t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+	});
+
+	// play animation
+	// TODO this icon and animation are not working
+	$(e.currentTarget).find('.rc-icon').addClass('play');
+}
+
 Template.appManage.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
@@ -323,31 +351,7 @@ Template.appManage.events({
 	},
 
 	'click .js-install': async(e, t) => {
-		const el = $(e.currentTarget);
-		el.prop('disabled', true);
-		el.addClass('loading');
-
-		const app = t.app.get();
-
-		const api = app.newVersion ? `apps/${ t.id.get() }` : 'apps/';
-
-		APIClient.post(api, {
-			appId: app.id,
-			marketplace: true,
-			version: app.version,
-		}).then(() => getApps(t)).then(() => {
-			el.prop('disabled', false);
-			el.removeClass('loading');
-		}).catch((e) => {
-			el.prop('disabled', false);
-			el.removeClass('loading');
-			t.hasError.set(true);
-			t.theError.set((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
-		});
-
-		// play animation
-		// TODO this icon and animation are not working
-		$(e.currentTarget).find('.rc-icon').addClass('play');
+		installAppFromEvent(e, t);
 	},
 
 	'click .js-purchase': (e, t) => {
@@ -355,7 +359,9 @@ Template.appManage.events({
 
 		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.id }`)
 			.then((data) => {
-				data.successCallback = () => getApps(t);
+				data.successCallback = async() => {
+					installAppFromEvent(e, t);
+				};
 
 				modal.open({
 					allowOutsideClick: false,

@@ -35,32 +35,29 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 	return tagged;
 };
 
-const getApps = (instance) => {
+const getApps = async(instance) => {
 	instance.isLoading.set(true);
 
-	APIClient.get('apps?marketplace=true')
-		.then((data) => {
-			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
+	const data = await APIClient.get('apps?marketplace=true');
+	const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
 
-			if (instance.searchType.get() === 'marketplace') {
-				instance.apps.set(tagged);
-				instance.isLoading.set(false);
-				instance.ready.set(true);
-			}
-		});
+	if (instance.searchType.get() === 'marketplace') {
+		instance.apps.set(tagged);
+		instance.isLoading.set(false);
+		instance.ready.set(true);
+	}
 };
 
-const getInstalledApps = (instance) => {
-	APIClient.get('apps').then((data) => {
-		const apps = data.apps.map((app) => ({ latest: app }));
-		instance.installedApps.set(apps);
+const getInstalledApps = async(instance) => {
+	const data = await APIClient.get('apps');
+	const apps = data.apps.map((app) => ({ latest: app }));
+	instance.installedApps.set(apps);
 
-		if (instance.searchType.get() === 'installed') {
-			instance.apps.set(apps);
-			instance.isLoading.set(false);
-			instance.ready.set(true);
-		}
-	});
+	if (instance.searchType.get() === 'installed') {
+		instance.apps.set(apps);
+		instance.isLoading.set(false);
+		instance.ready.set(true);
+	}
 };
 
 Template.apps.onCreated(function() {
@@ -264,14 +261,36 @@ Template.apps.events({
 			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
 		}
 	},
-	'click .js-install'(e) {
+	'click .js-install'(e, template) {
+		e.stopPropagation();
+		const elm = e.currentTarget.parentElement;
+
+		elm.classList.add('loading');
+
+		APIClient.post('apps/', {
+			appId: this.latest.id,
+			marketplace: true,
+			version: this.latest.version,
+		})
+			.then(async() => {
+				await Promise.all([
+					getInstalledApps(template),
+					getApps(template),
+				]);
+				elm.classList.remove('loading');
+			})
+			.catch((e) => {
+				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+				elm.classList.remove('loading');
+			});
+	},
+	'click .js-purchase'(e, template) {
 		e.stopPropagation();
 
 		const rl = this;
 
 		// play animation
 		const elm = e.currentTarget.parentElement;
-		elm.classList.add('loading');
 
 		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.latest.id }`)
 			.then((data) => {
@@ -280,13 +299,26 @@ Template.apps.events({
 					data,
 					template: 'iframeModal',
 				}, () => {
-					FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
-				}, () => {
-					elm.classList.remove('loading');
+					elm.classList.add('loading');
+					APIClient.post('apps/', {
+						appId: this.latest.id,
+						marketplace: true,
+						version: this.latest.version,
+					})
+						.then(async() => {
+							await Promise.all([
+								getInstalledApps(template),
+								getApps(template),
+							]);
+							elm.classList.remove('loading');
+						})
+						.catch((e) => {
+							toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+							elm.classList.remove('loading');
+						});
 				});
 			})
 			.catch((e) => {
-				elm.classList.remove('loading');
 				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 			});
 	},
