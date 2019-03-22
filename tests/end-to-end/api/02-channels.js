@@ -1,22 +1,12 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
-	apiEmail,
-	apiUsername,
-	targetUser,
-	log,
 	apiPublicChannelName,
 	channel,
 } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
+import { adminUsername } from '../../data/user.js';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -55,22 +45,135 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.info', (done) => {
-		request.get(api('channels.info'))
-			.set(credentials)
-			.query({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
-				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', 0);
-			})
-			.end(done);
+	describe('[/channels.info]', () => {
+		let testChannel = {};
+		let channelMessage = {};
+		it('creating new channel...', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testChannel = res.body.channel;
+				})
+				.end(done);
+		});
+		it('should return channel basic structure', (done) => {
+			request.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+		it('sending a message...', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: testChannel._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					channelMessage = res.body.message;
+				})
+				.end(done);
+		});
+		it('REACTing with last message', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('STARring last message', (done) => {
+			request.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('PINning last message', (done) => {
+			request.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return channel structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
+			request.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('channel').and.to.be.an('object');
+					const { channel } = res.body;
+					expect(channel).to.have.property('lastMessage').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('reactions').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('pinned').and.to.be.a('boolean');
+					expect(channel.lastMessage).to.have.property('pinnedAt').and.to.be.a('string');
+					expect(channel.lastMessage).to.have.property('pinnedBy').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('starred').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
+			request.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const { messages } = res.body;
+					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+				})
+				.end(done);
+		});
 	});
 
 	it('/channels.invite', async(done) => {
@@ -480,6 +583,35 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
+			})
+			.end(done);
+	});
+
+	it('/channels.addLeader', (done) => {
+		request.post(api('channels.addLeader'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', true);
+			})
+			.end(done);
+	});
+	it('/channels.removeLeader', (done) => {
+		request.post(api('channels.removeLeader'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
 			})
 			.end(done);
 	});

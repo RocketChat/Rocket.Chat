@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Rooms } from '../../app/models';
+
 Meteor.methods({
 	roomNameExists(rid) {
 		check(rid, String);
@@ -7,7 +11,7 @@ Meteor.methods({
 				method: 'roomExists',
 			});
 		}
-		const room = RocketChat.models.Rooms.findOneByName(rid);
+		const room = Rooms.findOneByName(rid);
 		return !!room;
 	},
 });

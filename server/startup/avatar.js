@@ -1,7 +1,12 @@
-/* globals FileUpload */
+import { WebApp } from 'meteor/webapp';
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
+import { FileUpload } from '../../app/file-upload';
+import { getAvatarColor } from '../../app/utils';
+import { Users, Avatars } from '../../app/models';
+import { settings } from '../../app/settings';
 
 const cookie = new Cookies();
 
@@ -16,7 +21,7 @@ function isUserAuthenticated(req) {
 		rc_token = cookie.get('rc_token', headers.cookie);
 	}
 
-	if (!rc_uid || !rc_token || !RocketChat.models.Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
+	if (!rc_uid || !rc_token || !Users.findOneByIdAndLoginToken(rc_uid, rc_token)) {
 		return false;
 	}
 
@@ -28,7 +33,7 @@ const warnUnauthenticatedAccess = _.debounce(() => {
 }, 60000 * 30); // 30 minutes
 
 function userCanAccessAvatar(req) {
-	if (RocketChat.settings.get('Accounts_AvatarBlockUnauthenticatedAccess') === true) {
+	if (settings.get('Accounts_AvatarBlockUnauthenticatedAccess') === true) {
 		return isUserAuthenticated(req);
 	}
 
@@ -44,7 +49,7 @@ Meteor.startup(function() {
 		const params = {
 			username: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')),
 		};
-		const cacheTime = req.query.cacheTime || RocketChat.settings.get('Accounts_AvatarCacheTime');
+		const cacheTime = req.query.cacheTime || settings.get('Accounts_AvatarCacheTime');
 
 		if (_.isEmpty(params.username) || !userCanAccessAvatar(req)) {
 			res.writeHead(403);
@@ -62,16 +67,7 @@ Meteor.startup(function() {
 			username = username.replace(/\.jpg$/, '');
 
 			if (username[0] !== '@') {
-				if (Meteor.settings && Meteor.settings.public && Meteor.settings.public.sandstorm) {
-					const user = RocketChat.models.Users.findOneByUsername(username);
-					if (user && user.services && user.services.sandstorm && user.services.sandstorm.picture) {
-						res.setHeader('Location', user.services.sandstorm.picture);
-						res.writeHead(302);
-						res.end();
-						return;
-					}
-				}
-				file = RocketChat.models.Avatars.findOneByName(username);
+				file = Avatars.findOneByName(username);
 			}
 
 			if (file) {
@@ -109,8 +105,8 @@ Meteor.startup(function() {
 					}
 				}
 
-				if (RocketChat.settings.get('UI_Use_Name_Avatar')) {
-					const user = RocketChat.models.Users.findOneByUsername(username, {
+				if (settings.get('UI_Use_Name_Avatar')) {
+					const user = Users.findOneByUsername(username, {
 						fields: {
 							name: 1,
 						},
@@ -128,7 +124,7 @@ Meteor.startup(function() {
 					color = '#000';
 					initials = username;
 				} else {
-					color = RocketChat.getAvatarColor(username);
+					color = getAvatarColor(username);
 
 					initials = username.replace(/[^A-Za-z0-9]/g, '').substr(0, 1).toUpperCase();
 				}
@@ -136,7 +132,7 @@ Meteor.startup(function() {
 				const viewSize = parseInt(req.query.size) || 200;
 				const fontSize = viewSize / 1.6;
 
-				const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${ viewSize } ${ viewSize }\">\n<rect width=\"100%\" height=\"100%\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"Helvetica, Arial, Lucida Grande, sans-serif\" font-size="${ fontSize }">\n${ initials }\n</text>\n</svg>`;
+				const svg = `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${ viewSize } ${ viewSize }\">\n<rect width=\"100%\" height=\"100%\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${ fontSize }">\n${ initials }\n</text>\n</svg>`;
 
 				if (['png', 'jpg', 'jpeg'].includes(req.query.format)) {
 					res.setHeader('Content-Type', `image/${ req.query.format }`);

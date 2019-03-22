@@ -1,6 +1,10 @@
+import { Template } from 'meteor/templating';
+import { settings } from 'meteor/rocketchat:settings';
+import { ChatRoom } from 'meteor/rocketchat:models';
+
 Template.room.helpers({
 	sentimentSmile() {
-		if (!RocketChat.settings.get('GoogleNaturalLanguage_Enabled')) {
+		if (!settings.get('GoogleNaturalLanguage_Enabled')) {
 			return;
 		}
 

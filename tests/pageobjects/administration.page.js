@@ -33,7 +33,7 @@ class Administration extends Page {
 	get usersRocketCat() { return browser.element('td=Rocket.Cat'); }
 	get usersInternalAdmin() { return browser.element('td=rocketchat.internal.admin.test'); }
 	get usersFilter() { return browser.element('#users-filter'); }
-	get rolesNewRolesButton() { return browser.element('.button.new-role'); }
+	get rolesNewRolesButton() { return browser.element('.rc-button.new-role'); }
 	get rolesPermissionGrid() { return browser.element('.permission-grid'); }
 	get rolesAdmin() { return browser.element('[title="Admin"]'); }
 	get rolesModerator() { return browser.element('[title="Moderator"]'); }
@@ -65,13 +65,13 @@ class Administration extends Page {
 	// settings
 	get buttonSave() { return browser.element('button.save'); }
 
-	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(4) .button.expand'); }
-	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(5) .button.expand'); }
-	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(6) .button.expand'); }
-	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(7) .button.expand'); }
-	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(8) .button.expand'); }
-	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(9) .button.expand'); }
-	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(10) .button.expand'); }
+	get generalButtonExpandIframe() { return browser.element('.section:nth-of-type(4) .expand'); }
+	get generalButtonExpandNotifications() { return browser.element('.section:nth-of-type(5) .expand'); }
+	get generalButtonExpandRest() { return browser.element('.section:nth-of-type(6) .expand'); }
+	get generalButtonExpandReporting() { return browser.element('.section:nth-of-type(7) .expand'); }
+	get generalButtonExpandStreamCast() { return browser.element('.section:nth-of-type(8) .expand'); }
+	get generalButtonExpandTranslations() { return browser.element('.section:nth-of-type(9) .expand'); }
+	get generalButtonExpandUTF8() { return browser.element('.section:nth-of-type(10) .expand'); }
 
 	get generalSiteUrl() { return browser.element('[name="Site_Url"]'); }
 	get generalSiteUrlReset() { return browser.element('.reset-setting[data-setting="Site_Url"]'); }
@@ -123,8 +123,8 @@ class Administration extends Page {
 	get generalUTF8NamesSlugReset() { return browser.element('.reset-setting[data-setting="UTF8_Names_Slugify"]'); }
 
 	// accounts
-	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .button.expand'); }
-	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .button.collapse'); }
+	get accountsButtonExpandDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .expand'); }
+	get accountsButtonCollapseDefaultUserPreferences() { return browser.element('.section:nth-of-type(2) .collapse'); }
 
 	get accountsEnableAutoAwayTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
 	get accountsEnableAutoAwayFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_Default_User_Preferences_enableAutoAway"]'); }
