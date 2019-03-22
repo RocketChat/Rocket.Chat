@@ -19,6 +19,11 @@ const validateUsername = (username) => {
 	return reg.test(username);
 };
 const validateName = (name) => name && name.length;
+const validateStatusMessage = (statusMessage) => {
+	if (!statusMessage || statusMessage.length <= 120 || statusMessage.length === 0) {
+		return true;
+	}
+};
 const validatePassword = (password, confirmationPassword) => {
 	if (!confirmationPassword) {
 		return true;
@@ -71,6 +76,9 @@ Template.accountProfile.helpers({
 	nameInvalid() {
 		return !validateName(Template.instance().realname.get());
 	},
+	statusMessageInvalid() {
+		return !validateStatusMessage(Template.instance().statusMessage.get());
+	},
 	confirmationPasswordInvalid() {
 		const { password, confirmationPassword } = Template.instance();
 		return !validatePassword(password.get(), confirmationPassword.get());
@@ -108,6 +116,7 @@ Template.accountProfile.helpers({
 		const instance = Template.instance();
 		instance.dep.depend();
 		const realname = instance.realname.get();
+		const statusMessage = instance.statusMessage.get();
 		const username = instance.username.get();
 		const password = instance.password.get();
 		const confirmationPassword = instance.confirmationPassword.get();
@@ -128,7 +137,7 @@ Template.accountProfile.helpers({
 		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
 			return ret;
 		}
-		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
+		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusMessage)) {
 			return ret;
 		}
 
@@ -143,6 +152,9 @@ Template.accountProfile.helpers({
 	username() {
 		return Meteor.user().username;
 	},
+	statusMessage() {
+		return Meteor.user().statusMessage;
+	},
 	email() {
 		const user = Meteor.user();
 		return getUserEmailAddress(user);
@@ -153,6 +165,9 @@ Template.accountProfile.helpers({
 	},
 	allowRealNameChange() {
 		return settings.get('Accounts_AllowRealNameChange');
+	},
+	allowStatusMessageChange() {
+		return settings.get('Accounts_AllowUserStatusMessageChange');
 	},
 	allowUsernameChange() {
 		return settings.get('Accounts_AllowUsernameChange') && settings.get('LDAP_Enable') !== true;
@@ -188,6 +203,7 @@ Template.accountProfile.onCreated(function() {
 	self.avatar = new ReactiveVar;
 	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
+	self.statusMessage = new ReactiveVar(user.statusMessage);
 
 	Notifications.onLogged('updateAvatar', () => self.avatar.set());
 	self.getSuggestions = function() {
@@ -252,6 +268,16 @@ Template.accountProfile.onCreated(function() {
 				return cb && cb();
 			} else {
 				data.realname = s.trim(self.realname.get());
+			}
+		}
+		if (s.trim(self.statusMessage.get()) !== user.statusMessage) {
+			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
+				toastr.remove();
+				toastr.error(t('StatusMessage_Change_Disabled'));
+				instance.clearForm();
+				return cb && cb();
+			} else {
+				data.statusMessage = s.trim(self.statusMessage.get());
 			}
 		}
 		if (s.trim(self.username.get()) !== user.username) {
@@ -374,6 +400,9 @@ Template.accountProfile.events({
 	},
 	'input [name=realname]'(e, instance) {
 		instance.realname.set(e.target.value);
+	},
+	'input [name=statusMessage]'(e, instance) {
+		instance.statusMessage.set(e.target.value);
 	},
 	'input [name=password]'(e, instance) {
 		instance.password.set(e.target.value);

@@ -48,6 +48,10 @@ Meteor.methods({
 			Meteor.call('setUsername', settings.username);
 		}
 
+		if (settings.statusMessage || settings.statusMessage.length === 0) {
+			Meteor.call('setStatusMessage', settings.statusMessage);
+		}
+
 		if (settings.email) {
 			if (!checkPassword(user, settings.typedPassword)) {
 				throw new Meteor.Error('error-invalid-password', 'Invalid password', {

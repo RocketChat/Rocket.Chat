@@ -176,8 +176,13 @@
 		text-overflow: ellipsis;
 	}
 
-	&-visual-status {
-		text-transform: capitalize;
+	&__visual-status {
+		overflow: hidden;
+
+		width: 100%;
+		max-width: fit-content;
+
+		text-overflow: ellipsis;
 	}
 
 	&__status {

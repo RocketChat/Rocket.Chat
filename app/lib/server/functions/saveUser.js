@@ -7,7 +7,7 @@ import { Gravatar } from 'meteor/jparker:gravatar';
 import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import PasswordPolicy from '../lib/PasswordPolicyClass';
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername } from '.';
+import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setRealName, setUsername, setStatusMessage } from '.';
 import { validateEmailDomain } from '../lib';
 
 const passwordPolicy = new PasswordPolicy();
@@ -131,6 +131,13 @@ function validateUserEditing(userId, userData) {
 		});
 	}
 
+	if (userData.statusMessage && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
+		throw new Meteor.Error('error-action-not-allowed', 'Edit user status is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Update_user',
+		});
+	}
+
 	if (userData.name && !settings.get('Accounts_AllowRealNameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 			method: 'insertOrUpdateUser',
@@ -238,6 +245,10 @@ export const saveUser = function(userId, userData) {
 
 	if (userData.name) {
 		setRealName(userData._id, userData.name);
+	}
+
+	if (userData.statusMessage) {
+		setStatusMessage(userData._id, userData.statusMessage);
 	}
 
 	if (userData.email) {

@@ -71,6 +71,21 @@
 							</div>
 						</div>
 						<div class="rc-form-group rc-grid">
+							{{# with canChange=allowStatusMessageChange}}
+							<div class="rc-input rc-w100 padded {{#if statusMessageInvalid}}rc-input--error{{/if}}">
+								<label class="rc-input__label">
+									<div class="rc-input__title">{{_ "StatusMessage"}}</div>
+									<div class="rc-input__wrapper">
+										<input type="text" class="rc-input__element" maxlength="120" name="statusMessage" id="statusMessage" placeholder="{{_ "StatusMessage_Placeholder" }}" value="{{statusMessage}}" {{ifThenElse canChange '' 'disabled'}}>
+									</div>
+								</label>
+								{{# unless canChange}}
+									<div class="rc-input__description">{{_ 'StatusMessage_Change_Disabled'}}</div>
+								{{/unless}}
+							</div>
+							{{/with}}
+						</div>
+						<div class="rc-form-group rc-grid">
 							{{# with canChange=allowRealNameChange}}
 							<div class="rc-input rc-w50 padded {{#if nameInvalid}}rc-input--error{{/if}}">
 								<label class="rc-input__label">

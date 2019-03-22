@@ -31,6 +31,8 @@ import Clipboard from 'clipboard';
 import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
+import { emojione } from 'meteor/emojione:emojione';
+import s from 'underscore.string';
 
 export const chatMessages = {};
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
@@ -359,6 +361,17 @@ Template.room.helpers({
 	userStatusText() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return roomTypes.getUserStatusText(roomData.t, this._id) || 'offline';
+	},
+
+	userStatusMessage() {
+		const roomData = Session.get(`roomData${ this._id }`);
+
+		let status = roomTypes.getUserStatusMessage(roomData.t, this._id);
+		if (s.trim(status) !== '') {
+			status = emojione.render(s.escapeHTML(status));
+		}
+
+		return status;
 	},
 
 	maxMessageLength() {

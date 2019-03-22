@@ -12,6 +12,8 @@ import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown';
 import { hasAllPermission } from '../../../../authorization';
 import { call } from '../../../../ui-utils';
+import { emojione } from 'meteor/emojione:emojione';
+import s from 'underscore.string';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -117,6 +119,17 @@ Template.headerRoom.helpers({
 	userStatusText() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		return roomTypes.getUserStatusText(roomData.t, this._id) || this.userStatus();
+	},
+
+	userStatusMessage() {
+		const roomData = Session.get(`roomData${ this._id }`);
+
+		let status = roomTypes.getUserStatusMessage(roomData.t, this._id);
+		if (s.trim(status) !== '') {
+			status = emojione.render(s.escapeHTML(status));
+		}
+
+		return status;
 	},
 
 	showToggleFavorite() {

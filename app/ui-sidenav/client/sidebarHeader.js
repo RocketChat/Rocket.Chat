@@ -413,6 +413,27 @@ Template.sidebarHeader.events({
 											};
 										},
 									},
+									{
+										icon: 'edit',
+										name: t('Edit_Status'),
+										type: 'open',
+										action: (e) => {
+											e.preventDefault();
+											modal.open({
+												title: t('Edit_Status'),
+												content: 'editStatus',
+												data: {
+													onSave() {
+														modal.close();
+													},
+												},
+												modalClass: 'modal',
+												showConfirmButton: false,
+												showCancelButton: false,
+												confirmOnEnter: false,
+											});
+										},
+									},
 								],
 							},
 							{

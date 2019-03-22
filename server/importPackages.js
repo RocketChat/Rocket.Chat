@@ -81,6 +81,7 @@ import '../app/slashcommands-leave';
 import '../app/slashcommands-me';
 import '../app/slashcommands-msg';
 import '../app/slashcommands-mute';
+import '../app/slashcommands-status';
 import '../app/slashcommands-topic';
 import '../app/slashcommands-unarchiveroom';
 import '../app/smarsh-connector';

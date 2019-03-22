@@ -1,0 +1,28 @@
+<template name="editStatus">
+		<section class="edit-status">
+			<div class="edit-status__wrapper">
+				{{#if canChange}}
+				<form id="edit-status" name="edit-status" class="edit-status__content">
+					<div class="edit-status__inputs">
+						<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
+							<label class="rc-input__label">
+								<div class="rc-input__title">{{_ "StatusMessage"}}</div>
+								<div class="rc-input__wrapper">
+									<div class="rc-input__icon">
+										{{> icon block="rc-input__icon-svg" icon="edit" }}
+									</div>
+									<input name="status" type="text" maxlength="120" class="rc-input__element" placeholder="{{_ "StatusMessage_Placeholder"}}" autofocus value="{{statusMessage}}">
+								</div>
+							</label>
+						</div>
+					</div>
+				</form>
+				<div class="edit-status__inputs">
+						<input form='edit-status' class="rc-button rc-button--primary" type='submit' data-button="Save" value="{{_ "Save"}}" />
+				</div>
+				{{else}}
+				<div class="rc-input__description">{{_ "StatusMessage_Change_Disabled"}}</div>
+				{{/if}}
+			</div>
+		</section>
+	</template>

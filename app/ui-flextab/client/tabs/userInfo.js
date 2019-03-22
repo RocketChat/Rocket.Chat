@@ -12,6 +12,7 @@ import { templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import { getActions } from './userActions';
+import { emojione } from 'meteor/emojione:emojione';
 
 const more = function() {
 	return Template.instance().actions.get()
@@ -143,6 +144,12 @@ Template.userInfo.helpers({
 
 	editingUser() {
 		return Template.instance().editingUser.get();
+	},
+
+	userStatusMessage() {
+		if (s.trim(this.statusMessage) !== '') {
+			return emojione.render(s.escapeHTML(this.statusMessage));
+		}
 	},
 
 	userToEdit() {
