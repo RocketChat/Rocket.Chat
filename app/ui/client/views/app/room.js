@@ -706,55 +706,60 @@ Template.room.events({
 	},
 	'contextmenu .message'(e, i) {
 
-		e.preventDefault();
+		const subtractedDiv = '.thumb, a, img';
 
-		if ($('.cursor-location').length !== 0) {
-			$('.cursor-location').remove();
+		if(!e.target.matches(subtractedDiv)) {
+
+			e.preventDefault();
+
+			if ($('.cursor-location').length !== 0) {
+				$('.cursor-location').remove();
+			}
+
+			$('<div class = "cursor-location">')
+				.css({
+					left: `${e.clientX}px`,
+					top: `${e.clientY}px`,
+					position: 'absolute',
+				})
+				.appendTo(document.body);
+
+
+			let context = $(e.target).parents('.message').data('context');
+			if (!context) {
+				context = 'message';
+			}
+
+			const [, message] = this._arguments;
+			const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
+				icon: item.icon,
+				name: t(item.label),
+				type: 'message-action',
+				id: item.id,
+				modifier: item.color,
+			}));
+			const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+			const groups = [{items}];
+
+			if (deleteItem.length) {
+				groups.push({items: deleteItem});
+			}
+
+			const config = {
+				columns: [
+					{
+						groups,
+					},
+				],
+				instance: i,
+				data: this,
+				currentTarget: $('body').find('.cursor-location')[0],
+				activeElement: $(e.currentTarget).parents('.message')[0],
+				onRendered: () => new Clipboard('.rc-popover__item'),
+			};
+
+			popover.open(config);
 		}
-
-		$('<div class = "cursor-location">')
-			.css({
-				left: `${ e.clientX }px`,
-				top: `${ e.clientY }px`,
-				position: 'absolute',
-			})
-			.appendTo(document.body);
-
-
-		let context = $(e.target).parents('.message').data('context');
-		if (!context) {
-			context = 'message';
-		}
-
-		const [, message] = this._arguments;
-		const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
-			icon: item.icon,
-			name: t(item.label),
-			type: 'message-action',
-			id: item.id,
-			modifier: item.color,
-		}));
-		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
-		const groups = [{ items }];
-
-		if (deleteItem.length) {
-			groups.push({ items: deleteItem });
-		}
-
-		const config = {
-			columns: [
-				{
-					groups,
-				},
-			],
-			instance: i,
-			data: this,
-			currentTarget: $('body').find('.cursor-location')[0],
-			activeElement: $(e.currentTarget).parents('.message')[0],
-			onRendered: () => new Clipboard('.rc-popover__item'),
-		};
-
-		popover.open(config);
 	},
 
 	'click .time a'(e) {
