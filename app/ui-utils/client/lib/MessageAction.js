@@ -284,37 +284,6 @@ Meteor.startup(async function() {
 	});
 
 	MessageAction.addButton({
-		id: 'copy-selection',
-		icon: 'copy',
-		label: 'Copy_selection',
-		classes: 'clipboard',
-		context: ['message', 'message-mobile'],
-		action(event) {
-			let selectedText = '';
-			if (window.getSelection) {
-				selectedText = window.getSelection().toString().trim();
-			} else if (document.selection && document.selection.type !== 'Control') {
-				selectedText = document.selection.createRange().text;
-			}
-			if (selectedText === '') {
-				toastr.error(TAPi18n.__('No_text_selected'));
-			} else {
-				$(event.currentTarget).attr('data-clipboard-text', selectedText);
-				toastr.success(TAPi18n.__('Copied'));
-			}
-		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
-				return false;
-			}
-
-			return true;
-		},
-		order: 5,
-		group: 'menu',
-	});
-
-	MessageAction.addButton({
 		id: 'copy',
 		icon: 'copy',
 		label: 'Copy',
@@ -332,7 +301,7 @@ Meteor.startup(async function() {
 
 			return true;
 		},
-		order: 6,
+		order: 5,
 		group: 'menu',
 	});
 
@@ -363,7 +332,7 @@ Meteor.startup(async function() {
 
 			return true;
 		},
-		order: 7,
+		order: 6,
 		group: 'menu',
 	});
 
