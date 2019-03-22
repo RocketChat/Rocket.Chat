@@ -317,7 +317,7 @@ Template.messageBox.events({
 	'click .cancel-reply'(event, instance) {
 
 		const input = instance.find('.js-input-message');
-		const messages = $(input).data('reply');
+		const messages = $(input).data('reply') || [];
 		const filtered = messages.filter((msg) => msg._id !== this._id);
 
 		$(input)
