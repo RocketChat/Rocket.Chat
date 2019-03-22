@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
@@ -70,8 +72,7 @@ Meteor.methods({
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
 				addUserToRoom(data.rid, newUser, user);
-			}
-			else {
+			} else {
 				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: data.rid,
