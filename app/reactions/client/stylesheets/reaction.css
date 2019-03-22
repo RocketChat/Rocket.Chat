@@ -9,7 +9,7 @@
 			display: inline-block;
 
 			height: 32px;
-			padding: 6px 6px 0px 3px;
+			padding: 6px 6px 0 3px;
 
 			cursor: pointer;
 
@@ -44,14 +44,14 @@
 				position: relative;
 				top: -1px;
 
-				font-size: 0.80rem;
+				font-size: 0.8rem;
 			}
 
 			&.add-reaction {
 				visibility: hidden;
 
 				margin-left: 2px;
-				padding: 6px 6px;
+				padding: 6px 6px 0 0;
 
 				transition: opacity 0.2s ease;
 
