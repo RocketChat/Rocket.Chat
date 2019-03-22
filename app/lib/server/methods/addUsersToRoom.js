@@ -65,7 +65,16 @@ Meteor.methods({
 					method: 'addUsersToRoom',
 				});
 			}
-			addUserToRoom(data.rid, newUser, user);
+			
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
+			if (!subscription) {
+				addUserToRoom(data.rid, newUser, user);
+			}
+			else {
+				throw new Meteor.Error('Username_already_exist', 'Username already exists. Please try another username.', {
+					method: 'addUsersToRoom',
+				});
+			}
 		});
 
 		return true;
