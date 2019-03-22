@@ -50,8 +50,7 @@
 			&.add-reaction {
 				visibility: hidden;
 
-				margin-left: 2px;
-				padding: 6px 6px 0 0;
+				padding: 6px;
 
 				transition: opacity 0.2s ease;
 
