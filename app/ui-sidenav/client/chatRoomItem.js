@@ -40,7 +40,7 @@ Template.chatRoomItem.helpers({
 		};
 		roomData.username = roomData.username || roomData.name;
 
-		// hide icon for threads
+		// hide icon for discussions
 		if (this.prid) {
 			roomData.darken = true;
 		}
