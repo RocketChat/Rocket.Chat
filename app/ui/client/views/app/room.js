@@ -708,7 +708,7 @@ Template.room.events({
 
 		const subtractedDiv = '.thumb, a, img';
 
-		if(!e.target.matches(subtractedDiv)) {
+		if (!e.target.matches(subtractedDiv)) {
 
 			e.preventDefault();
 
@@ -718,8 +718,8 @@ Template.room.events({
 
 			$('<div class = "cursor-location">')
 				.css({
-					left: `${e.clientX}px`,
-					top: `${e.clientY}px`,
+					left: `${ e.clientX }px`,
+					top: `${ e.clientY }px`,
 					position: 'absolute',
 				})
 				.appendTo(document.body);
@@ -739,10 +739,10 @@ Template.room.events({
 				modifier: item.color,
 			}));
 			const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
-			const groups = [{items}];
+			const groups = [{ items }];
 
 			if (deleteItem.length) {
-				groups.push({items: deleteItem});
+				groups.push({ items: deleteItem });
 			}
 
 			const config = {
