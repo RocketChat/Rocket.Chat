@@ -1,4 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
+
 import { Messages, Permissions, Rooms, Settings } from '../../../app/models/server';
 
 const getField = (msg, fieldType, fieldName) => {
