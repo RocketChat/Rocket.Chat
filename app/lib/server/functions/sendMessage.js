@@ -130,8 +130,6 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		message.unread = true;
 	}
 
-	Meteor.call('userActivityCounter.incrementMessageCount', message.rid, message.u._id);
-
 	// For the Rocket.Chat Apps :)
 	if (message && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));

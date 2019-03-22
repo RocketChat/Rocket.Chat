@@ -42,6 +42,13 @@ Meteor.methods({
 
 	'userActivityCounter.incrementMessageCount' : (roomId, userId) => {
 		const room = Rooms.findOne(roomId);
+
+		if (!room.customFields) {
+			if (!Meteor.call('userActivityCounter.isSet', roomId)) {
+				Meteor.call('userActivityCounter.set', roomId);
+			}
+		}
+		
 		let { userActivity } = room.customFields;
 		userActivity = userActivity.map((userObject) => {
 			if (userObject._id === userId) {
