@@ -40,7 +40,7 @@ export const ReadReceipt = {
 		updateMessages(roomId);
 	},
 
-	markMessageAsReadBySender(message, roomId, userId) {
+	markMessageAsReadBySender(message, roomId, userId, extraData) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -51,10 +51,10 @@ export const ReadReceipt = {
 			Messages.setAsReadById(message._id, firstSubscription.ls);
 		}
 
-		this.storeReadReceipts([{ _id: message._id }], roomId, userId);
+		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},
 
-	storeReadReceipts(messages, roomId, userId) {
+	storeReadReceipts(messages, roomId, userId, extraData = {}) {
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			const ts = new Date();
 			const receipts = messages.map((message) => ({
@@ -63,6 +63,7 @@ export const ReadReceipt = {
 				userId,
 				messageId: message._id,
 				ts,
+				token: extraData,
 			}));
 
 			if (receipts.length === 0) {
@@ -80,7 +81,7 @@ export const ReadReceipt = {
 	getReceipts(message) {
 		return ReadReceipts.findByMessageId(message._id).map((receipt) => ({
 			...receipt,
-			user: message.u._id === receipt.userId ? LivechatVisitors.getVisitorByToken(message.token, { fields: { username: 1, name: 1 } }) : Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
+			user: (receipt.token && !(Object.keys(receipt.token).length === 0 && receipt.token.constructor === Object)) ? LivechatVisitors.getVisitorByToken(message.token, { fields: { username: 1, name: 1 } }) : Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
 		}));
 	},
 };
