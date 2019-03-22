@@ -6,12 +6,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { t, getUserPreference, slashCommands, handleError } from '../../../utils';
-import { MessageAction, messageProperties, MessageTypes, readMessage, modal } from '../../../ui-utils';
+import { MessageAction, messageProperties, MessageTypes, readMessage, modal, call } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { Messages, Rooms, ChatMessage } from '../../../models';
+import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models';
 import { emoji } from '../../../emoji';
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
@@ -239,6 +239,11 @@ export const ChatMessages = class ChatMessages {
 	* * @param {function?} done callback
 	*/
 	async send(rid, input, done = function() {}) {
+
+		if (!ChatSubscription.findOne({ rid })) {
+			await call('joinRoom', rid);
+		}
+
 		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
