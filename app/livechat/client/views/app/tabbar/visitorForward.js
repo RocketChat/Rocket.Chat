@@ -66,27 +66,10 @@ Template.visitorForward.events({
 		} else if (instance.find('#forwardDepartment').value) {
 			transferData.departmentId = instance.find('#forwardDepartment').value;
 		}
-		transferData.userLoggedIn = Meteor.userId();
 
 		// Check for settings whether forward is enabled or not.
 
-		if (settings.get('Livechat_ask_for_forward')) {
-
-			const timeoutAgent = Math.abs(settings.get('Livechat_forward_timeout_second') * 1000);
-			instance.timeout = Meteor.setTimeout(() => {
-				modal.open({
-					title: t('Timeout'),
-					type: 'error',
-					timer: 2000,
-				});
-			}, timeoutAgent);
-
-			transferData.timeout = instance.timeout;
-			transferData.timeoutAgent = timeoutAgent;
-
-			Notifications.notifyUser(transferData.userId, 'forward', 'handshake', { roomId: transferData.roomId, userId: transferData.userId, transferData });
-
-		} else {
+		if (!settings.get('Livechat_ask_for_forward')) {
 			// If asking for forward permission disabled forward normally
 			Meteor.call('livechat:transfer', transferData, (error, result) => {
 				if (error) {
@@ -94,12 +77,32 @@ Template.visitorForward.events({
 				} else if (result) {
 					this.save();
 					toastr.success(t('Transferred'));
-					FlowRouter.go(`/${ transferData.roomId }`);
+					FlowRouter.go('/');
 				} else {
 					toastr.warning(t('No_available_agents_to_transfer'));
 				}
 			});
+			return;
 		}
+
+		const timeoutAgent = Math.abs(settings.get('Livechat_forward_timeout_second') * 1000);
+		const userdeny = Meteor.users.findOne(transferData.userId);
+		instance.timeout = Meteor.setTimeout(() => {
+			modal.open({
+				title: t('Timeout'),
+				type: 'error',
+				timer: 2000,
+				text: TAPi18n.__('Username_did_not_accept_your_livechat_request', { username: userdeny.username }),
+				html: true,
+				confirmButtonText: TAPi18n.__('OK'),
+			});
+		}, timeoutAgent);
+
+		transferData.timeout = instance.timeout;
+		transferData.timeoutAgent = timeoutAgent;
+		transferData.originalAgentId = Meteor.userId();
+
+		Notifications.notifyUser(transferData.userId, 'forward-livechat', 'handshake', { roomId: transferData.roomId, userId: transferData.userId, transferData });
 	},
 
 	'change #forwardDepartment, blur #forwardDepartment'(event, instance) {
@@ -124,8 +127,8 @@ Template.visitorForward.events({
 Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (Meteor.userId()) {
-			Notifications.onUser('forward', (type, data) => {
-				const user = Meteor.users.findOne(data.transferData.userLoggedIn);
+			Notifications.onUser('forward-livechat', (type, data) => {
+				const user = Meteor.users.findOne(data.transferData.originalAgentId);
 				switch (type) {
 
 					case 'handshake':
@@ -140,20 +143,10 @@ Meteor.startup(function() {
 							cancelButtonText: TAPi18n.__('No'),
 						}, (isConfirm) => {
 							if (isConfirm) {
-								Meteor.call('livechat:transfer', data.transferData, (error, result) => {
-									if (error) {
-										toastr.error(t(error.error));
-									} else if (result) {
-										toastr.success(t('Transferred'));
-										Notifications.notifyUser(data.transferData.userLoggedIn, 'forward', 'transferred', { transferData: data.transferData });
-										FlowRouter.go(`/live/${ data.roomId }`);
-									} else {
-										toastr.warning(t('No_available_agents_to_transfer'));
-									}
-								});
+								Notifications.notifyUser(data.transferData.originalAgentId, 'forward-livechat', 'accepted', { transferData: data.transferData });
 							}
 						}, () => {
-							Notifications.notifyUser(data.transferData.userLoggedIn, 'forward', 'deny', { transferData: data.transferData });
+							Notifications.notifyUser(data.transferData.originalAgentId, 'forward-livechat', 'deny', { transferData: data.transferData });
 						});
 
 						Meteor.setTimeout(() => {
@@ -162,21 +155,35 @@ Meteor.startup(function() {
 
 						break;
 
+					case 'accepted':
+						Meteor.call('livechat:transfer', data.transferData, (error, result) => {
+							if (error) {
+								toastr.error(t(error.error));
+							} else if (result) {
+								Meteor.clearTimeout(data.transferData.timeout);
+								Notifications.notifyUser(data.transferData.userId, 'forward-livechat', 'transferred', { transferData: data.transferData });
+								FlowRouter.go('/');
+								toastr.success(t('Transferred'));
+							} else {
+								toastr.warning(t('No_available_agents_to_transfer'));
+							}
+						});
+						break;
+
 					case 'deny':
 						const userdeny = Meteor.users.findOne(data.transferData.userId);
 						Meteor.clearTimeout(data.transferData.timeout);
 						modal.open({
 							title: TAPi18n.__('LiveChat'),
-							text: TAPi18n.__('Username_denied_the_OTR_session', { username: userdeny.username }),
+							text: TAPi18n.__('Username_did_not_accept_your_livechat_request', { username: userdeny.username }),
 							html: true,
 							confirmButtonText: TAPi18n.__('OK'),
 						});
 						break;
 
 					case 'transferred':
-						Meteor.clearTimeout(data.transferData.timeout);
+						FlowRouter.go(`/live/${ data.transferData.roomId }`);
 						toastr.success(t('Transferred'));
-						FlowRouter.go('/');
 						break;
 				}
 			});

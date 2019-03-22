@@ -3266,6 +3266,7 @@
   "Username_title": "Register username",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ wants to start OTR. Do you want to accept?",
   "Username_wants_to_forward_livechat_Do_you_want_to_accept": "__username__ wants to forward livechat. Do you want to accept?",
+  "Username_did_not_accept_your_livechat_request": "__username__ did not accept your livechat request",
   "Users": "Users",
   "Users_added": "The users have been added",
   "Users_in_role": "Users in role",
