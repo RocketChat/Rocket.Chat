@@ -2517,6 +2517,8 @@
   "This_is_a_push_test_messsage": "這是一則推播測試訊息",
   "This_room_has_been_archived_by__username_": "此房间已被 __username__ 归档",
   "This_room_has_been_unarchived_by__username_": "此房间已被 __username__ 取消归档",
+  "Thread_slash_command_params": "您的訊息",
+  "Threading_context_menu_none": "隱藏",
   "Thursday": "星期四",
   "Time_in_seconds": "時間（秒）",
   "Title": "標題",
@@ -2842,7 +2844,5 @@
   "Your_password_is_wrong": "您的密碼有誤！",
   "Your_push_was_sent_to_s_devices": "您的推播已發送到 %s 裝置",
   "Your_server_link": "您的服務器鏈接",
-  "Your_workspace_is_ready": "您的工作區已準備好使用🎉",
-  "Thread_slash_command_params": "您的訊息",
-  "Threading_context_menu_none": "隱藏"
+  "Your_workspace_is_ready": "您的工作區已準備好使用🎉"
 }

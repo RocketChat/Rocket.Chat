@@ -2512,6 +2512,8 @@
   "This_is_a_push_test_messsage": "Ovo je push obavijest",
   "This_room_has_been_archived_by__username_": "__username__ je arhivirao ovu sobu",
   "This_room_has_been_unarchived_by__username_": "__username__ je dearhivirao ovu sobu",
+  "Thread_slash_command_params": "tvoja poruka",
+  "Threading_context_menu_none": "Nevidljiv",
   "Thursday": "Četvrtak",
   "Time_in_seconds": "Vrijeme u sekundama",
   "Title": "Naslov",
@@ -2837,7 +2839,5 @@
   "Your_password_is_wrong": "Vaša lozinka je pogrešna!",
   "Your_push_was_sent_to_s_devices": "Push obavijest je poslana %s uređaje",
   "Your_server_link": "Veza poslužitelja",
-  "Your_workspace_is_ready": "Radni je prostor spreman za upotrebu 🎉",
-  "Thread_slash_command_params": "tvoja poruka",
-  "Threading_context_menu_none": "Nevidljiv"
+  "Your_workspace_is_ready": "Radni je prostor spreman za upotrebu 🎉"
 }
