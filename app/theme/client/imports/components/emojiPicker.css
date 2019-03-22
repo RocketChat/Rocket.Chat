@@ -101,6 +101,18 @@
 	}
 }
 
+.emoji-footer {
+	padding-top: 5px;
+
+	text-align: center;
+
+	color: var(--rc-color-primary-light);
+
+	font-size: 12px;
+
+	font-weight: 500;
+}
+
 .emoji-top {
 	display: flex;
 

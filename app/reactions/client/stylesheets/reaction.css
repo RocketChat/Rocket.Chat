@@ -8,8 +8,8 @@
 
 			display: inline-block;
 
-			height: 22px;
-			padding: 0 4px 0 2px;
+			height: 32px;
+			padding: 6px 6px 0 3px;
 
 			cursor: pointer;
 
@@ -20,17 +20,6 @@
 
 			line-height: 20px;
 
-			& .reaction-emoji {
-				& .emoji,
-				& .emojione {
-					width: 16px;
-					min-width: 16px;
-					height: 16px;
-					min-height: 16px;
-					margin: -0.2ex 0.15em 0.2ex;
-				}
-			}
-
 			& .people {
 				display: none;
 			}
@@ -39,16 +28,13 @@
 				position: relative;
 				top: -1px;
 
-				margin-left: -3px;
-
-				font-size: 0.65rem;
+				font-size: 0.8rem;
 			}
 
 			&.add-reaction {
 				visibility: hidden;
 
-				margin-left: 10px;
-				padding: 0 2px;
+				padding: 6px;
 
 				transition: opacity 0.2s ease;
 
