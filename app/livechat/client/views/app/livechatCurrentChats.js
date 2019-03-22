@@ -157,7 +157,6 @@ Template.livechatCurrentChats.events({
 	},
 	'submit form'(event, instance) {
 		event.preventDefault();
-
 		const filter = {};
 		$(':input', event.currentTarget).each(function() {
 			if (!this.name) {
@@ -276,6 +275,7 @@ Template.livechatCurrentChats.onCreated(async function() {
 			this.customFields.set(customFields);
 		}
 	});
+
 });
 
 Template.livechatCurrentChats.onRendered(function() {
