@@ -20,22 +20,6 @@
 
 			line-height: 20px;
 
-			& .reaction-emoji {
-				& .emoji,
-				& .emojione {
-					/*
-					Commenting this out for now, will need to add back
-					once sprite sheet is converted to percentage or svg
-
-					width: 16px;
-					min-width: 16px;
-					height: 16px;
-					min-height: 16px;
-					margin: -0.2ex 0.15em 0.2ex;
-					*/
-				}
-			}
-
 			& .people {
 				display: none;
 			}
