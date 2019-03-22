@@ -105,6 +105,7 @@ import '../app/chatpal-search';
 import '../app/threading';
 import '../app/bigbluebutton';
 import '../app/mail-messages';
+import '../app/user-status';
 import '../app/utils';
 import '../app/settings';
 import '../app/models';

@@ -1,8 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { hasPermission } from '../../../authorization';
+import { Notifications } from '../../../notifications';
+import { CustomUserStatus } from '../../../models';
 import s from 'underscore.string';
 
 Meteor.methods({
 	insertOrUpdateUserStatus(userStatusData) {
-		if (!RocketChat.authz.hasPermission(this.userId, 'manage-user-status')) {
+		if (!hasPermission(this.userId, 'manage-user-status')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
@@ -24,9 +28,9 @@ Meteor.methods({
 		let matchingResults = [];
 
 		if (userStatusData._id) {
-			matchingResults = RocketChat.models.CustomUserStatus.findByNameExceptID(userStatusData.name, userStatusData._id).fetch();
+			matchingResults = CustomUserStatus.findByNameExceptID(userStatusData.name, userStatusData._id).fetch();
 		} else {
-			matchingResults = RocketChat.models.CustomUserStatus.findByName(userStatusData.name).fetch();
+			matchingResults = CustomUserStatus.findByName(userStatusData.name).fetch();
 		}
 
 		if (matchingResults.length > 0) {
@@ -45,21 +49,21 @@ Meteor.methods({
 				statusType: userStatusData.statusType,
 			};
 
-			const _id = RocketChat.models.CustomUserStatus.create(createUserStatus);
+			const _id = CustomUserStatus.create(createUserStatus);
 
-			RocketChat.Notifications.notifyLogged('updateCustomUserStatus', { userStatusData: createUserStatus });
+			Notifications.notifyLogged('updateCustomUserStatus', { userStatusData: createUserStatus });
 
 			return _id;
 		} else {
 			// update User status
 			if (userStatusData.name !== userStatusData.previousName) {
-				RocketChat.models.CustomUserStatus.setName(userStatusData._id, userStatusData.name);
+				CustomUserStatus.setName(userStatusData._id, userStatusData.name);
 			}
 			if (userStatusData.statusType !== userStatusData.previousStatusType) {
-				RocketChat.models.CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
+				CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 			}
 
-			RocketChat.Notifications.notifyLogged('updateCustomUserStatus', { userStatusData });
+			Notifications.notifyLogged('updateCustomUserStatus', { userStatusData });
 
 			return true;
 		}

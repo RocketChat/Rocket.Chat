@@ -9,6 +9,8 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { modal } from '../../ui-utils';
+import { userStatus } from '../../user-status';
+
 const setStatus = (status, statusText) => {
 	AccountBox.setStatus(status, statusText);
 	callbacks.run('userStatusManuallySet', status);
@@ -322,8 +324,8 @@ Template.sidebarHeader.events({
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
-			const userStatus = Object.keys(RocketChat.userStatus.list).map((key) => {
-				const status = RocketChat.userStatus.list[key];
+			const userStatusList = Object.keys(userStatus.list).map((key) => {
+				const status = userStatus.list[key];
 				const customName = status.localizeName ? null : status.name;
 				const name = status.localizeName ? t(status.name) : status.name;
 
@@ -356,7 +358,7 @@ Template.sidebarHeader.events({
 							},
 							{
 								title: t('User'),
-								items: userStatus,
+								items: userStatusList,
 							},
 							{
 								title: t('Custom Status'),

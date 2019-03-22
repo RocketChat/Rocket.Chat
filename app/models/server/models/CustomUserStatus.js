@@ -1,4 +1,6 @@
-class CustomUserStatus extends RocketChat.models._Base {
+import { Base } from './_Base';
+
+class CustomUserStatus extends Base {
 	constructor() {
 		super('custom_user_status');
 
@@ -27,7 +29,6 @@ class CustomUserStatus extends RocketChat.models._Base {
 
 		return this.find(query, options);
 	}
-
 
 	// update
 	setName(_id, name) {
@@ -62,4 +63,4 @@ class CustomUserStatus extends RocketChat.models._Base {
 	}
 }
 
-RocketChat.models.CustomUserStatus = new CustomUserStatus();
+export default new CustomUserStatus();

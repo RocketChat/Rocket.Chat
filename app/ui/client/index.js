@@ -61,6 +61,11 @@ import './components/popupList.html';
 import './components/popupList';
 import './components/selectDropdown.html';
 import './components/selectDropdown';
+import './components/inputText.html';
+import './components/inputText';
+import './components/button.html';
+import './components/button';
+
 import './components/header/header.html';
 import './components/header/header';
 import './components/header/headerRoom.html';

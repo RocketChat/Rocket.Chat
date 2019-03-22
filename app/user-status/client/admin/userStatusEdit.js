@@ -1,6 +1,11 @@
 import toastr from 'toastr';
 import s from 'underscore.string';
 
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { t, handleError } from '../../../utils';
+import { TAPi18n } from 'meteor/tap:i18n';
+
 Template.userStatusEdit.helpers({
 	userStatus() {
 		return Template.instance().userStatus;

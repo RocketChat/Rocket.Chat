@@ -1,4 +1,6 @@
 import s from 'underscore.string';
+import { Meteor } from 'meteor/meteor';
+import { CustomUserStatus } from '../../../models';
 
 Meteor.publish('fullUserStatusData', function(filter, limit) {
 	if (!this.userId) {
@@ -20,8 +22,8 @@ Meteor.publish('fullUserStatusData', function(filter, limit) {
 
 	if (filter) {
 		const filterReg = new RegExp(s.escapeRegExp(filter), 'i');
-		return RocketChat.models.CustomUserStatus.findByName(filterReg, options);
+		return CustomUserStatus.findByName(filterReg, options);
 	}
 
-	return RocketChat.models.CustomUserStatus.find({}, options);
+	return CustomUserStatus.find({}, options);
 });

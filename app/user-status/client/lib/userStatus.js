@@ -1,4 +1,4 @@
-RocketChat.userStatus = {
+export const userStatus = {
 	packages: {
 		base: {
 			render(html) {

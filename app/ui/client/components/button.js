@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.button.events({
 	'click .js-button'(e) {
 		if (document.activeElement === e.currentTarget) {

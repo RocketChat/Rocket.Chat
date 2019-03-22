@@ -1,6 +1,12 @@
 import s from 'underscore.string';
 
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
+import { CustomUserStatus } from '../../../models';
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { TabBar, SideNav, RocketChatTabBar } from '../../../ui-utils';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Tracker } from 'meteor/tracker';
+import { t } from '../../../utils';
 
 Template.adminUserStatus.helpers({
 	isReady() {
@@ -55,7 +61,7 @@ Template.adminUserStatus.onCreated(function() {
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['user-status-custom'],
 		id: 'add-user-status',
 		i18nTitle: 'Custom_User_Status_Add',
@@ -64,7 +70,7 @@ Template.adminUserStatus.onCreated(function() {
 		order: 1,
 	});
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['user-status-custom'],
 		id: 'admin-user-status-info',
 		i18nTitle: 'Custom_User_Status_Info',
@@ -91,7 +97,7 @@ Template.adminUserStatus.onCreated(function() {
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.CustomUserStatus.find(query, { limit, sort: { name: 1 } }).fetch();
+		return CustomUserStatus.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
 });
 
@@ -119,7 +125,7 @@ Template.adminUserStatus.events({
 
 	'click .user-status-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(RocketChat.models.CustomUserStatus.findOne({ _id: this._id }));
+		instance.tabBarData.set(CustomUserStatus.findOne({ _id: this._id }));
 		instance.tabBar.open('admin-user-status-info');
 	},
 

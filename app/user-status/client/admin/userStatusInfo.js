@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { t, handleError } from '../../../utils';
+import { modal } from '../../../ui-utils';
+import { ReactiveVar } from 'meteor/reactive-var';
+
 Template.userStatusInfo.helpers({
 	name() {
 		const userStatus = Template.instance().userStatus.get();
