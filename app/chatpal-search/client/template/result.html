@@ -115,6 +115,9 @@
 		<span class="chatpal-name">{{username}}</span>
 		<span class="chatpal-time">{{time}}</span>
 		<div class="chatpal-message">{{{text}}}</div>
+		{{#if roomNotSubscribed}}
+			<div class="chatpal-info color-info-font-color"><i>{{{_ "Chatpal_channel_not_joined_yet"}}}</i></div>
+		{{/if}}
 	</div>
 </template>
 
@@ -149,5 +152,8 @@
 				<div class="chatpal-search-pills-announcement">{{{room_announcement}}}</div>
 			{{/if}}
 		</div>
+		{{#if roomNotSubscribed}}
+			<div class="chatpal-info color-info-font-color"><i>{{{_ "Chatpal_channel_not_joined_yet"}}}</i></div>
+		{{/if}}
 	</div>
 </template>

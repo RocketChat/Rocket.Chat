@@ -55,6 +55,8 @@ class ValidationService {
 				const subscription = getSubscription(room._id, uid);
 				if (subscription) {
 					room.valid = true;
+					room.t = subscription.t;
+					room.name = subscription.name;
 					SearchLogger.debug(`user ${ uid } can access ${ room._id } ( ${ subscription.t === 'd' ? subscription.username : subscription.name } )`);
 				} else {
 					SearchLogger.debug(`user ${ uid } can NOT access ${ room._id }`);

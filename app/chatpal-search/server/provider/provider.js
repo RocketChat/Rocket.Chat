@@ -3,6 +3,7 @@ import { searchProviderService, SearchProvider } from '../../../search';
 import Index from './index';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions } from '../../../models';
+import { Rooms } from '../../../models';
 
 /**
  * The chatpal search provider enables chatpal search. An appropriate backedn has to be specified by settings.
@@ -89,6 +90,10 @@ class ChatpalProvider extends SearchProvider {
 		this._settings.add('SuggestionEnabled', 'boolean', true, {
 			i18nLabel: 'Chatpal_Suggestion_Enabled',
 			alert: 'This feature is currently in beta and will be extended in the future',
+		});
+		this._settings.add('IncludeAllPublicChannels', 'boolean', false, {
+			i18nLabel: 'Chatpal_Include_All_Public_Channels',
+			i18nDescription: 'Chatpal_Include_All_Public_Channels_Description',
 		});
 		this._settings.add('BatchSize', 'int', 100, {
 			i18nLabel: 'Chatpal_Batch_Size',
@@ -296,12 +301,23 @@ class ChatpalProvider extends SearchProvider {
 	}
 
 	/**
-	 * returns a list of rooms that are allowed to see by current user
+	 * returns a list of rooms that are allowed to be seen by current user
 	 * @param context
 	 * @private
 	 */
 	_getAcl(context) {
-		return Subscriptions.find({ 'u._id': context.uid }).fetch().map((room) => room.rid);
+		let aclRoomsIds = [];
+
+		const subscribedRooms = Subscriptions.find({ 'u._id': context.uid }).fetch().map((room) => room.rid);
+		aclRoomsIds = aclRoomsIds.concat(subscribedRooms);
+
+		const publicRooms = Rooms.findByType('c').fetch().map((room) => room._id);
+		if (this._settings.get('IncludeAllPublicChannels')) {
+			aclRoomsIds = aclRoomsIds.concat(publicRooms);
+		}
+
+        // return unique room ids
+		return [...new Set(aclRoomsIds)];
 	}
 
 	/**
