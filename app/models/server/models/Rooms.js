@@ -19,7 +19,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 
-		// threads
+		// discussions
 		this.tryEnsureIndex({ prid: 1 });
 	}
 
@@ -1369,8 +1369,8 @@ export class Rooms extends Base {
 	}
 
 	// ############################
-	// Threads
-	findThreadParentByNameStarting(name, options) {
+	// Discussion
+	findDiscussionParentByNameStarting(name, options) {
 		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
 
 		const query = {
