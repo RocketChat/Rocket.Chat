@@ -18,7 +18,7 @@ API.v1.addRoute('info', { authRequired: false }, {
 		if (user && hasRole(user._id, 'admin')) {
 			return API.v1.success(this.deprecationWarning({
 				endpoint: 'info',
-				versionWillBeRemove: '1.12.0',
+				versionWillBeRemoved: '1.12.0',
 				response: {
 					info: Info,
 				},
@@ -27,7 +27,7 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'info',
-			versionWillBeRemove: '1.12.0',
+			versionWillBeRemoved: '1.12.0',
 			response: {
 				info: {
 					version: Info.version,
