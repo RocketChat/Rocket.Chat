@@ -6,7 +6,7 @@ import { APIClient } from '../../../utils';
 import moment from 'moment';
 import hljs from 'highlight.js';
 
-const laodData = (instance) => {
+const loadData = (instance) => {
 	Promise.all([
 		APIClient.get(`apps/${ instance.id.get() }`),
 		APIClient.get(`apps/${ instance.id.get() }/logs`),
@@ -31,7 +31,7 @@ Template.appLogs.onCreated(function() {
 	this.app = new ReactiveVar({});
 	this.logs = new ReactiveVar([]);
 
-	laodData(instance);
+	loadData(instance);
 });
 
 Template.appLogs.helpers({
@@ -101,6 +101,6 @@ Template.appLogs.events({
 	'click .js-refresh': (e, t) => {
 		t.ready.set(false);
 		t.logs.set([]);
-		laodData(t);
+		loadData(t);
 	},
 });
