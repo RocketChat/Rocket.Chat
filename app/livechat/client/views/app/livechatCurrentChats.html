@@ -36,29 +36,52 @@
 				</div>
 				<div class="form-group input-daterange">
 					<span class="input-group-addon">{{_ "Date_From"}}</span>
-					<input type="text" class="form-control rc-input__element" id="from" name="from" >
+					<input autocomplete="off" type="text" class="form-control rc-input__element" id="from" name="from" >
 						<span class="input-group-addon">{{_ "Date_to"}}</span>
-					<input type="text" class="form-control rc-input__element" id="to" name="to">
+					<input autocomplete="off" type="text" class="form-control rc-input__element" id="to" name="to">
 				</div>
-				<button class="button">{{_ "Filter"}}</button>
+				<div class="form-group">
+					<button class="rc-button rc-button--primary">{{_ "Filter"}}</button>
+				</div>
 			</form>
 		</fieldset>
-		<div class="list">
-			<table>
+		<div class="rc-table-content">
+			{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
 				<thead>
 					<tr>
-						<th width="25%">{{_ "Name"}}</th>
-						<th width="25%">{{_ "Served_By"}}</th>
-						<th width="15%">{{_ "Started_At"}}</th>
-						<th width="15%">{{_ "Last_Message_At"}}</th>
-						<th width="20%">{{_ "Status"}}</th>
-						<th>&nbsp;</th>
+						<th class="rc-table-td--medium" width="25%">
+							<div class="table-fake-th">{{_ "Name"}}</div>
+						</th>
+						<th class="rc-table-td--medium" width="25%">
+							<div class="table-fake-th">{{_ "Served_By"}}</div>
+						</th>
+						<th class="rc-table-td--medium" width="15%">
+							<div class="table-fake-th">{{_ "Started_At"}}</div>
+						</th>
+
+						<th class="rc-table-td--medium" width="15%">
+							<div class="table-fake-th">{{_ "Last_Message_At"}}</div>
+						</th>
+						<th class="rc-table-td--medium" width="15%">
+							<div class="table-fake-th">{{_ "Status"}}</div>
+						</th>
+
+						<th width="5%">&nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>
 					{{#each livechatRoom}}
-						<tr class="row-link">
-							<td>{{fname}}</td>
+						<tr class="rc-table-tr manage row-link" data-name="{{latest.name}}">
+
+							<td>
+								<div class="rc-table-wrapper">
+									<div class="rc-table-info">
+										<span class="rc-table-title">
+											{{fname}}
+										</span>
+									</div>
+								</div>
+							</td>
 							<td>{{servedBy}}</td>
 							<td>{{startedAt}}</td>
 							<td>{{lastMessage}}</td>
@@ -74,11 +97,16 @@
 							{{/requiresPermission}}
 						</tr>
 					{{/each}}
+					{{#unless isReady}}
+						<tr class="table-no-click">
+							<td class="table-loading-td">{{> loading}}</td>
+						</tr>
+					{{/unless}}
 				</tbody>
-			</table>
+			{{/table}}
 		</div>
 		<div class="text-center">
-			<button class="button load-more">{{_ "Load_more"}}</button>
+			<button class="button rc-button load-more">{{_ "Load_more"}}</button>
 		</div>
 	{{/requiresPermission}}
 </template>

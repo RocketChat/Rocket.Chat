@@ -1,18 +1,22 @@
-import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { modal } from '/app/ui-utils';
-import { t, handleError } from '/app/utils';
+import { modal, call } from '/app/ui-utils';
+import { t } from '/app/utils';
 import _ from 'underscore';
 import moment from 'moment';
 import { Blaze } from 'meteor/blaze';
-
 const LivechatRoom = new Mongo.Collection('livechatRoom');
 
 Template.livechatCurrentChats.helpers({
+	isReady() {
+		if (Template.instance().ready != null) {
+			return Template.instance().ready.get();
+		}
+		return undefined;
+	},
 	livechatRoom() {
 		return LivechatRoom.find({ t: 'l' }, { sort: { ts: -1 } });
 	},
@@ -98,24 +102,24 @@ Template.livechatCurrentChats.events({
 			cancelButtonText: t('Cancel'),
 			closeOnConfirm: false,
 			html: false,
-		}, () => {
-			Meteor.call('livechat:removeRoom', this._id, function(error/* , result*/) {
-				if (error) {
-					return handleError(error);
-				}
-				modal.open({
-					title: t('Deleted'),
-					text: t('Room_has_been_deleted'),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false,
-				});
+		}, async(confirmed) => {
+			if (!confirmed) {
+				return;
+			}
+			await call('livechat:removeRoom', this._id);
+			modal.open({
+				title: t('Deleted'),
+				text: t('Room_has_been_deleted'),
+				type: 'success',
+				timer: 1000,
+				showConfirmButton: false,
 			});
 		});
 	},
 });
 
 Template.livechatCurrentChats.onCreated(function() {
+	this.ready = new ReactiveVar(false);
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
 	this.selectedAgents = new ReactiveVar([]);
@@ -129,7 +133,7 @@ Template.livechatCurrentChats.onCreated(function() {
 	});
 
 	this.autorun(() => {
-		this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get());
+		this.ready.set(this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get()).ready());
 	});
 });
 
@@ -241,4 +245,3 @@ Template.SearchSelect.onCreated(function() {
 		});
 	this.ac.tmplInst = this;
 });
-
