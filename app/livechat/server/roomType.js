@@ -26,6 +26,10 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 	canAccessUploadedFile({ rc_token, rc_rid } = {}) {
 		return rc_token && rc_rid && Rooms.findOneOpenByRoomIdAndVisitorToken(rc_rid, rc_token);
 	}
+
+	getReadReceiptsExtraData(message, userId) {
+		return message.u._id === userId;
+	}
 }
 
 roomTypes.add(new LivechatRoomTypeServer());

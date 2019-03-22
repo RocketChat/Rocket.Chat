@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { ReadReceipts, Subscriptions, Messages, Rooms, Users } from '../../../../app/models';
+import { ReadReceipts, Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models';
 import { settings } from '../../../../app/settings';
+import { roomTypes } from '../../../../app/utils';
 
 const rawReadReceipts = ReadReceipts.model.rawCollection();
 
@@ -80,7 +81,7 @@ export const ReadReceipt = {
 	getReceipts(message) {
 		return ReadReceipts.findByMessageId(message._id).map((receipt) => ({
 			...receipt,
-			user: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
+			user: roomTypes.getConfig('l').getReadReceiptsExtraData(message, receipt.userId) ? LivechatVisitors.getVisitorByToken(message.token, { fields: { username: 1, name: 1 } }) : Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
 		}));
 	},
 };
