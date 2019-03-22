@@ -24,7 +24,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 		query.pinned = { $ne: true };
 	}
 	if (ignoreDiscussion) {
-		query.trid = { $exists: false };
+		query.drid = { $exists: false };
 	}
 	if (users && users.length) {
 		query['u.username'] = { $in: users };

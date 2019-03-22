@@ -27,7 +27,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
 		// discussions
-		this.tryEnsureIndex({ trid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ drid: 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {
@@ -164,7 +164,7 @@ export class Messages extends Base {
 		}
 
 		if (ignoreDiscussion) {
-			query.trid = { $exists: 0 };
+			query.drid = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -178,7 +178,7 @@ export class Messages extends Base {
 		const query = {
 			rid,
 			ts,
-			trid: { $exists: 1 },
+			drid: { $exists: 1 },
 		};
 
 		if (excludePinned) {
@@ -871,7 +871,7 @@ export class Messages extends Base {
 		}
 
 		if (ignoreDiscussion) {
-			query.trid = { $exists: 0 };
+			query.drid = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -975,7 +975,7 @@ export class Messages extends Base {
 		if (!rid) {
 			return false;
 		}
-		const { lm: tlm, msgs: tcount } = Rooms.findOneById(rid, {
+		const { lm: dlm, msgs: dcount } = Rooms.findOneById(rid, {
 			fields: {
 				msgs: 1,
 				lm: 1,
@@ -983,13 +983,13 @@ export class Messages extends Base {
 		});
 
 		const query = {
-			trid: rid,
+			drid: rid,
 		};
 
 		return this.update(query, {
 			$set: {
-				tcount,
-				tlm,
+				dcount,
+				dlm,
 			},
 		}, { multi: 1 });
 	}

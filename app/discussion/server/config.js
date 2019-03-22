@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from '../../settings';
 
-import { Discussion } from './constants';
-
 Meteor.startup(() => {
 	settings.addGroup('Discussion', function() {
 		// the channel for which discussions are created if none is explicitly chosen
@@ -13,23 +11,6 @@ Meteor.startup(() => {
 			type: 'boolean',
 			public: true,
 		});
-
-		const enableQuery = { _id: 'Discussion_enabled', value: true };
-
-
-		this.add('Discussion_send_creation_message', Discussion.SEND_CREATION_MESSAGE.ALWAYS, {
-			group: 'Discussion',
-			i18nLabel: 'Send creation message',
-			type: 'select',
-			values: [
-				{ key: Discussion.SEND_CREATION_MESSAGE.ALWAYS, i18nLabel: 'Always' },
-				{ key: Discussion.SEND_CREATION_MESSAGE.OLD_MESSAGES, i18nLabel: 'Old messages' },
-				{ key: Discussion.SEND_CREATION_MESSAGE.NEVER, i18nLabel: 'Never' },
-			],
-			public: true,
-			enableQuery,
-		});
-
 	});
 
 	settings.add('Accounts_Default_User_Preferences_sidebarShowDiscussion', true, {

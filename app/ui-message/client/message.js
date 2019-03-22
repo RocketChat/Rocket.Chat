@@ -69,12 +69,12 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 
 Template.message.helpers({
 	i18nKeyReply() {
-		return this.tcount > 1
+		return this.dcount > 1
 			? 'messages'
 			: 'message';
 	},
-	tlm() {
-		return this.tlm && moment(this.tlm).format('LLL');
+	dlm() {
+		return this.dlm && moment(this.dlm).format('LLL');
 	},
 	encodeURI(text) {
 		return encodeURI(text);

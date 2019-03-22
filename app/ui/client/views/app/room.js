@@ -858,8 +858,8 @@ Template.room.events({
 	},
 	'click .js-navigate-to-discussion'(event) {
 		event.preventDefault();
-		const [, { trid }] = this._arguments;
-		FlowRouter.goToRoomById(trid);
+		const [, { drid }] = this._arguments;
+		FlowRouter.goToRoomById(drid);
 	},
 });
 

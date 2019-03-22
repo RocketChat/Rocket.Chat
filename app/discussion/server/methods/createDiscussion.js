@@ -8,24 +8,23 @@ import { Messages, Rooms } from '../../../models';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib';
 
 import { settings } from '../../../settings';
-import { Discussion } from '../constants';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);
 	return room && (room.prid ? Rooms.findOne(room.prid, { fields: { _id: 1 } }) : room);
 };
 
-export const createDiscussionMessage = (rid, user, trid, msg, message_embedded) => {
+const createDiscussionMessage = (rid, user, drid, msg, message_embedded) => {
 	const welcomeMessage = {
 		msg,
 		rid,
-		trid,
+		drid,
 		attachments: [message_embedded].filter((e) => e),
 	};
 	return Messages.createWithTypeRoomIdMessageAndUser('discussion-created', rid, '', user, welcomeMessage);
 };
 
-export const mentionDiscussionMessage = (rid, { _id, username, name }, message_embedded) => {
+const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
 	const welcomeMessage = {
 		rid,
 		u: { _id, username, name },
@@ -37,7 +36,7 @@ export const mentionDiscussionMessage = (rid, { _id, username, name }, message_e
 	return Messages.insert(welcomeMessage);
 };
 
-export const create = ({ prid, pmid, t_name, reply, users }) => {
+const create = ({ prid, pmid, t_name, reply, users }) => {
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
 	let message = false;
 	if (pmid) {
@@ -93,63 +92,10 @@ export const create = ({ prid, pmid, t_name, reply, users }) => {
 		prid,
 	});
 
-	const fields = {
-		tcount: 0,
-		tlm: null,
-	};
-
-
 	if (pmid) {
+		mentionMessage(discussion._id, user, attachMessage(message, p_room));
 
-		const sendCreationMessage = settings.get('Discussion_send_creation_message');
-
-		mentionDiscussionMessage(discussion._id, user, attachMessage(message, p_room));
-
-		switch (sendCreationMessage) {
-			default:
-			case Discussion.SEND_CREATION_MESSAGE.OLD_MESSAGES:
-				Messages.update({
-					_id: message._id,
-				}, {
-					$set: {
-						trid: discussion._id,
-						...fields,
-					},
-				});
-
-				// check if the message is in the latest 10 messages sent to the room
-				// if not creates a new message saying about the discussion creation
-				const lastMessageIds = Messages.findByRoomId(message.rid, {
-					sort: {
-						ts: -1,
-					},
-					limit: 15,
-					fields: {
-						_id: 1,
-					},
-				}).fetch();
-
-				if (!lastMessageIds.find((msg) => msg._id === message._id)) {
-					createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
-				}
-				break;
-			case Discussion.SEND_CREATION_MESSAGE.NEVER:
-
-				Messages.update({
-					_id: message._id,
-				}, {
-					$set : {
-						trid: discussion._id,
-						...fields,
-					},
-				});
-				break;
-			case Discussion.SEND_CREATION_MESSAGE.ALWAYS:
-				createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
-				break;
-		}
-
-
+		createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
 	} else {
 		createDiscussionMessage(prid, user, discussion._id, t_name);
 	}

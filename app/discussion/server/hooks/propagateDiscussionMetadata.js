@@ -17,8 +17,8 @@ callbacks.add('afterDeleteMessage', function(message, { _id, prid } = {}) {
 	if (prid) {
 		Messages.refreshDiscussionMetadata({ rid: _id }, message);
 	}
-	if (message.trid) {
-		deleteRoom(message.trid);
+	if (message.drid) {
+		deleteRoom(message.drid);
 	}
 	return message;
 }, callbacks.priority.LOW, 'PropagateDiscussionMetadata');

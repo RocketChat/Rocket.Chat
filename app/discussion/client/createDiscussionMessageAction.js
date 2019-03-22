@@ -39,8 +39,8 @@ Meteor.startup(function() {
 					showCancelButton: false,
 				});
 			},
-			condition({ rid, u: { _id: uid }, trid, tcount }) {
-				if (trid || !isNaN(tcount)) {
+			condition({ rid, u: { _id: uid }, drid, dcount }) {
+				if (drid || !isNaN(dcount)) {
 					return false;
 				}
 				return condition(rid, uid);
