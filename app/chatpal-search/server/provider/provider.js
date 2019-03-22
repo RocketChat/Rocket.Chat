@@ -316,7 +316,7 @@ class ChatpalProvider extends SearchProvider {
 			aclRoomsIds = aclRoomsIds.concat(publicRooms);
 		}
 
-        // return unique room ids
+		// return unique room ids
 		return [...new Set(aclRoomsIds)];
 	}
 
