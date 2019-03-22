@@ -23,7 +23,7 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'settings.preferences.sidebarShowThreads': 1,
+				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
 			},
 		});
@@ -59,7 +59,7 @@ Template.roomList.helpers({
 				types = ['c', 'p', 'd'];
 			}
 
-			if (this.identifier === 'thread') {
+			if (this.identifier === 'discussion') {
 				types = ['c', 'p', 'd'];
 				query.prid = { $exists: true };
 			}
@@ -80,8 +80,8 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			// if we display threads as a separate group, we should hide them from the other lists
-			if (getUserPreference(user, 'sidebarShowThreads')) {
+			// if we display discussions as a separate group, we should hide them from the other lists
+			if (getUserPreference(user, 'sidebarShowDiscussion')) {
 				query.prid = { $exists: false };
 			}
 

@@ -95,7 +95,7 @@ import '../app/version-check';
 import '../app/search';
 import '../app/chatpal-search';
 import '../app/lazy-load';
-import '../app/threading';
+import '../app/discussion';
 import '../app/mail-messages';
 import '../app/utils';
 import '../app/settings';
