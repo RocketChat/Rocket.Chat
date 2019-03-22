@@ -1,5 +1,4 @@
 <template name="message">
-	<div class = "message-wrapper">
 		<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 			{{#if avatar}}
 				{{#if avatarFromUsername}}
@@ -138,5 +137,4 @@
 				</li>
 			</ul>
 		</li>
-	</div>
 </template>
