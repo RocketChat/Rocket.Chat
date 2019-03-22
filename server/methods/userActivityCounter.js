@@ -48,7 +48,7 @@ Meteor.methods({
 				Meteor.call('userActivityCounter.set', roomId);
 			}
 		}
-		
+
 		let { userActivity } = room.customFields;
 		userActivity = userActivity.map((userObject) => {
 			if (userObject._id === userId) {
