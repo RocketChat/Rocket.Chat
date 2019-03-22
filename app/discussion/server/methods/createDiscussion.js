@@ -1,13 +1,10 @@
-/* UserRoles RoomRoles*/
-// import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-// import { getAvatarUrlFromUsername } from '../../../utils';
-import { hasAtLeastOnePermission, canAccessRoom } from '../../../authorization';
-import { Messages, Rooms } from '../../../models';
-import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib';
 
-import { settings } from '../../../settings';
+import { hasAtLeastOnePermission, canAccessRoom } from '../../../authorization/server';
+import { Messages, Rooms } from '../../../models/server';
+import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
+import { settings } from '../../../settings/server';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);

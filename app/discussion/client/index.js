@@ -1,9 +1,6 @@
 // Templates
-import './views/creationDialog/CreateDiscussion.html';
 import './views/creationDialog/CreateDiscussion';
-import './views/DiscussionList.html';
 import './views/DiscussionList';
-import './views/DiscussionTabbar.html';
 import './views/DiscussionTabbar';
 
 // Other UI extensions

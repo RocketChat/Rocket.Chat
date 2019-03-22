@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '../../../callbacks';
-import { Subscriptions } from '../../../models';
+
+import { callbacks } from '../../../callbacks/server';
+import { Subscriptions } from '../../../models/server';
 
 callbacks.add('beforeSaveMessage', (message, room) => {
 
-	// abort if room is not a thread
+	// abort if room is not a discussion
 	if (!room || !room.prid) {
 		return message;
 	}
 
-	// check if user already joined the thread
+	// check if user already joined the discussion
 	const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, { fields: { _id: 1 } });
 	if (sub) {
 		return message;

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Subscriptions } from '../../models';
-import { settings } from '../../settings';
-import { hasPermission } from '../../authorization';
-import { MessageAction, modal } from '../../ui-utils';
-import { t } from '../../utils';
+
+import { Subscriptions } from '../../models/client';
+import { settings } from '../../settings/client';
+import { hasPermission } from '../../authorization/client';
+import { MessageAction, modal } from '../../ui-utils/client';
+import { t } from '../../utils/client';
 
 const condition = (rid, uid) => {
 	if (!Subscriptions.findOne({ rid })) {

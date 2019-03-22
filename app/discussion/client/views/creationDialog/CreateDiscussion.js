@@ -1,19 +1,20 @@
 import { Meteor } from 'meteor/meteor';
-import { roomTypes } from '../../../../utils';
-import { callbacks } from '../../../../callbacks';
+
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { ChatRoom, ChatSubscription } from '../../../../models';
 import { Blaze } from 'meteor/blaze';
-import { call } from '../../../../ui-utils';
-
 import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 
+import { roomTypes } from '../../../../utils/client';
+import { callbacks } from '../../../../callbacks/client';
+import { ChatRoom, ChatSubscription } from '../../../../models/client';
+import { call } from '../../../../ui-utils/client';
+
+import './CreateDiscussion.html';
 
 Template.CreateDiscussion.helpers({
-
 	onSelectUser() {
 		return Template.instance().onSelectUser;
 	},
@@ -124,7 +125,9 @@ Template.CreateDiscussion.events({
 Template.CreateDiscussion.onRendered(function() {
 	this.find(this.data.rid ? '#discussion_name' : '#parentChannel').focus();
 });
+
 const suggestName = (name, msg) => [name, msg].filter((e) => e).join(' - ').substr(0, 140);
+
 Template.CreateDiscussion.onCreated(function() {
 	const { rid, message: msg } = this.data;
 
@@ -171,7 +174,6 @@ Template.CreateDiscussion.onCreated(function() {
 		this.parentChannelId.set(room && (room.rid || room._id));
 	});
 
-
 	this.selectedUsers = new ReactiveVar([]);
 	this.onSelectUser = ({ item: user }) => {
 
@@ -195,7 +197,6 @@ Template.CreateDiscussion.onCreated(function() {
 		arr.pop();
 		this.selectedUsers.set(arr);
 	});
-
 
 	// callback to allow setting a parent Channel or e. g. tracking the event using Piwik or GA
 	const { parentChannel, reply } = callbacks.run('openDiscussionCreationScreen') || {};
