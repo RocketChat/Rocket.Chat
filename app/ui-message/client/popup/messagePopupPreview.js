@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 
 
 Template.messagePopupPreview.helpers({
-	messageContentRendered(){
+	messageContentRendered() {
 		return 'hello';
-	}
+	},
 });
