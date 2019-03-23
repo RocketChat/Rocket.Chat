@@ -403,7 +403,7 @@ Template.messagePopupConfig.helpers({
 					},
 				}, {
 					reactive: 1,
-					limit: 5,
+					limit: 1,
 					sort: {
 						ls: -1,
 					},
