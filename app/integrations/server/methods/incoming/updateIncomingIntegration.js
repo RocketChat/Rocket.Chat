@@ -22,9 +22,9 @@ Meteor.methods({
 
 		let currentIntegration;
 
-		if (hasPermission(this.userId, 'manage-integrations')) {
+		if (hasPermission(this.userId, 'manage-incoming-integrations')) {
 			currentIntegration = Integrations.findOne(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-integrations')) {
+		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
 			currentIntegration = Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'updateIncomingIntegration' });
@@ -75,7 +75,7 @@ Meteor.methods({
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'updateIncomingIntegration' });
 			}
 
-			if (!hasAllPermission(this.userId, ['manage-integrations', 'manage-own-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
+			if (!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'updateIncomingIntegration' });
 			}
 		}

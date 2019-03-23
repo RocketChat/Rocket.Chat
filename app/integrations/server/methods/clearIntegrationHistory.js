@@ -6,9 +6,9 @@ Meteor.methods({
 	clearIntegrationHistory(integrationId) {
 		let integration;
 
-		if (hasPermission(this.userId, 'manage-integrations') || hasPermission(this.userId, 'manage-integrations', 'bot')) {
+		if (hasPermission(this.userId, 'manage-outgoing-integrations') || hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')) {
 			integration = Integrations.findOne(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-integrations') || hasPermission(this.userId, 'manage-own-integrations', 'bot')) {
+		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations') || hasPermission(this.userId, 'manage-own-outgoing-integrations', 'bot')) {
 			integration = Integrations.findOne(integrationId, { fields: { '_createdBy._id': this.userId } });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'clearIntegrationHistory' });

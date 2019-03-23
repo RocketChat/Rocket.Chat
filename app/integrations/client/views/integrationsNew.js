@@ -3,6 +3,23 @@ import { hasAtLeastOnePermission } from '../../../authorization';
 
 Template.integrationsNew.helpers({
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission([
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		]);
+	},
+	canAddIncomingIntegration() {
+		return hasAtLeastOnePermission([
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		]);
+	},
+	canAddOutgoingIntegration() {
+		return hasAtLeastOnePermission([
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+		]);
 	},
 });

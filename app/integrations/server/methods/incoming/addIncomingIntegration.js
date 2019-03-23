@@ -9,7 +9,7 @@ const validChannelChars = ['@', '#'];
 
 Meteor.methods({
 	addIncomingIntegration(integration) {
-		if (!hasPermission(this.userId, 'manage-integrations') && !hasPermission(this.userId, 'manage-own-integrations')) {
+		if (!hasPermission(this.userId, 'manage-incoming-integrations') && !hasPermission(this.userId, 'manage-own-incoming-integrations')) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'addIncomingIntegration' });
 		}
 
@@ -74,7 +74,7 @@ Meteor.methods({
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'addIncomingIntegration' });
 			}
 
-			if (!hasAllPermission(this.userId, ['manage-integrations', 'manage-own-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
+			if (!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { method: 'addIncomingIntegration' });
 			}
 		}

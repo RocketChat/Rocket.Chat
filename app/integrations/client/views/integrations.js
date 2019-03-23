@@ -7,7 +7,12 @@ import moment from 'moment';
 
 Template.integrations.helpers({
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission([
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations'
+		]);
 	},
 	integrations() {
 		return ChatIntegrations.find();

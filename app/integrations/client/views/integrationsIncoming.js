@@ -19,7 +19,10 @@ Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated(
 
 Template.integrationsIncoming.helpers({
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission([
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		]);
 	},
 
 	data() {
@@ -27,9 +30,9 @@ Template.integrationsIncoming.helpers({
 
 		if (params && params.id) {
 			let data;
-			if (hasAllPermission('manage-integrations')) {
+			if (hasAllPermission('manage-incoming-integrations')) {
 				data = ChatIntegrations.findOne({ _id: params.id });
-			} else if (hasAllPermission('manage-own-integrations')) {
+			} else if (hasAllPermission('manage-own-incoming-integrations')) {
 				data = ChatIntegrations.findOne({ _id: params.id, '_createdBy._id': Meteor.userId() });
 			}
 

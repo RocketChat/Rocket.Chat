@@ -5,10 +5,10 @@ import { integrations } from '../../../lib/rocketchat';
 
 Meteor.methods({
 	addOutgoingIntegration(integration) {
-		if (!hasPermission(this.userId, 'manage-integrations')
-			&& !hasPermission(this.userId, 'manage-own-integrations')
-			&& !hasPermission(this.userId, 'manage-integrations', 'bot')
-			&& !hasPermission(this.userId, 'manage-own-integrations', 'bot')) {
+		if (!hasPermission(this.userId, 'manage-outgoing-integrations')
+			&& !hasPermission(this.userId, 'manage-own-outgoing-integrations')
+			&& !hasPermission(this.userId, 'manage-outgoing-integrations', 'bot')
+			&& !hasPermission(this.userId, 'manage-own-outgoing-integrations', 'bot')) {
 			throw new Meteor.Error('not_authorized');
 		}
 

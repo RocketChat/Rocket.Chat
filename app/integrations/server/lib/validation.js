@@ -44,7 +44,7 @@ function _verifyUserHasPermissionForChannels(integration, userId, channels) {
 		if (scopedChannels.includes(channel)) {
 			if (channel === 'all_public_channels') {
 				// No special permissions needed to add integration to public channels
-			} else if (!hasPermission(userId, 'manage-integrations')) {
+			} else if (!hasPermission(userId, 'manage-outgoing-integrations')) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing._verifyUserHasPermissionForChannels' });
 			}
 		} else {
@@ -75,7 +75,7 @@ function _verifyUserHasPermissionForChannels(integration, userId, channels) {
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', { function: 'validateOutgoing._verifyUserHasPermissionForChannels' });
 			}
 
-			if (!hasAllPermission(userId, ['manage-integrations', 'manage-own-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { fields: { _id: 1 } })) {
+			if (!hasAllPermission(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']) && !Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { fields: { _id: 1 } })) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', { function: 'validateOutgoing._verifyUserHasPermissionForChannels' });
 			}
 		}
@@ -113,7 +113,7 @@ integrations.validateOutgoing = function _validateOutgoing(integration, userId) 
 				}
 			}
 		}
-	} else if (!hasPermission(userId, 'manage-integrations')) {
+	} else if (!hasPermission(userId, 'manage-outgoing-integrations')) {
 		throw new Meteor.Error('error-invalid-permissions', 'Invalid permission for required Integration creation.', { function: 'validateOutgoing' });
 	}
 

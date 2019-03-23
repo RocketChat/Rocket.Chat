@@ -8,34 +8,38 @@
 				<div class="rocket-form">
 					<div class="section">
 						<div class="admin-integrations-new-panel">
-							<a href="{{pathFor "admin-integrations-incoming"}}">
-								<div class="admin-integrations-new-item">
-									<i class="icon-login"></i>
-									<div class="admin-integrations-new-item-body">
-										<div class="admin-integrations-new-item-title">
-											{{_ "Incoming_WebHook"}}
+							{{#if canAddIncomingIntegration}}
+								<a href="{{pathFor "admin-integrations-incoming"}}">
+									<div class="admin-integrations-new-item">
+										<i class="icon-login"></i>
+										<div class="admin-integrations-new-item-body">
+											<div class="admin-integrations-new-item-title">
+												{{_ "Incoming_WebHook"}}
+											</div>
+											<div class="admin-integrations-new-item-description">
+												{{_ "Send_data_into_RocketChat_in_realtime"}}
+											</div>
 										</div>
-										<div class="admin-integrations-new-item-description">
-											{{_ "Send_data_into_RocketChat_in_realtime"}}
-										</div>
+										<i class="icon-angle-right"></i>
 									</div>
-									<i class="icon-angle-right"></i>
-								</div>
-							</a>
-							<a href="{{pathFor "admin-integrations-outgoing"}}">
-								<div class="admin-integrations-new-item">
-									<i class="icon-logout"></i>
-									<div class="admin-integrations-new-item-body">
-										<div class="admin-integrations-new-item-title">
-											{{_ "Outgoing_WebHook"}}
+								</a>
+							{{/if}}
+							{{#if canAddOutgoingIntegration}}
+								<a href="{{pathFor "admin-integrations-outgoing"}}">
+									<div class="admin-integrations-new-item">
+										<i class="icon-logout"></i>
+										<div class="admin-integrations-new-item-body">
+											<div class="admin-integrations-new-item-title">
+												{{_ "Outgoing_WebHook"}}
+											</div>
+											<div class="admin-integrations-new-item-description">
+												{{_ "Outgoing_WebHook_Description"}}
+											</div>
 										</div>
-										<div class="admin-integrations-new-item-description">
-											{{_ "Outgoing_WebHook_Description"}}
-										</div>
+										<i class="icon-angle-right"></i>
 									</div>
-									<i class="icon-angle-right"></i>
-								</div>
-							</a>
+								</a>
+							{{/if}}
 						</div>
 					</div>
 				</div>

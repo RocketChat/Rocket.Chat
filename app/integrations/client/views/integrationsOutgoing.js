@@ -54,9 +54,9 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 			if (sub.ready()) {
 				let intRecord;
 
-				if (hasAllPermission('manage-integrations')) {
+				if (hasAllPermission('manage-outgoing-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id });
-				} else if (hasAllPermission('manage-own-integrations')) {
+				} else if (hasAllPermission('manage-own-outgoing-integrations')) {
 					intRecord = ChatIntegrations.findOne({ _id: id, '_createdBy._id': Meteor.userId() });
 				}
 
@@ -85,7 +85,10 @@ Template.integrationsOutgoing.helpers({
 	},
 
 	hasPermission() {
-		return hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations']);
+		return hasAtLeastOnePermission([
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+		]);
 	},
 
 	data() {
