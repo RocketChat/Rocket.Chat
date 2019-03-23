@@ -145,6 +145,7 @@ Template.messageBox.onCreated(function() {
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
+	this.currentMessage = new ReactiveVar();
 	messageBox.emit('created', this);
 
 	navigator.permissions.query({ name: 'microphone' })
@@ -159,6 +160,8 @@ Template.messageBox.onCreated(function() {
 Template.messageBox.onRendered(function() {
 	this.autorun(() => {
 		const subscribed = roomTypes.verifyCanSendMessage(this.data._id);
+
+
 
 		Tracker.afterFlush(() => {
 			const input = subscribed && this.find('.js-input-message');
@@ -188,6 +191,9 @@ Template.messageBox.onRendered(function() {
 });
 
 Template.messageBox.helpers({
+	preview() {
+		return 	Template.instance().currentMessage.get();
+	},
 	isEmbedded() {
 		return Layout.isEmbedded();
 	},
@@ -384,6 +390,7 @@ Template.messageBox.events({
 	'input .js-input-message'(event, instance) {
 		instance.sendIconDisabled.set(event.target.value !== '');
 		chatMessages[this._id].valueChanged(this._id, event, Template.instance());
+		Template.instance().currentMessage.set(Template.instance().$('.js-input-message')[0].value);
 	},
 	'propertychange .js-input-message'(event) {
 		if (event.originalEvent.propertyName === 'value') {

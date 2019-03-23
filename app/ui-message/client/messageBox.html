@@ -14,7 +14,9 @@
 					{{/each}}
 					</div>
 				{{/if}}
-
+				<div class = "reply-preview__wrap message-popup">
+					{{preview}}
+				</div>
 				<label class="rc-message-box__container">
 					<span class="rc-message-box__icon emoji-picker-icon {{#unless isEmojiEnabled}}emoji-picker-icon--disabled{{/unless}}">
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
