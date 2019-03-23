@@ -984,6 +984,10 @@ settings.addGroup('Message', function() {
 		type: 'int',
 		public: true,
 	});
+	this.add('Message_AllowConvertLongMessagesToAttachment', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Message_ShowFormattingTips', true, {
 		type: 'boolean',
 		public: true,

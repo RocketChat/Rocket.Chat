@@ -89,7 +89,9 @@
 	*/
 	--button-square-size: 36px;
 	--button-padding: 0.782rem;
-	--button-padding-small: 0.5rem;
+	--button-padding-small: 0 0.5rem;
+	--button-height-small: 28px;
+	--button-text-size-small: 13px;
 	--button-text-size: var(--input-font-size);
 	--button-border-width: var(--border);
 	--button-border-radius: var(--border-radius);

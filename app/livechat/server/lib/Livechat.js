@@ -397,7 +397,7 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return Rooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
@@ -533,12 +533,7 @@ export const Livechat = {
 		const agentIds = [];
 		// get the agents of the department
 		if (departmentId) {
-			let agents = Livechat.getOnlineAgents(departmentId);
-
-			if (agents.count() === 0 && settings.get('Livechat_guest_pool_with_no_agents')) {
-				agents = Livechat.getAgents(departmentId);
-			}
-
+			const agents = Livechat.getAgents(departmentId);
 			if (agents.count() === 0) {
 				return false;
 			}

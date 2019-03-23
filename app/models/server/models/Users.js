@@ -19,6 +19,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
+		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -481,7 +482,7 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields) {
+	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
@@ -505,11 +506,32 @@ export class Users extends Base {
 				{
 					username: { $exists: true, $nin: exceptions },
 				},
+				...extraQuery,
 			],
 		};
 
 		// do not use cache
 		return this._db.find(query, options);
+	}
+
+	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+		const extraQuery = [
+			{
+				$or: [
+					{ federation: { $exists: false } },
+					{ 'federation.peer': localPeer },
+				],
+			},
+		];
+		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+	}
+
+	findByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localPeer) {
+		const extraQuery = [
+			{ federation: { $exists: true } },
+			{ 'federation.peer': { $ne: localPeer } },
+		];
+		return this.findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
 	findUsersByNameOrUsername(nameOrUsername, options) {

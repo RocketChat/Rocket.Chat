@@ -869,6 +869,11 @@ Template.room.events({
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
+	'click .js-navigate-to-discussion'(event) {
+		event.preventDefault();
+		const [, { drid }] = this._arguments;
+		FlowRouter.goToRoomById(drid);
+	},
 });
 
 
