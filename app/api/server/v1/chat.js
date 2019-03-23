@@ -378,3 +378,30 @@ API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
 		});
 	},
 });
+
+API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
+	get() {
+		const { roomId } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+
+		if (!roomId) {
+			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+		}
+
+		const cursor = Messages.findPinnedByRoom(roomId, {
+			skip: offset,
+			limit: count,
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
+	},
+});
