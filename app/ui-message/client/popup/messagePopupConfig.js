@@ -384,6 +384,45 @@ Template.messagePopupConfig.helpers({
 		};
 		return config;
 	},
+	popupPreviewConfig() {
+		const self = this;
+		const config = {
+			title: t('Message_preview'),
+			collection: Subscriptions,
+			trigger: '`',
+			suffix: ' ',
+			textFilterDelay: 500,
+			template: 'messagePopupPreview',
+			getInput: self.getInput,
+			getFilter(collection, filter, cb) {
+				const exp = new RegExp(filter, 'i');
+				const records = collection.find({
+					name: exp,
+					t: {
+						$in: ['c', 'p'],
+					},
+				}, {
+					reactive: 1,
+					limit: 5,
+					sort: {
+						ls: -1,
+					},
+				}).fetch();
+
+				if (records.length < 5 && filter && filter.trim() !== '') {
+					fetchRoomsFromServerDelayed(filter, records, cb, RoomManager.openedRoom);
+				}
+				return records;
+			},
+			getValue(_id, collection, records) {
+				const record = _.findWhere(records, {
+					_id,
+				});
+				return record && record.name;
+			},
+		};
+		return config;
+	},
 	popupSlashCommandsConfig() {
 		const self = this;
 		const config = {
