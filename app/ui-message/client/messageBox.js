@@ -145,7 +145,6 @@ Template.messageBox.onCreated(function() {
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
-	this.currentMessage = new ReactiveVar();
 	this.currentMessageRendered = new ReactiveVar();
 	messageBox.emit('created', this);
 
@@ -389,8 +388,11 @@ Template.messageBox.events({
 	'input .js-input-message'(event, instance) {
 		instance.sendIconDisabled.set(event.target.value !== '');
 		chatMessages[this._id].valueChanged(this._id, event, Template.instance());
-		Template.instance().currentMessage.set(Template.instance().$('.js-input-message')[0].value);
-		let msg = Template.instance().currentMessage.get();
+		
+		let msg = $('.js-input-message')[0].value;
+
+		msg = msg.trim();
+
 		msg = msg.replace(/(|&gt;|[ >_~`])\*{1,2}([^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3');
 
 		// Support _text_ to make italics
@@ -414,6 +416,9 @@ Template.messageBox.events({
 
 		// Remove new-line between blockquotes.
 		msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote');
+
+		// Supports multiline text
+		msg = msg.replace(/\n/gm, '<br>');
 
 		Template.instance().currentMessageRendered.set(msg);
 
