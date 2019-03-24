@@ -24,6 +24,7 @@ import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
+import showdown from 'showdown';
 
 const formattingButtons = [
 	{
@@ -145,6 +146,10 @@ Template.messageBox.onCreated(function() {
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
+
+	const converter = new showdown.Converter();
+	console.log(converter.makeHtml('`*hello*`'));
+
 	messageBox.emit('created', this);
 
 	navigator.permissions.query({ name: 'microphone' })
