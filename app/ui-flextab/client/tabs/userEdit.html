@@ -3,67 +3,72 @@
 		<p class="secondary-font-color">{{_ "You_are_not_authorized_to_view_this_page"}}</p>
 	{{else}}
 	<form class="" action="index.html" method="post" autocomplete="off">
-               <div class="rc-form-group rc-form-group--small">
-                      <label class="rc-form-label">{{_ "Profile_picture"}}</label>
-                      <div class="rc-select-avatar">
-                              <div class="rc-select-avatar__preview">
-                                      {{# unless avatarPreview}}
-                                          {{> avatar username=user.username}}
-                                      {{else}}
-                                          {{> avatar url=avatarPreview.blob}}
-                                      {{/unless}}
-                              </div>
+          <div class="rc-form-group rc-form-group--small">
+                  <label class="rc-form-label">
+                          {{_ "Profile_picture"}}
+                  </label>
+                          <div class="rc-select-avatar">
+                                  <div class="rc-select-avatar__preview">
+                                          {{# unless avatarPreview}}
+                                                  {{> avatar username=user.username}}
+                                          {{else}}
+                                                  {{> avatar url=avatarPreview.blob}}
+                                          {{/unless}}
+                                  </div>
 
-                              <div class="rc-select-avatar__list">
-                                      <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
-                                              {{> avatar username=initialsUsername }}
-                                      </div>
-                                      <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_user_avatar" }}">
-                                              <label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
-                                                      {{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
-                                              </label>
-                                              <input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg">
-                                      </div>
-                                      <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectUrl}}" aria-label="{{_ "Use_url_for_avatar" }}">
-                                              <label class="rc-select-avatar__upload-label avatar">
-                                                      {{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
-                                              </label>
-                                      </div>
+                                  <div class="rc-select-avatar__list">
+                                          <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
+                                                  {{> avatar username=initialsUsername }}
+                                          </div>
+                                          <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_user_avatar" }}">
+                                                  <label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
+                                                          {{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
+                                                  </label>
+                                                  <input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg">
+                                          </div>
+                                          <div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectUrl}}" aria-label="{{_ "Use_url_for_avatar" }}">
+                                                  <label class="rc-select-avatar__upload-label avatar">
+                                                          {{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
+                                                  </label>
+                                          </div>
 
-                                      <div class="rc-input">
-                    
-                                              <label class="rc-input__label">
-                                                      <div class="rc-input__title">
-                                                              {{_ "Use_url_for_avatar"}}
-                                                      </div>
-                                                      <div class="rc-input__wrapper">
-                                                              <input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
-                                                      </div>
-                                              </label>
-                                      </div>
-                              </div>
-                      </div>
-
-      <div class="rc-input rc-form-group rc-form-group--small">
-        <label class="rc-input__label">
-          <div class="rc-input__title">{{_ "Name"}}</div>
-          <div class="rc-input__wrapper">
-            <input name="name" type="text" class="rc-input__element rc-input__element--small" id="name" autocomplete="off" value="{{user.name}}"/>
+                                          <div class="rc-input">
+                        
+                                                  <label class="rc-input__label">
+                                                          <div class="rc-input__title">
+                                                                  {{_ "Use_url_for_avatar"}}
+                                                          </div>
+                                                          <div class="rc-input__wrapper">
+                                                                  <input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
+                                                          </div>
+                                                  </label>
+                                          </div>
+                                  </div>
+                          </div> 
           </div>
-        </label>
-      </div>
-      <div class="rc-input rc-form-group rc-form-group--small">
-        <label class="rc-input__label">
-          <div class="rc-input__title">{{_ "Username"}}</div>
-          <div class="rc-input__wrapper">
-            <div class="rc-input__icon">
-              {{> icon icon='at' }}
-            </div>
-            <input name="name" type="text" class="rc-input__element rc-input__element--small" id="username" autocomplete="off" value="{{user.username}}"/>
+          <div class="rc-input rc-form-group rc-form-group--small">
+                  <label class="rc-input__label">
+                          <div class="rc-input__title">
+                                  {{_ "Name"}}
+                          </div>
+                          <div class="rc-input__wrapper">
+                                  <input name="name" type="text" class="rc-input__element rc-input__element--small" id="name" autocomplete="off" value="{{user.name}}"/>
+                          </div>
+                  </label>
           </div>
-        </label>
-      </div>
-    </div>
+          <div class="rc-input rc-form-group rc-form-group--small">
+                  <label class="rc-input__label">
+                          <div class="rc-input__title">
+                                  {{_ "Username"}}
+                          </div>
+                          <div class="rc-input__wrapper">
+                                  <div class="rc-input__icon">
+                                          {{> icon icon='at' }}
+                                  </div>
+                                  <input name="name" type="text" class="rc-input__element rc-input__element--small" id="username" autocomplete="off" value="{{user.username}}"/>
+                          </div>
+                  </label>
+          </div>
 		<div class="rc-form-group rc-form-group--small">
 			<div class="rc-input">
 				<label class="rc-input__label">

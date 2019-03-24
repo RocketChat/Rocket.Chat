@@ -67,9 +67,13 @@ Template.userEdit.helpers({
 
 Template.userEdit.events({
 	'click .js-select-avatar-initials'() {
-		Meteor.call('resetAvatar', Template.instance().user, function() {
-			toastr.success(t('Avatar_changed_successfully'));
-			callbacks.run('userAvatarSet', 'initials');
+		Meteor.call('resetAvatarAdmin', Template.instance().user, function(err) {
+			if (err && err.details) {
+				toastr.error(t(err.message));
+			} else {
+				toastr.success(t('Avatar_changed_successfully'));
+				callbacks.run('userAvatarSet', 'initials');
+			}
 		});
 	},
 	'click .js-select-avatar-url'(e, instance, ...args) {
@@ -256,9 +260,13 @@ Template.userEdit.onCreated(function() {
 
 			params.push(avatar.service);
 			params.push(Template.instance().user);
-			Meteor.call('setAvatarFromService', ...params, function() {
-				toastr.success(t('Avatar_changed_successfully'));
-				callbacks.run('userAvatarSet', avatar.service);
+			Meteor.call('setAvatarFromServiceAdmin', ...params, function(err) {
+				if (err && err.details) {
+					toastr.error(t(err.message));
+				} else {
+					toastr.success(t('Avatar_changed_successfully'));
+					callbacks.run('userAvatarSet', avatar.service);
+				}
 			});
 		}
 
