@@ -388,7 +388,7 @@ Template.messageBox.events({
 	'input .js-input-message'(event, instance) {
 		instance.sendIconDisabled.set(event.target.value !== '');
 		chatMessages[this._id].valueChanged(this._id, event, Template.instance());
-		
+
 		let msg = $('.js-input-message')[0].value;
 
 		msg = msg.trim();
