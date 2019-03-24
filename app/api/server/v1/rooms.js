@@ -72,7 +72,7 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		Meteor.wrapAsync((callback) => {
 			busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
 				if (fieldname !== 'file') {
-					return files.push(new Meteor.Error('invalid-field'));
+					return callback(new Meteor.Error('invalid-field'));
 				}
 
 				const fileDate = [];
@@ -124,7 +124,7 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			fileData = uploadedFile;
 		});
 
-		return API.v1.success({ file: Messages.getMessageByFileIdAndUsername(fileData._id, this.userId) });
+		return API.v1.success({ message: Messages.getMessageByFileIdAndUsername(fileData._id, this.userId) });
 	},
 });
 
