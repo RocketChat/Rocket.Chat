@@ -5,10 +5,11 @@ import { settings } from '../../app/settings';
 import { setUserAvatar } from '../../app/lib';
 
 Meteor.methods({
-	setAvatarFromService(dataURI, contentType, service) {
+	setAvatarFromService(dataURI, contentType, service, userData) {
 		check(dataURI, String);
 		check(contentType, Match.Optional(String));
 		check(service, Match.Optional(String));
+		check(userData, Match.Optional(Object));
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -20,6 +21,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'setAvatarFromService',
 			});
+		}
+
+		if (userData) {
+			return setUserAvatar(userData, dataURI, contentType, service);
 		}
 
 		const user = Meteor.user();

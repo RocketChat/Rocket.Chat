@@ -5,9 +5,21 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { t, handleError } from '../../../utils';
 import { Roles } from '../../../models';
+import { Notifications } from '../../../notifications';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import toastr from 'toastr';
+import { callbacks } from '../../../callbacks';
 import s from 'underscore.string';
+
+const setAvatar = function(event, template) {
+	const { blob, contentType, service } = this.suggestion;
+
+	template.avatar.set({
+		service,
+		contentType,
+		blob,
+	});
+};
 
 Template.userEdit.helpers({
 
@@ -18,8 +30,21 @@ Template.userEdit.helpers({
 		return (Template.instance().user && hasAtLeastOnePermission('edit-other-user-info')) || (!Template.instance().user && hasAtLeastOnePermission('create-user'));
 	},
 
+	selectUrl() {
+		return Template.instance().url.get().trim() ? '' : 'disabled';
+	},
+
 	user() {
 		return Template.instance().user;
+	},
+
+	initialsUsername() {
+		const { user } = Template.instance();
+		return `@${ user && user.username }`;
+	},
+
+	avatarPreview() {
+		return Template.instance().avatar.get();
 	},
 
 	requirePasswordChange() {
@@ -41,6 +66,52 @@ Template.userEdit.helpers({
 });
 
 Template.userEdit.events({
+	'click .js-select-avatar-initials'() {
+		Meteor.call('resetAvatar', Template.instance().user, function() {
+			toastr.success(t('Avatar_changed_successfully'));
+			callbacks.run('userAvatarSet', 'initials');
+		});
+	},
+	'click .js-select-avatar-url'(e, instance, ...args) {
+		const url = instance.url.get().trim();
+		if (!url) {
+			return;
+		}
+		setAvatar.apply({
+			suggestion: {
+				service: 'url',
+				blob: url,
+				contentType: '',
+			},
+		}, [e, instance, ...args]);
+	},
+	'input .js-avatar-url-input'(e, instance) {
+		const text = e.target.value;
+		instance.url.set(text);
+	},
+	'change .js-select-avatar-upload [type=file]'(event, template) {
+		const e = event.originalEvent || event;
+		let { files } = e.target;
+		if (!files || files.length === 0) {
+			files = (e.dataTransfer && e.dataTransfer.files) || [];
+		}
+		Object.keys(files).forEach((key) => {
+			const blob = files[key];
+			if (!/image\/.+/.test(blob.type)) {
+				return;
+			}
+			const reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.onloadend = function() {
+				template.avatar.set({
+					service: 'upload',
+					contentType: blob.type,
+					blob: reader.result,
+				});
+				callbacks.run('userAvatarSet', 'upload');
+			};
+		});
+	},
 	'click .cancel'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -98,7 +169,9 @@ Template.userEdit.events({
 Template.userEdit.onCreated(function() {
 	this.user = this.data != null ? this.data.user : undefined;
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
-
+	this.avatar = new ReactiveVar;
+	this.url = new ReactiveVar('');
+	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 
 	const { tabBar } = Template.currentData();
 
@@ -162,7 +235,7 @@ Template.userEdit.onCreated(function() {
 			return;
 		}
 		const userData = this.getUserData();
-
+		const avatar = this.avatar.get();
 		if (this.user != null) {
 			for (const key in userData) {
 				if (key) {
@@ -174,6 +247,19 @@ Template.userEdit.onCreated(function() {
 					}
 				}
 			}
+		}
+
+		if (avatar) {
+			const params = [avatar.blob];
+
+			params.push(avatar.contentType);
+
+			params.push(avatar.service);
+			params.push(Template.instance().user);
+			Meteor.call('setAvatarFromService', ...params, function() {
+				toastr.success(t('Avatar_changed_successfully'));
+				callbacks.run('userAvatarSet', avatar.service);
+			});
 		}
 
 		Meteor.call('insertOrUpdateUser', userData, (error) => {

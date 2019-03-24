@@ -6,7 +6,7 @@ import { settings } from '../../app/settings';
 import { Notifications } from '../../app/notifications';
 
 Meteor.methods({
-	resetAvatar() {
+	resetAvatar(args) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'resetAvatar',
@@ -19,12 +19,20 @@ Meteor.methods({
 			});
 		}
 
-		const user = Meteor.user();
-		FileUpload.getStore('Avatars').deleteByName(user.username);
-		Users.unsetAvatarOrigin(user._id);
-		Notifications.notifyLogged('updateAvatar', {
-			username: user.username,
-		});
+		if (args) {
+			FileUpload.getStore('Avatars').deleteByName(args.username);
+			Users.unsetAvatarOrigin(args._id);
+			Notifications.notifyLogged('updateAvatar', {
+				username: args.username,
+			});
+		} else {
+			const user = Meteor.user();
+			FileUpload.getStore('Avatars').deleteByName(user.username);
+			Users.unsetAvatarOrigin(user._id);
+			Notifications.notifyLogged('updateAvatar', {
+				username: user.username,
+			});
+		}
 	},
 });
 
