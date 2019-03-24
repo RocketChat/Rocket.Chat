@@ -24,6 +24,7 @@ import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
+import s from "underscore.string";
 
 const formattingButtons = [
 	{
@@ -146,6 +147,7 @@ Template.messageBox.onCreated(function() {
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
 	this.currentMessage = new ReactiveVar();
+	this.currentMessageRendered = new ReactiveVar();
 	messageBox.emit('created', this);
 
 	navigator.permissions.query({ name: 'microphone' })
@@ -160,8 +162,6 @@ Template.messageBox.onCreated(function() {
 Template.messageBox.onRendered(function() {
 	this.autorun(() => {
 		const subscribed = roomTypes.verifyCanSendMessage(this.data._id);
-
-
 
 		Tracker.afterFlush(() => {
 			const input = subscribed && this.find('.js-input-message');
@@ -192,7 +192,7 @@ Template.messageBox.onRendered(function() {
 
 Template.messageBox.helpers({
 	preview() {
-		return 	Template.instance().currentMessage.get();
+		return 	Template.instance().currentMessageRendered.get();
 	},
 	isEmbedded() {
 		return Layout.isEmbedded();
@@ -391,6 +391,33 @@ Template.messageBox.events({
 		instance.sendIconDisabled.set(event.target.value !== '');
 		chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 		Template.instance().currentMessage.set(Template.instance().$('.js-input-message')[0].value);
+		let msg = Template.instance().currentMessage.get();
+		msg = msg.replace(/(|&gt;|[ >_~`])\*{1,2}([^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3');
+
+		// Support _text_ to make italics
+		msg = msg.replace(/(^|&gt;|[ >*~`])\_{1,2}([^\_\r\n]+)\_{1,2}([<*~`]|\B|\b|$)/gm, '$1<span class="copyonly">_</span><em>$2</em><span class="copyonly">_</span>$3');
+
+		// Support ~text~ to strike through text
+		msg = msg.replace(/(^|&gt;|[ >_*`])\~{1,2}([^~\r\n]+)\~{1,2}([<_*`]|\B|\b|$)/gm, '$1<span class="copyonly">~</span><strike>$2</strike><span class="copyonly">~</span>$3');
+
+		// Support for block quote
+		// >>>
+		// Text
+		// <<<
+		msg = msg.replace(/(?:&gt;){3}\n+([\s\S]*?)\n+(?:&lt;){3}/g, '<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>');
+
+		// Support >Text for quote
+		msg = msg.replace(/^&gt;(.*)$/gm, '<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>$1</blockquote>');
+
+		// Remove white-space around blockquote (prevent <br>). Because blockquote is block element.
+		msg = msg.replace(/\s*<blockquote class="background-transparent-darker-before">/gm, '<blockquote class="background-transparent-darker-before">');
+		msg = msg.replace(/<\/blockquote>\s*/gm, '</blockquote>');
+
+		// Remove new-line between blockquotes.
+		msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote');
+
+		Template.instance().currentMessageRendered.set(msg);
+
 	},
 	'propertychange .js-input-message'(event) {
 		if (event.originalEvent.propertyName === 'value') {
