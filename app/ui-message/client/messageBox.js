@@ -24,7 +24,6 @@ import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
-import s from "underscore.string";
 
 const formattingButtons = [
 	{
