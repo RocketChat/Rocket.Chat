@@ -11,7 +11,7 @@ Template.integrations.helpers({
 			'manage-outgoing-integrations',
 			'manage-own-outgoing-integrations',
 			'manage-incoming-integrations',
-			'manage-own-incoming-integrations'
+			'manage-own-incoming-integrations',
 		]);
 	},
 	integrations() {

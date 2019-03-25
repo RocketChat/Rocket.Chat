@@ -6,7 +6,7 @@ Meteor.publish('integrationHistory', function _integrationHistoryPublication(int
 	if (!this.userId) {
 		return this.ready();
 	}
-	if(!hasAtLeastOnePermission(this.userId, [
+	if (!hasAtLeastOnePermission(this.userId, [
 		'manage-outgoing-integrations',
 		'manage-own-outgoing-integrations',
 	])) {
@@ -18,7 +18,7 @@ Meteor.publish('integrationHistory', function _integrationHistoryPublication(int
 
 	if (canViewAllOutgoingIntegrations) {
 		return IntegrationHistory.findByIntegrationId(integrationId, { sort: { _updatedAt: -1 }, limit });
-	}	
+	}
 	if (canViewOnlyOwnOutgoingIntegrations) {
 		return IntegrationHistory.findByIntegrationIdAndCreatedBy(integrationId, this.userId, { sort: { _updatedAt: -1 }, limit });
 	}

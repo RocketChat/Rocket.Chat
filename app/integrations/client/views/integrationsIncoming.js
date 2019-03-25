@@ -25,6 +25,10 @@ Template.integrationsIncoming.helpers({
 		]);
 	},
 
+	canDelete() {
+		return this.params && this.params() && typeof this.params().id !== 'undefined';
+	},
+
 	data() {
 		const params = Template.instance().data.params ? Template.instance().data.params() : undefined;
 
@@ -167,7 +171,7 @@ Template.integrationsIncoming.events({
 		t.record.set(value);
 	},
 
-	'click .submit > .delete': () => {
+	'click .rc-header__section-button > .delete': () => {
 		const params = Template.instance().data.params();
 
 		modal.open({
@@ -211,7 +215,7 @@ Template.integrationsIncoming.events({
 		codeMirrorBox.find('.CodeMirror')[0].CodeMirror.refresh();
 	},
 
-	'click .submit > .save': () => {
+	'click .rc-header__section-button > .save': () => {
 		const enabled = $('[name=enabled]:checked').val().trim();
 		const name = $('[name=name]').val().trim();
 		const alias = $('[name=alias]').val().trim();
