@@ -2193,7 +2193,7 @@
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Substituir URL para a qual os arquivos são carregados. Esta url também será usada para downloads, a menos que um CDN seja fornecido",
   "Page_title": "Título da página",
   "Page_URL": "URL da página",
-  "Parent_channel_doesnt_exist": "Canalnão existe.",
+  "Parent_channel_doesnt_exist": "Canal não existe.",
   "Password": "Senha",
   "Password_Change_Disabled": "O administrador do Rocket.Chat desativou a mudança de senhas",
   "Password_changed_successfully": "Senha alterada com sucesso",
