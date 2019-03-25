@@ -115,7 +115,8 @@ Template.livechat.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		Meteor.call('livechat:getFirstRoomMessage', { rid: this.rid }, (error, result) => {
+		const { rid } = this;
+		Meteor.call('livechat:getFirstRoomMessage', { rid }, (error, result) => {
 			if (error) {
 				return handleError(error);
 			}
