@@ -91,21 +91,23 @@ export const QueueMethods = {
 	 * only the client until paired with an agent
 	 */
 	'Guest_Pool'(guest, message, roomInfo) {
-		let agents = Livechat.getOnlineAgents(guest.department);
-
-		if (agents.count() === 0 && settings.get('Livechat_guest_pool_with_no_agents')) {
-			agents = Livechat.getAgents(guest.department);
+		const onlineAgents = Livechat.getOnlineAgents(guest.department);
+		if (settings.get('Livechat_guest_pool_with_no_agents') === false) {
+			if (!onlineAgents || onlineAgents.count() === 0) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
 		}
 
-		if (agents.count() === 0) {
-			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+		const allAgents = Livechat.getAgents(guest.department);
+		if (allAgents.count() === 0) {
+			throw new Meteor.Error('no-agent-available', 'Sorry, no available agents.');
 		}
 
 		Rooms.updateLivechatRoomCount();
 
 		const agentIds = [];
 
-		agents.forEach((agent) => {
+		allAgents.forEach((agent) => {
 			if (guest.department) {
 				agentIds.push(agent.agentId);
 			} else {
@@ -157,16 +159,26 @@ export const QueueMethods = {
 		LivechatInquiry.insert(inquiry);
 		Rooms.insert(room);
 
-		// Alert the agents of the queued request
-		agentIds.forEach((agentId) => {
+		// Alert only the online agents of the queued request
+		onlineAgents.forEach((agent) => {
+			const { _id, active, emails, language, status, statusConnection, username } = agent;
+
 			sendNotification({
 				// fake a subscription in order to make use of the function defined above
 				subscription: {
 					rid: room._id,
 					t : room.t,
 					u: {
-						_id : agentId,
+						_id,
 					},
+					receiver: [{
+						active,
+						emails,
+						language,
+						status,
+						statusConnection,
+						username,
+					}],
 				},
 				sender: room.v,
 				hasMentionToAll: true, // consider all agents to be in the room

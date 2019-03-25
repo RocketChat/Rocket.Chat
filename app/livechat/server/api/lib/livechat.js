@@ -3,9 +3,11 @@ import { Random } from 'meteor/random';
 import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import _ from 'underscore';
 import { Livechat } from '../../lib/Livechat';
+import { settings as rcSettings } from '../../../../settings';
 
 export function online() {
-	return Users.findOnlineAgents().count() > 0;
+	const onlineAgents = Livechat.getOnlineAgents();
+	return (onlineAgents && onlineAgents.count() > 0) || rcSettings.get('Livechat_guest_pool_with_no_agents');
 }
 
 export function findTriggers() {
