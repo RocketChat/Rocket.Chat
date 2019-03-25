@@ -200,6 +200,26 @@ export class AppsRestApi {
 					return API.v1.success({ app: result.data[0] });
 				}
 
+				if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ Info.marketplaceApiVersion }`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200 || result.data.length === 0) {
+						return API.v1.failure();
+					}
+
+					return API.v1.success({ app: result.data });
+				}
+
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {

@@ -22,6 +22,10 @@ function getApps(instance) {
 
 	const appInfo = { remote: undefined, local: undefined };
 	return APIClient.get(`apps/${ id }?marketplace=true&version=${ FlowRouter.getQueryParam('version') }`)
+		.catch((e) => {
+			console.log(e);
+			return Promise.resolve({ app: undefined });
+		})
 		.then((remote) => {
 			appInfo.remote = remote.app;
 			return APIClient.get(`apps/${ id }`);
@@ -71,6 +75,24 @@ function getApps(instance) {
 
 			instance.app.set(appInfo.local || appInfo.remote);
 			instance.ready.set(true);
+
+			if (appInfo.remote && appInfo.local) {
+				return APIClient.get(`apps/${ id }?marketplace=true&update=true&appVersion=${ FlowRouter.getQueryParam('version') }`);
+			}
+
+			return Promise.resolve(false);
+		}).then((updateInfo) => {
+			if (!updateInfo) {
+				return;
+			}
+
+			const update = updateInfo.app;
+
+			if (semver.gt(update.version, appInfo.local.version) && (update.isPurchased || update.price <= 0)) {
+				appInfo.local.newVersion = update.version;
+
+				instance.app.set(appInfo.local);
+			}
 		});
 }
 
