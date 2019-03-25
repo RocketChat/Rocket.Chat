@@ -6,12 +6,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { t, getUserPreference, slashCommands, handleError } from '../../../utils';
-import { MessageAction, messageProperties, MessageTypes, readMessage, modal } from '../../../ui-utils';
+import { MessageAction, messageProperties, MessageTypes, readMessage, modal, call } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { Messages, Rooms, ChatMessage } from '../../../models';
+import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models';
 import { emoji } from '../../../emoji';
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
@@ -19,6 +19,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+import { fileUpload } from './fileUpload';
 
 let sendOnEnter = '';
 
@@ -238,6 +239,11 @@ export const ChatMessages = class ChatMessages {
 	* * @param {function?} done callback
 	*/
 	async send(rid, input, done = function() {}) {
+
+		if (!ChatSubscription.findOne({ rid })) {
+			await call('joinRoom', rid);
+		}
+
 		if (s.trim(input.value) !== '') {
 			readMessage.enable();
 			readMessage.readNow();
@@ -269,7 +275,31 @@ export const ChatMessages = class ChatMessages {
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
-				return toastr.error(t('Message_too_long'));
+				if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
+					return toastr.error(t('Message_too_long'));
+				}
+				return modal.open({
+					text: t('Message_too_long_as_an_attachment_question'),
+					title: '',
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonText: t('Yes'),
+					cancelButtonText: t('No'),
+					closeOnConfirm: true,
+				}, () => {
+					const contentType = 'text/plain';
+					const messageBlob = new Blob([msgObject.msg], { type: contentType });
+					const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
+					const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
+					fileUpload([{ file, name: fileName }]);
+					this.clearCurrentDraft();
+					input.value = '';
+					$(input).trigger('change').trigger('input');
+					this.hasValue.set(false);
+					this.stopTyping(rid);
+					this.saveTextMessageBox(rid, '');
+					return done();
+				}, done);
 			}
 
 			this.clearCurrentDraft();
