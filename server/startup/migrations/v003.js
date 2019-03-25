@@ -1,12 +1,15 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Users, Subscriptions, Rooms, Messages } from '../../../app/models';
+
+Migrations.add({
 	version: 3,
 	up() {
-		RocketChat.models.Subscriptions.tryDropIndex('uid_1');
-		RocketChat.models.Subscriptions.tryDropIndex('rid_1_uid_1');
+		Subscriptions.tryDropIndex('uid_1');
+		Subscriptions.tryDropIndex('rid_1_uid_1');
 
 		console.log('Fixing ChatSubscription uid');
 
-		RocketChat.models.Subscriptions.find({
+		Subscriptions.find({
 			uid: {
 				$exists: true,
 			},
@@ -14,7 +17,7 @@ RocketChat.Migrations.add({
 			nonreactive: true,
 		}).forEach((sub) => {
 			const update = {};
-			const user = RocketChat.models.Users.findOneById(sub.uid, {
+			const user = Users.findOneById(sub.uid, {
 				fields: {
 					username: 1,
 				},
@@ -35,13 +38,13 @@ RocketChat.Migrations.add({
 			}
 
 			if (Object.keys(update).length > 0) {
-				return RocketChat.models.Subscriptions.update(sub._id, update);
+				return Subscriptions.update(sub._id, update);
 			}
 		});
 
 		console.log('Fixing ChatRoom uids');
 
-		RocketChat.models.Rooms.find({
+		Rooms.find({
 			'uids.0': {
 				$exists: true,
 			},
@@ -49,7 +52,7 @@ RocketChat.Migrations.add({
 			nonreactive: true,
 		}).forEach(function(room) {
 			const update = {};
-			const users = RocketChat.models.Users.find({
+			const users = Users.find({
 				_id: {
 					$in: room.uids,
 				},
@@ -77,7 +80,7 @@ RocketChat.Migrations.add({
 			update.$set.usernames = usernames;
 			update.$unset.uids = 1;
 
-			const user = RocketChat.models.Users.findOneById(room.uid, {
+			const user = Users.findOneById(room.uid, {
 				fields: {
 					username: 1,
 				},
@@ -103,10 +106,10 @@ RocketChat.Migrations.add({
 
 				room._id = usernames.sort().join(',');
 
-				RocketChat.models.Rooms.insert(room);
-				RocketChat.models.Rooms.removeById(oldId);
+				Rooms.insert(room);
+				Rooms.removeById(oldId);
 
-				RocketChat.models.Subscriptions.update({
+				Subscriptions.update({
 					rid: oldId,
 				}, {
 					$set: {
@@ -116,7 +119,7 @@ RocketChat.Migrations.add({
 					multi: true,
 				});
 
-				return RocketChat.models.Messages.update({
+				return Messages.update({
 					rid: oldId,
 				}, {
 					$set: {
@@ -126,13 +129,13 @@ RocketChat.Migrations.add({
 					multi: true,
 				});
 			} else {
-				return RocketChat.models.Rooms.update(room._id, update);
+				return Rooms.update(room._id, update);
 			}
 		});
 
 		console.log('Fixing ChatMessage uid');
 
-		RocketChat.models.Messages.find({
+		Messages.find({
 			uid: {
 				$exists: true,
 			},
@@ -140,7 +143,7 @@ RocketChat.Migrations.add({
 			nonreactive: true,
 		}).forEach((message) => {
 			const update = {};
-			const user = RocketChat.models.Users.findOneById(message.uid, {
+			const user = Users.findOneById(message.uid, {
 				fields: {
 					username: 1,
 				},
@@ -161,7 +164,7 @@ RocketChat.Migrations.add({
 			}
 
 			if (Object.keys(update).length > 0) {
-				return RocketChat.models.Messages.update(message._id, update);
+				return Messages.update(message._id, update);
 			}
 		});
 

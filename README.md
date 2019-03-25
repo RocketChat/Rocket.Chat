@@ -1,6 +1,8 @@
-![Rocket.Chat logo](https://upload.wikimedia.org/wikipedia/commons/1/12/Rocket.Chat_Logo.svg)
+![](https://user-images.githubusercontent.com/551004/43643393-884b00a4-9701-11e8-94d8-14c46d1f3660.png)
 
-# The Ultimate Open Source WebChat Platform
+<h1 align="center">
+  The Ultimate Open Source WebChat Platform
+</h1>
 
 [![Rocket.Chat](https://open.rocket.chat/images/join-chat.svg)](https://open.rocket.chat/)
 [![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
@@ -19,7 +21,6 @@
    * [Snaps](#instant-server-installation-with-snaps)
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
-   * [Sandstorm.io](#sandstormio)
    * [Yunohost.org](#yunohostorg)
    * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
@@ -37,6 +38,7 @@
   * [Hyper.sh](#hypersh)
   * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
+  * [Syncloud.org](#syncloudorg)
 * [About Rocket.Chat](#about-rocketchat)
   * [In the News](#in-the-news)
   * [Features](#features)
@@ -87,17 +89,7 @@ Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron]
 
 # Mobile Apps
 
-## Native Mobile Apps
-*Note: currently the native apps doesn't support all the features that web does. If you're looking for it, you should download the Cordova apps.*
-
-[![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)
-
-## Hybrid Mobile Apps (Cordova)
-
-[![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket.chat/id1028869439?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=com.konecty.rocket.chat)
-
-*Now compatible with all Android devices as old as version 4.0.x - [download here](https://rocket.chat/docs/developer-guides/mobile-apps/), even on BlackBerry Passport!*
-
+[![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)  [![](https://user-images.githubusercontent.com/551004/48210349-50649480-e35e-11e8-97d9-74a4331faf3a.png)](https://f-droid.org/en/packages/chat.rocket.android/)
 
 # Deployment
 
@@ -130,11 +122,6 @@ Instantly deploy your Rocket.Chat server for free on next generation auto-scalin
 [![Layershift Hosting](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
 
 Painless SSL. Automatically scale your server cluster based on usage demand.
-
-## Sandstorm.io
-Host your own Rocket.Chat server in four seconds flat.
-
-[![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
 ## Yunohost.org
 Host your own Rocket.Chat server in a few seconds.
@@ -173,7 +160,7 @@ Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://he
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 ## Helm Kubernetes
-Deploy on Kubernetes using the official [helm chart](https://github.com/kubernetes/charts/pull/752).
+Deploy on Kubernetes using the official [helm chart](https://github.com/helm/charts/tree/master/stable/rocketchat).
 
 ## Scalingo
 Deploy your own Rocket.Chat server instantly on [Scalingo](https://scalingo.com).
@@ -238,6 +225,11 @@ Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
 
 [![Deploy](https://github.com/mastappl/images/blob/master/deployTo.png)](https://panel.d2c.io/?import=https://github.com/d2cio/rocketchat-stack/archive/master.zip/)
+
+## Syncloud.org
+Run Rocket.Chat on your easy to use personal device.
+
+[![Deploy](https://syncloud.org/images/logo_min.svg)](https://syncloud.org)
 
 # About Rocket.Chat
 
@@ -322,7 +314,6 @@ It is a great solution for communities and companies wanting to privately host t
 - Native Cross-Platform Desktop Application [Windows, macOS, or Linux](https://rocket.chat/)
 - Mobile app for iPhone, iPad, and iPod touch [Download on App Store](https://geo.itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8)
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play](https://play.google.com/store/apps/details?id=chat.rocket.android)
-- Sandstorm.io instant Rocket.Chat server [Now on Sandstorm App Store](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 - Available on [Cloudron Store](https://cloudron.io/appstore.html#chat.rocket.cloudronapp)
 
 ## Roadmap
@@ -331,9 +322,6 @@ It is a great solution for communities and companies wanting to privately host t
 - XMPP Support via [Webhook bridge](https://github.com/saqura/xmppwb) [Issue #404](https://github.com/RocketChat/Rocket.Chat/issues/404)
 - Federation via [matrix.org](https://www.matrix.org/), see [hubot-freddie](https://www.npmjs.com/package/hubot-freddie) and [Federation project](https://github.com/RocketChat/Rocket.Chat.Federation) : [Issue #520](https://github.com/RocketChat/Rocket.Chat/issues/520), [Issue #601](https://github.com/RocketChat/Rocket.Chat/issues/601)
 - Support for PostgreSQL: [Issue #533](https://github.com/RocketChat/Rocket.Chat/issues/533), [Issue #822](https://github.com/RocketChat/Rocket.Chat/pull/822)
-- Native iOS Application [Issue #270](https://github.com/RocketChat/Rocket.Chat/issues/270), [Rocket.Chat.iOS - HELP WANTED](https://github.com/RocketChat/Rocket.Chat.iOS)
-- Native Android Application [Issue #271 - HELP WANTED](https://github.com/RocketChat/Rocket.Chat/issues/271)
-- Off the Record Messaging [Issue #36](https://github.com/RocketChat/Rocket.Chat/issues/36), [Issue #268](https://github.com/RocketChat/Rocket.Chat/issues/268)
 - WordPress Plug-in [Issue # 1920](https://github.com/RocketChat/Rocket.Chat/issues/1920)
 - Integration with PSTN (Public Switched Telephone Networks)
 - API-enabled methods: [Issue #202](https://github.com/RocketChat/Rocket.Chat/issues/202), [Issue #454](https://github.com/RocketChat/Rocket.Chat/issues/454), [Issue #455](https://github.com/RocketChat/Rocket.Chat/issues/455), [Issue #759](https://github.com/RocketChat/Rocket.Chat/issues/759)
@@ -415,8 +403,16 @@ Now just clone and start the app:
 ```sh
 git clone https://github.com/RocketChat/Rocket.Chat.git
 cd Rocket.Chat
+meteor npm install
 meteor npm start
 ```
+
+In order to debug the server part use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
+
+```sh
+meteor debug
+```
+You'll find a nodejs icon in the developer console.
 
 If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
 
@@ -434,7 +430,7 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 
 ## How to Contribute
 
-Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community.
+Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://rocket.chat/docs/contributing/).
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
