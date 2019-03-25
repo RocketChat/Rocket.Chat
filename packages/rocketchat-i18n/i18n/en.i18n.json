@@ -2740,6 +2740,7 @@
   "The_server_will_restart_in_s_seconds": "The server will restart in %s seconds",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "The setting <strong>%s</strong> is configured to <strong>%s</strong> and you are accessing from <strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "The user will be removed from %s",
+  "The_user_s_will_be_removed_from_role_s": "The user %s will be removed from role %s",
   "The_user_wont_be_able_to_type_in_s": "The user won't be able to type in %s",
   "Theme": "Theme",
   "theme-color-attention-color": "Attention Color",
