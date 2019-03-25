@@ -16,8 +16,11 @@ const acEvents = {
 	'keydown [name="users"]'(e, t) {
 		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
 			const users = t.selectedUsers;
+			console.log("users :::",users);
 			const usersArr = users.get();
+			console.log("USERS ARR :: ",usersArr);
 			usersArr.pop();
+			console.log("AFTER POP :: ",usersArr);
 			return users.set(usersArr);
 		}
 
@@ -121,18 +124,25 @@ Template.inviteUsers.onRendered(function() {
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, { item }) {
 		const usersArr = users.get();
-		usersArr.push(item);
+		if(!(_.include(this.roomUsers.get(), item))){
+			usersArr.push(item);
+		}
 		users.set(usersArr);
 	});
 });
 
 Template.inviteUsers.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
+	this.roomUsers = new ReactiveVar([]);
 	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
 	Deps.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
 	});
 	this.userFilter = new ReactiveVar('');
+
+	Meteor.call('getUsersOfRoom', Session.get('openedRoom'), new ReactiveVar(false), (error, users) => {
+		this.roomUsers.set(users.records);
+	});
 
 	this.ac = new AutoComplete({
 		selector:{
