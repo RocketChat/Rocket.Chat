@@ -58,7 +58,7 @@
 		{{#if isIgnored}}
 			<span class="toggle-hidden icon-right-dir" data-message="{{_id}}"> {{_ "Message_Ignored"}} </span>
 		{{/if}}
-		<div class="body color-primary-font-color {{system true}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
+		<div class="body {{bodyClass}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
 			{{#if isSnippet}}
 				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
 			{{/if}}
@@ -76,6 +76,23 @@
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
+
+		{{#if drid}}
+			<div class="message-discussion">
+				{{#if $gt dcount 0}}
+					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
+						<!-- {{> icon icon="discussion"}} -->
+						<span class='reply-counter'>{{dcount}}</span>&nbsp;{{_ i18nKeyReply}}
+					</button>
+				{{else}}
+					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small no-replies" data-rid={{roomId}}>
+						{{_ "No_messages_yet" }}
+					</button>
+				{{/if}}
+				<span class="discussion-reply-lm">{{dlm}}</span>
+			</div>
+		{{/if}}
+
 		{{#with readReceipt}}
 		<div class="read-receipt {{readByEveryone}}">
 			{{> icon icon="check" }}

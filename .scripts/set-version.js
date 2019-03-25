@@ -20,7 +20,6 @@ try {
 
 const files = [
 	'./package.json',
-	'./.sandstorm/sandstorm-pkgdef.capnp',
 	'./.travis/snap.sh',
 	'./.circleci/snap.sh',
 	'./.circleci/update-releases.sh',
