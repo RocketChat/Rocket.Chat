@@ -31,7 +31,7 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	getIcon(roomData) {
 		if (roomData.prid) {
-			return 'thread';
+			return 'discussion';
 		}
 		return this.icon;
 	}

@@ -2878,14 +2878,6 @@ rc-old select,
 		line-height: 40px;
 	}
 
-	& button {
-		font-weight: 400;
-
-		&:hover {
-			text-decoration: underline;
-		}
-	}
-
 	& .body {
 		transition: opacity 1s linear;
 
