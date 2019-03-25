@@ -256,12 +256,6 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			username: Match.Maybe(String),
 		}));
 
-		if (!settings.get('Accounts_AllowUserAvatarChange')) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
-				method: 'users.setAvatar',
-			});
-		}
-
 		let user;
 		if (this.isUserFromParams()) {
 			user = Meteor.users.findOne(this.userId);
@@ -269,6 +263,14 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			user = this.getUserFromParams();
 		} else {
 			return API.v1.unauthorized();
+		}
+
+		if (!user.roles.includes('admin')) {
+			if (!settings.get('Accounts_AllowUserAvatarChange')) {
+				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
+					method: 'users.setAvatar',
+				});
+			}
 		}
 
 		Meteor.runAsUser(user._id, () => {
