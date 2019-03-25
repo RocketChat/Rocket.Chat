@@ -1,8 +1,8 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
-import { modal } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { modal } from '../../../app/ui-utils';
+import { t } from '../../../app/utils';
 
 export class JitsiCallHandler {
 	static getAudioElement() {

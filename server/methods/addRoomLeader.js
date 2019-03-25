@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { hasPermission } from '../../app/authorization';
+import { Users, Subscriptions, Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { Notifications } from '../../app/notifications';
 
 Meteor.methods({
 	addRoomLeader(rid, userId) {

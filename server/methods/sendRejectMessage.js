@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Messages } from 'meteor/rocketchat:models';
+import { Rooms, Messages } from '../../app/models';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { callbacks } from 'meteor/rocketchat:callbacks';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	'jitsi:rejectCall': (rid, type = 'jitsi_call_rejected') => {

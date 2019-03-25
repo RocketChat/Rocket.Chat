@@ -1,7 +1,8 @@
+import './importsCss';
+import './importPackages';
 import '../imports/startup/client';
 
 import '../lib/RegExp';
-import '../lib/francocatena_fix';
 
 import './lib/jitsiCallMessages/messageTypes';
 import './lib/jitsiCallClasses/callDetector';

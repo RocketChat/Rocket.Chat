@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { SystemLogger } from 'meteor/rocketchat:logger';
-import { getWorkspaceAccessToken } from 'meteor/rocketchat:cloud';
+import { SystemLogger } from '../../app/logger';
+import { getWorkspaceAccessToken } from '../../app/cloud';
 import { Push } from 'meteor/rocketchat:push';
-import { hasRole } from 'meteor/rocketchat:authorization';
-import { settings } from 'meteor/rocketchat:settings';
+import { hasRole } from '../../app/authorization';
+import { settings } from '../../app/settings';
 
 
 Meteor.methods({

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
+import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization';
+import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	removeUserFromRoom(data) {
@@ -34,6 +35,8 @@ Meteor.methods({
 
 		const removedUser = Users.findOneByUsername(data.username);
 
+		const fromUser = Users.findOneById(fromId);
+
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, { fields: { _id: 1 } });
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -51,19 +54,23 @@ Meteor.methods({
 			}
 		}
 
+		callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
+
 		Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 
 		if (['c', 'p'].includes(room.t) === true) {
 			removeUserFromRoles(removedUser._id, ['moderator', 'owner'], data.rid);
 		}
 
-		const fromUser = Users.findOneById(fromId);
-
 		Messages.createUserRemovedWithRoomIdAndUser(data.rid, removedUser, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
 			},
+		});
+
+		Meteor.defer(function() {
+			callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 		});
 
 		return true;
