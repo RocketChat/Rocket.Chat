@@ -51,7 +51,9 @@ export const ReadReceipt = {
 		if (message.unread && message.ts < firstSubscription.ls) {
 			Messages.setAsReadById(message._id, firstSubscription.ls);
 		}
-		const extraData = roomTypes.getConfig('l').getReadReceiptsExtraData(message);
+
+		const room = Rooms.findOneById(roomId, { fields: { t: 1 } });
+		const extraData = roomTypes.getConfig(room.t).getReadReceiptsExtraData(message);
 
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},
