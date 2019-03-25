@@ -115,6 +115,7 @@ Template.permissionsRole.events({
 		e.preventDefault();
 		modal.open({
 			title: t('Are_you_sure'),
+			text: t('The_user_s_will_be_removed_from_role_s', this.username, FlowRouter.getParam('name')),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',
