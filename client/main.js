@@ -4,6 +4,9 @@ import '../imports/startup/client';
 
 import '../lib/RegExp';
 
+import './lib/jitsiCallMessages/messageTypes';
+import './lib/jitsiCallClasses/callDetector';
+import './lib/jitsiCallClasses/JitsiCallHandler';
 import './lib/toastr';
 import './helpers/escapeCssUrl';
 import './helpers/log';

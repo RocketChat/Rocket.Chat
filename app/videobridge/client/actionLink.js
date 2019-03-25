@@ -13,7 +13,15 @@ actionLinks.register('joinJitsiCall', function(message, params, instance) {
 		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 
 		if (jitsiTimeout > currentTime) {
-			instance.tabBar.open('video');
+			if (instance.tabBar.getState() !== 'opened') {
+				instance.tabBar.open('video');
+			} else {
+				// need to ReOpen video conference with slightest delay when participants try to call each other
+				instance.tabBar.close();
+				setTimeout(function() {
+					instance.tabBar.open('video');
+				}, 10);
+			}
 		} else {
 			toastr.info(TAPi18n.__('Call Already Ended', ''));
 		}

@@ -19,3 +19,10 @@ FlowRouter.goToRoomById = async(rid) => {
 	const room = await getRoomById(rid);
 	return roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
 };
+
+FlowRouter.goToRoomByIdWithParams = (roomId, queryParams) => {
+	const subscription = ChatSubscription.findOne({ rid: roomId });
+	if (subscription) {
+		roomTypes.openRouteLink(subscription.t, subscription, queryParams);
+	}
+};
