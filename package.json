@@ -99,6 +99,7 @@
 		"babel-plugin-array-includes": "^2.0.3",
 		"chai": "^3.5.0",
 		"chimp": "^0.51.1",
+		"emojione-assets": "^4.5.0",
 		"eslint": "^5.9.0",
 		"husky": "^1.2.0",
 		"mocha": "^5.2.0",
