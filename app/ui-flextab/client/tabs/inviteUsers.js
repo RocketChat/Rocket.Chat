@@ -8,6 +8,7 @@ import { settings } from '../../../settings';
 import { t } from '../../../utils';
 import { Deps } from 'meteor/deps';
 import toastr from 'toastr';
+import _ from 'lodash';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {
@@ -16,11 +17,8 @@ const acEvents = {
 	'keydown [name="users"]'(e, t) {
 		if ([8, 46].includes(e.keyCode) && e.target.value === '') {
 			const users = t.selectedUsers;
-			console.log("users :::",users);
 			const usersArr = users.get();
-			console.log("USERS ARR :: ",usersArr);
 			usersArr.pop();
-			console.log("AFTER POP :: ",usersArr);
 			return users.set(usersArr);
 		}
 
@@ -124,7 +122,7 @@ Template.inviteUsers.onRendered(function() {
 	this.ac.$element = $(this.ac.element);
 	this.ac.$element.on('autocompleteselect', function(e, { item }) {
 		const usersArr = users.get();
-		if(!(_.include(this.roomUsers.get(), item))){
+		if (!(_.include(this.roomUsers.get(), item))) {
 			usersArr.push(item);
 		}
 		users.set(usersArr);
