@@ -1197,20 +1197,6 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateUserStatusMessage(userId, statusMessage) {
-		const query = {
-			'u._id': userId,
-		};
-
-		const update = {
-			$set: {
-				statusMessage,
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
 	// INSERT
 	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {

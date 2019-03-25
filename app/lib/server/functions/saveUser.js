@@ -131,7 +131,7 @@ function validateUserEditing(userId, userData) {
 		});
 	}
 
-	if (userData.statusMessage && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (userData.statusText && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user status is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
@@ -247,8 +247,8 @@ export const saveUser = function(userId, userData) {
 		setRealName(userData._id, userData.name);
 	}
 
-	if (userData.statusMessage) {
-		setStatusMessage(userData._id, userData.statusMessage);
+	if (userData.statusText) {
+		setStatusMessage(userData._id, userData.statusText);
 	}
 
 	if (userData.email) {

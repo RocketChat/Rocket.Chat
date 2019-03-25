@@ -363,17 +363,6 @@ Template.room.helpers({
 		return roomTypes.getUserStatusText(roomData.t, this._id) || 'offline';
 	},
 
-	userStatusMessage() {
-		const roomData = Session.get(`roomData${ this._id }`);
-
-		let status = roomTypes.getUserStatusMessage(roomData.t, this._id);
-		if (s.trim(status) !== '') {
-			status = emojione.render(s.escapeHTML(status));
-		}
-
-		return status;
-	},
-
 	maxMessageLength() {
 		return settings.get('Message_MaxAllowedSize');
 	},

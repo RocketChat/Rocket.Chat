@@ -24,6 +24,10 @@ const isDiscussion = ({ _id }) => {
 	return !!(room && room.prid);
 };
 
+const	getUserStatus = (id) => {
+	const roomData = Session.get(`roomData${ id }`);
+	return roomTypes.getUserStatus(roomData.t, id) || t('offline');
+};
 
 Template.headerRoom.helpers({
 	back() {
@@ -112,19 +116,13 @@ Template.headerRoom.helpers({
 	},
 
 	userStatus() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		return roomTypes.getUserStatus(roomData.t, this._id) || t('offline');
+		return getUserStatus(this._id);
 	},
 
 	userStatusText() {
 		const roomData = Session.get(`roomData${ this._id }`);
-		return roomTypes.getUserStatusText(roomData.t, this._id) || this.userStatus();
-	},
+		let status = roomTypes.getUserStatusText(roomData.t, this._id) || getUserStatus(this._id);
 
-	userStatusMessage() {
-		const roomData = Session.get(`roomData${ this._id }`);
-
-		let status = roomTypes.getUserStatusMessage(roomData.t, this._id);
 		if (s.trim(status) !== '') {
 			status = emojione.render(s.escapeHTML(status));
 		}

@@ -219,12 +219,6 @@ export const RoomManager = new function() {
 			return onlineUsers.set(onlineUsersValue);
 		}
 
-		updateUserStatusMessage(user, statusMessage) {
-			const onlineUsersValue = onlineUsers.curValue;
-			onlineUsersValue[user.username].statusMessage = statusMessage;
-			return onlineUsers.set(onlineUsersValue);
-		}
-
 		updateMentionsMarksOfRoom(typeName) {
 			const dom = this.getDomOfRoom(typeName);
 			if ((dom == null)) {

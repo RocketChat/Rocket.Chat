@@ -332,6 +332,7 @@ Template.sidebarHeader.events({
 	'click .sidebar__header .avatar'(e) {
 		if (!(Meteor.userId() == null && settings.get('Accounts_AllowAnonymousRead'))) {
 			const user = Meteor.user();
+
 			const userStatusList = Object.keys(userStatus.list).map((key) => {
 				const status = userStatus.list[key];
 				const customName = status.localizeName ? null : status.name;
@@ -351,6 +352,28 @@ Template.sidebarHeader.events({
 				statusText = translatedUserStatus[0].toUpperCase() + translatedUserStatus.substr(1);
 			}
 
+			userStatusList.push({
+				icon: 'edit',
+				name: t('Edit_Status'),
+				type: 'open',
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Edit_Status'),
+						content: 'editStatus',
+						data: {
+							onSave() {
+								modal.close();
+							},
+						},
+						modalClass: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			});
+
 			const config = {
 				popoverClass: 'sidebar-header',
 				columns: [
@@ -367,74 +390,6 @@ Template.sidebarHeader.events({
 							{
 								title: t('User'),
 								items: userStatusList,
-							},
-							{
-								title: t('Custom Status'),
-								items: [
-									{
-										input: true,
-										inputTitle: '',
-										inputName: 'custom-status',
-										select: true,
-										selectTitle: '',
-										selectName: 'status-type',
-										selectOptions: [
-											{
-												value: 'online',
-												title: t('online'),
-												selected: user.status === 'online',
-											},
-											{
-												value: 'away',
-												title: t('away'),
-												selected: user.status === 'away',
-											},
-											{
-												value: 'busy',
-												title: t('busy'),
-												selected: user.status === 'busy',
-											},
-											{
-												value: 'offline',
-												title: t('invisible'),
-												selected: user.status === 'offline',
-											},
-										],
-										buttonTitle: t('Update'),
-										buttonAction() {
-											return () => {
-												const elText = $('input[type=text][name=custom-status]')[0];
-												const elType = $('select[name=status-type]')[0];
-
-												const statusText = elText.value;
-												const statusType = elType.value;
-
-												setStatus(statusType, statusText);
-											};
-										},
-									},
-									{
-										icon: 'edit',
-										name: t('Edit_Status'),
-										type: 'open',
-										action: (e) => {
-											e.preventDefault();
-											modal.open({
-												title: t('Edit_Status'),
-												content: 'editStatus',
-												data: {
-													onSave() {
-														modal.close();
-													},
-												},
-												modalClass: 'modal',
-												showConfirmButton: false,
-												showCancelButton: false,
-												confirmOnEnter: false,
-											});
-										},
-									},
-								],
 							},
 							{
 								items: [

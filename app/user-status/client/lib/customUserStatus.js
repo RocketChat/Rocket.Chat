@@ -38,11 +38,11 @@ Meteor.startup(() =>
 			return;
 		}
 
-		for (const userStatus of result) {
+		for (const customStatus of result) {
 			const newUserStatus = {
-				name: userStatus.name,
-				id: userStatus._id,
-				statusType: userStatus.statusType,
+				name: customStatus.name,
+				id: customStatus._id,
+				statusType: customStatus.statusType,
 				localizeName: false,
 			};
 

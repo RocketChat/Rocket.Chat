@@ -38,7 +38,7 @@
   "Accounts_AllowUserAvatarChange": "Allow User Avatar Change",
   "Accounts_AllowUsernameChange": "Allow Username Change",
   "Accounts_AllowUserProfileChange": "Allow User Profile Change",
-  "Accounts_AllowUserStatusMessageChange": "Allow Status Message Change",
+  "Accounts_AllowUserStatusMessageChange": "Allow Custom Status Message",
   "Accounts_AvatarBlockUnauthenticatedAccess": "Block Unauthenticated Access to Avatars",
   "Accounts_AvatarCacheTime": "Avatar cache time",
   "Accounts_AvatarCacheTime_description": "Number of seconds the http protocol is told to cache the avatar images.",

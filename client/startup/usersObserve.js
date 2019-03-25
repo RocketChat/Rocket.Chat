@@ -8,13 +8,11 @@ Meteor.startup(function() {
 			Session.set(`user_${ user.username }_status`, user.status);
 			Session.set(`user_${ user.username }_status_message`, user.statusMessage);
 			RoomManager.updateUserStatus(user, user.status, user.utcOffset);
-			RoomManager.updateUserStatusMessage(user, user.statusMessage);
 		},
 		changed(user) {
 			Session.set(`user_${ user.username }_status`, user.status);
 			Session.set(`user_${ user.username }_status_message`, user.statusMessage);
 			RoomManager.updateUserStatus(user, user.status, user.utcOffset);
-			RoomManager.updateUserStatusMessage(user, user.statusMessage);
 		},
 		removed(user) {
 			Session.set(`user_${ user.username }_status`, null);

@@ -14,7 +14,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
-		this.tryEnsureIndex({ statusMessage: 1 });
+		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
@@ -788,16 +788,6 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				active,
-			},
-		};
-
-		return this.update(_id, update);
-	}
-
-	setStatusMessage(_id, statusMessage) {
-		const update = {
-			$set: {
-				statusMessage,
 			},
 		};
 
