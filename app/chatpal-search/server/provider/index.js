@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages, Uploads } from '../../../models';
 
 /**
  * Enables HTTP functions on Chatpal Backend
@@ -269,6 +269,20 @@ export default class Index {
 					user_name: doc.name,
 					user_email: doc.emails && doc.emails.map((e) => e.address),
 				};
+			case 'file':
+				return {
+					id: doc._id,
+					rid: doc.rid,
+					uploaded: doc.uploadedAt,
+					updated: doc._updatedAt,
+					type,
+					file_name: doc.name,
+					file_desc: doc.description,
+					file_type: doc.type,
+					file_size: doc.size,
+					file_store: doc.store,
+					file_link: doc.link,
+				};
 			default: throw new Error(`Cannot index type '${ type }'`);
 		}
 	}
@@ -417,6 +431,25 @@ export default class Index {
 	}
 
 	indexDoc(type, doc, flush = true) {
+		// Detect messages with file attachment
+		if (type === 'message' && doc.file && doc.file._id) {
+			const file = Uploads.findOneById(doc.file._id);
+			if (file) {
+				const attachment = doc.attachments.filter((a) => a.type === 'file')[0];
+				if (attachment) {
+					file.link = attachment.title_link;
+					// Attachment description can be edited, so we overwrite the original description
+					file.description = attachment.description;
+				}
+
+				// TODO: Index file's binary data along with file details ( Get binary data using FileUpload.getBuffer(file, cb) )
+				this._batchIndexer.add(this._getIndexDocument('file', file));
+			}
+
+			// Skip message indexing
+			return true;
+		}
+
 		this._batchIndexer.add(this._getIndexDocument(type, doc));
 
 		if (flush) { this._batchIndexer.flush(); }
@@ -424,7 +457,10 @@ export default class Index {
 		return true;
 	}
 
-	removeDoc(type, id) {
+	removeDoc(type, id, doc) {
+		if (type === 'message' && doc && doc.file && doc.file._id) {
+			return this._backend.remove('file', doc.file._id);
+		}
 		return this._backend.remove(type, id);
 	}
 

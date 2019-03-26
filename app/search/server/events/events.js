@@ -28,7 +28,7 @@ callbacks.add('afterSaveMessage', function(m) {
 });
 
 callbacks.add('afterDeleteMessage', function(m) {
-	eventService.promoteEvent('message.delete', m._id);
+	eventService.promoteEvent('message.delete', m._id, m);
 });
 
 /**

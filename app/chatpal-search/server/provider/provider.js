@@ -139,7 +139,7 @@ class ChatpalProvider extends SearchProvider {
 			case 'message.save': return this.index.indexDoc('message', payload);
 			case 'user.save': return this.index.indexDoc('user', payload);
 			case 'room.save': return this.index.indexDoc('room', payload);
-			case 'message.delete': return this.index.removeDoc('message', value);
+			case 'message.delete': return this.index.removeDoc('message', value, payload);
 			case 'user.delete': return this.index.removeDoc('user', value);
 			case 'room.delete': return this.index.removeDoc('room', value);
 		}
