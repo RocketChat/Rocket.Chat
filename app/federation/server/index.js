@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { settings } from '../../settings';
 import { FederationKeys } from '../../models';
-import { getWorkspaceAccessToken } from '../../cloud';
+import { getWorkspaceAccessToken } from '../../cloud/server';
 
 import './federation-settings';
 import './methods';

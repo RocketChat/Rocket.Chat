@@ -4,7 +4,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
 
-import { Federation } from './main';
+import { Federation } from '.';
 import peerDNS from './peerDNS';
 import peerHTTP from './peerHTTP';
 import { updateStatus } from './settingsUpdater';
