@@ -26,7 +26,7 @@
 	&__arrow {
 		position: absolute;
 
-		margin: 0 -5px;
+		margin: 0 4px;
 
 		pointer-events: none;
 
