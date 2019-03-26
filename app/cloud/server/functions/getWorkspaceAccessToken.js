@@ -7,8 +7,9 @@ import { Settings } from '../../../models';
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
+import { workspaceScopes } from '../oauthScopes';
 
-export function getWorkspaceAccessToken(forceNew = false) {
+export function getWorkspaceAccessToken(forceNew = false, scope = '', save = true) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
@@ -31,6 +32,10 @@ export function getWorkspaceAccessToken(forceNew = false) {
 	const client_secret = settings.get('Cloud_Workspace_Client_Secret');
 	const redirectUri = getRedirectUri();
 
+	if (scope === '') {
+		scope = workspaceScopes.join(' ');
+	}
+
 	let authTokenResult;
 	try {
 		authTokenResult = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
@@ -38,6 +43,7 @@ export function getWorkspaceAccessToken(forceNew = false) {
 			query: querystring.stringify({
 				client_id,
 				client_secret,
+				scope,
 				grant_type: 'client_credentials',
 				redirect_uri: redirectUri,
 			}),
@@ -51,11 +57,13 @@ export function getWorkspaceAccessToken(forceNew = false) {
 		return '';
 	}
 
-	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
+	if (save) {
+		const expiresAt = new Date();
+		expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
 
-	Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
-	Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
+		Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
+		Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
+	}
 
 	return authTokenResult.data.access_token;
 }

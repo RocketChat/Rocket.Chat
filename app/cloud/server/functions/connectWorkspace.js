@@ -6,6 +6,7 @@ import { Settings } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { workspaceScopes } from '../oauthScopes';
 
 export function connectWorkspace(token) {
 	const { connectToCloud } = retrieveRegistrationStatus();
@@ -56,6 +57,7 @@ export function connectWorkspace(token) {
 				client_id: data.client_id,
 				client_secret: data.client_secret,
 				grant_type: 'client_credentials',
+				scope: workspaceScopes.join(' '),
 				redirect_uri: redirectUri,
 			}),
 		});

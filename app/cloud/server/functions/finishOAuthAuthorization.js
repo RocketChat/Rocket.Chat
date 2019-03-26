@@ -6,6 +6,7 @@ import { settings } from '../../../settings';
 import { Settings, Users } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
+import { userScopes } from '../oauthScopes';
 
 export function finishOAuthAuthorization(code, state) {
 	if (settings.get('Cloud_Workspace_Registration_State') !== state) {
@@ -16,6 +17,8 @@ export function finishOAuthAuthorization(code, state) {
 	const clientId = settings.get('Cloud_Workspace_Client_Id');
 	const clientSecret = settings.get('Cloud_Workspace_Client_Secret');
 
+	const scope = userScopes.join(' ');
+
 	let result;
 	try {
 		result = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
@@ -24,6 +27,7 @@ export function finishOAuthAuthorization(code, state) {
 				client_id: clientId,
 				client_secret: clientSecret,
 				grant_type: 'authorization_code',
+				scope,
 				code,
 				redirect_uri: getRedirectUri(),
 			}),
