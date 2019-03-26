@@ -5,7 +5,6 @@ import { settings } from '../../../settings';
 import { modal, TabBar } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { Users, Rooms } from '../../../models';
-
 import * as CONSTANTS from '../../constants';
 
 Template.videoFlexTab.helpers({
