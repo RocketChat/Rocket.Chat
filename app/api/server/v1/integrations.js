@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '../../../authorization';
+import { hasAtLeastOnePermission } from '../../../authorization/server';
 import { IntegrationHistory, Integrations } from '../../../models';
 import { API } from '../api';
+import { mountIntegrationHistoryQueryBasedOnPermissions, mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 
 API.v1.addRoute('integrations.create', { authRequired: true }, {
 	post() {
@@ -47,7 +48,10 @@ API.v1.addRoute('integrations.create', { authRequired: true }, {
 
 API.v1.addRoute('integrations.history', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'manage-integrations')) {
+		if (!hasAtLeastOnePermission(this.userId, [
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+		])) {
 			return API.v1.unauthorized();
 		}
 
@@ -58,8 +62,8 @@ API.v1.addRoute('integrations.history', { authRequired: true }, {
 		const { id } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
+		const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(this.userId, id), query);
 
-		const ourQuery = Object.assign({}, query, { 'integration._id': id });
 		const history = IntegrationHistory.find(ourQuery, {
 			sort: sort ? sort : { _updatedAt: -1 },
 			skip: offset,
@@ -78,14 +82,19 @@ API.v1.addRoute('integrations.history', { authRequired: true }, {
 
 API.v1.addRoute('integrations.list', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'manage-integrations')) {
+		if (!hasAtLeastOnePermission(this.userId, [
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		])) {
 			return API.v1.unauthorized();
 		}
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const ourQuery = Object.assign({}, query);
+		const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query);
 		const integrations = Integrations.find(ourQuery, {
 			sort: sort ? sort : { ts: -1 },
 			skip: offset,
@@ -104,6 +113,15 @@ API.v1.addRoute('integrations.list', { authRequired: true }, {
 
 API.v1.addRoute('integrations.remove', { authRequired: true }, {
 	post() {
+		if (!hasAtLeastOnePermission(this.userId, [
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		])) {
+			return API.v1.unauthorized();
+		}
+
 		check(this.bodyParams, Match.ObjectIncluding({
 			type: String,
 			target_url: Match.Maybe(String),

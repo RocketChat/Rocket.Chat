@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { composeMessageObjectWithUser } from '../../../utils';
 import { API } from '../api';
 import _ from 'underscore';
@@ -282,7 +282,12 @@ API.v1.addRoute('channels.files', { authRequired: true }, {
 
 API.v1.addRoute('channels.getIntegrations', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'manage-integrations')) {
+		if (!hasAtLeastOnePermission(this.userId, [
+			'manage-outgoing-integrations',
+			'manage-own-outgoing-integrations',
+			'manage-incoming-integrations',
+			'manage-own-incoming-integrations',
+		])) {
 			return API.v1.unauthorized();
 		}
 
