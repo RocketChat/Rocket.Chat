@@ -55,7 +55,6 @@ Template.videoFlexTab.onRendered(function() {
 	this.stop = stop;
 
 	const start = () => {
-
 		const update = () => {
 			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 }, reactive: false });
 
