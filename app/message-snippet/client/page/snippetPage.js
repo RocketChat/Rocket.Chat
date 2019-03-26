@@ -3,7 +3,7 @@ import { DateFormat } from '../../../lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { settings } from '../../../settings';
-import { Markdown } from '../../../markdown';
+import { Markdown } from '../../../markdown/client';
 import { SnippetedMessages } from '../lib/collections';
 import moment from 'moment';
 

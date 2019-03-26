@@ -1,7 +1,7 @@
 import { API } from '../../../../api';
 import { FederationKeys } from '../../../../models';
 
-import { Federation } from '../../main';
+import { Federation } from '../..';
 
 import peerDNS from '../../peerDNS';
 import peerServer from '../peerServer';

@@ -5,9 +5,8 @@ import { Template } from 'meteor/templating';
 import { t, handleError } from '../../../utils';
 import { Roles } from '../../../models';
 import { hasAllPermission } from '../hasPermission';
+import { modal } from '../../../ui-utils/client/lib/modal';
 import toastr from 'toastr';
-
-let _modal;
 
 Template.permissionsRole.helpers({
 	role() {
@@ -113,13 +112,10 @@ Template.permissionsRole.helpers({
 
 Template.permissionsRole.events({
 	async 'click .remove-user'(e, instance) {
-		if (!_modal) {
-			const { modal } = await import('../../../ui-utils');
-			_modal = modal;
-		}
 		e.preventDefault();
-		_modal.open({
+		modal.open({
 			title: t('Are_you_sure'),
+			text: t('The_user_s_will_be_removed_from_role_s', this.username, FlowRouter.getParam('name')),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',
@@ -133,7 +129,7 @@ Template.permissionsRole.events({
 					return handleError(error);
 				}
 
-				_modal.open({
+				modal.open({
 					title: t('Removed'),
 					text: t('User_removed'),
 					type: 'success',

@@ -24,8 +24,8 @@
 	}
 
 	&__switches,
-	&__inputs:not(:only-child),
-	& .rc-input:not(:only-child) {
+	&__inputs:not(:only-of-type),
+	& .rc-input:not(:only-of-type) {
 		margin-bottom: var(--create-channel-gap-between-elements);
 	}
 
