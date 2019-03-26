@@ -7,7 +7,7 @@ import { RoomManager, popover } from '../../../ui-utils';
 import { ChatRoom, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
-import { WebRTC } from '../../../webrtc';
+import { WebRTC } from '../../../webrtc/client';
 import _ from 'underscore';
 import { getActions } from './userActions';
 
