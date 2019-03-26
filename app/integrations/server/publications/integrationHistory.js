@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { hasAtLeastOnePermission } from '../../../authorization';
 import { IntegrationHistory } from '../../../models';
+import { mountIntegrationHistoryQueryBasedOnPermissions } from '../lib/mountQueriesBasedOnPermission';
 
 Meteor.publish('integrationHistory', function _integrationHistoryPublication(integrationId, limit = 25) {
 	if (!this.userId) {
@@ -13,13 +14,5 @@ Meteor.publish('integrationHistory', function _integrationHistoryPublication(int
 		throw new Meteor.Error('not-authorized');
 	}
 
-	const canViewAllOutgoingIntegrations = hasPermission(this.userId, 'manage-outgoing-integrations');
-	const canViewOnlyOwnOutgoingIntegrations = hasPermission(this.userId, 'manage-own-outgoing-integrations');
-
-	if (canViewAllOutgoingIntegrations) {
-		return IntegrationHistory.findByIntegrationId(integrationId, { sort: { _updatedAt: -1 }, limit });
-	}
-	if (canViewOnlyOwnOutgoingIntegrations) {
-		return IntegrationHistory.findByIntegrationIdAndCreatedBy(integrationId, this.userId, { sort: { _updatedAt: -1 }, limit });
-	}
+	return IntegrationHistory.find(Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(this.userId, integrationId)), { sort: { _updatedAt: -1 }, limit });
 });
