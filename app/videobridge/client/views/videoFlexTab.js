@@ -121,7 +121,6 @@ Template.videoFlexTab.onRendered(function() {
 					}, 300);
 					return newWindow.focus();
 				}
-			// Lets make sure its loaded before we try to show it.
 			}
 
 			if (typeof JitsiMeetExternalAPI !== 'undefined') {
