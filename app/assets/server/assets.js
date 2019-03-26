@@ -130,8 +130,8 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
-			width: 144,
-			height: 144,
+			width: 70,
+			height: 70,
 		},
 	},
 	tile_144: {
