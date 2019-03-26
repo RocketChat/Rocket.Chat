@@ -35,6 +35,11 @@ describe('[Resolution]', () => {
 				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
 			});
 
+			it('it should not close sidebar on pressing the sidebar item menu', () => {
+				sideNav.sidebarItemMenu.click();
+				mainContent.mainContent.getLocation().should.not.deep.include({ x:0 });
+			});
+
 			it('it should open general channel', () => {
 				sideNav.openChannel('general');
 			});
