@@ -95,7 +95,7 @@ Template.visitorForward.events({
 		const timeoutAgent = Math.abs(settings.get('Livechat_forward_timeout_second') * 1000);
 		const userDeny = Meteor.users.findOne(transferData.userId);
 		instance.timeout = Meteor.setTimeout(() => {
-			Meteor.call('livechat:forwardstatus', transferData.roomId, false);
+			Meteor.call('livechat:updateForwardStatus', transferData.roomId, false);
 			modal.open({
 				title: t('Timeout'),
 				type: 'error',
@@ -105,7 +105,6 @@ Template.visitorForward.events({
 				confirmButtonText: TAPi18n.__('OK'),
 			});
 		}, timeoutAgent);
-		Meteor.call('livechat:forwardstatus', transferData.roomId, true);
 		transferData.timeout = instance.timeout;
 		transferData.timeoutAgent = timeoutAgent;
 		transferData.originalAgentId = Meteor.userId();
@@ -138,7 +137,7 @@ Tracker.autorun(function() {
 			switch (type) {
 
 				case 'handshake':
-
+					Meteor.call('livechat:updateForwardStatus', data.transferData.roomId, true);
 					modal.open({
 						title: TAPi18n.__('LiveChat'),
 						text: TAPi18n.__('Username_wants_to_forward_livechat_Do_you_want_to_accept', { username: user.username }),
@@ -149,19 +148,29 @@ Tracker.autorun(function() {
 						cancelButtonText: TAPi18n.__('No'),
 					}, (isConfirm) => {
 						if (isConfirm) {
-							Notifications.notifyUser(data.transferData.originalAgentId, 'forward-livechat', 'accepted', { transferData: data.transferData });
+							Meteor.call('livechat:checkLiveAgent', data.transferData.originalAgentId, (error, result) => {
+								if (result && result.userStatus === 'offline') {
+									Meteor.call('livechat:updateForwardStatus', data.transferData.roomId, false);
+									toastr.error(t(`Cannot transfer, ${ user.username } is offline`));
+								} else {
+									Notifications.notifyUser(data.transferData.originalAgentId, 'forward-livechat', 'accepted', { transferData: data.transferData });
+								}
+							});
 						}
 					}, () => {
+						Meteor.call('livechat:updateForwardStatus', data.transferData.roomId, false);
 						Notifications.notifyUser(data.transferData.originalAgentId, 'forward-livechat', 'deny', { transferData: data.transferData });
 					});
 
 					Meteor.setTimeout(() => {
 						modal.close();
 					}, data.transferData.timeoutAgent);
-
+					// Set forward back to false if agent closes the window.
+					Meteor.call('livechat:updateForwardStatusOfflineAgent', data.transferData, false);
 					break;
 
 				case 'accepted':
+					Meteor.call('livechat:updateForwardStatus', data.transferData.roomId, false);
 					Meteor.call('livechat:transfer', data.transferData, (error, result) => {
 						if (error) {
 							toastr.error(t(error.error));
@@ -179,7 +188,6 @@ Tracker.autorun(function() {
 				case 'deny':
 					const userDeny = Meteor.users.findOne(data.transferData.userId);
 					Meteor.clearTimeout(data.transferData.timeout);
-					Meteor.call('livechat:forwardstatus', data.transferData.roomId, false);
 					modal.open({
 						title: TAPi18n.__('LiveChat'),
 						text: TAPi18n.__('Username_did_not_accept_your_livechat_request', { username: userDeny.username }),
@@ -189,7 +197,6 @@ Tracker.autorun(function() {
 					break;
 
 				case 'transferred':
-					Meteor.call('livechat:forwardstatus', data.transferData.roomId, false);
 					FlowRouter.go(`/live/${ data.transferData.roomId }`);
 					toastr.success(t('Transferred'));
 					break;
