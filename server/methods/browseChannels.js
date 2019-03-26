@@ -119,7 +119,7 @@ Meteor.methods({
 		const results = result.fetch();
 
 		// Try to find federated users, when appliable
-		if (PeerClient.enabled && type === 'users' && workspace === 'all' && text.indexOf('@') !== -1) {
+		if (PeerClient.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
 			const federatedUsers = Meteor.call('federationSearchUsers', text);
 
 			for (const federatedUser of federatedUsers) {
