@@ -1,4 +1,6 @@
 textarea.rc-input__element {
+	height: auto;
+
 	font-family: inherit;
 	line-height: 0.5rem 1rem;
 }
@@ -52,6 +54,7 @@ textarea.rc-input__element {
 
 	&__element {
 		width: 100%;
+		height: 2.5rem;
 		padding: 0 1rem;
 
 		text-overflow: ellipsis;
@@ -64,11 +67,10 @@ textarea.rc-input__element {
 		background-color: transparent;
 
 		font-size: var(--input-font-size);
-
-		line-height: 2.25rem;
+		line-height: normal;
 
 		&--small {
-			line-height: 1.75rem;
+			height: 2rem;
 		}
 
 		&::placeholder {
