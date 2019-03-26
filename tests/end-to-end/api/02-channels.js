@@ -6,7 +6,11 @@ import {
 	apiPublicChannelName,
 	channel,
 } from '../../data/api-data.js';
-import { adminUsername } from '../../data/user.js';
+import { adminUsername, password } from '../../data/user.js';
+import { createUser, login } from '../../data/users.helper';
+import { updatePermission } from '../../data/permissions.helper';
+import { createRoom } from '../../data/rooms.helper';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -554,20 +558,108 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.getIntegrations', (done) => {
-		request.get(api('channels.getIntegrations'))
-			.set(credentials)
-			.query({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count', 0);
-				expect(res.body).to.have.property('total', 0);
-			})
-			.end(done);
+	describe('/channels.getIntegrations', () => {
+		let integrationCreatedByAnUser;
+		let userCredentials;
+		let createdChannel;
+		before((done) => {
+			createRoom({ name: `test-integration-channel-${ Date.now() }`, type: 'c' })
+				.end((err, res) => {
+					createdChannel = res.body.channel;
+					createUser().then((createdUser) => {
+						const user = createdUser;
+						login(user.username, password).then((credentials) => {
+							userCredentials = credentials;
+							updatePermission('manage-incoming-integrations', ['user']).then(() => {
+								updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
+									createIntegration({
+										type: 'webhook-incoming',
+										name: 'Incoming test',
+										enabled: true,
+										alias: 'test',
+										username: 'rocket.cat',
+										scriptEnabled: false,
+										channel: `#${ createdChannel.name }`,
+									}, userCredentials).then((integration) => {
+										integrationCreatedByAnUser = integration;
+										done();
+									});
+								});
+							});
+						});
+					});
+				});
+		});
+
+		after((done) => {
+			removeIntegration(integrationCreatedByAnUser._id, 'incoming').then(done);
+		});
+
+		it('should return the list of integrations of created channel and it should contain the integration created by user when the admin DOES have the permission', (done) => {
+			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				request.get(api('channels.getIntegrations'))
+					.set(credentials)
+					.query({
+						roomId: createdChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const integrationCreated = res.body.integrations.find((createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id);
+						expect(integrationCreated).to.be.an('object');
+						expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return the list of integrations created by the user only', (done) => {
+			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+				updatePermission('manage-incoming-integrations', []).then(() => {
+					request.get(api('channels.getIntegrations'))
+						.set(credentials)
+						.query({
+							roomId: createdChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							const integrationCreated = res.body.integrations.find((createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id);
+							expect(integrationCreated).to.be.equal(undefined);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
+			updatePermission('manage-incoming-integrations', []).then(() => {
+				updatePermission('manage-own-incoming-integrations', []).then(() => {
+					updatePermission('manage-outgoing-integrations', []).then(() => {
+						updatePermission('manage-own-outgoing-integrations', []).then(() => {
+							request.get(api('channels.getIntegrations'))
+								.set(credentials)
+								.query({
+									roomId: createdChannel._id,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(403)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('error', 'unauthorized');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+		});
 	});
 
 	it('/channels.addAll', (done) => {
@@ -620,7 +712,7 @@ describe('[Channels]', function() {
 	describe('/channels.setCustomFields:', () => {
 		let cfchannel;
 		it('create channel with customFields', (done) => {
-			const customFields = { field0:'value0' };
+			const customFields = { field0: 'value0' };
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -647,7 +739,7 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 		it('change customFields', async(done) => {
-			const customFields = { field9:'value9' };
+			const customFields = { field9: 'value9' };
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -705,7 +797,7 @@ describe('[Channels]', function() {
 				});
 		});
 		it('set customFields with one nested field', async(done) => {
-			const customFields = { field1:'value1' };
+			const customFields = { field1: 'value1' };
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -724,7 +816,7 @@ describe('[Channels]', function() {
 				.end(done);
 		});
 		it('set customFields with multiple nested fields', async(done) => {
-			const customFields = { field2:'value2', field3:'value3', field4:'value4' };
+			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
 			request.post(api('channels.setCustomFields'))
 				.set(credentials)

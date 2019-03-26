@@ -1,5 +1,9 @@
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminUsername } from '../../data/user';
+import { adminUsername, password } from '../../data/user.js';
+import { createUser, login } from '../../data/users.helper';
+import { updatePermission } from '../../data/permissions.helper';
+import { createRoom } from '../../data/rooms.helper';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -523,20 +527,108 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.getIntegrations', (done) => {
-		request.get(api('groups.getIntegrations'))
-			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count', 0);
-				expect(res.body).to.have.property('total', 0);
-			})
-			.end(done);
+	describe('/groups.getIntegrations', () => {
+		let integrationCreatedByAnUser;
+		let userCredentials;
+		let createdGroup;
+		before((done) => {
+			createRoom({ name: `test-integration-group-${ Date.now() }`, type: 'p' })
+				.end((err, res) => {
+					createdGroup = res.body.group;
+					createUser().then((createdUser) => {
+						const user = createdUser;
+						login(user.username, password).then((credentials) => {
+							userCredentials = credentials;
+							updatePermission('manage-incoming-integrations', ['user']).then(() => {
+								updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
+									createIntegration({
+										type: 'webhook-incoming',
+										name: 'Incoming test',
+										enabled: true,
+										alias: 'test',
+										username: 'rocket.cat',
+										scriptEnabled: false,
+										channel: `#${ createdGroup.name }`,
+									}, userCredentials).then((integration) => {
+										integrationCreatedByAnUser = integration;
+										done();
+									});
+								});
+							});
+						});
+					});
+				});
+		});
+
+		after((done) => {
+			removeIntegration(integrationCreatedByAnUser._id, 'incoming').then(done);
+		});
+
+		it('should return the list of integrations of create group and it should contain the integration created by user when the admin DOES have the permission', (done) => {
+			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				request.get(api('groups.getIntegrations'))
+					.set(credentials)
+					.query({
+						roomId: createdGroup._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const integrationCreated = res.body.integrations.find((createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id);
+						expect(integrationCreated).to.be.an('object');
+						expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return the list of integrations created by the user only', (done) => {
+			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+				updatePermission('manage-incoming-integrations', []).then(() => {
+					request.get(api('groups.getIntegrations'))
+						.set(credentials)
+						.query({
+							roomId: createdGroup._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							const integrationCreated = res.body.integrations.find((createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id);
+							expect(integrationCreated).to.be.equal(undefined);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
+			updatePermission('manage-incoming-integrations', []).then(() => {
+				updatePermission('manage-own-incoming-integrations', []).then(() => {
+					updatePermission('manage-outgoing-integrations', []).then(() => {
+						updatePermission('manage-own-outgoing-integrations', []).then(() => {
+							request.get(api('groups.getIntegrations'))
+								.set(credentials)
+								.query({
+									roomId: createdGroup._id,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(403)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('error', 'unauthorized');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+		});
 	});
 
 	it('/groups.setReadOnly', (done) => {

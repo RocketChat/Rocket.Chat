@@ -1,20 +1,8 @@
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { createUser, login } from '../../data/users.helper';
 import { password } from '../../data/user';
-
-const removeIntegration = (integrationId) => new Promise((resolve) => {
-	request.post(api('integrations.remove'))
-		.set(credentials)
-		.send({
-			type: 'webhook-outgoing',
-			integrationId,
-		})
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.end(resolve);
-});
-
 
 describe('[Outgoing Integrations]', function() {
 	this.retries(0);
@@ -151,7 +139,7 @@ describe('[Outgoing Integrations]', function() {
 						expect(res.body).to.have.property('integration').and.to.be.an('object');
 						integrationId = res.body.integration._id;
 					})
-					.end(() => removeIntegration(integrationId).then(done));
+					.end(() => removeIntegration(integrationId, 'outgoing').then(done));
 			});
 		});
 
@@ -226,26 +214,23 @@ describe('[Outgoing Integrations]', function() {
 				login(user.username, password).then((credentials) => {
 					userCredentials = credentials;
 					updatePermission('manage-outgoing-integrations', ['user']).then(() => {
-						request.post(api('integrations.create'))
-							.set(userCredentials)
-							.send({
-								type: 'webhook-outgoing',
-								name: 'Guggy',
-								enabled: true,
-								username: 'rocket.cat',
-								urls: ['http://text2gif.guggy.com/guggify'],
-								scriptEnabled: false,
-								channel: '#general',
-								triggerWords: ['!guggy'],
-								alias: 'guggy',
-								avatar: 'http://res.guggy.com/logo_128.png',
-								emoji: ':ghost:',
-								event: 'sendMessage',
-							})
-							.end((err, res) => {
-								integrationCreatedByAnUser = res.body.integration;
-								done();
-							});
+						createIntegration({
+							type: 'webhook-outgoing',
+							name: 'Guggy',
+							enabled: true,
+							username: 'rocket.cat',
+							urls: ['http://text2gif.guggy.com/guggify'],
+							scriptEnabled: false,
+							channel: '#general',
+							triggerWords: ['!guggy'],
+							alias: 'guggy',
+							avatar: 'http://res.guggy.com/logo_128.png',
+							emoji: ':ghost:',
+							event: 'sendMessage',
+						}, userCredentials).then((integration) => {
+							integrationCreatedByAnUser = integration;
+							done();
+						});
 					});
 				});
 			});

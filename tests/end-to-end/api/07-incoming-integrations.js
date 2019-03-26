@@ -1,20 +1,8 @@
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { createUser, login } from '../../data/users.helper';
 import { password } from '../../data/user';
-
-const removeIntegration = (integrationId) => new Promise((resolve) => {
-	request.post(api('integrations.remove'))
-		.set(credentials)
-		.send({
-			type: 'webhook-incoming',
-			integrationId,
-		})
-		.expect('Content-Type', 'application/json')
-		.expect(200)
-		.end(resolve);
-});
-
 
 describe('[Incoming Integrations]', function() {
 	this.retries(0);
@@ -131,7 +119,7 @@ describe('[Incoming Integrations]', function() {
 						expect(res.body).to.have.property('integration').and.to.be.an('object');
 						integrationId = res.body.integration._id;
 					})
-					.end(() => removeIntegration(integrationId).then(done));
+					.end(() => removeIntegration(integrationId, 'incoming').then(done));
 			});
 		});
 
@@ -196,21 +184,18 @@ describe('[Incoming Integrations]', function() {
 				login(user.username, password).then((credentials) => {
 					userCredentials = credentials;
 					updatePermission('manage-incoming-integrations', ['user']).then(() => {
-						request.post(api('integrations.create'))
-							.set(userCredentials)
-							.send({
-								type: 'webhook-incoming',
-								name: 'Incoming test',
-								enabled: true,
-								alias: 'test',
-								username: 'rocket.cat',
-								scriptEnabled: false,
-								channel: '#general',
-							})
-							.end((err, res) => {
-								integrationCreatedByAnUser = res.body.integration;
-								done();
-							});
+						createIntegration({
+							type: 'webhook-incoming',
+							name: 'Incoming test',
+							enabled: true,
+							alias: 'test',
+							username: 'rocket.cat',
+							scriptEnabled: false,
+							channel: '#general',
+						}, userCredentials).then((integration) => {
+							integrationCreatedByAnUser = integration;
+							done();
+						});
 					});
 				});
 			});

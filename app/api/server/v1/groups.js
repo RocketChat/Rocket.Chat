@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { composeMessageObjectWithUser } from '../../../utils';
+import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { API } from '../api';
 import _ from 'underscore';
 
@@ -279,7 +280,7 @@ API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const ourQuery = Object.assign({}, query, { channel: { $in: channelsToSearch } });
+		const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, { channel: { $in: channelsToSearch } });
 		const integrations = Integrations.find(ourQuery, {
 			sort: sort ? sort : { _createdAt: 1 },
 			skip: offset,
