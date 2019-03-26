@@ -23,7 +23,7 @@
 	}
 
 	&-search {
-		height: 48px;
+		min-height: 48px;
 
 		margin-right: 5px;
 		margin-left: 5px;
