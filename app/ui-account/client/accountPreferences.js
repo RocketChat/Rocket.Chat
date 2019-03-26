@@ -8,7 +8,7 @@ import { t, handleError, getUserPreference } from '../../utils';
 import { modal, SideNav } from '../../ui-utils';
 import { KonchatNotification } from '../../ui';
 import { settings } from '../../settings';
-import { CustomSounds } from '../../custom-sounds';
+import { CustomSounds } from '../../custom-sounds/client';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -167,7 +167,7 @@ Template.accountPreferences.onCreated(function() {
 		data.desktopNotifications = $('#desktopNotifications').find('select').val();
 		data.mobileNotifications = $('#mobileNotifications').find('select').val();
 		data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
-		data.sidebarShowThreads = JSON.parse($('#sidebarShowThreads').find('input:checked').val());
+		data.sidebarShowDiscussion = JSON.parse($('#sidebarShowDiscussion').find('input:checked').val());
 		data.notificationsSoundVolume = parseInt($('#notificationsSoundVolume').val());
 		data.roomCounterSidebar = JSON.parse($('#roomCounterSidebar').find('input:checked').val());
 		data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
