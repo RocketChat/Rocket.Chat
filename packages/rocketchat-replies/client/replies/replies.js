@@ -55,7 +55,7 @@ Template.RocketReplies.onCreated(function () {
 });
 
 Template.RocketReplies.onRendered(function () {
-	$('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea')
+	$('section[id^="chat-window"] > div > div.contextual-bar > section > main > footer > div > label > textarea')
 		.focus()
 		.data('mention-user', true)
 		.data('reply',[Template.instance().data.tabBar.data.curValue.message])

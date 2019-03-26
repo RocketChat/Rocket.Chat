@@ -149,7 +149,7 @@ Template.messageBoxAudioMessage.events({
 
 				let parentMessage;
 				if (isInReplyView) {
-					parentMessage = $('#chat-window-GENERAL > div > div.contextual-bar > section > main > footer > div > label > textarea').data('reply');
+					parentMessage = $('section[id^="chat-window"] > div > div.contextual-bar > section > main > footer > div > label > textarea').data('reply');
 					file.customFields = { ref: parentMessage[0]._id };
 				}
 				if (file) {
