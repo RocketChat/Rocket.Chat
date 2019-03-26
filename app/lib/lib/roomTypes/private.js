@@ -31,7 +31,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	getIcon(roomData) {
 		if (roomData.prid) {
-			return 'thread';
+			return 'discussion';
 		}
 		return this.icon;
 	}
@@ -70,11 +70,6 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	canSendMessage(roomId) {
-		const room = ChatRoom.findOne({ _id: roomId, t: 'p' }, { fields: { prid: 1 } });
-		if (room.prid) {
-			return true;
-		}
-
 		// TODO: remove duplicated code
 		return ChatSubscription.find({
 			rid: roomId,
