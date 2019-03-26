@@ -111,6 +111,10 @@ export class AppsRestApi {
 				let buff;
 
 				if (this.bodyParams.url) {
+					if (process.env.NODE_ENV === 'production') {
+						return API.v1.failure({ error: 'Installation from url is disabled.' });
+					}
+
 					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
@@ -142,6 +146,10 @@ export class AppsRestApi {
 
 					buff = Buffer.from(result.content, 'base64');
 				} else {
+					if (process.env.NODE_ENV === 'production') {
+						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
+					}
+
 					buff = fileHandler(this.request, 'app');
 				}
 
@@ -237,6 +245,10 @@ export class AppsRestApi {
 				let buff;
 
 				if (this.bodyParams.url) {
+					if (process.env.NODE_ENV === 'production') {
+						return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
+					}
+
 					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
@@ -268,6 +280,10 @@ export class AppsRestApi {
 
 					buff = Buffer.from(result.content, 'base64');
 				} else {
+					if (process.env.NODE_ENV === 'production') {
+						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
+					}
+
 					buff = fileHandler(this.request, 'app');
 				}
 
