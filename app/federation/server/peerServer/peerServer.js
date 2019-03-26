@@ -1,5 +1,5 @@
 import { callbacks } from '../../../callbacks';
-import { setReaction } from '../../../reactions';
+import { setReaction } from '../../../reactions/server';
 import { addUserToRoom, removeUserFromRoom, deleteMessage } from '../../../lib';
 import { Rooms, Subscriptions } from '../../../models';
 

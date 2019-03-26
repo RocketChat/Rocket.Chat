@@ -94,6 +94,8 @@
 		overflow-x: hidden;
 		overflow-y: auto;
 
+		flex: 1;
+
 		margin: 0 -1.5rem;
 		padding: 0 1.5rem;
 
