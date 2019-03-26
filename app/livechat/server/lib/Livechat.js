@@ -324,6 +324,13 @@ export const Livechat = {
 		return true;
 	},
 
+	forwardChat(roomId, status) {
+		check(roomId, String);
+		check(status, Boolean);
+
+		Rooms.findByRoomAndUpdateForward(roomId, status);
+	},
+
 	setCustomFields({ token, key, value, overwrite } = {}) {
 		check(token, String);
 		check(key, String);

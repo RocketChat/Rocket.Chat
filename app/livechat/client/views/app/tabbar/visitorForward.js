@@ -35,20 +35,24 @@ Template.visitorForward.helpers({
 		return this.name || this.username;
 	},
 	forwarded() {
-		return Template.instance().forwarded.get() ? 'hidden' : '';
+		return Template.instance().forwarded.get();
 	},
 });
 
 Template.visitorForward.onCreated(function() {
 	this.visitor = new ReactiveVar();
 	this.room = new ReactiveVar();
-	this.forwarded = new ReactiveVar(false);
+	this.forwarded = new ReactiveVar();
 	this.autorun(() => {
 		this.visitor.set(Meteor.users.findOne({ _id: Template.currentData().visitorId }));
 	});
 
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
+	});
+
+	this.autorun(() => {
+		this.forwarded.set(ChatRoom.findOne({ _id: Template.currentData().roomId }).forwarded);
 	});
 
 	this.subscribe('livechat:departments');
@@ -91,6 +95,7 @@ Template.visitorForward.events({
 		const timeoutAgent = Math.abs(settings.get('Livechat_forward_timeout_second') * 1000);
 		const userDeny = Meteor.users.findOne(transferData.userId);
 		instance.timeout = Meteor.setTimeout(() => {
+			Meteor.call('livechat:forwardstatus', transferData.roomId, false);
 			modal.open({
 				title: t('Timeout'),
 				type: 'error',
@@ -99,9 +104,8 @@ Template.visitorForward.events({
 				html: true,
 				confirmButtonText: TAPi18n.__('OK'),
 			});
-			instance.forwarded.set(false);
 		}, timeoutAgent);
-		instance.forwarded.set(true);
+		Meteor.call('livechat:forwardstatus', transferData.roomId, true);
 		transferData.timeout = instance.timeout;
 		transferData.timeoutAgent = timeoutAgent;
 		transferData.originalAgentId = Meteor.userId();
@@ -124,9 +128,6 @@ Template.visitorForward.events({
 		event.preventDefault();
 
 		this.cancel();
-	},
-	'livechat.forward.deny'(event, instance) {
-		instance.forwarded.set(false);
 	},
 });
 
@@ -178,9 +179,7 @@ Tracker.autorun(function() {
 				case 'deny':
 					const userDeny = Meteor.users.findOne(data.transferData.userId);
 					Meteor.clearTimeout(data.transferData.timeout);
-					// eslint-disable-next-line new-cap
-					const denyEvent = $.Event('livechat.forward.deny');
-					$('#forward-livecahat').trigger(denyEvent);
+					Meteor.call('livechat:forwardstatus', data.transferData.roomId, false);
 					modal.open({
 						title: TAPi18n.__('LiveChat'),
 						text: TAPi18n.__('Username_did_not_accept_your_livechat_request', { username: userDeny.username }),
@@ -190,6 +189,7 @@ Tracker.autorun(function() {
 					break;
 
 				case 'transferred':
+					Meteor.call('livechat:forwardstatus', data.transferData.roomId, false);
 					FlowRouter.go(`/live/${ data.transferData.roomId }`);
 					toastr.success(t('Transferred'));
 					break;

@@ -20,6 +20,7 @@ import './methods/changeLivechatStatus';
 import './methods/closeByVisitor';
 import './methods/closeRoom';
 import './methods/facebook';
+import './methods/forwardStatus';
 import './methods/getCustomFields';
 import './methods/getAgentData';
 import './methods/getAgentOverviewData';
