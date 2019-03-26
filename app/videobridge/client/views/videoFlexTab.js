@@ -6,7 +6,7 @@ import { modal, TabBar } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { Users, Rooms } from '../../../models';
 
-import CONSTANTS from '../../constants';
+import * as CONSTANTS from '../../constants';
 
 Template.videoFlexTab.helpers({
 	openInNewWindow() {
@@ -47,9 +47,9 @@ Template.videoFlexTab.onRendered(function() {
 	};
 
 	const stop = () => {
-		if (this.timeOut) {
+		if (this.intervalHandler) {
 			Meteor.defer(() => this.api && this.api.dispose());
-			clearInterval(this.timeOut);
+			clearInterval(this.intervalHandler);
 		}
 	};
 
@@ -60,13 +60,13 @@ Template.videoFlexTab.onRendered(function() {
 		const update = () => {
 			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 }, reactive: false });
 
-			if (jitsiTimeout && (new Date() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.HEARTBEAT / 2)) {
+			if (jitsiTimeout && (new Date() - new Date(jitsiTimeout) + CONSTANTS.TIMEOUT < CONSTANTS.DEBOUNCE)) {
 				return;
 			}
 			return Meteor.status().connected && Meteor.call('jitsi:updateTimeout', rid);
 		};
 		update();
-		this.timeOut = Meteor.setInterval(update, CONSTANTS.HEARTBEAT);
+		this.intervalHandler = Meteor.setInterval(update, CONSTANTS.HEARTBEAT);
 		TabBar.updateButton('video', { class: 'red' });
 	};
 
@@ -82,7 +82,7 @@ Template.videoFlexTab.onRendered(function() {
 		if (!dismiss) {
 			return closePanel();
 		}
-		this.timeout = null;
+		this.intervalHandler = null;
 		this.autorun(() => {
 			if (!settings.get('Jitsi_Enabled')) {
 				return closePanel();
