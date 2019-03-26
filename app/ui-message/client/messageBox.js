@@ -9,15 +9,15 @@ import { Markdown } from '../../markdown';
 import { ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import {
-	AudioRecorder,
 	ChatMessages,
 	chatMessages,
 	fileUpload,
 	KonchatNotification,
 } from '../../ui';
-import { Layout, messageBox, popover, RoomManager } from '../../ui-utils';
+import { Layout, messageBox, popover, RoomManager, call } from '../../ui-utils';
 import { t, roomTypes, getUserPreference } from '../../utils';
 import moment from 'moment';
+
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
@@ -145,14 +145,6 @@ Template.messageBox.onCreated(function() {
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
 	messageBox.emit('created', this);
-
-	navigator.permissions.query({ name: 'microphone' })
-		.then((permissionStatus) => {
-			this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
-			permissionStatus.onchange = () => {
-				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
-			};
-		});
 });
 
 Template.messageBox.onRendered(function() {
@@ -235,23 +227,21 @@ Template.messageBox.helpers({
 		return getUserPreference(Meteor.userId(), 'useEmojis');
 	},
 	maxMessageLength() {
-		return settings.get('Message_MaxAllowedSize');
+		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
 	},
 	isSendIconDisabled() {
 		return !Template.instance().sendIconDisabled.get();
-	},
-	isAudioMessageAllowed() {
-		return AudioRecorder.isSupported() &&
-			!Template.instance().isMicrophoneDenied.get() &&
-			settings.get('FileUpload_Enabled') &&
-			settings.get('Message_AudioRecorderEnabled') &&
-			(!settings.get('FileUpload_MediaTypeWhiteList') ||
-			settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
 		return Object.values(actionGroups)
 			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
+	},
+	isAnonymousOrJoinCode() {
+		const room = Session.get(`roomData${ this._id }`);
+		return !Meteor.userId() || (!ChatSubscription.findOne({
+			rid: this._id,
+		}) && room && room.joinCodeRequired);
 	},
 	showFormattingTips() {
 		return settings.get('Message_ShowFormattingTips');
@@ -278,6 +268,16 @@ Template.messageBox.helpers({
 });
 
 Template.messageBox.events({
+	'click .js-join'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		const joinCodeInput = Template.instance().find('[name=joinCode]');
+		const joinCode = joinCodeInput && joinCodeInput.value;
+
+		call('joinRoom', this._id, joinCode);
+	},
+
 	'click .emoji-picker-icon'(event) {
 		event.stopPropagation();
 		event.preventDefault();
@@ -317,7 +317,7 @@ Template.messageBox.events({
 	'click .cancel-reply'(event, instance) {
 
 		const input = instance.find('.js-input-message');
-		const messages = $(input).data('reply');
+		const messages = $(input).data('reply') || [];
 		const filtered = messages.filter((msg) => msg._id !== this._id);
 
 		$(input)
@@ -373,7 +373,7 @@ Template.messageBox.events({
 			chatMessages[this._id].valueChanged(this._id, event, Template.instance());
 		}
 	},
-	'click .js-send'(event, instance) {
+	async 'click .js-send'(event, instance) {
 		const { input } = chatMessages[RoomManager.openedRoom];
 		chatMessages[this._id].send(this._id, input, () => {
 			input.updateAutogrow();
