@@ -8,8 +8,9 @@
 							<label class="rc-input__label">
 								<div class="rc-input__title">{{_ "StatusMessage"}}</div>
 								<div class="rc-input__wrapper">
-									<div class="rc-input__icon">
-										{{> icon block="rc-input__icon-svg" icon="edit" }}
+									<div class="rc-input__icon rc-input__icon__config-value rc-input__icon--status-busy">
+										{{> icon block="rc-input__icon-svg" icon="circle"}}
+										{{> icon block="rc-input__icon-svg" icon="arrow-down"}}
 									</div>
 									<input name="status" type="text" maxlength="120" class="rc-input__element" placeholder="{{_ "StatusMessage_Placeholder"}}" autofocus value="{{statusMessage}}">
 								</div>

@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 import { settings } from '../../../../settings';
 import { t } from '../../../../utils';
 import toastr from 'toastr';
+import { popover } from '../../../../ui-utils';
 import s from 'underscore.string';
 
 Template.editStatus.helpers({
@@ -15,6 +16,64 @@ Template.editStatus.helpers({
 });
 
 Template.editStatus.events({
+	'click .rc-input__icon__config-value'(e) {
+		const instance = Template.instance();
+
+		const options = [
+			{
+				icon: 'circle',
+				name: t('Online'),
+				modifier: 'online',
+				action: () => {
+					
+				},
+			},
+			{
+				icon: 'circle',
+				name: t('Away'),
+				modifier: 'away',
+				action: () => {
+					
+				},
+			},
+			{
+				icon: 'circle',
+				name: t('Busy'),
+				modifier: 'busy',
+				action: () => {
+					
+				},
+			},
+			{
+				icon: 'circle',
+				name: t('Invisible'),
+				modifier: 'invisible',
+				action: () => {
+					
+				},
+			},
+		];
+
+		const value = 'busy';
+		// const value = instance.form[key].get();
+
+		const config = {
+			popoverClass: 'edit-status-type',
+			columns: [
+				{
+					groups: [
+						{
+							items: options,
+						},
+					],
+				},
+			],
+			currentTarget: e.currentTarget,
+			offsetVertical: e.currentTarget.clientHeight,
+		};
+		popover.open(config);
+	},
+
 	'submit .edit-status__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
