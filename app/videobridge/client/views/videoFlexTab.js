@@ -5,7 +5,6 @@ import { settings } from '../../../settings';
 import { modal, TabBar } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { Users, Rooms } from '../../../models';
-
 import * as CONSTANTS from '../../constants';
 
 Template.videoFlexTab.helpers({
@@ -56,7 +55,6 @@ Template.videoFlexTab.onRendered(function() {
 	this.stop = stop;
 
 	const start = () => {
-
 		const update = () => {
 			const { jitsiTimeout } = Rooms.findOne({ _id: rid }, { fields: { jitsiTimeout: 1 }, reactive: false });
 
