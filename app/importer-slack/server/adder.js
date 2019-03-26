@@ -1,4 +1,4 @@
-import { Importers } from '../../importer';
+import { Importers } from '../../importer/server';
 import { SlackImporterInfo } from '../lib/info';
 import { SlackImporter } from './importer';
 

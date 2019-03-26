@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { settings } from '../../../settings';
 import { getUserPreference, handleError, t } from '../../../utils';
 import { popover } from '../../../ui-utils';
-import { CustomSounds } from '../../../custom-sounds';
+import { CustomSounds } from '../../../custom-sounds/client';
 import { ChatSubscription } from '../../../models';
 
 const notificationLabels = {

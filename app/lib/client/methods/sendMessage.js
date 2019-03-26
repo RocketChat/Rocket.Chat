@@ -3,7 +3,7 @@ import { TimeSync } from 'meteor/mizzao:timesync';
 import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { promises } from '../../../promises';
+import { promises } from '../../../promises/client';
 import s from 'underscore.string';
 
 Meteor.methods({

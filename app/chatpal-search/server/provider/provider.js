@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { searchProviderService, SearchProvider } from '../../../search';
+import { searchProviderService, SearchProvider } from '../../../search/server';
 import Index from './index';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions } from '../../../models';
