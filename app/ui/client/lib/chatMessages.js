@@ -9,7 +9,7 @@ import { t, getUserPreference, slashCommands, handleError } from '../../../utils
 import { MessageAction, messageProperties, MessageTypes, readMessage, modal, call } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { promises } from '../../../promises';
+import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models';
 import { emoji } from '../../../emoji';
