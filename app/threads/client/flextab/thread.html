@@ -1,0 +1,10 @@
+<template name="thread">
+	<ul class="thread">
+		{{#each parentMessage}}
+			{{> nrr nrrargs 'message' .}}
+		{{/each}}
+	</ul>
+	<footer class="footer border-component-color">
+		{{> messageBox getroomData}}
+	</footer>
+</template>
