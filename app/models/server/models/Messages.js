@@ -28,6 +28,9 @@ export class Messages extends Base {
 
 		// discussions
 		this.tryEnsureIndex({ drid: 1 }, { sparse: true });
+		// threads
+		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
+
 	}
 
 	setReactions(messageId, reactions) {
@@ -992,6 +995,10 @@ export class Messages extends Base {
 				dlm,
 			},
 		}, { multi: 1 });
+	}
+
+	replies(tmid) {
+		return this.find({ tmid });
 	}
 }
 
