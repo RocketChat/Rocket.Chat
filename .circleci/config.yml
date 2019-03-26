@@ -34,7 +34,7 @@ test-configure-replicaset: &test-configure-replicaset
     mongo --eval 'rs.status()'
 
 test-docker-image: &test-docker-image
-  circleci/node:8.11-browsers
+  circleci/node:8.11-stretch-browsers
 
 test: &test
   <<: *defaults
@@ -74,7 +74,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:8.11-stretch
 
     steps:
       - checkout
@@ -255,7 +255,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:8.11-stretch
 
     steps:
       - attach_workspace:
