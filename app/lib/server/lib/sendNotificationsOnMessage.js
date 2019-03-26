@@ -166,8 +166,11 @@ const lookup = {
 	},
 };
 
-async function sendAllNotifications(message, room) {
-
+export async function sendAllNotifications(message, room, users) {
+	// threads
+	if (message.tmid) {
+		return message;
+	}
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -202,6 +205,7 @@ async function sendAllNotifications(message, room) {
 	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 
 	const query = {
+		...(users && { 'u._id': { $in: users } }),
 		rid: room._id,
 		ignored: { $ne: sender._id },
 		disableNotifications: { $ne: true },
