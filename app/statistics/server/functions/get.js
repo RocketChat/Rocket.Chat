@@ -7,7 +7,7 @@ import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, Liv
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 import { Migrations } from '../../../migrations';
-import { statistics } from '../../lib/rocketchat';
+import { statistics } from '../statisticsNamespace';
 
 const wizardFields = [
 	'Organization_Type',
