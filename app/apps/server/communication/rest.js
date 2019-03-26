@@ -122,12 +122,9 @@ export class AppsRestApi {
 					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
 
 					const headers = {};
-					const token = getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${ token }`;
-					}
+					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
-					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${token}`, {
 						headers,
 						npmRequestOptions: { encoding: 'base64' },
 					});
