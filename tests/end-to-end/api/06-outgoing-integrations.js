@@ -1,69 +1,441 @@
-import { api, request, credentials, integration } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { updatePermission } from '../../data/permissions.helper';
+import { createUser, login } from '../../data/users.helper';
+import { password } from '../../data/user';
 
-describe('Outgoing Integrations', function() {
+const removeIntegration = (integrationId) => new Promise((resolve) => {
+	request.post(api('integrations.remove'))
+		.set(credentials)
+		.send({
+			type: 'webhook-outgoing',
+			integrationId,
+		})
+		.expect('Content-Type', 'application/json')
+		.expect(200)
+		.end(resolve);
+});
+
+
+describe('[Outgoing Integrations]', function() {
 	this.retries(0);
 
-	it('/integrations.create', (done) => {
-		request.post(api('integrations.create'))
-			.set(credentials)
-			.send({
-				type: 'webhook-outgoing',
-				name: 'Guggy',
-				enabled: true,
-				username: 'rocket.cat',
-				urls: ['http://text2gif.guggy.com/guggify'],
-				scriptEnabled: false,
-				channel: '#general',
-				triggerWords: ['!guggy'],
-				alias: 'guggy',
-				avatar: 'http://res.guggy.com/logo_128.png',
-				emoji: ':ghost:',
-				event: 'sendMessage',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				integration._id = res.body.integration._id;
-				expect(res.body).to.have.nested.property('integration.name', 'Guggy');
-				expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
-				expect(res.body).to.have.nested.property('integration.enabled', true);
-				expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
-				expect(res.body).to.have.nested.property('integration.event', 'sendMessage');
-			})
-			.end(done);
+	let integration;
+	let integrationCreatedByAnUser;
+	let user;
+	let userCredentials;
+
+	before((done) => getCredentials(done));
+
+	before((done) => {
+		updatePermission('manage-incoming-integrations', [])
+			.then(() => updatePermission('manage-own-incoming-integrations', []))
+			.then(() => updatePermission('manage-own-outgoing-integrations', []))
+			.then(() => updatePermission('manage-outgoing-integrations', []))
+			.then(done);
 	});
 
-	it('/integrations.list', (done) => {
-		request.get(api('integrations.list'))
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('offset');
-				expect(res.body).to.have.property('items');
-				expect(res.body).to.have.property('total');
-			})
-			.end(done);
+	after((done) => {
+		updatePermission('manage-incoming-integrations', ['admin'])
+			.then(() => updatePermission('manage-own-incoming-integrations', ['admin']))
+			.then(() => updatePermission('manage-own-outgoing-integrations', ['admin']))
+			.then(() => updatePermission('manage-outgoing-integrations', ['admin']))
+			.then(done);
 	});
 
-	it('/integrations.remove', (done) => {
-		request.post(api('integrations.remove'))
-			.set(credentials)
-			.send({
-				type: 'webhook-outgoing',
-				integrationId: integration._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('integration.name', 'Guggy');
-				expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
-				expect(res.body).to.have.nested.property('integration.enabled', true);
-				expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
-			})
-			.end(done);
+	describe('[/integrations.create]', () => {
+		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to add an outgoing integration', (done) => {
+			updatePermission('manage-outgoing-integrations', []).then(() => {
+				request.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-outgoing',
+						name: 'Guggy',
+						enabled: true,
+						username: 'rocket.cat',
+						urls: ['http://text2gif.guggy.com/guggify'],
+						scriptEnabled: false,
+						channel: '#general',
+						triggerWords: ['!guggy'],
+						alias: 'guggy',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						emoji: ':ghost:',
+						event: 'sendMessage',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'not_authorized');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the user DOES NOT have the permission "manage-own-outgoing-integrations" to add an outgoing integration', (done) => {
+			updatePermission('manage-own-outgoing-integrations', []).then(() => {
+				request.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-outgoing',
+						name: 'Guggy',
+						enabled: true,
+						username: 'rocket.cat',
+						urls: ['http://text2gif.guggy.com/guggify'],
+						scriptEnabled: false,
+						channel: '#general',
+						triggerWords: ['!guggy'],
+						alias: 'guggy',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						emoji: ':ghost:',
+						event: 'sendMessage',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'not_authorized');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the user sends an invalid type of integration', (done) => {
+			request.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-outgoing-invalid',
+					name: 'Guggy',
+					enabled: true,
+					username: 'rocket.cat',
+					urls: ['http://text2gif.guggy.com/guggify'],
+					scriptEnabled: false,
+					channel: '#general',
+					triggerWords: ['!guggy'],
+					alias: 'guggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					emoji: ':ghost:',
+					event: 'sendMessage',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid integration type.');
+				})
+				.end(done);
+		});
+
+		it('should add the integration successfully when the user ONLY has the permission "manage-outgoing-integrations" to add an outgoing integration', (done) => {
+			let integrationId;
+			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
+				request.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-outgoing',
+						name: 'Guggy',
+						enabled: true,
+						username: 'rocket.cat',
+						urls: ['http://text2gif.guggy.com/guggify'],
+						scriptEnabled: false,
+						channel: '#general',
+						triggerWords: ['!guggy'],
+						alias: 'guggy',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						emoji: ':ghost:',
+						event: 'sendMessage',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('integration').and.to.be.an('object');
+						integrationId = res.body.integration._id;
+					})
+					.end(() => removeIntegration(integrationId).then(done));
+			});
+		});
+
+		it('should add the integration successfully when the user ONLY has the permission "manage-own-outgoing-integrations" to add an outgoing integration', (done) => {
+			updatePermission('manage-outgoing-integrations', []).then(() => {
+				updatePermission('manage-own-outgoing-integrations', ['admin']).then(() => {
+					request.post(api('integrations.create'))
+						.set(credentials)
+						.send({
+							type: 'webhook-outgoing',
+							name: 'Guggy',
+							enabled: true,
+							username: 'rocket.cat',
+							urls: ['http://text2gif.guggy.com/guggify'],
+							scriptEnabled: false,
+							channel: '#general',
+							triggerWords: ['!guggy'],
+							alias: 'guggy',
+							avatar: 'http://res.guggy.com/logo_128.png',
+							emoji: ':ghost:',
+							event: 'sendMessage',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('integration').and.to.be.an('object');
+							integration = res.body.integration;
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should create an outgoing integration successfully', (done) => {
+			request.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-outgoing',
+					name: 'Guggy',
+					enabled: true,
+					username: 'rocket.cat',
+					urls: ['http://text2gif.guggy.com/guggify'],
+					scriptEnabled: false,
+					channel: '#general',
+					triggerWords: ['!guggy'],
+					alias: 'guggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					emoji: ':ghost:',
+					event: 'sendMessage',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					integration._id = res.body.integration._id;
+					expect(res.body).to.have.nested.property('integration.name', 'Guggy');
+					expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
+					expect(res.body).to.have.nested.property('integration.enabled', true);
+					expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
+					expect(res.body).to.have.nested.property('integration.event', 'sendMessage');
+				})
+				.end(done);
+		});
 	});
+
+	describe('[/integrations.list]', () => {
+
+		before((done) => {
+			createUser().then((createdUser) => {
+				user = createdUser;
+				login(user.username, password).then((credentials) => {
+					userCredentials = credentials;
+					updatePermission('manage-outgoing-integrations', ['user']).then(() => {
+						request.post(api('integrations.create'))
+							.set(userCredentials)
+							.send({
+								type: 'webhook-outgoing',
+								name: 'Guggy',
+								enabled: true,
+								username: 'rocket.cat',
+								urls: ['http://text2gif.guggy.com/guggify'],
+								scriptEnabled: false,
+								channel: '#general',
+								triggerWords: ['!guggy'],
+								alias: 'guggy',
+								avatar: 'http://res.guggy.com/logo_128.png',
+								emoji: ':ghost:',
+								event: 'sendMessage',
+							})
+							.end((err, res) => {
+								integrationCreatedByAnUser = res.body.integration;
+								done();
+							});
+					});
+				});
+			});
+		});
+
+		it('should return the list of outgoing integrations', (done) => {
+			request.get(api('integrations.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
+					expect(integrationCreatedByAdmin).to.be.an('object');
+					expect(integrationCreatedByAdmin._id).to.be.equal(integration._id);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('items');
+					expect(res.body).to.have.property('total');
+				})
+				.end(done);
+		});
+
+		it('should return the list create by the user only', (done) => {
+			updatePermission('manage-outgoing-integrations', []).then(() => {
+				updatePermission('manage-own-outgoing-integrations', ['user']).then(() => {
+					request.get(api('integrations.list'))
+						.set(userCredentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
+							expect(integrationCreatedByAdmin).to.be.equal(undefined);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('items');
+							expect(res.body).to.have.property('total');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
+			updatePermission('manage-incoming-integrations', []).then(() => {
+				updatePermission('manage-own-incoming-integrations', []).then(() => {
+					updatePermission('manage-outgoing-integrations', []).then(() => {
+						updatePermission('manage-outgoing-integrations', []).then(() => {
+							request.get(api('integrations.list'))
+								.set(credentials)
+								.expect('Content-Type', 'application/json')
+								.expect(403)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('error', 'unauthorized');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+		});
+	});
+
+	describe('[/integrations.history]', () => {
+		it('should return an error when the user DOES NOT the necessary permission', (done) => {
+			updatePermission('manage-outgoing-integrations', []).then(() => {
+				updatePermission('manage-own-outgoing-integrations', []).then(() => {
+					request.get(api('integrations.history'))
+						.set(credentials)
+						.query({
+							id: integration._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'unauthorized');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should return the history of outgoing integrations', (done) => {
+			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
+				request.get(api('integrations.history'))
+					.set(credentials)
+					.query({
+						id: integration._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('history').and.to.be.an('array');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('items');
+						expect(res.body).to.have.property('total');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/integrations.remove]', () => {
+		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to remove an outgoing integration', (done) => {
+			updatePermission('manage-outgoing-integrations', []).then(() => {
+				request.post(api('integrations.remove'))
+					.set(credentials)
+					.send({
+						integrationId: integration._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'unauthorized');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the user DOES NOT have the permission "manage-own-outgoing-integrations" to remove an outgoing integration', (done) => {
+			updatePermission('manage-own-incoming-integrations', []).then(() => {
+				request.post(api('integrations.remove'))
+					.set(credentials)
+					.send({
+						integrationId: integration._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'unauthorized');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when the user sends an invalid type of integration', (done) => {
+			updatePermission('manage-own-outgoing-integrations', ['admin']).then(() => {
+				request.post(api('integrations.remove'))
+					.set(credentials)
+					.send({
+						integrationId: integration._id,
+						type: 'invalid-type',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Invalid integration type.');
+					})
+					.end(done);
+			});
+		});
+
+		it('should remove the integration successfully when the user at least one of the necessary permission to remove an outgoing integration', (done) => {
+			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
+				request.post(api('integrations.remove'))
+					.set(credentials)
+					.send({
+						integrationId: integration._id,
+						type: integration.type,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		it('the normal user should remove the integration successfully when the user have the "manage-own-outgoing-integrations" to remove an outgoing integration', (done) => {
+			updatePermission('manage-own-outgoing-integrations', ['user']).then(() => {
+				request.post(api('integrations.remove'))
+					.set(userCredentials)
+					.send({
+						integrationId: integrationCreatedByAnUser._id,
+						type: integrationCreatedByAnUser.type,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+	});
+
 });
