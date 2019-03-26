@@ -125,8 +125,6 @@ Template.livechat.events({
 				title: t('Livechat_Take_Confirm'),
 				text: `${ t('Message') }: ${ result && result.msg }`,
 				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
 				confirmButtonText: t('Take_it'),
 			}, (isConfirm) => {
 				if (isConfirm) {
