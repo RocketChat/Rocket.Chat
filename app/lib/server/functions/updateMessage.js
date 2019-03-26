@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Apps } from '../../../apps';
+import { Apps } from '../../../apps/server';
 
 export const updateMessage = function(message, user, originalMessage) {
 	if (!originalMessage) {

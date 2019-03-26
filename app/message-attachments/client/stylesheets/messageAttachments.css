@@ -66,7 +66,7 @@ html.rtl .attachment {
 
 	& .attachment-title {
 
-		color: #13679a;
+		color: #1d74f5;
 
 		font-size: 1.02rem;
 		font-weight: 500;
@@ -89,6 +89,8 @@ html.rtl .attachment {
 		display: flex;
 
 		margin-top: 4px;
+
+		align-items: center;
 		flex-wrap: wrap;
 
 		& .attachment-field {

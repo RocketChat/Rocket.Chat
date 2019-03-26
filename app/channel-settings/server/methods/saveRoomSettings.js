@@ -60,7 +60,7 @@ Meteor.methods({
 		}
 
 		if (room.prid) {
-			throw new Meteor.Error('error-action-not-allowed', 'Editing thread room is not allowed', {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing discussion room is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
