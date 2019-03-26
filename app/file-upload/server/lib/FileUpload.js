@@ -354,7 +354,7 @@ export class FileUploadClass {
 			UserDataFiles,
 		};
 		const modelName = this.name.split(':')[1];
-		if (!Object.keys(modelsAvailable).includes(modelName)) {
+		if (!modelsAvailable[modelName]) {
 			throw new Error('Invalid Model for FileUpload');
 		}
 		return modelsAvailable[modelName];

@@ -2,6 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { settings } from '../../settings';
 
+let Users;
+if (Meteor.isServer) {
+	Users = require('../../models/server/models/Users').default;
+}
+
 export const RoomSettingsEnum = {
 	NAME: 'roomName',
 	TOPIC: 'roomTopic',
@@ -170,8 +175,8 @@ export class RoomTypeConfig {
 			throw new Error('You MUST provide the "hasPermission" to canBeCreated function');
 		}
 		return Meteor.isServer ?
-			hasPermission(Meteor.userId(), `create-${ this._identifier }`) :
-			hasPermission([`create-${ this._identifier }`]);
+			hasPermission(Meteor.userId(), `create-${this._identifier}`) :
+			hasPermission([`create-${this._identifier}`]);
 	}
 
 	canBeDeleted(hasPermission, room) {
@@ -179,8 +184,8 @@ export class RoomTypeConfig {
 			throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 		}
 		return Meteor.isServer ?
-			hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id) :
-			hasPermission(`delete-${ room.t }`, room._id);
+			hasPermission(Meteor.userId(), `delete-${room.t}`, room._id) :
+			hasPermission(`delete-${room.t}`, room._id);
 	}
 
 	supportMembersList(/* room */) {
@@ -231,8 +236,7 @@ export class RoomTypeConfig {
 	 * @return {object} Sender's object from db
 	 */
 	getMsgSender(senderId) {
-		if (Meteor.isServer) {
-			const Users = require('../../models/server/models/Users').default;
+		if (Meteor.isServer && Users) {
 			return Users.findOneById(senderId);
 		}
 		return {};
@@ -251,9 +255,9 @@ export class RoomTypeConfig {
 			return {};
 		}
 
-		const title = `#${ this.roomName(room) }`;
+		const title = `#${this.roomName(room)}`;
 
-		const text = `${ settings.get('UI_Use_Real_Name') ? user.name : user.username }: ${ notificationMessage }`;
+		const text = `${settings.get('UI_Use_Real_Name') ? user.name : user.username}: ${notificationMessage}`;
 
 		return { title, text };
 	}
