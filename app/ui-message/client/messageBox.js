@@ -4,12 +4,11 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
-import { katex } from '../../katex';
-import { Markdown } from '../../markdown';
+import { katex } from '../../katex/client';
+import { Markdown } from '../../markdown/client';
 import { ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import {
-	AudioRecorder,
 	ChatMessages,
 	chatMessages,
 	fileUpload,
@@ -146,14 +145,6 @@ Template.messageBox.onCreated(function() {
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
 	messageBox.emit('created', this);
-
-	navigator.permissions.query({ name: 'microphone' })
-		.then((permissionStatus) => {
-			this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
-			permissionStatus.onchange = () => {
-				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
-			};
-		});
 });
 
 Template.messageBox.onRendered(function() {
@@ -240,14 +231,6 @@ Template.messageBox.helpers({
 	},
 	isSendIconDisabled() {
 		return !Template.instance().sendIconDisabled.get();
-	},
-	isAudioMessageAllowed() {
-		return AudioRecorder.isSupported() &&
-			!Template.instance().isMicrophoneDenied.get() &&
-			settings.get('FileUpload_Enabled') &&
-			settings.get('Message_AudioRecorderEnabled') &&
-			(!settings.get('FileUpload_MediaTypeWhiteList') ||
-			settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
 	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
