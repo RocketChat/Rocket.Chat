@@ -2,7 +2,8 @@
 	<div class="chatpal-search-container">
 		<ul class="chatpal-search-typefilter">
 			<li value="All" class="{{navSelected 'All'}}">{{_ "Chatpal_All_Results"}}</li>
-			<li value="Messages" class="{{navSelected 'Messages'}}">{{_ "Chatpal_Messages_Only"}}</li>
+			<li value="Messages" class="{{navSelected 'Messages'}}">{{_ "Chatpal_Messages"}}</li>
+			<li value="Files" class="{{navSelected 'Files'}}">{{_ "Chatpal_Files"}}</li>
 		</ul>
 		<div class="chatpal-search-result">
 			{{#if searching}}
@@ -36,6 +37,19 @@
 							{{/each}}
 						</div>
 					{{/if}}
+					{{#if result.file.docs}}
+						<div class="chatpal-search-result-header">
+							{{_ "Chatpal_Files"}}
+						</div>
+						<div class="chatpal-search-result-list">
+							{{#each result.file.docs}}
+								{{> ChatpalSearchSingleFile}}
+							{{/each}}
+						</div>
+						{{#if moreThanDisplayed 'file'}}
+							<div class="chatpal-show-more more-files">{{_ "Chatpal_More"}}</div>
+						{{/if}}
+					{{/if}}
 					{{#if result.message.docs}}
 						<div class="chatpal-search-result-header">
 							{{_ "Chatpal_Messages"}}
@@ -45,9 +59,8 @@
 								{{> ChatpalSearchSingleMessage}}
 							{{/each}}
 						</div>
-						{{#if moreMessagesThanDisplayed}}
-							<div class="chatpal-show-more-messages">{{_
-									"Chatpal_More"}}</div>
+						{{#if moreThanDisplayed 'message'}}
+							<div class="chatpal-show-more more-messages">{{_ "Chatpal_More"}}</div>
 						{{/if}}
 					{{/if}}
 
@@ -62,9 +75,7 @@
 				{{#if $eq resultType "Messages"}}
 					<div class="chatpal-search-result-header">
 						<h2 class="chatpal-search-number">
-							{{#if resultNumFound}}
-								{{resultNumFound}}
-							{{/if}}
+							{{resultNumFound}}
 						</h2>
 					</div>
 					{{#if result.message}}
@@ -94,6 +105,39 @@
 						{{/if}}
 					{{/if}}
 				{{/if}}
+				{{#if $eq resultType "Files"}}
+					<div class="chatpal-search-result-header">
+						<h2 class="chatpal-search-number">
+							{{resultNumFound}}
+						</h2>
+					</div>
+					{{#if result.file}}
+						<div class="chatpal-search-result-list">
+							{{#each result.file.docs}}
+								{{> ChatpalSearchSingleFile}}
+							{{/each}}
+						</div>
+					{{/if}}
+					{{#if resultPaging}}
+						{{#if $neq resultPaging.numOfPages 0}}
+							<div class="chatpal-paging">
+								{{#if $gt resultPaging.currentPage 1}}
+									<div class="chatpal-paging-prev chatpal-paging-button">
+										<i class="icon-left-circled2"></i>
+									</div>
+								{{/if}}
+								<div class="chatpal-paging-text">{{_ "Chatpal_search_page_of"
+									resultPaging.currentPage
+									resultPaging.numOfPages}}</div>
+								{{#if $lt resultPaging.currentPage resultPaging.numOfPages}}
+									<div class="chatpal-paging-next chatpal-paging-button">
+										<i class="icon-right-circled2"></i>
+									</div>
+								{{/if}}
+							</div>
+						{{/if}}
+					{{/if}}
+				{{/if}}
 			{{/if}}
 		</div>
 	</div>
@@ -108,13 +152,44 @@
 			<a class="chatpal-link" href="{{roomLink}}?msg={{_id}}">{{_ "Chatpal_go_to_message"}}</a>
 			<span class="chatpal-date">{{date}}</span>
 		</h2>
-		<div class="chatpal-avatar">
-			<div class="chatpal-avatar-image"
-				 style="background-image:url(/avatar/{{username}}?_dc=undefined);"></div>
+		<div class="chatpal-result-row">
+			<div class="chatpal-avatar">
+				<div class="chatpal-avatar-image"
+					 style="background-image:url(/avatar/{{username}}?_dc=undefined);"></div>
+			</div>
+			<div class="chatpal-result-content">
+				<span class="chatpal-name">{{username}}</span>
+				<span class="chatpal-time">{{time}}</span>
+				<div class="chatpal-message">{{{text}}}</div>
+			</div>
 		</div>
-		<span class="chatpal-name">{{username}}</span>
-		<span class="chatpal-time">{{time}}</span>
-		<div class="chatpal-message">{{{text}}}</div>
+	</div>
+</template>
+
+<template name="ChatpalSearchSingleFile">
+	<div class="chatpal-search-result-single">
+		<h2>
+			<span class="chatpal-channel">
+				{{> icon icon=roomIcon}}
+				{{roomName}}</span>
+			<a class="chatpal-link" href="{{roomLink}}?msg={{mid}}">{{_ "Chatpal_go_to_message"}}</a>
+			<span class="chatpal-date">{{date}}</span>
+		</h2>
+		<div class="chatpal-result-row">
+			<div class="chatpal-avatar">
+				<div class="chatpal-avatar-image"
+					 style="background-image:url(/avatar/{{username}}?_dc=undefined);"></div>
+			</div>
+			<div class="chatpal-result-content">
+				<span class="chatpal-name">{{username}}</span>
+				<span class="chatpal-time">{{time}}</span><br/>
+				<a class="chatpal-file-link attachment-download-icon rc-tooltip" aria-label="{{_ 'Download'}}" href="{{file_link}}" target="_blank" rel="noopener noreferrer" download="">
+					<span class="chatpal-file-name">{{{file_name}}}</span> {{> icon icon="download"}}
+				</a><br/>
+				<div class="chatpal-file-desc">{{{file_desc}}}</div>
+				<span class="chatpal-size">{{fileSize}}</span>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -123,7 +198,7 @@
 		<div class="chatpal-avatar">
 			<div class="chatpal-avatar-image" style="background-image:url(/avatar/{{cleanUsername}}?_dc=undefined);"></div>
 		</div>
-		<h2>{{{user_name}}}</h2>
+		<h2>{{{user_name}}}{{#unless nameMatchingUsername}} (@{{{user_username}}}){{/unless}}</h2>
 		<div class="direct-message">
 			<a href="/direct/{{cleanUsername}}">{{_ "Chatpal_go_to_user"}}</a>
 		</div>
@@ -131,7 +206,7 @@
 </template>
 
 <template name="ChatpalSearchSingleRoom">
-	<div class="chatpal-search-result-user chatpal-search-result-room">
+	<div class="chatpal-search-result-room">
 		<h2>
 			<span class="chatpal-channel">
 				{{> icon icon=roomIcon}}

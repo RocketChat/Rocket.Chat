@@ -41,7 +41,7 @@
 .chatpal-search-typefilter li {
 
 	display: flex;
-	flex: 0 0 50%;
+	flex: 0 0 33%;
 
 	height: 35px;
 	padding-top: 10px;
@@ -83,8 +83,8 @@
 	background-color: white;
 }
 
-.chatpal-search-result-user {
-
+.chatpal-search-result-user,
+.chatpal-search-result-room {
 	position: relative;
 
 	min-height: 40px;
@@ -115,7 +115,6 @@
 }
 
 .chatpal-search-result-user h2 {
-	margin-bottom: 5px;
 	padding-left: 45px;
 }
 
@@ -130,11 +129,11 @@
 	flex: 1 1 auto;
 }
 
-.chatpal-search-result-user .chatpal-channel {
+.chatpal-search-result-room .chatpal-channel {
 	font-weight: bold;
 }
 
-.chatpal-show-more-messages {
+.chatpal-show-more {
 
 	margin-bottom: 20px;
 
@@ -148,7 +147,7 @@
 	font-weight: bold;
 }
 
-.chatpal-show-more-messages:hover {
+.chatpal-show-more:hover {
 	text-decoration: underline;
 }
 
@@ -164,14 +163,11 @@
 
 	display: flex;
 
-	margin-bottom: 20px;
+	margin-bottom: 9px;
 	align-items: center;
 }
 
 .chatpal-search-result-single .chatpal-avatar {
-
-	position: absolute;
-
 	width: 36px;
 	height: 36px;
 }
@@ -185,8 +181,16 @@
 	background-size: contain;
 }
 
+.chatpal-search-result-single .chatpal-result-row {
+	display: flex;
+	flex-direction: row;
+}
+
+.chatpal-search-result-single .chatpal-result-content {
+	margin-left: 9px;
+}
+
 .chatpal-search-result-single .chatpal-name {
-	padding: 0 0 0 46px;
 
 	color: #444444;
 
@@ -213,21 +217,15 @@
 	font-size: 12px;
 }
 
-.chatpal-search-result-single .chatpal-message {
+.chatpal-search-result-single .chatpal-message,
+.chatpal-search-result-single .chatpal-file-name,
+.chatpal-search-result-single .chatpal-file-desc {
 
 	overflow-x: hidden;
 
 	margin-top: 5px;
-	padding: 0 0 0 46px;
 
 	line-height: 20px;
-}
-
-.chatpal-search-result-single .chatpal-message em {
-
-	background-color: #faf9c8;
-
-	font-style: normal;
 }
 
 .chatpal-search-result-single .chatpal-link {
@@ -235,6 +233,22 @@
 	flex: 20;
 
 	color: #125074;
+}
+
+.chatpal-search-result-single .chatpal-file-link {
+	color: #125074;
+
+	font-size: 17px;
+}
+
+.chatpal-search-result-single .chatpal-file-desc {
+	font-size: 17px;
+}
+
+.chatpal-search-result-single .chatpal-size {
+	color: #a0a0a0;
+
+	font-size: 12px;
 }
 
 .chatpal-search-result-single .chatpal-link:hover {
@@ -316,6 +330,10 @@
 
 .chatpal-search-result-room .chatpal-link:hover {
 	text-decoration: underline;
+}
+
+.chatpal-search-pills {
+	margin-top: 5px;
 }
 
 .chatpal-search-pills div {
