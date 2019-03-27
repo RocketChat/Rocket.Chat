@@ -2,6 +2,7 @@ import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { settings } from '../../../settings';
 import { t, APIClient } from '../../../utils';
 import { modal } from '../../../ui-utils';
 import { AppEvents } from '../communication';
@@ -145,6 +146,9 @@ Template.apps.helpers({
 	categories() {
 		return Template.instance().categories.get();
 	},
+	appsDevelopmentMode() {
+		return settings.get('Apps_Framework_Development_Mode') === true;
+	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
 	},
@@ -260,6 +264,9 @@ Template.apps.events({
 		if (rl && rl.latest && rl.latest.id) {
 			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
 		}
+	},
+	'click [data-button="install"]'() {
+		FlowRouter.go('/admin/app/install');
 	},
 	'click .js-install'(e, template) {
 		e.stopPropagation();

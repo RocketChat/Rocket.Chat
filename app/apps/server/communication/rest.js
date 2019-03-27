@@ -111,7 +111,7 @@ export class AppsRestApi {
 				let buff;
 
 				if (this.bodyParams.url) {
-					if (process.env.NODE_ENV === 'production') {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Installation from url is disabled.' });
 					}
 
@@ -143,7 +143,7 @@ export class AppsRestApi {
 
 					buff = Buffer.from(result.content, 'base64');
 				} else {
-					if (process.env.NODE_ENV === 'production') {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 					}
 
@@ -242,7 +242,7 @@ export class AppsRestApi {
 				let buff;
 
 				if (this.bodyParams.url) {
-					if (process.env.NODE_ENV === 'production') {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
 					}
 
@@ -277,7 +277,7 @@ export class AppsRestApi {
 
 					buff = Buffer.from(result.content, 'base64');
 				} else {
-					if (process.env.NODE_ENV === 'production') {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 					}
 

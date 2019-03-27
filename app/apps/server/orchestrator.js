@@ -122,6 +122,16 @@ settings.addGroup('General', function() {
 			hidden: false,
 		});
 
+		this.add('Apps_Framework_Development_Mode', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Apps_Framework_enabled',
+				value: true,
+			},
+			public: true,
+			hidden: false,
+		});
+
 		this.add('Apps_Framework_Marketplace_Url', 'https://marketplace.rocket.chat', {
 			type: 'string',
 			hidden: true,
