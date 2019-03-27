@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { API } from '../../../api/server';
 import Busboy from 'busboy';
 
-import { getWorkspaceAccessToken } from '../../../cloud';
+import { getWorkspaceAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 
