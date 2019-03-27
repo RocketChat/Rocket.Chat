@@ -6,6 +6,7 @@ export const workspaceScopes = [
 	'workspace:push:send',
 	'marketplace:read',
 	'marketplace:download',
+	'fedhub:register',
 ];
 
 // These are the scopes we use for the user
