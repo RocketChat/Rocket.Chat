@@ -26,6 +26,15 @@ Template.iframeModal.onCreated(function() {
 	window.addEventListener('message', instance.iframeMsgListener);
 });
 
+Template.iframeModal.onRendered(function() {
+	const iframe = this.firstNode.querySelector('iframe');
+	const loading = this.firstNode.querySelector('.loading');
+	iframe.addEventListener('load', () => {
+		iframe.style.display = 'block';
+		loading.style.display = 'none';
+	});
+});
+
 Template.iframeModal.onDestroyed(function() {
 	const instance = this;
 
