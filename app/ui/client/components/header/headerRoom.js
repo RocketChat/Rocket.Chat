@@ -25,7 +25,7 @@ const isDiscussion = ({ _id }) => {
 
 
 Template.headerRoom.helpers({
-	backToRoom: function(){
+	backToRoom() {
 		return TAPi18n.__('Back_to_room');
 	},
 	back() {
