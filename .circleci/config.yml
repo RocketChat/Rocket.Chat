@@ -135,7 +135,7 @@ jobs:
   test-with-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9-browsers
+      - image: circleci/node:8.9-stretch-browsers
       - image: mongo:3.4
         command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
 
@@ -184,7 +184,7 @@ jobs:
   test-without-oplog:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9-browsers
+      - image: circleci/node:8.9-stretch-browsers
       - image: circleci/mongo:3.4
 
     environment:
@@ -239,9 +239,9 @@ jobs:
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3.4-dev
+            sudo apt-get -y -qq install python3.5-dev
             curl -O https://bootstrap.pypa.io/get-pip.py
-            python3.4 get-pip.py --user
+            python3.5 get-pip.py --user
             export PATH=~/.local/bin:$PATH
             pip install awscli --upgrade --user
 
@@ -281,7 +281,7 @@ jobs:
                docker build -t assistify/chat:$CIRCLE_TAG .
                docker push assistify/chat:$CIRCLE_TAG
 
-            #   # echo "Build preview Docker image" 
+            #   # echo "Build preview Docker image"
             #   # cp ~/repo/.docker-mongo/Dockerfile .
             #   # cp ~/repo/.docker-mongo/entrypoint.sh .
             #   # docker build -t assistify/chat.preview:$CIRCLE_TAG .
