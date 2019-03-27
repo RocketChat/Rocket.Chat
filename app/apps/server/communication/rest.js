@@ -115,13 +115,13 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Installation from url is disabled.' });
 					}
 
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'binary' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'base64');
+					buff = Buffer.from(result.content, 'binary');
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
 
@@ -130,7 +130,7 @@ export class AppsRestApi {
 
 					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
 						headers,
-						npmRequestOptions: { encoding: 'base64' },
+						npmRequestOptions: { encoding: 'binary' },
 					});
 
 					if (result.statusCode !== 200) {
@@ -141,7 +141,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'base64');
+					buff = Buffer.from(result.content, 'binary');
 				} else {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
@@ -246,13 +246,13 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
 					}
 
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'binary' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'base64');
+					buff = Buffer.from(result.content, 'binary');
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
 
@@ -264,7 +264,7 @@ export class AppsRestApi {
 
 					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
 						headers,
-						npmRequestOptions: { encoding: 'base64' },
+						npmRequestOptions: { encoding: 'binary' },
 					});
 
 					if (result.statusCode !== 200) {
@@ -275,7 +275,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'base64');
+					buff = Buffer.from(result.content, 'binary');
 				} else {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
