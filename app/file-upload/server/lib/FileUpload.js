@@ -7,18 +7,34 @@ import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { UploadFS } from 'meteor/jalik:ufs';
+import { Match } from 'meteor/check';
+import { TAPi18n } from 'meteor/tap:i18n';
 import { settings } from '../../../settings';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
 import Avatars from '../../../models/server/models/Avatars';
 import Users from '../../../models/server/models/Users';
-import { FileUpload as _FileUpload } from '../../lib/FileUpload';
+import Rooms from '../../../models/server/models/Rooms';
+import Settings from '../../../models/server/models/Settings';
 import { roomTypes } from '../../../utils/server/lib/roomTypes';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import filesize from 'filesize';
 
 const cookie = new Cookies();
+let maxFileSize = 0;
 
-export const FileUpload = Object.assign(_FileUpload, {
+settings.get('FileUpload_MaxFileSize', function(key, value) {
+	try {
+		maxFileSize = parseInt(value);
+	} catch (e) {
+		maxFileSize = Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+	}
+});
+
+
+export const FileUpload = {
 	handlers: {},
 
 	configureUploadsStore(store, name, options) {
@@ -29,6 +45,47 @@ export const FileUpload = Object.assign(_FileUpload, {
 		return new UploadFS.store[store](Object.assign({
 			name,
 		}, options, FileUpload[`default${ type }`]()));
+	},
+
+	validateFileUpload(file) {
+		if (!Match.test(file.rid, String)) {
+			return false;
+		}
+
+		// livechat users can upload files but they don't have an userId
+		const user = file.userId ? Meteor.users.findOne(file.userId) : null;
+
+		const room = Rooms.findOneById(file.rid);
+		const directMessageAllow = settings.get('FileUpload_Enabled_Direct');
+		const fileUploadAllowed = settings.get('FileUpload_Enabled');
+		if (canAccessRoom(room, user, file) !== true) {
+			return false;
+		}
+		const language = user ? user.language : 'en';
+		if (!fileUploadAllowed) {
+			const reason = TAPi18n.__('FileUpload_Disabled', language);
+			throw new Meteor.Error('error-file-upload-disabled', reason);
+		}
+
+		if (!directMessageAllow && room.t === 'd') {
+			const reason = TAPi18n.__('File_not_allowed_direct_messages', language);
+			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
+		}
+
+		// -1 maxFileSize means there is no limit
+		if (maxFileSize > -1 && file.size > maxFileSize) {
+			const reason = TAPi18n.__('File_exceeds_allowed_size_of_bytes', {
+				size: filesize(maxFileSize),
+			}, language);
+			throw new Meteor.Error('error-file-too-large', reason);
+		}
+
+		if (!fileUploadIsValidContentType(file.type)) {
+			const reason = TAPi18n.__('File_type_is_not_accepted', language);
+			throw new Meteor.Error('error-invalid-file-type', reason);
+		}
+
+		return true;
 	},
 
 	defaultUploads() {
@@ -314,7 +371,7 @@ export const FileUpload = Object.assign(_FileUpload, {
 
 		return false;
 	},
-});
+};
 
 export class FileUploadClass {
 	constructor({ name, model, store, get, insert, getStore, copy }) {
