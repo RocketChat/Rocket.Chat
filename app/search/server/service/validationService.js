@@ -64,6 +64,25 @@ class ValidationService {
 			result.room.docs.filter((room) => room.valid);
 		}
 
+		if (result.file) {
+			result.file.docs.forEach((file) => {
+
+				const subscription = getSubscription(file.rid, uid);
+
+				if (subscription) {
+					file.r = { name: subscription.name, t: subscription.t };
+					file.username = getUsername(file.user);
+					file.valid = true;
+					SearchLogger.debug(`user ${ uid } can access ${ file.rid } ( ${ subscription.t === 'd' ? subscription.username : subscription.name } )`);
+				} else {
+					SearchLogger.debug(`user ${ uid } can NOT access ${ file.rid }`);
+				}
+			});
+
+			result.file.docs.filter((file) => file.valid);
+		}
+
+
 		return result;
 	}
 }

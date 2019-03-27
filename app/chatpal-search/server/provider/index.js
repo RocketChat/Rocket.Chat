@@ -273,6 +273,8 @@ export default class Index {
 				return {
 					id: doc._id,
 					rid: doc.rid,
+					mid: doc.mid,
+					user: doc.userId,
 					uploaded: doc.uploadedAt,
 					updated: doc._updatedAt,
 					type,
@@ -435,6 +437,7 @@ export default class Index {
 		if (type === 'message' && doc.file && doc.file._id) {
 			const file = Uploads.findOneById(doc.file._id);
 			if (file) {
+				file.mid = doc._id;
 				const attachment = doc.attachments.filter((a) => a.type === 'file')[0];
 				if (attachment) {
 					file.link = attachment.title_link;

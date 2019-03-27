@@ -79,6 +79,7 @@ class ChatpalProvider extends SearchProvider {
 			values: [
 				{ key: 'All', i18nLabel: 'All' },
 				{ key: 'Messages', i18nLabel: 'Messages' },
+				{ key: 'Files', i18nLabel: 'Files' },
 			],
 			i18nLabel: 'Chatpal_Default_Result_Type',
 			i18nDescription: 'Chatpal_Default_Result_Type_Description',
@@ -305,6 +306,19 @@ class ChatpalProvider extends SearchProvider {
 	}
 
 	/**
+	 * returns a list of result types for result type name
+	 * @param resultTypeName
+	 * @private
+	 */
+	_getResultTypes(resultTypeName) {
+		switch (resultTypeName) {
+			case 'All': return ['message', 'user', 'room', 'file'];
+			case 'Messages': return ['message'];
+			case 'Files': return ['file'];
+		}
+	}
+
+	/**
 	 * @inheritDoc
 	 * @returns {*}
 	 */
@@ -312,7 +326,7 @@ class ChatpalProvider extends SearchProvider {
 
 		if (!this.index) { return callback({ msg:'Chatpal_currently_not_active' }); }
 
-		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
+		const type = this._getResultTypes(payload.resultType);
 
 		this.index.query(
 			text,
@@ -333,7 +347,7 @@ class ChatpalProvider extends SearchProvider {
 
 		if (!this.index) { return callback({ msg:'Chatpal_currently_not_active' }); }
 
-		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
+		const type = this._getResultTypes(payload.resultType);
 
 		this.index.suggest(
 			text,
