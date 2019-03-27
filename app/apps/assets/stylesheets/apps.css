@@ -155,6 +155,7 @@
 	}
 
 	.rc-table-info {
+		height: 40px;
 		margin: 0 7px;
 	}
 
@@ -186,7 +187,7 @@
 	}
 
 	th.rc-apps-marketplace-price {
-		width: 100px;
+		width: 120px;
 	}
 
 	&__wrap-actions {

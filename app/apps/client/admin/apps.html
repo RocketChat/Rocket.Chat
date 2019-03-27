@@ -50,24 +50,30 @@
 									</div>
 								</td>
 								<td>
-									<p class="rc-table-title">
-										{{#if latest.summary}}
-											{{latest.summary}}
-										{{else}}
-											{{latest.description}}
-										{{/if}}
-									</p>
-									{{#if latest.summary}}
-										<p>
-											{{latest.description}}
-										</p>
-									{{/if}}
-									{{formatCategories latest.categories}}
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{#if latest.summary}}
+													{{latest.summary}}
+												{{else}}
+													{{latest.description}}
+												{{/if}}
+											</span>
+											{{#if latest.summary}}
+												<span class="rc-table-subtitle">
+													{{latest.description}}
+												</span>
+											{{/if}}
+											<span class="rc-table-subtitle">
+												{{formatCategories latest.categories}}
+											</span>
+										</div>
+									</div>
 								</td>
 								<td class="rc-apps-marketplace-price">
 									{{#if $eq latest._installed true}}
 										<button class="apps-installer" data-app="{{appId}}">
-											{{_ "Purchased"}}
+											{{_ "Installed"}}
 											{{> icon icon="menu" block="rc-icon--default-size"}}
 										</button>
 									{{/if}}
