@@ -145,8 +145,8 @@ Template.emojiEdit.onCreated(function() {
 						} else {
 							toastr.success(t('Custom_Emoji_Updated_Successfully'));
 						}
-					} 
-					if (!emojiData._id){
+					}
+					if (!emojiData._id) {
 						if (emojiData.name === emojiData.aliases) {
 							toastr.warning(TAPi18n.__('Custom_Emoji_Without_Aliases'));
 							toastr.success(t('Custom_Emoji_Added_Successfully'));
