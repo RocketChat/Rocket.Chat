@@ -224,10 +224,10 @@ export class CustomOAuth {
 				if (identity.sub && !identity.id) {
 					identity.id = identity.sub;
 				}
-				
+
 				// Fix OpenShift identities where id is in 'metadata' object
 				if (identity.metadata.uid && !identity.id) {
-					identity.id = identity.metadata.uid;	
+					identity.id = identity.metadata.uid;
 				}
 
 				// Fix general 'userid' instead of 'id' from provider
