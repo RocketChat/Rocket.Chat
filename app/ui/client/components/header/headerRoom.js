@@ -12,6 +12,7 @@ import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown';
 import { hasAllPermission } from '../../../../authorization';
 import { call } from '../../../../ui-utils';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -24,6 +25,9 @@ const isDiscussion = ({ _id }) => {
 
 
 Template.headerRoom.helpers({
+	backToRoom: function(){
+		return TAPi18n.__('Back_to_room');
+	},
 	back() {
 		return Template.instance().data.back;
 	},
