@@ -1,4 +1,4 @@
-import { OEmbed } from '../../../app/oembed';
+import { OEmbed } from '../../../app/oembed/server';
 import { Migrations } from '../../../app/migrations';
 import { Messages } from '../../../app/models';
 import _ from 'underscore';

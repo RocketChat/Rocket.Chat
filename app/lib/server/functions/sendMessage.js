@@ -3,8 +3,8 @@ import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
-import { Apps } from '../../../apps';
-import { Markdown } from '../../../markdown';
+import { Apps } from '../../../apps/server';
+import { Markdown } from '../../../markdown/server';
 
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {

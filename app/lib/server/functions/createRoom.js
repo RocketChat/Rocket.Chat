@@ -3,7 +3,7 @@ import { Users, Rooms, Subscriptions } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { hasPermission, addUserRoles } from '../../../authorization';
 import { getValidRoomName } from '../../../utils';
-import { Apps } from '../../../apps';
+import { Apps } from '../../../apps/server';
 import _ from 'underscore';
 import s from 'underscore.string';
 

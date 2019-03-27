@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { TAPi18next } from 'meteor/tap:i18n';
 import { isEmail, Info, APIClient } from '../../../utils';
 import { settings } from '../../../settings';
-import { Markdown } from '../../../markdown';
+import { Markdown } from '../../../markdown/client';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
