@@ -864,9 +864,7 @@ Template.room.events({
 
 		const { input } = chatMessages[RoomManager.openedRoom];
 		input.value = msg;
-		setTimeout(() => {
-			input.focus();
-		}, 5);
+		input.focus();
 	},
 	'click .js-navigate-to-discussion'(event) {
 		event.preventDefault();
