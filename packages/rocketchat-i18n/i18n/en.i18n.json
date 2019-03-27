@@ -927,6 +927,7 @@
   "Custom_Emoji_Has_Been_Deleted": "The custom emoji has been deleted.",
   "Custom_Emoji_Info": "Custom Emoji Info",
   "Custom_Emoji_Updated_Successfully": "Custom emoji updated successfully",
+  "Custom_Emoji_Without_Aliases": "Aliase cannot be equal to name",
   "Custom_Fields": "Custom Fields",
   "Custom_oauth_helper": "When setting up your OAuth Provider, you'll have to inform a Callback URL. Use <pre>%s</pre> .",
   "Custom_oauth_unique_name": "Custom oauth unique name",

@@ -139,9 +139,19 @@ Template.emojiEdit.onCreated(function() {
 					}
 
 					if (emojiData._id) {
-						toastr.success(t('Custom_Emoji_Updated_Successfully'));
+						if (emojiData.name===emojiData.aliases) {
+							toastr.warning(TAPi18n.__('Custom_Emoji_Without_Aliases'));
+							toastr.success(t('Custom_Emoji_Updated_Successfully'));
+						} else {
+							toastr.success(t('Custom_Emoji_Updated_Successfully'));
+						}
 					} else {
-						toastr.success(t('Custom_Emoji_Added_Successfully'));
+						if (emojiData.name===emojiData.aliases) {
+							toastr.warning(TAPi18n.__('Custom_Emoji_Without_Aliases'));
+							toastr.success(t('Custom_Emoji_Added_Successfully'));
+						} else {
+							toastr.success(t('Custom_Emoji_Added_Successfully'));
+						}
 					}
 
 					this.cancel(form, emojiData.name);
