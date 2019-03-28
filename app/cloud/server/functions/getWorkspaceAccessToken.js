@@ -1,5 +1,3 @@
-import querystring from 'querystring';
-
 import { HTTP } from 'meteor/http';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
@@ -39,19 +37,23 @@ export function getWorkspaceAccessToken(forceNew = false, scope = '', save = tru
 	let authTokenResult;
 	try {
 		authTokenResult = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
-			data: {},
-			query: querystring.stringify({
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			params: {
 				client_id,
 				client_secret,
 				scope,
 				grant_type: 'client_credentials',
 				redirect_uri: redirectUri,
-			}),
+			},
 		});
 	} catch (e) {
-		if (e.response && e.response.data && e.response.data.errorCode === 'oauth_invalid_client_credentials') {
-			console.error('Server has been unregistered from cloud');
-			unregisterWorkspace();
+		if (e.response && e.response.data && e.response.data.error) {
+			console.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+
+			if (e.response.data.error === 'oauth_invalid_client_credentials') {
+				console.error('Server has been unregistered from cloud');
+				unregisterWorkspace();
+			}
 		}
 
 		return '';

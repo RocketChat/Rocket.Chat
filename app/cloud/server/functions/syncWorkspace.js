@@ -47,8 +47,8 @@ export function syncWorkspace() {
 		});
 
 	} catch (e) {
-		if (e.response && e.response.data && e.response.data.errorCode) {
-			console.error(`Failed to sync with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.errorCode }`);
+		if (e.response && e.response.data && e.response.data.error) {
+			console.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
 		}
 
 		return false;

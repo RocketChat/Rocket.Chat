@@ -1,12 +1,10 @@
-import querystring from 'querystring';
-
 import { HTTP } from 'meteor/http';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { workspaceScopes } from '../oauthScopes';
+import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
 export function connectWorkspace(token) {
 	const { connectToCloud } = retrieveRegistrationStatus();
@@ -32,6 +30,10 @@ export function connectWorkspace(token) {
 			data: regInfo,
 		});
 	} catch (e) {
+		if (e.response && e.response.data && e.response.data.error) {
+			console.error(`Failed to register with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		}
+
 		return false;
 	}
 
@@ -49,27 +51,10 @@ export function connectWorkspace(token) {
 	Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', data.registration_client_uri);
 
 	// Now that we have the client id and secret, let's get the access token
-	let authTokenResult;
-	try {
-		authTokenResult = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
-			data: {},
-			query: querystring.stringify({
-				client_id: data.client_id,
-				client_secret: data.client_secret,
-				grant_type: 'client_credentials',
-				scope: workspaceScopes.join(' '),
-				redirect_uri: redirectUri,
-			}),
-		});
-	} catch (e) {
+	const accessToken = getWorkspaceAccessToken(true);
+	if (!accessToken) {
 		return false;
 	}
-
-	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
-
-	Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
-	Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
 
 	return true;
 }
