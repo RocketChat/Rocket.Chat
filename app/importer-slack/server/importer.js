@@ -95,7 +95,6 @@ export class SlackImporter extends Base {
 		this.updateRecord({ 'count.channels': tempChannels.length });
 		this.addCountToTotal(tempChannels.length);
 
-		
 		// Insert the messages records
 		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 
@@ -143,7 +142,6 @@ export class SlackImporter extends Base {
 		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
-
 	startImport(importSelection) {
 		super.startImport(importSelection);
 		const start = Date.now();
@@ -171,8 +169,7 @@ export class SlackImporter extends Base {
 			});
 		});
 		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
-
-
+		
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
 			try {
