@@ -1975,12 +1975,6 @@ rc-old select,
 		font-size: 14px;
 	}
 
-	& .edit-room-title {
-		margin-left: 4px;
-
-		font-size: 16px;
-	}
-
 	& .wrapper {
 		position: absolute;
 		top: 0;
