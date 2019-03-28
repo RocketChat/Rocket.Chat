@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../models';
 
+import { Federation } from '../';
 import { logger } from '../logger';
 
 export function addUser(identifier) {
@@ -8,12 +9,12 @@ export function addUser(identifier) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'Federation.addUser' });
 	}
 
-	if (!this.peerServer.enabled) {
+	if (!Federation.peerServer.enabled) {
 		throw new Meteor.Error('error-federation-disabled', 'Federation disabled', { method: 'Federation.addUser' });
 	}
 
 	// Make sure the federated user still exists, and get the unique one, by email address
-	const [federatedUser] = this.peerClient.findUsers(identifier, { usernameOnly: true });
+	const [federatedUser] = Federation.peerClient.findUsers(identifier, { usernameOnly: true });
 
 	if (!federatedUser) {
 		throw new Meteor.Error('federation-invalid-user', 'There is no user to add.');

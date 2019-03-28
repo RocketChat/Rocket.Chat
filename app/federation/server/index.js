@@ -37,8 +37,8 @@ export const Federation = {
 
 // Add Federation methods with bound context
 Federation.methods = {
-	addUser: addUser.bind(Federation),
-	searchUsers: searchUsers.bind(Federation),
+	addUser,
+	searchUsers,
 };
 
 // Generate keys
