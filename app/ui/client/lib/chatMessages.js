@@ -39,9 +39,9 @@ export const getPermaLinks = async(replies) => {
 };
 
 export const mountReply = async(msg, input) => {
-	const replies = $(input).data('reply');
+	const replies = [].concat($(input).data('reply'));
 	const mentionUser = $(input).data('mention-user') || false;
-
+	
 	if (replies && replies.length) {
 		const permalinks = await getPermaLinks(replies);
 

@@ -160,7 +160,7 @@ Template.messageBox.onRendered(function() {
 
 			const $input = $(input);
 			$input.on('dataChange', () => { // TODO: remove jQuery event layer dependency
-				const reply = $input.data('reply');
+				const reply = [].concat($input.data('reply') || []);
 				this.replyMessageData.set(reply);
 			});
 
