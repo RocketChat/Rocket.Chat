@@ -29,7 +29,7 @@ export class SlackImporter extends Base {
 		const zipEntries = zip.getEntries();
 
 		let tempChannels = [];
-		let tempDMCs = [];
+		// let tempDMCs = [];
 		let tempUsers = [];
 		const tempMessages = {};
 
@@ -60,7 +60,7 @@ export class SlackImporter extends Base {
 				tempDMCs = JSON.parse(entry.getData().toString());
 				return;
 			}
-			//ToDo parse Multi-user-direct messages data
+			//  ToDo parse Multi-user-direct messages data
 
 
 			if (entry.entryName === 'users.json') {
