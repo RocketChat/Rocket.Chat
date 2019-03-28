@@ -29,19 +29,39 @@ export class SlackImporter extends Base {
 		const zipEntries = zip.getEntries();
 
 		let tempChannels = [];
+		let tempDMCs = [];
 		let tempUsers = [];
 		const tempMessages = {};
 
 		zipEntries.forEach((entry) => {
+			//ignore mac specific folders
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
 				return this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
 			}
-
+			//parse public channel data
 			if (entry.entryName === 'channels.json') {
 				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-				tempChannels = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
+				let tempJSONChannelArray = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
+				tempJSONChannelArray.forEach((channel) => channel.is_private = false);
+				tempChannels = (tempChannels) ? tempChannels.concat(tempJSONChannelArray) : tempJSONChannelArray;
 				return;
 			}
+			//parse group data (private Channels)
+			if (entry.entryName === 'groups.json') {
+				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+				let tempJSONGrouplArray = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
+				tempJSONGrouplArray.forEach((group) => group.is_private = true);
+				tempChannels = (tempChannels) ? tempChannels.concat(tempJSONGrouplArray) : tempJSONGrouplArray;
+				return;
+			}
+			//parse direct messages data
+			if (entry.entryName === 'dms.json') {
+				super.updateProgress(ProgressStep.PREPARING_DMS);
+				tempDMCs = JSON.parse(entry.getData().toString());
+				return;
+			}
+			//ToDo parse Multi-user-direct messages data
+
 
 			if (entry.entryName === 'users.json') {
 				super.updateProgress(ProgressStep.PREPARING_USERS);
@@ -71,7 +91,7 @@ export class SlackImporter extends Base {
 		});
 
 		// Insert the users record, eventually this might have to be split into several ones as well
-		// if someone tries to import a several thousands users instance
+		// if someone tries to import a several thousands of users instances
 		const usersId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
 		this.users = this.collection.findOne(usersId);
 		this.updateRecord({ 'count.users': tempUsers.length });
@@ -82,6 +102,14 @@ export class SlackImporter extends Base {
 		this.channels = this.collection.findOne(channelsId);
 		this.updateRecord({ 'count.channels': tempChannels.length });
 		this.addCountToTotal(tempChannels.length);
+
+		// if(tempDMCs){
+		// 	// Insert the DMs records.
+		// 	const dmsId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'dms', channels: tempDMs });
+		// 	this.dms = this.collection.findOne(dmsId);
+		// 	this.updateRecord({ 'count.dms': tempDMs.length });
+		// 	this.addCountToTotal(tempDMs.length);
+		// }
 
 		// Insert the messages records
 		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
@@ -120,17 +148,22 @@ export class SlackImporter extends Base {
 		}
 
 		const selectionUsers = tempUsers.map((user) => new SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
-		const selectionChannels = tempChannels.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
+		const selectionChannels = tempChannels.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, channel.is_private));
+
+
+
 		const selectionMessages = this.importRecord.count.messages;
 		super.updateProgress(ProgressStep.USER_SELECTION);
 
 		return new Selection(this.name, selectionUsers, selectionChannels, selectionMessages);
 	}
 
+
 	startImport(importSelection) {
 		super.startImport(importSelection);
 		const start = Date.now();
 
+		//assign import-flag for users (local copy of the users collection) and update the mongo collection
 		Object.keys(importSelection.users).forEach((key) => {
 			const user = importSelection.users[key];
 			Object.keys(this.users.users).forEach((k) => {
@@ -142,6 +175,7 @@ export class SlackImporter extends Base {
 		});
 		this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 
+		//assign import-flag for channels (local copy of the channels collection)  and update mongo collection
 		Object.keys(importSelection.channels).forEach((key) => {
 			const channel = importSelection.channels[key];
 			Object.keys(this.channels.channels).forEach((k) => {
@@ -153,9 +187,11 @@ export class SlackImporter extends Base {
 		});
 		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
 
+
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
 			try {
+				//user import
 				super.updateProgress(ProgressStep.IMPORTING_USERS);
 				this.users.users.forEach((user) => {
 					if (!user.do_import) {
@@ -215,6 +251,7 @@ export class SlackImporter extends Base {
 				});
 				this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 
+				//channel import
 				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				this.channels.channels.forEach((channel) => {
 					if (!channel.do_import) {
@@ -222,7 +259,9 @@ export class SlackImporter extends Base {
 					}
 
 					Meteor.runAsUser (startedByUserId, () => {
+
 						const existantRoom = Rooms.findOneByName(channel.name);
+
 						if (existantRoom || channel.is_general) {
 							if (channel.is_general && existantRoom && channel.name !== existantRoom.name) {
 								Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', channel.name);
@@ -248,7 +287,7 @@ export class SlackImporter extends Base {
 								}
 							});
 							Meteor.runAsUser(userId, () => {
-								const returned = Meteor.call('createChannel', channel.name, users);
+								const returned = channel.is_private ? Meteor.call('createPrivateGroup', channel.name, users) : Meteor.call('createChannel', channel.name, users);
 								channel.rocketId = returned.rid;
 							});
 
@@ -272,6 +311,8 @@ export class SlackImporter extends Base {
 				const missedTypes = {};
 				const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
 				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
+
+				//importing messages...
 				Object.keys(this.messages).forEach((channel) => {
 					const messagesObj = this.messages[channel];
 
