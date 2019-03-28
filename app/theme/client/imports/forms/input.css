@@ -68,7 +68,7 @@ textarea.rc-input__element {
 		line-height: 2.25rem;
 
 		&--small {
-			line-height: 1.75rem;
+			line-height: 100%;
 		}
 
 		&::placeholder {
