@@ -7,6 +7,8 @@ import { getDefaultSubscriptionPref } from '../../app/utils';
 import { RateLimiter } from '../../app/lib';
 import { callbacks } from '../../app/callbacks';
 
+import { Federation } from '../../app/federation';
+
 Meteor.methods({
 	createDirectMessage(username) {
 		check(username, String);
@@ -39,22 +41,17 @@ Meteor.methods({
 
 		let to = Users.findOneByUsername(username);
 
-		// If the username does not have an `@` it means it is not federated
-		if (!to && username.indexOf('@') === -1) {
+		if (!to && username.indexOf('@') !== -1) {
+			// If the username does have an `@`, but does not exist locally, we create it first
+			const toId = Federation.methods.addUser(username);
+
+			to = Users.findOneById(toId);
+		}
+
+		if (!to) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createDirectMessage',
 			});
-		} else if (!to && username.indexOf('@') !== -1) {
-			// If the username does have an `@`, but does not exist locally, let's create it first
-			const toId = Meteor.call('federationAddUser', username);
-
-			to = Users.findOneById(toId);
-
-			if (!to) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'createDirectMessage',
-				});
-			}
 		}
 
 		if (!hasPermission(to._id, 'view-d-room')) {

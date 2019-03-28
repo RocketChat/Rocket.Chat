@@ -3,13 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import { FederationDNSCache } from '../../models';
 
 import { logger } from './logger';
-import peerHTTP from './peerHTTP';
 import { updateStatus } from './settingsUpdater';
+import { Federation } from './main';
 
 const dnsResolveSRV = Meteor.wrapAsync(dns.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dns.resolveTxt);
 
-class PeerDNS {
+export class PeerDNS {
 	constructor() {
 		this.config = {};
 	}
@@ -44,7 +44,7 @@ class PeerDNS {
 
 		// Attempt to register peer
 		try {
-			peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key }, { total: 5, stepSize: 1000, tryToUpdateDNS: false }, headers);
+			Federation.peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key }, { total: 5, stepSize: 1000, tryToUpdateDNS: false }, headers);
 
 			this.log('Peer registered!');
 
@@ -114,7 +114,7 @@ class PeerDNS {
 		this.log(`getPeerUsingHub: ${ domain }`);
 
 		// If there is no DNS entry for that, get from the Hub
-		const { data: { peer } } = peerHTTP.simpleRequest(this.HubPeer, 'GET', `/api/v1/peers?search=${ domain }`);
+		const { data: { peer } } = Federation.peerHTTP.simpleRequest(this.HubPeer, 'GET', `/api/v1/peers?search=${ domain }`);
 
 		return peer;
 	}
@@ -169,5 +169,3 @@ class PeerDNS {
 		}
 	}
 }
-
-export default new PeerDNS();

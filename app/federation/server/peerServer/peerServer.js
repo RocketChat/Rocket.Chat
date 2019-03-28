@@ -5,9 +5,9 @@ import { Rooms, Subscriptions } from '../../../models';
 
 import { FederatedMessage, FederatedRoom, FederatedUser } from '../federatedResources';
 import { logger } from '../logger.js';
-import peerClient from '../peerClient';
+import { Federation } from '../main';
 
-class PeerServer {
+export class PeerServer {
 	constructor() {
 		this.config = {};
 		this.enabled = false;
@@ -93,7 +93,7 @@ class PeerServer {
 		const localUser = federatedUser.create();
 
 		// Callback management
-		peerClient.addCallbackToSkip('afterAddedToRoom', federatedUser.getFederationId());
+		Federation.peerClient.addCallbackToSkip('afterAddedToRoom', federatedUser.getFederationId());
 
 		// Add the user to the room
 		addUserToRoom(federatedRoom.room._id, localUser, null, false);
@@ -129,7 +129,7 @@ class PeerServer {
 		const localUser = federatedUser.create();
 
 		// Callback management
-		peerClient.addCallbackToSkip('afterAddedToRoom', federatedUser.getFederationId());
+		Federation.peerClient.addCallbackToSkip('afterAddedToRoom', federatedUser.getFederationId());
 
 		// Add the user to the room
 		addUserToRoom(federatedRoom.room._id, localUser, localInviter, false);
@@ -156,7 +156,7 @@ class PeerServer {
 		const localUser = federatedUser.getLocalUser();
 
 		// Callback management
-		peerClient.addCallbackToSkip('beforeLeaveRoom', federatedUser.getFederationId());
+		Federation.peerClient.addCallbackToSkip('beforeLeaveRoom', federatedUser.getFederationId());
 
 		// Remove the user from the room
 		removeUserFromRoom(federatedRoom.room._id, localUser);
@@ -187,7 +187,7 @@ class PeerServer {
 		const localUserWhoRemoved = federatedUserWhoRemoved.getLocalUser();
 
 		// Callback management
-		peerClient.addCallbackToSkip('beforeRemoveFromRoom', federatedUser.getFederationId());
+		Federation.peerClient.addCallbackToSkip('beforeRemoveFromRoom', federatedUser.getFederationId());
 
 		// Remove the user from the room
 		removeUserFromRoom(federatedRoom.room._id, localUser, { byUser: localUserWhoRemoved });
@@ -260,7 +260,7 @@ class PeerServer {
 		const federatedMessage = new FederatedMessage(localPeerDomain, message);
 
 		// Callback management
-		peerClient.addCallbackToSkip('afterSaveMessage', federatedMessage.getFederationId());
+		Federation.peerClient.addCallbackToSkip('afterSaveMessage', federatedMessage.getFederationId());
 
 		// Create the federated message
 		federatedMessage.create();
@@ -280,7 +280,7 @@ class PeerServer {
 		const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, federated_user_id);
 
 		// Callback management
-		peerClient.addCallbackToSkip('afterSaveMessage', federatedMessage.getFederationId());
+		Federation.peerClient.addCallbackToSkip('afterSaveMessage', federatedMessage.getFederationId());
 
 		// Update the federated message
 		federatedMessage.update(federatedUser);
@@ -302,7 +302,7 @@ class PeerServer {
 		const localAuthor = federatedMessage.federatedAuthor.getLocalUser();
 
 		// Callback management
-		peerClient.addCallbackToSkip('afterDeleteMessage', federatedMessage.getFederationId());
+		Federation.peerClient.addCallbackToSkip('afterDeleteMessage', federatedMessage.getFederationId());
 
 		// Create the federated message
 		deleteMessage(localMessage, localAuthor);
@@ -318,7 +318,7 @@ class PeerServer {
 		// Load the federated room
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, federated_room_id);
 
-		peerClient.addCallbackToSkip('afterReadMessages', federatedRoom.getFederationId());
+		Federation.peerClient.addCallbackToSkip('afterReadMessages', federatedRoom.getFederationId());
 
 		// Load the user who left
 		const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, federated_user_id);
@@ -352,7 +352,7 @@ class PeerServer {
 		const localMessage = federatedMessage.getLocalMessage();
 
 		// Callback management
-		peerClient.addCallbackToSkip('afterSetReaction', federatedMessage.getFederationId());
+		Federation.peerClient.addCallbackToSkip('afterSetReaction', federatedMessage.getFederationId());
 
 		// Set message reaction
 		setReaction(localRoom, localUser, localMessage, reaction, shouldReact);
@@ -378,11 +378,9 @@ class PeerServer {
 		const localMessage = federatedMessage.getLocalMessage();
 
 		// Callback management
-		peerClient.addCallbackToSkip('afterUnsetReaction', federatedMessage.getFederationId());
+		Federation.peerClient.addCallbackToSkip('afterUnsetReaction', federatedMessage.getFederationId());
 
 		// Unset message reaction
 		setReaction(localRoom, localUser, localMessage, reaction, shouldReact);
 	}
 }
-
-export default new PeerServer();

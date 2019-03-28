@@ -1,10 +1,10 @@
 import { createRoom } from '../../../lib';
 import { Rooms, Subscriptions, Users } from '../../../models';
 
-import FederatedResource from './FederatedResource';
-import FederatedUser from './FederatedUser';
+import { FederatedResource } from './FederatedResource';
+import { FederatedUser } from './FederatedUser';
 
-class FederatedRoom extends FederatedResource {
+export class FederatedRoom extends FederatedResource {
 	constructor(localPeerIdentifier, room, extras = {}) {
 		super('room');
 
@@ -266,5 +266,3 @@ FederatedRoom.isFederated = function isFederated(localPeerIdentifier, room, opti
 
 	return isFederated;
 };
-
-export default FederatedRoom;

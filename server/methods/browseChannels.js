@@ -4,7 +4,7 @@ import { hasPermission } from '../../app/authorization';
 import { Rooms, Users } from '../../app/models';
 import s from 'underscore.string';
 
-import { Federation, PeerClient } from '../../app/federation';
+import { Federation } from '../../app/federation';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -119,8 +119,8 @@ Meteor.methods({
 		const results = result.fetch();
 
 		// Try to find federated users, when appliable
-		if (PeerClient.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
-			const federatedUsers = Meteor.call('federationSearchUsers', text);
+		if (Federation.enabled && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {
+			const federatedUsers = Federation.methods.searchUsers(text);
 
 			for (const federatedUser of federatedUsers) {
 				const { user } = federatedUser;

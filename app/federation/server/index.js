@@ -5,14 +5,21 @@ import { FederationKeys } from '../../models';
 import { getWorkspaceAccessToken } from '../../cloud/server';
 
 import './federation-settings';
-import './methods';
 
 import { logger } from './logger';
-import peerClient from './peerClient';
-import peerServer from './peerServer';
-import peerDNS from './peerDNS';
-import peerHTTP from './peerHTTP';
+import { PeerClient } from './PeerClient';
+import { PeerDNS } from './PeerDNS';
+import { PeerHTTP } from './PeerHTTP';
+import { PeerServer } from './PeerServer';
 import * as SettingsUpdater from './settingsUpdater';
+
+import { addUser } from './methods/addUser';
+import { searchUsers } from './methods/searchUsers';
+
+const peerClient = new PeerClient();
+const peerDNS = new PeerDNS();
+const peerHTTP = new PeerHTTP();
+const peerServer = new PeerServer();
 
 export const Federation = {
 	enabled: false,
@@ -21,9 +28,18 @@ export const Federation = {
 	usingHub: null,
 	uniqueId: null,
 	localIdentifier: null,
+
+	peerClient,
+	peerDNS,
+	peerHTTP,
+	peerServer,
 };
-export const PeerClient = peerClient;
-export const PeerServer = peerServer;
+
+// Add Federation methods with bound context
+Federation.methods = {
+	addUser: addUser.bind(Federation),
+	searchUsers: searchUsers.bind(Federation),
+};
 
 // Generate keys
 
