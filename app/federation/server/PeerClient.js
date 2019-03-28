@@ -4,14 +4,12 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
 
-import { Federation } from '.';
-import peerDNS from './peerDNS';
-import peerHTTP from './peerHTTP';
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
 import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
+import { Federation } from './';
 
-class PeerClient {
+export class PeerClient {
 	constructor() {
 		this.config = {};
 
@@ -69,7 +67,7 @@ class PeerClient {
 		if (this.config.hub.active) {
 			updateStatus('Registering with Hub...');
 
-			return peerDNS.register(this.peer);
+			return Federation.peerDNS.register(this.peer);
 		}
 
 		return true;
@@ -143,7 +141,7 @@ class PeerClient {
 
 		const { peer: domain } = e;
 
-		const peer = peerDNS.searchPeer(domain);
+		const peer = Federation.peerDNS.searchPeer(domain);
 
 		if (!peer || !peer.public_key) {
 			this.log(`Could not find valid peer:${ domain }`);
@@ -159,7 +157,7 @@ class PeerClient {
 				// Encrypt with the local private key
 				payload = Federation.privateKey.encryptPrivate(payload);
 
-				peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
+				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
@@ -242,22 +240,22 @@ class PeerClient {
 	// Users
 	//
 	// #####
-	findUsers(email, options = {}) {
-		const [username, domain] = email.split('@');
+	findUsers(identifier, options = {}) {
+		const [username, domain] = identifier.split('@');
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		let peer = null;
 
 		try {
-			peer = peerDNS.searchPeer(options.domainOverride || domain);
+			peer = Federation.peerDNS.searchPeer(options.domainOverride || domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
 		try {
-			const { data: { federatedUsers: remoteFederatedUsers } } = peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, emailOnly: options.emailOnly }) }`);
+			const { data: { federatedUsers: remoteFederatedUsers } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, usernameOnly: options.usernameOnly }) }`);
 
 			const federatedUsers = [];
 
@@ -268,7 +266,7 @@ class PeerClient {
 			return federatedUsers;
 		} catch (err) {
 			this.log(`Could not find user:${ username } at ${ peer.domain }`);
-			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ email } at ${ peer.domain }`);
+			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ identifier } at ${ peer.domain }`);
 		}
 	}
 
@@ -283,13 +281,13 @@ class PeerClient {
 		let peer = null;
 
 		try {
-			peer = peerDNS.searchPeer(domain);
+			peer = Federation.peerDNS.searchPeer(domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
-		const { data: { upload, buffer } } = peerHTTP.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
+		const { data: { upload, buffer } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
 
 		return { upload, buffer: Buffer.from(buffer) };
 	}
@@ -611,5 +609,3 @@ class PeerClient {
 		FederationEvents.userUnmuted(federatedRoom, federatedUnmutedUser, federatedUserWhoUnmuted, { skipPeers: [localPeerDomain] });
 	}
 }
-
-export default new PeerClient();
