@@ -56,5 +56,9 @@ RocketChat.API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 		preferences: getUserPreferences(),
 	};
 
+	me.telephoneNumber = '';
+	if (('services' in user) && ('viasatsso' in user.services) && ('telephoneNumber' in user.services.viasatsso)) {
+		me.telephoneNumber = user.services.viasatsso.telephoneNumber;
+	}
 	return me;
 });
