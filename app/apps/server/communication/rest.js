@@ -1,7 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { API } from '../../../api/server/api';
+import { API } from '../../../api/server';
 import Busboy from 'busboy';
+
+import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { settings } from '../../../settings';
+import { Info } from '../../../utils';
 
 export class AppsRestApi {
 	constructor(orch, manager) {
@@ -49,6 +53,50 @@ export class AppsRestApi {
 
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
+				const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+				// Gets the Apps from the marketplace
+				if (this.queryParams.marketplace) {
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps?version=${ Info.marketplaceApiVersion }`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200) {
+						return API.v1.failure();
+					}
+
+					return API.v1.success(result.data);
+				}
+
+				if (this.queryParams.categories) {
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/categories`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200) {
+						return API.v1.failure();
+					}
+
+					return API.v1.success(result.data);
+				}
+
+				if (this.queryParams.buildBuyUrl && this.queryParams.appId) {
+					const workspaceId = settings.get('Cloud_Workspace_Id');
+					return API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }` });
+				}
+
 				const apps = manager.get().map((prl) => {
 					const info = prl.getInfo();
 					info.languages = prl.getStorageItem().languageContent;
@@ -63,14 +111,42 @@ export class AppsRestApi {
 				let buff;
 
 				if (this.bodyParams.url) {
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
+						return API.v1.failure({ error: 'Installation from url is disabled.' });
+					}
+
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'binary' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'base64');
+					buff = Buffer.from(result.content, 'binary');
+				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+					const headers = {};
+					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
+						headers,
+						npmRequestOptions: { encoding: 'binary' },
+					});
+
+					if (result.statusCode !== 200) {
+						return API.v1.failure();
+					}
+
+					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+					}
+
+					buff = Buffer.from(result.content, 'binary');
 				} else {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
+						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
+					}
+
 					buff = fileHandler(this.request, 'app');
 				}
 
@@ -109,7 +185,46 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log('Getting:', this.urlParams.id);
+				if (this.queryParams.marketplace && this.queryParams.version) {
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }?appVersion=${ this.queryParams.version }`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200 || result.data.length === 0) {
+						return API.v1.failure();
+					}
+
+					return API.v1.success({ app: result.data[0] });
+				}
+
+				if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.urlParams.id }/latest?frameworkVersion=${ Info.marketplaceApiVersion }`, {
+						headers,
+					});
+
+					if (result.statusCode !== 200 || result.data.length === 0) {
+						return API.v1.failure();
+					}
+
+					return API.v1.success({ app: result.data });
+				}
+
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -122,20 +237,50 @@ export class AppsRestApi {
 				}
 			},
 			post() {
-				console.log('Updating:', this.urlParams.id);
 				// TODO: Verify permissions
 
 				let buff;
 
 				if (this.bodyParams.url) {
-					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'base64' } });
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
+						return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
+					}
+
+					const result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: 'binary' } });
 
 					if (result.statusCode !== 200 || !result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
 						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
 					}
 
-					buff = Buffer.from(result.content, 'base64');
+					buff = Buffer.from(result.content, 'binary');
+				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+
+					const headers = {};
+					const token = getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${ token }`;
+					}
+
+					const result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+						headers,
+						npmRequestOptions: { encoding: 'binary' },
+					});
+
+					if (result.statusCode !== 200) {
+						return API.v1.failure();
+					}
+
+					if (!result.headers['content-type'] || result.headers['content-type'] !== 'application/zip') {
+						return API.v1.failure({ error: 'Invalid url. It doesn\'t exist or is not "application/zip".' });
+					}
+
+					buff = Buffer.from(result.content, 'binary');
 				} else {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
+						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
+					}
+
 					buff = fileHandler(this.request, 'app');
 				}
 
@@ -160,7 +305,6 @@ export class AppsRestApi {
 				});
 			},
 			delete() {
-				console.log('Uninstalling:', this.urlParams.id);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -178,7 +322,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/icon', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log('Getting the App\'s Icon:', this.urlParams.id);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -193,7 +336,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/languages', { authRequired: false }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s languages..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -208,7 +350,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/logs', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s logs..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -234,7 +375,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/settings', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s settings..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -252,7 +392,6 @@ export class AppsRestApi {
 				}
 			},
 			post() {
-				console.log(`Updating ${ this.urlParams.id }'s settings..`);
 				if (!this.bodyParams || !this.bodyParams.settings) {
 					return API.v1.failure('The settings to update must be present.');
 				}
@@ -280,8 +419,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/settings/:settingId', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting the App ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
-
 				try {
 					const setting = manager.getSettingsManager().getAppSetting(this.urlParams.id, this.urlParams.settingId);
 
@@ -297,8 +434,6 @@ export class AppsRestApi {
 				}
 			},
 			post() {
-				console.log(`Updating the App ${ this.urlParams.id }'s setting ${ this.urlParams.settingId }`);
-
 				if (!this.bodyParams.setting) {
 					return API.v1.failure('Setting to update to must be present on the posted body.');
 				}
@@ -321,7 +456,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/apis', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s apis..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -336,7 +470,6 @@ export class AppsRestApi {
 
 		this.api.addRoute(':id/status', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				console.log(`Getting ${ this.urlParams.id }'s status..`);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
@@ -350,7 +483,6 @@ export class AppsRestApi {
 					return API.v1.failure('Invalid status provided, it must be "status" field and a string.');
 				}
 
-				console.log(`Updating ${ this.urlParams.id }'s status...`, this.bodyParams.status);
 				const prl = manager.getOneById(this.urlParams.id);
 
 				if (prl) {
