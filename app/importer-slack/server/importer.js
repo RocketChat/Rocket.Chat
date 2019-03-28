@@ -29,7 +29,6 @@ export class SlackImporter extends Base {
 		const zipEntries = zip.getEntries();
 
 		let tempChannels = [];
-		// let tempDMCs = [];
 		let tempUsers = [];
 		const tempMessages = {};
 
@@ -54,15 +53,7 @@ export class SlackImporter extends Base {
 				tempChannels = (tempChannels) ? tempChannels.concat(tempJSONGrouplArray) : tempJSONGrouplArray;
 				return;
 			}
-			/* preperation parse direct messages data
-			if (entry.entryName === 'dms.json') {
-				super.updateProgress(ProgressStep.PREPARING_DMS);
-				tempDMCs = JSON.parse(entry.getData().toString());
-				return;
-			}*/
-			
-			//  ToDo parse Multi-user-direct messages data
-
+			//  ToDo parse direct messages json and multi-user-direct messages json
 
 			if (entry.entryName === 'users.json') {
 				super.updateProgress(ProgressStep.PREPARING_USERS);
@@ -104,14 +95,7 @@ export class SlackImporter extends Base {
 		this.updateRecord({ 'count.channels': tempChannels.length });
 		this.addCountToTotal(tempChannels.length);
 
-		// if(tempDMCs){
-		// 	// Insert the DMs records.
-		// 	const dmsId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'dms', channels: tempDMs });
-		// 	this.dms = this.collection.findOne(dmsId);
-		// 	this.updateRecord({ 'count.dms': tempDMs.length });
-		// 	this.addCountToTotal(tempDMs.length);
-		// }
-
+		
 		// Insert the messages records
 		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 
