@@ -1,24 +1,21 @@
 <template name="appLogs">
 	{{#with app}}
-		<section class="page-container page-list page-settings flex-tab-main-content">
-			<header class="fixed-title">
-				{{> burger}}
-				<a href="{{pathFor "app-manage" appId=id}}" title="{{_ "Back_to_Manage_Apps"}}">
-					<i class="icon-left-open"></i>
-				</a> &nbsp;
+		<section class="page-container page-list page-settings flex-tab-main-content rc-apps-marketplace">
+			{{# header rawSectionName=title fixedHeight=true hideHelp=true fullpage=true}}
+				<div class="rc-header__block rc-header__block-action">
+					<button class="rc-button rc-button--primary js-refresh">
+						{{> icon icon="reload" block="rc-icon--default-size"}} {{_ "Refresh"}}
+					</button>
+					<button class="rc-button rc-button--nude js-cancel">{{> icon icon="cross"}}</button>
 
-				{{#if isReady}}
-					<h2>
-						<span class="room-title">{{_ "View_the_Logs_for" name=name}}</span>
-					</h2>
-				{{/if}}
+				</div>
+			{{/header}}
+			<div class="content">
 				{{#if hasError}}
 					<h2>
 						<span class="room-title">{{ theError }}</span>
 					</h2>
 				{{/if}}
-			</header>
-			<div class="content">
 				{{#if isReady}}
 					<div class="rocket-form">
 						{{#each log in logs}}
@@ -28,30 +25,18 @@
 										{{formatDate log._createdAt}}: "{{log.method}}" ({{log.totalTime}}ms)
 									</div>
 									<div class="section-title-right">
-										<button class="button primary expand">
-											<span>{{_ "Expand"}}</span>
+										<button class="rc-button rc-button--nude button-down">
+											{{> icon icon="arrow-down" block="rc-icon--default-size"}}
 										</button>
 									</div>
 								</div>
 								<div class="section-content">
-									<h4>General Information</h4>
-									<ul>
-										<li>Method: {{ log.method }}</li>
-										<li>Start Time: {{ log.startTime }}</li>
-										<li>End Time: {{ log.endTime }}</li>
-										<li>Total Time: {{ log.totalTime }}ms</li>
-										<li>Log Entries: {{ log.entries.length }}</li>
-									</ul>
-
-									<h4>Log Entries</h4>
-									<ul>
-										{{#each entry in log.entries}}
-											<li>Timestamp: {{ entry.timestamp }}</li>
-											<li>Severity: {{ entry.severity }}</li>
-											<li>Caller: {{ entry.caller }}</li>
-											<li>Arguments: <pre><code class="code-colors hljs json">{{{ jsonStringify entry.args }}}</code></pre></li>
-										{{/each}}
-									</ul>
+									{{#each entry in log.entries}}
+										<div>{{ entry.severity }}: {{ entry.timestamp }} (Caller: {{ entry.caller }})</div>
+										<div>
+											<pre><code class="code-colors hljs json">{{{ jsonStringify entry.args }}}</code></pre>
+										</div>
+									{{/each}}
 								</div>
 							</div>
 						{{/each}}
