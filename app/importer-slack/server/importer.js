@@ -169,7 +169,7 @@ export class SlackImporter extends Base {
 			});
 		});
 		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
-		
+
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
 			try {
