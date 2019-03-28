@@ -2,12 +2,13 @@ import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, Info, APIClient } from '../../../utils';
+import { settings } from '../../../settings';
+import { t, APIClient } from '../../../utils';
+import { modal } from '../../../ui-utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 
 const ENABLED_STATUS = ['auto_enabled', 'manually_enabled'];
-const HOST = 'https://marketplace.rocket.chat';
 const enabled = ({ status }) => ENABLED_STATUS.includes(status);
 
 const sortByColumn = (array, column, inverted) =>
@@ -23,6 +24,8 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 
 	const tagged = apps.map((app) =>
 		({
+			price: app.price,
+			isPurchased: app.isPurchased,
 			latest: {
 				...app.latest,
 				_installed: installedIds.includes(app.latest.id),
@@ -33,31 +36,29 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 	return tagged;
 };
 
-const getApps = (instance) => {
-	fetch(`${ HOST }/v1/apps?version=${ Info.marketplaceApiVersion }`)
-		.then((response) => response.json())
-		.then((data) => {
-			const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
+const getApps = async(instance) => {
+	instance.isLoading.set(true);
 
-			if (instance.searchType.get() === 'marketplace') {
-				instance.apps.set(tagged);
-				instance.isLoading.set(false);
-				instance.ready.set(true);
-			}
-		});
+	const data = await APIClient.get('apps?marketplace=true');
+	const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
+
+	if (instance.searchType.get() === 'marketplace') {
+		instance.apps.set(tagged);
+		instance.isLoading.set(false);
+		instance.ready.set(true);
+	}
 };
 
-const getInstalledApps = (instance) => {
-	APIClient.get('apps').then((data) => {
-		const apps = data.apps.map((app) => ({ latest: app }));
-		instance.installedApps.set(apps);
+const getInstalledApps = async(instance) => {
+	const data = await APIClient.get('apps');
+	const apps = data.apps.map((app) => ({ latest: app }));
+	instance.installedApps.set(apps);
 
-		if (instance.searchType.get() === 'installed') {
-			instance.apps.set(apps);
-			instance.isLoading.set(false);
-			instance.ready.set(true);
-		}
-	});
+	if (instance.searchType.get() === 'installed') {
+		instance.apps.set(apps);
+		instance.isLoading.set(false);
+		instance.ready.set(true);
+	}
 };
 
 Template.apps.onCreated(function() {
@@ -82,14 +83,10 @@ Template.apps.onCreated(function() {
 		}
 	}
 
-	getApps(instance);
 	getInstalledApps(instance);
+	getApps(instance);
 
-	fetch(`${ HOST }/v1/categories`)
-		.then((response) => response.json())
-		.then((data) => {
-			instance.categories.set(data);
-		});
+	APIClient.get('apps?categories=true').then((data) => instance.categories.set(data));
 
 	instance.onAppAdded = function _appOnAppAdded() {
 		// ToDo: fix this formatting data to add an app to installedApps array without to fetch all
@@ -148,6 +145,9 @@ Template.apps.helpers({
 	},
 	categories() {
 		return Template.instance().categories.get();
+	},
+	appsDevelopmentMode() {
+		return settings.get('Apps_Framework_Development_Mode') === true;
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
@@ -211,6 +211,12 @@ Template.apps.helpers({
 
 		return isMarketplace && isDownloaded;
 	},
+	formatPrice(price) {
+		return `$${ Number.parseFloat(price).toFixed(2) }`;
+	},
+	formatCategories(categories = []) {
+		return categories.join(', ');
+	},
 	tabsData() {
 		const instance = Template.instance();
 
@@ -256,7 +262,7 @@ Template.apps.events({
 		const rl = this;
 
 		if (rl && rl.latest && rl.latest.id) {
-			FlowRouter.go(`/admin/apps/${ rl.latest.id }`);
+			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
 		}
 	},
 	'click [data-button="install"]'() {
@@ -264,18 +270,64 @@ Template.apps.events({
 	},
 	'click .js-install'(e, template) {
 		e.stopPropagation();
+		const elm = e.currentTarget.parentElement;
 
-		const url = `${ HOST }/v1/apps/${ this.latest.id }/download/${ this.latest.version }`;
+		elm.classList.add('loading');
+
+		APIClient.post('apps/', {
+			appId: this.latest.id,
+			marketplace: true,
+			version: this.latest.version,
+		})
+			.then(async() => {
+				await Promise.all([
+					getInstalledApps(template),
+					getApps(template),
+				]);
+				elm.classList.remove('loading');
+			})
+			.catch((e) => {
+				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+				elm.classList.remove('loading');
+			});
+	},
+	'click .js-purchase'(e, template) {
+		e.stopPropagation();
+
+		const rl = this;
 
 		// play animation
-		e.currentTarget.parentElement.classList.add('loading');
+		const elm = e.currentTarget.parentElement;
 
-		APIClient.post('apps/', { url })
-			.then(() => {
-				getApps(template);
-				getInstalledApps(template);
+		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.latest.id }`)
+			.then((data) => {
+				modal.open({
+					allowOutsideClick: false,
+					data,
+					template: 'iframeModal',
+				}, () => {
+					elm.classList.add('loading');
+					APIClient.post('apps/', {
+						appId: this.latest.id,
+						marketplace: true,
+						version: this.latest.version,
+					})
+						.then(async() => {
+							await Promise.all([
+								getInstalledApps(template),
+								getApps(template),
+							]);
+							elm.classList.remove('loading');
+						})
+						.catch((e) => {
+							toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+							elm.classList.remove('loading');
+						});
+				});
 			})
-			.catch((e) => toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message));
+			.catch((e) => {
+				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+			});
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);

@@ -23,11 +23,6 @@
 	}
 
 	&-search {
-		height: 48px;
-
-		margin-right: 5px;
-		margin-left: 5px;
-
 		& .rc-icon {
 			width: 0.875rem;
 		}
