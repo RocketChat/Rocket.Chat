@@ -4,7 +4,7 @@ import { hasPermission } from '../../app/authorization';
 import { Rooms, Users } from '../../app/models';
 import s from 'underscore.string';
 
-import { Federation } from '../../app/federation';
+import { Federation } from '../../app/federation/server';
 
 const sortChannels = function(field, direction) {
 	switch (field) {

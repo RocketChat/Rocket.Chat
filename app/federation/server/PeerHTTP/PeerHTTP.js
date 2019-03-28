@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
 import { logger } from '../logger';
-import { Federation } from '../main';
+import { Federation } from '../';
 
 import { skipRetryOnSpecificError, delay } from './utils';
 

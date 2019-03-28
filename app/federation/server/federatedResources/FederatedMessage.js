@@ -6,7 +6,7 @@ import { FileUpload } from '../../../file-upload';
 import { FederatedResource } from './FederatedResource';
 import { FederatedRoom } from './FederatedRoom';
 import { FederatedUser } from './FederatedUser';
-import { Federation } from '../main';
+import { Federation } from '../';
 
 export class FederatedMessage extends FederatedResource {
 	constructor(localPeerIdentifier, message) {

@@ -7,7 +7,7 @@ import { getDefaultSubscriptionPref } from '../../app/utils';
 import { RateLimiter } from '../../app/lib';
 import { callbacks } from '../../app/callbacks';
 
-import { Federation } from '../../app/federation';
+import { Federation } from '../../app/federation/server';
 
 Meteor.methods({
 	createDirectMessage(username) {
