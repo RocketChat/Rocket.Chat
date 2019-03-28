@@ -16,6 +16,8 @@ Meteor.startup(function() {
 		}
 	}
 
+	const mongoDbVersion = MongoInternals.NpmModules.mongodb.version;
+
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
 
@@ -23,6 +25,7 @@ Meteor.startup(function() {
 		let msg = [
 			`Rocket.Chat Version: ${ Info.version }`,
 			`     NodeJS Version: ${ process.versions.node } - ${ process.arch }`,
+			`    MongoDB Version: ${ mongoDbVersion }`,
 			`           Platform: ${ process.platform }`,
 			`       Process Port: ${ process.env.PORT }`,
 			`           Site URL: ${ settings.get('Site_Url') }`,
