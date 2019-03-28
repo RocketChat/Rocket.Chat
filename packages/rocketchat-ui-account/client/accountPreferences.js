@@ -111,8 +111,8 @@ Template.accountPreferences.helpers({
 	showLocalization() {
 		return RocketChat.settings.get('UI_DisplayLocalization');
 	},
-	showGlobal() {
-		return RocketChat.settings.get('UI_DisplayGlobal');
+	showPrivacy() {
+		return RocketChat.settings.get('UI_DisplayPrivacy');
 	},
 	showUserPresence() {
 		return RocketChat.settings.get('UI_DisplayUserPresence');
@@ -184,9 +184,9 @@ Template.accountPreferences.onCreated(function() {
 			}
 		}
 
-		if (RocketChat.settings.get('UI_DisplayGlobal')) {
+		if (RocketChat.settings.get('UI_DisplayPrivacy')) {
 			data.dontAskAgainList = Array.from(document.getElementById('dont-ask').options).map((option) => ({ action: option.value, label: option.text }));
-			data.isPublicAccount = JSON.parse($('#isPublicAccount').find('input:checked').val());
+			data.discoverability = $('#discoverability').find('input:checked').val();
 		}
 
 		if (RocketChat.settings.get('UI_DisplayUserPresence')) {

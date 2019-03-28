@@ -450,10 +450,25 @@ RocketChat.settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
-		this.add('Accounts_Default_User_Preferences_isPublicAccount', true, {
-			type: 'boolean',
+		this.add('Accounts_Default_User_Preferences_discoverability', 'all', {
+			type: 'select',
+			values: [
+				{
+					key: 'all',
+					i18nLabel: 'Everyone',
+				},
+				{
+					key: 'contacts',
+					i18nLabel: 'My Contacts',
+				},
+				{
+					key: 'none',
+					i18nLabel: 'Nobody',
+				},
+			],
+
 			public: true,
-			i18nLabel: 'Is_Public_Account',
+			i18nLabel: 'Discoverability',
 		});
 	});
 
@@ -1256,7 +1271,7 @@ RocketChat.settings.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('UI_DisplayGlobal', true, {
+		this.add('UI_DisplayPrivacy', true, {
 			type: 'boolean',
 			public: true,
 		});
