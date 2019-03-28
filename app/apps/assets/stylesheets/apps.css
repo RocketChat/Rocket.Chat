@@ -1,6 +1,12 @@
 .rc-apps-marketplace {
+	display: flex;
 
 	overflow: auto;
+	flex-direction: column;
+
+	height: 100vh;
+
+	padding: 1.25rem 2rem;
 
 	font-size: 14px;
 
@@ -225,6 +231,46 @@
 
 			&:hover {
 				background-color: var(--rc-color-primary-lightest);
+			}
+		}
+	}
+
+	.rc-table-content {
+		display: flex;
+		overflow-x: auto;
+		flex-direction: column;
+		flex: 1 1 100%;
+
+		height: 100vh;
+
+		& .js-sort {
+			cursor: pointer;
+
+			&.is-sorting .table-fake-th .rc-icon {
+				opacity: 1;
+			}
+		}
+
+		& .table-fake-th {
+			&:hover .rc-icon {
+				opacity: 1;
+			}
+
+			& .rc-icon {
+				transition: opacity 0.3s;
+
+				opacity: 0;
+
+				font-size: 1rem;
+			}
+		}
+	}
+
+	@media (width <= 700px) {
+		.rc-table-content {
+			& th:not(:first-child),
+			& td:not(:first-child) {
+				display: none;
 			}
 		}
 	}

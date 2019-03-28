@@ -7,10 +7,10 @@
 			<form class="directory__search-form js-search-form" role="form">
 				<div class="rc-input">
 					<div class="rc-input__icon">
-						{{#if isReady}}
-							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
-						{{else}}
+						{{#if isLoading}}
 							{{> loading }}
+						{{else}}
+							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
 						{{/if}}
 					</div>
 					<input
@@ -18,7 +18,7 @@
 						class="rc-input__element js-search"
 						name="message-search"
 						id="message-search"
-						placeholder={{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}}
+						placeholder="{{#if $eq searchType 'channels'}}{{_ "Search_Channels"}}{{/if}}{{#if $eq searchType 'users'}}{{_ "Search_Users"}}{{/if}}"
 						autocomplete="off">
 				</div>
 				{{#if $eq searchType 'users'}}
@@ -65,7 +65,7 @@
 										<div class="rc-table-avatar">{{> avatar username=name roomIcon="true"}}</div>
 										<div class="rc-table-info">
 											<span class="rc-table-title">
-												{{>icon icon="hashtag" block="rc-directory-icon"}}
+												{{>icon icon="hashtag" block="rc-table-icon"}}
 												{{name}}
 											</span>
 										</div>

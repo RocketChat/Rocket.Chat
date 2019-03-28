@@ -149,9 +149,6 @@ Template.directory.helpers({
 			}
 		};
 	},
-	isReady() {
-		return !Template.instance().isLoading.get();
-	},
 	isLoading() {
 		return Template.instance().isLoading.get();
 	},
@@ -322,9 +319,4 @@ Template.directory.onCreated(function() {
 	this.autorun(() => {
 		this.canViewOtherUserInfo.set(hasAllPermission('view-full-other-user-info'));
 	});
-});
-
-Template.directory.onRendered(function() {
-	$('.main-content').removeClass('rc-old');
-	$('.rc-table-content').css('height', `calc(100vh - ${ document.querySelector('.directory .rc-header').offsetHeight }px)`);
 });
