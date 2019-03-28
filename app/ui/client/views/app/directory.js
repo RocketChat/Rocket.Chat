@@ -7,6 +7,8 @@ import { timeAgo } from './helpers';
 import { t, roomTypes } from '../../../../utils';
 import { settings } from '../../../../settings';
 import { hasAtLeastOnePermission } from '../../../../authorization';
+import './directory.html';
+import './directory.css';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
@@ -147,6 +149,9 @@ Template.directory.helpers({
 			}
 		};
 	},
+	isReady() {
+		return !Template.instance().isLoading.get();
+	},
 	isLoading() {
 		return Template.instance().isLoading.get();
 	},
@@ -192,9 +197,19 @@ Template.directory.helpers({
 
 		return canViewOtherUserInfo.get();
 	},
+	sumColumnCount(...args) {
+		return args
+			.slice(0, -1)
+			.map((value) => (typeof value === 'number' ? value : Number(!!value)))
+			.reduce((sum, value) => sum + value, 0);
+	},
 });
 
 Template.directory.events({
+	'submit .js-search-form'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+	},
 	'input .js-search': _.debounce((e, t) => {
 		t.end.set(false);
 		t.sortDirection.set('asc');
@@ -311,5 +326,5 @@ Template.directory.onCreated(function() {
 
 Template.directory.onRendered(function() {
 	$('.main-content').removeClass('rc-old');
-	$('.rc-table-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
+	$('.rc-table-content').css('height', `calc(100vh - ${ document.querySelector('.directory .rc-header').offsetHeight }px)`);
 });
