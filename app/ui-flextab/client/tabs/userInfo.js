@@ -79,6 +79,16 @@ Template.userInfo.helpers({
 		return userStatus;
 	},
 
+	userStatusText() {
+		if (s.trim(this.statusText) !== '') {
+			return emojione.render(s.escapeHTML(this.statusText));
+		}
+
+		const user = Template.instance().user.get();
+		const userStatus = Session.get(`user_${ user.username }_status`);
+		return userStatus;
+	},
+
 	email() {
 		const user = Template.instance().user.get();
 		return user && user.emails && user.emails[0] && user.emails[0].address;
@@ -144,12 +154,6 @@ Template.userInfo.helpers({
 
 	editingUser() {
 		return Template.instance().editingUser.get();
-	},
-
-	userStatusMessage() {
-		if (s.trim(this.statusMessage) !== '') {
-			return emojione.render(s.escapeHTML(this.statusMessage));
-		}
 	},
 
 	userToEdit() {

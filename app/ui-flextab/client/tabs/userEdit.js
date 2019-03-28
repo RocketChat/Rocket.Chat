@@ -116,7 +116,7 @@ Template.userEdit.onCreated(function() {
 		const userData = { _id: (this.user != null ? this.user._id : undefined) };
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
-		userData.statusMessage = s.trim(this.$('#status').val());
+		userData.statusText = s.trim(this.$('#status').val());
 		userData.email = s.trim(this.$('#email').val());
 		userData.verified = this.$('#verified:checked').length > 0;
 		userData.password = s.trim(this.$('#password').val());

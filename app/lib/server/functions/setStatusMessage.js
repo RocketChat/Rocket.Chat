@@ -30,7 +30,7 @@ export const _setStatusMessage = function(userId, statusMessage) {
 		_id: user._id,
 		name: user.name,
 		username: user.username,
-		statusMessage: user.statusText,
+		statusText: user.statusText,
 	});
 
 	return true;

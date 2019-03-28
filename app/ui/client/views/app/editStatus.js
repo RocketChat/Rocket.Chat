@@ -10,22 +10,24 @@ Template.editStatus.helpers({
 	canChange() {
 		return settings.get('Accounts_AllowUserStatusMessageChange');
 	},
-	statusMessage() {
-		return Meteor.user().statusMessage;
+	statusType() {
+		return Meteor.user().status;
+	},
+	statusText() {
+		return Meteor.user().statusText;
 	},
 });
 
 Template.editStatus.events({
-	'click .rc-input__icon__config-value'(e) {
-		const instance = Template.instance();
-
+	'click .edit-status .rc-input__icon'(e) {
 		const options = [
 			{
 				icon: 'circle',
 				name: t('Online'),
 				modifier: 'online',
 				action: () => {
-					
+					$('input[name=statusType]').val('online');
+					$('.edit-status .rc-input__icon').prop('class', 'rc-input__icon edit-status-type-icon--online');
 				},
 			},
 			{
@@ -33,7 +35,8 @@ Template.editStatus.events({
 				name: t('Away'),
 				modifier: 'away',
 				action: () => {
-					
+					$('input[name=statusType]').val('away');
+					$('.edit-status .rc-input__icon').prop('class', 'rc-input__icon edit-status-type-icon--away');
 				},
 			},
 			{
@@ -41,21 +44,20 @@ Template.editStatus.events({
 				name: t('Busy'),
 				modifier: 'busy',
 				action: () => {
-					
+					$('input[name=statusType]').val('busy');
+					$('.edit-status .rc-input__icon').prop('class', 'rc-input__icon edit-status-type-icon--busy');
 				},
 			},
 			{
 				icon: 'circle',
 				name: t('Invisible'),
-				modifier: 'invisible',
+				modifier: 'offline',
 				action: () => {
-					
+					$('input[name=statusType]').val('offline');
+					$('.edit-status .rc-input__icon').prop('class', 'rc-input__icon edit-status-type-icon--offline');
 				},
 			},
 		];
-
-		const value = 'busy';
-		// const value = instance.form[key].get();
 
 		const config = {
 			popoverClass: 'edit-status-type',
@@ -77,9 +79,11 @@ Template.editStatus.events({
 	'submit .edit-status__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
-		const status = s.trim(e.target.status.value);
-		if (status !== this.statusMessage) {
-			if (status.length > 120) {
+		const statusText = s.trim(e.target.status.value);
+		const statusType = e.target.statusType.value;
+
+		if (statusText !== this.statusText) {
+			if (statusText.length > 120) {
 				toastr.remove();
 				toastr.error(t('StatusMessage_Too_Long'));
 				return false;
@@ -88,8 +92,8 @@ Template.editStatus.events({
 				toastr.remove();
 				toastr.error(t('StatusMessage_Change_Disabled'));
 				return false;
-			} else if (status || status.length === 0) {
-				Meteor.call('setStatusMessage', status);
+			} else if (statusText || statusText.length === 0) {
+				Meteor.call('setUserStatus', statusType, statusText);
 				if (instance.data.onSave) {
 					instance.data.onSave(true);
 				}

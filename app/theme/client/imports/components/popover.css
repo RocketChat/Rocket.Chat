@@ -118,6 +118,27 @@
 		&--star-filled .rc-icon {
 			fill: currentColor;
 		}
+
+		&--online {
+			& .rc-popover__icon {
+				color: var(--status-online);
+			}
+		}
+		&--away {
+			& .rc-popover__icon {
+				color: var(--status-away);
+			}
+		}
+		&--busy {
+			& .rc-popover__icon {
+				color: var(--status-busy);
+			}
+		}
+		&--invisible {
+			& .rc-popover__icon {
+				color: var(--status-invisible);
+			}
+		}
 	}
 
 	&__label {

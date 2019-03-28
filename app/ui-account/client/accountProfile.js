@@ -77,7 +77,7 @@ Template.accountProfile.helpers({
 		return !validateName(Template.instance().realname.get());
 	},
 	statusMessageInvalid() {
-		return !validateStatusMessage(Template.instance().statusMessage.get());
+		return !validateStatusMessage(Template.instance().statusText.get());
 	},
 	confirmationPasswordInvalid() {
 		const { password, confirmationPassword } = Template.instance();
@@ -116,7 +116,7 @@ Template.accountProfile.helpers({
 		const instance = Template.instance();
 		instance.dep.depend();
 		const realname = instance.realname.get();
-		const statusMessage = instance.statusMessage.get();
+		const statusText = instance.statusText.get();
 		const username = instance.username.get();
 		const password = instance.password.get();
 		const confirmationPassword = instance.confirmationPassword.get();
@@ -137,7 +137,7 @@ Template.accountProfile.helpers({
 		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
 			return ret;
 		}
-		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusMessage)) {
+		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname) || !validateStatusMessage(statusText)) {
 			return ret;
 		}
 
@@ -152,8 +152,8 @@ Template.accountProfile.helpers({
 	username() {
 		return Meteor.user().username;
 	},
-	statusMessage() {
-		return Meteor.user().statusMessage;
+	statusText() {
+		return Meteor.user().statusText;
 	},
 	email() {
 		const user = Meteor.user();
@@ -203,7 +203,7 @@ Template.accountProfile.onCreated(function() {
 	self.avatar = new ReactiveVar;
 	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
-	self.statusMessage = new ReactiveVar(user.statusMessage);
+	self.statusText = new ReactiveVar(user.statusText);
 
 	Notifications.onLogged('updateAvatar', () => self.avatar.set());
 	self.getSuggestions = function() {
@@ -270,14 +270,14 @@ Template.accountProfile.onCreated(function() {
 				data.realname = s.trim(self.realname.get());
 			}
 		}
-		if (s.trim(self.statusMessage.get()) !== user.statusMessage) {
+		if (s.trim(self.statusText.get()) !== user.statusText) {
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
 				toastr.remove();
 				toastr.error(t('StatusMessage_Change_Disabled'));
 				instance.clearForm();
 				return cb && cb();
 			} else {
-				data.statusMessage = s.trim(self.statusMessage.get());
+				data.statusText = s.trim(self.statusText.get());
 			}
 		}
 		if (s.trim(self.username.get()) !== user.username) {
@@ -401,8 +401,8 @@ Template.accountProfile.events({
 	'input [name=realname]'(e, instance) {
 		instance.realname.set(e.target.value);
 	},
-	'input [name=statusMessage]'(e, instance) {
-		instance.statusMessage.set(e.target.value);
+	'input [name=statusText]'(e, instance) {
+		instance.statusText.set(e.target.value);
 	},
 	'input [name=password]'(e, instance) {
 		instance.password.set(e.target.value);

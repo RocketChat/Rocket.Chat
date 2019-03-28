@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../models';
+import s from 'underscore.string';
 
 Meteor.methods({
 	setUserStatus(statusType, statusText) {

@@ -24,6 +24,7 @@ import './views/app/audioNotification.html';
 import './views/app/burger.html';
 import './views/app/createChannel.html';
 import './views/app/editStatus.html';
+import './views/app/editStatus.css';
 import './views/app/fullModal.html';
 import './views/app/home.html';
 import './views/app/directory.html';
