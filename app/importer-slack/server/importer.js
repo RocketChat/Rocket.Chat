@@ -54,12 +54,13 @@ export class SlackImporter extends Base {
 				tempChannels = (tempChannels) ? tempChannels.concat(tempJSONGrouplArray) : tempJSONGrouplArray;
 				return;
 			}
-			//  parse direct messages data
+			/* preperation parse direct messages data
 			if (entry.entryName === 'dms.json') {
 				super.updateProgress(ProgressStep.PREPARING_DMS);
 				tempDMCs = JSON.parse(entry.getData().toString());
 				return;
-			}
+			}*/
+			
 			//  ToDo parse Multi-user-direct messages data
 
 
