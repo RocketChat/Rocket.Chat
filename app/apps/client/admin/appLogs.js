@@ -6,6 +6,22 @@ import { APIClient } from '../../../utils';
 import moment from 'moment';
 import hljs from 'highlight.js';
 
+const loadData = (instance) => {
+	Promise.all([
+		APIClient.get(`apps/${ instance.id.get() }`),
+		APIClient.get(`apps/${ instance.id.get() }/logs`),
+	]).then((results) => {
+
+		instance.app.set(results[0].app);
+		instance.logs.set(results[1].logs);
+
+		instance.ready.set(true);
+	}).catch((e) => {
+		instance.hasError.set(true);
+		instance.theError.set(e.message);
+	});
+};
+
 Template.appLogs.onCreated(function() {
 	const instance = this;
 	this.id = new ReactiveVar(FlowRouter.getParam('appId'));
@@ -15,21 +31,7 @@ Template.appLogs.onCreated(function() {
 	this.app = new ReactiveVar({});
 	this.logs = new ReactiveVar([]);
 
-	const id = this.id.get();
-
-	Promise.all([
-		APIClient.get(`apps/${ id }`),
-		APIClient.get(`apps/${ id }/logs`),
-	]).then((results) => {
-
-		instance.app.set(results[0].app);
-		instance.logs.set(results[1].logs);
-
-		this.ready.set(true);
-	}).catch((e) => {
-		instance.hasError.set(true);
-		instance.theError.set(e.message);
-	});
+	loadData(instance);
 });
 
 Template.appLogs.helpers({
@@ -76,16 +78,29 @@ Template.appLogs.helpers({
 
 		return value.replace(/\\\\n/g, '<br>');
 	},
+	title() {
+		return TAPi18n.__('View_the_Logs_for', { name: Template.instance().app.get().name });
+	},
 });
 
 Template.appLogs.events({
-	'click .expand': (e) => {
-		$(e.currentTarget).closest('.section').removeClass('section-collapsed');
-		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__('Collapse'));
+	'click .section-collapsed .section-title': (e) => {
+		$(e.currentTarget).closest('.section').removeClass('section-collapsed').addClass('section-expanded');
+		$(e.currentTarget).find('.button-down').addClass('arrow-up');
 	},
 
-	'click .collapse': (e) => {
-		$(e.currentTarget).closest('.section').addClass('section-collapsed');
-		$(e.currentTarget).closest('button').addClass('expand').removeClass('collapse').find('span').text(TAPi18n.__('Expand'));
+	'click .section-expanded .section-title': (e) => {
+		$(e.currentTarget).closest('.section').removeClass('section-expanded').addClass('section-collapsed');
+		$(e.currentTarget).find('.button-down').removeClass('arrow-up');
+	},
+
+	'click .js-cancel': (e, t) => {
+		FlowRouter.go('app-manage', { appId: t.app.get().id }, { version: FlowRouter.getQueryParam('version') });
+	},
+
+	'click .js-refresh': (e, t) => {
+		t.ready.set(false);
+		t.logs.set([]);
+		loadData(t);
 	},
 });
