@@ -6,7 +6,7 @@ export class AppHttpBridge {
 			info.request.content = JSON.stringify(info.request.data);
 		}
 
-		console.log(`The App ${ info.appId } is requesting from the outter webs:`, info);
+		this.orch.debugLog(`The App ${ info.appId } is requesting from the outter webs:`, info);
 
 		try {
 			return HTTP.call(info.method, info.url, info.request);
