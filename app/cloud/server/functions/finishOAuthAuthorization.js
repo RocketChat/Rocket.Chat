@@ -1,5 +1,3 @@
-import querystring from 'querystring';
-
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { settings } from '../../../settings';
@@ -22,17 +20,21 @@ export function finishOAuthAuthorization(code, state) {
 	let result;
 	try {
 		result = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
-			data: {},
-			query: querystring.stringify({
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			params: {
 				client_id: clientId,
 				client_secret: clientSecret,
 				grant_type: 'authorization_code',
 				scope,
 				code,
 				redirect_uri: getRedirectUri(),
-			}),
+			},
 		});
 	} catch (e) {
+		if (e.response && e.response.data && e.response.data.error) {
+			console.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		}
+
 		return false;
 	}
 
