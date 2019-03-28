@@ -3,11 +3,11 @@ import { API } from '../../../../api';
 import { Uploads } from '../../../../models';
 import { FileUpload } from '../../../../file-upload';
 
-import peerServer from '../peerServer';
+import { Federation } from '../../';
 
 API.v1.addRoute('federation.uploads', { authRequired: false }, {
 	get() {
-		if (!peerServer.enabled) {
+		if (!Federation.peerServer.enabled) {
 			return API.v1.failure('Not found');
 		}
 
