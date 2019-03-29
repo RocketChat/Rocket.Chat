@@ -9,7 +9,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 	Imports,
-} from '../../importer';
+} from '../../importer/server';
 import { Messages, Users, Subscriptions, Rooms } from '../../models';
 import { insertMessage } from '../../lib';
 import { Readable } from 'stream';

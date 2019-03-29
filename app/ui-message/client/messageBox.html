@@ -26,9 +26,7 @@
 						</span>
 					{{else}}
 						{{#if subscribed}}
-							{{#if isAudioMessageAllowed}}
-								{{> messageBoxAudioMessage rid=_id}}
-							{{/if}}
+							{{> messageBoxAudioMessage rid=_id}}
 							<span class="rc-message-box__action-menu" data-desktop>
 								{{#if actions}}
 									<span class="rc-message-box__icon">

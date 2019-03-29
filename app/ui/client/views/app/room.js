@@ -7,7 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
-import { WebRTC } from '../../../../webrtc';
+import { WebRTC } from '../../../../webrtc/client';
 import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
 	fireGlobalEvent,
@@ -22,7 +22,7 @@ import {
 } from '../../../../ui-utils';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
-import { promises } from '../../../../promises';
+import { promises } from '../../../../promises/client';
 import { hasAllPermission, hasRole } from '../../../../authorization';
 import _ from 'underscore';
 import moment from 'moment';
@@ -855,6 +855,16 @@ Template.room.events({
 
 			Meteor.call('sendMessage', msgObject);
 		});
+	},
+	'click .js-actionButton-respondWithMessage'(event) {
+		const msg = event.currentTarget.value;
+		if (!msg) {
+			return;
+		}
+
+		const { input } = chatMessages[RoomManager.openedRoom];
+		input.value = msg;
+		input.focus();
 	},
 	'click .js-navigate-to-discussion'(event) {
 		event.preventDefault();
