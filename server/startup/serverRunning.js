@@ -9,14 +9,24 @@ import semver from 'semver';
 
 Meteor.startup(function() {
 	let oplogState = 'Disabled';
-	if (MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry) {
+
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry) {
 		oplogState = 'Enabled';
 		if (settings.get('Force_Disable_OpLog_For_Cache') === true) {
 			oplogState += ' (Disabled for Cache Sync)';
 		}
 	}
 
-	const mongoDbVersion = MongoInternals.NpmModules.mongodb.version;
+	let mongoDbVersion;
+	try {
+		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));
+		mongoDbVersion = version;
+	} catch (e) {
+		mongoDbVersion = 'Error getting version';
+		console.error('Error getting MongoDB version');
+	}
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
@@ -42,14 +52,20 @@ Meteor.startup(function() {
 
 		msg = msg.join('\n');
 
-		if (semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
-			return SystemLogger.startup_box(msg, 'SERVER RUNNING');
+		if (!semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
+			msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${ desiredNodeVersionMajor }.X.X`].join('\n');
+			SystemLogger.error_box(msg, 'SERVER ERROR');
+
+			return process.exit();
 		}
 
-		msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${ desiredNodeVersionMajor }.X.X`].join('\n');
+		if (!semver.satisfies(mongoDbVersion, '>=3.2.0')) {
+			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.2 OR LATER'].join('\n');
+			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-		SystemLogger.error_box(msg, 'SERVER ERROR');
+			return process.exit();
+		}
 
-		return process.exit();
+		return SystemLogger.startup_box(msg, 'SERVER RUNNING');
 	}, 100);
 });
