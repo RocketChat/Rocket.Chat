@@ -4,30 +4,8 @@
 	"globals": {
 		"__meteor_bootstrap__"        : false,
 		"__meteor_runtime_config__"   : false,
-		"Apps"                        : false,
 		"Assets"                      : false,
 		"chrome"                      : false,
-		"cordova"                     : false,
-		"device"                      : false,
-		"DynamicCss"                  : false,
-		"facebookConnectPlugin"       : false,
-		"handleError"                 : false,
-		"getAvatarSuggestionForUser"  : false,
-		"globals"                     : true,
-		"JitsiMeetExternalAPI"        : false,
-		"jscolor"                     : false,
-		"language_names"              : true,
-		"msgStream"                   : false,
-		"Npm"                         : false,
-		"openRoom"                    : false,
-		"OnePassword"                 : false,
-		"Package"                     : false,
-		"RocketChat"                  : true,
-		"roomExit"                    : true,
-		"Servers"                     : false,
-		"Settings"                    : false,
-		"TAPi18next"                  : false,
-		"TwitterConnect"              : false,
-		"VRecDialog"                  : false
+		"jscolor"                     : false
 	}
 }

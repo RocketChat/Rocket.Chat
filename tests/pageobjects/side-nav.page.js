@@ -5,7 +5,7 @@ class SideNav extends Page {
 	get channelType() { return browser.element('.create-channel__content .rc-switch__button'); }
 	get channelReadOnly() { return browser.elements('.create-channel__switches .rc-switch__button').value[1]; }
 	get channelName() { return browser.element('.create-channel__content input[name="name"]'); }
-	get saveChannelBtn() { return browser.element('.create-channel__content [data-button="create"]'); }
+	get saveChannelBtn() { return browser.element('.rc-modal__content [data-button="create"]'); }
 
 	// Account box
 	getPopOverContent() { return browser.element('.rc-popover__content'); }
@@ -29,7 +29,11 @@ class SideNav extends Page {
 	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--magnifier'); }
 	get spotlightSearch() { return browser.element('.toolbar__search input'); }
 	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }
-	get newChannelBtn() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
+	get newChannelBtnToolbar() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
+
+	get newChannelBtn() { return browser.element('.rc-popover__icon-element--hashtag'); }
+	get newDiscussionBtn() { return browser.element('.rc-popover__icon-element--discussion'); }
+
 	get newChannelIcon() { return browser.element('.toolbar__icon.toolbar__search-create-channel'); }
 
 	// Rooms List
@@ -46,10 +50,12 @@ class SideNav extends Page {
 
 	get burgerBtn() { return browser.element('.burger'); }
 
+	get sidebarWrap() { return browser.element('.sidebar-wrap'); }
+
 	// Opens a channel via rooms list
 	openChannel(channelName) {
-		browser.waitForVisible(`.sidebar-item__name=${ channelName }`, 5000);
-		browser.click(`.sidebar-item__name=${ channelName }`);
+		browser.waitForVisible(`.sidebar-item__ellipsis=${ channelName }`, 10000);
+		browser.click(`.sidebar-item__ellipsis=${ channelName }`);
 		browser.waitForVisible('.rc-message-box__container textarea', 5000);
 		browser.waitForVisible('.rc-header', 5000);
 		browser.waitUntil(function() {
@@ -60,23 +66,21 @@ class SideNav extends Page {
 
 	// Opens a channel via spotlight search
 	searchChannel(channelName) {
-		let currentRoom;
 		browser.waitForVisible('.rc-header', 15000);
 		if (browser.isVisible('.rc-header__name')) {
-			currentRoom = browser.element('.rc-header__name').getText();
+			if (channelName === browser.element('.rc-header__name').getText()) {
+				return;
+			}
 		}
-		if (currentRoom !== channelName) {
-			this.spotlightSearch.waitForVisible(5000);
-			this.spotlightSearch.click();
-			this.spotlightSearch.setValue(channelName);
-			browser.waitForVisible(`[aria-label='${ channelName }']`, 5000);
-			browser.click(`[aria-label='${ channelName }']`);
-			browser.waitForVisible('.rc-header__name', 8000);
-			browser.waitUntil(function() {
-				return browser.getText('.rc-header__name') === channelName;
-			}, 10000);
-
-		}
+		this.spotlightSearch.waitForVisible(5000);
+		this.spotlightSearch.click();
+		this.spotlightSearch.setValue(channelName);
+		browser.waitForVisible(`[aria-label='${ channelName }']`, 5000);
+		browser.click(`[aria-label='${ channelName }']`);
+		browser.waitForVisible('.rc-header__name', 8000);
+		browser.waitUntil(function() {
+			return browser.getText('.rc-header__name') === channelName;
+		}, 10000);
 	}
 
 	// Gets a channel from the spotlight search
@@ -106,15 +110,19 @@ class SideNav extends Page {
 	}
 
 	createChannel(channelName, isPrivate, /* isReadOnly*/) {
+		this.newChannelBtnToolbar.waitForVisible(10000);
+		this.newChannelBtnToolbar.click();
+
 		this.newChannelBtn.waitForVisible(10000);
 		this.newChannelBtn.click();
+
 		this.channelName.waitForVisible(10000);
 
 		// workaround for incomplete setvalue bug
 		this.channelName.setValue(channelName);
 
 		browser.waitUntil(function() {
-			return browser.isEnabled('.create-channel__content [data-button="create"]');
+			return browser.isEnabled('.rc-modal__content [data-button="create"]');
 		}, 5000);
 
 		this.channelType.waitForVisible(10000);

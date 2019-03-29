@@ -1,0 +1,46 @@
+<template name="permissions">
+	<section class="permissions-manager page-container page-home page-static page-list">
+		{{#if hasPermission}}
+			{{# header sectionName=pageTitle}}
+				<div class="rc-header__section-button">
+					<a href="{{pathFor"admin-permissions-new"}}" class="rc-button rc-button--primary new-role">{{_ "New_role"}}</a>
+				</div>
+			{{/header}}
+
+			<div class="content">
+				<table border="1" class="permission-grid secondary-background-color">
+					<thead class="content-background-color">
+						<tr>
+							<th class="border-component-color">&nbsp;</th>
+							{{#each role}}
+							<th class="border-component-color" title="{{description}}">
+								<a href="{{pathFor "admin-permissions-edit" name=_id}}">
+									{{_id}}
+									<i class="icon-edit"></i>
+								</a>
+							</th>
+							{{/each}}
+						</tr>
+					</thead>
+					<tbody>
+						{{#each permission}}
+						<tr class="admin-table-row">
+							<td class="permission-name border-component-color" title="{{_ permissionDescription}}">{{_ permissionName}}<br>[{{_id}}]</td>
+							{{#each role}}
+							<td class="border-component-color">
+								<input type="checkbox" name="perm[{{_id}}][{{../_id}}]" class="role-permission" value="1" checked="{{granted ../roles}}" data-role="{{_id}}" data-permission="{{../_id}}">
+							</td>
+							{{/each}}
+						</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			</div>
+		{{else}}
+			<div class="content">
+				{{#if i18nPageTitle}} {{> header sectionName=i18nPageTitle}} {{else}} {{> header sectionName=pageTitle}} {{/if}}
+				{{_ "Not_authorized"}}
+			</div>
+		{{/if}}
+	</section>
+</template>
