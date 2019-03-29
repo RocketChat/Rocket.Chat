@@ -17,7 +17,7 @@ export class AppHttpBridge {
 		this.orch.debugLog(`The App ${ info.appId } is requesting from the outter webs:`, info);
 
 		try {
-			return await HTTP.call(info.method, info.url, info.request);
+			return HTTP.call(info.method, info.url, info.request);
 		} catch (e) {
 			return e.response;
 		}
