@@ -363,8 +363,11 @@ export class PeerClient {
 
 		const { peer: { domain: localPeerDomain } } = this;
 
-		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return users; }
+		// Check if room or user who joined are federated
+		if ((!userWhoJoined.federation || userWhoJoined.federation.peer === localPeerDomain) &&
+			!FederatedRoom.isFederated(localPeerDomain, room)) {
+			return users;
+		}
 
 		const extras = {};
 
