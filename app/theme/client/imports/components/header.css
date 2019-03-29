@@ -3,6 +3,8 @@
 
 	font-size: var(--text-heading-size);
 
+	z-index: 10;
+
 	&__first-icon {
 		display: flex;
 

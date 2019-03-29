@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks/server';
-import { settings } from '../../settings';
+import { settings } from '../../../settings';
 import { undoReply } from '../../lib/Thread';
 import { Messages } from '../../../models';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';

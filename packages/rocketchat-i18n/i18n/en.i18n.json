@@ -2809,6 +2809,7 @@
   "This_room_has_been_unarchived_by__username_": "This room has been unarchived by __username__",
   "thread": "thread",
   "Threads": "Threads",
+  "Thread_message": "Commented on *__username__'s* message: _ __msg__ _",
   "This_week": "This Week",
   "Thursday": "Thursday",
   "Time_in_seconds": "Time in seconds",

@@ -30,6 +30,30 @@ Meteor.startup(() => {
 	});
 });
 
+const keyCodes = [
+	13, // Enter
+	20, // Caps lock
+	16, // Shift
+	9, // Tab
+	27, // Escape Key
+	17, // Control Key
+	91, // Windows Command Key
+	19, // Pause Break
+	18, // Alt Key
+	93, // Right Click Point Key
+	45, // Insert Key
+	34, // Page Down
+	35, // Page Up
+	144, // Num Lock
+	145, // Scroll Lock
+];
+
+for (let i = 35; i <= 40; i++) { keyCodes.push(i); } // Home, End, Arrow Keys
+for (let i = 112; i <= 123; i++) { keyCodes.push(i); } // F1 - F12
+
+const ltrChars = 'A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u2C00-\uFB1C\uFDFE-\uFE6F\uFEFD-\uFFFF';
+const rtlChars = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC';
+
 export const getPermaLinks = async(replies) => {
 	const promises = replies.map(async(reply) =>
 		MessageAction.getPermaLink(reply._id)
@@ -38,19 +62,19 @@ export const getPermaLinks = async(replies) => {
 	return Promise.all(promises);
 };
 
-export const mountReply = async(msg, input) => {
-	const replies = $(input).data('reply');
+export const mountReply = async(msg, input, replies) => {
 	const mentionUser = $(input).data('mention-user') || false;
+	const { username } = Meteor.user();
 
 	if (replies && replies.length) {
 		const permalinks = await getPermaLinks(replies);
 
 		replies.forEach(async(reply, replyIndex) => {
 			if (reply !== undefined) {
+				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
 				msg += `[ ](${ permalinks[replyIndex] }) `;
 
-				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
+				if (roomInfo.t !== 'd' && reply.u.username !== username && mentionUser) {
 					msg += `@${ reply.u.username } `;
 				}
 			}
@@ -234,12 +258,12 @@ export const ChatMessages = class ChatMessages {
 		return this.editing.savedCursor = this.input.selectionEnd;
 	}
 	/**
-	* * @param {string} rim room ID
+	* * @param {string} rid room ID
 	* * @param {Element} input DOM element
 	* * @param {function?} done callback
 	*/
 	async send(rid, input, done = function() {}) {
-
+		const threadsEnabled = settings.get('Threads_enabled');
 		if (!ChatSubscription.findOne({ rid })) {
 			await call('joinRoom', rid);
 		}
@@ -251,7 +275,11 @@ export const ChatMessages = class ChatMessages {
 
 			let msg = '';
 
-			msg += await mountReply(msg, input);
+			const replies = $(input).data('reply') || [];
+
+			if (!threadsEnabled) {
+				msg += await mountReply(msg, input, replies);
+			}
 
 			msg += input.value;
 			$(input)
@@ -271,7 +299,7 @@ export const ChatMessages = class ChatMessages {
 			}
 
 			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg });
+			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg, ...(threadsEnabled && replies.length && { tmid: replies[0]._id }) });
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
@@ -533,28 +561,9 @@ export const ChatMessages = class ChatMessages {
 	}
 
 	keyup(rid, event) {
-		let i;
+
 		const input = event.currentTarget;
 		const k = event.which;
-		const keyCodes = [
-			13, // Enter
-			20, // Caps lock
-			16, // Shift
-			9, // Tab
-			27, // Escape Key
-			17, // Control Key
-			91, // Windows Command Key
-			19, // Pause Break
-			18, // Alt Key
-			93, // Right Click Point Key
-			45, // Insert Key
-			34, // Page Down
-			35, // Page Up
-			144, // Num Lock
-			145, // Scroll Lock
-		];
-		for (i = 35; i <= 40; i++) { keyCodes.push(i); } // Home, End, Arrow Keys
-		for (i = 112; i <= 123; i++) { keyCodes.push(i); } // F1 - F12
 
 		if (!Array.from(keyCodes).includes(k)) {
 			this.startTyping(rid, input);
@@ -651,10 +660,7 @@ export const ChatMessages = class ChatMessages {
 
 	// http://stackoverflow.com/a/14824756
 	isMessageRtl(message) {
-		const ltrChars = 'A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u2C00-\uFB1C\uFDFE-\uFE6F\uFEFD-\uFFFF';
-		const rtlChars = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC';
 		const rtlDirCheck = new RegExp(`^[^${ ltrChars }]*[${ rtlChars }]`);
-
 		return rtlDirCheck.test(message);
 	}
 

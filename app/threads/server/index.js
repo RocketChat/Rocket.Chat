@@ -1,3 +1,3 @@
+import './hooks';
 import './methods';
-import './permissions';
 import './settings';

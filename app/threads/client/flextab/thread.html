@@ -1,10 +1,22 @@
 <template name="thread">
-	<ul class="thread">
-		{{#each parentMessage}}
-			{{> nrr nrrargs 'message' .}}
-		{{/each}}
-	</ul>
-	<footer class="footer border-component-color">
-		{{> messageBox getroomData}}
-	</footer>
+	<header class="contextual-bar__header">
+		<div class="contextual-bar__header-data">
+			{{> icon block="contextual-bar__header-icon" icon='thread'}}
+			<h2 class="contextual-bar__header-title">{{_ 'Thread'}}</h2>
+		</div>
+		<button class="contextual-bar__header-close js-close">
+			{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
+		</button>
+	</header>
+	<section class="contextual-bar__content flex-tab">
+		<ul class="thread">
+			{{> nrr nrrargs 'message' msg=mainMessage room=room subscription=subscription settings=settings templatePrefix='thread-' noDate=true }}
+			{{#let room=room subscription=subscription settings=settings}}
+				{{#each messages}}
+					{{> nrr nrrargs 'message' msg=. room=room subscription=subscription settings=settings templatePrefix='thread-'}}
+				{{/each}}
+			{{/let}}
+		</ul>
+		<div contenteditable="">ads</div>
+	</section>
 </template>

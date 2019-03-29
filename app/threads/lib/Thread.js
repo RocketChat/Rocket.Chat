@@ -1,6 +1,7 @@
-import { Messages } from '../../../models';
+import { Messages } from '../../models';
 
 export const reply = ({ tmid }, { ts, u }) => {
+
 	if (!tmid) {
 		return false;
 	}

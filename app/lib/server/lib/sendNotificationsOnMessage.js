@@ -11,7 +11,7 @@ import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/m
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
-const sendNotification = async({
+export const sendNotification = async({
 	subscription,
 	sender,
 	hasMentionToAll,
@@ -313,5 +313,3 @@ export async function sendAllNotifications(message, room, users) {
 }
 
 callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
-
-export { sendNotification, sendAllNotifications };

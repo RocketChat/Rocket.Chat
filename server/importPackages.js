@@ -87,6 +87,7 @@ import '../app/smarsh-connector';
 import '../app/spotify';
 import '../app/statistics';
 import '../app/theme';
+import '../app/threads/server';
 import '../app/tokenpass';
 import '../app/ui-admin';
 import '../app/ui-master';

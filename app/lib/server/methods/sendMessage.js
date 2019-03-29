@@ -19,8 +19,6 @@ Meteor.methods({
 	sendMessage(message) {
 		check(message, Object);
 
-
-
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -66,7 +64,7 @@ Meteor.methods({
 		const user = Users.findOneById(uid, {
 			fields: {
 				username: 1,
-				name: !!settings.get('Message_SetNameToAliasEnabled'),
+				...(!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 }),
 			},
 		});
 
