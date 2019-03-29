@@ -71,7 +71,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.upload', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${ Date.now() }`;
+		const testChannelName = `channel.test.upload.${ Date.now() }`;
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
