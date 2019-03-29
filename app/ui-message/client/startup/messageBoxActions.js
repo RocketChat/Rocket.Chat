@@ -49,7 +49,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.rc-message-box__textarea.js-input-message'));
+			fileUpload(filesToUpload, $('.js-input-message'));
 			$input.remove();
 		});
 
