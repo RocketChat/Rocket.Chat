@@ -6,37 +6,33 @@
 
 	padding: 1.25rem 2rem;
 
-	.directory__search-form {
-		display: flex;
+	& &__search-form {
+		display: grid;
+		grid-gap: 0 10px;
 
-		margin: 0 -5px;
-		flex-flow: row nowrap;
-
-		> * {
-			margin: 0 5px;
-		}
+		grid-template-columns: 2fr auto;
 	}
 
-	.directory__channel-name,
-	.directory__user-name,
-	.directory__user-count,
-	.directory__username,
-	.directory__email,
-	.directory__domain {
+	& &__channel-name,
+	& &__user-name,
+	& &__user-count,
+	& &__username,
+	& &__email,
+	& &__domain {
 		overflow: hidden;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
 	}
 
-	.directory__user-count {
+	& &__user-count {
 		width: 80px;
 	}
 
-	.directory__user-name,
-	.directory__username,
-	.directory__email,
-	.directory__domain {
+	& &__user-name,
+	& &__username,
+	& &__email,
+	& &__domain {
 		min-width: 100px;
 	}
 
