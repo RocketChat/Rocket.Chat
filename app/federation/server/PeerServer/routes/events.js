@@ -3,12 +3,9 @@ import { FederationKeys } from '../../../../models';
 
 import { Federation } from '../..';
 
-import peerDNS from '../../peerDNS';
-import peerServer from '../peerServer';
-
 API.v1.addRoute('federation.events', { authRequired: false }, {
 	post() {
-		if (!peerServer.enabled) {
+		if (!Federation.peerServer.enabled) {
 			return API.v1.failure('Not found');
 		}
 
@@ -22,7 +19,7 @@ API.v1.addRoute('federation.events', { authRequired: false }, {
 
 		const remotePeerDomain = this.request.headers['x-federation-domain'];
 
-		const peer = peerDNS.searchPeer(remotePeerDomain);
+		const peer = Federation.peerDNS.searchPeer(remotePeerDomain);
 
 		if (!peer) {
 			return API.v1.failure('Could not find valid peer');
@@ -43,62 +40,62 @@ API.v1.addRoute('federation.events', { authRequired: false }, {
 			return API.v1.failure('Event was not sent');
 		}
 
-		peerServer.log(`Received event:${ e.t }`);
+		Federation.peerServer.log(`Received event:${ e.t }`);
 
 		try {
 			switch (e.t) {
 				case 'drc':
-					peerServer.handleDirectRoomCreatedEvent(e);
+					Federation.peerServer.handleDirectRoomCreatedEvent(e);
 					break;
 				case 'roc':
-					peerServer.handleRoomCreatedEvent(e);
+					Federation.peerServer.handleRoomCreatedEvent(e);
 					break;
 				case 'usj':
-					peerServer.handleUserJoinedEvent(e);
+					Federation.peerServer.handleUserJoinedEvent(e);
 					break;
 				case 'usa':
-					peerServer.handleUserAddedEvent(e);
+					Federation.peerServer.handleUserAddedEvent(e);
 					break;
 				case 'usl':
-					peerServer.handleUserLeftEvent(e);
+					Federation.peerServer.handleUserLeftEvent(e);
 					break;
 				case 'usr':
-					peerServer.handleUserRemovedEvent(e);
+					Federation.peerServer.handleUserRemovedEvent(e);
 					break;
 				case 'usm':
-					peerServer.handleUserMutedEvent(e);
+					Federation.peerServer.handleUserMutedEvent(e);
 					break;
 				case 'usu':
-					peerServer.handleUserUnmutedEvent(e);
+					Federation.peerServer.handleUserUnmutedEvent(e);
 					break;
 				case 'msc':
-					peerServer.handleMessageCreatedEvent(e);
+					Federation.peerServer.handleMessageCreatedEvent(e);
 					break;
 				case 'msu':
-					peerServer.handleMessageUpdatedEvent(e);
+					Federation.peerServer.handleMessageUpdatedEvent(e);
 					break;
 				case 'msd':
-					peerServer.handleMessageDeletedEvent(e);
+					Federation.peerServer.handleMessageDeletedEvent(e);
 					break;
 				case 'msr':
-					peerServer.handleMessagesReadEvent(e);
+					Federation.peerServer.handleMessagesReadEvent(e);
 					break;
 				case 'mrs':
-					peerServer.handleMessagesSetReactionEvent(e);
+					Federation.peerServer.handleMessagesSetReactionEvent(e);
 					break;
 				case 'mru':
-					peerServer.handleMessagesUnsetReactionEvent(e);
+					Federation.peerServer.handleMessagesUnsetReactionEvent(e);
 					break;
 				default:
 					throw new Error(`Invalid event:${ e.t }`);
 			}
 
-			peerServer.log('Success, responding...');
+			Federation.peerServer.log('Success, responding...');
 
 			// Respond
 			return API.v1.success();
 		} catch (err) {
-			peerServer.log(`Error handling event:${ e.t } - ${ err.toString() }`);
+			Federation.peerServer.log(`Error handling event:${ e.t } - ${ err.toString() }`);
 
 			return API.v1.failure(`Error handling event:${ e.t } - ${ err.toString() }`, err.error || 'unknown-error');
 		}
