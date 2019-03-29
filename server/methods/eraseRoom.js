@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { deleteRoom } from '../../app/lib';
 import { hasPermission } from '../../app/authorization';
 import { Rooms } from '../../app/models';
-import { Apps } from '../../app/apps';
+import { Apps } from '../../app/apps/server';
 import { roomTypes } from '../../app/utils';
 
 Meteor.methods({

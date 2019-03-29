@@ -6,7 +6,7 @@ import { Settings } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
 
-export function getWorkspaceAccessToken() {
+export function getWorkspaceAccessToken(forceNew = false, scope = '', save = true) {
 	if (!settings.get('Register_Server')) {
 		return '';
 	}
@@ -19,7 +19,7 @@ export function getWorkspaceAccessToken() {
 	const expires = Settings.findOneById('Cloud_Workspace_Access_Token_Expires_At');
 	const now = new Date();
 
-	if (now < expires.value) {
+	if (now < expires.value && !forceNew) {
 		return settings.get('Cloud_Workspace_Access_Token');
 	}
 
@@ -34,6 +34,7 @@ export function getWorkspaceAccessToken() {
 			query: querystring.stringify({
 				client_id,
 				client_secret,
+				scope,
 				grant_type: 'client_credentials',
 				redirect_uri: redirectUri,
 			}),
@@ -42,12 +43,13 @@ export function getWorkspaceAccessToken() {
 		return '';
 	}
 
-	const expiresAt = new Date();
-	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
+	if (save) {
+		const expiresAt = new Date();
+		expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
 
-	Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
-	Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
-
+		Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
+		Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
+	}
 
 	return authTokenResult.data.access_token;
 }

@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
-import { Markdown } from '../../markdown';
+import { Markdown } from '../../markdown/server';
 import _ from 'underscore';
 import s from 'underscore.string';
 
