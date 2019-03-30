@@ -116,6 +116,7 @@ export class Base {
 		this.users = {};
 		this.channels = {};
 		this.messages = {};
+		this.dms = {};
 		this.oldSettings = {};
 
 		this.logger.debug(`Constructed a new ${ info.name } Importer.`);

@@ -30,6 +30,7 @@ import './methods/checkRegistrationSecretURL';
 import './methods/checkUsernameAvailability';
 import './methods/cleanRoomHistory';
 import './methods/createChannel';
+import './methods/createDirectRoom';
 import './methods/createPrivateGroup';
 import './methods/createToken';
 import './methods/deleteMessage';
