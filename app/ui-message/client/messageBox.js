@@ -146,6 +146,10 @@ Template.messageBox.onCreated(function() {
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
 	messageBox.emit('created', this);
+	window.addEventListener('keydown',function(e){
+		if(e.key==='Escape'){
+		EmojiPicker.close()}
+	})
 
 	navigator.permissions.query({ name: 'microphone' })
 		.then((permissionStatus) => {
@@ -314,7 +318,6 @@ Template.messageBox.events({
 
 			const caretPos = input.selectionStart;
 			const textAreaTxt = input.value;
-
 			input.focus();
 			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
 				input.value = textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos);
