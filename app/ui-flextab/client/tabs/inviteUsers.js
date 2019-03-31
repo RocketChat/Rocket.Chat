@@ -128,9 +128,14 @@ Template.inviteUsers.onRendered(function() {
 
 Template.inviteUsers.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
+	this.roomUsers = new ReactiveVar([]);
 	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
+	Meteor.call('getUsersOfRoom', Session.get('openedRoom'), new ReactiveVar(false), (error, users) => {
+		this.roomUsers.set(users.records);
+	}
+	);
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
+		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)).concat(this.roomUsers.get().map(u => u.username));
 	});
 	this.userFilter = new ReactiveVar('');
 
