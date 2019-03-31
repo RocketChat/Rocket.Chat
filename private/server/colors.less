@@ -27,6 +27,8 @@
 @transparent-lighter: rgba(255, 255, 255, 0.3);
 @transparent-lightest: rgba(255, 255, 255, 0.6);
 
+@tablerow-background-color: rgba(234, 241, 251, 1);
+
 /** ----------------------------------------------------------------------------
  * Mixins
  */
@@ -454,6 +456,10 @@ input:-webkit-autofill {
 
 	&:nth-of-type(even) {
 		background-color: @transparent-lightest;
+	}
+
+	&:hover {
+		background: @tablerow-background-color;
 	}
 }
 
