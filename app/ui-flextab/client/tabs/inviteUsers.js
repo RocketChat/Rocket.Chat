@@ -135,7 +135,7 @@ Template.inviteUsers.onCreated(function() {
 	}
 	);
 	Deps.autorun(() => {
-		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)).concat(this.roomUsers.get().map(u => u.username));
+		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)).concat(this.roomUsers.get().map((u) => u.username));
 	});
 	this.userFilter = new ReactiveVar('');
 
