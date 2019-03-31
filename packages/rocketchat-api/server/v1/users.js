@@ -420,6 +420,7 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarHideAvatar: Match.Optional(Boolean),
 				sidebarGroupByType: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean),
+				discoverability: Match.Optional(String),
 			}),
 		});
 		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
@@ -435,7 +436,6 @@ RocketChat.API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 			delete this.bodyParams.data.language;
 			userData.language = language;
 		}
-
 		Meteor.runAsUser(this.userId, () => RocketChat.saveUser(this.userId, userData));
 		const user = RocketChat.models.Users.findOneById(userId, {
 			fields: {
@@ -557,5 +557,30 @@ RocketChat.API.v1.addRoute('users.getServiceAccessToken', { authRequired: true }
 		return RocketChat.API.v1.success({
 			accessToken : token,
 		});
+	},
+});
+
+RocketChat.API.v1.addRoute('users.setDiscoverability', { authRequired: true }, {
+	post() {
+		const params = this.bodyParams;
+		if (!params.discoverability) {
+			return RocketChat.API.v1.failure('The \'discoverability\' param is required');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserPreferences', { discoverability: params.discoverability }, function(error, results) {
+			if (results) {
+				return RocketChat.API.v1.success();
+			}
+			if (error) {
+				return RocketChat.API.v1.failure('Saving preference failed');
+			}
+		}));
+	},
+});
+
+RocketChat.API.v1.addRoute('users.getDiscoverability', { authRequired: true }, {
+	get() {
+		const discoverability = RocketChat.getUserPreference(this.userId, 'discoverability');
+		return RocketChat.API.v1.success({ discoverability });
 	},
 });
