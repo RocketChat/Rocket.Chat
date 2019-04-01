@@ -314,7 +314,8 @@ Template.room.helpers({
 	messageboxData() {
 		const instance = Template.instance();
 		return {
-			_id: this._id,
+			rid: this._id,
+			showFormattingTips: settings.get('Message_ShowFormattingTips'),
 			onResize: () => {
 				if (instance.sendToBottomIfNecessaryDebounced) {
 					instance.sendToBottomIfNecessaryDebounced();

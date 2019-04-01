@@ -149,7 +149,7 @@ Template.messageBox.onCreated(function() {
 
 Template.messageBox.onRendered(function() {
 	this.autorun(() => {
-		const subscribed = roomTypes.verifyCanSendMessage(this.data._id);
+		const subscribed = roomTypes.verifyCanSendMessage(this.data.rid);
 
 		Tracker.afterFlush(() => {
 			const input = subscribed && this.find('.js-input-message');
@@ -183,19 +183,19 @@ Template.messageBox.helpers({
 		return Layout.isEmbedded();
 	},
 	subscribed() {
-		return roomTypes.verifyCanSendMessage(this._id);
+		return roomTypes.verifyCanSendMessage(this.rid);
 	},
 	canSend() {
-		if (roomTypes.readOnly(this._id, Meteor.user())) {
+		if (roomTypes.readOnly(this.rid, Meteor.user())) {
 			return false;
 		}
-		if (roomTypes.archived(this._id)) {
+		if (roomTypes.archived(this.rid)) {
 			return false;
 		}
-		const roomData = Session.get(`roomData${ this._id }`);
+		const roomData = Session.get(`roomData${ this.rid }`);
 		if (roomData && roomData.t === 'd') {
 			const subscription = ChatSubscription.findOne({
-				rid: this._id,
+				rid: this.rid,
 			}, {
 				fields: {
 					archived: 1,
@@ -238,22 +238,19 @@ Template.messageBox.helpers({
 			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
 	isAnonymousOrJoinCode() {
-		const room = Session.get(`roomData${ this._id }`);
+		const room = Session.get(`roomData${ this.rid }`);
 		return !Meteor.userId() || (!ChatSubscription.findOne({
-			rid: this._id,
+			rid: this.rid,
 		}) && room && room.joinCodeRequired);
-	},
-	showFormattingTips() {
-		return settings.get('Message_ShowFormattingTips');
 	},
 	formattingButtons() {
 		return formattingButtons.filter((button) => !button.condition || button.condition());
 	},
 	isBlockedOrBlocker() {
-		const roomData = Session.get(`roomData${ this._id }`);
+		const roomData = Session.get(`roomData${ this.rid }`);
 		if (roomData && roomData.t === 'd') {
 			const subscription = ChatSubscription.findOne({
-				rid: this._id,
+				rid: this.rid,
 			}, {
 				fields: {
 					blocked: 1,
@@ -275,10 +272,10 @@ Template.messageBox.events({
 		const joinCodeInput = Template.instance().find('[name=joinCode]');
 		const joinCode = joinCodeInput && joinCodeInput.value;
 
-		call('joinRoom', this._id, joinCode);
+		call('joinRoom', this.rid, joinCode);
 	},
 
-	'click .emoji-picker-icon'(event) {
+	'click .js-emoji-picker'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
@@ -309,24 +306,24 @@ Template.messageBox.events({
 		});
 	},
 	'focus .js-input-message'(event, instance) {
-		KonchatNotification.removeRoomNotification(this._id);
-		if (chatMessages[this._id]) {
-			chatMessages[this._id].input = instance.find('.js-input-message');
+		KonchatNotification.removeRoomNotification(this.rid);
+		if (chatMessages[this.rid]) {
+			chatMessages[this.rid].input = instance.find('.js-input-message');
 		}
 	},
 	'click .cancel-reply'(event, instance) {
 
 		const input = instance.find('.js-input-message');
 		const messages = $(input).data('reply') || [];
-		const filtered = messages.filter((msg) => msg._id !== this._id);
+		const filtered = messages.filter((msg) => msg._id !== this.rid);
 
 		$(input)
 			.data('reply', filtered)
 			.trigger('dataChange');
 	},
 	'keyup .js-input-message'(event, instance) {
-		chatMessages[this._id].keyup(this._id, event, instance);
-		instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
+		chatMessages[this.rid].keyup(this.rid, event, instance);
+		instance.isMessageFieldEmpty.set(chatMessages[this.rid].isEmpty());
 	},
 	'paste .js-input-message'(event, instance) {
 		const { $input } = chatMessages[RoomManager.openedRoom];
@@ -362,22 +359,22 @@ Template.messageBox.events({
 				(action) => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
 			action && applyFormatting.apply(action, [event, instance]);
 		}
-		chatMessages[this._id].keydown(this._id, event, Template.instance());
+		chatMessages[this.rid].keydown(this.rid, event, Template.instance());
 	},
 	'input .js-input-message'(event, instance) {
 		instance.sendIconDisabled.set(event.target.value !== '');
-		chatMessages[this._id].valueChanged(this._id, event, Template.instance());
+		chatMessages[this.rid].valueChanged(this.rid, event, Template.instance());
 	},
 	'propertychange .js-input-message'(event) {
 		if (event.originalEvent.propertyName === 'value') {
-			chatMessages[this._id].valueChanged(this._id, event, Template.instance());
+			chatMessages[this.rid].valueChanged(this.rid, event, Template.instance());
 		}
 	},
 	async 'click .js-send'(event, instance) {
 		const { input } = chatMessages[RoomManager.openedRoom];
-		chatMessages[this._id].send(this._id, input, () => {
+		chatMessages[this.rid].send(this.rid, input, () => {
 			input.updateAutogrow();
-			instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
+			instance.isMessageFieldEmpty.set(chatMessages[this.rid].isEmpty());
 			input.focus();
 		});
 	},
@@ -408,7 +405,7 @@ Template.messageBox.events({
 			direction: 'top-inverted',
 			currentTarget: event.currentTarget.firstElementChild.firstElementChild,
 			data: {
-				rid: this._id,
+				rid: this.rid,
 				messageBox: instance.firstNode,
 			},
 			activeElement: event.currentTarget,
@@ -423,7 +420,7 @@ Template.messageBox.events({
 			.filter(({ action }) => !!action)
 			.forEach(({ action }) => {
 				action.call(null, {
-					rid: this._id,
+					rid: this.rid,
 					messageBox: instance.firstNode,
 					event,
 				});
