@@ -5,7 +5,7 @@ import {
 	ProgressStep,
 	Selection,
 	SelectionChannel,
-	SelectionUser
+	SelectionUser,
 } from '../../importer/server';
 import { RocketChatFile } from '../../file';
 import { getAvatarUrlFromUsername } from '../../utils';
@@ -84,7 +84,7 @@ export class SlackImporter extends Base {
 			}
 		});
 
-		// Insert the users record to the collection (rocketchat_raw_import), 
+		// Insert the users record to the collection (rocketchat_raw_import),
 		// eventually this might have to be split into several ones as well if someone tries to import a several thousands of users instances
 		const usersId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
 		this.users = this.collection.findOne(usersId);
@@ -99,7 +99,7 @@ export class SlackImporter extends Base {
 		this.addCountToTotal(tempChannels.length);
 		console.log(`added ${ tempChannels.length } channels to the import-queue`);
 
-		if(tempGroups.length > 0){
+		if (tempGroups.length > 0) {
 			// Insert the Groups records to the collection (rocketchat_raw_import)
 			const groupsId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'groups', channels: tempGroups });
 			this.groups = this.collection.findOne(groupsId);
@@ -108,7 +108,7 @@ export class SlackImporter extends Base {
 			console.log(`added ${ tempGroups.length } private channels to the import-queue`);
 		}
 
-		if(tempDMS.length > 0){
+		if (tempDMS.length > 0) {
 			// Insert the DMs records to the collection (rocketchat_raw_import)
 			const dmsId = this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'dms', channels: tempDMS });
 			this.dms = this.collection.findOne(dmsId);
@@ -320,24 +320,20 @@ export class SlackImporter extends Base {
 					Meteor.runAsUser (startedByUserId, () => {
 
 						// check if user is bot and replace with rocket-cat than
-						if(!this.users.users.find((user) => user.id === room.members[0]).is_bot){
-							var user1 = this.getRocketUser(room.members[0]);
-						}else{
-							var user1 = Users.findOneById('rocket.cat', { fields: { username: 1, name: 1 } });
-						}
-						if(!this.users.users.find((user) => user.id === room.members[1]).is_bot){
-							var user2 = this.getRocketUser(room.members[1]);
-						}else{
-							var user2 = Users.findOneById('rocket.cat', { fields: { username: 1, name: 1 } });
-						}
+						const user1 = !this.users.users.find((user) => user.id === room.members[0]).is_bot ?
+						this.getRocketUser(room.members[0]) :
+						Users.findOneById('rocket.cat', { fields: { username: 1, name: 1 } });
+
+						const user2 = !this.users.users.find((user) => user.id === room.members[1]).is_bot ?
+						this.getRocketUser(room.members[1]) :
+						Users.findOneById('rocket.cat', { fields: { username: 1, name: 1 } });
 
 						// check if one of the usrs is not existent (i.e. user was not imported)
-						if(user1 == undefined || user2 == undefined){
+						if (user1 == undefined || user2 == undefined) {
 							room.do_import = false;
 							console.log("skipping creation of room (type d) due to non-existence of user");
 							return;
 						}
-
 
 						const roomid = [user1._id,user2._id].sort().join('');
 						const existantRoom = Rooms.findOneById(roomid);
@@ -353,7 +349,7 @@ export class SlackImporter extends Base {
 								console.log(`Creating room (type d): ${ returned._id }`);
 								room.rocketId = returned.rid;
 							});
- 
+
 							// @TODO implement model specific function
 							const roomUpdate = {
 								ts: new Date(room.created * 1000),
@@ -374,15 +370,15 @@ export class SlackImporter extends Base {
 				// message import
 				Object.keys(this.messages).forEach((channel) => {
 					const messagesObj = this.messages[channel];
- 
+
 					Meteor.runAsUser(startedByUserId, () => {
 
 						const slackChannel = this.getSlackChannelFromName(channel);
 						const slackChannelDMS = this.getSlackDMSFromID(channel);
 						const slackRoom = slackChannel ? slackChannel : slackChannelDMS;
 
-						if (!slackRoom || !slackRoom.do_import) { 
-							console.log("canceled importing messages for Room-ID because Room is not created or import flag is set to false");	
+						if (!slackRoom || !slackRoom.do_import) {
+							console.log("canceled importing messages for Room-ID because Room is not created or import flag is set to false");
 							return; }
 						const room = Rooms.findOneById(slackRoom.rocketId, { fields: { _id: 1, usernames: 1, t: 1, name: 1 } });
 						console.log(`importing messages for room-ID ${ room._id }, room-type: ${ room.t }, usernames: ${ room.usernames }`);
