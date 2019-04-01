@@ -35,29 +35,29 @@ export class SlackImporter extends Base {
 		const tempMessages = {};
 
 		zipEntries.forEach((entry) => {
-			//ignore mac specific folders
+			// ignore mac specific folders
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
 				return this.logger.debug(`Ignoring the file: ${ entry.entryName }`);
 			}
-			//parse Channel data
+			// parse Channel data
 			if (entry.entryName === 'channels.json') {
 				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 				tempChannels = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 				return;
 			}
-			//parse group data (private Channels)
+			// parse group data (private Channels)
 			if (entry.entryName === 'groups.json') {
 				super.updateProgress(ProgressStep.PREPARING_GROUPS);
 				tempGroups = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 				return;
 			}
-			//parse direct messages data
+			// parse direct messages data
 			if (entry.entryName === 'dms.json') {
 				super.updateProgress(ProgressStep.PREPARING_DMS);
 				tempDMS = JSON.parse(entry.getData().toString());
 				return;
 			}
-			//ToDo parse Multi-user-direct messages data
+			// ToDo parse Multi-user-direct messages data
 
 
 			if (entry.entryName === 'users.json') {
@@ -167,7 +167,7 @@ export class SlackImporter extends Base {
 		super.startImport(importSelection);
 		const start = Date.now();
 
-		//assign import-flag for users (local copy of the users collection) and update the mongo collection
+		// assign import-flag for users (local copy of the users collection) and update the mongo collection
 		Object.keys(importSelection.users).forEach((key) => {
 			const user = importSelection.users[key];
 			Object.keys(this.users.users).forEach((k) => {
@@ -179,7 +179,7 @@ export class SlackImporter extends Base {
 		});
 		this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 
-		//assign import-flag for channels (local copy of the users collection)  and update mongo collection
+		// assign import-flag for channels (local copy of the users collection)  and update mongo collection
 		Object.keys(importSelection.channels).forEach((key) => {
 			const channel = importSelection.channels[key];
 			Object.keys(this.channels.channels).forEach((k) => {
@@ -195,7 +195,7 @@ export class SlackImporter extends Base {
 		const startedByUserId = Meteor.userId();
 		Meteor.defer(() => {
 			try {
-				//user import
+				// user import
 				super.updateProgress(ProgressStep.IMPORTING_USERS);
 				this.users.users.forEach((user) => {
 					if (!user.do_import) {
@@ -255,7 +255,7 @@ export class SlackImporter extends Base {
 				});
 				this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 
-				//channel import
+				// channel import
 				super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				this.channels.channels.forEach((channel) => {
 					if (!channel.do_import) {
@@ -313,11 +313,12 @@ export class SlackImporter extends Base {
 				this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
 
 				// direct message channel import
+				super.updateProgress(ProgressStep.IMPORTING_DMS);
 				this.dms.channels.forEach((room) => {
 
 					Meteor.runAsUser (startedByUserId, () => {
 
-						//check if user is bot and replace with rocket-cat than
+						// check if user is bot and replace with rocket-cat than
 						if(!this.users.users.find((user) => user.id === room.members[0]).is_bot){
 							var user1 = this.getRocketUser(room.members[0]);
 						}else{
@@ -329,6 +330,13 @@ export class SlackImporter extends Base {
 							var user2 = Users.findOneById('rocket.cat', { fields: { username: 1, name: 1 } });
 						}
 
+						// check if one of the usrs is not existent (i.e. user was not imported)
+						if(user1 == undefined || user2 == undefined){
+							room.do_import = false;
+							console.log("skipping creation of d-room due to non-existence of user");
+							return;
+						}
+
 
 						const roomid = [user1._id,user2._id].sort().join('');
 						const existantRoom = Rooms.findOneById(roomid);
@@ -336,9 +344,11 @@ export class SlackImporter extends Base {
 						if (existantRoom) {
 							room.rocketId = existantRoom._id;
 							Rooms.update({ _id: room.rocketId }, { $addToSet: { importIds: room.id } });
+							console.log("d-room already existent: %o",room.rocketId);
 						} else {
 							// create direct message room
 							Meteor.runAsUser(user1._id, () => {
+								console.log("Creating d-room: %o",returned.rid);
 								const returned = Meteor.call('createDirectRoom', [user1,user2]);
 								room.rocketId = returned.rid;
 							});
@@ -349,6 +359,8 @@ export class SlackImporter extends Base {
 							};
 							Rooms.update({ _id: room.rocketId }, { $set: roomUpdate, $addToSet: { importIds: room.id } });
 						}
+						// import direct messages for all rooms
+						room.do_import = true;
 						// this.addCountCompleted(1);
 					});
 				});
@@ -358,21 +370,27 @@ export class SlackImporter extends Base {
 				const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
 				super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 
-				//message import
+				// message import
 				Object.keys(this.messages).forEach((channel) => {
 					const messagesObj = this.messages[channel];
  
 					Meteor.runAsUser(startedByUserId, () => {
-						const slackChannel = this.getSlackChannelFromName(channel) || this.getSlackDMSFromID(channel);
 
-						if (!slackChannel || !slackChannel.do_import) { return; }
-						const room = Rooms.findOneById(slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
+						const slackChannel = this.getSlackChannelFromName(channel);
+						const slackChannelDMS = this.getSlackDMSFromID(channel);
+						const slackRoom = slackChannel ? slackChannel : slackChannelDMS;
+
+						if (!slackRoom || !slackRoom.do_import) { 
+							console.log("canceled importing messages for Room-ID because Room is not created or import flag is set to false");	
+							return; }
+						const room = Rooms.findOneById(slackRoom.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
+						console.log("importing messages for Room-ID %o, RoomType: %o",room._id,room.t);
 						Object.keys(messagesObj).forEach((date) => {
 							const msgs = messagesObj[date];
 							msgs.messages.forEach((message) => {
 								this.updateRecord({ messagesstatus: `${ channel }/${ date }.${ msgs.messages.length }` });
 								const msgDataDefaults = {
-									_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }`,
+									_id: `slack-${ slackRoom.id }-${ message.ts.replace(/\./g, '-') }`,
 									ts: new Date(parseInt(message.ts.split('.')[0]) * 1000),
 								};
 

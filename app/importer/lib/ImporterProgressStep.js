@@ -12,6 +12,7 @@ export const ProgressStep = Object.freeze({
 	IMPORTING_STARTED: 'importer_importing_started',
 	IMPORTING_USERS: 'importer_importing_users',
 	IMPORTING_CHANNELS: 'importer_importing_channels',
+	IMPORTING_DMS: 'importer_importing_direct_message_rooms',
 	IMPORTING_MESSAGES: 'importer_importing_messages',
 	FINISHING: 'importer_finishing',
 	DONE: 'importer_done',
