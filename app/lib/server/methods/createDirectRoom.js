@@ -5,7 +5,6 @@ import { createRoom } from '../functions';
 
 Meteor.methods({
 	createDirectRoom(members, customFields = {}, extraData = {}) {
-		// check(members, Match.Optional([String]));
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
