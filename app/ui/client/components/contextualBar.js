@@ -24,6 +24,7 @@ Template.contextualBar.helpers({
 		const { tabBar } = Template.instance();
 		return {
 			tabBar,
+			...tabBar.getData(),
 			...Template.currentData().data,
 		};
 	},
