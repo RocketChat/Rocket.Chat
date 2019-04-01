@@ -32,7 +32,7 @@ class SideNav extends Page {
 	get newChannelBtnToolbar() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
 
 	get newChannelBtn() { return browser.element('.rc-popover__icon-element--hashtag'); }
-	get newThreadBtn() { return browser.element('.rc-popover__icon-element--thread'); }
+	get newDiscussionBtn() { return browser.element('.rc-popover__icon-element--discussion'); }
 
 	get newChannelIcon() { return browser.element('.toolbar__icon.toolbar__search-create-channel'); }
 

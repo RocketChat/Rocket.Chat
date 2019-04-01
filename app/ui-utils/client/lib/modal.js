@@ -93,6 +93,11 @@ export const modal = {
 };
 
 Template.rc_modal.helpers({
+
+	showFooter() {
+		const { showCancelButton, showConfirmButton } = this;
+		return showCancelButton || showConfirmButton;
+	},
 	hasAction() {
 		return !!this.action;
 	},
