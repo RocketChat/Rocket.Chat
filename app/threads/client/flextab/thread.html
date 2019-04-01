@@ -12,12 +12,12 @@
 	</header>
 	<section class="contextual-bar__content flex-tab threads">
 		<ul class="thread">
-			{{> nrr nrrargs 'message' msg=mainMessage room=room subscription=subscription settings=settings templatePrefix='thread-' customClass="thread-main" u=user}}
-			{{#let room=room subscription=subscription settings=settings}}
-				{{#each messages}}
-					{{> nrr nrrargs 'message' msg=. room=room subscription=subscription settings=settings templatePrefix='thread-' u=user}}
+			{{# with messageContext}}
+				{{> nrr nrrargs 'message' msg=mainMessage room=room subscription=subscription settings=settings templatePrefix='thread-' customClass="thread-main" u=user}}
+				{{#each msg in messages}}
+					{{> nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u}}
 				{{/each}}
-			{{/let}}
+			{{/with}}
 		</ul>
 		<div contenteditable="">ads</div>
 	</section>

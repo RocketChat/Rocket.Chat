@@ -47,7 +47,6 @@ Template.threads.onCreated(async function() {
 		this.rid = rid;
 
 		if (mid) {
-			this.mid.set(null);
 			return this.mid.set(Messages.findOne(mid));
 		}
 

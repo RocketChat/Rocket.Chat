@@ -149,7 +149,7 @@ Template.message.helpers({
 	},
 	sequentialClass() {
 		const { msg } = this;
-		return msg.groupable && 'sequential';
+		return msg.groupable !== false && 'sequential';
 	},
 	avatarFromUsername() {
 		const { msg } = this;
