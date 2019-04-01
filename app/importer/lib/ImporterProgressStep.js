@@ -7,6 +7,8 @@ export const ProgressStep = Object.freeze({
 	PREPARING_STARTED: 'importer_preparing_started',
 	PREPARING_USERS: 'importer_preparing_users',
 	PREPARING_CHANNELS: 'importer_preparing_channels',
+	PREPARING_PRIVATE_CHANNELS: 'importer_preparing_private_channels',
+	PREPARING_DMS: 'importer_preparing_direct_message_rooms',
 	PREPARING_MESSAGES: 'importer_preparing_messages',
 	USER_SELECTION: 'importer_user_selection',
 	IMPORTING_STARTED: 'importer_importing_started',
