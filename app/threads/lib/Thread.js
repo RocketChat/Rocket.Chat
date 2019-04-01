@@ -1,6 +1,6 @@
-import { Messages } from '../../models';
+import { Messages, Subscriptions } from '../../models/server';
 
-export const reply = ({ tmid }, { ts, u }) => {
+export const reply = ({ tmid }, { rid, ts, u }, parentMessage) => {
 
 	if (!tmid) {
 		return false;
@@ -18,9 +18,18 @@ export const reply = ({ tmid }, { ts, u }) => {
 		},
 	};
 
-	return Messages.update({
+	Messages.update({
 		_id: tmid,
 	}, update);
+
+	Subscriptions.update({
+		'u._id': parentMessage.u._id,
+		rid,
+	}, {
+		$addToSet: {
+			unreadThreads: tmid,
+		},
+	});
 };
 
 export const undoReply = ({ tmid }) => {
@@ -48,9 +57,6 @@ export const undoReply = ({ tmid }) => {
 		_id: tmid,
 	}, update);
 };
-
-
-
 
 export const follow = ({ tmid, uid }) => {
 	if (!tmid || !uid) {
@@ -82,4 +88,15 @@ export const unfollow = ({ tmid, uid }) => {
 	return Messages.update({
 		_id: tmid,
 	}, update);
+};
+
+export const readThread = ({ userId, rid, tmid }) => {
+	Subscriptions.update({
+		'u._id': userId,
+		rid,
+	}, {
+		$pull: {
+			unreadThreads: tmid,
+		},
+	});
 };

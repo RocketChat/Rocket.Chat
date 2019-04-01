@@ -1,4 +1,4 @@
 import './followMessage';
-import './getThreads';
-import './getThread';
+import './getThreadMessages';
+import './getThreadsList';
 import './unfollowMessage';

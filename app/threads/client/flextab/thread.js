@@ -64,7 +64,7 @@ Template.thread.onCreated(async function() {
 
 	this.room = room;
 
-	const messages = await call('getThread', { tmid: mainMessage._id });
+	const messages = await call('getThreadMessages', { tmid: mainMessage._id });
 
 	messages.forEach((t) => Threads.insert(t));
 

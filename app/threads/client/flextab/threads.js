@@ -45,7 +45,7 @@ Template.threads.onCreated(async function() {
 		description: this.room.fname,
 	});
 
-	const threads = await call('getThreads', { rid });
+	const threads = await call('getThreadsList', { rid });
 
 	threads.forEach((t) => Threads.insert(t));
 

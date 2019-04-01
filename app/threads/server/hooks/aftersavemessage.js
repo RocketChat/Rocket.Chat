@@ -19,7 +19,7 @@ export function messageContainsHighlight(message, highlights) {
 	});
 }
 
-function notifyUsersOnReply(message, room) {
+function notifyUsersOnReply(message, { replies }, room) {
 
 	if (!message.tmid) {
 		return message;
@@ -28,8 +28,6 @@ function notifyUsersOnReply(message, room) {
 	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
 		return message;
 	}
-
-	const { replies } = Messages.findOne({ _id: message.tmid });
 
 	if (!replies) {
 		return message;
@@ -97,30 +95,41 @@ function notifyUsersOnReply(message, room) {
 
 	return message;
 }
+
+const metaData = (message, parentMessage) => {
+	if (message.tmid) {
+		reply({ tmid: message.tmid }, message, parentMessage);
+	}
+	return message;
+};
+
+const notification = (message, room) => {
+	if (message.tmid) {
+		sendAllNotifications(message, room, message.replies);
+	}
+	return message;
+};
+
+const processThreads = (message, room) => {
+	const parentMessage = Messages.findOne({ _id: message.tmid });
+
+	notifyUsersOnReply(message, parentMessage, room);
+	metaData(message, parentMessage);
+	notification(message, room);
+};
+
 Meteor.startup(function() {
-	const metaData = function(message) {
-
-		if (message.tmid) {
-			reply({ tmid: message.tmid }, message);
-		}
-		return message;
-	};
-
-	const notification = function(message, room) {
-		if (message.tmid) {
-			sendAllNotifications(message, room, message.replies);
-		}
-		return message;
-	};
 
 	settings.get('Threads_enabled', function(key, value) {
 		if (value) {
-			callbacks.add('afterSaveMessage', metaData, callbacks.priority.LOW, 'Threads');
-			callbacks.add('afterSaveMessage', notifyUsersOnReply, callbacks.priority.LOW, 'NotifyUsersOnReply');
-			return callbacks.add('afterSaveMessage', notification, callbacks.priority.LOW, 'Notification');
+			callbacks.add('afterSaveMessage', processThreads, callbacks.priority.LOW, 'Threads');
+			// callbacks.add('afterSaveMessage', notifyUsersOnReply, callbacks.priority.LOW, 'NotifyUsersOnReply');
+			// callbacks.add('afterSaveMessage', notification, callbacks.priority.LOW, 'Notification');
+			return;
 		}
 		callbacks.remove('afterSaveMessage', 'Threads');
-		callbacks.remove('afterSaveMessage', 'Notification');
+		// callbacks.remove('afterSaveMessage', 'NotifyUsersOnReply');
+		// callbacks.remove('afterSaveMessage', 'Notification');
 	});
 
 });
