@@ -76,8 +76,8 @@ export const APIClient = {
 			jQuery.ajax({
 				url: `${ document.baseURI }api/${ endpoint }${ query }`,
 				headers: {
-					'X-User-Id': localStorage['Meteor.userId'],
-					'X-Auth-Token': localStorage['Meteor.loginToken'],
+					'X-User-Id': localStorage[Accounts.USER_ID_KEY],
+					'X-Auth-Token': localStorage[Accounts.LOGIN_TOKEN_KEY],
 				},
 				data: formData,
 				processData: false,
