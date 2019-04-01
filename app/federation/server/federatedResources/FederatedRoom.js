@@ -228,7 +228,7 @@ export class FederatedRoom extends FederatedResource {
 	}
 }
 
-FederatedRoom.loadByFederationId = function loadByFederationId(localPeerIdentifier, federationId) {
+FederatedRoom.loadByFederationId = function _loadByFederationId(localPeerIdentifier, federationId) {
 	const localRoom = Rooms.findOne({ 'federation._id': federationId });
 
 	if (!localRoom) { return; }
@@ -236,13 +236,13 @@ FederatedRoom.loadByFederationId = function loadByFederationId(localPeerIdentifi
 	return new FederatedRoom(localPeerIdentifier, localRoom);
 };
 
-FederatedRoom.loadRoomUsers = function loadRoomUsers(room) {
+FederatedRoom.loadRoomUsers = function _loadRoomUsers(room) {
 	const subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id, { fields: { 'u._id': 1 } }).fetch();
 	const userIds = subscriptions.map((s) => s.u._id);
 	return Users.findUsersWithUsernameByIds(userIds).fetch();
 };
 
-FederatedRoom.isFederated = function isFederated(localPeerIdentifier, room, options = {}) {
+FederatedRoom.isFederated = function _isFederated(localPeerIdentifier, room, options = {}) {
 	this.log('federated-room', `${ room._id } - isFederated?`);
 
 	let isFederated = false;
