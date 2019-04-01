@@ -140,10 +140,10 @@ const readMessage = new class {
 			ts: {
 				$lt: subscription.ls,
 			},
-		}
+		},
 		// 'u._id':
 		// 	$ne: Meteor.userId()
-			, {
+		{
 			sort: {
 				ts: -1,
 			},
@@ -170,8 +170,8 @@ const readMessage = new class {
 				'u._id': {
 					$ne: Meteor.userId(),
 				},
-			}
-				, {
+			},
+			{
 				sort: {
 					ts: 1,
 				},

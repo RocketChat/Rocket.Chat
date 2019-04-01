@@ -1,12 +1,82 @@
 defaults: &defaults
   working_directory: ~/repo
 
+attach_workspace: &attach_workspace
+  at: /tmp
+
+test-install-dependencies: &test-install-dependencies
+  name: Install dependencies
+  command: |
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+    echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+    sudo apt-get update
+    sudo apt-get install -y mongodb-org-shell google-chrome-stable
+
+test-run: &test-run
+          name: Run Tests
+          command: |
+            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
+            npm test # npm test holds an option to re-execute each test for ${ RETRY_TEST }-times - so we don't need the standard mechanism here
+
+test-npm-install: &test-npm-install
+  name: NPM install
+  command: |
+    npm install
+
+test-store_artifacts: &test-store_artifacts
+  path: .screenshots/
+
+test-configure-replicaset: &test-configure-replicaset
+  name: Configure Replica Set
+  command: |
+    mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
+    mongo --eval 'rs.status()'
+
+test-docker-image: &test-docker-image
+  circleci/node:8.9-stretch-browsers
+
+test: &test
+  <<: *defaults
+  environment: &test-environment
+    TEST_MODE: "true"
+    MONGO_URL: mongodb://localhost:27017/rocketchat
+    RETRY_TESTS: 5
+
+
+test-with-oplog: &test-with-oplog
+  <<: *test
+  environment:
+    <<: *test-environment
+    MONGO_OPLOG_URL: mongodb://localhost:27017/local
+
+  steps:
+    - attach_workspace: *attach_workspace
+    - checkout
+    - run: *test-install-dependencies
+    - run: *test-configure-replicaset
+    - run: *test-npm-install
+    - run: *test-run
+    - store_artifacts: *test-store_artifacts
+
+test-without-oplog: &test-without-oplog
+  <<: *test
+  steps:
+    - attach_workspace: *attach_workspace
+    - checkout
+    - run: *test-install-dependencies
+    - run: *test-npm-install
+    - run: *test-run
+    - store_artifacts: *test-store_artifacts
+
+
 version: 2
 jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:8.9-stretch
 
     steps:
       - checkout
@@ -81,12 +151,9 @@ jobs:
       - run:
           name: Build Rocket.Chat
           environment:
-            TOOL_NODE_FLAGS: --max_old_space_size=4096
+            TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
             if [[ $CIRCLE_TAG ]]; then meteor reset; fi
-            set +e
-            meteor add rocketchat:lib
-            set -e
             meteor build --server-only --directory /tmp/build-test
 
       - run:
@@ -132,100 +199,65 @@ jobs:
       - store_artifacts:
           path: /tmp/build
 
-  test-with-oplog:
-    <<: *defaults
+
+  test-with-oplog-mongo-3-2:
+    <<: *test-with-oplog
     docker:
-      - image: circleci/node:8.9-stretch-browsers
+      - image: *test-docker-image
+      - image: mongo:3.2
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
+
+  test-with-oplog-mongo-3-4:
+    <<: *test-with-oplog
+    docker:
+      - image: *test-docker-image
       - image: mongo:3.4
-        command: [mongod, --nojournal, --noprealloc, --smallfiles, --replSet=rs0]
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
-    environment:
-      TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/rocketchat
-      MONGO_OPLOG_URL: mongodb://localhost:27017/local
-      RETRY_TESTS: 5
-
-    steps:
-      - attach_workspace:
-          at: /tmp
-
-      - checkout
-
-      - run:
-          name: Install dependencies
-          command: |
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-            sudo apt-get update
-            sudo apt-get install -y mongodb-org-shell google-chrome-stable
-
-      - run:
-          name: Configure Replica Set
-          command: |
-            mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
-            mongo --eval 'rs.status()'
-
-      - run:
-          name: NPM install
-          command: |
-            npm install
-
-      - run:
-          name: Run Tests
-          command: |
-            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
-            npm test
-
-      - store_artifacts:
-          path: .screenshots/
-
-  test-without-oplog:
-    <<: *defaults
+  test-with-oplog-mongo-3-6:
+    <<: *test-with-oplog
     docker:
-      - image: circleci/node:8.9-stretch-browsers
-      - image: circleci/mongo:3.4
+      - image: *test-docker-image
+      - image: mongo:3.6
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
-    environment:
-      TEST_MODE: "true"
-      MONGO_URL: mongodb://localhost:27017/testwithoplog
-      RETRY_TESTS: 5
+  test-with-oplog-mongo-4-0:
+    <<: *test-with-oplog
+    docker:
+      - image: *test-docker-image
+      - image: mongo:4.0
+        command: [mongod, --noprealloc, --smallfiles, --replSet=rs0]
 
-    steps:
-      - attach_workspace:
-          at: /tmp
 
-      - checkout
+  test-without-oplog-mongo-3-2:
+    <<: *test-without-oplog
+    docker:
+      - image: *test-docker-image
+      - image: mongo:3.2
 
-      - run:
-          name: Install dependencies
-          command: |
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-            echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-            echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-            sudo apt-get update
-            sudo apt-get install -y mongodb-org-shell google-chrome-stable
+  test-without-oplog-mongo-3-4:
+    <<: *test-without-oplog
+    docker:
+      - image: *test-docker-image
+      - image: mongo:3.4
 
-      - run:
-          name: NPM install
-          command: |
-            npm install
+  test-without-oplog-mongo-3-6:
+    <<: *test-without-oplog
+    docker:
+      - image: *test-docker-image
+      - image: mongo:3.6
 
-      - run:
-          name: Run Tests
-          command: |
-            if [[ $DISABLE_SMARTI ]]; then rm -rf ./tests/end-to-end/ui_smarti; fi;
-            npm test
+  test-without-oplog-mongo-4-0:
+    <<: *test-without-oplog
+    docker:
+      - image: *test-docker-image
+      - image: mongo:4.0
 
-      - store_artifacts:
-          path: .screenshots/
 
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:8.9-stretch
 
     steps:
       - attach_workspace:
@@ -362,24 +394,32 @@ jobs:
 
 workflows:
   version: 2
-  build:
+  build-and-test:
     jobs:
       - build:
           filters:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - test-with-oplog:
+      - test-with-oplog-mongo-3-2: &test-mongo
           requires:
             - build
           filters:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
-      - test-without-oplog:
+      - test-with-oplog-mongo-3-4: &test-mongo-no-pr
           requires:
             - build
           filters:
+            branches:
+              only: develop
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]-[0-9]+\.[0-9]+\.[0-9]+$/
+      - test-with-oplog-mongo-3-6: *test-mongo-no-pr
+      - test-with-oplog-mongo-4-0: *test-mongo
+      - test-without-oplog-mongo-3-2: *test-mongo-no-pr
+      - test-without-oplog-mongo-3-4: *test-mongo-no-pr
+      - test-without-oplog-mongo-3-6: *test-mongo-no-pr
+      - test-without-oplog-mongo-4-0: *test-mongo-no-pr
       - deploy:
           requires:
             - image-build
@@ -417,3 +457,6 @@ workflows:
               ignore:
                 - develop
                 - master
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/
+
