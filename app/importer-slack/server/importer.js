@@ -155,8 +155,8 @@ export class SlackImporter extends Base {
 		const selectionUsers = tempUsers.map((user) => new SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
 		let selectionChannels = tempChannels.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
 		selectionChannels = tempGroups ?
-		selectionChannels.concat(tempGroups.map((group) => new SelectionChannel(group.id, group.name, group.is_archived, true, true))) :
-		selectionChannels;
+			selectionChannels.concat(tempGroups.map((group) => new SelectionChannel(group.id, group.name, group.is_archived, true, true))) :
+			selectionChannels;
 
 		const selectionMessages = this.importRecord.count.messages;
 		super.updateProgress(ProgressStep.USER_SELECTION);
@@ -331,7 +331,7 @@ export class SlackImporter extends Base {
 						// check if one of the usrs is not existent (i.e. user was not imported)
 						if (user1 === undefined || user2 === undefined) {
 							room.do_import = false;
-							console.log(`skipping creation of room (type d) due to non-existence of user`);
+							console.log('skipping creation of room (type d) due to non-existence of user');
 							return;
 						}
 
@@ -378,7 +378,7 @@ export class SlackImporter extends Base {
 						const slackRoom = slackChannel ? slackChannel : slackChannelDMS;
 
 						if (!slackRoom || !slackRoom.do_import) {
-							console.log(`canceled importing messages for Room-ID because Room is not created or import flag is set to false`);
+							console.log('canceled importing messages for Room-ID because Room is not created or import flag is set to false');
 							return;
 						}
 						const room = Rooms.findOneById(slackRoom.rocketId, { fields: { _id: 1, usernames: 1, t: 1, name: 1 } });
