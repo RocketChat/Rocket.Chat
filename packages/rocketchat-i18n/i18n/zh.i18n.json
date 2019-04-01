@@ -2738,6 +2738,7 @@
   "The_server_will_restart_in_s_seconds": "服务器将在 %s 秒后重启",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong>已被设置为<strong>%s</strong>但你是从<strong>%s</strong>访问的！",
   "The_user_will_be_removed_from_s": "该用户将从 %s 中被删除",
+  "The_user_s_will_be_removed_from_role_s": "用户 %s 将被移除 %s 角色",
   "The_user_wont_be_able_to_type_in_s": "该用户将被禁止在 %s 房间中发言",
   "Theme": "主题",
   "theme-color-attention-color": "关注颜色",
