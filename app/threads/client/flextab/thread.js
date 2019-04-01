@@ -30,7 +30,8 @@ Template.thread.helpers({
 		return Template.instance().loading.get();
 	},
 	messages() {
-		return Threads.find({ tmid: this.mainMessage._id }, { sort: { ts: 1 } });
+		const { mainMessage } = Template.currentData();
+		return Threads.find({ tmid: mainMessage._id }, { sort: { ts: 1 } });
 	},
 	room() {
 		return Template.instance().room;
@@ -58,32 +59,35 @@ Template.thread.helpers({
 });
 
 Template.thread.onCreated(async function() {
-
-	const { room, mainMessage } = this.data;
 	this.loading = new ReactiveVar(true);
+	this.autorun(async() => {
+		const { room, mainMessage } = Template.currentData();
+		this.loading.set(true);
 
-	this.room = room;
+		this.room = room;
 
-	const messages = await call('getThread', { tmid: mainMessage._id });
+		const messages = await call('getThread', { tmid: mainMessage._id });
 
-	messages.forEach((t) => Threads.insert(t));
+		messages.forEach((t) => Threads.insert(t));
 
-	this.loading.set(false);
+		this.loading.set(false);
 
+		this.threadsObserve && this.threadsObserve.stop();
 
-	this.threadsObserve = Messages.find({ tmid: mainMessage._id }).observe({
-		added: ({ _id, ...message }) => {
-			Threads.upsert({ _id }, message);
-		}, // Update message to re-render DOM
-		changed: ({ _id, ...message }) => {
-			Threads.update({ _id }, message);
-		}, // Update message to re-render DOM
-		// removed: (role) => {
-		// 	if (!role.u || !role.u._id) {
-		// 		return;
-		// 	}
-		// 	ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
-		// },
+		this.threadsObserve = Messages.find({ tmid: mainMessage._id }).observe({
+			added: ({ _id, ...message }) => {
+				Threads.upsert({ _id }, message);
+			}, // Update message to re-render DOM
+			changed: ({ _id, ...message }) => {
+				Threads.update({ _id }, message);
+			}, // Update message to re-render DOM
+			// removed: (role) => {
+			// 	if (!role.u || !role.u._id) {
+			// 		return;
+			// 	}
+			// 	ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+			// },
+		});
 	});
 });
 

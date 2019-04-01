@@ -20,6 +20,7 @@ import {
 	RocketChatTabBar,
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
+import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { promises } from '../../../../promises';
@@ -492,8 +493,24 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
+	'click .js-open-thread'() {
+		const { tabBar } = Template.instance();
+
+		const { msg: { rid, _id, tmid } } = messageArgs(this);
+		const $flexTab = $('.flex-tab-container .flex-tab');
+		$flexTab.attr('template', 'thread');
+
+		tabBar.setData({
+			rid,
+			mid: tmid || _id,
+			label: 'Threads',
+			icon: 'thread',
+		});
+
+		tabBar.open('thread');
+	},
 	'click .js-reply-broadcast'() {
-		const { msg } = this._arguments[1].hash;
+		const { msg } = messageArgs(this);
 		roomTypes.openRouteLink('d', { name: msg.u.username }, { ...FlowRouter.current().queryParams, reply: msg._id });
 	},
 	'click, touchend'(e, t) {
@@ -624,7 +641,7 @@ Template.room.events({
 	},
 
 	'click .user-card-message'(e, instance) {
-		const { msg } = this._arguments[1].hash;
+		const { msg } = messageArgs(this);
 		if (!Meteor.userId() || !this._arguments) {
 			return;
 		}
@@ -701,7 +718,7 @@ Template.room.events({
 	},
 	'click .time a'(e) {
 		e.preventDefault();
-		const { msg } = this._arguments[1].hash;
+		const { msg } = messageArgs(this);
 		const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
 		FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
 	},
@@ -723,13 +740,13 @@ Template.room.events({
 	},
 
 	'click .image-to-download'(event) {
-		const { msg } = this._arguments[1].hash;
+		const { msg } = messageArgs(this);
 		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
 		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
 	},
 
 	'click .collapse-switch'(e) {
-		const { msg } = this._arguments[1].hash;
+		const { msg } = messageArgs(this);
 		const index = $(e.currentTarget).data('index');
 		const collapsed = $(e.currentTarget).data('collapsed');
 		const id = msg._id;

@@ -21,7 +21,8 @@ Template.threads.events({
 Template.threads.helpers({
 	close() {
 		const instance = Template.instance();
-		return () => instance.mid.set(null);
+		const { tabBar } = instance.data;
+		return () => (instance.close ? tabBar.close() : instance.mid.set(null));
 	},
 	message() {
 		return Template.instance().mid.get();
@@ -36,36 +37,46 @@ Template.threads.helpers({
 });
 
 Template.threads.onCreated(async function() {
-	const { rid, mid, tabBar } = this.data;
-	this.loading = new ReactiveVar(true);
-	this.mid = new ReactiveVar(mid);
-	this.room = Rooms.findOne({ _id: rid });
-	this.rid = rid;
-	tabBar.extendsData({
-		description: this.room.fname,
+	this.loading = new ReactiveVar(false);
+	this.mid = new ReactiveVar(null);
+	this.room = new ReactiveVar(null);
+	this.autorun(async() => {
+		const { rid, mid } = Template.currentData();
+		this.room.set(Rooms.findOne({ _id: rid }));
+		this.close = !!mid;
+		this.rid = rid;
+
+		if (mid) {
+			this.mid.set(null);
+			return this.mid.set(Messages.findOne(mid));
+		}
+
+		this.loading.set(true);
+
+		const threads = await call('getThreads', { rid });
+		threads.forEach((t) => Threads.insert(t));
+
+		this.loading.set(false);
+
+		this.threadsObserve && this.threadsObserve.stop();
+		this.threadsObserve = Messages.find({ rid, tcount: { $exists: true } }).observe({
+			added: ({ _id, ...message }) => {
+				Threads.upsert({ _id }, message);
+			}, // Update message to re-render DOM
+			changed: ({ _id, ...message }) => {
+				Threads.update({ _id }, message);
+			}, // Update message to re-render DOM
+			// removed: (role) => {
+			// 	if (!role.u || !role.u._id) {
+			// 		return;
+			// 	}
+			// 	ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+			// },
+		});
 	});
 
-	const threads = await call('getThreads', { rid });
-
-	threads.forEach((t) => Threads.insert(t));
-
-	this.loading.set(false);
 
 
-	this.threadsObserve = Messages.find({ rid, tcount: { $exists: true } }).observe({
-		added: ({ _id, ...message }) => {
-			Threads.upsert({ _id }, message);
-		}, // Update message to re-render DOM
-		changed: ({ _id, ...message }) => {
-			Threads.update({ _id }, message);
-		}, // Update message to re-render DOM
-		// removed: (role) => {
-		// 	if (!role.u || !role.u._id) {
-		// 		return;
-		// 	}
-		// 	ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
-		// },
-	});
 });
 
 Template.threads.onDestroyed(function() {

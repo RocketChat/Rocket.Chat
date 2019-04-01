@@ -9,6 +9,6 @@ Meteor.startup(function() {
 		i18nTitle: 'threads',
 		icon: 'thread',
 		template: 'threads',
-		order: 10,
+		order: 1,
 	});
 });
