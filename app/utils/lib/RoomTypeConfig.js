@@ -264,4 +264,8 @@ export class RoomTypeConfig {
 		return false;
 	}
 
+	getReadReceiptsExtraData(/* message */) {
+		return {};
+	}
+
 }

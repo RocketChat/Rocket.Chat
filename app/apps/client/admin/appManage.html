@@ -3,6 +3,13 @@
 	{{#with app}}
 		<section class="page-container page-home page-static page-settings rc-apps-marketplace">
 			{{# header sectionName='App_Details' fixedHeight=true hideHelp=true fullpage=true}}
+				<div class="rc-header__section-button">
+					{{#unless disabled}}
+						<button class="rc-button rc-button--cancel js-cancel-editing">{{_ "Cancel" }}</button>
+					{{/unless}}
+					<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save_changes" }}</button>
+				</div>
+
 				<div class="rc-header__block rc-header__block-action">
 					<button class="rc-button rc-button--nude js-cancel">{{> icon icon="cross"}}</button>
 				</div>
@@ -18,7 +25,7 @@
 						<div class="rc-apps-details">
 							<div class="rc-apps-container rc-apps-container__header">
 								{{#if iconFileData}}
-								<div class="rc-apps-details__photo" style="background-image:url(data:image/png;base64,{{iconFileData}})"></div>
+									<div class="rc-apps-details__photo" style="background-image:url(data:image/png;base64,{{iconFileData}})"></div>
 								{{else}}
 									<div class="rc-apps-details__photo" style="background-image:url({{iconFileContent}})"></div>
 								{{/if}}
@@ -44,7 +51,15 @@
 											{{/if}}
 											<button class="rc-button rc-button--nude js-view-logs">{{> icon icon="list-alt"}} {{_ "View_Logs" }}</button>
 										{{else}}
-											<button class="rc-button rc-button--primary js-install">{{> icon icon="circled-arrow-down"}} {{_ "Install"}}</button>
+											{{#if hasPurchased}}
+												<button class="rc-button rc-button--primary js-install">{{> icon icon="download"}} {{_ "Purchased"}}</button>
+											{{else}}
+												{{#if $eq price 0}}
+													<button class="rc-button rc-button--primary js-purchase">{{> icon icon="circled-arrow-down"}} {{_ "Free"}}</button>
+												{{else}}
+													<button class="rc-button rc-button--primary js-purchase">{{> icon icon="circled-arrow-down"}} {{displayPrice}}</button>
+												{{/if}}
+											{{/if}}
 										{{/if}}
 									</div>
 								</div>
@@ -454,10 +469,6 @@
 
 											</div>
 										{{/each}}
-										<div class="rc-button-group">
-											<button class="rc-button rc-button--outline js-cancel-editing" disabled='{{disabled}}'>{{_ "Cancel" }}</button>
-											<button class="rc-button rc-button--primary js-save {{#if saving}} loading{{/if}}" disabled='{{disabled}}'>{{_ "Save" }}</button>
-										</div>
 									</div>
 								{{/if}}
 							</div>
