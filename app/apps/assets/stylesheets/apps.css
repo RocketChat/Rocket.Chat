@@ -223,15 +223,13 @@
 		transform: rotate(180deg);
 	}
 
-	&.page-settings {
-		.section {
-			padding: 0 !important;
+	&.page-settings .content .rocket-form .section {
+		padding: 0 2.5em;
 
-			border-bottom: none !important;
+		border-bottom: none;
 
-			&:hover {
-				background-color: var(--rc-color-primary-lightest);
-			}
+		&:hover {
+			background-color: var(--rc-color-primary-lightest);
 		}
 	}
 
