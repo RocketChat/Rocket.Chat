@@ -1,12 +1,12 @@
 <template name="message">
-	<li id="{{_id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{templatePrefix}}{{msg._id}}" data-context={{msg.actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{msg.u.username}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
+				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
 			{{else}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
+				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">
 					<div class="avatar">
-						<div class="avatar-image" style="background-image:url({{encodeURI avatar}})"></div>
+						<div class="avatar-image" style="background-image:url({{encodeURI msg.avatar}})"></div>
 					</div>
 				</button>
 			{{/if}}
@@ -18,7 +18,7 @@
 					</div>
 				</button>
 			{{else}}
-				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=u.username}}</button>
+				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">{{> avatar username=msg.u.username}}</button>
 			{{/if}}
 		{{/if}}
 		<button type="button" class="user user-card-message color-primary-font-color" data-username="{{u.username}}" tabindex="1">{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{u.username}}</span>{{/if}}</button>
@@ -29,7 +29,7 @@
 			{{#if isBot}}
 				<span class="is-bot color-secondary-color border-component-color">Bot</span>
 			{{/if}}
-			<span class="time" title='{{date}} {{time}}'>{{time}}</span>
+			<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
 			{{#if showTranslated}}
 				<span class="translated">
 					<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
@@ -65,31 +65,48 @@
 			{{#if isDecrypting}}
 				<span>******</span>
 			{{else}}
-				{{{body}}}
+				{{#if and settings.showreply msg.tmid}}
+					<p class="thread-replied"> Replied on: <q class="thread-quote js-open-thread">{{parentMessage}}</q> </p>
+					<blockquote>
+						{{{body}}}
+					</blockquote>
+				{{else}}
+					{{{body}}}
+				{{/if}}
 			{{/if}}
 			{{#if hasOembed}}
-				{{#each urls}}
+				{{#each msg.urls}}
 					{{injectIndex . @index}} {{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{#each attachments}}
+			{{#each msg.attachments}}
 				{{injectIndex . @index}} {{> messageAttachment}}
 			{{/each}}
 		</div>
 
-		{{#if drid}}
+		{{#if msg.drid}}
 			<div class="message-discussion">
-				{{#if $gt dcount 0}}
+				{{#if $gt msg.dcount 0}}
 					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
 						<!-- {{> icon icon="discussion"}} -->
-						<span class='reply-counter'>{{dcount}}</span>&nbsp;{{_ i18nKeyReply}}
+						<span class='reply-counter'>{{msg.dcount}}</span>&nbsp;{{_ i18nKeyMessage}}
 					</button>
 				{{else}}
 					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small no-replies" data-rid={{roomId}}>
 						{{_ "No_messages_yet" }}
 					</button>
 				{{/if}}
-				<span class="discussion-reply-lm">{{dlm}}</span>
+				<span class="discussion-reply-lm">{{ formatDate msg.dlm }}</span>
+			</div>
+		{{/if}}
+
+		{{#if and settings.showReplyButton msg.tcount}}
+			<div class="message-discussion">
+					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small js-open-thread" data-rid={{roomId}}>
+						<!-- {{> icon icon="discussion"}} -->
+						<span class='reply-counter'>{{msg.tcount}}</span>&nbsp;{{_ i18nKeyReply}}
+					</button>
+				<span class="discussion-reply-lm">{{ formatDate msg.tlm}}</span>
 			</div>
 		{{/if}}
 
@@ -103,7 +120,7 @@
 				{{#if messageActions 'message'}}
 					<div class="message-actions__buttons">
 						{{#each action in messageActions 'message'}}
-							<button class="message-actions__button" data-message-action="{{action.id}}">
+							<button class="message-actions__button"  data-message-action="{{action.id}}">
 									{{> icon block="message-actions__button-icon" icon=action.icon}}
 							</button>
 						{{/each}}

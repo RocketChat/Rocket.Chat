@@ -2636,6 +2636,10 @@ rc-old select,
 		margin-top: 0;
 	}
 
+	&.new-day:hover::before {
+		box-shadow: 0 1px 1px 0 #cccccc8a;
+	}
+
 	&.new-day {
 		margin-top: 40px;
 
@@ -2650,9 +2654,13 @@ rc-old select,
 			padding: 0 10px;
 
 			content: attr(data-date);
+
+			transition: all 0.3s;
 			text-align: center;
 
 			pointer-events: none;
+
+			border-radius: 2px;
 
 			font-size: 12px;
 			font-weight: 600;
@@ -2662,11 +2670,12 @@ rc-old select,
 			position: absolute;
 			z-index: -1;
 			top: -20px;
+			right: 0;
 			left: 0;
 
 			display: block;
 
-			width: 100%;
+			margin: 0 var(--default-padding);
 
 			content: " ";
 

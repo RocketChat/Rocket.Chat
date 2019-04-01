@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
+import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import _ from 'underscore';
 
 Meteor.startup(function() {
@@ -13,7 +14,7 @@ Meteor.startup(function() {
 		label: 'Jump_to_message',
 		context: ['search'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			if (Session.get('openedRoom') === message.rid) {
 				return RoomHistoryManager.getSurroundingMessages(message, 50);
 			}

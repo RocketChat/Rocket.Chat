@@ -6,7 +6,9 @@
 					{{#with headerData}}
 						<div class="contextual-bar__header-data">
 							{{> icon block="contextual-bar__header-icon" icon=icon}}
-							<h1 class="contextual-bar__header-title">{{_ label}}</h1>
+							<h1 class="contextual-bar__header-title">{{_ label}}
+								<sub class="contextual-bar__header-description">{{ description }}</sub>
+							</h1>
 						</div>
 					{{/with}}
 					<button class="contextual-bar__header-close js-close">

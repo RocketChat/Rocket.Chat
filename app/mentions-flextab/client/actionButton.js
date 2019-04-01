@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { MessageAction, RoomHistoryManager } from '../../ui-utils';
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -9,7 +10,7 @@ Meteor.startup(function() {
 		label: 'Jump_to_message',
 		context: ['mentions'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}

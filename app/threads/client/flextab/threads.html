@@ -1,13 +1,12 @@
 <template name="threads">
-	{{# if loading}} loading {{/if}}
-	<ul class="thread">
-		{{#let room=room subscription=subscription settings=settings}}
-			{{#each threads}}
-				{{> nrr nrrargs 'message' msg=. room=room subscription=subscription settings=settings templatePrefix='thread-'}}
-			{{/each}}
-		{{/let}}
-	</ul>
-	<div class="rc-user-info-container flex-nav animated{{#unless message}} animated-hidden{{/unless}}">
-		{{#if message}} {{> thread mainMessage=message room=room subscription=subscription settings=settings}} {{/if}}
-	</div>
+	{{# with messageContext}}
+		<ul class="thread">
+				{{#each thread in threads}}
+					{{> nrr nrrargs 'message' msg=thread room=room subscription=subscription settings=settings templatePrefix='threads-' customClass="js-open-thread" u=u forceDate=true}}
+				{{/each}}
+		</ul>
+		<div class="rc-user-info-container flex-nav animated{{#unless message}} animated-hidden{{/unless}}">
+			{{#if message}} {{> thread mainMessage=message room=room subscription=subscription settings=settings close=close}} {{/if}}
+		</div>
+	{{/with}}
 </template>

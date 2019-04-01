@@ -40,6 +40,11 @@
 		padding: var(--default-padding);
 		justify-content: space-between;
 
+		&--no-padding {
+			padding-right: 0;
+			padding-left: 0;
+		}
+
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;
 		}
@@ -51,13 +56,13 @@
 
 		padding: var(--default-padding);
 
-		align-items: flex-end;
+		align-items: center;
 		justify-content: flex-end;
 
 		&-data {
 			display: flex;
 			flex: 1 1;
-			align-items: center;
+			align-items: flex-start;
 		}
 
 		&-icon {
@@ -76,6 +81,17 @@
 			margin: 0 0.25rem;
 
 			font-size: 16px;
+			font-weight: 400;
+		}
+
+		&-description {
+
+			display: block;
+			flex: 1;
+
+			color: var(--color-gray);
+
+			font-size: 0.85rem;
 			font-weight: 400;
 		}
 

@@ -1,15 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../callbacks/server';
-import { settings } from '../../../settings';
-import { reply } from '../../lib/Thread';
-import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage'
-// import { sendAllNotifications } from '../../../lib/server/lib';
-
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
+
 import { Messages, Subscriptions } from '../../../models';
+import { callbacks } from '../../../callbacks/server';
+import { settings } from '../../../settings';
+import { reply } from '../../lib/Thread';
+import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 
 export function messageContainsHighlight(message, highlights) {
 	if (!highlights || highlights.length === 0) { return false; }

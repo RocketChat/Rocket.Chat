@@ -10,7 +10,7 @@ import { metrics } from '../../../metrics';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
 import { messageProperties } from '../../../ui-utils';
-import { Users } from '../../../models';
+import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
@@ -30,10 +30,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', {
 				method: 'sendMessage',
 			});
-		}
-
-		if (!message.rid) {
-			throw new Error('The \'rid\' property on the message object is missing.');
 		}
 
 		if (message.ts) {
@@ -67,9 +63,21 @@ Meteor.methods({
 				...(!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 }),
 			},
 		});
+		let { rid } = message;
+
+		// do not allow nested threads
+		if (message.tmid) {
+			const parentMessage = Messages.findOneById(message.tmid);
+			message.tmid = parentMessage.tmid || message.tmid;
+			rid = parentMessage.rid;
+		}
+
+		if (!rid) {
+			throw new Error('The \'rid\' property on the message object is missing.');
+		}
 
 		try {
-			const room = canSendMessage(message.rid, { uid, username: user.username });
+			const room = canSendMessage(rid, { uid, username: user.username });
 			if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
 				message.alias = user.name;
 			}

@@ -1,78 +1,75 @@
-import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { call } from '../../../ui-utils';
-import { getUserPreference } from '../../../utils';
-import { Rooms } from '../../../models';
-
-import { hasPermission } from '../../../authorization';
-
-import { settings } from '../../../settings';
+import { Rooms, Messages } from '../../../models';
+import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 
 import './threads.html';
 
 export const Threads = new Mongo.Collection(null);
 
 Template.threads.events({
-	'click .message'(e) {
+	'click .js-open-thread'(e, instance) {
 		const [, { hash: { msg } }] = this._arguments;
-		Template.instance().mid.set(Threads.findOne(msg._id));
+		instance.mid.set(Threads.findOne(msg._id));
 		e.preventDefault();
 	},
 });
 
 Template.threads.helpers({
+	close() {
+		const instance = Template.instance();
+		return () => instance.mid.set(null);
+	},
 	message() {
 		return Template.instance().mid.get();
 	},
-	loading() {
+	isLoading() {
 		return Template.instance().loading.get();
 	},
 	threads() {
-		return Threads.find({ rid: this.rid }, { sort: { ts: -1 } });
+		return Threads.find({ rid: Template.instance().rid }, { sort: { ts: -1 } });
 	},
-	room() {
-		return Template.instance().room;
-	},
-	subscription() {
-		return Template.instance().subscription;
-	},
-	settings() {
-		const { rid } = Template.instance();
-
-		return {
-			hasPermissionDeleteMessage: hasPermission('delete-message', rid),
-			hideRoles: !settings.get('UI_DisplayRoles') || getUserPreference(Meteor.userId(), 'hideRoles'),
-			UI_Use_Real_Name: settings.get('UI_Use_Real_Name'),
-			Chatops_Username: settings.get('Chatops_Username'),
-			AutoTranslate_Enabled: settings.get('AutoTranslate_Enabled'),
-			Message_AllowEditing: settings.get('Message_AllowEditing'),
-			Message_AllowEditing_BlockEditInMinutes: settings.get('Message_AllowEditing_BlockEditInMinutes'),
-			Message_ShowEditedStatus: settings.get('Message_ShowEditedStatus'),
-			API_Embed: settings.get('API_Embed'),
-			API_EmbedDisabledFor: settings.get('API_EmbedDisabledFor'),
-			Message_GroupingPeriod: settings.get(''),
-			allowGroup: false,
-		};
-	},
+	messageContext,
 });
 
 Template.threads.onCreated(async function() {
-	const { rid, mid } = this.data;
+	const { rid, mid, tabBar } = this.data;
 	this.loading = new ReactiveVar(true);
 	this.mid = new ReactiveVar(mid);
 	this.room = Rooms.findOne({ _id: rid });
+	this.rid = rid;
+	tabBar.extendsData({
+		description: this.room.fname,
+	});
 
 	const threads = await call('getThreads', { rid });
 
 	threads.forEach((t) => Threads.insert(t));
 
 	this.loading.set(false);
+
+
+	this.threadsObserve = Messages.find({ rid, tcount: { $exists: true } }).observe({
+		added: ({ _id, ...message }) => {
+			Threads.upsert({ _id }, message);
+		}, // Update message to re-render DOM
+		changed: ({ _id, ...message }) => {
+			Threads.update({ _id }, message);
+		}, // Update message to re-render DOM
+		// removed: (role) => {
+		// 	if (!role.u || !role.u._id) {
+		// 		return;
+		// 	}
+		// 	ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+		// },
+	});
 });
 
 Template.threads.onDestroyed(function() {
 	const { rid } = this.data;
 	Threads.remove({ rid });
+	this.threadsObserve.stop();
 });

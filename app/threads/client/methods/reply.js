@@ -1,14 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { TimeSync } from 'meteor/mizzao:timesync';
+import s from 'underscore.string';
+
 import { ChatMessage } from '../../../models';
-import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises';
-import s from 'underscore.string';
 
-
-// Message: thread replies = { user, ts }
 Meteor.methods({
 	reply({ mid, msg }) {
 

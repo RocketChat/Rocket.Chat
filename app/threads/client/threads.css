@@ -1,0 +1,37 @@
+.message.thread-main {
+	padding-top: var(--default-padding);
+	padding-bottom: var(--default-padding);
+
+	border-bottom: 1px solid #eaeaea;
+	background: #f7f8fa;
+}
+
+.thread-replied {
+	overflow: hidden;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+
+	color: #9ea2a8;
+
+	font-size: 14px;
+	font-style: italic;
+}
+
+.thread-quote {
+	cursor: pointer;
+
+	color: var(--rc-color-link-active);
+
+	font-weight: 600;
+	font-style: normal;
+}
+
+.contextual-bar__content.thread,
+.contextual-bar__content.threads {
+	padding: 0;
+}
+
+.js-open-thread {
+	cursor: pointer;
+}

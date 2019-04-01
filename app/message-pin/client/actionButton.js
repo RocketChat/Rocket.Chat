@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Subscriptions } from '../../models';
@@ -15,7 +16,7 @@ Meteor.startup(function() {
 		label: 'Pin_Message',
 		context: ['pinned', 'message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			message.pinned = true;
 			Meteor.call('pinMessage', message, function(error) {
 				if (error) {
@@ -40,7 +41,7 @@ Meteor.startup(function() {
 		label: 'Unpin_Message',
 		context: ['pinned', 'message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			message.pinned = false;
 			Meteor.call('unpinMessage', message, function(error) {
 				if (error) {
@@ -65,7 +66,7 @@ Meteor.startup(function() {
 		label: 'Jump_to_message',
 		context: ['pinned'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}
@@ -88,7 +89,7 @@ Meteor.startup(function() {
 		classes: 'clipboard',
 		context: ['pinned'],
 		async action(event) {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},

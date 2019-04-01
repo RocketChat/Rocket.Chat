@@ -21,8 +21,10 @@ Template.contextualBar.helpers({
 		return Template.instance().tabBar.getData();
 	},
 	flexData() {
-		return Object.assign(Template.currentData().data || {}, {
-			tabBar: Template.instance().tabBar,
-		});
+		const { tabBar } = Template.instance();
+		return {
+			tabBar,
+			...Template.currentData().data,
+		};
 	},
 });

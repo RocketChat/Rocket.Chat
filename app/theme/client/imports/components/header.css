@@ -1,9 +1,10 @@
 .rc-header {
+
+	z-index: 10;
+
 	padding: 0.5rem;
 
 	font-size: var(--text-heading-size);
-
-	z-index: 10;
 
 	&__first-icon {
 		display: flex;
