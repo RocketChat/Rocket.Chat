@@ -1,12 +1,7 @@
 import { Template } from 'meteor/templating';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import './pageNotFound.html';
-
-Template.pageNotFound.helpers({
-	errorcode() {
-		return '404';
-	},
-});
 
 Template.pageNotFound.onRendered(function() {
 	const parent = document.querySelector('.page-loading');
@@ -17,7 +12,7 @@ Template.pageNotFound.onRendered(function() {
 Template.pageNotFound.events({
 	'click .page-not-found-button-home'(e) {
 		e.preventDefault();
-		window.location.href = '/';
+		FlowRouter.go('home');
 	},
 
 	'click .page-not-found-button-previous'(e) {
