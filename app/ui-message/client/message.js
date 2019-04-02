@@ -530,6 +530,11 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period) => {
 		classList.add('new-day');
 	}
 
+
+	if (previousDataset.tmid !== currentDataset.tmid) {
+		return classList.remove('sequential');
+	}
+
 	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
 		return classList.remove('sequential');
 	}
