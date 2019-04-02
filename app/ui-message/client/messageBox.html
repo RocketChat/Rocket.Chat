@@ -1,11 +1,13 @@
-<template name="messageBox">
+<template name="messageBox" args="rid isAnonymousOrJoinCode showFormattingTips">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#unless isAnonymousOrJoinCode}}
 			{{> messageBoxTyping rid=_id}}
 
 			{{#if canSend}}
-				{{> messagePopupConfig popupConfig}}
-				{{> messagePopupSlashCommandPreview popupConfig}}
+				{{#if popupConfig}}
+					{{> messagePopupConfig popupConfig}}
+					{{> messagePopupSlashCommandPreview popupConfig}}
+				{{/if}}
 
 				{{#if replyMessageData}}
 					<div class="reply-preview__wrap message-popup">

@@ -4,12 +4,9 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
-import { katex } from '../../katex/client';
-import { Markdown } from '../../markdown/client';
 import { ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import {
-	ChatMessages,
 	chatMessages,
 	fileUpload,
 	KonchatNotification,
@@ -17,7 +14,10 @@ import {
 import { Layout, messageBox, popover, call } from '../../ui-utils';
 import { t, roomTypes, getUserPreference } from '../../utils';
 import moment from 'moment';
-
+import {
+	formattingButtons,
+	applyFormatting,
+} from './messageBoxFormatting';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
@@ -25,148 +25,50 @@ import './messageBoxNotSubscribed';
 import './messageBox.html';
 
 
-const formattingButtons = [
-	{
-		label: 'bold',
-		icon: 'bold',
-		pattern: '*{{text}}*',
-		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
-	},
-	{
-		label: 'bold',
-		icon: 'bold',
-		pattern: '**{{text}}**',
-		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
-	},
-	{
-		label: 'italic',
-		icon: 'italic',
-		pattern: '_{{text}}_',
-		command: 'i',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
-	},
-	{
-		label: 'strike',
-		icon: 'strike',
-		pattern: '~{{text}}~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
-	},
-	{
-		label: 'strike',
-		icon: 'strike',
-		pattern: '~~{{text}}~~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
-	},
-	{
-		label: 'inline_code',
-		icon: 'code',
-		pattern: '`{{text}}`',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
-	},
-	{
-		label: 'multi_line',
-		icon: 'multiline',
-		pattern: '```\n{{text}}\n``` ',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
-	},
-	{
-		label: 'KaTeX',
-		text: () => {
-			if (!katex.isEnabled()) {
-				return;
-			}
-			if (katex.isDollarSyntaxEnabled()) {
-				return '$$KaTeX$$';
-			}
-			if (katex.isParenthesisSyntaxEnabled()) {
-				return '\\[KaTeX\\]';
-			}
-		},
-		link: 'https://khan.github.io/KaTeX/function-support.html',
-		condition: () => katex.isEnabled(),
-	},
-];
-
-function applyFormatting(pattern, input) {
-	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
-	const initText = input.value.slice(0, selectionStart);
-	const selectedText = input.value.slice(selectionStart, selectionEnd);
-	const finalText = input.value.slice(selectionEnd, input.value.length);
-
-	input.focus();
-
-	const startPattern = pattern.substr(0, pattern.indexOf('{{text}}'));
-	const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.substr(selectionStart - index - 1, 1) === char);
-
-	if (startPatternFound) {
-		const endPattern = pattern.substr(pattern.indexOf('{{text}}') + '{{text}}'.length);
-		const endPatternFound = [...endPattern].every((char, index) => input.value.substr(selectionEnd + index, 1) === char);
-
-		if (endPatternFound) {
-			input.selectionStart = selectionStart - startPattern.length;
-			input.selectionEnd = selectionEnd + endPattern.length;
-
-			if (!document.execCommand || !document.execCommand('insertText', false, selectedText)) {
-				input.value = initText.substr(0, initText.length - startPattern.length) + selectedText + finalText.substr(endPattern.length);
-			}
-
-			input.selectionStart = selectionStart - startPattern.length;
-			input.selectionEnd = input.selectionStart + selectedText.length;
-			$(input).change();
-			return;
-		}
-	}
-
-	if (!document.execCommand || !document.execCommand('insertText', false, pattern.replace('{{text}}', selectedText))) {
-		input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
-	}
-
-	input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
-	input.selectionEnd = input.selectionStart + selectedText.length;
-	$(input).change();
-}
-
-
 Template.messageBox.onCreated(function() {
 	EmojiPicker.init();
+	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar();
 	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
-	messageBox.emit('created', this);
 });
 
 Template.messageBox.onRendered(function() {
-	const { rid } = this.data;
-	this.autorun(() => {
-		const subscribed = roomTypes.verifyCanSendMessage(rid);
+	const { rid, onResize } = this.data;
 
+	this.autorun(() => {
 		Tracker.afterFlush(() => {
-			const input = subscribed && this.find('.js-input-message');
+			const input = this.find('.js-input-message');
+			const $input = $(input);
+
+			this.input = input;
+
+			chatMessages[rid].input = input;
+			chatMessages[rid].$input = $input;
 
 			if (!input) {
+				this.popupConfig.set(null);
 				return;
 			}
 
-			const $input = $(input);
+			this.popupConfig.set({
+				getInput: () => input,
+			});
 
 			$input.on('dataChange', () => {
 				const messages = $input.data('reply') || [];
 				this.replyMessageData.set(messages);
 			});
 
-			$input.autogrow({
-				animate: true,
-				onInitialize: true,
-			})
+			$input
+				.autogrow({
+					animate: true,
+					onInitialize: true,
+				})
 				.on('autogrow', () => {
-					this.data && this.data.onResize && this.data.onResize();
+					onResize && onResize();
 				});
-
-			chatMessages[rid] = chatMessages[rid] || new ChatMessages;
-			chatMessages[rid].input = input;
 		});
 	});
 });
@@ -203,15 +105,10 @@ Template.messageBox.helpers({
 		return true;
 	},
 	popupConfig() {
-		const template = Template.instance();
-		return {
-			getInput() {
-				return template.find('.js-input-message');
-			},
-		};
+		return Template.instance().popupConfig.get();
 	},
 	input() {
-		return Template.instance().find('.js-input-message');
+		return Template.instance().input;
 	},
 	replyMessageData() {
 		return Template.instance().replyMessageData.get();
@@ -229,12 +126,6 @@ Template.messageBox.helpers({
 		const actionGroups = messageBox.actions.get();
 		return Object.values(actionGroups)
 			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
-	},
-	isAnonymousOrJoinCode() {
-		const room = Session.get(`roomData${ this.rid }`);
-		return !Meteor.userId() || (!ChatSubscription.findOne({
-			rid: this.rid,
-		}) && room && room.joinCodeRequired);
 	},
 	formattingButtons() {
 		return formattingButtons.filter(({ condition }) => !condition || condition());
@@ -282,7 +173,8 @@ Template.messageBox.events({
 
 		EmojiPicker.open(event.currentTarget, (emoji) => {
 			const emojiValue = `:${ emoji }: `;
-			const { input } = chatMessages[this.rid];
+
+			const { input } = this;
 
 			const caretPos = input.selectionStart;
 			const textAreaTxt = input.value;
@@ -297,18 +189,41 @@ Template.messageBox.events({
 			input.selectionEnd = caretPos + emojiValue.length;
 		});
 	},
-	'focus .js-input-message'(event, instance) {
+	'focus .js-input-message'() {
 		KonchatNotification.removeRoomNotification(this.rid);
-		if (chatMessages[this.rid]) {
-			chatMessages[this.rid].input = instance.find('.js-input-message');
+	},
+	'keydown .js-input-message'(event, instance) {
+		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+		const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+		const key = event.key.toLowerCase();
+
+		if (isCmdOrCtrlPressed) {
+			const { pattern } = formattingButtons
+				.filter(({ condition }) => !condition || condition())
+				.find(({ command }) => command === key) || {};
+
+			if (!pattern) {
+				return;
+			}
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			const input = instance.find('.js-input-message');
+			applyFormatting(pattern, input);
+			return;
 		}
+
+		const { rid, onKeyDown } = this;
+		onKeyDown && onKeyDown(rid, event, instance);
 	},
 	'keyup .js-input-message'(event, instance) {
-		chatMessages[this.rid].keyup(this.rid, event, instance);
-		instance.isMessageFieldEmpty.set(chatMessages[this.rid].isEmpty());
+		const { rid, onKeyUp } = this;
+		onKeyUp && onKeyUp(rid, event, instance);
+		instance.isMessageFieldEmpty.set(chatMessages[rid].isEmpty());
 	},
 	'paste .js-input-message'(event, instance) {
-		const { input } = chatMessages[this.rid];
+		const { input } = instance;
 		setTimeout(() => {
 			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
 		}, 50);
@@ -335,12 +250,17 @@ Template.messageBox.events({
 	},
 	'input .js-input-message'(event, instance) {
 		instance.sendIconDisabled.set(event.target.value !== '');
-		chatMessages[this.rid].valueChanged(this.rid, event, instance);
+
+		const { rid, onValueChanged } = this;
+		onValueChanged && onValueChanged(rid, event, instance);
 	},
 	'propertychange .js-input-message'(event, instance) {
-		if (event.originalEvent.propertyName === 'value') {
-			chatMessages[this.rid].valueChanged(this.rid, event, instance);
+		if (event.originalEvent.propertyName !== 'value') {
+			return;
 		}
+
+		const { rid, onValueChanged } = this;
+		onValueChanged && onValueChanged(rid, event, instance);
 	},
 	async 'click .js-send'(event, instance) {
 		const { input } = chatMessages[this.rid];
@@ -413,29 +333,5 @@ Template.messageBox.events({
 
 		const input = instance.find('.js-input-message');
 		applyFormatting(pattern, input);
-	},
-	'keydown .js-input-message'(event, instance) {
-		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-		const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
-		const key = event.key.toLowerCase();
-
-		if (isCmdOrCtrlPressed) {
-			event.preventDefault();
-			event.stopPropagation();
-
-			const { pattern } = formattingButtons
-				.filter(({ condition }) => !condition || condition())
-				.find(({ command }) => command === key) || {};
-
-			if (!pattern) {
-				return;
-			}
-
-			const input = instance.find('.js-input-message');
-			applyFormatting(pattern, input);
-			return;
-		}
-
-		chatMessages[this.rid].keydown(this.rid, event, instance);
 	},
 });

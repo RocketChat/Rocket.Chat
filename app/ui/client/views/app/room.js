@@ -313,9 +313,20 @@ Template.room.helpers({
 
 	messageboxData() {
 		const instance = Template.instance();
+		const { _id: rid } = this;
+		const roomData = Session.get(`roomData${ rid }`);
+		const isAnonymous = !Meteor.userId();
+		const mustJoinWithCode = !ChatSubscription.findOne({ rid }) && roomData && roomData.joinCodeRequired;
+		const isAnonymousOrJoinCode = isAnonymous || mustJoinWithCode;
+		const showFormattingTips = settings.get('Message_ShowFormattingTips') && !Layout.isEmbedded();
+
 		return {
-			rid: this._id,
-			showFormattingTips: settings.get('Message_ShowFormattingTips') && !Layout.isEmbedded(),
+			rid,
+			isAnonymousOrJoinCode,
+			showFormattingTips,
+			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
+			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
+			onValueChanged: (...args) => chatMessages[rid] && chatMessages[rid].valueChanged.apply(chatMessages[rid], args),
 			onResize: () => {
 				if (instance.sendToBottomIfNecessaryDebounced) {
 					instance.sendToBottomIfNecessaryDebounced();

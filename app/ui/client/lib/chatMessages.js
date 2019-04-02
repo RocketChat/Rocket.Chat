@@ -62,7 +62,6 @@ export const mountReply = async (msg, input) => {
 
 export class ChatMessages {
 	constructor() {
-
 		this.saveTextMessageBox = _.debounce((rid, value) => {
 			const key = `messagebox_${ rid }`;
 			return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
@@ -77,7 +76,6 @@ export class ChatMessages {
 		this.input = this.input || $(node).find('.js-input-message').get(0);
 		this.$input = $(this.input);
 		this.hasValue = new ReactiveVar(false);
-		this.bindEvents();
 	}
 
 	getEditingIndex(element) {
@@ -478,12 +476,6 @@ export class ChatMessages {
 
 	stopTyping(rid) {
 		return MsgTyping.stop(rid);
-	}
-
-	bindEvents() {
-		if (this.wrapper && this.wrapper.length) {
-			$('.input-message').autogrow();
-		}
 	}
 
 	tryCompletion(input) {

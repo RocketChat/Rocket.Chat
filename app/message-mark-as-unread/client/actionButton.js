@@ -27,7 +27,7 @@ Meteor.startup(() => {
 			});
 		},
 		condition(message) {
-			return message.u._id !== Meteor.user()._id;
+			return Meteor.userId() && message.u._id !== Meteor.userId();
 		},
 		order: 22,
 		group: 'menu',
