@@ -81,5 +81,5 @@ Template.threads.onCreated(async function() {
 Template.threads.onDestroyed(function() {
 	const { rid } = this.data;
 	Threads.remove({ rid });
-	this.threadsObserve.stop();
+	this.threadsObserve && this.threadsObserve.stop();
 });

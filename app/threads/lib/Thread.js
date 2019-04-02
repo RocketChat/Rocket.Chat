@@ -74,7 +74,7 @@ export const follow = ({ tmid, uid }) => {
 	}, update);
 };
 
-export const unfollow = ({ tmid, uid }) => {
+export const unfollow = ({ tmid, rid, uid }) => {
 	if (!tmid || !uid) {
 		return false;
 	}
@@ -84,6 +84,15 @@ export const unfollow = ({ tmid, uid }) => {
 			replies: uid,
 		},
 	};
+
+	Subscriptions.update({
+		'u._id': uid,
+		rid,
+	}, {
+		$pull: {
+			tunread: tmid,
+		},
+	});
 
 	return Messages.update({
 		_id: tmid,

@@ -6,6 +6,30 @@
 
 	font-size: var(--text-heading-size);
 
+	.rc-badge {
+		position: absolute;
+		z-index: 1;
+		top: -2px;
+		right: -2px;
+
+		display: flex;
+
+		width: var(--badge-size);
+		height: var(--badge-size);
+
+		text-align: center;
+
+		color: white;
+		border-radius: 100%;
+		background: var(--rc-color-button-primary);
+		box-shadow: 0 0 0 2px #ffffff;
+
+		font-size: var(--badge-font-size);
+		font-weight: 600;
+		align-items: center;
+		justify-content: center;
+	}
+
 	&__first-icon {
 		display: flex;
 
@@ -279,6 +303,8 @@
 
 	&__action,
 	&__more-action {
+		position: relative;
+
 		display: flex;
 		flex-direction: column;
 

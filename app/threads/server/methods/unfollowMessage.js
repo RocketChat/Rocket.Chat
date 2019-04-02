@@ -21,19 +21,18 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 		}
 
-		const { rid } = Messages.findOne({ _id: mid }, { fields: { rid: 1 } }) || {};
+		const message = Messages.findOne({ _id: mid }, { fields: { rid: 1, tmid: 1 } }) || {};
 
-		if (!rid) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'unfollowMessage' });
+		if (!message) {
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'followMessage' });
 		}
 
-		const room = Meteor.call('canAccessRoom', rid, uid);
+		const room = Meteor.call('canAccessRoom', message.rid, uid);
 
 		if (!room) {
-			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
+			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
 		}
-
-		return unfollow({ tmid: mid, uid });
+		return unfollow({ rid: message.rid, tmid: message.tmid || message._id, uid });
 
 	},
 });

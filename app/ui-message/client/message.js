@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
@@ -67,6 +68,9 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 }
 
 Template.message.helpers({
+	hover() {
+		return Template.instance().hover.get();
+	},
 	and(a, b) {
 		return a && b;
 	},
@@ -446,8 +450,14 @@ const findParentMessage = async(tmid) => {
 		return;
 	}
 	cache[tmid] = call('getSingleMessage', tmid);
-	const msg = await cache[tmid];
-	Messages.insert(msg);
+	const _message = await cache[tmid];
+	try {
+		const { _id, ...msg } = _message;
+		Messages.upsert({ _id }, msg);
+
+	} catch (error) {
+		console.log(tmid);
+	}
 	delete cache[tmid];
 };
 
@@ -483,6 +493,7 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.onCreated(function() {
+	this.hover = new ReactiveVar(false);
 	// const [, currentData] = Template.currentData()._arguments;
 	// const { msg, settings } = currentData.hash;
 	const { msg, settings } = Template.currentData();
@@ -503,7 +514,7 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 	if (currentNode.previousElementSibling != null) {
 		let previousValid = currentNode.previousElementSibling;
-		while (previousValid != null && hasTempClass(previousValid)) {
+		while (previousValid != null && (hasTempClass(previousValid) || !previousValid.classList.contains('message'))) {
 			previousValid = previousValid.previousElementSibling;
 		}
 		return previousValid;
@@ -553,6 +564,9 @@ Template.message.onViewRendered = function(context) {
 	}
 	return !noDate && this._domrange.onAttached((domRange) => {
 		const currentNode = domRange.lastNode();
+		if (!currentNode.classList.contains('message')) {
+			return;
+		}
 		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
 		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod * 1000);

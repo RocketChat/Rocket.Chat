@@ -45,6 +45,9 @@
 	<div class="rc-room-actions">
 		{{#each buttons}}
 		<div class="rc-room-actions__action tab-button {{active}} {{visible}} {{class}} js-action" data-id="{{id}}">
+			{{#if badge}}
+				<span class="rc-badge">{{badge.body}}</span>
+			{{/if}}
 			<button class="rc-tooltip rc-tooltip--down rc-tooltip--end rc-room-actions__button" aria-label="{{title}}">
 				{{> icon block="tab-button-icon" icon=icon }}
 			</button>
