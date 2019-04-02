@@ -36,7 +36,7 @@ const tagAlreadyInstalledApps = (installedApps, apps) => {
 	return tagged;
 };
 
-const getApps = async(instance) => {
+const getApps = async (instance) => {
 	instance.isLoading.set(true);
 
 	const data = await APIClient.get('apps?marketplace=true');
@@ -49,7 +49,7 @@ const getApps = async(instance) => {
 	}
 };
 
-const getInstalledApps = async(instance) => {
+const getInstalledApps = async (instance) => {
 	const data = await APIClient.get('apps');
 	const apps = data.apps.map((app) => ({ latest: app }));
 	instance.installedApps.set(apps);
@@ -279,7 +279,7 @@ Template.apps.events({
 			marketplace: true,
 			version: this.latest.version,
 		})
-			.then(async() => {
+			.then(async () => {
 				await Promise.all([
 					getInstalledApps(template),
 					getApps(template),
@@ -312,7 +312,7 @@ Template.apps.events({
 						marketplace: true,
 						version: this.latest.version,
 					})
-						.then(async() => {
+						.then(async () => {
 							await Promise.all([
 								getInstalledApps(template),
 								getApps(template),
@@ -332,7 +332,8 @@ Template.apps.events({
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
 	},
-	'submit .js-search'(e) {
+	'submit .js-search-form'(e) {
 		e.preventDefault();
+		e.stopPropagation();
 	},
 });
