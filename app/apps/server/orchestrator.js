@@ -15,7 +15,7 @@ class AppServerOrchestrator {
 			Permissions.createOrUpdate('manage-apps', ['admin']);
 		}
 
-		this._marketplaceUrl = 'http://localhost:7488';
+		this._marketplaceUrl = 'https://marketplace.rocket.chat';
 
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
