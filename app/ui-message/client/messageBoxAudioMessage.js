@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { fileUploadHandler } from '../../file-upload';
 import { settings } from '../../settings';
-import { AudioRecorder, chatMessages } from '../../ui';
+import { AudioRecorder } from '../../ui';
 import { call } from '../../ui-utils';
 import { t } from '../../utils';
 import './messageBoxAudioMessage.html';
@@ -135,7 +135,6 @@ Template.messageBoxAudioMessage.events({
 			return;
 		}
 
-		chatMessages[this.rid].recording = true;
 		instance.state.set('recording');
 
 		try {
@@ -153,7 +152,6 @@ Template.messageBoxAudioMessage.events({
 		} catch (error) {
 			instance.state.set(null);
 			instance.isMicrophoneDenied.set(true);
-			chatMessages[this.rid].recording = false;
 		}
 	},
 
@@ -171,7 +169,6 @@ Template.messageBoxAudioMessage.events({
 		await stopRecording();
 
 		instance.state.set(null);
-		chatMessages[this.rid].recording = false;
 	},
 
 	async 'click .js-audio-message-done'(event, instance) {
@@ -190,7 +187,6 @@ Template.messageBoxAudioMessage.events({
 		const blob = await stopRecording();
 
 		instance.state.set(null);
-		chatMessages[this.rid].recording = false;
 
 		await uploadRecord({ rid: this.rid, blob });
 	},

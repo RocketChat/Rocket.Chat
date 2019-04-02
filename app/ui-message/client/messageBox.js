@@ -25,7 +25,7 @@ import './messageBoxNotSubscribed';
 import './messageBox.html';
 
 
-const formattingActions = [
+const formattingButtons = [
 	{
 		label: 'bold',
 		icon: 'bold',
@@ -89,7 +89,7 @@ const formattingActions = [
 	},
 ];
 
-function applyFormatting(formattingAction, input) {
+function applyFormatting(pattern, input) {
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 	const initText = input.value.slice(0, selectionStart);
 	const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -97,11 +97,11 @@ function applyFormatting(formattingAction, input) {
 
 	input.focus();
 
-	const startPattern = formattingAction.pattern.substr(0, formattingAction.pattern.indexOf('{{text}}'));
+	const startPattern = pattern.substr(0, pattern.indexOf('{{text}}'));
 	const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.substr(selectionStart - index - 1, 1) === char);
 
 	if (startPatternFound) {
-		const endPattern = formattingAction.pattern.substr(formattingAction.pattern.indexOf('{{text}}') + '{{text}}'.length);
+		const endPattern = pattern.substr(pattern.indexOf('{{text}}') + '{{text}}'.length);
 		const endPatternFound = [...endPattern].every((char, index) => input.value.substr(selectionEnd + index, 1) === char);
 
 		if (endPatternFound) {
@@ -119,11 +119,11 @@ function applyFormatting(formattingAction, input) {
 		}
 	}
 
-	if (!document.execCommand || !document.execCommand('insertText', false, formattingAction.pattern.replace('{{text}}', selectedText))) {
-		input.value = initText + formattingAction.pattern.replace('{{text}}', selectedText) + finalText;
+	if (!document.execCommand || !document.execCommand('insertText', false, pattern.replace('{{text}}', selectedText))) {
+		input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
 	}
 
-	input.selectionStart = selectionStart + formattingAction.pattern.indexOf('{{text}}');
+	input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
 	input.selectionEnd = input.selectionStart + selectedText.length;
 	$(input).change();
 }
@@ -237,7 +237,7 @@ Template.messageBox.helpers({
 		}) && room && room.joinCodeRequired);
 	},
 	formattingButtons() {
-		return formattingActions.filter((button) => !button.condition || button.condition());
+		return formattingButtons.filter(({ condition }) => !condition || condition());
 	},
 	isBlockedOrBlocker() {
 		const roomData = Session.get(`roomData${ this.rid }`);
@@ -403,16 +403,16 @@ Template.messageBox.events({
 		event.stopPropagation();
 
 		const { id } = event.currentTarget.dataset;
-		const formattingAction = formattingActions
+		const { pattern } = formattingButtons
 			.filter(({ condition }) => !condition || condition())
-			.find(({ label }) => label === id);
+			.find(({ label }) => label === id) || {};
 
-		if (!formattingAction) {
+		if (!pattern) {
 			return;
 		}
 
 		const input = instance.find('.js-input-message');
-		applyFormatting(formattingAction, input);
+		applyFormatting(pattern, input);
 	},
 	'keydown .js-input-message'(event, instance) {
 		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
@@ -423,16 +423,16 @@ Template.messageBox.events({
 			event.preventDefault();
 			event.stopPropagation();
 
-			const formattingAction = formattingActions
+			const { pattern } = formattingButtons
 				.filter(({ condition }) => !condition || condition())
-				.find(({ command }) => command === key);
+				.find(({ command }) => command === key) || {};
 
-			if (!formattingAction) {
+			if (!pattern) {
 				return;
 			}
 
 			const input = instance.find('.js-input-message');
-			applyFormatting(formattingAction, input);
+			applyFormatting(pattern, input);
 			return;
 		}
 
