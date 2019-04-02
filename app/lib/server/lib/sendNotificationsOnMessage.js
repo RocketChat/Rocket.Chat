@@ -11,7 +11,7 @@ import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/m
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 
-const sendNotification = async({
+const sendNotification = async ({
 	subscription,
 	sender,
 	hasMentionToAll,
@@ -280,7 +280,7 @@ async function sendAllNotifications(message, room) {
 		});
 
 		Promise.all(mentions
-			.map(async(userId) => {
+			.map(async (userId) => {
 				await callJoinRoom(userId, room._id);
 
 				return userId;
