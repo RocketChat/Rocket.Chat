@@ -85,10 +85,18 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	readOnly(roomId /* , user */) {
+	readOnly(roomId, user) {
 		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1, servedBy: 1 } });
-		console.log(room);
-		return !(room && room.open === true);
+		if (!(room && room.open === true)) {
+			return true;
+		}
+
+		const inquiry = LivechatInquiry.findOne({ rid: roomId }, { fields: { status: 1 } });
+		if (inquiry && inquiry.status === 'open') {
+			return true;
+		}
+
+		return !((room.servedBy && room.servedBy._id == user._id) || hasPermission('view-livechat-rooms'));
 	}
 
 }

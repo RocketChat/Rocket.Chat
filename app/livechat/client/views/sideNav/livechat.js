@@ -7,9 +7,8 @@ import { ChatSubscription } from '../../../../models';
 import { KonchatNotification } from '../../../../ui';
 import { settings } from '../../../../settings';
 import { hasRole } from '../../../../authorization';
-import { modal } from '../../../../ui-utils';
 import { Users } from '../../../../models';
-import { t, handleError, getUserPreference, roomTypes } from '../../../../utils';
+import { t, handleError, getUserPreference } from '../../../../utils';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 
 Template.livechat.helpers({
@@ -108,33 +107,6 @@ Template.livechat.events({
 			if (err) {
 				return handleError(err);
 			}
-		});
-	},
-
-	'click .inquiries .sidebar-item'(event) {
-		event.preventDefault();
-		event.stopPropagation();
-
-		const { rid } = this;
-		Meteor.call('livechat:getFirstRoomMessage', { rid }, (error, result) => {
-			if (error) {
-				return handleError(error);
-			}
-
-			modal.open({
-				title: t('Livechat_Take_Confirm'),
-				text: `${ t('Message') }: ${ result && result.msg }`,
-				showCancelButton: true,
-				confirmButtonText: t('Take_it'),
-			}, (isConfirm) => {
-				if (isConfirm) {
-					Meteor.call('livechat:takeInquiry', this._id, (error, result) => {
-						if (!error) {
-							roomTypes.openRouteLink(result.t, result);
-						}
-					});
-				}
-			});
 		});
 	},
 });

@@ -1,7 +1,14 @@
 <template name="livechatReadOnly">
-    {{#unless roomClosed}}
-        <p>{{_ "Sala esta aberta"}}</p>
+    {{#if roomOpen}}
+        {{#if guestPool}}
+            {{#if isInquiryOpen}}
+                <div class="rc-message-box__join">
+				    {{{_ "you_are_in_preview_mode_of_incoming_livechat"}}}
+				    <button class="rc-button rc-button--primary rc-button--small rc-message-box__take-it-button js-take-it">{{_ "Take_it"}}</button>
+                </div>
+            {{/if}}
+        {{/if}}
     {{else}}
         <p>{{_ "This_conversation_is_already_closed"}}</p>
-	{{/unless}}
+	{{/if}}
 </template>

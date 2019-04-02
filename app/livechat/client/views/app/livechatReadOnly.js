@@ -1,28 +1,55 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Rooms } from '../../../../models';
+import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+import { handleError } from '../../../../utils';
+import { call } from '../../../../ui-utils/client';
+import { settings } from '../../../../settings';
 
 Template.livechatReadOnly.helpers({
-	roomClosed() {
-		return Template.instance().roomClosed.get();
+	isInquiryOpen() {
+		const inquiry = Template.instance().inquiry.get();
+		return inquiry || FlowRouter.go('/home');
 	},
 
-	isInquiry() {
+	roomOpen() {
+		const room = Template.instance().room.get();
+		return room && room.open === true;
+	},
 
+	guestPool() {
+		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
+	},
+});
+
+Template.livechatReadOnly.events({
+	'click .js-take-it'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const inquiry = instance.inquiry.get();
+		const { _id } = inquiry;
+		call('livechat:takeInquiry', _id, (error /* ,result */) => {
+			if (error) {
+				return handleError(error);
+			}
+		});
 	},
 });
 
 Template.livechatReadOnly.onCreated(function() {
-	this.rid = new ReactiveVar(null);
-	this.roomClosed = new ReactiveVar(false);
+	this.rid = Template.currentData().rid;
+	this.room = new ReactiveVar(null);
+	this.inquiry = new ReactiveVar(null);
 
-	const currentData = Template.currentData();
-	if (currentData && currentData.rid) {
-		this.rid.set(currentData.rid);
+	this.autorun(() => {
+		const room = Rooms.findOne({ _id: this.rid });
+		this.room.set(room);
+		const inquiry = LivechatInquiry.findOne({ agents: Meteor.userId(), status: 'open', rid: this.rid });
+		this.inquiry.set(inquiry);
+	});
 
-		this.autorun(() => {
-			const room = Rooms.findOne({ _id: currentData.rid });
-			this.roomClosed.set(!(room && room.open && room.open === true));
-		});
-	}
+	this.subscribe('livechat:inquiry');
 });
