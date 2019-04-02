@@ -17,9 +17,7 @@ export function messageContext() {
 				lastMessage: 0,
 			},
 		}),
-		subscription: Subscriptions.findOne({ rid }, {
-			reactive: false,
-		}),
+		subscription: Subscriptions.findOne({ rid }),
 		settings: {
 			showreply: true,
 			showReplyButton: true,

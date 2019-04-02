@@ -14,7 +14,7 @@ Meteor.startup(function() {
 			const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') }, { fields: { tunread: 1 } });
 
 			if (subscription) {
-				return subscription.tunread && { body: subscription.tunread.length };
+				return subscription.tunread && subscription.tunread.length && { body: subscription.tunread.length > 9 ? '+' : subscription.tunread.length };
 			}
 		},
 		order: 1,

@@ -68,6 +68,10 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 }
 
 Template.message.helpers({
+	unread() {
+		const { msg, subscription } = Template.currentData();
+		return subscription && subscription.tunread && subscription.tunread.includes(msg._id);
+	},
 	hover() {
 		return Template.instance().hover.get();
 	},

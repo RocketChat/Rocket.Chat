@@ -120,9 +120,9 @@ const processThreads = (message, room) => {
 Meteor.startup(function() {
 	settings.get('Threads_enabled', function(key, value) {
 		if (value) {
-			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
+			callbacks.add('afterSaveMessage', processThreads, callbacks.priority.LOW, 'threads-after-save-message');
 			return;
 		}
-		callbacks.add('afterSaveMessage', processThreads, callbacks.priority.LOW, 'threads-after-save-message');
+		callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 	});
 });
