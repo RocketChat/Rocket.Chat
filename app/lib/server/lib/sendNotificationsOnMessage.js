@@ -14,6 +14,7 @@ import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/a
 export const sendNotification = async({
 	subscription,
 	sender,
+	hasReplyToThread,
 	hasMentionToAll,
 	hasMentionToHere,
 	message,
@@ -31,7 +32,7 @@ export const sendNotification = async({
 	const hasMentionToUser = mentionIds.includes(subscription.u._id);
 
 	// mute group notifications (@here and @all) if not directly mentioned as well
-	if (!hasMentionToUser && subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
+	if (!hasMentionToUser && !hasReplyToThread && subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
 		return;
 	}
 
@@ -64,6 +65,7 @@ export const sendNotification = async({
 		hasMentionToHere,
 		isHighlighted,
 		hasMentionToUser,
+		hasReplyToThread,
 		roomType,
 	})) {
 		notifyAudioUser(subscription.u._id, message, room);
@@ -79,6 +81,7 @@ export const sendNotification = async({
 		hasMentionToHere,
 		isHighlighted,
 		hasMentionToUser,
+		hasReplyToThread,
 		roomType,
 	})) {
 		notifyDesktopUser({
@@ -97,6 +100,7 @@ export const sendNotification = async({
 		hasMentionToAll,
 		isHighlighted,
 		hasMentionToUser,
+		hasReplyToThread,
 		statusConnection: receiver.statusConnection,
 		roomType,
 	})) {
@@ -118,6 +122,7 @@ export const sendNotification = async({
 		isHighlighted,
 		hasMentionToUser,
 		hasMentionToAll,
+		hasReplyToThread,
 		roomType,
 	})) {
 		receiver.emails.some((email) => {
@@ -166,24 +171,7 @@ const lookup = {
 	},
 };
 
-export async function sendAllNotifications(message, room, users) {
-	// threads
-	if (message.tmid) {
-		return message;
-	}
-	// skips this callback if the message was edited
-	if (message.editedAt) {
-		return message;
-	}
-
-	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
-		return message;
-	}
-
-	if (!room || room.t == null) {
-		return message;
-	}
-
+export async function sendMessageNotifications(message, room, usersInThread) {
 	const sender = roomTypes.getConfig(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
@@ -205,7 +193,7 @@ export async function sendAllNotifications(message, room, users) {
 	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 
 	const query = {
-		...(users && { 'u._id': { $in: users } }),
+		...(usersInThread && { 'u._id': { $in: usersInThread } }),
 		rid: room._id,
 		ignored: { $ne: sender._id },
 		disableNotifications: { $ne: true },
@@ -270,7 +258,45 @@ export async function sendAllNotifications(message, room, users) {
 		room,
 		mentionIds,
 		disableAllMessageNotifications,
+		hasReplyToThread: usersInThread && usersInThread.includes(subscription.u._id),
 	}));
+
+	return {
+		sender,
+		hasMentionToAll,
+		hasMentionToHere,
+		notificationMessage,
+		mentionIds,
+		mentionIdsWithoutGroups,
+	};
+}
+
+async function sendAllNotifications(message, room) {
+	// threads
+	if (message.tmid) {
+		return message;
+	}
+	// skips this callback if the message was edited
+	if (message.editedAt) {
+		return message;
+	}
+
+	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+		return message;
+	}
+
+	if (!room || room.t == null) {
+		return message;
+	}
+
+	const {
+		sender,
+		hasMentionToAll,
+		hasMentionToHere,
+		notificationMessage,
+		mentionIds,
+		mentionIdsWithoutGroups,
+	} = await sendMessageNotifications(message, room);
 
 	// on public channels, if a mentioned user is not member of the channel yet, he will first join the channel and then be notified based on his preferences.
 	if (room.t === 'c') {

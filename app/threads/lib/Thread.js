@@ -8,7 +8,9 @@ export const reply = ({ tmid }, { rid, ts, u }, parentMessage) => {
 
 	const update = {
 		$addToSet: {
-			replies: u._id,
+			replies: {
+				$each: [parentMessage.u._id, u._id],
+			},
 		},
 		$set: {
 			tlm: ts,
@@ -22,8 +24,10 @@ export const reply = ({ tmid }, { rid, ts, u }, parentMessage) => {
 		_id: tmid,
 	}, update);
 
+	const msg = Messages.findOne({ _id: tmid }, { fields: { replies: 1 } });
+
 	Subscriptions.update({
-		'u._id': parentMessage.u._id,
+		'u._id': { $in: msg.replies },
 		rid,
 	}, {
 		$addToSet: {

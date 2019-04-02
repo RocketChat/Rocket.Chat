@@ -20,10 +20,11 @@ Meteor.startup(function() {
 	};
 
 	settings.get('Threads_enabled', function(key, value) {
-		if (value) {
-			return callbacks.add('afterDeleteMessage', fn, callbacks.priority.LOW, 'Threads');
+		if (!value) {
+			callbacks.remove('afterDeleteMessage', 'Threads');
+			return;
 		}
-		callbacks.remove('afterDeleteMessage', 'Threads');
+		callbacks.add('afterDeleteMessage', fn, callbacks.priority.LOW, 'Threads');
 	});
 
 });
