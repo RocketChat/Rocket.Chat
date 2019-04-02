@@ -25,7 +25,6 @@ import './views/app/burger.html';
 import './views/app/createChannel.html';
 import './views/app/fullModal.html';
 import './views/app/home.html';
-import './views/app/directory.html';
 import './views/app/notAuthorized.html';
 import './views/app/pageContainer.html';
 import './views/app/pageSettingsContainer.html';

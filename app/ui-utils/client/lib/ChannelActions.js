@@ -81,7 +81,7 @@ export function erase(rid) {
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
 		html: false,
-	}, async() => {
+	}, async () => {
 		await call('eraseRoom', rid);
 		modal.open({
 			title: t('Deleted'),

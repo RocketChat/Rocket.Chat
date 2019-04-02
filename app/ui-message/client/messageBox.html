@@ -27,7 +27,7 @@
 					{{else}}
 						{{#if subscribed}}
 							{{> messageBoxAudioMessage rid=_id}}
-							<span class="rc-message-box__action-menu" data-desktop>
+							<span class="rc-message-box__action-menu js-action-menu" data-desktop>
 								{{#if actions}}
 									<span class="rc-message-box__icon">
 										{{> icon block="rc-input__icon-svg" icon="plus"}}
@@ -41,9 +41,9 @@
 						{{/if}}
 					{{/unless}}
 					<span class="rc-message-box__action-label js-message-actions" data-small>
-						{{#each actions}}
-							<span class="js-message-action">
-								{{> icon block="rc-message-box__action" icon=icon }}
+						{{#each action in actions}}
+							<span class="js-message-action" data-id="{{action.id}}">
+								{{> icon block="rc-message-box__action" icon=action.icon }}
 							</span>
 						{{/each}}
 					</span>
