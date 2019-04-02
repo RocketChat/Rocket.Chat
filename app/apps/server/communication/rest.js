@@ -53,7 +53,7 @@ export class AppsRestApi {
 
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+				const baseUrl = orchestrator.getMarketplaceUrl();
 
 				// Gets the Apps from the marketplace
 				if (this.queryParams.marketplace) {
@@ -123,7 +123,7 @@ export class AppsRestApi {
 
 					buff = Buffer.from(result.content, 'binary');
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
 					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
@@ -186,7 +186,7 @@ export class AppsRestApi {
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				if (this.queryParams.marketplace && this.queryParams.version) {
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
 					const token = getWorkspaceAccessToken();
@@ -206,7 +206,7 @@ export class AppsRestApi {
 				}
 
 				if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const baseUrl = orchestrator.getMarketplaceUrl()
 
 					const headers = {};
 					const token = getWorkspaceAccessToken();
@@ -254,7 +254,7 @@ export class AppsRestApi {
 
 					buff = Buffer.from(result.content, 'binary');
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
 					const token = getWorkspaceAccessToken();
