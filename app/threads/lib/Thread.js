@@ -27,7 +27,7 @@ export const reply = ({ tmid }, { rid, ts, u }, parentMessage) => {
 		rid,
 	}, {
 		$addToSet: {
-			unreadThreads: tmid,
+			tunread: tmid,
 		},
 	});
 };
@@ -90,13 +90,20 @@ export const unfollow = ({ tmid, uid }) => {
 	}, update);
 };
 
-export const readThread = ({ userId, rid, tmid }) => {
-	Subscriptions.update({
-		'u._id': userId,
-		rid,
-	}, {
-		$pull: {
-			unreadThreads: tmid,
-		},
-	});
-};
+export const readThread = ({ userId, rid, tmid }) => Subscriptions.update({
+	'u._id': userId,
+	rid,
+}, {
+	$pull: {
+		tunread: tmid,
+	},
+});
+
+export const readAllThreads = (rid, uid) => Subscriptions.update({
+	rid,
+	'u._id': uid,
+}, {
+	$unset: {
+		tunread: 1,
+	},
+});

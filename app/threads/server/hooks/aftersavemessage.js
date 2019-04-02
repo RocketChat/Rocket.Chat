@@ -20,16 +20,11 @@ export function messageContainsHighlight(message, highlights) {
 }
 
 function notifyUsersOnReply(message, { replies }, room) {
-
 	if (!message.tmid) {
 		return message;
 	}
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt && Math.abs(moment(message.editedAt).diff()) > 60000) {
-		return message;
-	}
-
-	if (!replies) {
 		return message;
 	}
 
@@ -92,26 +87,30 @@ function notifyUsersOnReply(message, { replies }, room) {
 		}
 	}
 
-
 	return message;
 }
 
 const metaData = (message, parentMessage) => {
-	if (message.tmid) {
-		reply({ tmid: message.tmid }, message, parentMessage);
-	}
+	reply({ tmid: message.tmid }, message, parentMessage);
+
 	return message;
 };
 
 const notification = (message, room) => {
-	if (message.tmid) {
-		sendAllNotifications(message, room, message.replies);
-	}
+	sendAllNotifications(message, room, message.replies);
+
 	return message;
 };
 
 const processThreads = (message, room) => {
+	if (!message.tmid) {
+		return;
+	}
+
 	const parentMessage = Messages.findOne({ _id: message.tmid });
+	if (!parentMessage) {
+		return;
+	}
 
 	notifyUsersOnReply(message, parentMessage, room);
 	metaData(message, parentMessage);
@@ -119,17 +118,11 @@ const processThreads = (message, room) => {
 };
 
 Meteor.startup(function() {
-
 	settings.get('Threads_enabled', function(key, value) {
 		if (value) {
-			callbacks.add('afterSaveMessage', processThreads, callbacks.priority.LOW, 'Threads');
-			// callbacks.add('afterSaveMessage', notifyUsersOnReply, callbacks.priority.LOW, 'NotifyUsersOnReply');
-			// callbacks.add('afterSaveMessage', notification, callbacks.priority.LOW, 'Notification');
+			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;
 		}
-		callbacks.remove('afterSaveMessage', 'Threads');
-		// callbacks.remove('afterSaveMessage', 'NotifyUsersOnReply');
-		// callbacks.remove('afterSaveMessage', 'Notification');
+		callbacks.add('afterSaveMessage', processThreads, callbacks.priority.LOW, 'threads-after-save-message');
 	});
-
 });
