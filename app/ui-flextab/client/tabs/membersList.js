@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { RoomManager, popover } from '../../../ui-utils';
-import { ChatRoom, Subscriptions } from '../../../models';
+import { UserRoles, RoomRoles, ChatRoom, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
@@ -75,11 +75,22 @@ Template.membersList.helpers({
 				}
 			}
 
+			const userRoles = UserRoles.findOne(user._id) || {};
+			const roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
+			let roles = _.union(userRoles.roles || [], roomRoles.roles || []);
+			let str = '';
+			let i;
+			for (i in roles) {
+				str += `(${ roles[i] })`;
+			}
+			roles = str;
+
 			return {
 				user,
 				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
 				muted: Array.from(roomMuted).includes(user.username),
 				utcOffset,
+				roles,
 			};
 		});
 
@@ -169,7 +180,6 @@ Template.membersList.helpers({
 		if (settings.get('UI_Use_Real_Name') && this.user.name) {
 			return this.user.name;
 		}
-
 		return this.user.username;
 	} });
 
