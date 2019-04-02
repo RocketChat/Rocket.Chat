@@ -17,14 +17,13 @@ API.v1.addRoute('livechat/config', {
 
 			const status = online();
 
-			let guest;
+			const { token } = this.queryParams;
+			const guest = token && findGuest(token);
+
 			let room;
 			let agent;
 
-			const { token } = this.queryParams;
-
-			if (token) {
-				guest = findGuest(token);
+			if (guest) {
 				room = findOpenRoom(token);
 				agent = room && room.servedBy && Users.getAgentInfo(room.servedBy._id);
 			}
