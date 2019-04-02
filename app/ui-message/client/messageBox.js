@@ -14,7 +14,7 @@ import {
 	fileUpload,
 	KonchatNotification,
 } from '../../ui';
-import { Layout, messageBox, popover, RoomManager, call } from '../../ui-utils';
+import { Layout, messageBox, popover, call } from '../../ui-utils';
 import { t, roomTypes, getUserPreference } from '../../utils';
 import moment from 'moment';
 
@@ -91,7 +91,7 @@ const formattingButtons = [
 
 function applyFormatting(event, instance) {
 	event.preventDefault();
-	const { input } = chatMessages[RoomManager.openedRoom];
+	const { input } = chatMessages[this.rid];
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 	const initText = input.value.slice(0, selectionStart);
 	const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -148,8 +148,9 @@ Template.messageBox.onCreated(function() {
 });
 
 Template.messageBox.onRendered(function() {
+	const { rid } = this.data;
 	this.autorun(() => {
-		const subscribed = roomTypes.verifyCanSendMessage(this.data.rid);
+		const subscribed = roomTypes.verifyCanSendMessage(rid);
 
 		Tracker.afterFlush(() => {
 			const input = subscribed && this.find('.js-input-message');
@@ -172,8 +173,8 @@ Template.messageBox.onRendered(function() {
 					this.data && this.data.onResize && this.data.onResize();
 				});
 
-			chatMessages[RoomManager.openedRoom] = chatMessages[RoomManager.openedRoom] || new ChatMessages;
-			chatMessages[RoomManager.openedRoom].input = input;
+			chatMessages[rid] = chatMessages[rid] || new ChatMessages;
+			chatMessages[rid].input = input;
 		});
 	});
 });
@@ -290,7 +291,7 @@ Template.messageBox.events({
 
 		EmojiPicker.open(event.currentTarget, (emoji) => {
 			const emojiValue = `:${ emoji }: `;
-			const { input } = chatMessages[RoomManager.openedRoom];
+			const { input } = chatMessages[this.rid];
 
 			const caretPos = input.selectionStart;
 			const textAreaTxt = input.value;
@@ -326,8 +327,7 @@ Template.messageBox.events({
 		instance.isMessageFieldEmpty.set(chatMessages[this.rid].isEmpty());
 	},
 	'paste .js-input-message'(event, instance) {
-		const { $input } = chatMessages[RoomManager.openedRoom];
-		const [input] = $input;
+		const { input } = chatMessages[this.rid];
 		setTimeout(() => {
 			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
 		}, 50);
@@ -371,7 +371,7 @@ Template.messageBox.events({
 		}
 	},
 	async 'click .js-send'(event, instance) {
-		const { input } = chatMessages[RoomManager.openedRoom];
+		const { input } = chatMessages[this.rid];
 		chatMessages[this.rid].send(this.rid, input, () => {
 			input.updateAutogrow();
 			instance.isMessageFieldEmpty.set(chatMessages[this.rid].isEmpty());

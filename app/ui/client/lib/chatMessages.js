@@ -60,7 +60,7 @@ export const mountReply = async (msg, input) => {
 	return msg;
 };
 
-export const ChatMessages = class ChatMessages {
+export class ChatMessages {
 	constructor() {
 
 		this.saveTextMessageBox = _.debounce((rid, value) => {
