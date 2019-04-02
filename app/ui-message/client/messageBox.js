@@ -263,10 +263,11 @@ Template.messageBox.events({
 		onValueChanged && onValueChanged(rid, event, instance);
 	},
 	async 'click .js-send'(event, instance) {
-		const { input } = chatMessages[this.rid];
-		chatMessages[this.rid].send(this.rid, input, () => {
+		const { rid } = this;
+		const { input } = instance;
+		chatMessages[rid].send(rid, input, () => {
 			input.updateAutogrow();
-			instance.isMessageFieldEmpty.set(chatMessages[this.rid].isEmpty());
+			instance.isMessageFieldEmpty.set(chatMessages[rid].isEmpty());
 			input.focus();
 		});
 	},

@@ -1,7 +1,7 @@
 <template name="messageBox" args="rid isAnonymousOrJoinCode showFormattingTips">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#unless isAnonymousOrJoinCode}}
-			{{> messageBoxTyping rid=_id}}
+			{{> messageBoxTyping rid=rid}}
 
 			{{#if canSend}}
 				{{#if popupConfig}}
