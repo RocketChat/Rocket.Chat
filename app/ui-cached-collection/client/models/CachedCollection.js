@@ -346,7 +346,7 @@ export class CachedCollection {
 	}
 
 	async setupListener(eventType, eventName) {
-		Meteor.startup(async () => {
+		Meteor.startup(async() => {
 			const { RoomManager } = await import('../../../ui-utils');
 			const { ChatRoom, CachedChatRoom } = await import('../../../models');
 			Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {

@@ -269,7 +269,7 @@ Template.adminRoomInfo.onCreated(function() {
 		this.editing.set();
 	};
 
-	this.autorun(async () => {
+	this.autorun(async() => {
 		this.roomOwner.set(null);
 		for (const { roles, u } of await call('getRoomRoles', Session.get('adminRoomsSelected').rid)) {
 			if (roles.includes('owner')) {

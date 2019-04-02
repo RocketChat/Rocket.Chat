@@ -8,7 +8,7 @@ const resolver = {
 	User: {
 		id: property('_id'),
 		status: ({ status }) => status.toUpperCase(),
-		avatar: async ({ _id }) => {
+		avatar: async({ _id }) => {
 			// XXX js-accounts/graphql#16
 			const avatar = await Avatars.model.rawCollection().findOne({
 				userId: _id,
@@ -18,7 +18,7 @@ const resolver = {
 				return avatar.url;
 			}
 		},
-		channels: Meteor.bindEnvironment(async ({ _id }) => await Rooms.findBySubscriptionUserId(_id).fetch()),
+		channels: Meteor.bindEnvironment(async({ _id }) => await Rooms.findBySubscriptionUserId(_id).fetch()),
 		directMessages: ({ username }) => Rooms.findDirectRoomContainingUsername(username).fetch(),
 	},
 };

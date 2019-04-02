@@ -360,7 +360,7 @@ Template.appManage.events({
 		setActivate(false, e, t);
 	},
 
-	'click .js-uninstall': async (e, t) => {
+	'click .js-uninstall': async(e, t) => {
 		t.ready.set(false);
 		try {
 			await APIClient.delete(`apps/${ t.id.get() }`);
@@ -372,7 +372,7 @@ Template.appManage.events({
 		}
 	},
 
-	'click .js-install': async (e, t) => {
+	'click .js-install': async(e, t) => {
 		installAppFromEvent(e, t);
 	},
 
@@ -381,7 +381,7 @@ Template.appManage.events({
 
 		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.id }`)
 			.then((data) => {
-				data.successCallback = async () => {
+				data.successCallback = async() => {
 					installAppFromEvent(e, t);
 				};
 
@@ -404,11 +404,11 @@ Template.appManage.events({
 		FlowRouter.go(`/admin/apps/${ t.id.get() }/logs`, {}, { version: FlowRouter.getQueryParam('version') });
 	},
 
-	'click .js-cancel-editing': async (e, t) => {
+	'click .js-cancel-editing': async(e, t) => {
 		t.onSettingUpdated({ appId: t.id.get() });
 	},
 
-	'click .js-save': async (e, t) => {
+	'click .js-save': async(e, t) => {
 		if (t.loading.get()) {
 			return;
 		}

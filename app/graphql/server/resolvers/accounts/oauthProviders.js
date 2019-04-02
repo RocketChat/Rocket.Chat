@@ -14,7 +14,7 @@ function isJSON(obj) {
 
 const resolver = {
 	Query: {
-		oauthProviders: async () => {
+		oauthProviders: async() => {
 			// depends on rocketchat:grant package
 			try {
 				const result = HTTP.get(Meteor.absoluteUrl('_oauth_apps/providers')).content;

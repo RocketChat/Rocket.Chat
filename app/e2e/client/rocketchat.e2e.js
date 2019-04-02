@@ -210,7 +210,7 @@ class E2E {
 	}
 
 	setupListeners() {
-		Notifications.onUser('e2ekeyRequest', async (roomId, keyId) => {
+		Notifications.onUser('e2ekeyRequest', async(roomId, keyId) => {
 			const e2eRoom = await this.getInstanceByRoomId(roomId);
 			if (!e2eRoom) {
 				return;
@@ -438,7 +438,7 @@ class E2E {
 			return;
 		}
 
-		return await Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async (item) => {
+		return await Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
 			await this.decryptMessage(item);
 		});
 	}
