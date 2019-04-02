@@ -332,7 +332,8 @@ Template.apps.events({
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
 	},
-	'submit .js-search'(e) {
+	'submit .js-search-form'(e) {
 		e.preventDefault();
+		e.stopPropagation();
 	},
 });
