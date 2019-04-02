@@ -49,7 +49,10 @@ Template.livechatReadOnly.onCreated(function() {
 		this.room.set(room);
 		const inquiry = LivechatInquiry.findOne({ agents: Meteor.userId(), status: 'open', rid: this.rid });
 		this.inquiry.set(inquiry);
+
+		if (inquiry) {
+			this.subscribe('livechat:inquiry', inquiry._id);
+		}
 	});
 
-	this.subscribe('livechat:inquiry');
 });
