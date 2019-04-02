@@ -161,7 +161,8 @@ jobs:
           command: |
             mkdir /tmp/build/
             cd /tmp/build-test
-            tar czf /tmp/build/Rocket.Chat.tar.gz bundle
+            git clone --depth=1 https://github.com/assistify/rocketchat-liveness-check.git livenessprobe
+            tar czf /tmp/build/Rocket.Chat.tar.gz bundle livenessprobe
             cd /tmp/build-test/bundle/programs/server
             npm install
 
