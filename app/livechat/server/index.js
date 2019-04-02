@@ -58,6 +58,7 @@ import './methods/takeInquiry';
 import './methods/returnAsInquiry';
 import './methods/saveOfficeHours';
 import './methods/sendTranscript';
+import './methods/getFirstRoomMessage';
 import '../lib/LivechatExternalMessage';
 import '../lib/LivechatInquiry';
 export { Livechat } from './lib/Livechat';
