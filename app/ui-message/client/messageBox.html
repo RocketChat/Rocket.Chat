@@ -9,8 +9,8 @@
 
 				{{#if replyMessageData}}
 					<div class="reply-preview__wrap message-popup">
-					{{#each replyMessageData}}
-						{{> messageBoxReplyPreview input=input replyMessageData=.}}
+					{{#each reply in replyMessageData}}
+						{{> messageBoxReplyPreview input=input replyMessageData=reply}}
 					{{/each}}
 					</div>
 				{{/if}}
@@ -26,7 +26,7 @@
 						</span>
 					{{else}}
 						{{#if subscribed}}
-							{{> messageBoxAudioMessage rid=_id}}
+							{{> messageBoxAudioMessage rid=rid}}
 							<span class="rc-message-box__action-menu js-action-menu" data-desktop>
 								{{#if actions}}
 									<span class="rc-message-box__icon">
@@ -52,23 +52,21 @@
 					</span>
 				</label>
 
-				{{#unless isEmbedded}}
-					{{#if showFormattingTips}}
-						<div class="rc-message-box__toolbar-formatting">
-							{{#each formattingButtons}}
-								{{#if icon}}
-									<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" aria-label={{_ label}}>
-										{{> icon block="rc-message-box__toolbar-formatting-icon" icon=icon }}
-									</button>
-								{{else}}
-									<span class="rc-message-box__toolbar-formatting-item rc-tooltip" aria-label={{_ label}}>
-										<a href="{{link}}" target="_blank" rel="noopener noreferrer" class="rc-message-box__toolbar-formatting-link">{{text}}</a>
-									</span>
-								{{/if}}
-							{{/each}}
-						</div>
-					{{/if}}
-				{{/unless}}
+				{{#if showFormattingTips}}
+					<div class="rc-message-box__toolbar-formatting">
+						{{#each formattingButton in formattingButtons}}
+							{{#if formattingButton.icon}}
+								<button class="rc-message-box__toolbar-formatting-item rc-tooltip js-format" data-id="{{formattingButton.label}}" aria-label="{{_ formattingButton.label}}">
+									{{> icon block="rc-message-box__toolbar-formatting-icon" icon=formattingButton.icon }}
+								</button>
+							{{else}}
+								<span class="rc-message-box__toolbar-formatting-item rc-tooltip" aria-label="{{_ formattingButton.label}}">
+									<a href="{{formattingButton.link}}" target="_blank" rel="noopener noreferrer" class="rc-message-box__toolbar-formatting-link">{{formattingButton.text}}</a>
+								</span>
+							{{/if}}
+						{{/each}}
+					</div>
+				{{/if}}
 			{{else}}
 				<div class="rc-message-box__cannot-send">
 					{{#if isBlockedOrBlocker}}
@@ -79,7 +77,7 @@
 				</div>
 			{{/if}}
 		{{else}}
-			{{> messageBoxNotSubscribed _id=_id}}
+			{{> messageBoxNotSubscribed rid=rid}}
 		{{/unless}}
 	</div>
 </template>

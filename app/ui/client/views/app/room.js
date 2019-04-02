@@ -315,7 +315,7 @@ Template.room.helpers({
 		const instance = Template.instance();
 		return {
 			rid: this._id,
-			showFormattingTips: settings.get('Message_ShowFormattingTips'),
+			showFormattingTips: settings.get('Message_ShowFormattingTips') && !Layout.isEmbedded(),
 			onResize: () => {
 				if (instance.sendToBottomIfNecessaryDebounced) {
 					instance.sendToBottomIfNecessaryDebounced();

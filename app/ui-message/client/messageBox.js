@@ -24,7 +24,8 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 
-const formattingButtons = [
+
+const formattingActions = [
 	{
 		label: 'bold',
 		icon: 'bold',
@@ -88,29 +89,19 @@ const formattingButtons = [
 	},
 ];
 
-
-function applyFormatting(event, instance) {
-	event.preventDefault();
-	const { input } = chatMessages[this.rid];
+function applyFormatting(formattingAction, input) {
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 	const initText = input.value.slice(0, selectionStart);
 	const selectedText = input.value.slice(selectionStart, selectionEnd);
 	const finalText = input.value.slice(selectionEnd, input.value.length);
 
-	const [btn] = instance.findAll(`.js-format[aria-label=${ this.label }]`);
-	if (btn) {
-		btn.classList.add('active');
-		setTimeout(() => {
-			btn.classList.remove('active');
-		}, 100);
-	}
 	input.focus();
 
-	const startPattern = this.pattern.substr(0, this.pattern.indexOf('{{text}}'));
+	const startPattern = formattingAction.pattern.substr(0, formattingAction.pattern.indexOf('{{text}}'));
 	const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.substr(selectionStart - index - 1, 1) === char);
 
 	if (startPatternFound) {
-		const endPattern = this.pattern.substr(this.pattern.indexOf('{{text}}') + '{{text}}'.length);
+		const endPattern = formattingAction.pattern.substr(formattingAction.pattern.indexOf('{{text}}') + '{{text}}'.length);
 		const endPatternFound = [...endPattern].every((char, index) => input.value.substr(selectionEnd + index, 1) === char);
 
 		if (endPatternFound) {
@@ -128,11 +119,11 @@ function applyFormatting(event, instance) {
 		}
 	}
 
-	if (!document.execCommand || !document.execCommand('insertText', false, this.pattern.replace('{{text}}', selectedText))) {
-		input.value = initText + this.pattern.replace('{{text}}', selectedText) + finalText;
+	if (!document.execCommand || !document.execCommand('insertText', false, formattingAction.pattern.replace('{{text}}', selectedText))) {
+		input.value = initText + formattingAction.pattern.replace('{{text}}', selectedText) + finalText;
 	}
 
-	input.selectionStart = selectionStart + this.pattern.indexOf('{{text}}');
+	input.selectionStart = selectionStart + formattingAction.pattern.indexOf('{{text}}');
 	input.selectionEnd = input.selectionStart + selectedText.length;
 	$(input).change();
 }
@@ -160,9 +151,10 @@ Template.messageBox.onRendered(function() {
 			}
 
 			const $input = $(input);
-			$input.on('dataChange', () => { // TODO: remove jQuery event layer dependency
-				const reply = $input.data('reply');
-				this.replyMessageData.set(reply);
+
+			$input.on('dataChange', () => {
+				const messages = $input.data('reply') || [];
+				this.replyMessageData.set(messages);
 			});
 
 			$input.autogrow({
@@ -245,7 +237,7 @@ Template.messageBox.helpers({
 		}) && room && room.joinCodeRequired);
 	},
 	formattingButtons() {
-		return formattingButtons.filter((button) => !button.condition || button.condition());
+		return formattingActions.filter((button) => !button.condition || button.condition());
 	},
 	isBlockedOrBlocker() {
 		const roomData = Session.get(`roomData${ this.rid }`);
@@ -275,7 +267,6 @@ Template.messageBox.events({
 
 		call('joinRoom', this.rid, joinCode);
 	},
-
 	'click .js-emoji-picker'(event) {
 		event.stopPropagation();
 		event.preventDefault();
@@ -312,16 +303,6 @@ Template.messageBox.events({
 			chatMessages[this.rid].input = instance.find('.js-input-message');
 		}
 	},
-	'click .cancel-reply'(event, instance) {
-
-		const input = instance.find('.js-input-message');
-		const messages = $(input).data('reply') || [];
-		const filtered = messages.filter((msg) => msg._id !== this.rid);
-
-		$(input)
-			.data('reply', filtered)
-			.trigger('dataChange');
-	},
 	'keyup .js-input-message'(event, instance) {
 		chatMessages[this.rid].keyup(this.rid, event, instance);
 		instance.isMessageFieldEmpty.set(chatMessages[this.rid].isEmpty());
@@ -352,22 +333,13 @@ Template.messageBox.events({
 
 		instance.isMessageFieldEmpty.set(false);
 	},
-	'keydown .js-input-message'(event, instance) {
-		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-		if (isMacOS && (event.metaKey || event.ctrlKey)) {
-			const action = formattingButtons.find(
-				(action) => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
-			action && applyFormatting.apply(action, [event, instance]);
-		}
-		chatMessages[this.rid].keydown(this.rid, event, Template.instance());
-	},
 	'input .js-input-message'(event, instance) {
 		instance.sendIconDisabled.set(event.target.value !== '');
-		chatMessages[this.rid].valueChanged(this.rid, event, Template.instance());
+		chatMessages[this.rid].valueChanged(this.rid, event, instance);
 	},
-	'propertychange .js-input-message'(event) {
+	'propertychange .js-input-message'(event, instance) {
 		if (event.originalEvent.propertyName === 'value') {
-			chatMessages[this.rid].valueChanged(this.rid, event, Template.instance());
+			chatMessages[this.rid].valueChanged(this.rid, event, instance);
 		}
 	},
 	async 'click .js-send'(event, instance) {
@@ -426,7 +398,44 @@ Template.messageBox.events({
 				});
 			});
 	},
-	'click .js-format'(e, t) {
-		applyFormatting.apply(this, [e, t]);
+	'click .js-format'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const { id } = event.currentTarget.dataset;
+		const formattingAction = formattingActions
+			.filter(({ condition }) => !condition || condition())
+			.find(({ label }) => label === id);
+
+		if (!formattingAction) {
+			return;
+		}
+
+		const input = instance.find('.js-input-message');
+		applyFormatting(formattingAction, input);
+	},
+	'keydown .js-input-message'(event, instance) {
+		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+		const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+		const key = event.key.toLowerCase();
+
+		if (isCmdOrCtrlPressed) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			const formattingAction = formattingActions
+				.filter(({ condition }) => !condition || condition())
+				.find(({ command }) => command === key);
+
+			if (!formattingAction) {
+				return;
+			}
+
+			const input = instance.find('.js-input-message');
+			applyFormatting(formattingAction, input);
+			return;
+		}
+
+		chatMessages[this.rid].keydown(this.rid, event, instance);
 	},
 });

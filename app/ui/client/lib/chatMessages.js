@@ -527,9 +527,9 @@ export class ChatMessages {
 		}
 		const message = Messages.findOne(msgId);
 		if (message) {
-			return this.$input.data('reply', message).trigger('dataChange');
+			return this.$input.data('reply', [message]).trigger('dataChange');
 		}
-		Meteor.call('getSingleMessage', msgId, (err, msg) => !err && this.$input.data('reply', msg).trigger('dataChange'));
+		Meteor.call('getSingleMessage', msgId, (err, msg) => !err && this.$input.data('reply', [msg]).trigger('dataChange'));
 	}
 
 	keyup(rid, event) {
@@ -666,7 +666,7 @@ export class ChatMessages {
 	isEmpty() {
 		return !this.hasValue.get();
 	}
-};
+}
 
 
 callbacks.add('afterLogoutCleanUp', () => {
