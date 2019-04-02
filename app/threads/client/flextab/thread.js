@@ -45,13 +45,18 @@ Template.thread.helpers({
 
 Template.thread.onCreated(async function() {
 	this.loading = new ReactiveVar(true);
+	let rid = false;
 	this.autorun(async() => {
 		const { room, mainMessage } = Template.currentData();
 		this.loading.set(true);
 
 		this.room = room;
 
+		if (rid === room._id) {
+			return;
+		}
 		this.rid = room._id;
+		rid = this.rid;
 
 		const messages = await call('getThreadMessages', { tmid: mainMessage._id });
 
