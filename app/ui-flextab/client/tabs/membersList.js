@@ -79,7 +79,7 @@ Template.membersList.helpers({
 			const roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 			let roles = _.union(userRoles.roles || [], roomRoles.roles || []);
 			let str = '';
-			for (let i=0; i<roles.length; i++) {
+			for (let i = 0; i < roles.length; i++) {
 				str += `(${ roles[i] })`;
 			}
 			roles = str;
