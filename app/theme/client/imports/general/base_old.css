@@ -521,7 +521,7 @@ rc-old select,
 
 	display: inline-block;
 
-	padding: 9px 12px;
+	padding: 18px 12px;
 
 	user-select: none;
 	text-align: center;
@@ -533,7 +533,7 @@ rc-old select,
 
 	font-size: 14px;
 	font-weight: 500;
-	line-height: 16px;
+	line-height: 0;
 
 	& span {
 		position: relative;
