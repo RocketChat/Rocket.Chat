@@ -9,6 +9,7 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
+import { getURL } from '../../utils';
 
 const logger = new Logger('rocketchat:theme', {
 	methods: {
@@ -80,7 +81,8 @@ export const theme = new class {
 
 			currentHash = crypto.createHash('sha1').update(data.css).digest('hex');
 			currentSize = data.css.length;
-			Inject.rawHead('css-theme', `<link rel="stylesheet" type="text/css" href="/theme.css?${ currentHash }">`);
+			const themePath = `/theme.css?${ currentHash }`;
+			Inject.rawHead('css-theme', `<link rel="stylesheet" type="text/css" href=${ getURL(themePath) }>`);
 
 			return Meteor.startup(function() {
 				return Meteor.setTimeout(function() {
