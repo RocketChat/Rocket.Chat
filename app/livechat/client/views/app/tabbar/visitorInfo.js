@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
 import { modal } from '../../../../../ui-utils';
 import { ChatRoom, Rooms, Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
@@ -171,24 +172,40 @@ Template.visitorInfo.events({
 	'click .close-livechat'(event) {
 		event.preventDefault();
 
-		modal.open({
-			title: t('Closing_chat'),
-			type: 'input',
-			inputPlaceholder: t('Please_add_a_comment'),
-			showCancelButton: true,
-			closeOnConfirm: false,
-		}, (inputValue) => {
-			if (!inputValue) {
-				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
+		if (settings.get('Livechat_conversation_finished_message_enabled')) {
+			modal.open({
+				title: t('Closing_chat'),
+				type: 'input',
+				inputPlaceholder: t('Please_add_a_comment'),
+				showCancelButton: true,
+				closeOnConfirm: false,
+			}, (inputValue) => {
+				if (!inputValue) {
+					modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+					return false;
+				}
 
-			if (s.trim(inputValue) === '') {
-				modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
-				return false;
-			}
+				if (s.trim(inputValue) === '') {
+					modal.showInputError(t('Please_add_a_comment_to_close_the_room'));
+					return false;
+				}
 
-			Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/* , result*/) {
+				Meteor.call('livechat:closeRoom', this.rid, inputValue, function(error/* , result*/) {
+					if (error) {
+						return handleError(error);
+					}
+					modal.open({
+						title: t('Chat_closed'),
+						text: t('Chat_closed_successfully'),
+						type: 'success',
+						timer: 1000,
+						showConfirmButton: false,
+					});
+				});
+			});
+		} else {
+			const comment = TAPi18n.__('Chat_closed_by_agent');
+			Meteor.call('livechat:closeRoom', this.rid, comment, function(error/* , result*/) {
 				if (error) {
 					return handleError(error);
 				}
@@ -200,7 +217,7 @@ Template.visitorInfo.events({
 					showConfirmButton: false,
 				});
 			});
-		});
+		}
 	},
 
 	'click .return-inquiry'(event) {
