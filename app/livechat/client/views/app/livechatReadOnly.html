@@ -1,0 +1,7 @@
+<template name="livechatReadOnly">
+    {{#unless roomClosed}}
+        <p>{{_ "Sala esta aberta"}}</p>
+    {{else}}
+        <p>{{_ "This_conversation_is_already_closed"}}</p>
+	{{/unless}}
+</template>

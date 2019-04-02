@@ -29,6 +29,8 @@ import './views/app/livechatInstallation.html';
 import './views/app/livechatInstallation';
 import './views/app/livechatIntegrations.html';
 import './views/app/livechatNotSubscribed.html';
+import './views/app/livechatReadOnly.html';
+import './views/app/livechatReadOnly';
 import './views/app/livechatQueue.html';
 import './views/app/livechatQueue';
 import './views/app/livechatTriggers.html';

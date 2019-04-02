@@ -41,6 +41,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	readOnly(roomId, user) {
 		const fields = {
 			ro: 1,
+			t: 1,
 		};
 		if (user) {
 			fields.muted = 1;
@@ -50,6 +51,12 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}, {
 			fields,
 		});
+
+		const roomType = room.t;
+		if (room && roomType && this.roomTypes[roomType] && this.roomTypes[roomType].readOnly) {
+			return this.roomTypes[roomType].readOnly(roomId, user);
+		}
+
 		if (!user) {
 			return room && room.ro;
 		}
@@ -105,16 +112,16 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}
 		return this.roomTypes[roomType].showJoinLink(roomId);
 	}
-	getNotSubscribedTpl(roomId) {
+	getTemplate(roomId, templateName) {
 		const room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
 		const roomType = room.t;
-		if (this.roomTypes[roomType] && !this.roomTypes[roomType].notSubscribedTpl) {
+		if (this.roomTypes[roomType] && !this.roomTypes[roomType][templateName]) {
 			return false;
 		}
-		return this.roomTypes[roomType].notSubscribedTpl;
+		return this.roomTypes[roomType][templateName];
 	}
 
 	openRouteLink(roomType, subData, queryParams) {

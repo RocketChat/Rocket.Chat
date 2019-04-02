@@ -23,6 +23,7 @@ import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
+import './messageBoxReadOnly';
 
 const formattingButtons = [
 	{

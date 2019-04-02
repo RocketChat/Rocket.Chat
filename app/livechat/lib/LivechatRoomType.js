@@ -35,9 +35,8 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			route: new LivechatRoomRoute(),
 		});
 
-		this.notSubscribedTpl = {
-			template: 'livechatNotSubscribed',
-		};
+		this.notSubscribedTpl = 'livechatNotSubscribed';
+		this.readOnlyTpl = 'livechatReadOnly';
 	}
 
 	findRoom(identifier) {
@@ -85,4 +84,11 @@ export default class LivechatRoomType extends RoomTypeConfig {
 				return '';
 		}
 	}
+
+	readOnly(roomId /* , user */) {
+		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1, servedBy: 1 } });
+		console.log(room);
+		return !(room && room.open === true);
+	}
+
 }
