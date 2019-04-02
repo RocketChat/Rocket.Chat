@@ -77,7 +77,7 @@ Template.membersList.helpers({
 
 			const userRoles = UserRoles.findOne(user._id) || {};
 			const roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
-			let roles = _.union(userRoles.roles || [], roomRoles.roles || []);
+			const roles = _.union(userRoles.roles || [], roomRoles.roles || []);
 			let rolesStr = '';
 			for (let i = 0; i < roles.length; i++) {
 				rolesStr += `(${ roles[i] })`;
@@ -108,7 +108,6 @@ Template.membersList.helpers({
 			case 1:
 				break;
 			case 2:
-				//users = _.sortBy(users, (u) => (-1) * u.messageCount);
 				break;
 			default:
 				break;
@@ -196,8 +195,8 @@ Template.membersList.helpers({
 	},
 
 	showUserRoles() {
-		return (Template.instance().sortingMode.get() == 2)
-	}
+		return (Template.instance().sortingMode.get() === 2);
+	},
 });
 
 Template.membersList.events({
