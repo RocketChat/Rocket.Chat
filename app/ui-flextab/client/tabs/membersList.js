@@ -78,19 +78,17 @@ Template.membersList.helpers({
 			const userRoles = UserRoles.findOne(user._id) || {};
 			const roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 			let roles = _.union(userRoles.roles || [], roomRoles.roles || []);
-			let str = '';
-			let i;
-			for (i in roles) {
-				str += `(${ roles[i] })`;
+			let rolesStr = '';
+			for (let i = 0; i < roles.length; i++) {
+				rolesStr += `(${ roles[i] })`;
 			}
-			roles = str;
-
 			return {
 				user,
 				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
 				muted: Array.from(roomMuted).includes(user.username),
 				utcOffset,
 				roles,
+				rolesStr,
 			};
 		});
 
@@ -101,7 +99,20 @@ Template.membersList.helpers({
 		}
 		// show online users first.
 		// sortBy is stable, so we can do this
-		users = _.sortBy(users, (u) => u.status === 'offline');
+		// users = _.sortBy(users, (u) => u.status === 'offline');
+
+		switch (Template.instance().sortingMode.get()) {
+			case 0:
+				users = _.sortBy(users, (u) => u.status === 'offline');
+				break;
+			case 1:
+				break;
+			case 2:
+				//users = _.sortBy(users, (u) => (-1) * u.messageCount);
+				break;
+			default:
+				break;
+		}
 
 		let hasMore = undefined;
 		const usersLimit = Template.instance().usersLimit.get();
@@ -176,12 +187,18 @@ Template.membersList.helpers({
 			video: ['d'].includes(room != null ? room.t : undefined),
 		};
 	},
+
 	displayName() {
 		if (settings.get('UI_Use_Real_Name') && this.user.name) {
 			return this.user.name;
 		}
 		return this.user.username;
-	} });
+	},
+
+	showUserRoles() {
+		return (Template.instance().sortingMode.get() == 2)
+	}
+});
 
 Template.membersList.events({
 	'click .js-add'() {
@@ -197,8 +214,25 @@ Template.membersList.events({
 		instance.filter.set(e.target.value.trim());
 	},
 	'change .js-type'(e, instance) {
-		const seeAll = instance.showAllUsers.get();
-		instance.showAllUsers.set(!seeAll);
+		// const seeAll = instance.showAllUsers.get();
+		// instance.showAllUsers.set(!seeAll);
+		instance.sortingMode.set(document.getElementById('status-type').selectedIndex);
+		switch (instance.sortingMode.get()) {
+			case 0:
+				console.log('Online');
+				instance.showAllUsers.set(false);
+				break;
+			case 1:
+				console.log('All Users');
+				instance.showAllUsers.set(true);
+				break;
+			case 2:
+				console.log('User Roles');
+				instance.showAllUsers.set(true);
+				break;
+			default:
+				break;
+		}
 	},
 	'click .see-all'(e, instance) {
 		const seeAll = instance.showAllUsers.get();
@@ -289,6 +323,7 @@ Template.membersList.onCreated(function() {
 	this.userDetail = new ReactiveVar;
 	this.showDetail = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
+	this.sortingMode = new ReactiveVar(0);
 
 
 	this.users = new ReactiveVar([]);
