@@ -7,7 +7,7 @@ import { call } from '../../app/ui-utils';
 
 const getRoomById = mem((rid) => call('getRoomById', rid));
 
-FlowRouter.goToRoomById = async(rid) => {
+FlowRouter.goToRoomById = async (rid) => {
 	if (!rid) {
 		return;
 	}

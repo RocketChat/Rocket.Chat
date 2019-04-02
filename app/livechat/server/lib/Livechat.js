@@ -86,7 +86,7 @@ export const Livechat = {
 				return true;
 			}
 			const onlineAgents = LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			return onlineAgents.count() > 0;
+			return onlineAgents && onlineAgents.count() > 0;
 		});
 	},
 	getRoom(guest, message, roomInfo, agent) {
@@ -534,7 +534,7 @@ export const Livechat = {
 		// get the agents of the department
 		if (departmentId) {
 			const agents = Livechat.getAgents(departmentId);
-			if (agents.count() === 0) {
+			if (!agents || agents.count() === 0) {
 				return false;
 			}
 

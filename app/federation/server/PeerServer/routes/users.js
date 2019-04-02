@@ -2,28 +2,28 @@ import { API } from '../../../../api';
 import { Users } from '../../../../models';
 
 import { FederatedUser } from '../../federatedResources';
-import peerServer from '../peerServer';
+import { Federation } from '../../';
 
 API.v1.addRoute('federation.users', { authRequired: false }, {
 	get() {
-		if (!peerServer.enabled) {
+		if (!Federation.peerServer.enabled) {
 			return API.v1.failure('Not found');
 		}
 
-		const { peer: { domain: localPeerDomain } } = peerServer.config;
+		const { peer: { domain: localPeerDomain } } = Federation.peerServer.config;
 
-		const { username, domain, emailOnly } = this.requestParams();
+		const { username, domain, usernameOnly } = this.requestParams();
 
 		const email = `${ username }@${ domain }`;
 
-		peerServer.log(`[users] Trying to find user by username:${ username } and email:${ email }`);
+		Federation.peerServer.log(`[users] Trying to find user by username:${ username } and email:${ email }`);
 
 		const query = {
 			type: 'user',
 		};
 
-		if (emailOnly === 'true') {
-			query['emails.address'] = email;
+		if (usernameOnly === 'true') {
+			query.username = username;
 		} else {
 			query.$or = [
 				{ name: username },

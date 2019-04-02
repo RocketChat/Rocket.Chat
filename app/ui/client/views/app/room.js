@@ -856,6 +856,16 @@ Template.room.events({
 			Meteor.call('sendMessage', msgObject);
 		});
 	},
+	'click .js-actionButton-respondWithMessage'(event) {
+		const msg = event.currentTarget.value;
+		if (!msg) {
+			return;
+		}
+
+		const { input } = chatMessages[RoomManager.openedRoom];
+		input.value = msg;
+		input.focus();
+	},
 	'click .js-navigate-to-discussion'(event) {
 		event.preventDefault();
 		const [, { drid }] = this._arguments;
