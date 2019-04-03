@@ -9,7 +9,7 @@ import { call } from '../../../../ui-utils/client';
 import { settings } from '../../../../settings';
 
 Template.livechatReadOnly.helpers({
-	isInquiryOpen() {
+	inquiryOpen() {
 		const inquiry = Template.instance().inquiry.get();
 		return inquiry || FlowRouter.go('/home');
 	},
