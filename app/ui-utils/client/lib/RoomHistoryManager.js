@@ -1,10 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
-import { UserRoles, RoomRoles, ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
-import _ from 'underscore';
+import { /* UserRoles, RoomRoles,*/ ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+// import _ from 'underscore';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
+
+const normalizeThreadMessage = (message) => {
+	if (message.msg) {
+		return message.msg;
+	}
+
+	if (message.attachments) {
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+
+		if (attachment.description) {
+			return attachment.description;
+		}
+
+		if (attachment.title) {
+			return attachment.title;
+		}
+	}
+};
 
 export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	const userId = msg.u && msg.u._id;
@@ -12,17 +30,24 @@ export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
 		msg.ignored = true;
 	}
-	const roles = [
-		(userId && UserRoles.findOne(userId, { fields: { roles: 1 } })) || {},
-		(userId && RoomRoles.findOne({ rid: msg.rid, 'u._id': userId })) || {},
-	].map((e) => e.roles);
-	msg.roles = _.union.apply(_.union, roles);
+
+	// const roles = [
+	// 	(userId && UserRoles.findOne(userId, { fields: { roles: 1 } })) || {},
+	// 	(userId && RoomRoles.findOne({ rid: msg.rid, 'u._id': userId })) || {},
+	// ].map((e) => e.roles);
+	// msg.roles = _.union.apply(_.union, roles);
+
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
 	}
 
 	if (msg.tcount) {
-		ChatMessage.update({ tmid: _id }, { $set: { threadMsg: msg.msg } }, { multi: true });
+		ChatMessage.update({ tmid: _id }, {
+			$set: {
+				threadMsg: normalizeThreadMessage(msg),
+				repliesCount: msg.tcount,
+			},
+		}, { multi: true });
 	}
 
 	return ChatMessage.upsert({ _id }, msg);
