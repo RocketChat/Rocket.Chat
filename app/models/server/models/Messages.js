@@ -1080,7 +1080,7 @@ export class Messages extends Base {
 			},
 		};
 
-		return Messages.update(query, update);
+		return this.update(query, update);
 	}
 
 	removeThreadFollowerByThreadId(tmid, userId) {
@@ -1094,7 +1094,7 @@ export class Messages extends Base {
 			},
 		};
 
-		return Messages.update(query, update);
+		return this.update(query, update);
 	}
 
 	findThreadsByRoomId(rid, skip, limit) {
