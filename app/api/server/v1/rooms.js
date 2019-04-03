@@ -218,3 +218,28 @@ API.v1.addRoute('rooms.leave', { authRequired: true }, {
 		return API.v1.success();
 	},
 });
+
+API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
+	post() {
+		const { parentRoomId, parentMessageId, reply, name, users } = this.bodyParams;
+		if (!parentRoomId) {
+			return API.v1.failure('Body parameter "parentRoomId" is required.');
+		}
+		if (!name) {
+			return API.v1.failure('Body parameter "name" is required.');
+		}
+		if (users && !Array.isArray(users)) {
+			return API.v1.failure('Body parameter "users" must be an array.');
+		}
+
+		const discussion = Meteor.runAsUser(this.userId, () => Meteor.call('createDiscussion', {
+			prid: parentRoomId,
+			pmid: parentMessageId,
+			t_name: name,
+			reply,
+			users: users || [],
+		}));
+
+		return API.v1.success({ discussion });
+	},
+});
