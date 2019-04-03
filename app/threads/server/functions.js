@@ -18,8 +18,8 @@ export const undoReply = ({ tmid }) => {
 	if (!tmid) {
 		return false;
 	}
-	const { ts } = Messages.getFirstReplyTsByThreadId(tmid) || {};
 
+	const { ts } = Messages.getFirstReplyTsByThreadId(tmid) || {};
 	if (!ts) {
 		return Messages.unsetThreadByThreadId(tmid);
 	}

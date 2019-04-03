@@ -1028,7 +1028,7 @@ export class Messages extends Base {
 	}
 
 	getThreadFollowsByThreadId(tmid) {
-		const msg = this.findOne({ _id: tmid }, { fields: { replies: 1 } });
+		const msg = this.findOneById(tmid, { fields: { replies: 1 } });
 		return msg && msg.replies;
 	}
 

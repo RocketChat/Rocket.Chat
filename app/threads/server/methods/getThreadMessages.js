@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages, Rooms } from '../../../models';
-import { canAccessRoom } from '../../../authorization';
-import { settings } from '../../../settings';
+import { Messages, Rooms } from '../../../models/server';
+import { canAccessRoom } from '../../../authorization/server';
+import { settings } from '../../../settings/server';
+
 import { readThread } from '../functions';
 
 const MAX_LIMIT = 100;
@@ -17,9 +18,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadMessages' });
 		}
 
-		const thread = Messages.findOne({
-			_id: tmid,
-		});
+		const thread = Messages.findOneById(tmid);
+		if (!thread) {
+			return [];
+		}
 
 		const user = Meteor.user();
 		const room = Rooms.findOneById(thread.rid);
