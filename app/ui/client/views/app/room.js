@@ -351,6 +351,8 @@ Template.room.helpers({
 				chatMessages[rid].input = input;
 				chatMessages[rid].$input = $(input);
 				chatMessages[rid].hasValue = new ReactiveVar(false);
+
+				instance.focusMessageBox();
 			},
 			onResize: () => {
 				if (instance.sendToBottomIfNecessaryDebounced) {
@@ -939,6 +941,18 @@ Template.room.onCreated(function() {
 
 	this.hideLeaderHeader = new ReactiveVar(false);
 
+	this.focusMessageBox = () => {
+		const rid = Session.get('openedRoom');
+		if (chatMessages[rid] && chatMessages[rid].input) {
+			chatMessages[rid].restoreText(rid);
+
+			const mediaQueryList = window.matchMedia('screen and (min-device-width: 500px)');
+			if (mediaQueryList.matches) {
+				chatMessages[rid].input.focus();
+			}
+		}
+	};
+
 	this.resetSelection = (enabled) => {
 		this.selectable.set(enabled);
 		$('.messages-box .message.selected').removeClass('selected');
@@ -1036,6 +1050,7 @@ Template.room.onRendered(function() {
 		chatMessages[rid] = new ChatMessages;
 	}
 	chatMessages[rid].init(this.firstNode);
+	this.focusMessageBox();
 
 	const wrapper = this.find('.wrapper');
 	const wrapperUl = this.find('.wrapper > ul');

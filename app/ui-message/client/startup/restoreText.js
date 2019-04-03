@@ -7,7 +7,7 @@ import { callbacks } from '../../../callbacks';
 Meteor.startup(() => {
 	callbacks.add('enter-room', () => {
 		setTimeout(() => {
-			if (!chatMessages[RoomManager.openedRoom].input) {
+			if (!chatMessages[RoomManager.openedRoom] || !chatMessages[RoomManager.openedRoom].input) {
 				return;
 			}
 
