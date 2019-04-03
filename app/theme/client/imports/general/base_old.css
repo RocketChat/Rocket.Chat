@@ -2636,10 +2636,6 @@ rc-old select,
 		margin-top: 0;
 	}
 
-	&.new-day:hover::before {
-		box-shadow: 0 1px 1px 0 #cccccc8a;
-	}
-
 	&.new-day {
 		margin-top: 40px;
 

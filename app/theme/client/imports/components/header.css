@@ -10,17 +10,19 @@
 		position: absolute;
 		z-index: 1;
 		top: -2px;
-		right: -2px;
+		left: var(--badge-size);
 
 		display: flex;
 
-		width: var(--badge-size);
+		min-width: var(--badge-size);
 		height: var(--badge-size);
+
+		padding: 0 5px;
 
 		text-align: center;
 
 		color: white;
-		border-radius: 100%;
+		border-radius: calc(4 * var(--badge-font-size));
 		background: var(--rc-color-button-primary);
 		box-shadow: 0 0 0 2px #ffffff;
 

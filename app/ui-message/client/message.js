@@ -371,27 +371,39 @@ Template.message.helpers({
 	},
 });
 
-const cache = {};
-const findParentMessage = async(tmid) => {
-	if (cache[tmid]) {
-		return;
-	}
 
-	const message = Messages.findOne({ _id: tmid });
-	if (message) {
-		return;
-	}
-	cache[tmid] = call('getSingleMessage', tmid);
-	const _message = await cache[tmid];
-	try {
-		const { _id, ...msg } = _message;
-		Messages.upsert({ _id }, msg);
+const findParentMessage = (() => {
 
-	} catch (error) {
-		console.log(tmid);
-	}
-	delete cache[tmid];
-};
+	const waiting = [];
+
+	const getMessages = _.debounce(async function() {
+		const _tmp = [...waiting];
+		waiting.length = 0;
+		const messages = await call('getMessages', _tmp);
+		messages.forEach((message) => {
+			if (!message) {
+				return;
+			}
+			const { _id, ...msg } = message;
+			Messages.upsert({ _id }, msg);
+		});
+	}, 500);
+
+	return (tmid) => {
+		if (waiting.indexOf(tmid) > -1) {
+			return;
+		}
+
+		const message = Messages.findOne({ _id: tmid });
+
+		if (message) {
+			return;
+		}
+
+		waiting.push(tmid);
+		getMessages();
+	};
+})();
 
 
 const renderBody = (msg, settings) => {
