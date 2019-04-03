@@ -1038,6 +1038,7 @@
   "Decode_Key": "Decode Key",
   "Default": "Default",
   "Delete": "Delete",
+  "Delete_all_closed_chats": "Delete all closed chats",
   "delete-c": "Delete Public Channels",
   "delete-c_description": "Permission to delete public channels",
   "delete-d": "Delete Direct Messages",

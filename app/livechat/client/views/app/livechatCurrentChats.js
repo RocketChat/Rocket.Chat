@@ -20,7 +20,7 @@ Template.livechatCurrentChats.helpers({
 		return Template.instance().ready.get();
 	},
 	livechatRoom() {
-		return LivechatRoom.find({ t: 'l' }, { sort: { ts: -1 } });
+		return Template.instance().livechatRoom.get();
 	},
 	startedAt() {
 		return moment(this.ts).format('L LTS');
@@ -275,6 +275,8 @@ Template.livechatCurrentChats.onCreated(function() {
 			this.customFields.set(customFields);
 		}
 	});
+
+	this.livechatRoom.set(LivechatRoom.find({ t: 'l' }, { sort: { ts: -1 } }));
 });
 
 Template.livechatCurrentChats.onRendered(function() {
