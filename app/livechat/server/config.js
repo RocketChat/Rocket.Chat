@@ -80,7 +80,7 @@ Meteor.startup(function() {
 	settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
 	settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
 
-	settings.add('Livechat_conversation_finished_message_enabled', true, {
+	settings.add('Livechat_request_comment_when_closing_conversation', true, {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
