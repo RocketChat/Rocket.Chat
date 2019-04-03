@@ -178,7 +178,9 @@ export async function sendMessageNotifications(message, room, usersInThread) {
 	}
 
 	const mentionIds = (message.mentions || []).map(({ _id }) => _id);
-	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here');
+	const mentionIdsWithoutGroups = mentionIds
+		.filter((_id) => _id !== 'all' && _id !== 'here')
+		.concat(usersInThread || []); // add users in thread to mentions array because they follow the same rules
 	const hasMentionToAll = mentionIds.includes('all');
 	const hasMentionToHere = mentionIds.includes('here');
 
@@ -230,7 +232,7 @@ export async function sendMessageNotifications(message, room, usersInThread) {
 			query.$or.push({
 				[notificationField]: { $exists: false },
 			});
-		} else if (serverPreference === 'mentions' && mentionIdsWithoutGroups.length) {
+		} else if (serverPreference === 'mentions' && mentionIdsWithoutGroups.length > 0) {
 			query.$or.push({
 				[notificationField]: { $exists: false },
 				'u._id': { $in: mentionIdsWithoutGroups },
