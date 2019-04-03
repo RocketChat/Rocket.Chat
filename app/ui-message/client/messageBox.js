@@ -1,17 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
-import { ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import {
 	chatMessages,
 	fileUpload,
 	KonchatNotification,
 } from '../../ui';
-import { Layout, messageBox, popover, call } from '../../ui-utils';
+import { messageBox, popover, call } from '../../ui-utils';
 import { t, roomTypes, getUserPreference } from '../../utils';
 import moment from 'moment';
 import {
@@ -74,35 +72,13 @@ Template.messageBox.onRendered(function() {
 });
 
 Template.messageBox.helpers({
-	isEmbedded() {
-		return Layout.isEmbedded();
-	},
-	subscribed() {
-		return roomTypes.verifyCanSendMessage(this.rid);
+	isAnonymousOrMustJoinWithCode() {
+		const { isAnonymous, mustJoinWithCode } = this;
+		return isAnonymous || mustJoinWithCode;
 	},
 	canSend() {
-		if (roomTypes.readOnly(this.rid, Meteor.user())) {
-			return false;
-		}
-		if (roomTypes.archived(this.rid)) {
-			return false;
-		}
-		const roomData = Session.get(`roomData${ this.rid }`);
-		if (roomData && roomData.t === 'd') {
-			const subscription = ChatSubscription.findOne({
-				rid: this.rid,
-			}, {
-				fields: {
-					archived: 1,
-					blocked: 1,
-					blocker: 1,
-				},
-			});
-			if (subscription && (subscription.archived || subscription.blocked || subscription.blocker)) {
-				return false;
-			}
-		}
-		return true;
+		const { isReadOnly, isArchived, isBlocked, isBlocker } = this;
+		return !isReadOnly && !isArchived && !isBlocked && !isBlocker;
 	},
 	popupConfig() {
 		return Template.instance().popupConfig.get();
@@ -122,6 +98,10 @@ Template.messageBox.helpers({
 	isSendIconDisabled() {
 		return !Template.instance().sendIconDisabled.get();
 	},
+	subscribed() {
+		const { rid } = this;
+		return roomTypes.verifyCanSendMessage(rid);
+	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
 		return Object.values(actionGroups)
@@ -131,20 +111,8 @@ Template.messageBox.helpers({
 		return formattingButtons.filter(({ condition }) => !condition || condition());
 	},
 	isBlockedOrBlocker() {
-		const roomData = Session.get(`roomData${ this.rid }`);
-		if (roomData && roomData.t === 'd') {
-			const subscription = ChatSubscription.findOne({
-				rid: this.rid,
-			}, {
-				fields: {
-					blocked: 1,
-					blocker: 1,
-				},
-			});
-			if (subscription && (subscription.blocked || subscription.blocker)) {
-				return true;
-			}
-		}
+		const { isBlocked, isBlocker } = this;
+		return isBlocked || isBlocker;
 	},
 });
 

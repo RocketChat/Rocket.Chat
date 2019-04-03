@@ -315,15 +315,34 @@ Template.room.helpers({
 		const instance = Template.instance();
 		const { _id: rid } = this;
 		const roomData = Session.get(`roomData${ rid }`);
+		const subscription = ChatSubscription.findOne({
+			rid,
+		}, {
+			fields: {
+				archived: 1,
+				blocked: 1,
+				blocker: 1,
+			},
+		});
 		const isAnonymous = !Meteor.userId();
-		const mustJoinWithCode = !ChatSubscription.findOne({ rid }) && roomData && roomData.joinCodeRequired;
-		const isAnonymousOrJoinCode = isAnonymous || mustJoinWithCode;
-		const showFormattingTips = settings.get('Message_ShowFormattingTips') && !Layout.isEmbedded();
+		const mustJoinWithCode = !subscription && roomData && roomData.joinCodeRequired;
+		const isReadOnly = roomTypes.readOnly(rid, Meteor.user());
+		const isArchived = roomTypes.archived(rid) || (roomData && roomData.t === 'd' && subscription && subscription.archived);
+		const isBlocked = (roomData && roomData.t === 'd' && subscription && subscription.blocked);
+		const isBlocker = (roomData && roomData.t === 'd' && subscription && subscription.blocker);
+		const isEmbedded = Layout.isEmbedded();
+		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
 		return {
 			rid,
-			isAnonymousOrJoinCode,
-			showFormattingTips,
+			isAnonymous,
+			mustJoinWithCode,
+			isReadOnly,
+			isArchived,
+			isBlocked,
+			isBlocker,
+			isEmbedded,
+			showFormattingTips: showFormattingTips && !isEmbedded,
 			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
 			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
 			onValueChanged: (...args) => chatMessages[rid] && chatMessages[rid].valueChanged.apply(chatMessages[rid], args),

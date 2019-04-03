@@ -1,6 +1,6 @@
-<template name="messageBox" args="rid isAnonymousOrJoinCode showFormattingTips">
+<template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
-		{{#unless isAnonymousOrJoinCode}}
+		{{#unless isAnonymousOrMustJoinWithCode}}
 			{{> messageBoxTyping rid=rid}}
 
 			{{#if canSend}}
