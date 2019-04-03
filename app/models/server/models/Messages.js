@@ -1002,7 +1002,13 @@ export class Messages extends Base {
 	// threads
 
 	removeThreadRefByThreadId(tmid) {
-		return this.remove({ tmid });
+		const query = { tmid };
+		const update = {
+			$unset: {
+				tmid: 1,
+			},
+		};
+		return this.update(query, update, { multi: true });
 	}
 
 	updateRepliesByThreadId(tmid, replies, ts) {

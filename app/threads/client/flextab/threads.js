@@ -68,17 +68,16 @@ Template.threads.onCreated(async function() {
 			changed: ({ _id, ...message }) => {
 				Threads.update({ _id }, message);
 			}, // Update message to re-render DOM
-			// removed: (role) => {
-			// 	if (!role.u || !role.u._id) {
-			// 		return;
-			// 	}
-			// 	ChatMessage.update({ rid: this.data._id, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
-			// },
+			removed: ({ _id }) => {
+				Threads.remove(_id);
+
+				const { _id: mid } = this.mid.get() || {};
+				if (_id === mid) {
+					this.mid.set(null);
+				}
+			},
 		});
 	});
-
-
-
 });
 
 Template.threads.onDestroyed(function() {
