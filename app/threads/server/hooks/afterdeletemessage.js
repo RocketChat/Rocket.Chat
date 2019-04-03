@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks/server';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { Messages } from '../../../models/server';
+
 import { undoReply } from '../functions';
-import { Messages } from '../../../models';
 
 Meteor.startup(function() {
 	const fn = function(message) {
@@ -15,7 +16,7 @@ Meteor.startup(function() {
 
 		// is a thread
 		if (message.tcount) {
-			Messages.removeThreadRefByThreadId(message.tmid);
+			Messages.removeThreadRefByThreadId(message._id);
 		}
 
 		return message;
