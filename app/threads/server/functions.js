@@ -9,7 +9,9 @@ export const reply = ({ tmid }, { rid, ts, u }, parentMessage) => {
 	Messages.updateRepliesByThreadId(tmid, [parentMessage.u._id, u._id], ts);
 
 	const replies = Messages.getThreadFollowsByThreadId(tmid);
-	Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, replies, tmid);
+
+	// doesnt need to update the sender (u._id) subscription, so filter it
+	Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, replies.filter((userId) => userId !== u._id), tmid);
 };
 
 export const undoReply = ({ tmid }) => {

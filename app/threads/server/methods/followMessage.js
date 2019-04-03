@@ -6,7 +6,7 @@ import { RateLimiter } from '../../../lib';
 
 import { settings } from '../../../settings';
 
-import { follow } from '../../lib/Thread';
+import { follow } from '../functions';
 
 Meteor.methods({
 	'followMessage'({ mid }) {

@@ -6,7 +6,7 @@ import { RateLimiter } from '../../../lib';
 
 import { settings } from '../../../settings';
 
-import { unfollow } from '../../lib/Thread';
+import { unfollow } from '../functions';
 
 Meteor.methods({
 	'unfollowMessage'({ mid }) {

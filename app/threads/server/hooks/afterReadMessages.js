@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
-import { readAllThreads } from '../../lib/Thread';
+import { readAllThreads } from '../functions';
 
 const readThreads = (rid, { userId }) => {
 	readAllThreads(rid, userId);
