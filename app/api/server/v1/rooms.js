@@ -243,3 +243,29 @@ API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
 		return API.v1.success({ discussion });
 	},
 });
+
+API.v1.addRoute('rooms.getDiscussions', { authRequired: true }, {
+	get() {
+		const room = findRoomByIdOrName({ params: this.requestParams() });
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+		const ourQuery = Object.assign({ prid: room._id }, query);
+
+		const discussions = Rooms.find(ourQuery, {
+			sort: sort ? sort : { fname: 1 },
+			skip: offset,
+			limit: count,
+			fields,
+		}).fetch();
+
+		return API.v1.success({
+			discussions,
+			count: discussions.length,
+			offset,
+			total: Rooms.find(ourQuery).count(),
+		});
+	},
+});

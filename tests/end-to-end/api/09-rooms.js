@@ -598,7 +598,7 @@ describe('[Rooms]', function() {
 							expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 						})
 						.end(() => {
-							updatePermission('start-discussion', [])
+							updatePermission('start-discussion', ['admin'])
 								.then(() => updatePermission('start-discussion-other-user', ['admin']))
 								.then(done);
 						});
@@ -732,6 +732,65 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/rooms.getDiscussions', () => {
+		let testChannel;
+		const testChannelName = `channel.test.getDiscussions${ Date.now() }`;
+		it('create an channel', (done) => {
+			createRoom({ type: 'c', name: testChannelName })
+				.end((err, res) => {
+					testChannel = res.body.channel;
+					done();
+				});
+		});
+		it('create a discussion', (done) => {
+			request.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					parentRoomId: testChannel._id,
+					name: `discussion-create-from-tests-${ testChannel.name }`,
+				})
+				.end(done);
+		});
+		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', (done) => {
+			request.get(api('rooms.getDiscussions'))
+				.set(credentials)
+				.query({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The parameter \"roomId\" or \"roomName\" is required [error-roomid-param-not-provided]');
+				})
+				.end(done);
+		});
+		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
+			updatePermission('view-c-room', []).then(() => {
+				request.get(api('rooms.getDiscussions'))
+					.set(credentials)
+					.query({})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Not Allowed');
+					})
+					.end(() => updatePermission('view-c-room', ['admin']).then(done));
+			});
+		});
+		it('should return a list of discussions with ONE discussion', (done) => {
+			request.get(api('rooms.getDiscussions'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('discussions').and.to.be.an('array');
+					expect(res.body.discussions).to.have.lengthOf(1);
 				})
 				.end(done);
 		});
