@@ -1,0 +1,18 @@
+<template name="setupWizardFinal">
+	<div class="setup-wizard">
+		<div class="setup-wizard-final">
+			<header class="setup-wizard-info__header setup-wizard-final__header">
+				<img class="setup-wizard-info__header-logo" src="images/logo/logo.svg">
+			</header>
+			<main class="setup-wizard-final__box">
+				<span class="setup-wizard-forms__header-step">{{_ "Launched_successfully"}}</span>
+				<h1 class="setup-wizard-info__content-title setup-wizard-final__box-title">{{_ "Your_workspace_is_ready"}}</h1>
+				<span class="setup-wizard-final__link-text">{{_ "Your_server_link"}}</span>
+				<span class="setup-wizard-final__link">{{siteUrl}}</span>
+				<button class="rc-button rc-button--primary js-finish">
+					<span>{{_ "Go_to_your_workspace"}}</span>
+				</button>
+			</main>
+		</div>
+	</div>
+</template>

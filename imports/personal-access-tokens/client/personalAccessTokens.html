@@ -1,0 +1,60 @@
+<template name="accountTokens">
+	<section class="preferences-page preferences-page--new page-container page-home page-static page-settings">
+		{{> header sectionName="Personal_Access_Tokens" hideHelp=true fullpage=true}}
+
+		<div class="content">
+			{{# if isAllowed}}
+			<form id="form-tokens">
+				<div class="section-content border-component-color">
+					<div class="input-line double-col">
+						<label for="tokenName" class="setting-label">{{_ "API_Personal_Access_Tokens_To_REST_API"}}</label>
+						<div class="setting-field">
+							<input type="text" class="rc-input__element js-search" name="tokenName" id="tokenName"
+								placeholder={{_ "API_Add_Personal_Access_Token"}} autocomplete="off" />
+						</div>
+						<button name="add" class="rc-button rc-button--primary setting-action save-token">{{_ "Add"}}</button>
+					</div>
+				</div>
+			</form>
+
+			<div class="rc-table-content">
+				{{#table}}
+				<thead>
+					<tr>
+						<th width="30%">
+							<div class="table-fake-th">{{_ "API_Personal_Access_Token_Name"}}</div>
+						</th>
+						<th>
+							<div class="table-fake-th">{{_ "Created_at"}}</div>
+						</th>
+						<th>
+							<div class="table-fake-th">{{_ "Last_token_part"}}</div>
+						</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#each tokens}}
+					<tr data-id="{{name}}">
+						<td>
+							<div class="rc-table-title">
+								{{name}}
+							</div>
+						</td>
+						<td>{{dateFormated createdAt}}</td>
+						<td>...{{lastTokenPart}}</td>
+						<td><button class="regenerate-personal-access-token"><i class="icon-ccw"></i></button></td>
+						<td><button class="remove-personal-access-token"><i class="icon-block"></i></button></td>
+					</tr>
+					{{else}}
+					<tr>
+						<td colspan="4">{{_ "There_are_no_personal_access_tokens_created_yet"}}</td>
+					</tr>
+					{{/each}}
+				</tbody>
+				{{/table}}
+			</div>
+			{{/if}}
+		</div>
+	</section>
+</template>

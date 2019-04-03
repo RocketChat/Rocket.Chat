@@ -1,9 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { Users } from '../../app/models';
+
 Meteor.publish('userData', function() {
 	if (!this.userId) {
 		return this.ready();
 	}
 
-	return RocketChat.models.Users.find(this.userId, {
+	return Users.find(this.userId, {
 		fields: {
 			name: 1,
 			username: 1,
@@ -23,6 +26,7 @@ Meteor.publish('userData', function() {
 			'services.github': 1,
 			'services.gitlab': 1,
 			'services.tokenpass': 1,
+			'services.blockstack': 1,
 			requirePasswordChange: 1,
 			requirePasswordChangeReason: 1,
 			'services.password.bcrypt': 1,

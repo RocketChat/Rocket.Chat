@@ -1,4 +1,8 @@
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { composeMessageObjectWithUser } from '../../app/utils';
 
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
@@ -17,7 +21,7 @@ Meteor.methods({
 			return false;
 		}
 
-		message = RocketChat.models.Messages.findOneById(message._id);
+		message = Messages.findOneById(message._id);
 
 		if (!message || !message.rid) {
 			return false;
@@ -36,20 +40,13 @@ Meteor.methods({
 			limit: Math.ceil(limit / 2),
 		};
 
-		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+		if (!settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
 				editedAt: 0,
 			};
 		}
 
-		const recordsBefore = RocketChat.models.Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
-
-		const messages = recordsBefore.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId,
-			});
-			return message;
-		});
+		const messages = Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
 
 		const moreBefore = messages.length === options.limit;
 
@@ -61,18 +58,13 @@ Meteor.methods({
 
 		options.limit = Math.floor(limit / 2);
 
-		const recordsAfter = RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
-		const afterMessages = recordsAfter.map((message) => {
-			message.starred = _.findWhere(message.starred, {
-				_id: fromId,
-			});
-			return message;
-		});
+		const afterMessages = Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
 
 		const moreAfter = afterMessages.length === options.limit;
 
 		return {
-			messages: messages.concat(afterMessages),
+			messages: messages.concat(afterMessages)
+				.map((message) => composeMessageObjectWithUser(message, fromId)),
 			moreBefore,
 			moreAfter,
 		};
