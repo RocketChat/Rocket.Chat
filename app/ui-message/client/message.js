@@ -366,9 +366,8 @@ Template.message.helpers({
 		return msg.actionContext === 'snippeted';
 	},
 	parentMessage() {
-		const { msg } = this;
-		const message = Messages.findOne(msg.tmid, { fields: { msg: 1 } });
-		return message && message.msg;
+		const { msg: { threadMsg } } = this;
+		return threadMsg;
 	},
 });
 

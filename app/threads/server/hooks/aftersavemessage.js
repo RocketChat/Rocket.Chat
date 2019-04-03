@@ -105,12 +105,15 @@ const processThreads = (message, room) => {
 		return;
 	}
 
-	const parentMessage = Messages.findOne({ _id: message.tmid });
+	const parentMessage = Messages.findOneById(message.tmid);
 	if (!parentMessage) {
 		return;
 	}
 
-	const replies = [].concat(parentMessage.replies).filter((userId) => userId !== message.u._id);
+	const replies = [
+		parentMessage.u._id,
+		...(parentMessage.replies || []),
+	].filter((userId) => userId !== message.u._id);
 
 	notifyUsersOnReply(message, replies, room);
 	metaData(message, parentMessage);

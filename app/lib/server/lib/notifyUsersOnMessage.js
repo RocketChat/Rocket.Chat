@@ -85,7 +85,7 @@ export function updateUsersSubscriptions(message, room, users) {
 				if (users || ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount)) {
 					incUnread = 1;
 				}
-				Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, users || _.compact(_.unique(mentionIds.concat(highlightsIds))), 1, incUnread);
+				Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds, users))), 1, incUnread);
 			} else if (unreadCount === 'all_messages') {
 				Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
 			}

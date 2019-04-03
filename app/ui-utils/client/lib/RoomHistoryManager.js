@@ -21,6 +21,10 @@ export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 		msg.e2e = 'pending';
 	}
 
+	if (msg.tcount) {
+		ChatMessage.update({ tmid: _id }, { $set: { threadMsg: msg.msg } }, { multi: true });
+	}
+
 	return ChatMessage.upsert({ _id }, msg);
 };
 
