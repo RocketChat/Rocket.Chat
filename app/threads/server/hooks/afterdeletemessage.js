@@ -1,19 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks/server';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { Messages } from '../../../models/server';
+
 import { undoReply } from '../functions';
-import { Messages } from '../../../models';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 
 Meteor.startup(function() {
-	const fn = function(message, room, user) {
+	const fn = function(message) {
+
+		// is a reply from a thread
 		if (message.tmid) {
 			undoReply(message);
 		}
 
+		// is a thread
 		if (message.tcount) {
-			Messages.findRepliesByThreadId(message.tmid).forEach((message) => deleteMessage(message, user));
+			Messages.removeThreadRefByThreadId(message._id);
 		}
 
 		return message;

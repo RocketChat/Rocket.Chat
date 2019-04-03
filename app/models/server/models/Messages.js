@@ -1001,8 +1001,8 @@ export class Messages extends Base {
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
-	findRepliesByThreadId(tmid) {
-		return this.find({ tmid });
+	removeThreadRefByThreadId(tmid) {
+		return this.remove({ tmid });
 	}
 
 	updateRepliesByThreadId(tmid, replies, ts) {
