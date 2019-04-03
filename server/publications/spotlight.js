@@ -57,6 +57,7 @@ Meteor.methods({
 				status: 1,
 			},
 			sort: {},
+			filterByDiscoverability: true,
 		};
 		if (RocketChat.settings.get('UI_Use_Real_Name')) {
 			userOptions.sort.name = 1;

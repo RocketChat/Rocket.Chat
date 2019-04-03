@@ -41,8 +41,8 @@ function refreshContactsHashMap() {
 	const phonePattern = /^\+?[1-9]\d{1,14}$/;
 	const rfcMailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	cursor.forEach((user) => {
-		const discoverable = RocketChat.getUserPreference(user, 'isPublicAccount');
-		if (discoverable !== false) {
+		const discoverability = RocketChat.getUserPreference(user, 'discoverability');
+		if (discoverability !== 'none') {
 			if (phoneFieldArray.length > 0) {
 				dict = user;
 				for (let i = 0;i < phoneFieldArray.length - 1;i++) {

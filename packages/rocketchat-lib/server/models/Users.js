@@ -155,8 +155,25 @@ class ModelUsers extends RocketChat.models._Base {
 				},
 			],
 		};
-
-		// do not use cache
+		if (options.filterByDiscoverability) {
+			const defaultDiscoverability = RocketChat.settings.get('Accounts_Default_User_Preferences_discoverability');
+			if (defaultDiscoverability === 'all') {
+				query.$and.push({
+					$or: [
+						{
+							'settings.preferences': { $exists: false },
+						},
+						{
+							'settings.preferences.discoverability': 'all',
+						},
+					],
+				});
+			} else {
+				query.$and.push({
+					'settings.preferences.discoverability': 'all',
+				});
+			}
+		}
 		return this._db.find(query, options);
 	}
 

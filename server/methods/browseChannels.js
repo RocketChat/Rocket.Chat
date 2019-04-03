@@ -51,6 +51,7 @@ Meteor.methods({
 		const options = {
 			skip,
 			limit,
+			filterByDiscoverability: true,
 		};
 
 		const user = Meteor.user();
