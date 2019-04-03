@@ -4,16 +4,18 @@ import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
 import { undoReply } from '../functions';
 import { Messages } from '../../../models';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 
 Meteor.startup(function() {
-	const fn = function(message, room, user) {
+	const fn = function(message) {
+
+		// is a reply from a thread
 		if (message.tmid) {
 			undoReply(message);
 		}
 
+		// is a thread
 		if (message.tcount) {
-			Messages.findRepliesByThreadId(message.tmid).forEach((message) => deleteMessage(message, user));
+			Messages.removeThreadRefByThreadId(message.tmid);
 		}
 
 		return message;

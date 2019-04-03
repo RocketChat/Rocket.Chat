@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { roomTypes as _roomTypes } from '../../../utils';
+import { roomTypes } from '../../../utils';
 import { fireGlobalEvent } from './fireGlobalEvent';
 import { promises } from '../../../promises';
 import { callbacks } from '../../../callbacks';
@@ -17,7 +17,12 @@ import { mainReady } from './mainReady';
 
 const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
-const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
+const onDeleteMessageStream = (msg) => {
+	ChatMessage.remove({ _id: msg._id });
+
+	// remove thread refenrece from deleted message
+	ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
+};
 const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
 	const query = { rid, ts };
 	if (excludePinned) {
@@ -52,7 +57,7 @@ export const RoomManager = new function() {
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-					const room = Tracker.nonreactive(() => _roomTypes.findRoom(type, name, user));
+					const room = Tracker.nonreactive(() => roomTypes.findRoom(type, name, user));
 
 					if (room != null) {
 						openedRooms[typeName].rid = room._id;
@@ -285,9 +290,10 @@ Meteor.startup(() => {
 		if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
 			currentUsername = user.username;
 			RoomManager.closeAllRooms();
-			const { roomTypes } = _roomTypes;
+			const { roomTypes: types } = roomTypes;
+
 			// Reload only if the current route is a channel route
-			const roomType = Object.keys(roomTypes).find((key) => roomTypes[key].route && roomTypes[key].route.name === FlowRouter.current().route.name);
+			const roomType = Object.keys(types).find((key) => types[key].route && types[key].route.name === FlowRouter.current().route.name);
 			if (roomType) {
 				FlowRouter.reload();
 			}
