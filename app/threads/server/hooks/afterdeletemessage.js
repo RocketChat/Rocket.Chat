@@ -9,7 +9,7 @@ import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 Meteor.startup(function() {
 	const fn = function(message, room, user) {
 		if (message.tmid) {
-			undoReply(message.tmid);
+			undoReply(message);
 		}
 
 		if (message.tcount) {
