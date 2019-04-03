@@ -33,6 +33,9 @@ Template.threads.helpers({
 	isLoading() {
 		return Template.instance().loading.get();
 	},
+	hasThreads() {
+		return Threads.find({ rid: Template.instance().rid }, { sort: { ts: -1 } }).count();
+	},
 	threads() {
 		return Threads.find({ rid: Template.instance().rid }, { sort: { ts: -1 } });
 	},
@@ -45,14 +48,18 @@ Template.threads.onCreated(async function() {
 	this.room = new ReactiveVar(null);
 	this.autorun(async() => {
 		const { rid, mid } = Template.currentData();
-		this.room.set(Rooms.findOne({ _id: rid }));
 		this.close = !!mid;
-		this.rid = rid;
 
 		if (mid) {
+			this.rid = rid;
 			return this.mid.set(Messages.findOne(mid));
 		}
 
+		if (this.rid == rid) {
+			return;
+		}
+
+		this.rid = rid;
 		this.loading.set(true);
 
 		const threads = await call('getThreadsList', { rid });

@@ -6,6 +6,11 @@
 	background: #f7f8fa;
 }
 
+
+.thread-empty {
+	padding: 0 calc(2 * var(--default-padding));
+}
+
 .thread-replied {
 	overflow: hidden;
 

@@ -92,7 +92,7 @@ Template.message.helpers({
 		return encodeURI(text);
 	},
 	broadcast() {
-		const { msg, room } = this;
+		const { msg, room = {} } = this;
 		return !msg.private && !msg.t && msg.u._id !== Meteor.userId() && room && room.broadcast;
 	},
 	isIgnored() {
@@ -141,7 +141,7 @@ Template.message.helpers({
 		});
 	},
 	isGroupable() {
-		const { msg, room, settings, groupable } = this;
+		const { msg, room = {}, settings, groupable } = this;
 		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false) {
 			return 'false';
 		}

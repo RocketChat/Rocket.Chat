@@ -51,6 +51,10 @@ Template.thread.onCreated(async function() {
 		const { room, mainMessage } = Template.currentData();
 		this.loading.set(true);
 
+		if(!room) {
+			return;
+		}
+
 		this.room = room;
 
 		if (rid === room._id && mainMessage._id === mid) {
