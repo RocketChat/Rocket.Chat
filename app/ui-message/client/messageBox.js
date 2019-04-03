@@ -5,7 +5,6 @@ import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
 import { settings } from '../../settings';
 import {
-	chatMessages,
 	fileUpload,
 	KonchatNotification,
 } from '../../ui';
@@ -27,23 +26,20 @@ Template.messageBox.onCreated(function() {
 	EmojiPicker.init();
 	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar();
-	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
 });
 
 Template.messageBox.onRendered(function() {
-	const { rid, onResize } = this.data;
-
 	this.autorun(() => {
+		const { onInputChanged, onResize } = Template.currentData();
+
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message');
 			const $input = $(input);
 
 			this.input = input;
-
-			chatMessages[rid].input = input;
-			chatMessages[rid].$input = $input;
+			onInputChanged && onInputChanged(input);
 
 			if (!input) {
 				this.popupConfig.set(null);
@@ -188,7 +184,6 @@ Template.messageBox.events({
 	'keyup .js-input-message'(event, instance) {
 		const { rid, onKeyUp } = this;
 		onKeyUp && onKeyUp(rid, event, instance);
-		instance.isMessageFieldEmpty.set(chatMessages[rid].isEmpty());
 	},
 	'paste .js-input-message'(event, instance) {
 		const { input } = instance;
@@ -213,8 +208,6 @@ Template.messageBox.events({
 			fileUpload(files, input);
 			return;
 		}
-
-		instance.isMessageFieldEmpty.set(false);
 	},
 	'input .js-input-message'(event, instance) {
 		instance.sendIconDisabled.set(event.target.value !== '');
@@ -231,11 +224,10 @@ Template.messageBox.events({
 		onValueChanged && onValueChanged(rid, event, instance);
 	},
 	async 'click .js-send'(event, instance) {
-		const { rid } = this;
+		const { rid, onSend } = this;
 		const { input } = instance;
-		chatMessages[rid].send(rid, input, () => {
+		onSend && onSend(rid, input, () => {
 			input.updateAutogrow();
-			instance.isMessageFieldEmpty.set(chatMessages[rid].isEmpty());
 			input.focus();
 		});
 	},

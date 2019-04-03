@@ -61,13 +61,6 @@ export const mountReply = async (msg, input) => {
 };
 
 export class ChatMessages {
-	constructor() {
-		this.saveTextMessageBox = _.debounce((rid, value) => {
-			const key = `messagebox_${ rid }`;
-			return value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
-		}, 1000);
-	}
-
 	init(node) {
 		this.editing = {};
 		this.records = {};
@@ -77,6 +70,11 @@ export class ChatMessages {
 		this.$input = $(this.input);
 		this.hasValue = new ReactiveVar(false);
 	}
+
+	saveTextMessageBox = _.debounce((rid, value) => {
+		const key = `messagebox_${ rid }`;
+		value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
+	}, 1000);
 
 	getEditingIndex(element) {
 		const msgs = this.wrapper.get(0).querySelectorAll('.own:not(.system)');
@@ -98,11 +96,12 @@ export class ChatMessages {
 		const draft = this.input.value;
 
 		if (draft === message.msg) {
-			return this.clearCurrentDraft();
-		} else {
-			record.draft = draft;
-			return this.records[id] = record;
+			this.clearCurrentDraft();
+			return;
 		}
+
+		record.draft = draft;
+		this.records[id] = record;
 	}
 
 	getMessageDraft(id) {
@@ -110,11 +109,11 @@ export class ChatMessages {
 	}
 
 	clearMessageDraft(id) {
-		return delete this.records[id];
+		delete this.records[id];
 	}
 
 	clearCurrentDraft() {
-		return this.clearMessageDraft(this.editing.id);
+		this.clearMessageDraft(this.editing.id);
 	}
 
 	resetToDraft(id) {
@@ -182,18 +181,13 @@ export class ChatMessages {
 
 		const editingNext = this.editing.index < index;
 
-		// const old_input = this.input.value;
-
 		this.clearEditing();
 
 		this.hasValue.set(true);
 		this.editing.element = element;
 		this.editing.index = index;
 		this.editing.id = message._id;
-		// TODO: stop set two elements
 		this.input.parentElement.classList.add('editing');
-		this.input.classList.add('editing');
-
 		element.classList.add('editing');
 
 		if (message.attachments && message.attachments[0].description) {
@@ -212,8 +206,6 @@ export class ChatMessages {
 	clearEditing() {
 		if (this.editing.element) {
 			this.recordInputAsDraft();
-			// TODO: stop set two elements
-			this.input.classList.remove('editing');
 			this.input.parentElement.classList.remove('editing');
 
 			this.editing.element.classList.remove('editing');
@@ -231,11 +223,6 @@ export class ChatMessages {
 		this.editing.saved = this.input.value;
 		return this.editing.savedCursor = this.input.selectionEnd;
 	}
-	/**
-	* * @param {string} rim room ID
-	* * @param {Element} input DOM element
-	* * @param {function?} done callback
-	*/
 	async send(rid, input, done = function() {}) {
 
 		if (!ChatSubscription.findOne({ rid })) {

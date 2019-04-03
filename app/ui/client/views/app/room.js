@@ -217,7 +217,7 @@ callbacks.add('enter-room', wipeFailedUploads);
 Template.room.helpers({
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
-		settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
+		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
 
 	embeddedVersion() {
@@ -343,14 +343,24 @@ Template.room.helpers({
 			isBlocker,
 			isEmbedded,
 			showFormattingTips: showFormattingTips && !isEmbedded,
-			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
-			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
-			onValueChanged: (...args) => chatMessages[rid] && chatMessages[rid].valueChanged.apply(chatMessages[rid], args),
+			onInputChanged: (input) => {
+				if (!chatMessages[rid]) {
+					return;
+				}
+
+				chatMessages[rid].input = input;
+				chatMessages[rid].$input = $(input);
+				chatMessages[rid].hasValue = new ReactiveVar(false);
+			},
 			onResize: () => {
 				if (instance.sendToBottomIfNecessaryDebounced) {
 					instance.sendToBottomIfNecessaryDebounced();
 				}
 			},
+			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
+			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
+			onValueChanged: (...args) => chatMessages[rid] && chatMessages[rid].valueChanged.apply(chatMessages[rid], args),
+			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
 		};
 	},
 
@@ -695,8 +705,8 @@ Template.room.events({
 		}
 	}, 200),
 
-	'click .new-message'() {
-		Template.instance().atBottom = true;
+	'click .new-message'(event, instance) {
+		instance.atBottom = true;
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
@@ -1021,13 +1031,11 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	// $(this.find('.messages-box .wrapper')).perfectScrollbar();
 	const rid = Session.get('openedRoom');
 	if (!chatMessages[rid]) {
 		chatMessages[rid] = new ChatMessages;
 	}
 	chatMessages[rid].init(this.firstNode);
-	// ScrollListener.init()
 
 	const wrapper = this.find('.wrapper');
 	const wrapperUl = this.find('.wrapper > ul');
