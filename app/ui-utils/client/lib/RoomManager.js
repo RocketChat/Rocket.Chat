@@ -6,7 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { roomTypes as _roomTypes } from '../../../utils';
 import { fireGlobalEvent } from './fireGlobalEvent';
-import { promises } from '../../../promises';
+import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
@@ -18,13 +18,13 @@ import { mainReady } from './mainReady';
 const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
 const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
-const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreThreads, users }) => {
+const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
 	const query = { rid, ts };
 	if (excludePinned) {
 		query.pinned = { $ne: true };
 	}
-	if (ignoreThreads) {
-		query.trid = { $exists: false };
+	if (ignoreDiscussion) {
+		query.drid = { $exists: false };
 	}
 	if (users && users.length) {
 		query['u.username'] = { $in: users };

@@ -11,7 +11,7 @@ Meteor.startup(function() {
 		if (!siteUrl || (Meteor.userId() == null)) {
 			return;
 		}
-		if (hasRole(Meteor.userId(), 'admin') === false || Meteor.settings.public.sandstorm) {
+		if (hasRole(Meteor.userId(), 'admin') === false) {
 			return c.stop();
 		}
 		Meteor.setTimeout(function() {

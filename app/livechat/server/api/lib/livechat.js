@@ -3,9 +3,11 @@ import { Random } from 'meteor/random';
 import { Users, Rooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import _ from 'underscore';
 import { Livechat } from '../../lib/Livechat';
+import { settings as rcSettings } from '../../../../settings';
 
 export function online() {
-	return Users.findOnlineAgents().count() > 0;
+	const onlineAgents = Livechat.getOnlineAgents();
+	return (onlineAgents && onlineAgents.count() > 0) || rcSettings.get('Livechat_guest_pool_with_no_agents');
 }
 
 export function findTriggers() {
@@ -13,7 +15,7 @@ export function findTriggers() {
 }
 
 export function findDepartments() {
-	return LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration'));
+	return LivechatDepartment.findEnabledWithAgents().fetch().map((department) => _.pick(department, '_id', 'name', 'showOnRegistration', 'showOnOfflineForm'));
 }
 
 export function findGuest(token) {
@@ -34,6 +36,7 @@ export function findRoom(token, rid) {
 		departmentId: 1,
 		servedBy: 1,
 		open: 1,
+		v: 1,
 	};
 
 	if (!rid) {
