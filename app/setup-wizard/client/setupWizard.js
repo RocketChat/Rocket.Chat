@@ -193,7 +193,19 @@ Template.setupWizard.events({
 				persistSettings(t.state.all(), () => {
 					localStorage.removeItem('wizard');
 					localStorage.setItem('wizardFinal', true);
-					FlowRouter.go('setup-wizard-final');
+
+					if (t.state.get('registerServer')) {
+						Meteor.call('cloud:registerWorkspace', (error) => {
+							if (error) {
+								console.warn(error);
+								return;
+							}
+
+							FlowRouter.go('setup-wizard-final');
+						});
+					} else {
+						FlowRouter.go('setup-wizard-final');
+					}
 				});
 				return false;
 			}
