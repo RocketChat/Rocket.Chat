@@ -84,7 +84,7 @@ Meteor.startup(function() {
 		type: 'boolean',
 		group: 'Livechat',
 		public: true,
-		i18nLabel: 'Ask_for_conversation_finished_message',
+		i18nLabel: 'Request_comment_when_closing_conversation',
 	});
 
 	settings.add('Livechat_conversation_finished_message', '', {
