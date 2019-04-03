@@ -68,10 +68,6 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 }
 
 Template.message.helpers({
-	unread() {
-		const { msg, subscription } = Template.currentData();
-		return subscription && subscription.tunread && subscription.tunread.includes(msg._id);
-	},
 	hover() {
 		return Template.instance().hover.get();
 	},
@@ -146,14 +142,10 @@ Template.message.helpers({
 		});
 	},
 	isGroupable() {
-		const { msg, room, settings } = this;
-		if (settings.allowGroup === false || room.broadcast || msg.groupable === false) {
+		const { msg, room, settings, groupable } = this;
+		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false) {
 			return 'false';
 		}
-	},
-	isSequential() {
-		const { msg, room } = this;
-		return msg.groupable && !room.broadcast;
 	},
 	sequentialClass() {
 		const { msg } = this;
@@ -166,9 +158,7 @@ Template.message.helpers({
 			return msg.avatar.replace(/^@/, '');
 		}
 	},
-	getEmoji(emoji) {
-		return renderEmoji(emoji);
-	},
+	renderEmoji,
 	getName() {
 		const { msg, settings } = this;
 		if (msg.alias) {
@@ -184,8 +174,8 @@ Template.message.helpers({
 		return msg.alias || (settings.UI_Use_Real_Name && msg.u && msg.u.name);
 	},
 	own() {
-		const { msg } = this;
-		if (msg.u && msg.u._id === Meteor.userId()) {
+		const { msg, u } = this;
+		if (msg.u && msg.u._id === u._id) {
 			return 'own';
 		}
 	},
@@ -254,57 +244,6 @@ Template.message.helpers({
 		// otherwise a special "?" character that will be
 		// rendered as a special avatar
 		return (msg.editedBy && msg.editedBy.username) || '?';
-	},
-	canEdit() {
-		const { msg, settings } = this;
-		const hasPermission = settings.hasPermissionDeleteMessage;
-		const isEditAllowed = settings.Message_AllowEditing;
-		const editOwn = msg.u && msg.u._id === Meteor.userId();
-		if (!(hasPermission || (isEditAllowed && editOwn))) {
-			return;
-		}
-		const blockEditInMinutes = settings.Message_AllowEditing_BlockEditInMinutes;
-		if (blockEditInMinutes) {
-			let msgTs;
-			if (msg.ts != null) {
-				msgTs = moment(msg.ts);
-			}
-			let currentTsDiff;
-			if (msgTs != null) {
-				currentTsDiff = moment().diff(msgTs, 'minutes');
-			}
-			return currentTsDiff < blockEditInMinutes;
-		}
-
-		return true;
-	},
-	canDelete() {
-		const { msg, settings } = this;
-
-		const hasPermission = settings.hasPermissionDeleteMessage;
-		const isDeleteAllowed = settings.Message_AllowDeleting;
-		const deleteOwn = msg.u && msg.u._id === Meteor.userId();
-		if (!(hasPermission || (isDeleteAllowed && deleteOwn))) {
-			return;
-		}
-		const blockDeleteInMinutes = settings.Message_AllowDeleting_BlockDeleteInMinutes;
-		if (blockDeleteInMinutes) {
-			let msgTs;
-			if (msg.ts != null) {
-				msgTs = moment(msg.ts);
-			}
-			let currentTsDiff;
-			if (msgTs != null) {
-				currentTsDiff = moment().diff(msgTs, 'minutes');
-			}
-			return currentTsDiff < blockDeleteInMinutes;
-		} else {
-			return true;
-		}
-	},
-	showEditedStatus() {
-		const { settings } = this;
-		return settings.Message_ShowEditedStatus;
 	},
 	label() {
 		const { msg } = this;
@@ -388,15 +327,6 @@ Template.message.helpers({
 	injectIndex(data, index) {
 		data.index = index;
 	},
-	hideCog() {
-		const { subscription } = this;
-		// const subscription = Subscriptions.findOne({
-		// 	rid: this.rid,
-		// });
-		if (subscription == null) {
-			return 'hidden';
-		}
-	},
 	channelName() {
 		const { subscription } = this;
 		// const subscription = Subscriptions.findOne({ rid: this.rid });
@@ -438,7 +368,7 @@ Template.message.helpers({
 	},
 	parentMessage() {
 		const { msg } = this;
-		const message = Messages.findOne(msg.tmid);
+		const message = Messages.findOne(msg.tmid, { fields: { msg: 1 } });
 		return message && message.msg;
 	},
 });
@@ -509,86 +439,118 @@ Template.message.onCreated(function() {
 	return this.body = renderBody(msg, settings);
 });
 
-const hasTempClass = (node) => node.classList.contains('temp');
+// const hasTempClass = (node) => node.classList.contains('temp');
 
 
-const getPreviousSentMessage = (currentNode) => {
-	if (hasTempClass(currentNode)) {
-		return currentNode.previousElementSibling;
-	}
-	if (currentNode.previousElementSibling != null) {
-		let previousValid = currentNode.previousElementSibling;
-		while (previousValid != null && (hasTempClass(previousValid) || !previousValid.classList.contains('message'))) {
-			previousValid = previousValid.previousElementSibling;
-		}
-		return previousValid;
-	}
-};
+// const getPreviousSentMessage = (currentNode) => {
+// 	if (hasTempClass(currentNode)) {
+// 		return currentNode.previousElementSibling;
+// 	}
+// 	if (currentNode.previousElementSibling != null) {
+// 		let previousValid = currentNode.previousElementSibling;
+// 		while (previousValid != null && (hasTempClass(previousValid) || !previousValid.classList.contains('message'))) {
+// 			previousValid = previousValid.previousElementSibling;
+// 		}
+// 		return previousValid;
+// 	}
+// };
 
-const setNewDayAndGroup = (currentNode, previousNode, forceDate, period) => {
-
-
-	const { classList } = currentNode;
-
-	// const $nextNode = $(nextNode);
-	if (previousNode == null) {
-		classList.remove('sequential');
-		return classList.add('new-day');
-	}
-
-	const previousDataset = previousNode.dataset;
-	const currentDataset = currentNode.dataset;
-	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
-	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
-
-	if (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
-		classList.add('new-day');
-	}
+// const setNewDayAndGroup = (currentNode, previousNode, forceDate, period) => {
 
 
-	if (previousDataset.tmid !== currentDataset.tmid) {
-		return classList.remove('sequential');
-	}
+// 	const { classList } = currentNode;
 
-	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
-		return classList.remove('sequential');
-	}
+// 	// const $nextNode = $(nextNode);
+// 	if (previousNode == null) {
+// 		classList.remove('sequential');
+// 		return classList.add('new-day');
+// 	}
 
-	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
-		return classList.remove('sequential');
-	}
+// 	const previousDataset = previousNode.dataset;
+// 	const currentDataset = currentNode.dataset;
+// 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
+// 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
-};
+// 	if (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+// 		classList.add('new-day');
+// 	}
+
+
+// 	if (previousDataset.tmid !== currentDataset.tmid) {
+// 		return classList.remove('sequential');
+// 	}
+
+// 	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
+// 		return classList.remove('sequential');
+// 	}
+
+// 	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
+// 		return classList.remove('sequential');
+// 	}
+
+// };
+
 
 Template.message.onViewRendered = function(context) {
+
 	const [, currentData] = Template.currentData()._arguments;
-	const { settings, noDate, forceDate } = currentData.hash;
-	if (context.file && context.file.type === 'application/pdf') {
-		Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
-	}
-	return !noDate && this._domrange.onAttached((domRange) => {
-		const currentNode = domRange.lastNode();
-		if (!currentNode.classList.contains('message')) {
-			return;
+	const { settings } = currentData.hash;
+	return this._domrange.onAttached((domRange) => {
+		if (context.file && context.file.type === 'application/pdf') {
+			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
 		}
+		const currentNode = domRange.lastNode();
+		const currentDataset = currentNode.dataset;
+		const getPreviousSentMessage = (currentNode) => {
+			if ($(currentNode).hasClass('temp')) {
+				return currentNode.previousElementSibling;
+			}
+			if (currentNode.previousElementSibling != null) {
+				let previousValid = currentNode.previousElementSibling;
+				while (previousValid != null && $(previousValid).hasClass('temp')) {
+					previousValid = previousValid.previousElementSibling;
+				}
+				return previousValid;
+			}
+		};
 		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
-		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod * 1000);
-		// if (nextNode && nextNode.dataset) {
-		// 	const nextDataset = nextNode.dataset;
-		// 	if (nextDataset.date !== currentDataset.date) {
-		// 		$nextNode.addClass('new-day').removeClass('sequential');
-		// 	} else {
-		// 		$nextNode.removeClass('new-day');
-		// 	}
-		// 	if (nextDataset.groupable !== 'false') {
-		// 		if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod * 1000) {
-		// 			$nextNode.removeClass('sequential');
-		// 		} else if (!$nextNode.hasClass('new-day') && !hasTempClass(currentNode)) {
-		// 			$nextNode.addClass('sequential');
-		// 		}
-		// 	}
-		// }
+		const $currentNode = $(currentNode);
+		const $nextNode = $(nextNode);
+		if (previousNode == null) {
+			$currentNode.addClass('new-day').removeClass('sequential');
+		} else if (previousNode.dataset) {
+			const previousDataset = previousNode.dataset;
+			const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
+			const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
+			if (previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+				$currentNode.addClass('new-day').removeClass('sequential');
+			} else {
+				$currentNode.removeClass('new-day');
+			}
+			if (previousDataset.groupable === 'false' || currentDataset.groupable === 'false') {
+				$currentNode.removeClass('sequential');
+			} else if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > settings.Message_GroupingPeriod) {
+				$currentNode.removeClass('sequential');
+			} else if (!$currentNode.hasClass('new-day')) {
+				$currentNode.addClass('sequential');
+			}
+		}
+		if (nextNode && nextNode.dataset) {
+			const nextDataset = nextNode.dataset;
+			if (nextDataset.date !== currentDataset.date) {
+				$nextNode.addClass('new-day').removeClass('sequential');
+			} else {
+				$nextNode.removeClass('new-day');
+			}
+			if (nextDataset.groupable !== 'false') {
+				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+					$nextNode.removeClass('sequential');
+				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
+					$nextNode.addClass('sequential');
+				}
+			}
+		}
 		if (nextNode == null) {
 			const [el] = $(`#chat-window-${ context.rid }`);
 			const view = el && Blaze.getView(el);
@@ -602,6 +564,55 @@ Template.message.onViewRendered = function(context) {
 			}
 			templateInstance.sendToBottomIfNecessary();
 		}
-
 	});
 };
+
+// Template.message.onViewRendered = function(context) {
+// 	const [, currentData] = Template.currentData()._arguments;
+// 	const { settings, noDate, forceDate } = currentData.hash;
+// 	if (context.file && context.file.type === 'application/pdf') {
+// 		Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
+// 	}
+
+// 	return !noDate && this._domrange.onAttached((domRange) => {
+// 		const currentNode = domRange.firstNode();
+// 		if (!currentNode.classList.contains('message')) {
+// 			return;
+// 		}
+// 		const previousNode = getPreviousSentMessage(currentNode);
+// 		// const nextNode = currentNode.nextElementSibling;
+
+// 		// console.log(previousNode, currentNode, nextNode);
+// 		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod * 1000);
+// 		// if (nextNode && nextNode.dataset) {
+// 		// 	const nextDataset = nextNode.dataset;
+// 		// 	if (nextDataset.date !== currentDataset.date) {
+// 		// 		$nextNode.addClass('new-day').removeClass('sequential');
+// 		// 	} else {
+// 		// 		$nextNode.removeClass('new-day');
+// 		// 	}
+// 		// 	if (nextDataset.groupable !== 'false') {
+// 		// 		if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod * 1000) {
+// 		// 			$nextNode.removeClass('sequential');
+// 		// 		} else if (!$nextNode.hasClass('new-day') && !hasTempClass(currentNode)) {
+// 		// 			$nextNode.addClass('sequential');
+// 		// 		}
+// 		// 	}
+// 		// }
+// 		// if (nextNode == null) {
+// 		// 	const [el] = $(`#chat-window-${ context.rid }`);
+// 		// 	const view = el && Blaze.getView(el);
+// 		// 	const templateInstance = view && view.templateInstance();
+// 		// 	if (!templateInstance) {
+// 		// 		return;
+// 		// 	}
+
+// 		// 	if (currentNode.classList.contains('own') === true) {
+// 		// 		templateInstance.atBottom = true;
+// 		// 	}
+// 		// 	templateInstance.sendToBottomIfNecessary();
+// 		// }
+
+
+// 	});
+// };
