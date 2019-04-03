@@ -51,7 +51,7 @@ Template.thread.onCreated(async function() {
 		const { room, mainMessage } = Template.currentData();
 		this.loading.set(true);
 
-		if(!room) {
+		if (!room) {
 			return;
 		}
 

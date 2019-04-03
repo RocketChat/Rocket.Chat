@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { call } from '../../../ui-utils';
-import { Rooms, Messages } from '../../../models';
+import { Messages } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 
@@ -55,7 +55,7 @@ Template.threads.onCreated(async function() {
 			return this.mid.set(Messages.findOne(mid));
 		}
 
-		if (this.rid == rid) {
+		if (this.rid === rid) {
 			return;
 		}
 
