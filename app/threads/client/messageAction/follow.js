@@ -13,7 +13,7 @@ Meteor.startup(function() {
 		}
 		MessageAction.addButton({
 			id: 'follow-message',
-			icon: 'thread',
+			icon: 'bell',
 			label: 'Follow_message',
 			context: ['message', 'message-mobile'],
 			async action() {

@@ -13,7 +13,7 @@ Meteor.startup(function() {
 		}
 		MessageAction.addButton({
 			id: 'unfollow-message',
-			icon: 'thread',
+			icon: 'bell-off',
 			label: 'Unfollow_message',
 			context: ['message', 'message-mobile'],
 			async action() {
