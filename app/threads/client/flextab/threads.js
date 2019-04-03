@@ -5,6 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { call } from '../../../ui-utils';
 import { Rooms, Messages } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 
 import './threads.html';
 
@@ -12,9 +13,11 @@ export const Threads = new Mongo.Collection(null);
 
 Template.threads.events({
 	'click .js-open-thread'(e, instance) {
-		const [, { hash: { msg } }] = this._arguments;
+		const { msg } = messageArgs(this);
 		instance.mid.set(Threads.findOne(msg._id));
 		e.preventDefault();
+		e.stopPropagation();
+		return false;
 	},
 });
 
