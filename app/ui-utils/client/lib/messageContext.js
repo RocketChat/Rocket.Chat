@@ -17,7 +17,12 @@ export function messageContext() {
 				lastMessage: 0,
 			},
 		}),
-		subscription: Subscriptions.findOne({ rid }),
+		subscription: Subscriptions.findOne({ rid }, {
+			fields: {
+				name: 1,
+				autoTranslate: 1,
+			},
+		}),
 		settings: {
 			showreply: true,
 			showReplyButton: true,

@@ -35,9 +35,10 @@ function upsertMessageBulk({ msgs, subscription }) {
 	});
 }
 
+const defaultLimit = parseInt(localStorage && localStorage.getItem('rc-defaultLimit')) || 50 ;
+
 export const RoomHistoryManager = new class {
 	constructor() {
-		this.defaultLimit = 50;
 		this.histories = {};
 	}
 	getRoom(rid) {
@@ -55,9 +56,8 @@ export const RoomHistoryManager = new class {
 		return this.histories[rid];
 	}
 
-	getMore(rid, limit) {
+	getMore(rid, limit = defaultLimit) {
 		let ts;
-		if (limit == null) { limit = this.defaultLimit; }
 		const room = this.getRoom(rid);
 		if (room.hasMore.curValue !== true) {
 			return;
@@ -126,8 +126,7 @@ export const RoomHistoryManager = new class {
 		});
 	}
 
-	getMoreNext(rid, limit) {
-		if (limit == null) { limit = this.defaultLimit; }
+	getMoreNext(rid, limit = defaultLimit) {
 		const room = this.getRoom(rid);
 		if (room.hasMoreNext.curValue !== true) {
 			return;
@@ -174,8 +173,7 @@ export const RoomHistoryManager = new class {
 		}
 	}
 
-	getSurroundingMessages(message, limit) {
-		if (limit == null) { limit = this.defaultLimit; }
+	getSurroundingMessages(message, limit = defaultLimit) {
 		if (!(message != null ? message.rid : undefined)) {
 			return;
 		}

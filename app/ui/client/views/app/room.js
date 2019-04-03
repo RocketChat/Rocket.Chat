@@ -549,7 +549,6 @@ Template.room.events({
 		}
 
 		const doLongTouch = () => {
-			console.log('long press');
 			mountPopover(e, t, this);
 		};
 
@@ -658,24 +657,24 @@ Template.room.events({
 		if ($roomLeader.length) {
 			if (e.target.scrollTop < lastScrollTop) {
 				t.hideLeaderHeader.set(false);
-			} else if (t.isAtBottom(100) === false && e.target.scrollTop > $('.room-leader').height()) {
+			} else if (t.isAtBottom(100) === false && e.target.scrollTop > $roomLeader.height()) {
 				t.hideLeaderHeader.set(true);
 			}
 		}
 		lastScrollTop = e.target.scrollTop;
-
+		const height = e.target.clientHeight;
 		const isLoading = RoomHistoryManager.isLoading(this._id);
 		const hasMore = RoomHistoryManager.hasMore(this._id);
 		const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
 
 		if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-			if (hasMore === true && e.target.scrollTop === 0) {
+			if (hasMore === true && lastScrollTop <= height / 3) {
 				RoomHistoryManager.getMore(this._id);
-			} else if (hasMoreNext === true && Math.ceil(e.target.scrollTop) >= e.target.scrollHeight - e.target.clientHeight) {
+			} else if (hasMoreNext === true && Math.ceil(lastScrollTop) >= e.target.scrollHeight - height) {
 				RoomHistoryManager.getMoreNext(this._id);
 			}
 		}
-	}, 200),
+	}, 500),
 
 	'click .new-message'() {
 		Template.instance().atBottom = true;
@@ -686,7 +685,7 @@ Template.room.events({
 		if (!context) {
 			context = 'message';
 		}
-		const message = this.msg || this._arguments[1].hash.msg;
+		const { msg: message } = messageArgs(this);
 		const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),

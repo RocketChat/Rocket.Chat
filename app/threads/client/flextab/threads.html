@@ -2,7 +2,7 @@
 	{{# with messageContext}}
 		<ul class="thread">
 				{{#each thread in threads}}
-					{{> nrr nrrargs 'message' msg=thread room=room subscription=subscription settings=settings templatePrefix='threads-' customClass="js-open-thread" u=u forceDate=true}}
+					{{> nrr nrrargs 'message' groupable=false msg=thread room=room subscription=subscription settings=settings templatePrefix='threads-' customClass="js-open-thread" u=u forceDate=true}}
 				{{/each}}
 		</ul>
 		<div class="rc-user-info-container flex-nav animated{{#unless message}} animated-hidden{{/unless}}">
