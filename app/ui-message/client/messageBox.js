@@ -126,7 +126,7 @@ Template.messageBox.events({
 
 		call('joinRoom', this.rid, joinCode);
 	},
-	'click .js-emoji-picker'(event) {
+	'click .js-emoji-picker'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
 
@@ -142,7 +142,7 @@ Template.messageBox.events({
 		EmojiPicker.open(event.currentTarget, (emoji) => {
 			const emojiValue = `:${ emoji }: `;
 
-			const { input } = this;
+			const { input } = instance;
 
 			const caretPos = input.selectionStart;
 			const textAreaTxt = input.value;
