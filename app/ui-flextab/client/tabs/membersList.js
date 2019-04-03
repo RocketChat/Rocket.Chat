@@ -111,7 +111,8 @@ Template.membersList.helpers({
 				users = _.sortBy(users, (u) => {
 					const { roles } = u;
 
-					// Simply change the order of roles in the array to change the 'hierarchy' for sorting by roles. The element at index==0 being the one appearing first in Members List after sorting by 
+					// Simply change the order of roles in the array to change the 'hierarchy' for sorting by roles.
+					// The element at index==0 being the one appearing first in Members List after sorting by user roles. 
 					const hierarchy = ['admin', 'owner', 'leader', 'Rocket.Chat team', 'moderator', 'user', 'guest', 'bot', 'anonymous'];
 					let rank = hierarchy.length + 1;
 					let temp;
