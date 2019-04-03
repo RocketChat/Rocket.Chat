@@ -171,16 +171,14 @@ const lookup = {
 	},
 };
 
-export async function sendMessageNotifications(message, room, usersInThread) {
+export async function sendMessageNotifications(message, room, usersInThread = []) {
 	const sender = roomTypes.getConfig(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
 	}
 
-	const mentionIds = (message.mentions || []).map(({ _id }) => _id);
-	const mentionIdsWithoutGroups = mentionIds
-		.filter((_id) => _id !== 'all' && _id !== 'here')
-		.concat(usersInThread || []); // add users in thread to mentions array because they follow the same rules
+	const mentionIds = (message.mentions || []).map(({ _id }) => _id).concat(usersInThread); // add users in thread to mentions array because they follow the same rules
+	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here');
 	const hasMentionToAll = mentionIds.includes('all');
 	const hasMentionToHere = mentionIds.includes('here');
 
