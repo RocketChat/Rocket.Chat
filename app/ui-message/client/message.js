@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 
@@ -372,27 +371,39 @@ Template.message.helpers({
 	},
 });
 
-const cache = {};
-const findParentMessage = async(tmid) => {
-	if (cache[tmid]) {
-		return;
-	}
 
-	const message = Messages.findOne({ _id: tmid });
-	if (message) {
-		return;
-	}
-	cache[tmid] = call('getSingleMessage', tmid);
-	const _message = await cache[tmid];
-	try {
-		const { _id, ...msg } = _message;
-		Messages.upsert({ _id }, msg);
+const findParentMessage = (() => {
 
-	} catch (error) {
-		console.log(tmid);
-	}
-	delete cache[tmid];
-};
+	const waiting = [];
+
+	const getMessages = _.debounce(async function() {
+		const _tmp = [...waiting];
+		waiting.length = 0;
+		const messages = await call('getMessages', _tmp);
+		messages.forEach((message) => {
+			if (!message) {
+				return;
+			}
+			const { _id, ...msg } = message;
+			Messages.upsert({ _id }, msg);
+		});
+	}, 500);
+
+	return (tmid) => {
+		if (waiting.indexOf(tmid) > -1) {
+			return;
+		}
+
+		const message = Messages.findOne({ _id: tmid });
+
+		if (message) {
+			return;
+		}
+
+		waiting.push(tmid);
+		getMessages();
+	};
+})();
 
 
 const renderBody = (msg, settings) => {
@@ -438,180 +449,180 @@ Template.message.onCreated(function() {
 	return this.body = renderBody(msg, settings);
 });
 
-// const hasTempClass = (node) => node.classList.contains('temp');
+const hasTempClass = (node) => node.classList.contains('temp');
 
 
-// const getPreviousSentMessage = (currentNode) => {
-// 	if (hasTempClass(currentNode)) {
-// 		return currentNode.previousElementSibling;
-// 	}
-// 	if (currentNode.previousElementSibling != null) {
-// 		let previousValid = currentNode.previousElementSibling;
-// 		while (previousValid != null && (hasTempClass(previousValid) || !previousValid.classList.contains('message'))) {
-// 			previousValid = previousValid.previousElementSibling;
-// 		}
-// 		return previousValid;
-// 	}
-// };
-
-// const setNewDayAndGroup = (currentNode, previousNode, forceDate, period) => {
-
-
-// 	const { classList } = currentNode;
-
-// 	// const $nextNode = $(nextNode);
-// 	if (previousNode == null) {
-// 		classList.remove('sequential');
-// 		return classList.add('new-day');
-// 	}
-
-// 	const previousDataset = previousNode.dataset;
-// 	const currentDataset = currentNode.dataset;
-// 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
-// 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
-
-// 	if (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
-// 		classList.add('new-day');
-// 	}
-
-
-// 	if (previousDataset.tmid !== currentDataset.tmid) {
-// 		return classList.remove('sequential');
-// 	}
-
-// 	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
-// 		return classList.remove('sequential');
-// 	}
-
-// 	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
-// 		return classList.remove('sequential');
-// 	}
-
-// };
-
-
-Template.message.onViewRendered = function(context) {
-
-	const [, currentData] = Template.currentData()._arguments;
-	const { settings } = currentData.hash;
-	return this._domrange.onAttached((domRange) => {
-		if (context.file && context.file.type === 'application/pdf') {
-			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
+const getPreviousSentMessage = (currentNode) => {
+	if (hasTempClass(currentNode)) {
+		return currentNode.previousElementSibling;
+	}
+	if (currentNode.previousElementSibling != null) {
+		let previousValid = currentNode.previousElementSibling;
+		while (previousValid != null && (hasTempClass(previousValid) || !previousValid.classList.contains('message'))) {
+			previousValid = previousValid.previousElementSibling;
 		}
-		const currentNode = domRange.lastNode();
-		const currentDataset = currentNode.dataset;
-		const getPreviousSentMessage = (currentNode) => {
-			if ($(currentNode).hasClass('temp')) {
-				return currentNode.previousElementSibling;
-			}
-			if (currentNode.previousElementSibling != null) {
-				let previousValid = currentNode.previousElementSibling;
-				while (previousValid != null && $(previousValid).hasClass('temp')) {
-					previousValid = previousValid.previousElementSibling;
-				}
-				return previousValid;
-			}
-		};
-		const previousNode = getPreviousSentMessage(currentNode);
-		const nextNode = currentNode.nextElementSibling;
-		const $currentNode = $(currentNode);
-		const $nextNode = $(nextNode);
-		if (previousNode == null) {
-			$currentNode.addClass('new-day').removeClass('sequential');
-		} else if (previousNode.dataset) {
-			const previousDataset = previousNode.dataset;
-			const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
-			const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
-			if (previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
-				$currentNode.addClass('new-day').removeClass('sequential');
-			} else {
-				$currentNode.removeClass('new-day');
-			}
-			if (previousDataset.groupable === 'false' || currentDataset.groupable === 'false') {
-				$currentNode.removeClass('sequential');
-			} else if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > settings.Message_GroupingPeriod) {
-				$currentNode.removeClass('sequential');
-			} else if (!$currentNode.hasClass('new-day')) {
-				$currentNode.addClass('sequential');
-			}
-		}
-		if (nextNode && nextNode.dataset) {
-			const nextDataset = nextNode.dataset;
-			if (nextDataset.date !== currentDataset.date) {
-				$nextNode.addClass('new-day').removeClass('sequential');
-			} else {
-				$nextNode.removeClass('new-day');
-			}
-			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
-					$nextNode.removeClass('sequential');
-				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
-					$nextNode.addClass('sequential');
-				}
-			}
-		}
-		if (nextNode == null) {
-			const [el] = $(`#chat-window-${ context.rid }`);
-			const view = el && Blaze.getView(el);
-			const templateInstance = view && view.templateInstance();
-			if (!templateInstance) {
-				return;
-			}
-
-			if (currentNode.classList.contains('own') === true) {
-				templateInstance.atBottom = true;
-			}
-			templateInstance.sendToBottomIfNecessary();
-		}
-	});
+		return previousValid;
+	}
 };
 
+const setNewDayAndGroup = (currentNode, previousNode, forceDate, period) => {
+
+
+	const { classList } = currentNode;
+
+	// const $nextNode = $(nextNode);
+	if (previousNode == null) {
+		classList.remove('sequential');
+		return classList.add('new-day');
+	}
+
+	const previousDataset = previousNode.dataset;
+	const currentDataset = currentNode.dataset;
+	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
+	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
+
+	if (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+		classList.add('new-day');
+	}
+
+
+	if (previousDataset.tmid !== currentDataset.tmid) {
+		return classList.remove('sequential');
+	}
+
+	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
+		return classList.remove('sequential');
+	}
+
+	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
+		return classList.remove('sequential');
+	}
+
+};
+
+
 // Template.message.onViewRendered = function(context) {
+
 // 	const [, currentData] = Template.currentData()._arguments;
-// 	const { settings, noDate, forceDate } = currentData.hash;
-// 	if (context.file && context.file.type === 'application/pdf') {
-// 		Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
-// 	}
-
-// 	return !noDate && this._domrange.onAttached((domRange) => {
-// 		const currentNode = domRange.firstNode();
-// 		if (!currentNode.classList.contains('message')) {
-// 			return;
+// 	const { settings } = currentData.hash;
+// 	return this._domrange.onAttached((domRange) => {
+// 		if (context.file && context.file.type === 'application/pdf') {
+// 			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
 // 		}
+// 		const currentNode = domRange.lastNode();
+// 		const currentDataset = currentNode.dataset;
+// 		const getPreviousSentMessage = (currentNode) => {
+// 			if ($(currentNode).hasClass('temp')) {
+// 				return currentNode.previousElementSibling;
+// 			}
+// 			if (currentNode.previousElementSibling != null) {
+// 				let previousValid = currentNode.previousElementSibling;
+// 				while (previousValid != null && $(previousValid).hasClass('temp')) {
+// 					previousValid = previousValid.previousElementSibling;
+// 				}
+// 				return previousValid;
+// 			}
+// 		};
 // 		const previousNode = getPreviousSentMessage(currentNode);
-// 		// const nextNode = currentNode.nextElementSibling;
+// 		const nextNode = currentNode.nextElementSibling;
+// 		const $currentNode = $(currentNode);
+// 		const $nextNode = $(nextNode);
+// 		if (previousNode == null) {
+// 			$currentNode.addClass('new-day').removeClass('sequential');
+// 		} else if (previousNode.dataset) {
+// 			const previousDataset = previousNode.dataset;
+// 			const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
+// 			const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
+// 			if (previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+// 				$currentNode.addClass('new-day').removeClass('sequential');
+// 			} else {
+// 				$currentNode.removeClass('new-day');
+// 			}
+// 			if (previousDataset.groupable === 'false' || currentDataset.groupable === 'false') {
+// 				$currentNode.removeClass('sequential');
+// 			} else if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > settings.Message_GroupingPeriod) {
+// 				$currentNode.removeClass('sequential');
+// 			} else if (!$currentNode.hasClass('new-day')) {
+// 				$currentNode.addClass('sequential');
+// 			}
+// 		}
+// 		if (nextNode && nextNode.dataset) {
+// 			const nextDataset = nextNode.dataset;
+// 			if (nextDataset.date !== currentDataset.date) {
+// 				$nextNode.addClass('new-day').removeClass('sequential');
+// 			} else {
+// 				$nextNode.removeClass('new-day');
+// 			}
+// 			if (nextDataset.groupable !== 'false') {
+// 				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+// 					$nextNode.removeClass('sequential');
+// 				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
+// 					$nextNode.addClass('sequential');
+// 				}
+// 			}
+// 		}
+// 		if (nextNode == null) {
+// 			const [el] = $(`#chat-window-${ context.rid }`);
+// 			const view = el && Blaze.getView(el);
+// 			const templateInstance = view && view.templateInstance();
+// 			if (!templateInstance) {
+// 				return;
+// 			}
 
-// 		// console.log(previousNode, currentNode, nextNode);
-// 		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod * 1000);
-// 		// if (nextNode && nextNode.dataset) {
-// 		// 	const nextDataset = nextNode.dataset;
-// 		// 	if (nextDataset.date !== currentDataset.date) {
-// 		// 		$nextNode.addClass('new-day').removeClass('sequential');
-// 		// 	} else {
-// 		// 		$nextNode.removeClass('new-day');
-// 		// 	}
-// 		// 	if (nextDataset.groupable !== 'false') {
-// 		// 		if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod * 1000) {
-// 		// 			$nextNode.removeClass('sequential');
-// 		// 		} else if (!$nextNode.hasClass('new-day') && !hasTempClass(currentNode)) {
-// 		// 			$nextNode.addClass('sequential');
-// 		// 		}
-// 		// 	}
-// 		// }
-// 		// if (nextNode == null) {
-// 		// 	const [el] = $(`#chat-window-${ context.rid }`);
-// 		// 	const view = el && Blaze.getView(el);
-// 		// 	const templateInstance = view && view.templateInstance();
-// 		// 	if (!templateInstance) {
-// 		// 		return;
-// 		// 	}
-
-// 		// 	if (currentNode.classList.contains('own') === true) {
-// 		// 		templateInstance.atBottom = true;
-// 		// 	}
-// 		// 	templateInstance.sendToBottomIfNecessary();
-// 		// }
-
-
+// 			if (currentNode.classList.contains('own') === true) {
+// 				templateInstance.atBottom = true;
+// 			}
+// 			templateInstance.sendToBottomIfNecessary();
+// 		}
 // 	});
 // };
+
+Template.message.onViewRendered = function(context) {
+	const [, currentData] = Template.currentData()._arguments;
+	const { settings, noDate, forceDate } = currentData.hash;
+	if (context.file && context.file.type === 'application/pdf') {
+		Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
+	}
+
+	return !noDate && this._domrange.onAttached((domRange) => {
+		const currentNode = domRange.firstNode();
+		if (!currentNode.classList.contains('message')) {
+			return;
+		}
+		const previousNode = getPreviousSentMessage(currentNode);
+		// const nextNode = currentNode.nextElementSibling;
+
+		// console.log(previousNode, currentNode, nextNode);
+		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod * 1000);
+		// if (nextNode && nextNode.dataset) {
+		// 	const nextDataset = nextNode.dataset;
+		// 	if (nextDataset.date !== currentDataset.date) {
+		// 		$nextNode.addClass('new-day').removeClass('sequential');
+		// 	} else {
+		// 		$nextNode.removeClass('new-day');
+		// 	}
+		// 	if (nextDataset.groupable !== 'false') {
+		// 		if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod * 1000) {
+		// 			$nextNode.removeClass('sequential');
+		// 		} else if (!$nextNode.hasClass('new-day') && !hasTempClass(currentNode)) {
+		// 			$nextNode.addClass('sequential');
+		// 		}
+		// 	}
+		// }
+		// if (nextNode == null) {
+		// 	const [el] = $(`#chat-window-${ context.rid }`);
+		// 	const view = el && Blaze.getView(el);
+		// 	const templateInstance = view && view.templateInstance();
+		// 	if (!templateInstance) {
+		// 		return;
+		// 	}
+
+		// 	if (currentNode.classList.contains('own') === true) {
+		// 		templateInstance.atBottom = true;
+		// 	}
+		// 	templateInstance.sendToBottomIfNecessary();
+		// }
+
+
+	});
+};

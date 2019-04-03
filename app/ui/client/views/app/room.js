@@ -84,7 +84,7 @@ const mountPopover = (e, i, outerContext) => {
 		context = 'message';
 	}
 
-	const [, message] = outerContext._arguments;
+	const { msg: message } = messageArgs(outerContext);
 
 	let menuItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
 		icon: item.icon,
@@ -641,7 +641,7 @@ Template.room.events({
 
 	'click .user-card-message'(e, instance) {
 		const { msg } = messageArgs(this);
-		if (!Meteor.userId() || !this._arguments) {
+		if (!Meteor.userId()) {
 			return;
 		}
 
@@ -814,7 +814,7 @@ Template.room.events({
 		if (template.selectable.get()) {
 			(document.selection != null ? document.selection.empty() : undefined) || (typeof window.getSelection === 'function' ? window.getSelection().removeAllRanges() : undefined);
 			const data = Blaze.getData(e.currentTarget);
-			const _id = data && data._arguments && data._arguments[1] && data._arguments[1]._id;
+			const { msg: { _id } } = messageArgs(data);
 
 			if (!template.selectablePointer) {
 				template.selectablePointer = _id;
@@ -872,7 +872,7 @@ Template.room.events({
 	},
 	'click .js-navigate-to-discussion'(event) {
 		event.preventDefault();
-		const [, { drid }] = this._arguments;
+		const { msg: { drid } } = messageArgs(this);
 		FlowRouter.goToRoomById(drid);
 	},
 });
