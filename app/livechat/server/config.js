@@ -308,14 +308,6 @@ Meteor.startup(function() {
 		i18nLabel: 'Livechat_registration_form_message',
 	});
 
-	settings.add('Livechat_open_inquiery_show_connecting', false, {
-		type: 'boolean',
-		group: 'Livechat',
-		public: true,
-		i18nLabel: 'Livechat_open_inquiery_show_connecting',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Guest_Pool' },
-	});
-
 	settings.add('Livechat_AllowedDomainsList', '', {
 		type: 'string',
 		group: 'Livechat',

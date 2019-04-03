@@ -39,9 +39,6 @@ Template.messages.helpers({
 	fileUploadEnabled() {
 		return Livechat.fileUpload && Template.instance().isMessageFieldEmpty.get();
 	},
-	showConnecting() {
-		return Livechat.connecting;
-	},
 	usersTyping() {
 		const users = MsgTyping.get(visitor.getRoom());
 		if (users.length === 0) {

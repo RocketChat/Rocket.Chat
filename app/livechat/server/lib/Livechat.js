@@ -794,11 +794,7 @@ export const Livechat = {
 	},
 
 	showConnecting() {
-		if (settings.get('Livechat_Routing_Method') === 'Guest_Pool') {
-			return settings.get('Livechat_open_inquiery_show_connecting');
-		} else {
-			return false;
-		}
+		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
 
 	sendEmail(from, to, replyTo, subject, html) {
