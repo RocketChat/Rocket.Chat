@@ -314,6 +314,9 @@ export const Livechat = {
 			groupable: false,
 		};
 
+		// Retreive the closed room
+		room = Rooms.findOneByIdOrName(room._id);
+
 		sendMessage(user, message, room);
 
 		if (room.servedBy) {
