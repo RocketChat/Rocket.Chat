@@ -30,6 +30,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ drid: 1 }, { sparse: true });
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ tcount: 1 }, { sparse: true });
 
 	}
 
@@ -997,8 +998,107 @@ export class Messages extends Base {
 		}, { multi: 1 });
 	}
 
-	replies(tmid) {
+	// //////////////////////////////////////////////////////////////////
+	// threads
+
+	findRepliesByThreadId(tmid) {
 		return this.find({ tmid });
+	}
+
+	updateRepliesByThreadId(tmid, replies, ts) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$addToSet: {
+				replies: {
+					$each: replies,
+				},
+			},
+			$set: {
+				tlm: ts,
+			},
+			$inc: {
+				tcount: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	getThreadFollowsByThreadId(tmid) {
+		const msg = this.findOne({ _id: tmid }, { fields: { replies: 1 } });
+		return msg && msg.replies;
+	}
+
+	getFirstReplyTsByThreadId(tmid) {
+		return this.findOne({ tmid }, { fields: { ts: 1 }, sort: { ts: 1 } });
+	}
+
+	unsetThreadByThreadId(tmid) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$unset: {
+				tcount: 1,
+				tlm: 1,
+				replies: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateThreadLastMessageAndCountByThreadId(tmid, tlm, tcount) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$set: {
+				tlm,
+			},
+			$inc: {
+				tcount,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	addThreadFollowerByThreadId(tmid, userId) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$addToSet: {
+				replies: userId,
+			},
+		};
+
+		return Messages.update(query, update);
+	}
+
+	removeThreadFollowerByThreadId(tmid, userId) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$pull: {
+				replies: userId,
+			},
+		};
+
+		return Messages.update(query, update);
+	}
+
+	findThreadsByRoomId(rid, skip, limit) {
+		return this.find({ rid, tcount: { $exists: true } }, { skip, limit });
 	}
 }
 

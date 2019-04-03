@@ -1287,6 +1287,49 @@ export class Subscriptions extends Base {
 
 		return result;
 	}
+
+	// //////////////////////////////////////////////////////////////////
+	// threads
+
+	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid) {
+		if (!users) {
+			return;
+		}
+		return this.update({
+			'u._id': { $in: users },
+			rid,
+		}, {
+			$addToSet: {
+				tunread: tmid,
+			},
+		}, { multi: true });
+	}
+
+	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid) {
+		return this.update({
+			'u._id': userId,
+			rid,
+		}, {
+			$pull: {
+				tunread: tmid,
+			},
+		});
+	}
+
+	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {
+		const query = {
+			rid,
+			'u._id': userId,
+		};
+
+		const update = {
+			$unset: {
+				tunread: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
 
 export default new Subscriptions('subscription', true);

@@ -24,6 +24,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'getThreadsList' });
 		}
 
-		return Messages.find({ rid, tcount: { $exists: true } }, { skip, limit }).fetch();
+		return Messages.findThreadsByRoomId(rid, skip, limit).fetch();
 	},
 });

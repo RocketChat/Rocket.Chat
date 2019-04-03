@@ -13,7 +13,7 @@ Meteor.startup(function() {
 		}
 
 		if (message.tcount) {
-			Messages.replies(message.tmid).forEach((message) => deleteMessage(message, user));
+			Messages.findRepliesByThreadId(message.tmid).forEach((message) => deleteMessage(message, user));
 		}
 
 		return message;
@@ -21,10 +21,10 @@ Meteor.startup(function() {
 
 	settings.get('Threads_enabled', function(key, value) {
 		if (!value) {
-			callbacks.remove('afterDeleteMessage', 'Threads');
+			callbacks.remove('afterDeleteMessage', 'threads-after-delete-message');
 			return;
 		}
-		callbacks.add('afterDeleteMessage', fn, callbacks.priority.LOW, 'Threads');
+		callbacks.add('afterDeleteMessage', fn, callbacks.priority.LOW, 'threads-after-delete-message');
 	});
 
 });
