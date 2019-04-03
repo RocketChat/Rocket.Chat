@@ -17,15 +17,22 @@ function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) 
 	} else if (params.roomName) {
 		roomSub = Subscriptions.findOneByRoomNameAndUserId(params.roomName, userId);
 	}
-
-	if (!roomSub || roomSub.t !== 'p') {
+	const room = Rooms.findOneByIdOrName(params.roomId || params.roomName);
+	const userIsSubescribedToRoom = Boolean(roomSub);
+	const privateRoom = roomSub && roomSub.t === 'p';
+	const isADiscussion = !roomSub && room;
+	const canAccessDiscussionParentRoom = isADiscussion && Meteor.call('canAccessRoom', room._id, userId);
+	if (!privateRoom && ((isADiscussion && !canAccessDiscussionParentRoom) || (!isADiscussion && !userIsSubescribedToRoom))) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
-	if (checkedArchived && roomSub.archived) {
+	if (!isADiscussion && checkedArchived && roomSub.archived) {
 		throw new Meteor.Error('error-room-archived', `The private group, ${ roomSub.name }, is archived`);
 	}
-
+	if (isADiscussion) {
+		roomSub = room;
+		room.rid = room._id;
+	}
 	return roomSub;
 }
 
