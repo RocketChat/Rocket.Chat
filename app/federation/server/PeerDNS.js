@@ -19,7 +19,9 @@ export class PeerDNS {
 		this.config = config;
 
 		// Setup HubPeer
-		const { hub: { url } } = config;
+		const {
+			hub: { url },
+		} = config;
 		this.HubPeer = { url };
 	}
 
@@ -44,7 +46,14 @@ export class PeerDNS {
 
 		// Attempt to register peer
 		try {
-			Federation.peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key }, { total: 5, stepSize: 1000, tryToUpdateDNS: false }, headers);
+			Federation.peerHTTP.request(
+				this.HubPeer,
+				'POST',
+				'/api/v1/peers',
+				{ uniqueId, domain, url, public_key },
+				{ total: 5, stepSize: 1000, tryToUpdateDNS: false },
+				headers
+			);
 
 			this.log('Peer registered!');
 
@@ -72,9 +81,13 @@ export class PeerDNS {
 
 		// Try to lookup at the DNS Cache
 		if (!peer) {
-			this.updatePeerDNS(domain);
+			try {
+				this.updatePeerDNS(domain);
 
-			peer = FederationDNSCache.findOneByDomain(domain);
+				peer = FederationDNSCache.findOneByDomain(domain);
+			} catch (err) {
+				this.log(`Could not find peer for domain ${ domain }`);
+			}
 		}
 
 		return peer;
@@ -96,7 +109,10 @@ export class PeerDNS {
 
 		// If there is no record, skip
 		if (!txtRecord) {
-			throw new Meteor.Error('ENOTFOUND', 'Could not find public key entry on TXT records');
+			throw new Meteor.Error(
+				'ENOTFOUND',
+				'Could not find public key entry on TXT records'
+			);
 		}
 
 		const publicKey = txtRecord.join('');
@@ -114,7 +130,13 @@ export class PeerDNS {
 		this.log(`getPeerUsingHub: ${ domain }`);
 
 		// If there is no DNS entry for that, get from the Hub
-		const { data: { peer } } = Federation.peerHTTP.simpleRequest(this.HubPeer, 'GET', `/api/v1/peers?search=${ domain }`);
+		const {
+			data: { peer },
+		} = Federation.peerHTTP.simpleRequest(
+			this.HubPeer,
+			'GET',
+			`/api/v1/peers?search=${ domain }`
+		);
 
 		return peer;
 	}
@@ -127,7 +149,7 @@ export class PeerDNS {
 	updatePeerDNS(domain) {
 		this.log(`updatePeerDNS: ${ domain }`);
 
-		let peer;
+		let peer = null;
 
 		try {
 			peer = this.getPeerUsingDNS(domain);
@@ -138,7 +160,13 @@ export class PeerDNS {
 				throw new Error(`Error trying to fetch SRV DNS entries for ${ domain }`);
 			}
 
-			peer = this.getPeerUsingHub(domain);
+			try {
+				peer = this.getPeerUsingHub(domain);
+			} catch (err) {
+				throw new Error(
+					`Could not find a peer with domain ${ domain } using the hub`
+				);
+			}
 		}
 
 		this.updateDNSCache.call(this, peer);

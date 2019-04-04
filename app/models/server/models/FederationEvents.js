@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Base } from './_Base';
 
 const normalizePeers = (basePeers, options) => {
@@ -22,20 +23,26 @@ class FederationEventsModel extends Base {
 
 	// Sometimes events errored but the error is final
 	setEventAsErrored(e, error, fulfilled = false) {
-		this.update({ _id: e._id }, {
-			$set: {
-				fulfilled,
-				lastAttemptAt: new Date(),
-				error,
-			},
-		});
+		this.update(
+			{ _id: e._id },
+			{
+				$set: {
+					fulfilled,
+					lastAttemptAt: new Date(),
+					error,
+				},
+			}
+		);
 	}
 
 	setEventAsFullfilled(e) {
-		this.update({ _id: e._id }, {
-			$set: { fulfilled: true },
-			$unset: { error: 1 },
-		});
+		this.update(
+			{ _id: e._id },
+			{
+				$set: { fulfilled: true },
+				$unset: { error: 1 },
+			}
+		);
 	}
 
 	createEvent(type, payload, peer) {
@@ -49,7 +56,9 @@ class FederationEventsModel extends Base {
 
 		record._id = this.insert(record);
 
-		this.emit('createEvent', record);
+		Meteor.defer(() => {
+			this.emit('createEvent', record);
+		});
 
 		return record;
 	}
@@ -64,6 +73,11 @@ class FederationEventsModel extends Base {
 		}
 
 		return records;
+	}
+
+	// Create a `ping(png)` event
+	ping(peers) {
+		return this.createEventForPeers('png', {}, peers);
 	}
 
 	// Create a `directRoomCreated(drc)` event
@@ -130,7 +144,12 @@ class FederationEventsModel extends Base {
 	}
 
 	// Create a `userRemoved(usr)` event
-	userRemoved(federatedRoom, federatedUser, federatedRemovedByUser, options = {}) {
+	userRemoved(
+		federatedRoom,
+		federatedUser,
+		federatedRemovedByUser,
+		options = {}
+	) {
 		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -156,7 +175,12 @@ class FederationEventsModel extends Base {
 	}
 
 	// Create a `userUnmuted(usu)` event
-	userUnmuted(federatedRoom, federatedUser, federatedUnmutedByUser, options = {}) {
+	userUnmuted(
+		federatedRoom,
+		federatedUser,
+		federatedUnmutedByUser,
+		options = {}
+	) {
 		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -215,7 +239,14 @@ class FederationEventsModel extends Base {
 	}
 
 	// Create a `messagesSetReaction(mrs)` event
-	messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
+	messagesSetReaction(
+		federatedRoom,
+		federatedMessage,
+		federatedUser,
+		reaction,
+		shouldReact,
+		options = {}
+	) {
 		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -230,7 +261,14 @@ class FederationEventsModel extends Base {
 	}
 
 	// Create a `messagesUnsetReaction(mru)` event
-	messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
+	messagesUnsetReaction(
+		federatedRoom,
+		federatedMessage,
+		federatedUser,
+		reaction,
+		shouldReact,
+		options = {}
+	) {
 		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -248,8 +286,6 @@ class FederationEventsModel extends Base {
 	getUnfulfilled() {
 		return this.find({ fulfilled: false }, { sort: { ts: 1 } }).fetch();
 	}
-
-
 }
 
 export const FederationEvents = new FederationEventsModel();
