@@ -2,7 +2,7 @@ import _ from 'underscore';
 import moment from 'moment';
 
 import { Meteor } from 'meteor/meteor';
-// import { Blaze } from 'meteor/blaze';
+import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
