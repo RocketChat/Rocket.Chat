@@ -62,8 +62,7 @@ export const getPermaLinks = async (replies) => {
 	return Promise.all(promises);
 };
 
-export const mountReply = async (msg, input, replies) => {
-	const mentionUser = $(input).data('mention-user') || false;
+export const mountReply = async (mention, msg, input, replies) => {
 	const { username } = Meteor.user();
 
 	if (replies && replies.length) {
@@ -74,7 +73,7 @@ export const mountReply = async (msg, input, replies) => {
 				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
 				msg += `[ ](${ permalinks[replyIndex] }) `;
 
-				if (roomInfo.t !== 'd' && reply.u.username !== username && mentionUser) {
+				if (roomInfo.t !== 'd' && reply.u.username !== username && mention) {
 					msg += `@${ reply.u.username } `;
 				}
 			}
@@ -277,8 +276,10 @@ export const ChatMessages = class ChatMessages {
 
 			const replies = $(input).data('reply') || [];
 
-			if (!threadsEnabled) {
-				msg += await mountReply(msg, input, replies);
+			const mentionUser = $(input).data('mention-user') || false;
+
+			if (!mentionUser || !threadsEnabled) {
+				msg += await mountReply(mentionUser, msg, input, replies);
 			}
 
 			msg += input.value;
@@ -299,7 +300,7 @@ export const ChatMessages = class ChatMessages {
 			}
 
 			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg, ...(threadsEnabled && replies.length && { tmid: replies[0]._id }) });
+			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg, ...(mentionUser && threadsEnabled && replies.length && { tmid: replies[0]._id }) });
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
