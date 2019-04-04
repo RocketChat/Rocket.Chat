@@ -1,19 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-
 import _ from 'underscore';
 import moment from 'moment';
 
-import { DateFormat } from '../../lib';
-import { renderEmoji } from '../../emoji';
-import { renderMessageBody, MessageTypes, MessageAction, call } from '../../ui-utils';
-import { RoomRoles, UserRoles, Roles, Messages } from '../../models';
-import { AutoTranslate } from '../../autotranslate';
-import { callbacks } from '../../callbacks';
-import { Markdown } from '../../markdown';
-import { t, roomTypes } from '../../utils';
+import { Meteor } from 'meteor/meteor';
+// import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { ReactiveVar } from 'meteor/reactive-var';
+
+import { DateFormat } from '../../lib/client';
+import { renderEmoji } from '../../emoji/client';
+import { renderMessageBody, MessageTypes, MessageAction, call } from '../../ui-utils/client';
+import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
+import { AutoTranslate } from '../../autotranslate/client';
+import { callbacks } from '../../callbacks/client';
+import { Markdown } from '../../markdown/client';
+import { t, roomTypes } from '../../utils/client';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||

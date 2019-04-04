@@ -34,7 +34,67 @@ Template.cloud.onCreated(function() {
 			}
 
 			if (!success) {
-				toastr.error('Invalid token');
+				toastr.error('An error occured connecting');
+				instance.loadRegStatus();
+				return;
+			}
+
+			toastr.success(t('Connected'));
+
+			instance.loadRegStatus();
+		});
+	};
+
+	instance.disconnectWorkspace = function _disconnectWorkspace() {
+		Meteor.call('cloud:disconnectWorkspace', (error, success) => {
+			if (error) {
+				toastr.error(error);
+				instance.loadRegStatus();
+				return;
+			}
+
+			if (!success) {
+				toastr.error('An error occured disconnecting');
+				instance.loadRegStatus();
+				return;
+			}
+
+			toastr.success(t('Disconnected'));
+
+			instance.loadRegStatus();
+		});
+	};
+
+	instance.syncWorkspace = function _syncWorkspace() {
+		Meteor.call('cloud:syncWorkspace', (error, success) => {
+			if (error) {
+				toastr.error(error);
+				instance.loadRegStatus();
+				return;
+			}
+
+			if (!success) {
+				toastr.error('An error occured syncing');
+				instance.loadRegStatus();
+				return;
+			}
+
+			toastr.success(t('Sync Complete'));
+
+			instance.loadRegStatus();
+		});
+	};
+
+	instance.registerWorkspace = function _registerWorkspace() {
+		Meteor.call('cloud:registerWorkspace', (error, success) => {
+			if (error) {
+				toastr.error(error);
+				instance.loadRegStatus();
+				return;
+			}
+
+			if (!success) {
+				toastr.error('An error occured');
 				instance.loadRegStatus();
 				return;
 			}
@@ -74,20 +134,21 @@ Template.cloud.events({
 		});
 	},
 
-	'click .login-btn'() {
-		Meteor.call('cloud:getOAuthAuthorizationUrl', (error, url) => {
-			if (error) {
-				console.warn(error);
-				return;
-			}
-
-			window.location.href = url;
-		});
-	},
-
 	'click .connect-btn'(e, i) {
 		const token = $('input[name=cloudToken]').val();
 
 		i.connectWorkspace(token);
+	},
+
+	'click .register-btn'(e, i) {
+		i.registerWorkspace();
+	},
+
+	'click .disconnect-btn'(e, i) {
+		i.disconnectWorkspace();
+	},
+
+	'click .sync-btn'(e, i) {
+		i.syncWorkspace();
 	},
 });

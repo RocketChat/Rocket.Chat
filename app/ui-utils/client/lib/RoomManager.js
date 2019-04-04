@@ -6,7 +6,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { roomTypes } from '../../../utils';
 import { fireGlobalEvent } from './fireGlobalEvent';
-import { promises } from '../../../promises';
+import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
