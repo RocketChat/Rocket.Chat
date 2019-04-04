@@ -36,7 +36,7 @@ export function messageContext() {
 			Message_ShowEditedStatus: settings.get('Message_ShowEditedStatus'),
 			API_Embed: settings.get('API_Embed'),
 			API_EmbedDisabledFor: settings.get('API_EmbedDisabledFor'),
-			Message_GroupingPeriod: settings.get('Message_GroupingPeriod'),
+			Message_GroupingPeriod: settings.get('Message_GroupingPeriod') * 1000,
 		},
 	};
 }
