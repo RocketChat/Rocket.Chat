@@ -10,6 +10,11 @@
 	padding: 0 calc(2 * var(--default-padding));
 }
 
+.thread-list {
+	overflow: auto;
+	flex-shrink: 1;
+}
+
 .thread-replied {
 	overflow: hidden;
 

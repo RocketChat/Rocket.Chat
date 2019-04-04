@@ -9,7 +9,7 @@ import { readThread } from '../functions';
 const MAX_LIMIT = 100;
 
 Meteor.methods({
-	getThreadMessages({ tmid, limit = 50, skip = 0 }) {
+	getThreadMessages({ tmid, limit, skip }) {
 		if (limit > MAX_LIMIT) {
 			throw new Meteor.Error('error-not-allowed', `max limit: ${ MAX_LIMIT }`, { method: 'getThreadMessages' });
 		}
@@ -32,7 +32,8 @@ Meteor.methods({
 
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
-		const result = Messages.find({ tmid }, { skip, limit }).fetch();
+		const result = Messages.find({ tmid }, { ...(skip && { skip }), ...(limit && { limit }), sort: { ts : -1 } }).fetch();
+
 		return [thread, ...result];
 	},
 });

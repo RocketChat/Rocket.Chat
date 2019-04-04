@@ -11,13 +11,15 @@
 		</button>
 	</header>
 	<section class="contextual-bar__content flex-tab threads">
-		<ul class="thread">
-			{{# with messageContext}}
-				{{> nrr nrrargs 'message' msg=mainMessage room=room subscription=subscription settings=settings templatePrefix='thread-' customClass="thread-main" u=u}}
-				{{#each msg in messages}}
-					{{> nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u}}
-				{{/each}}
-			{{/with}}
-		</ul>
+		<div class="thread-list js-scroll-thread">
+			<ul class="thread">
+				{{# with messageContext}}
+					{{> nrr nrrargs 'message' msg=mainMessage room=room subscription=subscription settings=settings templatePrefix='thread-' customClass="thread-main" u=u}}
+					{{#each msg in messages}}
+						{{> nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u}}
+					{{/each}}
+				{{/with}}
+			</ul>
+		</div>
 	</section>
 </template>
