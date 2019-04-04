@@ -130,6 +130,22 @@ Template.livechatWindow.onCreated(function() {
 		});
 	};
 
+	const normalizeLanguageString = (languageString) => {
+		let [languageCode, countryCode] = languageString.split ? languageString.split(/[-_]/) : [];
+		if (!languageCode || languageCode.length !== 2) {
+			return 'en';
+		}
+		languageCode = languageCode.toLowerCase();
+
+		if (!countryCode || countryCode.length !== 2) {
+			countryCode = null;
+		} else {
+			countryCode = countryCode.toUpperCase();
+		}
+
+		return countryCode ? `${ languageCode }-${ countryCode }` : languageCode;
+	};
+
 	this.autorun(() => {
 		// get all needed live chat info for the user
 		Meteor.call('livechat:getInitialData', visitor.getToken(), Livechat.department, (err, result) => {
@@ -200,7 +216,7 @@ Template.livechatWindow.onCreated(function() {
 				Livechat.agent = result.agentData;
 			}
 
-			let language = result.language || defaultAppLanguage();
+			let language = normalizeLanguageString(result.language || defaultAppLanguage());
 
 			if (!availableLanguages[language]) {
 				language = language.split('-').shift();
