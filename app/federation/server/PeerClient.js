@@ -4,14 +4,12 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
 
-import { Federation } from '.';
-import peerDNS from './peerDNS';
-import peerHTTP from './peerHTTP';
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
 import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
+import { Federation } from './';
 
-class PeerClient {
+export class PeerClient {
 	constructor() {
 		this.config = {};
 
@@ -69,7 +67,7 @@ class PeerClient {
 		if (this.config.hub.active) {
 			updateStatus('Registering with Hub...');
 
-			return peerDNS.register(this.peer);
+			return Federation.peerDNS.register(this.peer);
 		}
 
 		return true;
@@ -117,11 +115,11 @@ class PeerClient {
 		FederationEvents.on('createEvent', this.wrapEnabled(this.onCreateEvent.bind(this)));
 
 		callbacks.add('afterCreateDirectRoom', this.wrapEnabled(this.afterCreateDirectRoom.bind(this)), callbacks.priority.LOW, 'federation-create-direct-room');
-		callbacks.add('afterCreateRoom', this.wrapEnabled(this.afterCreateRoom.bind(this)), callbacks.priority.LOW, 'federation-join-room');
+		callbacks.add('afterCreateRoom', this.wrapEnabled(this.afterCreateRoom.bind(this)), callbacks.priority.LOW, 'federation-create-room');
 		callbacks.add('afterSaveRoomSettings', this.wrapEnabled(this.afterSaveRoomSettings.bind(this)), callbacks.priority.LOW, 'federation-after-save-room-settings');
-		callbacks.add('afterAddedToRoom', this.wrapEnabled(this.afterAddedToRoom.bind(this)), callbacks.priority.LOW, 'federation-join-room');
+		callbacks.add('afterAddedToRoom', this.wrapEnabled(this.afterAddedToRoom.bind(this)), callbacks.priority.LOW, 'federation-added-to-room');
 		callbacks.add('beforeLeaveRoom', this.wrapEnabled(this.beforeLeaveRoom.bind(this)), callbacks.priority.LOW, 'federation-leave-room');
-		callbacks.add('beforeRemoveFromRoom', this.wrapEnabled(this.beforeRemoveFromRoom.bind(this)), callbacks.priority.LOW, 'federation-leave-room');
+		callbacks.add('beforeRemoveFromRoom', this.wrapEnabled(this.beforeRemoveFromRoom.bind(this)), callbacks.priority.LOW, 'federation-remove-from-room');
 		callbacks.add('afterSaveMessage', this.wrapEnabled(this.afterSaveMessage.bind(this)), callbacks.priority.LOW, 'federation-save-message');
 		callbacks.add('afterDeleteMessage', this.wrapEnabled(this.afterDeleteMessage.bind(this)), callbacks.priority.LOW, 'federation-delete-message');
 		callbacks.add('afterReadMessages', this.wrapEnabled(this.afterReadMessages.bind(this)), callbacks.priority.LOW, 'federation-read-messages');
@@ -143,7 +141,7 @@ class PeerClient {
 
 		const { peer: domain } = e;
 
-		const peer = peerDNS.searchPeer(domain);
+		const peer = Federation.peerDNS.searchPeer(domain);
 
 		if (!peer || !peer.public_key) {
 			this.log(`Could not find valid peer:${ domain }`);
@@ -159,7 +157,7 @@ class PeerClient {
 				// Encrypt with the local private key
 				payload = Federation.privateKey.encryptPrivate(payload);
 
-				peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
+				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {
@@ -242,22 +240,22 @@ class PeerClient {
 	// Users
 	//
 	// #####
-	findUsers(email, options = {}) {
-		const [username, domain] = email.split('@');
+	findUsers(identifier, options = {}) {
+		const [username, domain] = identifier.split('@');
 
 		const { peer: { domain: localPeerDomain } } = this;
 
 		let peer = null;
 
 		try {
-			peer = peerDNS.searchPeer(options.domainOverride || domain);
+			peer = Federation.peerDNS.searchPeer(options.domainOverride || domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
 		try {
-			const { data: { federatedUsers: remoteFederatedUsers } } = peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, emailOnly: options.emailOnly }) }`);
+			const { data: { federatedUsers: remoteFederatedUsers } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.users?${ qs.stringify({ username, domain, usernameOnly: options.usernameOnly }) }`);
 
 			const federatedUsers = [];
 
@@ -268,7 +266,7 @@ class PeerClient {
 			return federatedUsers;
 		} catch (err) {
 			this.log(`Could not find user:${ username } at ${ peer.domain }`);
-			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ email } at ${ peer.domain }`);
+			throw new Meteor.Error('federation-user-does-not-exist', `Could not find user:${ identifier } at ${ peer.domain }`);
 		}
 	}
 
@@ -283,13 +281,13 @@ class PeerClient {
 		let peer = null;
 
 		try {
-			peer = peerDNS.searchPeer(domain);
+			peer = Federation.peerDNS.searchPeer(domain);
 		} catch (err) {
 			this.log(`Could not find peer using domain:${ domain }`);
 			throw new Meteor.Error('federation-peer-does-not-exist', `Could not find peer using domain:${ domain }`);
 		}
 
-		const { data: { upload, buffer } } = peerHTTP.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
+		const { data: { upload, buffer } } = Federation.peerHTTP.request(peer, 'GET', `/api/v1/federation.uploads?${ qs.stringify({ upload_id: fileId }) }`);
 
 		return { upload, buffer: Buffer.from(buffer) };
 	}
@@ -319,6 +317,8 @@ class PeerClient {
 		federatedRoom.refreshFederation();
 
 		FederationEvents.directRoomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
+
+		return room;
 	}
 
 	afterCreateRoom(roomOwner, room) {
@@ -345,6 +345,8 @@ class PeerClient {
 		federatedRoom.refreshFederation();
 
 		FederationEvents.roomCreated(federatedRoom, { skipPeers: [localPeerDomain] });
+
+		return roomOwner;
 	}
 
 	afterSaveRoomSettings(/* room */) {
@@ -361,8 +363,11 @@ class PeerClient {
 
 		const { peer: { domain: localPeerDomain } } = this;
 
-		// Check if room is federated
-		if (!FederatedRoom.isFederated(localPeerDomain, room, { checkUsingUsers: true })) { return users; }
+		// Check if room or user who joined are federated
+		if ((!userWhoJoined.federation || userWhoJoined.federation.peer === localPeerDomain) &&
+			!FederatedRoom.isFederated(localPeerDomain, room)) {
+			return users;
+		}
 
 		const extras = {};
 
@@ -410,6 +415,8 @@ class PeerClient {
 		} else {
 			FederationEvents.userJoined(federatedRoom, federatedUserWhoJoined, { skipPeers: [localPeerDomain] });
 		}
+
+		return users;
 	}
 
 	beforeLeaveRoom(userWhoLeft, room) {
@@ -435,6 +442,8 @@ class PeerClient {
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
+
+		return userWhoLeft;
 	}
 
 	beforeRemoveFromRoom(users, room) {
@@ -463,6 +472,8 @@ class PeerClient {
 
 		// Refresh room's federation
 		federatedRoom.refreshFederation();
+
+		return users;
 	}
 
 	afterSaveMessage(message, room) {
@@ -490,6 +501,8 @@ class PeerClient {
 		} else {
 			FederationEvents.messageCreated(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
 		}
+
+		return message;
 	}
 
 	afterDeleteMessage(message) {
@@ -510,6 +523,8 @@ class PeerClient {
 		const federatedMessage = new FederatedMessage(localPeerDomain, message);
 
 		FederationEvents.messageDeleted(federatedRoom, federatedMessage, { skipPeers: [localPeerDomain] });
+
+		return message;
 	}
 
 	afterReadMessages(roomId, { userId }) {
@@ -533,6 +548,8 @@ class PeerClient {
 		const federatedUser = FederatedUser.loadByFederationId(localPeerDomain, user.federation._id);
 
 		FederationEvents.messagesRead(federatedRoom, federatedUser, { skipPeers: [localPeerDomain] });
+
+		return roomId;
 	}
 
 	afterSetReaction(message, { user, reaction, shouldReact }) {
@@ -552,6 +569,8 @@ class PeerClient {
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
 		FederationEvents.messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
+
+		return message;
 	}
 
 	afterUnsetReaction(message, { user, reaction, shouldReact }) {
@@ -571,6 +590,8 @@ class PeerClient {
 		const federatedRoom = FederatedRoom.loadByFederationId(localPeerDomain, room.federation._id);
 
 		FederationEvents.messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, { skipPeers: [localPeerDomain] });
+
+		return message;
 	}
 
 	afterMuteUser(users, room) {
@@ -590,6 +611,8 @@ class PeerClient {
 		const federatedUserWhoMuted = FederatedUser.loadByFederationId(localPeerDomain, fromUser.federation._id);
 
 		FederationEvents.userMuted(federatedRoom, federatedMutedUser, federatedUserWhoMuted, { skipPeers: [localPeerDomain] });
+
+		return users;
 	}
 
 	afterUnmuteUser(users, room) {
@@ -609,7 +632,7 @@ class PeerClient {
 		const federatedUserWhoUnmuted = FederatedUser.loadByFederationId(localPeerDomain, fromUser.federation._id);
 
 		FederationEvents.userUnmuted(federatedRoom, federatedUnmutedUser, federatedUserWhoUnmuted, { skipPeers: [localPeerDomain] });
+
+		return users;
 	}
 }
-
-export default new PeerClient();
