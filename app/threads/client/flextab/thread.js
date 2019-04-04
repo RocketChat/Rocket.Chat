@@ -47,7 +47,7 @@ Template.thread.onCreated(async function() {
 	this.loading = new ReactiveVar(true);
 	let rid = false;
 	let mid;
-	this.autorun(async() => {
+	this.autorun(async () => {
 		const { room, mainMessage } = Template.currentData();
 		this.loading.set(true);
 

@@ -46,7 +46,7 @@ Template.threads.onCreated(async function() {
 	this.loading = new ReactiveVar(false);
 	this.mid = new ReactiveVar(null);
 	this.room = new ReactiveVar(null);
-	this.autorun(async() => {
+	this.autorun(async () => {
 		const { rid, mid } = Template.currentData();
 		this.close = !!mid;
 
