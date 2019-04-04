@@ -8,7 +8,6 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { DateFormat } from '../../lib/client';
-import { renderEmoji } from '../../emoji/client';
 import { renderMessageBody, MessageTypes, MessageAction, call } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { AutoTranslate } from '../../autotranslate/client';
@@ -158,7 +157,6 @@ Template.message.helpers({
 			return msg.avatar.replace(/^@/, '');
 		}
 	},
-	renderEmoji,
 	getName() {
 		const { msg, settings } = this;
 		if (msg.alias) {

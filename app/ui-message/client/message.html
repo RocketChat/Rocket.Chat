@@ -14,7 +14,7 @@
 			{{#if emoji}}
 				<button class="thumb user-card-message" data-username="{{u.username}}" tabindex="1">
 					<div class="avatar">
-						{{{renderEmoji emoji}}}
+						{{> renderEmoji emoji}}
 					</div>
 				</button>
 			{{else}}
@@ -66,7 +66,7 @@
 				<span>******</span>
 			{{else}}
 				{{#if and settings.showreply msg.tmid}}
-					<p class="thread-replied"> {{_ "Replied_on"}}: <q class="thread-quote js-open-thread">{{parentMessage}}</q> </p>
+					<p class="thread-replied"> {{_ "Replied_on"}}: <q aria-label="Open_thread" class="rc-tooltip thread-quote js-open-thread">{{parentMessage}}</q> </p>
 					<blockquote>
 						{{{body}}}
 					</blockquote>
