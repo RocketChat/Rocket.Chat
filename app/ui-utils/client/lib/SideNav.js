@@ -87,7 +87,7 @@ export const SideNav = new class {
 			}
 		});
 		setTimeout(() => {
-			const ref = highestZidxElem.querySelector('input');
+			const ref = highestZidxElem && highestZidxElem.querySelector('input');
 			return ref && ref.focus();
 		}, 200);
 	}
