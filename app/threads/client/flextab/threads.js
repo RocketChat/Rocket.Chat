@@ -120,7 +120,7 @@ Template.threads.onCreated(async function() {
 
 	this.autorun(async () => {
 		const mid = this.state.get('mid');
-		return this.state.set('thread', mid && Messages.findOne(mid));
+		return this.state.set('thread', mid && this.Threads.findOne({ _id: mid }));
 	});
 
 	this.autorun(async () => {
