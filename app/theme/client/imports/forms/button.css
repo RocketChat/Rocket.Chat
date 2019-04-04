@@ -75,11 +75,6 @@
 		background-color: var(--button-disabled-background);
 	}
 
-	&--nude {
-		border: none;
-		background: inherit;
-	}
-
 	&--invisible {
 		visibility: hidden;
 	}
@@ -88,6 +83,15 @@
 		color: var(--button-primary-text-color);
 		border: 0;
 		background-color: var(--button-primary-background);
+	}
+
+	&--nude {
+		border: none;
+		background-color: inherit;
+	}
+
+	&--primary.rc-button--nude {
+		color: var(--button-primary-background);
 	}
 
 	&--primary.rc-button--outline {
