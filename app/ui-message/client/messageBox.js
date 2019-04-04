@@ -55,14 +55,9 @@ Template.messageBox.onRendered(function() {
 				this.replyMessageData.set(messages);
 			});
 
-			$input
-				.autogrow({
-					animate: true,
-					onInitialize: true,
-				})
-				.on('autogrow', () => {
-					onResize && onResize();
-				});
+			$input.autogrow().on('autogrow', () => {
+				onResize && onResize();
+			});
 		});
 	});
 });
