@@ -8,8 +8,17 @@ import {
 	fileUpload,
 	KonchatNotification,
 } from '../../ui';
-import { messageBox, popover, call } from '../../ui-utils';
-import { t, roomTypes, getUserPreference } from '../../utils';
+import {
+	messageBox,
+	popover,
+	call,
+	keyCodes,
+} from '../../ui-utils';
+import {
+	t,
+	roomTypes,
+	getUserPreference,
+} from '../../utils';
 import moment from 'moment';
 import {
 	formattingButtons,
@@ -36,7 +45,10 @@ Template.messageBox.onRendered(function() {
 
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message');
-			const $input = $(input);
+
+			if (this.input === input) {
+				return;
+			}
 
 			this.input = input;
 			onInputChanged && onInputChanged(input);
@@ -49,6 +61,8 @@ Template.messageBox.onRendered(function() {
 			this.popupConfig.set({
 				getInput: () => input,
 			});
+
+			const $input = $(input);
 
 			$input.on('dataChange', () => {
 				const messages = $input.data('reply') || [];
@@ -107,6 +121,85 @@ Template.messageBox.helpers({
 	},
 });
 
+const handleFormattingShortcut = (event, instance) => {
+	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+
+	if (!isCmdOrCtrlPressed) {
+		return false;
+	}
+
+	const key = event.key.toLowerCase();
+
+	const { pattern } = formattingButtons
+		.filter(({ condition }) => !condition || condition())
+		.find(({ command }) => command === key) || {};
+
+	if (!pattern) {
+		return false;
+	}
+
+	const { input } = instance;
+	applyFormatting(pattern, input);
+	return true;
+};
+
+let sendOnEnter = '';
+
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		const user = Meteor.userId();
+		sendOnEnter = getUserPreference(user, 'sendOnEnter');
+	});
+});
+
+const insertNewLine = (input) => {
+	if (document.selection) {
+		input.focus();
+		const sel = document.selection.createRange();
+		sel.text = '\n';
+	} else if (input.selectionStart || input.selectionStart === 0) {
+		const newPosition = input.selectionStart + 1;
+		const before = input.value.substring(0, input.selectionStart);
+		const after = input.value.substring(input.selectionEnd, input.value.length);
+		input.value = `${ before }\n${ after }`;
+		input.selectionStart = input.selectionEnd = newPosition;
+	} else {
+		input.value += '\n';
+	}
+
+	input.blur();
+	input.focus();
+	input.updateAutogrow();
+};
+
+const handleSubmit = (event, instance) => {
+	const { data: { rid, onSend }, input } = instance;
+	const { which: keyCode } = event;
+
+	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+
+	if (!isSubmitKey) {
+		return false;
+	}
+
+	const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' ||
+		(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
+	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
+	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
+
+	if (isSending) {
+		onSend && onSend(rid, input, () => {
+			input.updateAutogrow();
+			input.focus();
+		});
+		return true;
+	}
+
+	insertNewLine(input);
+	return true;
+};
+
 Template.messageBox.events({
 	'click .js-join'(event) {
 		event.stopPropagation();
@@ -152,24 +245,11 @@ Template.messageBox.events({
 		KonchatNotification.removeRoomNotification(this.rid);
 	},
 	'keydown .js-input-message'(event, instance) {
-		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-		const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
-		const key = event.key.toLowerCase();
+		const isEventHandled = handleFormattingShortcut(event, instance) || handleSubmit(event, instance);
 
-		if (isCmdOrCtrlPressed) {
-			const { pattern } = formattingButtons
-				.filter(({ condition }) => !condition || condition())
-				.find(({ command }) => command === key) || {};
-
-			if (!pattern) {
-				return;
-			}
-
+		if (isEventHandled) {
 			event.preventDefault();
 			event.stopPropagation();
-
-			const input = instance.find('.js-input-message');
-			applyFormatting(pattern, input);
 			return;
 		}
 

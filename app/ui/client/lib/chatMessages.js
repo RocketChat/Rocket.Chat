@@ -1,12 +1,19 @@
 import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
-import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, getUserPreference, slashCommands, handleError } from '../../../utils';
-import { MessageAction, messageProperties, MessageTypes, readMessage, modal, call } from '../../../ui-utils';
+import { t, slashCommands, handleError } from '../../../utils';
+import {
+	MessageAction,
+	messageProperties,
+	MessageTypes,
+	readMessage,
+	modal,
+	call,
+	isRTL,
+	keyCodes,
+} from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises/client';
@@ -21,22 +28,10 @@ import moment from 'moment';
 import toastr from 'toastr';
 import { fileUpload } from './fileUpload';
 
-let sendOnEnter = '';
 
-Meteor.startup(() => {
-	Tracker.autorun(function() {
-		const user = Meteor.userId();
-		sendOnEnter = getUserPreference(user, 'sendOnEnter');
-	});
-});
-
-export const getPermaLinks = async (replies) => {
-	const promises = replies.map(async (reply) =>
-		MessageAction.getPermaLink(reply._id)
-	);
-
-	return Promise.all(promises);
-};
+export const getPermaLinks = async (replies) => Promise.all(
+	replies.map(async ({ _id }) => MessageAction.getPermaLink(_id))
+);
 
 export const mountReply = async (msg, input) => {
 	const replies = $(input).data('reply');
@@ -60,38 +55,38 @@ export const mountReply = async (msg, input) => {
 	return msg;
 };
 
+const saveMessageBoxText = _.debounce((rid, value) => {
+	const key = `messagebox_${ rid }`;
+	value ? localStorage.setItem(key, value) : localStorage.removeItem(key);
+}, 1000);
+
+const loadMessageBoxText = (rid) => localStorage.getItem(`messagebox_${ rid }`);
+
+const purgeSavedMessageBoxTexts = () => {
+	Object.keys(localStorage)
+		.filter((key) => key.indexOf('messagebox_') === 0)
+		.forEach((key) => localStorage.removeItem(key));
+};
+
 export class ChatMessages {
 	init(node) {
 		this.editing = {};
 		this.records = {};
 		this.messageMaxSize = settings.get('Message_MaxAllowedSize');
-		this.wrapper = $(node).find('.wrapper');
-		this.input = this.input || $(node).find('.js-input-message').get(0);
+		this.wrapper = node.querySelector('.wrapper');
+		this.input = this.input || node.querySelector('.js-input-message');
 		this.$input = $(this.input);
-		this.hasValue = new ReactiveVar(false);
 	}
 
-	saveTextMessageBox = _.debounce((rid, value) => {
-		const key = `messagebox_${ rid }`;
-		value.length ? localStorage.setItem(key, value) : localStorage.removeItem(key);
-	}, 1000);
-
 	getEditingIndex(element) {
-		const msgs = this.wrapper.get(0).querySelectorAll('.own:not(.system)');
-		let index = 0;
-		for (const msg of Array.from(msgs)) {
-			if (msg === element) {
-				return index;
-			}
-			index++;
-		}
-		return -1;
+		const msgs = this.wrapper.querySelectorAll('.own:not(.system)');
+		return Array.from(msgs).findIndex((msg) => msg === element);
 	}
 
 	recordInputAsDraft() {
 		const { id } = this.editing;
 
-		const message = this.getMessageById(id);
+		const message = ChatMessage.findOne(id);
 		const record = this.records[id] || {};
 		const draft = this.input.value;
 
@@ -104,50 +99,45 @@ export class ChatMessages {
 		this.records[id] = record;
 	}
 
-	getMessageDraft(id) {
-		return this.records[id];
-	}
-
-	clearMessageDraft(id) {
-		delete this.records[id];
-	}
-
 	clearCurrentDraft() {
-		this.clearMessageDraft(this.editing.id);
+		delete this.records[this.editing.id];
 	}
 
 	resetToDraft(id) {
-		const message = this.getMessageById(id);
-
-		const old_value = this.input.value;
+		const message = ChatMessage.findOne(id);
+		const oldValue = this.input.value;
 		this.input.value = message.msg;
-
-		return old_value !== message.msg;
-	}
-
-	getMessageById(id) {
-		return ChatMessage.findOne(id);
+		return oldValue !== message.msg;
 	}
 
 	toPrevMessage() {
 		const { index } = this.editing;
-		return this.editByIndex((index != null) ? index - 1 : undefined);
+		this.editByIndex((index != null) ? index - 1 : undefined);
 	}
 
 	toNextMessage() {
 		const { index } = this.editing;
-		if (!this.editByIndex(index + 1)) { return this.clearEditing(); }
+		if (!this.editByIndex(index + 1)) {
+			this.clearEditing();
+		}
 	}
 
 	editByIndex(index) {
-		if (!this.editing.element && index) { return false; }
+		if (!this.editing.element && index) {
+			return false;
+		}
 
-		const msgs = this.wrapper.get(0).querySelectorAll('.own:not(.system)');
-		if (index == null) { index = msgs.length - 1; }
+		const messageElements = this.wrapper.querySelectorAll('.own:not(.system)');
 
-		if (!msgs[index]) { return false; }
+		if (index == null) {
+			index = messageElements.length - 1;
+		}
 
-		const element = msgs[index];
+		if (!messageElements[index]) {
+			return false;
+		}
+
+		const element = messageElements[index];
 		this.edit(element, index);
 		return true;
 	}
@@ -155,7 +145,7 @@ export class ChatMessages {
 	edit(element, index) {
 		index = index != null ? index : this.getEditingIndex(element);
 
-		const message = this.getMessageById(element.getAttribute('id'));
+		const message = ChatMessage.findOne(element.getAttribute('id'));
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
@@ -175,7 +165,7 @@ export class ChatMessages {
 			}
 		}
 
-		const draft = this.getMessageDraft(message._id);
+		const draft = this.records[message._id];
 		let msg = draft && draft.draft;
 		msg = msg || message.msg;
 
@@ -183,7 +173,6 @@ export class ChatMessages {
 
 		this.clearEditing();
 
-		this.hasValue.set(true);
 		this.editing.element = element;
 		this.editing.index = index;
 		this.editing.id = message._id;
@@ -195,36 +184,38 @@ export class ChatMessages {
 		} else {
 			this.input.value = msg;
 		}
-		$(this.input).trigger('change').trigger('input');
+		this.$input.trigger('change').trigger('input');
 
-		const cursor_pos = editingNext ? 0 : -1;
-		this.$input.setCursorPosition(cursor_pos);
+		const cursorPosition = editingNext ? 0 : -1;
+		this.$input.setCursorPosition(cursorPosition);
 		this.input.focus();
 		return this.input;
 	}
 
 	clearEditing() {
-		if (this.editing.element) {
-			this.recordInputAsDraft();
-			this.input.parentElement.classList.remove('editing');
-
-			this.editing.element.classList.remove('editing');
-			delete this.editing.id;
-			delete this.editing.element;
-			delete this.editing.index;
-
-			this.input.value = this.editing.saved || '';
-			$(this.input).trigger('change').trigger('input');
-			const cursor_pos = this.editing.savedCursor != null ? this.editing.savedCursor : -1;
-			this.$input.setCursorPosition(cursor_pos);
-
-			return this.hasValue.set(this.input.value !== '');
+		if (!this.editing.element) {
+			this.editing.saved = this.input.value;
+			this.editing.savedCursor = this.input.selectionEnd;
+			return;
 		}
-		this.editing.saved = this.input.value;
-		return this.editing.savedCursor = this.input.selectionEnd;
-	}
-	async send(rid, input, done = function() {}) {
 
+		this.recordInputAsDraft();
+		this.input.parentElement.classList.remove('editing');
+
+		this.editing.element.classList.remove('editing');
+		delete this.editing.id;
+		delete this.editing.element;
+		delete this.editing.index;
+
+		this.input.value = this.editing.saved || '';
+		$(this.input).trigger('change').trigger('input');
+		const cursorPosition = this.editing.savedCursor != null ? this.editing.savedCursor : -1;
+		this.$input.setCursorPosition(cursorPosition);
+
+		return;
+	}
+
+	async send(rid, input, done = () => {}) {
 		if (!ChatSubscription.findOne({ rid })) {
 			await call('joinRoom', rid);
 		}
@@ -239,18 +230,15 @@ export class ChatMessages {
 			msg += await mountReply(msg, input);
 
 			msg += input.value;
-			$(input)
-				.removeData('reply')
-				.trigger('dataChange');
-
+			this.$input.removeData('reply').trigger('dataChange');
 
 			if (msg.slice(0, 2) === '+:') {
 				const reaction = msg.slice(1).trim();
 				if (emoji.list[reaction]) {
 					const lastMessage = ChatMessage.findOne({ rid }, { fields: { ts: 1 }, sort: { ts: -1 } });
-					Meteor.call('setReaction', reaction, lastMessage._id);
+					await call('setReaction', reaction, lastMessage._id);
 					input.value = '';
-					$(input).trigger('change').trigger('input');
+					this.$input.trigger('change').trigger('input');
 					return;
 				}
 			}
@@ -279,53 +267,54 @@ export class ChatMessages {
 					fileUpload([{ file, name: fileName }]);
 					this.clearCurrentDraft();
 					input.value = '';
-					$(input).trigger('change').trigger('input');
-					this.hasValue.set(false);
-					this.stopTyping(rid);
-					this.saveTextMessageBox(rid, '');
-					return done();
+					this.$input.trigger('change').trigger('input');
+					MsgTyping.stop(rid);
+					saveMessageBoxText(rid, '');
+					done();
 				}, done);
 			}
 
 			this.clearCurrentDraft();
 
 			if (this.editing.id) {
-				this.update(this.editing.id, rid, msgObject.msg);
+				await this.update(this.editing.id, rid, msgObject.msg);
 				return;
 			}
 
 			KonchatNotification.removeRoomNotification(rid);
 			input.value = '';
-			$(input).trigger('change').trigger('input');
+			this.$input.trigger('change').trigger('input');
 
-			if (typeof input.updateAutogrow === 'function') {
-				input.updateAutogrow();
-			}
-			this.hasValue.set(false);
-			this.stopTyping(rid);
+			MsgTyping.stop(rid);
 
 			if (this.processSlashCommand(msgObject)) {
 				return;
 			}
 
-			Meteor.call('sendMessage', msgObject);
+			await call('sendMessage', msgObject);
 
-			this.saveTextMessageBox(rid, '');
+			saveMessageBoxText(rid, '');
 
-			return done();
-
-
-			// If edited message was emptied we ask for deletion
+			done();
 		}
-		if (this.editing.element) {
-			const message = this.getMessageById(this.editing.id);
-			if (message.attachments && message.attachments[0] && message.attachments[0].description) {
-				return this.update(this.editing.id, rid, '', true);
+
+		if (this.editing.id) {
+			const message = ChatMessage.findOne(this.editing.id);
+
+			const isDescription = message.attachments && message.attachments[0] && message.attachments[0].description;
+			if (isDescription) {
+				this.update(this.editing.id, rid, '', true);
+				return;
 			}
-			// Restore original message in textbox in case delete is canceled
+
 			this.resetToDraft(this.editing.id);
 
-			return this.confirmDeleteMsg(message, done);
+			if (MessageTypes.isSystemMessage(message)) {
+				return;
+			}
+
+			this.confirmDeleteMsg(message, done);
+			return;
 		}
 	}
 
@@ -344,7 +333,9 @@ export class ChatMessages {
 						if (commandOptions.clientOnly) {
 							commandOptions.callback(command, param, msgObject);
 						} else {
-							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject }));
+							Meteor.call('slashCommand', { cmd: command, params: param, msg: msgObject }, (err, result) => {
+								typeof commandOptions.result === 'function' && commandOptions.result(err, result, { cmd: command, params: param, msg: msgObject });
+							});
 						}
 
 						return true;
@@ -372,13 +363,12 @@ export class ChatMessages {
 		return false;
 	}
 
-	confirmDeleteMsg(message, done = function() {}) {
-		if (MessageTypes.isSystemMessage(message)) { return; }
-
+	confirmDeleteMsg(message, done = () => {}) {
 		const room = message.drid && Rooms.findOne({
 			_id: message.drid,
 			prid: { $exists: true },
 		});
+
 		modal.open({
 			title: t('Are_you_sure'),
 			text: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
@@ -398,21 +388,22 @@ export class ChatMessages {
 			});
 
 			if (this.editing.id === message._id) {
-				this.clearEditing(message);
+				this.clearEditing();
 			}
+
 			this.deleteMsg(message);
 
 			this.$input.focus();
-			return done();
+			done();
 		});
 	}
 
-	deleteMsg(message) {
-		const forceDelete = hasAtLeastOnePermission('force-delete-message', message.rid);
+	async deleteMsg({ _id, rid, ts }) {
+		const forceDelete = hasAtLeastOnePermission('force-delete-message', rid);
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes && forceDelete === false) {
 			let msgTs;
-			if (message.ts != null) { msgTs = moment(message.ts); }
+			if (ts != null) { msgTs = moment(ts); }
 			let currentTsDiff;
 			if (msgTs != null) { currentTsDiff = moment().diff(msgTs, 'minutes'); }
 			if (currentTsDiff > blockDeleteInMinutes) {
@@ -421,81 +412,36 @@ export class ChatMessages {
 			}
 		}
 
-		return Meteor.call('deleteMessage', { _id: message._id }, function(error) {
-			if (error) {
-				return handleError(error);
-			}
-		});
-	}
-
-	pinMsg(message) {
-		message.pinned = true;
-		return Meteor.call('pinMessage', message, function(error) {
-			if (error) {
-				return handleError(error);
-			}
-		});
-	}
-
-	unpinMsg(message) {
-		message.pinned = false;
-		return Meteor.call('unpinMessage', message, function(error) {
-			if (error) {
-				return handleError(error);
-			}
-		});
+		try {
+			await call('deleteMessage', { _id });
+		} catch (error) {
+			handleError(error);
+		}
 	}
 
 	update(id, rid, msg, isDescription) {
 		if ((s.trim(msg) !== '') || (isDescription === true)) {
-			Meteor.call('updateMessage', { _id: id, msg, rid });
+			call('updateMessage', { _id: id, msg, rid });
 			this.clearEditing();
-			return this.stopTyping(rid);
+			MsgTyping.stop(rid);
 		}
 	}
 
-	startTyping(rid, input) {
-		if (s.trim(input.value) === '') {
-			return this.stopTyping(rid);
-		}
-		return MsgTyping.start(rid);
-	}
-
-	stopTyping(rid) {
-		return MsgTyping.stop(rid);
-	}
-
+	// DEPRECATED
 	tryCompletion(input) {
 		const [value] = input.value.match(/[^\s]+$/) || [];
-		if (!value) { return; }
-		const re = new RegExp(value, 'i');
-		const user = Meteor.users.findOne({ username: re });
+		if (!value) {
+			return;
+		}
+
+		const user = Meteor.users.findOne({ username: new RegExp(value, 'i') });
 		if (user) {
-			return input.value = input.value.replace(value, `@${ user.username } `);
+			input.value = input.value.replace(value, `@${ user.username } `);
 		}
 	}
 
-	insertNewLine(input) {
-		if (document.selection) {
-			input.focus();
-			const sel = document.selection.createRange();
-			sel.text = '\n';
-		} else if (input.selectionStart || input.selectionStart === 0) {
-			const newPosition = input.selectionStart + 1;
-			const before = input.value.substring(0, input.selectionStart);
-			const after = input.value.substring(input.selectionEnd, input.value.length);
-			input.value = `${ before }\n${ after }`;
-			input.selectionStart = input.selectionEnd = newPosition;
-		} else {
-			input.value += '\n';
-		}
-		input.blur();
-		input.focus();
-		typeof input.updateAutogrow === 'function' && input.updateAutogrow();
-	}
-
-	restoreText(rid) {
-		const text = localStorage.getItem(`messagebox_${ rid }`);
+	async restoreText(rid) {
+		const text = loadMessageBoxText(rid);
 		if (typeof text === 'string' && this.input) {
 			this.input.value = text;
 			this.$input.trigger('input');
@@ -504,154 +450,95 @@ export class ChatMessages {
 		if (!msgId) {
 			return;
 		}
+
 		const message = Messages.findOne(msgId);
+
 		if (message) {
-			return this.$input.data('reply', [message]).trigger('dataChange');
-		}
-		Meteor.call('getSingleMessage', msgId, (err, msg) => !err && this.$input.data('reply', [msg]).trigger('dataChange'));
-	}
-
-	keyup(rid, event) {
-		let i;
-		const input = event.currentTarget;
-		const k = event.which;
-		const keyCodes = [
-			13, // Enter
-			20, // Caps lock
-			16, // Shift
-			9, // Tab
-			27, // Escape Key
-			17, // Control Key
-			91, // Windows Command Key
-			19, // Pause Break
-			18, // Alt Key
-			93, // Right Click Point Key
-			45, // Insert Key
-			34, // Page Down
-			35, // Page Up
-			144, // Num Lock
-			145, // Scroll Lock
-		];
-		for (i = 35; i <= 40; i++) { keyCodes.push(i); } // Home, End, Arrow Keys
-		for (i = 112; i <= 123; i++) { keyCodes.push(i); } // F1 - F12
-
-		if (!Array.from(keyCodes).includes(k)) {
-			this.startTyping(rid, input);
-		}
-
-		this.saveTextMessageBox(rid, input.value);
-
-		return this.hasValue.set(input.value !== '');
-	}
-
-	keydown(rid, event) {
-		const { currentTarget: input, which: k } = event;
-
-		if (k === 13 || k === 10) { // New line or carriage return
-			const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' ||
-				(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
-			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
-			const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
-
-			event.preventDefault();
-			event.stopPropagation();
-			if (isSending) {
-				this.send(rid, input);
-			} else {
-				this.insertNewLine(input);
-			}
-
+			this.$input.data('reply', [message]).trigger('dataChange');
 			return;
 		}
 
-		if (k === 9) { // Tab
+		const msg = await call('getSingleMessage', msgId);
+		this.$input.data('reply', [msg]).trigger('dataChange');
+	}
+
+	keyup(rid, event) {
+		const { currentTarget: input, which: keyCode } = event;
+
+		if (!Object.values(keyCodes).includes(keyCode)) {
+			if (s.trim(input.value) === '') {
+				MsgTyping.stop(rid);
+			} else {
+				MsgTyping.start(rid);
+			}
+		}
+
+		saveMessageBoxText(rid, input.value);
+	}
+
+	keydown(rid, event) {
+		const { currentTarget: input, which: keyCode } = event;
+
+		if (keyCode === keyCodes.TAB) {
 			event.preventDefault();
 			event.stopPropagation();
 			this.tryCompletion(input);
 		}
 
-		if (k === 27) { // Escape
-			if (this.editing.index != null) {
-				// const record = this.getMessageDraft(this.editing.id);
-
-				// If resetting did nothing then edited message is same as original
-				if (!this.resetToDraft(this.editing.id)) {
-					this.clearCurrentDraft();
-					this.clearEditing();
-				}
-
-				event.preventDefault();
-				event.stopPropagation();
-				return;
+		if (keyCode === keyCodes.ESCAPE && this.editing.index != null) {
+			if (!this.resetToDraft(this.editing.id)) {
+				this.clearCurrentDraft();
+				this.clearEditing();
 			}
-		} else if (k === 38 || k === 40) { // Arrow Up or down
-			if (event.shiftKey) { return true; }
 
-			const cursor_pos = input.selectionEnd;
+			event.preventDefault();
+			event.stopPropagation();
+			return true;
+		}
 
-			if (k === 38) { // Arrow Up
-				if (cursor_pos === 0) {
+		if (keyCode === keyCodes.ARROW_UP || keyCode === keyCodes.ARROW_DOWN) {
+			if (event.shiftKey) {
+				return true;
+			}
+
+			const cursorPosition = input.selectionEnd;
+
+			if (keyCode === keyCodes.ARROW_UP) {
+				if (cursorPosition === 0) {
 					this.toPrevMessage();
 				} else if (!event.altKey) {
 					return true;
 				}
 
-				if (event.altKey) { this.$input.setCursorPosition(0); }
-
-			} else { // Arrow Down
-				if (cursor_pos === input.value.length) {
+				if (event.altKey) {
+					this.$input.setCursorPosition(0);
+				}
+			} else {
+				if (cursorPosition === input.value.length) {
 					this.toNextMessage();
 				} else if (!event.altKey) {
 					return true;
 				}
 
-				if (event.altKey) { this.$input.setCursorPosition(-1); }
+				if (event.altKey) {
+					this.$input.setCursorPosition(-1);
+				}
 			}
 
 			return false;
-
-			// ctrl (command) + shift + k -> clear room messages
 		}
-		// TODO
-		// else if (k === 75 && navigator && navigator.platform && event.shiftKey && (navigator.platform.indexOf('Mac') !== -1 ? event.metaKey : event.ctrlKey)) {
-		// 	return RoomHistoryManager.clear(rid);
-		// }
 	}
 
 	valueChanged(/* rid, event*/) {
-		if (this.input.value.length === 1) {
-			return this.determineInputDirection();
+		if (this.input.value.length > 0) {
+			this.input.dir = isRTL(this.input.value) ? 'rtl' : 'ltr';
 		}
-	}
-
-	determineInputDirection() {
-		return this.input.dir = this.isMessageRtl(this.input.value) ? 'rtl' : 'ltr';
-	}
-
-	// http://stackoverflow.com/a/14824756
-	isMessageRtl(message) {
-		const ltrChars = 'A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u2C00-\uFB1C\uFDFE-\uFE6F\uFEFD-\uFFFF';
-		const rtlChars = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC';
-		const rtlDirCheck = new RegExp(`^[^${ ltrChars }]*[${ rtlChars }]`);
-
-		return rtlDirCheck.test(message);
 	}
 
 	isMessageTooLong(message) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message);
 		return messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
 	}
-
-	isEmpty() {
-		return !this.hasValue.get();
-	}
 }
 
-
-callbacks.add('afterLogoutCleanUp', () => {
-	Object.keys(localStorage).forEach((item) => {
-		if (item.indexOf('messagebox_') === 0) {
-			localStorage.removeItem(item);
-		}
-	});
-}, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
+callbacks.add('afterLogoutCleanUp', purgeSavedMessageBoxTexts, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
