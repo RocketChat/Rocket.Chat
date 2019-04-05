@@ -82,7 +82,7 @@ export const RoomManager = new function() {
 											};
 										}
 										msg.name = room.name;
-										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+										RoomManager.updateMentionsMarksOfRoom(typeName);
 
 										callbacks.run('streamMessage', msg);
 
@@ -226,25 +226,20 @@ export const RoomManager = new function() {
 
 		updateMentionsMarksOfRoom(typeName) {
 			const dom = this.getDomOfRoom(typeName);
-			if ((dom == null)) {
+			if (!dom) {
 				return;
 			}
 
-			const ticksBar = $(dom).find('.ticks-bar');
-			$(dom).find('.ticks-bar > .tick').remove();
+			const [ticksBar] = dom.getElementsByClassName('ticks-bar');
+			const messagesBox = $('.messages-box', dom);
+			const scrollTop = messagesBox.find('> .wrapper').scrollTop() - 50;
+			const totalHeight = messagesBox.find(' > .wrapper > ul').height() + 40;
 
-			const scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50;
-			const totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40;
-
-			return $('.messages-box .mention-link-me').each(function(index, item) {
-				const topOffset = $(item).offset().top + scrollTop;
+			ticksBar.innerHTML = Array.from(messagesBox[0].getElementsByClassName('mention-link-me')).map((item) => {
+				const topOffset = item.getBoundingClientRect().top + scrollTop;
 				const percent = (100 / totalHeight) * topOffset;
-				if ($(item).hasClass('mention-link-all')) {
-					return ticksBar.append(`<div class="tick background-attention-color" style="top: ${ percent }%;"></div>`);
-				} else {
-					return ticksBar.append(`<div class="tick background-primary-action-color" style="top: ${ percent }%;"></div>`);
-				}
-			});
+				return `<div class="tick ${ item.classList.contains('mention-link-all') ? 'background-attention-color' : 'background-primary-action-color' }" style="top: ${ percent }%;"></div>`;
+			}).join('');
 		}
 	};
 	Cls.initClass();
