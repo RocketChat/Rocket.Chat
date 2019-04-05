@@ -5,15 +5,16 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 
 import _ from 'underscore';
 
+import { lazyloadtick } from '../../../lazy-load';
 import { call } from '../../../ui-utils';
-import { Messages } from '../../../models';
+import { Messages, Subscriptions } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 
 import './threads.html';
 
 const LIST_SIZE = 50;
-const sort = { ts: -1 };
+const sort = { tlm: -1 };
 
 Template.threads.events({
 	'click .js-open-thread'(e, instance) {
@@ -24,6 +25,7 @@ Template.threads.events({
 		return false;
 	},
 	'scroll .js-scroll-threads': _.throttle(({ currentTarget: e }, i) => {
+		lazyloadtick();
 		if (e.offsetHeight + e.scrollTop === e.scrollHeight - 50) {
 			i.loadMore && i.incLimit();
 		}
@@ -116,6 +118,18 @@ Template.threads.onCreated(async function() {
 				}
 			},
 		});
+
+		this.subscriptionObserve && this.subscriptionObserve.stop();
+		this.subscriptionObserve = Subscriptions.find({ rid }, { fields: { tunread: 1 } }).observeChanges({
+			added: (_id, { tunread }) => {
+				tunread && tunread.length && this.Threads.update({ tmid: { $in: tunread } }, { $set: { unread: 1 } }, { multi: true });
+			},
+			changed: (id, { tunread = [] }) => {
+				this.Threads.update({ unread: 1, _id: { $nin: tunread } }, { $unset: { unread: 1 } }, { multi: true });
+				tunread && tunread.length && this.Threads.update({ _id: { $in: tunread } }, { $set: { unread: 1 } }, { multi: true });
+
+			},
+		});
 	});
 
 	this.autorun(async () => {
@@ -135,7 +149,8 @@ Template.threads.onCreated(async function() {
 });
 
 Template.threads.onDestroyed(function() {
-	const { Threads, threadsObserve } = this;
+	const { Threads, threadsObserve, subscriptionObserve } = this;
 	Threads.remove({});
 	threadsObserve && threadsObserve.stop();
+	subscriptionObserve && subscriptionObserve.stop();
 });

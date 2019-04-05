@@ -6,7 +6,7 @@ import { /* UserRoles, RoomRoles,*/ ChatMessage, ChatSubscription, ChatRoom } fr
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 
-const normalizeThreadMessage = (message) => {
+export const normalizeThreadMessage = (message) => {
 	if (message.msg) {
 		return message.msg;
 	}

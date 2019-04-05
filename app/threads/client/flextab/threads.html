@@ -6,7 +6,7 @@
 		<div class="thread-list js-scroll-threads">
 			<ul class="thread">
 				{{#each thread in threads}}
-					{{> nrr nrrargs 'message' groupable=false msg=thread room=room subscription=subscription settings=settings templatePrefix='threads-' u=u forceDate=true}}
+					{{> nrr nrrargs 'message' groupable=false msg=thread room=room subscription=subscription customClass="thread-message" settings=settings templatePrefix='threads-' u=u noDate=true showCompleteData=true }}
 				{{/each}}
 			</ul>
 		</div>

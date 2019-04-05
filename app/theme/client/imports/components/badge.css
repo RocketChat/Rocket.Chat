@@ -1,7 +1,10 @@
 .badge {
-	display: inline-block;
 
-	padding: 3px 6px;
+	display: flex;
+
+	min-width: 25px;
+
+	padding: 2px;
 
 	color: var(--badge-text-color);
 
@@ -10,6 +13,7 @@
 	background-color: var(--badge-background);
 
 	font-size: var(--badge-text-size);
+	justify-content: center;
 
 	&--unread {
 		margin: 0 3px;

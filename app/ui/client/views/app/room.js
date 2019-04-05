@@ -7,7 +7,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
-import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
+import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
 	fireGlobalEvent,
 	RoomHistoryManager,
@@ -615,7 +615,7 @@ Template.room.events({
 		if (message) {
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		} else {
-			const subscription = ChatSubscription.findOne({ rid: _id });
+			const subscription = Subscriptions.findOne({ rid: _id });
 			message = ChatMessage.find({ rid: _id, ts: { $gt: (subscription != null ? subscription.ls : undefined) } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		}
@@ -1122,7 +1122,7 @@ Template.room.onRendered(function() {
 		}
 	};
 
-	const subscription = ChatSubscription.findOne({ rid: template.data._id }, { reactive: false });
+	const subscription = Subscriptions.findOne({ rid: template.data._id }, { reactive: false });
 	const updateUnreadCount = _.throttle(function() {
 		const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 

@@ -2,12 +2,20 @@
 	padding-top: var(--default-padding);
 	padding-bottom: var(--default-padding);
 
-	border-bottom: 1px solid #eaeaea;
-	background: #f7f8fa;
+	border-bottom: 1px solid var(--color-gray-light);
+}
+
+.message.thread-message {
+	padding-top: 16px;
+	padding-bottom: 8px;
+}
+
+.thread-message + .thread-message {
+	border-top: 1px solid var(--color-gray-light);
 }
 
 .thread-empty {
-	padding: 0 calc(2 * var(--default-padding));
+	padding: calc(2 * var(--default-padding));
 }
 
 .thread-list {
@@ -21,10 +29,9 @@
 	white-space: nowrap;
 	text-overflow: ellipsis;
 
-	color: #9ea2a8;
+	color: var(--color-gray);
 
 	font-size: 14px;
-	font-style: italic;
 }
 
 .message.sequential > .body > .thread-replied {

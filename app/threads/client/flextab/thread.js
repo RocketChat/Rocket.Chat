@@ -8,6 +8,7 @@ import _ from 'underscore';
 import { call } from '../../../ui-utils';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models';
+import { lazyloadtick } from '../../../lazy-load';
 
 import './thread.html';
 
@@ -21,11 +22,7 @@ Template.thread.events({
 		const { close } = this;
 		return close && close();
 	},
-	// 'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
-	// 	if (e.scrollTop < 50) {
-	// 		i.loadMore && i.incLimit();
-	// 	}
-	// }, 500),
+	'scroll .js-scroll-thread': () => lazyloadtick(),
 });
 
 Template.thread.helpers({

@@ -150,6 +150,11 @@
 		width: 100%;
 	}
 
+	&--no-padding {
+		padding-right: 0;
+		padding-left: 0;
+	}
+
 	&.loading {
 		position: relative;
 

@@ -160,7 +160,6 @@ button {
 .first-unread .body {
 	&::before {
 		position: absolute;
-		z-index: 1;
 		top: 0;
 		left: 0;
 
@@ -197,22 +196,6 @@ button {
 		font-size: 10px;
 
 		line-height: 10px;
-	}
-}
-
-.message.new-day.first-unread {
-	&::after {
-		border-color: var(--rc-color-error);
-	}
-
-	& .body {
-		&::before {
-			display: none;
-		}
-
-		&::after {
-			top: -26px;
-		}
 	}
 }
 

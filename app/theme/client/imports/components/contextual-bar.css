@@ -56,13 +56,17 @@
 
 		padding: var(--default-padding);
 
+		border-bottom: solid 1px var(--color-gray-light);
+
+		background: var(--color-gray-lightest);
+
 		align-items: center;
 		justify-content: flex-end;
 
 		&-data {
 			display: flex;
 			flex: 1 1;
-			align-items: flex-start;
+			align-items: center;
 		}
 
 		&-icon {
@@ -127,7 +131,6 @@
 		top: 0;
 
 		width: 100%;
-		max-width: var(--flex-tab-width);
 
 		animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}

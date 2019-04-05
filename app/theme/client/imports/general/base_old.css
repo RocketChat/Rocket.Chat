@@ -2628,12 +2628,33 @@ rc-old select,
 
 	line-height: 20px;
 
+	&-unread {
+		display: inline-block;
+
+		width: 10px;
+		height: 10px;
+		margin: 0 0.25rem;
+
+		cursor: pointer;
+
+		border-radius: 50%;
+		background: var(--rc-color-button-primary);
+	}
+
+	&.highlighted {
+		background: #ffff99;
+	}
+
 	&.highlight {
 		animation: highlight 3s;
 	}
 
 	&:nth-child(1) {
 		margin-top: 0;
+	}
+
+	& .time {
+		white-space: nowrap;
 	}
 
 	&.new-day {
@@ -4447,9 +4468,9 @@ rc-old select,
 
 .rc-old .mention-link {
 
-	padding: 0 4px 2px;
+	padding: 2px 5px;
 
-	border-radius: var(--border-radius);
+	border-radius: 15px;
 
 	font-weight: bold;
 }
@@ -4457,7 +4478,7 @@ rc-old select,
 .rc-old .highlight-text {
 	padding: 2px;
 
-	border-radius: var(--border-radius);
+	border-radius: 15px;
 }
 
 .rc-old .avatar-suggestions {
@@ -5339,7 +5360,7 @@ rc-old select,
 	text-decoration: none;
 
 	color: #555555;
-	border: 1px solid #eaeaea;
+	border: 1px solid var(--color-gray-light);
 	border-radius: var(--border-radius);
 
 	font-family: arial;

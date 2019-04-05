@@ -8,13 +8,12 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { DateFormat } from '../../lib/client';
-import { renderMessageBody, MessageTypes, MessageAction, call } from '../../ui-utils/client';
+import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
 import { AutoTranslate } from '../../autotranslate/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils/client';
-
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
 		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
@@ -188,8 +187,8 @@ Template.message.helpers({
 		}
 	},
 	time() {
-		const { msg } = this;
-		return DateFormat.formatTime(msg.ts);
+		const { msg, showCompleteData } = this;
+		return showCompleteData ? DateFormat.formatDateAndTime(msg.ts) : DateFormat.formatTime(msg.ts);
 	},
 	date() {
 		const { msg } = this;
@@ -346,9 +345,9 @@ Template.message.helpers({
 		return msg.actionContext;
 	},
 	messageActions(group) {
-		const { msg } = this;
+		const { msg, context: ctx } = this;
 		let messageGroup = group;
-		let context = msg.actionContext;
+		let context = ctx || msg.actionContext;
 
 		if (!group) {
 			messageGroup = 'message';
@@ -384,6 +383,12 @@ const findParentMessage = (() => {
 				return;
 			}
 			const { _id, ...msg } = message;
+			Messages.update({ tmid: _id }, {
+				$set: {
+					threadMsg: normalizeThreadMessage(msg),
+					repliesCount: msg.tcount,
+				},
+			}, { multi: true });
 			Messages.upsert({ _id }, msg);
 		});
 	}, 500);
@@ -464,15 +469,16 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 };
 
-const setNewDayAndGroup = (currentNode, previousNode, forceDate, period) => {
+const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate) => {
 
 
 	const { classList } = currentNode;
 
 	// const $nextNode = $(nextNode);
 	if (previousNode == null) {
+
 		classList.remove('sequential');
-		return classList.add('new-day');
+		return !noDate && classList.add('new-day');
 	}
 
 	const previousDataset = previousNode.dataset;
@@ -480,7 +486,7 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period) => {
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
-	if (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+	if (!noDate && (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString())) {
 		classList.add('new-day');
 	}
 
@@ -499,67 +505,36 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period) => {
 
 };
 
-Template.message.onViewRendered = !localStorage.getItem('rc-onViewRendered') ? function(context) {
-
+Template.message.onViewRendered = function(context) {
 	const [, currentData] = Template.currentData()._arguments;
-	const { settings, forceDate } = currentData.hash;
+	const { settings, forceDate, noDate } = currentData.hash;
 	return this._domrange.onAttached((domRange) => {
 		if (context.file && context.file.type === 'application/pdf') {
 			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
 		}
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
-		const getPreviousSentMessage = (currentNode) => {
-			if ($(currentNode).hasClass('temp')) {
-				return currentNode.previousElementSibling;
-			}
-			if (currentNode.previousElementSibling != null) {
-				let previousValid = currentNode.previousElementSibling;
-				while (previousValid != null && $(previousValid).hasClass('temp')) {
-					previousValid = previousValid.previousElementSibling;
-				}
-				return previousValid;
-			}
-		};
 		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
-		const $currentNode = $(currentNode);
-		const $nextNode = $(nextNode);
-		if (forceDate || previousNode == null) {
-			$currentNode.addClass('new-day').removeClass('sequential');
-		} else if (previousNode.dataset) {
-			const previousDataset = previousNode.dataset;
-			const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
-			const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
-			if (previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
-				$currentNode.addClass('new-day').removeClass('sequential');
-			} else {
-				$currentNode.removeClass('new-day');
-			}
-			if (previousDataset.groupable === 'false' || currentDataset.groupable === 'false') {
-				$currentNode.removeClass('sequential');
-			} else if (previousDataset.tmid !== currentDataset.tmid || previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > settings.Message_GroupingPeriod) {
-				$currentNode.removeClass('sequential');
-			} else if (!$currentNode.hasClass('new-day')) {
-				$currentNode.addClass('sequential');
-			}
-		}
+		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, noDate);
 		if (nextNode && nextNode.dataset) {
 			const nextDataset = nextNode.dataset;
 			if (forceDate || nextDataset.date !== currentDataset.date) {
-				$nextNode.addClass('new-day').removeClass('sequential');
+				if (!noDate) {
+					currentNode.classList.add('new-day');
+				}
+				currentNode.classList.remove('sequential');
 			} else {
-				$nextNode.removeClass('new-day');
+				nextNode.classList.remove('new-day');
 			}
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.tmid !== currentDataset.tmid || nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
-					$nextNode.removeClass('sequential');
-				} else if (!$nextNode.hasClass('new-day') && !$currentNode.hasClass('temp')) {
-					$nextNode.addClass('sequential');
+					nextNode.classList.remove('sequential');
+				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp')) {
+					nextNode.classList.add('sequential');
 				}
 			}
-		}
-		if (nextNode == null) {
+		} else {
 			const [el] = $(`#chat-window-${ context.rid }`);
 			const view = el && Blaze.getView(el);
 			const templateInstance = view && view.templateInstance();
@@ -575,20 +550,4 @@ Template.message.onViewRendered = !localStorage.getItem('rc-onViewRendered') ? f
 
 	});
 
-} : function(context) {
-	const [, currentData] = Template.currentData()._arguments;
-	const { settings, noDate, forceDate } = currentData.hash;
-	if (context.file && context.file.type === 'application/pdf') {
-		Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
-	}
-
-	return !noDate && this._domrange.onAttached((domRange) => {
-		const currentNode = domRange.firstNode();
-		if (!currentNode.classList.contains('message')) {
-			return;
-		}
-		const previousNode = getPreviousSentMessage(currentNode);
-
-		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod * 1000);
-	});
 };

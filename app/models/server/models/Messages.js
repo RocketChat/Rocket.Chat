@@ -30,7 +30,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ drid: 1 }, { sparse: true });
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
-		this.tryEnsureIndex({ tcount: 1 }, { sparse: true });
+		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
 
 	}
 
@@ -1104,7 +1104,7 @@ export class Messages extends Base {
 	}
 
 	findThreadsByRoomId(rid, skip, limit) {
-		return this.find({ rid, tcount: { $exists: true } }, { skip, limit });
+		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
 	}
 }
 
