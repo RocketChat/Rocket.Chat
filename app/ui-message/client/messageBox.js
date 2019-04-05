@@ -255,7 +255,7 @@ Template.messageBox.events({
 		onKeyUp && onKeyUp(rid, event, instance);
 	},
 	'paste .js-input-message'(event, instance) {
-		const { rid } = this;
+		const { rid, tmid } = this;
 		const { input } = instance;
 		setTimeout(() => {
 			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
@@ -275,7 +275,7 @@ Template.messageBox.events({
 
 		if (files.length) {
 			event.preventDefault();
-			fileUpload(files, input, rid);
+			fileUpload(files, input, { rid, tmid });
 			return;
 		}
 	},
@@ -349,6 +349,7 @@ Template.messageBox.events({
 			currentTarget: event.currentTarget.firstElementChild.firstElementChild,
 			data: {
 				rid: this.rid,
+				tmid: this.tmid,
 				messageBox: instance.firstNode,
 			},
 			activeElement: event.currentTarget,
@@ -364,6 +365,7 @@ Template.messageBox.events({
 			.forEach(({ action }) => {
 				action.call(null, {
 					rid: this.rid,
+					tmid: this.tmid,
 					messageBox: instance.firstNode,
 					event,
 				});

@@ -39,7 +39,7 @@ const unregisterUploadProgress = (upload) => setTimeout(() => {
 	Session.set('uploading', uploads.filter(({ id }) => id !== upload.id));
 }, 2000);
 
-const uploadRecord = async ({ rid, blob }) => {
+const uploadRecord = async ({ rid, tmid, blob }) => {
 	const upload = fileUploadHandler('Uploads', {
 		name: `${ t('Audio record') }.mp3`,
 		size: blob.size,
@@ -59,7 +59,7 @@ const uploadRecord = async ({ rid, blob }) => {
 			upload.start((error, ...args) => (error ? reject(error) : resolve(args)));
 		});
 
-		await call('sendFileMessage', rid, storage, file);
+		await call('sendFileMessage', rid, storage, file, { tmid });
 
 		unregisterUploadProgress(upload);
 	} catch (error) {
@@ -188,6 +188,7 @@ Template.messageBoxAudioMessage.events({
 
 		instance.state.set(null);
 
-		await uploadRecord({ rid: this.rid, blob });
+		const { rid, tmid } = this;
+		await uploadRecord({ rid, tmid, blob });
 	},
 });

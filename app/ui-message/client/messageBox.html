@@ -1,7 +1,9 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#unless isAnonymousOrMustJoinWithCode}}
-			{{> messageBoxTyping rid=rid}}
+			{{#unless tmid}}
+				{{> messageBoxTyping rid=rid}}
+			{{/unless}}
 
 			{{#if canSend}}
 				{{#if popupConfig}}
@@ -28,7 +30,7 @@
 						</span>
 					{{else}}
 						{{#if subscribed}}
-							{{> messageBoxAudioMessage rid=rid}}
+							{{> messageBoxAudioMessage rid=rid tmid=tmid}}
 							<span class="rc-message-box__action-menu js-action-menu" data-desktop>
 								{{#if actions}}
 									<span class="rc-message-box__icon">

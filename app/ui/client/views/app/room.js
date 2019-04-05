@@ -824,7 +824,7 @@ Template.room.events({
 			});
 		}
 
-		fileUpload(filesToUpload, chatMessages[RoomManager.openedRoom].input, RoomManager.openedRoom);
+		fileUpload(filesToUpload, chatMessages[RoomManager.openedRoom].input, { rid: RoomManager.openedRoom });
 	},
 
 	'load img'(e, template) {

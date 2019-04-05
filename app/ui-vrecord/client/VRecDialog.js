@@ -20,9 +20,9 @@ export const VRecDialog = new class {
 		return Blaze.renderWithData(Template.vrecDialog, templateData, document.body);
 	}
 
-	open(rid, source) {
+	open(source, { rid, tmid }) {
 		if (!this.initiated) {
-			this.init({ rid, input: source.querySelector('.js-input-message') });
+			this.init({ rid, tmid, input: source.querySelector('.js-input-message') });
 		}
 
 		this.source = source;
