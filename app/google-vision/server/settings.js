@@ -15,6 +15,7 @@ Meteor.startup(function() {
 		section: 'Google Vision',
 		multiline: true,
 		enableQuery: { _id: 'GoogleVision_Enable', value: true },
+		secret: true,
 	});
 	settings.add('GoogleVision_Max_Monthly_Calls', 0, {
 		type: 'int',

@@ -25,6 +25,7 @@ Meteor.startup(function() {
 					value: 'twilio',
 				},
 				i18nLabel: 'Account_SID',
+				secret: true,
 			});
 			this.add('SMS_Twilio_authToken', '', {
 				type: 'string',
@@ -33,6 +34,7 @@ Meteor.startup(function() {
 					value: 'twilio',
 				},
 				i18nLabel: 'Auth_Token',
+				secret: true,
 			});
 		});
 	});

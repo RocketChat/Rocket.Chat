@@ -52,6 +52,7 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'SAML_Custom_Cert',
 			multiline: true,
+			secret: true,
 		});
 		settings.add(`SAML_Custom_${ name }_public_cert`, '', {
 			type: 'string',
@@ -66,6 +67,7 @@ Meteor.methods({
 			section: name,
 			multiline: true,
 			i18nLabel: 'SAML_Custom_Private_Key',
+			secret: true,
 		});
 		settings.add(`SAML_Custom_${ name }_button_label_text`, '', {
 			type: 'string',
