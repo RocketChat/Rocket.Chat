@@ -3,12 +3,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, getUserPreference, roomTypes } from '../../utils';
-import moment from 'moment';
 import { popover, renderMessageBody } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { menu } from '../../ui-utils';
+import { timeAgo } from '../../lib/client/lib/formatDate';
 
 Template.sidebarItem.helpers({
 	streaming() {
@@ -37,16 +37,6 @@ Template.sidebarItem.helpers({
 	},
 });
 
-function timeAgo(time) {
-	const now = new Date();
-	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-
-	return (
-		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
-		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
-		moment(time).format('L')
-	);
-}
 function setLastMessageTs(instance, ts) {
 	if (instance.timeAgoInterval) {
 		clearInterval(instance.timeAgoInterval);
