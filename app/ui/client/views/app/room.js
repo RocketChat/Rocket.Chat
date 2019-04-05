@@ -40,7 +40,7 @@ const favoritesEnabled = () => settings.get('Favorite_Rooms');
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Meteor.user());
 
 const openProfileTab = (e, instance, username) => {
-	const roomData = Session.get(`roomData${ Session.get('openedRoom') }`);
+	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
 
 	if (Layout.isEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
@@ -1031,7 +1031,8 @@ Template.room.onDestroyed(function() {
 });
 
 Template.room.onRendered(function() {
-	const rid = Session.get('openedRoom');
+	const { _id: rid } = this.data;
+
 	if (!chatMessages[rid]) {
 		chatMessages[rid] = new ChatMessages;
 	}
