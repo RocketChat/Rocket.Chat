@@ -3,7 +3,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermission, canAccessRoom } from '../../../authorization/server';
 import { composeMessageObjectWithUser } from '../../../utils/server';
 
 import { API } from '../api';
@@ -14,17 +14,27 @@ function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) 
 		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
-	// gets only the room type to validate its existance since we cannot avoid a full find from canAccessRoom
-	const roomCheck = params.roomId ?
-		Rooms.findOneById(params.roomId, { fields: { t: 1 } }) :
-		Rooms.findOneByName(params.roomName, { fields: { t: 1 } });
+	const roomOptions = {
+		fields: {
+			t: 1,
+			ro: 1,
+			name: 1,
+			fname: 1,
+			prid: 1,
+			archived: 1,
+		},
+	};
+	const room = params.roomId ?
+		Rooms.findOneById(params.roomId, roomOptions) :
+		Rooms.findOneByName(params.roomName, roomOptions);
 
-	if (!roomCheck || roomCheck.t !== 'p') {
+	if (!room || room.t !== 'p') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
-	const room = Meteor.call('canAccessRoom', roomCheck._id, userId);
-	if (!room) {
+	const user = Users.findOneById(userId, { fields: { username: 1 } });
+
+	if (!canAccessRoom(room, user)) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
