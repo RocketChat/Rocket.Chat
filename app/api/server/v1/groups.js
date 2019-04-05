@@ -1,9 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models';
-import { hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
-import { API } from '../api';
 import _ from 'underscore';
+
+import { Meteor } from 'meteor/meteor';
+
+import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
+import { composeMessageObjectWithUser } from '../../../utils/server';
+
+import { API } from '../api';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -11,29 +14,36 @@ function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) 
 		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
-	let roomSub;
-	if (params.roomId) {
-		roomSub = Subscriptions.findOneByRoomIdAndUserId(params.roomId, userId);
-	} else if (params.roomName) {
-		roomSub = Subscriptions.findOneByRoomNameAndUserId(params.roomName, userId);
-	}
-	const room = Rooms.findOneByIdOrName(params.roomId || params.roomName);
-	const userIsSubescribedToRoom = Boolean(roomSub);
-	const privateRoom = roomSub && roomSub.t === 'p';
-	const isADiscussion = !roomSub && room;
-	const canAccessDiscussionParentRoom = isADiscussion && Meteor.call('canAccessRoom', room._id, userId);
-	if (!privateRoom && ((isADiscussion && !canAccessDiscussionParentRoom) || (!isADiscussion && !userIsSubescribedToRoom))) {
+	// gets only the room type to validate its existance since we cannot avoid a full find from canAccessRoom
+	const roomCheck = params.roomId ?
+		Rooms.findOneById(params.roomId, { fields: { t: 1 } }) :
+		Rooms.findOneByName(params.roomName, { fields: { t: 1 } });
+
+	if (!roomCheck || roomCheck.t !== 'p') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
-	if (!isADiscussion && checkedArchived && roomSub.archived) {
-		throw new Meteor.Error('error-room-archived', `The private group, ${ roomSub.name }, is archived`);
+	const room = Meteor.call('canAccessRoom', roomCheck._id, userId);
+	if (!room) {
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
-	if (isADiscussion) {
-		roomSub = room;
-		room.rid = room._id;
+
+	// discussions have their names saved on `fname` property
+	const roomName = room.prid ? room.fname : room.name;
+
+	if (checkedArchived && room.archived) {
+		throw new Meteor.Error('error-room-archived', `The private group, ${ roomName }, is archived`);
 	}
-	return roomSub;
+
+	const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, userId, { fields: { open: 1 } });
+
+	return {
+		rid: room._id,
+		open: sub && sub.open,
+		ro: room.ro,
+		t: room.t,
+		name: roomName,
+	};
 }
 
 API.v1.addRoute('groups.addAll', { authRequired: true }, {
