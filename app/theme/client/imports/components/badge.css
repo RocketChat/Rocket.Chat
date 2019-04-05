@@ -2,9 +2,9 @@
 
 	display: flex;
 
-	min-width: 25px;
+	min-width: 20px;
 
-	padding: 2px;
+	padding: 2px 6px;
 
 	color: var(--badge-text-color);
 
