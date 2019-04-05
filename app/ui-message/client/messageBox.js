@@ -41,7 +41,7 @@ Template.messageBox.onCreated(function() {
 
 Template.messageBox.onRendered(function() {
 	this.autorun(() => {
-		const { onInputChanged, onResize } = Template.currentData();
+		const { rid, onInputChanged, onResize } = Template.currentData();
 
 		Tracker.afterFlush(() => {
 			const input = this.find('.js-input-message');
@@ -59,6 +59,7 @@ Template.messageBox.onRendered(function() {
 			}
 
 			this.popupConfig.set({
+				rid,
 				getInput: () => input,
 			});
 
@@ -144,15 +145,6 @@ const handleFormattingShortcut = (event, instance) => {
 	return true;
 };
 
-let sendOnEnter = '';
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const user = Meteor.userId();
-		sendOnEnter = getUserPreference(user, 'sendOnEnter');
-	});
-});
-
 const insertNewLine = (input) => {
 	if (document.selection) {
 		input.focus();
@@ -183,6 +175,7 @@ const handleSubmit = (event, instance) => {
 		return false;
 	}
 
+	const sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
 	const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' ||
 		(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
 	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
