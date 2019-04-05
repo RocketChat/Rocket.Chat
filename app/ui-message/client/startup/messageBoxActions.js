@@ -19,14 +19,14 @@ messageBox.actions.add('Create_new', 'Video_message', {
 		settings.get('Message_VideoRecorderEnabled') &&
 		(!settings.get('FileUpload_MediaTypeWhiteList') ||
 			settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
-	action: ({ messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox)),
+	action: ({ rid, messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(rid, messageBox)),
 });
 
 messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
 	condition: () => settings.get('FileUpload_Enabled'),
-	action({ event, messageBox }) {
+	action({ rid, event, messageBox }) {
 		event.preventDefault();
 		const $input = $(document.createElement('input'));
 		$input.css('display', 'none');
@@ -49,7 +49,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.js-input-message', messageBox));
+			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0), rid);
 			$input.remove();
 		});
 

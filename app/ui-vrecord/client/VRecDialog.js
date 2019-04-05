@@ -11,23 +11,23 @@ export const VRecDialog = new class {
 		this.height = 290;
 	}
 
-	init() {
+	init(templateData) {
 		if (this.initiated) {
 			return;
 		}
 
 		this.initiated = true;
-		return Blaze.render(Template.vrecDialog, document.body);
+		return Blaze.renderWithData(Template.vrecDialog, templateData, document.body);
 	}
 
-	open(source, options = {}) {
+	open(rid, source) {
 		if (!this.initiated) {
-			this.init();
+			this.init({ rid, input: source.querySelector('.js-input-message') });
 		}
 
 		this.source = source;
 		const dialog = $('.vrec-dialog');
-		this.setPosition(dialog, source, options.anchor);
+		this.setPosition(dialog, source);
 		dialog.addClass('show');
 		this.opened = true;
 
@@ -44,7 +44,6 @@ export const VRecDialog = new class {
 	}
 
 	setPosition(dialog, source, anchor = 'left') {
-
 		const _set = () => {
 			const sourcePos = $(source).offset();
 			let top = sourcePos.top - this.height - 5;
@@ -71,7 +70,6 @@ export const VRecDialog = new class {
 		_set();
 		this.remove = set;
 		$(window).on('resize', set);
-
 	}
 
 	initializeCamera() {

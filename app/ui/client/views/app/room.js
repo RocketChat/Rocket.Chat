@@ -824,9 +824,7 @@ Template.room.events({
 			});
 		}
 
-		const { input } = chatMessages[RoomManager.openedRoom];
-
-		fileUpload(filesToUpload, input);
+		fileUpload(filesToUpload, chatMessages[RoomManager.openedRoom].input, RoomManager.openedRoom);
 	},
 
 	'load img'(e, template) {

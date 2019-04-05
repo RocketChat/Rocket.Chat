@@ -139,10 +139,12 @@ const getUploadPreview = async (file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-export const fileUpload = async (files, input) => {
+export const fileUpload = async (files, input, rid) => {
 	files = [].concat(files);
 
-	const roomId = Session.get('openedRoom');
+	if (!rid) {
+		rid = Session.get('openedRoom');
+	}
 
 	let msg = '';
 
@@ -193,7 +195,7 @@ export const fileUpload = async (files, input) => {
 				name: document.getElementById('file-name').value || file.name || file.file.name,
 				size: file.file.size,
 				type: file.file.type,
-				rid: roomId,
+				rid,
 				description: document.getElementById('file-description').value,
 			};
 
@@ -233,7 +235,7 @@ export const fileUpload = async (files, input) => {
 					return;
 				}
 
-				Meteor.call('sendFileMessage', roomId, storage, file, { msg }, () => {
+				Meteor.call('sendFileMessage', rid, storage, file, { msg }, () => {
 					$(input)
 						.removeData('reply')
 						.trigger('dataChange');

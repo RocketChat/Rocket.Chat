@@ -260,7 +260,7 @@ export class ChatMessages {
 					const messageBlob = new Blob([msgObject.msg], { type: contentType });
 					const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
 					const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
-					fileUpload([{ file, name: fileName }]);
+					fileUpload([{ file, name: fileName }], input, rid);
 					this.clearCurrentDraft();
 					input.value = '';
 					this.$input.trigger('change').trigger('input');
