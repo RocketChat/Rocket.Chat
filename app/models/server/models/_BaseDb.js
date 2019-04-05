@@ -47,7 +47,9 @@ export class BaseDb extends EventEmitter {
 					};
 
 					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
-					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
+					if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
+						MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
+					}
 				}
 			}
 		});
