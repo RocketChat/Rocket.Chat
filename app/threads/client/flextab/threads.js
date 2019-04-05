@@ -122,11 +122,11 @@ Template.threads.onCreated(async function() {
 		this.subscriptionObserve && this.subscriptionObserve.stop();
 		this.subscriptionObserve = Subscriptions.find({ rid }, { fields: { tunread: 1 } }).observeChanges({
 			added: (_id, { tunread }) => {
-				tunread && tunread.length && this.Threads.update({ tmid: { $in: tunread } }, { $set: { unread: 1 } }, { multi: true });
+				tunread && tunread.length && this.Threads.update({ tmid: { $in: tunread } }, { $set: { alert: 'Unread' } }, { multi: true });
 			},
 			changed: (id, { tunread = [] }) => {
-				this.Threads.update({ unread: 1, _id: { $nin: tunread } }, { $unset: { unread: 1 } }, { multi: true });
-				tunread && tunread.length && this.Threads.update({ _id: { $in: tunread } }, { $set: { unread: 1 } }, { multi: true });
+				this.Threads.update({ alert: 1, _id: { $nin: tunread } }, { $unset: { alert: 1 } }, { multi: true });
+				tunread && tunread.length && this.Threads.update({ _id: { $in: tunread } }, { $set: { alert: 'Unread' } }, { multi: true });
 
 			},
 		});
