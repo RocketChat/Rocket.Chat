@@ -43,7 +43,7 @@ export class AppSettingBridge {
 	async isReadableById(id, appId) {
 		this.orch.debugLog(`The App ${ appId } is checking if they can read the setting ${ id }.`);
 
-		return !RocketChat.models.Settings.findOneById(id).secret;
+		return !Settings.findOneById(id).secret;
 	}
 
 	async updateOne(setting, appId) {
