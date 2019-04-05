@@ -4468,9 +4468,9 @@ rc-old select,
 
 .rc-old .mention-link {
 
-	padding: 2px 5px;
+	padding: 0 6px 2px;
 
-	border-radius: 15px;
+	border-radius: 10px;
 
 	font-weight: bold;
 }
