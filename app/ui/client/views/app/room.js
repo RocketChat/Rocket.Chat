@@ -681,11 +681,11 @@ Template.room.events({
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
-		let context = $(e.target).parents('.message').data('context');
-		if (!context) {
-			context = 'message';
-		}
-		const { msg: message } = messageArgs(this);
+
+		const { msg: message, context: ctx } = messageArgs(this);
+
+		const context = ctx || message.actionContext || 'message';
+
 		const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),

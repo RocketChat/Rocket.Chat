@@ -8,16 +8,13 @@ Meteor.startup(function() {
 		id: 'jump-to-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['mentions'],
+		context: ['mentions', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
-		},
-		condition(message) {
-			return message.mentionedList === true;
 		},
 		order: 100,
 		group: 'menu',

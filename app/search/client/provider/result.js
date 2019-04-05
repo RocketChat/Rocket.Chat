@@ -15,7 +15,7 @@ Meteor.startup(function() {
 		id: 'jump-to-search-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['search', 'threads'],
+		context: ['search'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (Session.get('openedRoom') === message.rid) {

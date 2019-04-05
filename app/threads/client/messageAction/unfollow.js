@@ -15,7 +15,7 @@ Meteor.startup(function() {
 			id: 'unfollow-message',
 			icon: 'bell-off',
 			label: 'Unfollow_message',
-			context: ['message', 'message-mobile'],
+			context: ['message', 'message-mobile', 'threads'],
 			async action() {
 				const { msg } = messageArgs(this);
 				call('unfollowMessage', { mid: msg._id });
