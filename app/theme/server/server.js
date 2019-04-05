@@ -82,7 +82,7 @@ export const theme = new class {
 			currentHash = crypto.createHash('sha1').update(data.css).digest('hex');
 			currentSize = data.css.length;
 			const themePath = `/theme.css?${ currentHash }`;
-			Inject.rawHead('css-theme', `<link rel="stylesheet" type="text/css" href=${ getURL(themePath) }>`);
+			Inject.rawHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(themePath) }">`);
 
 			return Meteor.startup(function() {
 				return Meteor.setTimeout(function() {
