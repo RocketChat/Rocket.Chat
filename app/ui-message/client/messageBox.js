@@ -13,6 +13,7 @@ import {
 	popover,
 	call,
 	keyCodes,
+	isRTL,
 } from '../../ui-utils';
 import {
 	t,
@@ -278,7 +279,16 @@ Template.messageBox.events({
 		}
 	},
 	'input .js-input-message'(event, instance) {
-		instance.sendIconDisabled.set(event.target.value !== '');
+		const { input } = instance;
+		if (!input) {
+			return;
+		}
+
+		instance.sendIconDisabled.set(!!input.value);
+
+		if (input.value.length > 0) {
+			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
+		}
 
 		const { rid, onValueChanged } = this;
 		onValueChanged && onValueChanged(rid, event, instance);
@@ -286,6 +296,17 @@ Template.messageBox.events({
 	'propertychange .js-input-message'(event, instance) {
 		if (event.originalEvent.propertyName !== 'value') {
 			return;
+		}
+
+		const { input } = instance;
+		if (!input) {
+			return;
+		}
+
+		instance.sendIconDisabled.set(!!input.value);
+
+		if (input.value.length > 0) {
+			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
 
 		const { rid, onValueChanged } = this;
@@ -360,7 +381,6 @@ Template.messageBox.events({
 			return;
 		}
 
-		const input = instance.find('.js-input-message');
-		applyFormatting(pattern, input);
+		applyFormatting(pattern, instance.input);
 	},
 });

@@ -362,7 +362,6 @@ Template.room.helpers({
 			},
 			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
 			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
-			onValueChanged: (...args) => chatMessages[rid] && chatMessages[rid].valueChanged.apply(chatMessages[rid], args),
 			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
 		};
 	},

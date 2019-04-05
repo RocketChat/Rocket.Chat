@@ -11,7 +11,6 @@ import {
 	readMessage,
 	modal,
 	call,
-	isRTL,
 	keyCodes,
 } from '../../../ui-utils';
 import { settings } from '../../../settings';
@@ -23,7 +22,6 @@ import { emoji } from '../../../emoji';
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
 import _ from 'underscore';
-import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
 import { fileUpload } from './fileUpload';
@@ -211,8 +209,6 @@ export class ChatMessages {
 		$(this.input).trigger('change').trigger('input');
 		const cursorPosition = this.editing.savedCursor != null ? this.editing.savedCursor : -1;
 		this.$input.setCursorPosition(cursorPosition);
-
-		return;
 	}
 
 	async send(rid, input, done = () => {}) {
@@ -220,7 +216,7 @@ export class ChatMessages {
 			await call('joinRoom', rid);
 		}
 
-		if (s.trim(input.value) !== '') {
+		if (input.value.trim()) {
 			readMessage.enable();
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
@@ -277,7 +273,7 @@ export class ChatMessages {
 			this.clearCurrentDraft();
 
 			if (this.editing.id) {
-				await this.update(this.editing.id, rid, msgObject.msg);
+				await this.updateMessage(this.editing.id, rid, msgObject.msg);
 				return;
 			}
 
@@ -303,7 +299,7 @@ export class ChatMessages {
 
 			const isDescription = message.attachments && message.attachments[0] && message.attachments[0].description;
 			if (isDescription) {
-				this.update(this.editing.id, rid, '', true);
+				this.updateMessage(this.editing.id, rid, '', true);
 				return;
 			}
 
@@ -419,24 +415,11 @@ export class ChatMessages {
 		}
 	}
 
-	update(id, rid, msg, isDescription) {
-		if ((s.trim(msg) !== '') || (isDescription === true)) {
-			call('updateMessage', { _id: id, msg, rid });
-			this.clearEditing();
+	async updateMessage(_id, rid, msg, isDescription) {
+		if (msg.trim() || isDescription) {
 			MsgTyping.stop(rid);
-		}
-	}
-
-	// DEPRECATED
-	tryCompletion(input) {
-		const [value] = input.value.match(/[^\s]+$/) || [];
-		if (!value) {
-			return;
-		}
-
-		const user = Meteor.users.findOne({ username: new RegExp(value, 'i') });
-		if (user) {
-			input.value = input.value.replace(value, `@${ user.username } `);
+			await call('updateMessage', { _id, msg, rid });
+			this.clearEditing();
 		}
 	}
 
@@ -466,10 +449,10 @@ export class ChatMessages {
 		const { currentTarget: input, which: keyCode } = event;
 
 		if (!Object.values(keyCodes).includes(keyCode)) {
-			if (s.trim(input.value) === '') {
-				MsgTyping.stop(rid);
-			} else {
+			if (input.value.trim()) {
 				MsgTyping.start(rid);
+			} else {
+				MsgTyping.stop(rid);
 			}
 		}
 
@@ -478,12 +461,6 @@ export class ChatMessages {
 
 	keydown(rid, event) {
 		const { currentTarget: input, which: keyCode } = event;
-
-		if (keyCode === keyCodes.TAB) {
-			event.preventDefault();
-			event.stopPropagation();
-			this.tryCompletion(input);
-		}
 
 		if (keyCode === keyCodes.ESCAPE && this.editing.index != null) {
 			if (!this.resetToDraft(this.editing.id)) {
@@ -526,12 +503,6 @@ export class ChatMessages {
 			}
 
 			return false;
-		}
-	}
-
-	valueChanged(/* rid, event*/) {
-		if (this.input.value.length > 0) {
-			this.input.dir = isRTL(this.input.value) ? 'rtl' : 'ltr';
 		}
 	}
 
