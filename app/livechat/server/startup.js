@@ -7,7 +7,7 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 
 Meteor.startup(() => {
-	roomTypes.setRoomFind('l', (_id) => Rooms.findLivechatById(_id).fetch());
+	roomTypes.setRoomFind('l', (_id) => Rooms.findOneLivechatById(_id));
 
 	addRoomAccessValidator(function(room, user) {
 		return room && room.t === 'l' && user && hasPermission(user._id, 'view-livechat-rooms');

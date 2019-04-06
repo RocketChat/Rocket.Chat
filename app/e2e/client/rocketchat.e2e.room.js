@@ -39,7 +39,7 @@ export class E2ERoom {
 			this._ready.set(true);
 			this.establishing.set(false);
 
-			Notifications.onRoom(this.roomId, 'e2ekeyRequest', async(keyId) => {
+			Notifications.onRoom(this.roomId, 'e2ekeyRequest', async (keyId) => {
 				this.provideKeyToUser(keyId);
 			});
 		});

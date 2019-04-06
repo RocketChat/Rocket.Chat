@@ -3,6 +3,7 @@ import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 
 import { getRedirectUri } from './getRedirectUri';
+import { userScopes } from '../oauthScopes';
 
 export function getOAuthAuthorizationUrl() {
 	const state = Random.id();
@@ -13,5 +14,7 @@ export function getOAuthAuthorizationUrl() {
 	const client_id = settings.get('Cloud_Workspace_Client_Id');
 	const redirectUri = getRedirectUri();
 
-	return `${ cloudUrl }/authorize?response_type=code&client_id=${ client_id }&redirect_uri=${ redirectUri }&scope=offline_access&state=${ state }`;
+	const scope = userScopes.join(' ');
+
+	return `${ cloudUrl }/authorize?response_type=code&client_id=${ client_id }&redirect_uri=${ redirectUri }&scope=${ scope }&state=${ state }`;
 }
