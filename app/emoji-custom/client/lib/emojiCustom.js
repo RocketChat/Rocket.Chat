@@ -158,7 +158,7 @@ emoji.packages.emojiCustom = {
 };
 
 Meteor.startup(() =>
-	CachedCollectionManager.onLogin(async() => {
+	CachedCollectionManager.onLogin(async () => {
 		const emojis = await call('listEmojiCustom');
 
 		emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };

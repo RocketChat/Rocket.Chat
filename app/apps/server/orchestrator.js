@@ -15,6 +15,8 @@ class AppServerOrchestrator {
 			Permissions.createOrUpdate('manage-apps', ['admin']);
 		}
 
+		this._inDebug = process.env.NODE_ENV !== 'production';
+
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
 		this._persistModel = new AppsPersistenceModel();
@@ -77,6 +79,17 @@ class AppServerOrchestrator {
 		return this.getManager().areAppsLoaded();
 	}
 
+	isDebugging() {
+		return this._inDebug;
+	}
+
+	debugLog() {
+		if (this._inDebug) {
+			// eslint-disable-next-line
+			console.log(...arguments);
+		}
+	}
+
 	load() {
 		// Don't try to load it again if it has
 		// already been loaded
@@ -107,6 +120,21 @@ settings.addGroup('General', function() {
 		this.add('Apps_Framework_enabled', true, {
 			type: 'boolean',
 			hidden: false,
+		});
+
+		this.add('Apps_Framework_Development_Mode', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Apps_Framework_enabled',
+				value: true,
+			},
+			public: true,
+			hidden: false,
+		});
+
+		this.add('Apps_Framework_Marketplace_Url', 'https://marketplace.rocket.chat', {
+			type: 'string',
+			hidden: true,
 		});
 	});
 });

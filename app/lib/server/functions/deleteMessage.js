@@ -4,7 +4,7 @@ import { settings } from '../../../settings';
 import { Messages, Uploads, Rooms } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { callbacks } from '../../../callbacks';
-import { Apps } from '../../../apps';
+import { Apps } from '../../../apps/server';
 
 export const deleteMessage = function(message, user) {
 	const keepHistory = settings.get('Message_KeepHistory');
