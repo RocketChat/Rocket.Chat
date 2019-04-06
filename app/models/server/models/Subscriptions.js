@@ -1198,11 +1198,20 @@ export class Subscriptions extends Base {
 			name,
 		};
 
-		const update = {
-			$set: {
-				fname,
-			},
-		};
+		let update;
+		if (fname) {
+			update = {
+				$set: {
+					fname,
+				},
+			};
+		} else {
+			update = {
+				$unset: {
+					fname: true,
+				},
+			};
+		}
 
 		return this.update(query, update, { multi: true });
 	}

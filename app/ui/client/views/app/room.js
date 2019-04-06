@@ -858,7 +858,8 @@ Template.room.events({
 		} else {
 			modal.open({
 				title: t('Announcement'),
-				text: roomData.announcement,
+				text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
+				html: true,
 				showConfirmButton: false,
 				showCancelButton: true,
 				cancelButtonText: t('Close'),
