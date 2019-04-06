@@ -11,10 +11,6 @@ import { hasAtLeastOnePermission } from '../../authorization';
 import { menu } from '../../ui-utils';
 
 Template.sidebarItem.helpers({
-	or(...args) {
-		args.pop();
-		return args.some((arg) => arg);
-	},
 	streaming() {
 		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},
@@ -35,6 +31,9 @@ Template.sidebarItem.helpers({
 	},
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
+	},
+	showUnread() {
+		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
 });
 

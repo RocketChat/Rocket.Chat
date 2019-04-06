@@ -42,19 +42,8 @@ const extendedViewOption = (user) => {
 
 const showToolbar = new ReactiveVar(false);
 
-const selectorSearch = '.toolbar__search .rc-input__element';
 export const toolbarSearch = {
 	shortcut: false,
-	clear() {
-		const $inputMessage = $('.js-input-message');
-
-		if (0 === $inputMessage.length) {
-			return;
-		}
-
-		$inputMessage.focus();
-		$(selectorSearch).val('');
-	},
 	show(fromShortcut) {
 		menu.open();
 		showToolbar.set(true);

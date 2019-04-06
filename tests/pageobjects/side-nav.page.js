@@ -58,7 +58,7 @@ class SideNav extends Page {
 	openChannel(channelName) {
 		browser.waitForVisible(`.sidebar-item__ellipsis=${ channelName }`, 10000);
 		browser.click(`.sidebar-item__ellipsis=${ channelName }`);
-		browser.waitForVisible('.rc-message-box__container textarea', 5000);
+		browser.waitForVisible('.js-input-message', 5000);
 		browser.waitForVisible('.rc-header', 5000);
 		browser.waitUntil(function() {
 			browser.waitForVisible('.rc-header__name', 8000);
