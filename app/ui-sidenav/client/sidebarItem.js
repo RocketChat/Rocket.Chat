@@ -101,6 +101,7 @@ Template.sidebarItem.events({
 		return menu.close();
 	},
 	'click .sidebar-item__menu'(e) {
+		e.stopPropagation(); // to not close the menu
 		e.preventDefault();
 
 		const canLeave = () => {

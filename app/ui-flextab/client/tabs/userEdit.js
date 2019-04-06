@@ -6,6 +6,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { t, handleError } from '../../../utils';
 import { Roles } from '../../../models';
 import { hasAtLeastOnePermission } from '../../../authorization';
+import { settings } from '../../../settings';
 import toastr from 'toastr';
 import s from 'underscore.string';
 
@@ -136,7 +137,7 @@ Template.userEdit.onCreated(function() {
 		const userData = this.getUserData();
 
 		const errors = [];
-		if (!userData.name) {
+		if (settings.get('Accounts_RequireNameForSignUp') && !userData.name) {
 			errors.push('Name');
 		}
 		if (!userData.username) {
