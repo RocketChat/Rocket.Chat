@@ -1,4 +1,4 @@
-import merge from 'lodash.merge';
+import { merge } from '../../../utils/lib/merge';
 import { Meteor } from 'meteor/meteor';
 import { Users, Rooms, Subscriptions } from '../../../models';
 import { callbacks } from '../../../callbacks';

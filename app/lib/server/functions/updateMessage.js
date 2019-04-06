@@ -1,4 +1,4 @@
-import merge from 'lodash.merge';
+import { merge } from '../../../utils/lib/merge';
 import { Meteor } from 'meteor/meteor';
 import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';

@@ -150,15 +150,7 @@ export class AppMessagesConverter {
 			actions: attachment.actions,
 			type: attachment.type,
 			description: attachment.description,
-		})).map((a) => {
-			Object.keys(a).forEach((k) => {
-				if (typeof a[k] === 'undefined') {
-					delete a[k];
-				}
-			});
-
-			return a;
-		});
+		}));
 	}
 
 	_convertAttachmentsToApp(attachments) {
