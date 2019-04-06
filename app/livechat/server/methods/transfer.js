@@ -17,13 +17,16 @@ Meteor.methods({
 			departmentId: Match.Optional(String),
 			originalAgentId: Match.Optional(String),
 			timeout: Match.Optional(Match.Integer),
-			timeoutAgent: Match.Optional(Match.Integer),
+			currentAgent: Match.Optional(Object),
+			expirationAt: Match.Optional(Match.Integer),
 		});
 
 		const room = LivechatRooms.findOneById(transferData.roomId);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:transfer' });
 		}
+
+		transferData.currentAgent = room.servedBy;
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription && !hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
@@ -32,6 +35,6 @@ Meteor.methods({
 
 		const guest = LivechatVisitors.findOneById(room.v && room.v._id);
 
-		return Livechat.transfer(room, guest, transferData);
+		return { result: Livechat.transfer(room, guest, transferData), transferData };
 	},
 });

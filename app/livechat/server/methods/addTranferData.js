@@ -13,10 +13,10 @@ Meteor.methods({
 			roomId: String,
 			userId: String,
 			departmentId: Match.Optional(String),
-			originalAgentId: String,
+			originalAgentId: Match.Optional(String),
+			currentAgent: Match.Optional(Object),
 			timeout: Match.Optional(Match.Integer),
-			timeoutAgent: Match.Optional(Match.Integer),
-			currentAgent: Object,
+			expirationAt: Match.Optional(Match.Integer),
 		});
 
 		return Livechat.addTransferData({

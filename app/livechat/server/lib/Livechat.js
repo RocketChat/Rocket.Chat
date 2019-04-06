@@ -273,12 +273,11 @@ export const Livechat = {
 	},
 
 	addTransferData({ transferData }) {
-
 		if (!transferData || !transferData.currentAgent) {
 			return false;
 		}
 
-		const updated = Rooms.updateTransferData(transferData);
+		const updated = Rooms.findByRoomUpdateTransferHistory(transferData);
 		return updated;
 	},
 
@@ -334,11 +333,32 @@ export const Livechat = {
 		return true;
 	},
 
-	forwardChat(roomId, status) {
-		check(roomId, String);
-		check(status, Boolean);
+	addForwardData(transferData) {
+		check(transferData, {
+			roomId: String,
+			userId: String,
+			departmentId: Match.Optional(String),
+			originalAgentId: Match.Optional(String),
+			currentAgent: Match.Optional(Object),
+			timeout: Match.Optional(Match.Integer),
+			expirationAt: Match.Optional(Match.Integer),
+		});
 
-		Rooms.findByRoomAndUpdateForward(roomId, status);
+		Rooms.findByRoomAddTranferData(transferData);
+	},
+
+	removeForwardData(transferData) {
+		check(transferData, {
+			roomId: String,
+			userId: String,
+			departmentId: Match.Optional(String),
+			originalAgentId: Match.Optional(String),
+			currentAgent: Match.Optional(Object),
+			timeout: Match.Optional(Match.Integer),
+			expirationAt: Match.Optional(Match.Integer),
+		});
+
+		Rooms.findByRoomRemoveTranferData(transferData);
 	},
 
 	setCustomFields({ token, key, value, overwrite } = {}) {
