@@ -1,3 +1,4 @@
+import merge from 'lodash.merge';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings';
@@ -142,7 +143,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
 
 		if (typeof result === 'object') {
-			message = Object.assign(message, result);
+			message = merge(message, result);
 		}
 	}
 

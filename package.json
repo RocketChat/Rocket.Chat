@@ -182,6 +182,7 @@
 		"less-plugin-autoprefix": "^2.0.0",
 		"limax": "^1.7.0",
 		"localforage": "^1.7.3",
+		"lodash.merge": "^4.6.1",
 		"lodash.property": "^4.4.2",
 		"lokijs": "^1.5.5",
 		"lru-cache": "^5.1.1",
