@@ -1,3 +1,4 @@
+import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
@@ -147,6 +148,22 @@ const getEmojis = (collection, filter) => {
 		.filter(({ _id }) => regExp.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)))
 		.sort(emojiSort(recents))
 		.slice(0, 10);
+};
+
+const addEmojiToRecents = (emoji) => {
+	const pickerEl = document.querySelector('.emoji-picker');
+	if (!pickerEl) {
+		return;
+	}
+
+	const view = Blaze.getView(pickerEl);
+	if (!view) {
+		return;
+	}
+
+	Template._withTemplateInstanceFunc(view.templateInstance, () => {
+		EmojiPicker.addRecent(emoji.replace(/:/g, ''));
+	});
 };
 
 Template.messagePopupConfig.onCreated(function() {
@@ -406,7 +423,7 @@ Template.messagePopupConfig.helpers({
 			getInput: this.getInput,
 			getFilter: getEmojis,
 			getValue: (emojiText) => {
-				EmojiPicker.initiated && EmojiPicker.addRecent(emojiText.replace(/:/g, ''));
+				addEmojiToRecents(emojiText);
 				return emojiText;
 			},
 		};
@@ -423,7 +440,7 @@ Template.messagePopupConfig.helpers({
 			getInput: this.getInput,
 			getFilter: getEmojis,
 			getValue: (emojiText) => {
-				EmojiPicker.initiated && EmojiPicker.addRecent(emojiText.replace(/:/g, ''));
+				addEmojiToRecents(emojiText);
 				return emojiText;
 			},
 		};
