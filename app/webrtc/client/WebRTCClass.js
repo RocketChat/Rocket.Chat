@@ -131,7 +131,7 @@ class WebRTCClass {
 		this.config = {
 			iceServers: [],
 		};
-		this.debug = true;
+		this.debug = false;
 		this.TransportClass = WebRTCTransportClass;
 		this.selfId = selfId;
 		this.room = room;
