@@ -1031,11 +1031,8 @@ Template.room.onRendered(function() {
 	if (!chatMessages[rid]) {
 		chatMessages[rid] = new ChatMessages;
 	}
-	chatMessages[rid].init(this.firstNode, { rid });
-
-	if (chatMessages[rid].input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
-		chatMessages[rid].input.focus();
-	}
+	chatMessages[rid].initializeWrapper(this.find('.wrapper'));
+	chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
 
 	const wrapper = this.find('.wrapper');
 	const wrapperUl = this.find('.wrapper > ul');

@@ -65,19 +65,19 @@ callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority
 const showModal = (config) => new Promise((resolve, reject) => modal.open(config, resolve, reject));
 
 export class ChatMessages {
-	init(node, { rid, tmid }) {
-		this.editing = {};
-		this.records = {};
-		this.messageMaxSize = settings.get('Message_MaxAllowedSize');
-		this.wrapper = node.querySelector('.wrapper');
-		this.initializeInput(this.input || node.querySelector('.js-input-message'), { rid, tmid });
+	editing = {}
+
+	records = {}
+
+	initializeWrapper(wrapper) {
+		this.wrapper = wrapper;
 	}
 
 	initializeInput(input, { rid, tmid }) {
 		this.input = input;
 		this.$input = $(this.input);
 
-		if (!input) {
+		if (!input || !rid) {
 			return;
 		}
 
@@ -173,7 +173,7 @@ export class ChatMessages {
 	edit(element, index) {
 		index = index || this.getEditingIndex(element);
 
-		const message = ChatMessage.findOne(element.getAttribute('id'));
+		const message = ChatMessage.findOne(element.dataset.id);
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
@@ -289,6 +289,7 @@ export class ChatMessages {
 				messageBoxState.save({ rid, tmid }, this.input);
 				this.$input.removeData('reply').trigger('dataChange');
 			} catch (error) {
+				console.error(error);
 				handleError(error);
 			} finally {
 				return done();
@@ -308,6 +309,7 @@ export class ChatMessages {
 				this.resetToDraft(this.editing.id);
 				this.confirmDeleteMsg(message, done);
 			} catch (error) {
+				console.error(error);
 				handleError(error);
 			}
 		}
@@ -349,14 +351,12 @@ export class ChatMessages {
 
 		const lastMessage = ChatMessage.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
 		await call('setReaction', reaction, lastMessage._id);
-		messageBoxState.set(this.input, '');
-		this.$input.removeData('reply').trigger('dataChange');
 		return true;
 	}
 
 	async processTooLongMessage({ msg, rid, tmid }) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
-		if (messageProperties.length(adjustedMessage) <= this.messageMaxSize && msg) {
+		if (messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') && msg) {
 			return false;
 		}
 
@@ -503,6 +503,7 @@ export class ChatMessages {
 		try {
 			await call('deleteMessage', { _id });
 		} catch (error) {
+			console.error(error);
 			handleError(error);
 		}
 	}
