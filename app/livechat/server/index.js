@@ -16,6 +16,7 @@ import './hooks/sendToCRM';
 import './hooks/sendToFacebook';
 import './methods/addAgent';
 import './methods/addManager';
+import './methods/addTranferData';
 import './methods/changeLivechatStatus';
 import './methods/checkLiveAgent';
 import './methods/closeByVisitor';

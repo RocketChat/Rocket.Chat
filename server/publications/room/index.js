@@ -28,6 +28,7 @@ export const fields = {
 	customFields: 1,
 	lastMessage: 1,
 	forwarded: 1,
+	servedBy: 1,
 	retention: 1,
 	prid: 1,
 

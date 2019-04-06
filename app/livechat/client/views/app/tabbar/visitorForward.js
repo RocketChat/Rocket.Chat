@@ -175,6 +175,11 @@ Tracker.autorun(function() {
 						if (error) {
 							toastr.error(t(error.error));
 						} else if (result) {
+							const roomInfo = ChatRoom.findOneLivechatById(data.transferData.roomId);
+
+							data.transferData.currentAgent = roomInfo.servedBy;
+							// Now add transer information to collection
+							Meteor.call('livechat:addTranferData', data.transferData);
 							Meteor.clearTimeout(data.transferData.timeout);
 							Notifications.notifyUser(data.transferData.userId, 'forward-livechat', 'transferred', { transferData: data.transferData });
 							FlowRouter.go('/');

@@ -272,6 +272,16 @@ export const Livechat = {
 		return ret;
 	},
 
+	addTransferData({ transferData }) {
+
+		if (!transferData || !transferData.currentAgent) {
+			return false;
+		}
+
+		const updated = Rooms.updateTransferData(transferData);
+		return updated;
+	},
+
 	closeRoom({ user, visitor, room, comment }) {
 		if (!room || room.t !== 'l' || !room.open) {
 			return false;
