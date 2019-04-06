@@ -4,8 +4,8 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
-import { katex } from '../../katex';
-import { Markdown } from '../../markdown';
+import { katex } from '../../katex/client';
+import { Markdown } from '../../markdown/client';
 import { ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import {
@@ -381,7 +381,7 @@ Template.messageBox.events({
 			input.focus();
 		});
 	},
-	'click .rc-message-box__action-menu'(event) {
+	'click .js-action-menu'(event, instance) {
 		const groups = messageBox.actions.get();
 		const config = {
 			popoverClass: 'message-box',
@@ -409,6 +409,7 @@ Template.messageBox.events({
 			currentTarget: event.currentTarget.firstElementChild.firstElementChild,
 			data: {
 				rid: this._id,
+				messageBox: instance.firstNode,
 			},
 			activeElement: event.currentTarget,
 		};
@@ -416,12 +417,17 @@ Template.messageBox.events({
 		popover.open(config);
 	},
 	'click .js-message-actions .js-message-action'(event, instance) {
-		this.action.apply(this, [{
-			rid: Template.parentData()._id,
-			messageBox: instance.find('.rc-message-box'),
-			element: event.currentTarget,
-			event,
-		}]);
+		const { id } = event.currentTarget.dataset;
+		const actions = messageBox.actions.getById(id);
+		actions
+			.filter(({ action }) => !!action)
+			.forEach(({ action }) => {
+				action.call(null, {
+					rid: this._id,
+					messageBox: instance.firstNode,
+					event,
+				});
+			});
 	},
 	'click .js-format'(e, t) {
 		applyFormatting.apply(this, [e, t]);
