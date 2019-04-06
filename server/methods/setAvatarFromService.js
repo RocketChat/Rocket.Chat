@@ -27,7 +27,7 @@ Meteor.methods({
 
 		let user;
 
-		if (userId) {
+		if (userId && userId !== Meteor.userId()) {
 			if (!hasPermission(userId, 'edit-other-user-avatar')) {
 				throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
 					method: 'setAvatarFromService',
