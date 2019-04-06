@@ -171,10 +171,6 @@ Meteor.startup(async function() {
 				return false;
 			}
 
-			if (message.u && message.u._id === Meteor.userId()) {
-				return false;
-			}
-
 			return true;
 		},
 		order: 1,
