@@ -42,6 +42,7 @@
 			width: 32px;
 			height: 32px;
 			margin-right: 1rem;
+			flex-shrink: 0;
 		}
 
 		&-name {

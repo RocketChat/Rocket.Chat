@@ -3,7 +3,6 @@ import './importPackages';
 import '../imports/startup/client';
 
 import '../lib/RegExp';
-import '../lib/francocatena_fix';
 
 import './lib/toastr';
 import './helpers/escapeCssUrl';
@@ -20,7 +19,7 @@ import './notifications/updateAvatar';
 import './notifications/updateUserState';
 import './notifications/UsersNameChanged';
 import './routes/adminRouter';
-import './routes/pageNotFound.html';
+import './routes/pageNotFound';
 import './routes/roomRoute';
 import './routes/router';
 import './startup/emailVerification';
