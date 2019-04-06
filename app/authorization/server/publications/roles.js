@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles } from '/app/models';
+import { Roles } from '../../../models';
 
 Meteor.publish('roles', function() {
 	if (!this.userId) {

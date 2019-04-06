@@ -1,11 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { popover } from '/app/ui-utils';
-import { getUserPreference } from '/app/utils';
-import { settings } from '/app/settings';
+import { popover } from '../../ui-utils';
+import { getUserPreference } from '../../utils';
+import { settings } from '../../settings';
 
 const checked = function(prop, field) {
 	const userId = Meteor.userId();
+
+	if (prop === 'sidebarShowDiscussion') {
+		return getUserPreference(userId, 'sidebarShowDiscussion');
+	}
 	if (prop === 'sidebarShowFavorites') {
 		return getUserPreference(userId, 'sidebarShowFavorites');
 	}

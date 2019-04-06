@@ -1,8 +1,8 @@
-import { Users } from '/app/models';
+import { Users } from '../../../models';
 
-import FederatedResource from './FederatedResource';
+import { FederatedResource } from './FederatedResource';
 
-class FederatedUser extends FederatedResource {
+export class FederatedUser extends FederatedResource {
 	constructor(localPeerIdentifier, user) {
 		super('user');
 
@@ -120,5 +120,3 @@ FederatedUser.loadOrCreate = function loadOrCreate(localPeerIdentifier, user) {
 
 	return new FederatedUser(localPeerIdentifier, user);
 };
-
-export default FederatedUser;

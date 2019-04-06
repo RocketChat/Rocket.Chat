@@ -1,6 +1,6 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { VideoRecorder } from '/app/ui';
+import { VideoRecorder } from '../../ui';
 import _ from 'underscore';
 
 export const VRecDialog = new class {

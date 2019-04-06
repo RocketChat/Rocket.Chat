@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Integrations } from '/app/models';
+import { hasPermission } from '../../../../authorization';
+import { Integrations } from '../../../../models';
 
 Meteor.methods({
 	deleteIncomingIntegration(integrationId) {

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { FileUpload } from '/app/file-upload';
-import { settings } from '/app/settings';
-import { Messages, Uploads, Rooms } from '/app/models';
-import { Notifications } from '/app/notifications';
-import { callbacks } from '/app/callbacks';
-import { Apps } from '/app/apps';
+import { FileUpload } from '../../../file-upload';
+import { settings } from '../../../settings';
+import { Messages, Uploads, Rooms } from '../../../models';
+import { Notifications } from '../../../notifications';
+import { callbacks } from '../../../callbacks';
+import { Apps } from '../../../apps/server';
 
 export const deleteMessage = function(message, user) {
 	const keepHistory = settings.get('Message_KeepHistory');

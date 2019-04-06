@@ -2,16 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { t, getUserPreference } from '/app/utils';
+import { t, getUserPreference } from '../../utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent } from '/app/ui-utils';
-import { toolbarSearch } from '/app/ui-sidenav';
-import { settings } from '/app/settings';
-import { CachedChatSubscription, Roles, ChatSubscription } from '/app/models';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
-import { hasRole } from '/app/authorization';
-import { tooltip } from '/app/tooltip';
+import { chatMessages } from '../../ui';
+import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
+import { toolbarSearch } from '../../ui-sidenav';
+import { settings } from '../../settings';
+import { CachedChatSubscription, Roles, ChatSubscription } from '../../models';
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import { hasRole } from '../../authorization';
+import { tooltip } from '../../tooltip';
 import Clipboard from 'clipboard';
 import s from 'underscore.string';
 
@@ -78,8 +79,8 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('.rc-message-box__textarea');
-		if (inputMessage.length === 0) {
+		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
+		if (!inputMessage) {
 			return;
 		}
 		inputMessage.focus();

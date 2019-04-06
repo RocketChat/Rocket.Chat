@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages, Rooms } from '/app/models';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Apps } from '/app/apps';
+import { Messages, Rooms } from '../../../models';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { Apps } from '../../../apps/server';
 
 export const updateMessage = function(message, user, originalMessage) {
 	if (!originalMessage) {

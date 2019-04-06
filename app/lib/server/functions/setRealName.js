@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Subscriptions } from '/app/models';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { hasPermission } from '/app/authorization';
+import { Users, Subscriptions } from '../../../models';
+import { settings } from '../../../settings';
+import { Notifications } from '../../../notifications';
+import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import s from 'underscore.string';
 

@@ -60,6 +60,7 @@
 	--status-bullet-radius: 50%;
 	--account-username-weight: 700;
 	--status-name-weight: 400;
+	--default-font-weight-header: 500;
 
 	/*
 	* General Typography
@@ -88,7 +89,9 @@
 	*/
 	--button-square-size: 36px;
 	--button-padding: 0.782rem;
-	--button-padding-small: 0.5rem;
+	--button-padding-small: 0 0.5rem;
+	--button-height-small: 28px;
+	--button-text-size-small: 13px;
 	--button-text-size: var(--input-font-size);
 	--button-border-width: var(--border);
 	--button-border-radius: var(--border-radius);
@@ -213,7 +216,7 @@
 	/*
 	* Modal - Create Channel
 	*/
-	--create-channel-gap-between-elements: 2.5rem;
+	--create-channel-gap-between-elements: 1rem;
 	--create-channel-title-color: var(--color-darkest);
 	--create-channel-title-text-size: 1.375rem;
 	--create-channel-description-color: var(--color-gray);

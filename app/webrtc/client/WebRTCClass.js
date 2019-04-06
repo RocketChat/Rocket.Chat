@@ -3,13 +3,15 @@ import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router' ;
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t } from '/app/utils';
-import { ChromeScreenShare } from './screenShare';
-import { Notifications } from '/app/notifications';
-import { settings } from '/app/settings';
-import { modal } from '/app/ui-utils';
-import { ChatSubscription } from '/app/models';
+
 import EventEmitter from 'wolfy87-eventemitter';
+
+import { t } from '../../utils';
+import { ChromeScreenShare } from './screenShare';
+import { Notifications } from '../../notifications';
+import { settings } from '../../settings';
+import { modal } from '../../ui-utils';
+import { ChatSubscription } from '../../models';
 
 const WEB_RTC_EVENTS = {
 	WEB_RTC: 0,

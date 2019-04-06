@@ -3,8 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
-import { CredentialTokens } from '/app/models';
-import { generateUsernameSuggestion } from '/app/lib';
+import { CredentialTokens } from '../../models';
+import { generateUsernameSuggestion } from '../../lib';
 import bodyParser from 'body-parser';
 import { SAML } from './saml_utils';
 import _ from 'underscore';
@@ -92,11 +92,11 @@ Meteor.methods({
 });
 
 Accounts.registerLoginHandler(function(loginRequest) {
-	if (!loginRequest.saml || !loginRequest.credentialToken) {
+	if (!loginRequest.saml) {
 		return undefined;
 	}
 
-	const loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
+	const loginResult = Accounts.saml.retrieveCredential(this.connection.id);
 	if (Accounts.saml.settings.debug) {
 		console.log(`RESULT :${ JSON.stringify(loginResult) }`);
 	}

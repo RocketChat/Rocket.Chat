@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 Meteor.startup(function() {
 	settings.addGroup('Livechat');
@@ -79,6 +79,13 @@ Meteor.startup(function() {
 
 	settings.add('Livechat_allow_switching_departments', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Allow_switching_departments' });
 	settings.add('Livechat_show_agent_email', true, { type: 'boolean', group: 'Livechat', public: true, i18nLabel: 'Show_agent_email' });
+
+	settings.add('Livechat_request_comment_when_closing_conversation', true, {
+		type: 'boolean',
+		group: 'Livechat',
+		public: true,
+		i18nLabel: 'Request_comment_when_closing_conversation',
+	});
 
 	settings.add('Livechat_conversation_finished_message', '', {
 		type: 'string',

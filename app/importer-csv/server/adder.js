@@ -1,4 +1,4 @@
-import { Importers } from '/app/importer';
+import { Importers } from '../../importer/server';
 import { CsvImporterInfo } from '../lib/info';
 import { CsvImporter } from './importer';
 

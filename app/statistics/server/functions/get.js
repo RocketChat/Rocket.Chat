@@ -3,11 +3,11 @@ import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, LivechatVisitors } from '/app/models';
-import { settings } from '/app/settings';
-import { Info } from '/app/utils';
-import { Migrations } from '/app/migrations';
-import { statistics } from '../../lib/rocketchat';
+import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, LivechatVisitors } from '../../../models';
+import { settings } from '../../../settings';
+import { Info } from '../../../utils';
+import { Migrations } from '../../../migrations';
+import { statistics } from '../statisticsNamespace';
 
 const wizardFields = [
 	'Organization_Type',
@@ -20,6 +20,7 @@ const wizardFields = [
 	'Language',
 	'Server_Type',
 	'Allow_Marketing_Emails',
+	'Register_Server',
 ];
 
 statistics.get = function _getStatistics() {

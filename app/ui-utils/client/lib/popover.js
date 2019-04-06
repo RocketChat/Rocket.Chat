@@ -4,8 +4,8 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { isRtl, handleError } from '/app/utils';
-import { ChatSubscription } from '/app/models';
+import { isRtl, handleError } from '../../../utils';
+import { ChatSubscription } from '../../../models';
 import _ from 'underscore';
 import { hide, leave } from './ChannelActions';
 import { modal } from './modal';
@@ -160,13 +160,16 @@ Template.popover.events({
 	},
 	'click [data-type="messagebox-action"]'(event, t) {
 		const { id } = event.currentTarget.dataset;
-		const action = messageBox.actions.getById(id);
-		if ((action[0] != null ? action[0].action : undefined) != null) {
-			action[0].action({ rid: t.data.data.rid, ...t.data.data, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });
-			if (id !== 'audio-message') {
-				popover.close();
-			}
-		}
+		const actions = messageBox.actions.getById(id);
+		actions
+			.filter(({ action }) => !!action)
+			.forEach(({ action }) => {
+				action.call(null, {
+					...t.data.data,
+					event,
+				});
+			});
+		popover.close();
 	},
 	'click [data-type="message-action"]'(e, t) {
 		const button = MessageAction.getButtonById(e.currentTarget.dataset.id);

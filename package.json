@@ -63,7 +63,7 @@
 		"start": "meteor",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
-		"lint": "meteor npm run jslint && meteor npm run stylelint",
+		"lint": "meteor npm run stylelint && meteor npm run jslint",
 		"jslint": "eslint .",
 		"stylelint": "stylelint \"app/**/*.css\"",
 		"test": "node .scripts/start.js",
@@ -91,7 +91,7 @@
 	},
 	"devDependencies": {
 		"@octokit/rest": "^16.1.0",
-		"@rocket.chat/eslint-config": "^0.1.2",
+		"@rocket.chat/eslint-config": "^0.2.0",
 		"acorn": "^6.0.7",
 		"autoprefixer": "^9.4.1",
 		"babel-eslint": "^10.0.1",
@@ -242,7 +242,6 @@
 	"houston": {
 		"updateFiles": [
 			"package.json",
-			".sandstorm/sandstorm-pkgdef.capnp",
 			".travis/snap.sh",
 			".circleci/snap.sh",
 			".circleci/update-releases.sh",

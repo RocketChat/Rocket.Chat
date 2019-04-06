@@ -1,6 +1,6 @@
 import Filter from 'bad-words';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
 
 callbacks.add('beforeSaveMessage', function(message) {
 

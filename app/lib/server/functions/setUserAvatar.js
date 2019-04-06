@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { RocketChatFile } from '/app/file';
-import { FileUpload } from '/app/file-upload';
-import { Users } from '/app/models';
-import { Notifications } from '/app/notifications';
+import { RocketChatFile } from '../../../file';
+import { FileUpload } from '../../../file-upload';
+import { Users } from '../../../models';
+import { Notifications } from '../../../notifications';
 
 export const setUserAvatar = function(user, dataURI, contentType, service) {
 	let encoding;

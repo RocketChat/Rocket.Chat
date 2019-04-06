@@ -7,19 +7,19 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
-import { e2e } from '/app/e2e';
-import { Users, ChatSubscription } from '/app/models';
-import { getUserPreference } from '/app/utils';
-import { getAvatarUrlFromUsername } from '/app/utils';
-import { getAvatarAsPng } from '/app/ui-utils';
-import { promises } from '/app/promises';
+import { e2e } from '../../../e2e/client';
+import { Users, ChatSubscription } from '../../../models';
+import { getUserPreference } from '../../../utils';
+import { getAvatarUrlFromUsername } from '../../../utils';
+import { getAvatarAsPng } from '../../../ui-utils';
+import { promises } from '../../../promises/client';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar,
 
 	// notificacoes HTML5
 	getDesktopPermission() {
-		if (window.Notification && (Notification.permission !== 'granted') && !Meteor.settings.public.sandstorm) {
+		if (window.Notification && (Notification.permission !== 'granted')) {
 			return Notification.requestPermission(function(status) {
 				KonchatNotification.notificationStatus.set(status);
 				if (Notification.permission !== status) {
@@ -79,7 +79,7 @@ export const KonchatNotification = {
 			return;
 		}
 
-		if ((Meteor.user().status === 'busy') || (Meteor.settings.public.sandstorm != null)) {
+		if (Meteor.user().status === 'busy') {
 			return;
 		}
 

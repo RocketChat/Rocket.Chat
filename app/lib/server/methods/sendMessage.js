@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasPermission } from '/app/authorization';
-import { metrics } from '/app/metrics';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { messageProperties } from '/app/ui-utils';
-import { Subscriptions, Users } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { metrics } from '../../../metrics';
+import { settings } from '../../../settings';
+import { Notifications } from '../../../notifications';
+import { messageProperties } from '../../../ui-utils';
+import { Subscriptions, Users } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import moment from 'moment';
@@ -86,10 +86,6 @@ Meteor.methods({
 
 		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
 			message.alias = user.name;
-		}
-
-		if (Meteor.settings.public.sandstorm) {
-			message.sandstormSessionId = this.connection.sandstormSessionId();
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736

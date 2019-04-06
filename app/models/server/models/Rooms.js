@@ -19,7 +19,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 
-		// threads
+		// discussions
 		this.tryEnsureIndex({ prid: 1 });
 	}
 
@@ -92,6 +92,21 @@ export class Rooms extends Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneLivechatById(_id, fields) {
+		const options = {};
+
+		if (fields) {
+			options.fields = fields;
+		}
+
+		const query = {
+			t: 'l',
+			_id,
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findLivechatByIdAndVisitorToken(_id, visitorToken, fields) {
@@ -1369,8 +1384,8 @@ export class Rooms extends Base {
 	}
 
 	// ############################
-	// Threads
-	findThreadParentByNameStarting(name, options) {
+	// Discussion
+	findDiscussionParentByNameStarting(name, options) {
 		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
 
 		const query = {

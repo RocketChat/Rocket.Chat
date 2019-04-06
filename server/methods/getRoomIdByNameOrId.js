@@ -1,8 +1,8 @@
 // DEPRECATE
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Rooms } from '/app/models';
-import { canAccessRoom } from '/app/authorization';
+import { Rooms } from '../../app/models';
+import { canAccessRoom } from '../../app/authorization';
 
 Meteor.methods({
 	getRoomIdByNameOrId(rid) {

@@ -1,12 +1,14 @@
-import { WebApp } from 'meteor/webapp';
-import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Logger } from '/app/logger';
-import { WebAppHashing } from 'meteor/webapp-hashing';
 import _ from 'underscore';
 import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefix';
 import crypto from 'crypto';
+
+import { WebApp } from 'meteor/webapp';
+import { Meteor } from 'meteor/meteor';
+import { Inject } from 'meteor/meteorhacks:inject-initial';
+
+import { settings } from '../../settings';
+import { Logger } from '../../logger';
 
 const logger = new Logger('rocketchat:theme', {
 	methods: {
@@ -15,6 +17,9 @@ const logger = new Logger('rocketchat:theme', {
 		},
 	},
 });
+
+let currentHash = '';
+let currentSize = 0;
 
 export const theme = new class {
 	constructor() {
@@ -72,6 +77,11 @@ export const theme = new class {
 				return console.log(err);
 			}
 			settings.updateById('css', data.css);
+
+			currentHash = crypto.createHash('sha1').update(data.css).digest('hex');
+			currentSize = data.css.length;
+			Inject.rawHead('css-theme', `<link rel="stylesheet" type="text/css" href="/theme.css?${ currentHash }">`);
+
 			return Meteor.startup(function() {
 				return Meteor.setTimeout(function() {
 					return process.emit('message', {
@@ -145,45 +155,18 @@ export const theme = new class {
 	getCss() {
 		return settings.get('css') || '';
 	}
-
 };
-
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {
 	const path = req.url.split('?')[0];
 	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-	if (path === `${ prefix }/theme.css`) {
-		const css = theme.getCss();
-		const hash = crypto.createHash('sha1').update(css).digest('hex');
-		res.setHeader('Content-Type', 'text/css; charset=UTF-8');
-		res.setHeader('ETag', `"${ hash }"`);
-		res.write(css);
-		return res.end();
-	} else {
+	if (path !== `${ prefix }/theme.css`) {
 		return next();
 	}
+
+	res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+	res.setHeader('Content-Length', currentSize);
+	res.setHeader('ETag', `"${ currentHash }"`);
+	res.write(theme.getCss());
+	res.end();
 });
-
-const { calculateClientHash } = WebAppHashing;
-
-WebAppHashing.calculateClientHash = function(manifest, includeFilter, runtimeConfigOverride) {
-	const css = theme.getCss();
-	if (css.trim() !== '') {
-		const hash = crypto.createHash('sha1').update(css).digest('hex');
-		let themeManifestItem = _.find(manifest, function(item) {
-			return item.path === 'app/theme.css';
-		});
-		if (themeManifestItem == null) {
-			themeManifestItem = {};
-			manifest.push(themeManifestItem);
-		}
-		themeManifestItem.path = 'app/theme.css';
-		themeManifestItem.type = 'css';
-		themeManifestItem.cacheable = true;
-		themeManifestItem.where = 'client';
-		themeManifestItem.url = `/theme.css?${ hash }`;
-		themeManifestItem.size = css.length;
-		themeManifestItem.hash = hash;
-	}
-	return calculateClientHash.call(this, manifest, includeFilter, runtimeConfigOverride);
-};

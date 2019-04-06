@@ -1,6 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { Uploads } from '/app/models';
+import { Uploads } from '../../../models';
 import { FileUpload } from './FileUpload';
 
 WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
@@ -11,7 +10,7 @@ WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
 		const file = Uploads.findOneById(match[1]);
 
 		if (file) {
-			if (!Meteor.settings.public.sandstorm && !FileUpload.requestCanAccessFiles(req)) {
+			if (!FileUpload.requestCanAccessFiles(req)) {
 				res.writeHead(403);
 				return res.end();
 			}

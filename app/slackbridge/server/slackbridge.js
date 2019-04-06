@@ -1,4 +1,4 @@
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import SlackAdapter from './SlackAdapter.js';
 import RocketAdapter from './RocketAdapter.js';
 import { logger } from './logger';

@@ -1,4 +1,4 @@
-import { composeMessageObjectWithUser } from '/app/utils';
+import { composeMessageObjectWithUser } from '../../../utils';
 import { API } from '../api';
 
 API.helperMethods.set('composeRoomWithLastMessage', function _composeRoomWithLastMessage(room, userId) {

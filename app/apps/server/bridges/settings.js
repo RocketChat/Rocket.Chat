@@ -1,4 +1,4 @@
-import { Settings } from '/app/models';
+import { Settings } from '../../../models';
 
 export class AppSettingBridge {
 	constructor(orch) {
@@ -22,7 +22,7 @@ export class AppSettingBridge {
 	}
 
 	async getAll(appId) {
-		console.log(`The App ${ appId } is getting all the settings.`);
+		this.orch.debugLog(`The App ${ appId } is getting all the settings.`);
 
 		return Settings.find({ _id: { $nin: this.disallowedSettings } })
 			.fetch()
@@ -30,7 +30,7 @@ export class AppSettingBridge {
 	}
 
 	async getOneById(id, appId) {
-		console.log(`The App ${ appId } is getting the setting by id ${ id }.`);
+		this.orch.debugLog(`The App ${ appId } is getting the setting by id ${ id }.`);
 
 		if (!this.isReadableById(id, appId)) {
 			throw new Error(`The setting "${ id }" is not readable.`);
@@ -40,13 +40,13 @@ export class AppSettingBridge {
 	}
 
 	async hideGroup(name, appId) {
-		console.log(`The App ${ appId } is hidding the group ${ name }.`);
+		this.orch.debugLog(`The App ${ appId } is hidding the group ${ name }.`);
 
 		throw new Error('Method not implemented.');
 	}
 
 	async hideSetting(id, appId) {
-		console.log(`The App ${ appId } is hidding the setting ${ id }.`);
+		this.orch.debugLog(`The App ${ appId } is hidding the setting ${ id }.`);
 
 		if (!this.isReadableById(id, appId)) {
 			throw new Error(`The setting "${ id }" is not readable.`);
@@ -56,13 +56,13 @@ export class AppSettingBridge {
 	}
 
 	async isReadableById(id, appId) {
-		console.log(`The App ${ appId } is checking if they can read the setting ${ id }.`);
+		this.orch.debugLog(`The App ${ appId } is checking if they can read the setting ${ id }.`);
 
 		return !this.disallowedSettings.includes(id);
 	}
 
 	async updateOne(setting, appId) {
-		console.log(`The App ${ appId } is updating the setting ${ setting.id } .`);
+		this.orch.debugLog(`The App ${ appId } is updating the setting ${ setting.id } .`);
 
 		if (!this.isReadableById(setting.id, appId)) {
 			throw new Error(`The setting "${ setting.id }" is not readable.`);

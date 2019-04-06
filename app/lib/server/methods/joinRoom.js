@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission, canAccessRoom } from '/app/authorization';
-import { Rooms } from '/app/models';
-import { Tokenpass, updateUserTokenpassBalances } from '/app/tokenpass';
+import { hasPermission, canAccessRoom } from '../../../authorization';
+import { Rooms } from '../../../models';
+import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
 import { addUserToRoom } from '../functions';
 
 Meteor.methods({

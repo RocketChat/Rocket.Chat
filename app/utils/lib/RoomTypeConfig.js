@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users } from '/app/models';
-import { settings } from '/app/settings';
+import { Users } from '../../models';
+import { settings } from '../../settings';
 
 export const RoomSettingsEnum = {
 	NAME: 'roomName',
@@ -262,6 +262,10 @@ export class RoomTypeConfig {
 	 */
 	canAccessUploadedFile(/* accessData */) {
 		return false;
+	}
+
+	getReadReceiptsExtraData(/* message */) {
+		return {};
 	}
 
 }

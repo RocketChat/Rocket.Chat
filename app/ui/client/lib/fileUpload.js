@@ -4,10 +4,10 @@ import { Session } from 'meteor/session';
 import s from 'underscore.string';
 
 import { mountReply } from './chatMessages';
-import { fileUploadHandler } from '/app/file-upload';
+import { fileUploadHandler } from '../../../file-upload';
 import { Handlebars } from 'meteor/ui';
-import { t, fileUploadIsValidContentType } from '/app/utils';
-import { modal } from '/app/ui-utils';
+import { t, fileUploadIsValidContentType } from '../../../utils';
+import { modal } from '../../../ui-utils';
 
 
 const readAsDataURL = (file, callback) => {
@@ -116,7 +116,7 @@ const getGenericUploadPreview = (file) => `\
 </div>
 </div>`;
 
-const getUploadPreview = async(file, preview) => {
+const getUploadPreview = async (file, preview) => {
 	if (file.type === 'audio') {
 		return getAudioUploadPreview(file, preview);
 	}
@@ -139,7 +139,7 @@ const getUploadPreview = async(file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-export const fileUpload = async(files, input) => {
+export const fileUpload = async (files, input) => {
 	files = [].concat(files);
 
 	const roomId = Session.get('openedRoom');
@@ -174,7 +174,7 @@ export const fileUpload = async(files, input) => {
 			return;
 		}
 
-		showUploadPreview(file, async(file, preview) => modal.open({
+		showUploadPreview(file, async (file, preview) => modal.open({
 			title: t('Upload_file_question'),
 			text: await getUploadPreview(file, preview),
 			showCancelButton: true,

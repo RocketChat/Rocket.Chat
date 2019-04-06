@@ -2,7 +2,7 @@ import './modal.html';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { t, getUserPreference, handleError } from '/app/utils';
+import { t, getUserPreference, handleError } from '../../../utils';
 
 export const modal = {
 	renderedModal: null,
@@ -93,6 +93,11 @@ export const modal = {
 };
 
 Template.rc_modal.helpers({
+
+	showFooter() {
+		const { showCancelButton, showConfirmButton } = this;
+		return showCancelButton || showConfirmButton;
+	},
 	hasAction() {
 		return !!this.action;
 	},

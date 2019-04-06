@@ -1,13 +1,13 @@
 import mem from 'mem';
 
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { ChatSubscription } from '/app/models';
-import { roomTypes } from '/app/utils';
-import { call } from '/app/ui-utils';
+import { ChatSubscription } from '../../app/models';
+import { roomTypes } from '../../app/utils';
+import { call } from '../../app/ui-utils';
 
 const getRoomById = mem((rid) => call('getRoomById', rid));
 
-FlowRouter.goToRoomById = async(rid) => {
+FlowRouter.goToRoomById = async (rid) => {
 	if (!rid) {
 		return;
 	}

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
-import { Settings } from '/app/models';
-import { settings } from '/app/settings';
+import { Settings } from '../../models';
+import { settings } from '../../settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 

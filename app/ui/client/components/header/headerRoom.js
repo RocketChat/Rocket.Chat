@@ -3,21 +3,21 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, roomTypes, handleError } from '/app/utils';
-import { TabBar, fireGlobalEvent } from '/app/ui-utils';
-import { ChatSubscription, Rooms, ChatRoom } from '/app/models';
-import { settings } from '/app/settings';
+import { t, roomTypes, handleError } from '../../../../utils';
+import { TabBar, fireGlobalEvent } from '../../../../ui-utils';
+import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
+import { settings } from '../../../../settings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { emoji } from '/app/emoji';
-import { Markdown } from '/app/markdown';
-import { hasAllPermission } from '/app/authorization';
-import { call } from '/app/ui-utils';
+import { emoji } from '../../../../emoji';
+import { Markdown } from '../../../../markdown/client';
+import { hasAllPermission } from '../../../../authorization';
+import { call } from '../../../../ui-utils';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
-const isThread = ({ _id }) => {
+const isDiscussion = ({ _id }) => {
 	const room = ChatRoom.findOne({ _id });
 	return !!(room && room.prid);
 };
@@ -36,8 +36,8 @@ Template.headerRoom.helpers({
 		return TabBar.getButtons();
 	},
 
-	isThread() {
-		return isThread(Template.instance().data);
+	isDiscussion() {
+		return isDiscussion(Template.instance().data);
 	},
 
 	isTranslated() {
@@ -115,7 +115,7 @@ Template.headerRoom.helpers({
 	},
 
 	showToggleFavorite() {
-		return !isThread(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
+		return !isDiscussion(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
 	},
 
 	fixedHeight() {

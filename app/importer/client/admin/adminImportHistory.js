@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from '/app/importer';
+import { Importers } from '..';
 import { Template } from 'meteor/templating';
-import { hasRole } from '/app/authorization';
-import { t, APIClient } from '/app/utils';
+import { hasRole } from '../../../authorization';
+import { t, APIClient } from '../../../utils';
 import toastr from 'toastr';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ProgressStep } from '../../lib/ImporterProgressStep';

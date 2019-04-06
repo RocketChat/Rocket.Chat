@@ -1,12 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Settings } from '/app/models';
+import { hasPermission } from '../../authorization';
+import { Settings } from '../../models';
 
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { connectWorkspace } from './functions/connectWorkspace';
 import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
 import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
+import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
+import { disconnectWorkspace } from './functions/disconnectWorkspace';
+import { syncWorkspace } from './functions/syncWorkspace';
 
 Meteor.methods({
 	'cloud:checkRegisterStatus'() {
@@ -20,6 +23,17 @@ Meteor.methods({
 
 		return retrieveRegistrationStatus();
 	},
+	'cloud:registerWorkspace'() {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:startRegister' });
+		}
+
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:startRegister' });
+		}
+
+		return startRegisterWorkspace();
+	},
 	'cloud:updateEmail'(email) {
 		check(email, String);
 
@@ -32,6 +46,19 @@ Meteor.methods({
 		}
 
 		Settings.updateValueById('Organization_Email', email);
+
+		return startRegisterWorkspace();
+	},
+	'cloud:syncWorkspace'() {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:updateEmail' });
+		}
+
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:updateEmail' });
+		}
+
+		return syncWorkspace();
 	},
 	'cloud:connectWorkspace'(token) {
 		check(token, String);
@@ -46,6 +73,18 @@ Meteor.methods({
 
 		return connectWorkspace(token);
 	},
+	'cloud:disconnectWorkspace'() {
+		if (!Meteor.userId()) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:connectServer' });
+		}
+
+		if (!hasPermission(Meteor.userId(), 'manage-cloud')) {
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:connectServer' });
+		}
+
+		return disconnectWorkspace();
+	},
+	// Currently unused but will link local account to Rocket.Chat Cloud account.
 	'cloud:getOAuthAuthorizationUrl'() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cloud:connectServer' });

@@ -4,11 +4,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Rooms, Subscriptions, Messages } from '/app/models';
-import { promises } from '/app/promises';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { Layout, call, modal, alerts } from '/app/ui-utils';
+import { Rooms, Subscriptions, Messages } from '../../models';
+import { promises } from '../../promises/client';
+import { settings } from '../../settings';
+import { Notifications } from '../../notifications';
+import { Layout, call, modal, alerts } from '../../ui-utils';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
@@ -210,7 +210,7 @@ class E2E {
 	}
 
 	setupListeners() {
-		Notifications.onUser('e2ekeyRequest', async(roomId, keyId) => {
+		Notifications.onUser('e2ekeyRequest', async (roomId, keyId) => {
 			const e2eRoom = await this.getInstanceByRoomId(roomId);
 			if (!e2eRoom) {
 				return;
@@ -438,7 +438,7 @@ class E2E {
 			return;
 		}
 
-		return await Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async(item) => {
+		return await Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async (item) => {
 			await this.decryptMessage(item);
 		});
 	}

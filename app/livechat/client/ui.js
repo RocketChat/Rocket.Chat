@@ -1,6 +1,6 @@
-import { settings } from '/app/settings';
-import { hasAllPermission } from '/app/authorization';
-import { AccountBox, TabBar, MessageTypes } from '/app/ui-utils';
+import { settings } from '../../settings';
+import { hasAllPermission } from '../../authorization';
+import { AccountBox, TabBar, MessageTypes } from '../../ui-utils';
 
 AccountBox.addItem({
 	name: 'Livechat',
@@ -38,7 +38,7 @@ TabBar.addButton({
 	groups: ['live'],
 	id: 'external-search',
 	i18nTitle: 'Knowledge_Base',
-	icon: 'lightbulb',
+	icon: 'book',
 	template: 'externalSearch',
 	order: 10,
 });

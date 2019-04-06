@@ -6,9 +6,9 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, roomTypes, getUserPreference, handleError } from '/app/utils';
-import { WebRTC } from '/app/webrtc';
-import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '/app/models';
+import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
+import { WebRTC } from '../../../../webrtc/client';
+import { ChatSubscription, ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
 	fireGlobalEvent,
 	RoomHistoryManager,
@@ -19,16 +19,16 @@ import {
 	Layout,
 	MessageAction,
 	RocketChatTabBar,
-} from '/app/ui-utils';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { promises } from '/app/promises';
-import { hasAllPermission, hasRole } from '/app/authorization';
+} from '../../../../ui-utils';
+import { settings } from '../../../../settings';
+import { callbacks } from '../../../../callbacks';
+import { promises } from '../../../../promises/client';
+import { hasAllPermission, hasRole } from '../../../../authorization';
 import _ from 'underscore';
 import moment from 'moment';
 import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
-import { lazyloadtick } from '/app/lazy-load';
+import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 
@@ -855,6 +855,21 @@ Template.room.events({
 
 			Meteor.call('sendMessage', msgObject);
 		});
+	},
+	'click .js-actionButton-respondWithMessage'(event) {
+		const msg = event.currentTarget.value;
+		if (!msg) {
+			return;
+		}
+
+		const { input } = chatMessages[RoomManager.openedRoom];
+		input.value = msg;
+		input.focus();
+	},
+	'click .js-navigate-to-discussion'(event) {
+		event.preventDefault();
+		const [, { drid }] = this._arguments;
+		FlowRouter.goToRoomById(drid);
 	},
 });
 

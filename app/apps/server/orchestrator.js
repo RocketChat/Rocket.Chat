@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '/app/models';
-import { settings } from '/app/settings';
+import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
+import { settings } from '../../settings';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
@@ -14,6 +14,8 @@ class AppServerOrchestrator {
 		if (Permissions) {
 			Permissions.createOrUpdate('manage-apps', ['admin']);
 		}
+
+		this._inDebug = process.env.NODE_ENV !== 'production';
 
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
@@ -77,6 +79,17 @@ class AppServerOrchestrator {
 		return this.getManager().areAppsLoaded();
 	}
 
+	isDebugging() {
+		return this._inDebug;
+	}
+
+	debugLog() {
+		if (this._inDebug) {
+			// eslint-disable-next-line
+			console.log(...arguments);
+		}
+	}
+
 	load() {
 		// Don't try to load it again if it has
 		// already been loaded
@@ -107,6 +120,21 @@ settings.addGroup('General', function() {
 		this.add('Apps_Framework_enabled', true, {
 			type: 'boolean',
 			hidden: false,
+		});
+
+		this.add('Apps_Framework_Development_Mode', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Apps_Framework_enabled',
+				value: true,
+			},
+			public: true,
+			hidden: false,
+		});
+
+		this.add('Apps_Framework_Marketplace_Url', 'https://marketplace.rocket.chat', {
+			type: 'string',
+			hidden: true,
 		});
 	});
 });

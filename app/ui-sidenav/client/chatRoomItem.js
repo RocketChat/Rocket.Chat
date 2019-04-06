@@ -1,11 +1,11 @@
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t } from '/app/utils';
-import { settings } from '/app/settings';
-import { roomTypes } from '/app/utils';
-import { Rooms } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { t } from '../../utils';
+import { settings } from '../../settings';
+import { roomTypes } from '../../utils';
+import { Rooms } from '../../models';
+import { callbacks } from '../../callbacks';
 
 Template.chatRoomItem.helpers({
 	roomData() {
@@ -18,8 +18,6 @@ Template.chatRoomItem.helpers({
 		const active = [this.rid, this._id].includes((id) => id === openedRoom);
 
 		const archivedClass = this.archived ? 'archived' : false;
-
-		this.alert = !this.hideUnreadStatus && this.alert; // && (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
 
 		const icon = this.t !== 'd' && roomTypes.getIcon(this);
 		const avatar = !icon;
@@ -40,7 +38,7 @@ Template.chatRoomItem.helpers({
 		};
 		roomData.username = roomData.username || roomData.name;
 
-		// hide icon for threads
+		// hide icon for discussions
 		if (this.prid) {
 			roomData.darken = true;
 		}
