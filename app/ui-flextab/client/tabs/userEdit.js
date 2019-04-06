@@ -67,7 +67,7 @@ Template.userEdit.helpers({
 
 Template.userEdit.events({
 	'click .js-select-avatar-initials'() {
-		Meteor.call('resetAvatarAdmin', Template.instance().user, function(err) {
+		Meteor.call('resetAvatar', Template.instance().user._id, function(err) {
 			if (err && err.details) {
 				toastr.error(t(err.message));
 			} else {
@@ -254,13 +254,7 @@ Template.userEdit.onCreated(function() {
 		}
 
 		if (avatar) {
-			const params = [avatar.blob];
-
-			params.push(avatar.contentType);
-
-			params.push(avatar.service);
-			params.push(Template.instance().user);
-			Meteor.call('setAvatarFromServiceAdmin', ...params, function(err) {
+			Meteor.call('setAvatarFromService', avatar.blob, avatar.contentType, avatar.service, Template.instance().user._id, function(err) {
 				if (err && err.details) {
 					toastr.error(t(err.message));
 				} else {
