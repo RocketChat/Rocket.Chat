@@ -14,7 +14,7 @@ API.v1.addRoute('emoji-custom', { authRequired: true }, {
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'emoji-custom',
-			versionWillBeRemove: '1.12.0',
+			versionWillBeRemoved: '1.12.0',
 			response: {
 				emojis,
 			},
