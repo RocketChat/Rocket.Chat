@@ -1,12 +1,13 @@
+import _ from 'underscore';
+
 import { Meteor } from 'meteor/meteor';
-import { modal } from '../../../ui-utils';
+import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { DateFormat } from '../../../lib';
-import { t, canDeleteMessage, getURL, handleError } from '../../../utils/client';
-import { popover } from '../../../ui-utils';
-import { Template } from 'meteor/templating';
-import _ from 'underscore';
+
+import { DateFormat } from '../../../lib/client';
+import { canDeleteMessage, getURL, handleError, t } from '../../../utils/client';
+import { popover, modal } from '../../../ui-utils/client';
 
 const roomFiles = new Mongo.Collection('room_files');
 
