@@ -7,7 +7,7 @@ import { Notifications } from '../../app/notifications';
 import { hasPermission } from '../../app/authorization/server';
 
 Meteor.methods({
-	resetAvatar({ userId }) {
+	resetAvatar(userId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'resetAvatar',
@@ -23,7 +23,7 @@ Meteor.methods({
 		let user;
 
 		if (userId && userId !== Meteor.userId()) {
-			if (!hasPermission(userId, 'edit-other-user-avatar')) {
+			if (!hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
 				throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
 					method: 'resetAvatar',
 				});

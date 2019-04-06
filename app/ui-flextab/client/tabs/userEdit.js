@@ -11,16 +11,6 @@ import toastr from 'toastr';
 import { callbacks } from '../../../callbacks';
 import s from 'underscore.string';
 
-const setAvatar = function(event, template) {
-	const { blob, contentType, service } = this.suggestion;
-
-	template.avatar.set({
-		service,
-		contentType,
-		blob,
-	});
-};
-
 Template.userEdit.helpers({
 
 	disabled(cursor) {
@@ -66,33 +56,31 @@ Template.userEdit.helpers({
 });
 
 Template.userEdit.events({
-	'click .js-select-avatar-initials'() {
-		Meteor.call('resetAvatar', Template.instance().user._id, function(err) {
-			if (err && err.details) {
-				toastr.error(t(err.message));
-			} else {
-				toastr.success(t('Avatar_changed_successfully'));
-				callbacks.run('userAvatarSet', 'initials');
-			}
+	'click .js-select-avatar-initials'(e, template) {
+		template.avatar.set({
+			service: 'initials',
+			blob: `@${ template.user.username }`,
 		});
 	},
-	'click .js-select-avatar-url'(e, instance, ...args) {
-		const url = instance.url.get().trim();
+
+	'click .js-select-avatar-url'(e, template) {
+		const url = template.url.get().trim();
 		if (!url) {
 			return;
 		}
-		setAvatar.apply({
-			suggestion: {
-				service: 'url',
-				blob: url,
-				contentType: '',
-			},
-		}, [e, instance, ...args]);
+
+		template.avatar.set({
+			service: 'url',
+			contentType: '',
+			blob: url,
+		});
 	},
-	'input .js-avatar-url-input'(e, instance) {
+
+	'input .js-avatar-url-input'(e, template) {
 		const text = e.target.value;
-		instance.url.set(text);
+		template.url.set(text);
 	},
+
 	'change .js-select-avatar-upload [type=file]'(event, template) {
 		const e = event.originalEvent || event;
 		let { files } = e.target;
@@ -112,10 +100,10 @@ Template.userEdit.events({
 					contentType: blob.type,
 					blob: reader.result,
 				});
-				callbacks.run('userAvatarSet', 'upload');
 			};
 		});
 	},
+
 	'click .cancel'(e, t) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -239,7 +227,6 @@ Template.userEdit.onCreated(function() {
 			return;
 		}
 		const userData = this.getUserData();
-		const avatar = this.avatar.get();
 		if (this.user != null) {
 			for (const key in userData) {
 				if (key) {
@@ -253,8 +240,19 @@ Template.userEdit.onCreated(function() {
 			}
 		}
 
+		const avatar = this.avatar.get();
 		if (avatar) {
-			Meteor.call('setAvatarFromService', avatar.blob, avatar.contentType, avatar.service, Template.instance().user._id, function(err) {
+			let method;
+			const params = [];
+
+			if (avatar.service === 'initials') {
+				method = 'resetAvatar';
+			} else {
+				method = 'setAvatarFromService';
+				params.push(avatar.blob, avatar.contentType, avatar.service);
+			}
+
+			Meteor.call(method, ...params, Template.instance().user._id, function(err) {
 				if (err && err.details) {
 					toastr.error(t(err.message));
 				} else {
