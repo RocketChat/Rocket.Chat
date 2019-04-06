@@ -8,7 +8,7 @@ import s from 'underscore.string';
 
 export const _setRealName = function(userId, name) {
 	name = s.trim(name);
-	if (!userId || !name) {
+	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
 		return false;
 	}
 
