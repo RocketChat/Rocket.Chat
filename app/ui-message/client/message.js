@@ -14,7 +14,7 @@ import { AutoTranslate } from '../../autotranslate/client';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { callbacks } from '../../callbacks';
 import { Markdown } from '../../markdown/client';
-import { t, getUserPreference, roomTypes } from '../../utils';
+import { t, getUserPreference, roomTypes, getURL } from '../../utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -31,6 +31,7 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
 		return;
 	}
+	pdfLink = getURL(pdfLink);
 
 	const canvas = document.getElementById(canvasId);
 	if (!canvas) {

@@ -3,7 +3,7 @@ import { modal } from '../../../ui-utils';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { DateFormat } from '../../../lib';
-import { t, handleError, canDeleteMessage } from '../../../utils/client';
+import { t, canDeleteMessage, getURL, handleError } from '../../../utils/client';
 import { popover } from '../../../ui-utils';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
@@ -31,7 +31,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	url() {
-		return `/file-upload/${ this._id }/${ this.name }`;
+		return getURL(`/file-upload/${ this._id }/${ this.name }`);
 	},
 
 	fileTypeClass() {
@@ -43,7 +43,7 @@ Template.uploadedFilesList.helpers({
 
 	thumb() {
 		if (/image/.test(this.type)) {
-			return this.url;
+			return getURL(this.url);
 		}
 	},
 	format(timestamp) {
