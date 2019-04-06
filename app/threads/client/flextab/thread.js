@@ -33,12 +33,12 @@ Template.thread.helpers({
 		return Template.instance().state.get('loading');
 	},
 	messages() {
-		const { mainMessage } = Template.parentData();
-		const { Threads } = Template.instance();
+		const { Threads, state } = Template.instance();
+		const tmid = state.get('tmid');
 		// const count = Threads.find({ tmid: mainMessage._id }).count();
 		// const limit = Template.instance().state.get('limit');
 		// return Threads.find({ tmid: mainMessage._id }, { sort, skip: count > limit ? count - limit : 0 });
-		return Threads.find({ tmid: mainMessage._id }, { sort });
+		return Threads.find({ tmid }, { sort });
 	},
 	messageContext() {
 		const result = messageContext.apply(this);
