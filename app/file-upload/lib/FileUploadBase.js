@@ -35,7 +35,6 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 	},
 });
 
-
 export class FileUploadBase {
 	constructor(store, meta, file) {
 		this.id = Random.id();
