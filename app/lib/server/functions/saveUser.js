@@ -171,18 +171,16 @@ export const saveUser = function(userId, userData) {
 
 		const _id = Accounts.createUser(createUser);
 
-		// set userData.name to empty string to guarantee it's not undefined
-		if (!userData.name) {
-			userData.name = '';
-		}
-
 		const updateUser = {
 			$set: {
-				name: userData.name,
 				roles: userData.roles || ['user'],
 				settings: userData.settings || {},
 			},
 		};
+
+		if (typeof userData.name !== 'undefined') {
+			updateUser.$set.name = userData.name;
+		}
 
 		if (typeof userData.requirePasswordChange !== 'undefined') {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
@@ -203,11 +201,14 @@ export const saveUser = function(userId, userData) {
 				subject,
 				html,
 				data: {
-					name: s.escapeHTML(userData.name),
 					email: s.escapeHTML(userData.email),
 					password: s.escapeHTML(userData.password),
 				},
 			};
+
+			if (typeof userData.name !== 'undefined') {
+				email.data.name = s.escapeHTML(userData.name);
+			}
 
 			try {
 				Mailer.send(email);

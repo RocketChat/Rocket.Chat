@@ -20,7 +20,11 @@ export const _setRealName = function(userId, name) {
 	}
 
 	// Set new name
-	Users.setName(user._id, name);
+	if (name) {
+		Users.setName(user._id, name);
+	} else {
+		Users.unsetName(user._id);
+	}
 	user.name = name;
 
 	// if user has no username, there is no need to updated any direct messages (there is none)
