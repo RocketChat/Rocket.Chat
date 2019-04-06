@@ -62,6 +62,8 @@ const messageBoxState = {
 
 callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
 
+const showModal = (config) => new Promise((resolve, reject) => modal.open(config, resolve, reject));
+
 export class ChatMessages {
 	init(node, { rid, tmid }) {
 		this.editing = {};
@@ -180,6 +182,7 @@ export class ChatMessages {
 		if (!hasPermission && (!editAllowed || !editOwn)) {
 			return;
 		}
+
 		if (element.classList.contains('system')) {
 			return;
 		}
@@ -246,108 +249,157 @@ export class ChatMessages {
 
 	async send(event, { rid, tmid, value }, done = () => {}) {
 		const threadsEnabled = false;
+
+		MsgTyping.stop(rid);
+
 		if (!ChatSubscription.findOne({ rid })) {
 			await call('joinRoom', rid);
 		}
 
+		let msg = value;
 		if (value.trim()) {
-			readMessage.enable();
-			readMessage.readNow();
-			$('.message.first-unread').removeClass('first-unread');
-
-			let msg = value;
 			const mention = this.$input.data('mention-user') || false;
 			const replies = this.$input.data('reply') || [];
 			if (!mention || !threadsEnabled) {
 				msg = await prependReplies(msg, replies, mention);
 			}
 
-			this.$input.removeData('reply').trigger('dataChange');
-
-			if (msg.slice(0, 2) === '+:') {
-				const reaction = msg.slice(1).trim();
-				if (emoji.list[reaction]) {
-					const lastMessage = ChatMessage.findOne({ rid }, { fields: { ts: 1 }, sort: { ts: -1 } });
-					await call('setReaction', reaction, lastMessage._id);
-					messageBoxState.set(this.input, '');
-					return;
-				}
+			if (mention && threadsEnabled && replies.length) {
+				tmid = replies[0]._id;
 			}
+		} else {
+			msg = '';
+		}
 
-			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg, ...(mention && threadsEnabled && replies.length && { tmid: replies[0]._id }) });
+		if (msg) {
+			readMessage.enable();
+			readMessage.readNow();
+			$('.message.first-unread').removeClass('first-unread');
 
-			// checks for the final msgObject.msg size before actually sending the message
-			if (this.isMessageTooLong(msgObject.msg)) {
-				if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
-					return toastr.error(t('Message_too_long'));
-				}
-				return modal.open({
-					text: t('Message_too_long_as_an_attachment_question'),
-					title: '',
-					type: 'warning',
-					showCancelButton: true,
-					confirmButtonText: t('Yes'),
-					cancelButtonText: t('No'),
-					closeOnConfirm: true,
-				}, () => {
-					const contentType = 'text/plain';
-					const messageBlob = new Blob([msgObject.msg], { type: contentType });
-					const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
-					const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
-					fileUpload([{ file, name: fileName }], this.input, { rid });
-					this.clearCurrentDraft();
-					messageBoxState.set(this.input, '');
-					MsgTyping.stop(rid);
-					messageBoxState.save({ rid, tmid }, this.input);
-					done();
-				}, done);
+			const message = await promises.run('onClientBeforeSendMessage', {
+				_id: Random.id(),
+				rid,
+				tmid,
+				msg,
+			});
+
+			try {
+				await this.processMessageSend(message);
+				messageBoxState.set(this.input, '');
+				messageBoxState.save({ rid, tmid }, this.input);
+				this.$input.removeData('reply').trigger('dataChange');
+			} catch (error) {
+				handleError(error);
+			} finally {
+				return done();
 			}
-
-			this.clearCurrentDraft();
-
-			if (this.editing.id) {
-				await this.updateMessage(this.editing.id, rid, msgObject.msg);
-				return;
-			}
-
-			KonchatNotification.removeRoomNotification(rid);
-			messageBoxState.set(this.input, '');
-
-			MsgTyping.stop(rid);
-
-			if (this.processSlashCommand(msgObject)) {
-				return;
-			}
-
-			await call('sendMessage', msgObject);
-
-			messageBoxState.save({ rid, tmid }, this.input);
-
-			done();
 		}
 
 		if (this.editing.id) {
 			const message = ChatMessage.findOne(this.editing.id);
-
 			const isDescription = message.attachments && message.attachments[0] && message.attachments[0].description;
-			if (isDescription) {
-				this.updateMessage(this.editing.id, rid, '', true);
-				return;
+
+			try {
+				if (isDescription) {
+					await this.processMessageEditing({ _id: this.editing.id, rid, msg: '' });
+					return done();
+				}
+
+				this.resetToDraft(this.editing.id);
+				this.confirmDeleteMsg(message, done);
+			} catch (error) {
+				handleError(error);
 			}
-
-			this.resetToDraft(this.editing.id);
-
-			if (MessageTypes.isSystemMessage(message)) {
-				return;
-			}
-
-			this.confirmDeleteMsg(message, done);
-			return;
 		}
 	}
 
-	processSlashCommand(msgObject) {
+	async processMessageSend(message) {
+		if (await this.processSetReaction(message)) {
+			return;
+		}
+
+		this.clearCurrentDraft();
+
+		if (await this.processTooLongMessage(message)) {
+			return;
+		}
+
+		if (await this.processMessageEditing({ ...message, _id: this.editing.id })) {
+			return;
+		}
+
+		KonchatNotification.removeRoomNotification(message.rid);
+
+		if (await this.processSlashCommand(message)) {
+			return;
+		}
+
+		await call('sendMessage', message);
+	}
+
+	async processSetReaction({ rid, tmid, msg }) {
+		if (msg.slice(0, 2) !== '+:') {
+			return false;
+		}
+
+		const reaction = msg.slice(1).trim();
+		if (!emoji.list[reaction]) {
+			return false;
+		}
+
+		const lastMessage = ChatMessage.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
+		await call('setReaction', reaction, lastMessage._id);
+		messageBoxState.set(this.input, '');
+		this.$input.removeData('reply').trigger('dataChange');
+		return true;
+	}
+
+	async processTooLongMessage({ msg, rid, tmid }) {
+		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
+		if (messageProperties.length(adjustedMessage) <= this.messageMaxSize && msg) {
+			return false;
+		}
+
+		if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
+			throw { error: 'Message_too_long' };
+		}
+
+		try {
+			await showModal({
+				text: t('Message_too_long_as_an_attachment_question'),
+				title: '',
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonText: t('Yes'),
+				cancelButtonText: t('No'),
+				closeOnConfirm: true,
+			});
+
+			const contentType = 'text/plain';
+			const messageBlob = new Blob([msg], { type: contentType });
+			const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
+			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
+			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
+		} finally {
+			return true;
+		}
+	}
+
+	async processMessageEditing(message) {
+		if (!message._id) {
+			return false;
+		}
+
+		if (MessageTypes.isSystemMessage(message)) {
+			return false;
+		}
+
+		await call('updateMessage', message);
+		this.clearEditing();
+		return true;
+	}
+
+	async processSlashCommand(msgObject) {
 		if (msgObject.msg[0] === '/') {
 			const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
 			if (match) {
@@ -392,6 +444,10 @@ export class ChatMessages {
 	}
 
 	confirmDeleteMsg(message, done = () => {}) {
+		if (MessageTypes.isSystemMessage(message)) {
+			return done();
+		}
+
 		const room = message.drid && Rooms.findOne({
 			_id: message.drid,
 			prid: { $exists: true },
@@ -449,19 +505,6 @@ export class ChatMessages {
 		} catch (error) {
 			handleError(error);
 		}
-	}
-
-	async updateMessage(_id, rid, msg, isDescription) {
-		if (msg.trim() || isDescription) {
-			MsgTyping.stop(rid);
-			await call('updateMessage', { _id, msg, rid });
-			this.clearEditing();
-		}
-	}
-
-	isMessageTooLong(message) {
-		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message);
-		return messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
 	}
 
 	keydown(event) {
