@@ -24,11 +24,9 @@ Meteor.startup(function() {
 						AutoTranslate.messageIdsToWait[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
-					} else if (message.autoTranslateShowInverse) {
-						Messages.update({ _id: message._id }, { $unset: { autoTranslateShowInverse: true } });
-					} else {
-						Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true } });
 					}
+					const action = message.autoTranslateShowInverse ? '$unset' : '$set';
+					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition(message) {
 					return message && message.u && message.u._id !== Meteor.userId();

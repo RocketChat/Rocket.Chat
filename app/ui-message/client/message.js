@@ -197,18 +197,11 @@ Template.message.helpers({
 		}
 	},
 	showTranslated() {
-		if (settings.get('AutoTranslate_Enabled') && this.u && this.u._id !== Meteor.userId() && !MessageTypes.isSystemMessage(this)) {
-			const subscription = Subscriptions.findOne({
-				rid: this.rid,
-				'u._id': Meteor.userId(),
-			}, {
-				fields: {
-					autoTranslate: 1,
-					autoTranslateLanguage: 1,
-				},
-			});
-			const language = AutoTranslate.getLanguage(this.rid);
-			return this.autoTranslateFetching || (subscription && subscription.autoTranslate !== this.autoTranslateShowInverse && this.translations && this.translations[language]);
+		const { msg, subscription, settings } = this;
+		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== Meteor.userId() && !MessageTypes.isSystemMessage(msg)) {
+			const language = AutoTranslate.getLanguage(msg.rid);
+			const autoTranslate = subscription && subscription.autoTranslate;
+			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[language]);
 		}
 	},
 	edited() {
