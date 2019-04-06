@@ -1089,6 +1089,8 @@
   "edit-message_description": "Permission to edit a message within a room",
   "edit-other-user-active-status": "Edit Other User Active Status",
   "edit-other-user-active-status_description": "Permission to enable or disable other accounts",
+  "edit-other-user-avatar": "Edit Other User Avatar",
+  "edit-other-user-avatar_description": "Permission to change other user's avatar.",
   "edit-other-user-info": "Edit Other User Information",
   "edit-other-user-info_description": "Permission to change other user's name, username or email address.",
   "edit-other-user-password": "Edit Other User Password",
