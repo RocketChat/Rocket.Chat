@@ -221,21 +221,21 @@ API.v1.addRoute('rooms.leave', { authRequired: true }, {
 
 API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
 	post() {
-		const { parentRoomId, parentMessageId, reply, name, users } = this.bodyParams;
-		if (!parentRoomId) {
-			return API.v1.failure('Body parameter "parentRoomId" is required.');
+		const { prid, pmid, reply, t_name, users } = this.bodyParams;
+		if (!prid) {
+			return API.v1.failure('Body parameter "prid" is required.');
 		}
-		if (!name) {
-			return API.v1.failure('Body parameter "name" is required.');
+		if (!t_name) {
+			return API.v1.failure('Body parameter "t_name" is required.');
 		}
 		if (users && !Array.isArray(users)) {
 			return API.v1.failure('Body parameter "users" must be an array.');
 		}
 
 		const discussion = Meteor.runAsUser(this.userId, () => Meteor.call('createDiscussion', {
-			prid: parentRoomId,
-			pmid: parentMessageId,
-			t_name: name,
+			prid,
+			pmid,
+			t_name,
 			reply,
 			users: users || [],
 		}));

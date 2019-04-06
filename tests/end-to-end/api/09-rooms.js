@@ -572,8 +572,8 @@ describe('[Rooms]', function() {
 				request.post(api('rooms.createDiscussion'))
 					.set(credentials)
 					.send({
-						parentRoomId: testChannel._id,
-						name: 'valid name',
+						prid: testChannel._id,
+						t_name: 'valid name',
 					})
 					.expect(400)
 					.expect((res) => {
@@ -589,8 +589,8 @@ describe('[Rooms]', function() {
 					request.post(api('rooms.createDiscussion'))
 						.set(credentials)
 						.send({
-							parentRoomId: testChannel._id,
-							name: 'valid name',
+							prid: testChannel._id,
+							t_name: 'valid name',
 						})
 						.expect(400)
 						.expect((res) => {
@@ -605,27 +605,27 @@ describe('[Rooms]', function() {
 				});
 			});
 		});
-		it('should throw an error when the user tries to create a discussion without the required parameter "parentRoomId"', (done) => {
+		it('should throw an error when the user tries to create a discussion without the required parameter "prid"', (done) => {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter \"parentRoomId\" is required.');
+					expect(res.body).to.have.property('error', 'Body parameter \"prid\" is required.');
 				})
 				.end(done);
 		});
-		it('should throw an error when the user tries to create a discussion without the required parameter "name"', (done) => {
+		it('should throw an error when the user tries to create a discussion without the required parameter "t_name"', (done) => {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: testChannel._id,
+					prid: testChannel._id,
 				})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter \"name\" is required.');
+					expect(res.body).to.have.property('error', 'Body parameter \"t_name\" is required.');
 				})
 				.end(done);
 		});
@@ -633,8 +633,8 @@ describe('[Rooms]', function() {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: testChannel._id,
-					name: 'valid name',
+					prid: testChannel._id,
+					t_name: 'valid name',
 					users: 'invalid-type-of-users',
 				})
 				.expect(400)
@@ -648,8 +648,8 @@ describe('[Rooms]', function() {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: 'invalid-id',
-					name: 'valid name',
+					prid: 'invalid-id',
+					t_name: 'valid name',
 				})
 				.expect(400)
 				.expect((res) => {
@@ -662,9 +662,9 @@ describe('[Rooms]', function() {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: testChannel._id,
-					name: 'valid name',
-					parentMessageId: 'invalid-message',
+					prid: testChannel._id,
+					t_name: 'valid name',
+					pmid: 'invalid-message',
 				})
 				.expect(400)
 				.expect((res) => {
@@ -677,8 +677,8 @@ describe('[Rooms]', function() {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: testChannel._id,
-					name: `discussion-create-from-tests-${ testChannel.name }`,
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -691,8 +691,8 @@ describe('[Rooms]', function() {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: testChannel._id,
-					name: `discussion-create-from-tests-${ testChannel.name }`,
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					reply: 'reply from discussion tests',
 				})
 				.expect(200)
@@ -706,8 +706,8 @@ describe('[Rooms]', function() {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: testChannel._id,
-					name: `discussion-create-from-tests-${ testChannel.name }`,
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					reply: 'reply from discussion tests',
 					users: ['rocket.cat'],
 				})
@@ -718,15 +718,15 @@ describe('[Rooms]', function() {
 				})
 				.end(done);
 		});
-		it('should create a discussion successfully when send the required parameters plus the optional parameter "parentMessageId"', (done) => {
+		it('should create a discussion successfully when send the required parameters plus the optional parameter "pmid"', (done) => {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: testChannel._id,
-					name: `discussion-create-from-tests-${ testChannel.name }`,
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					reply: 'reply from discussion tests',
 					users: ['rocket.cat'],
-					parentMessageId: messageSent._id,
+					pmid: messageSent._id,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -751,8 +751,8 @@ describe('[Rooms]', function() {
 			request.post(api('rooms.createDiscussion'))
 				.set(credentials)
 				.send({
-					parentRoomId: testChannel._id,
-					name: `discussion-create-from-tests-${ testChannel.name }`,
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 				})
 				.end(done);
 		});
