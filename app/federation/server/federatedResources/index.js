@@ -1,4 +1,4 @@
-export { default as FederatedMessage } from './FederatedMessage';
-export { default as FederatedResource } from './FederatedResource';
-export { default as FederatedRoom } from './FederatedRoom';
-export { default as FederatedUser } from './FederatedUser';
+export { FederatedMessage } from './FederatedMessage';
+export { FederatedResource } from './FederatedResource';
+export { FederatedRoom } from './FederatedRoom';
+export { FederatedUser } from './FederatedUser';

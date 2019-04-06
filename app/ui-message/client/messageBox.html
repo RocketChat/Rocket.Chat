@@ -1,6 +1,6 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
-		{{#if subscribed}}
+		{{#unless isAnonymousOrJoinCode}}
 			{{> messageBoxTyping rid=_id}}
 
 			{{#if canSend}}
@@ -25,21 +25,25 @@
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</span>
 					{{else}}
-						{{#if isAudioMessageAllowed}}
+						{{#if subscribed}}
 							{{> messageBoxAudioMessage rid=_id}}
+							<span class="rc-message-box__action-menu js-action-menu" data-desktop>
+								{{#if actions}}
+									<span class="rc-message-box__icon">
+										{{> icon block="rc-input__icon-svg" icon="plus"}}
+									</span>
+								{{/if}}
+							</span>
+						{{else}}
+							<span class="rc-message-box__icon">
+								<strong><a href="#" class="js-join"> {{_"join"}}</a></strong>
+							</span>
 						{{/if}}
-						<span class="rc-message-box__action-menu" data-desktop>
-							{{#if actions}}
-								<span class="rc-message-box__icon">
-									{{> icon block="rc-input__icon-svg" icon="plus"}}
-								</span>
-							{{/if}}
-						</span>
 					{{/unless}}
 					<span class="rc-message-box__action-label js-message-actions" data-small>
-						{{#each actions}}
-							<span class="js-message-action">
-								{{> icon block="rc-message-box__action" icon=icon }}
+						{{#each action in actions}}
+							<span class="js-message-action" data-id="{{action.id}}">
+								{{> icon block="rc-message-box__action" icon=action.icon }}
 							</span>
 						{{/each}}
 					</span>
@@ -75,7 +79,7 @@
 				</div>
 			{{/if}}
 		{{else}}
-			{{> messageBoxNotSubscribed rid=_id}}
-		{{/if}}
+			{{> messageBoxNotSubscribed _id=_id}}
+		{{/unless}}
 	</div>
 </template>
