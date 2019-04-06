@@ -157,6 +157,7 @@ Template.livechatCurrentChats.events({
 	},
 	'submit form'(event, instance) {
 		event.preventDefault();
+
 		const filter = {};
 		$(':input', event.currentTarget).each(function() {
 			if (!this.name) {
@@ -206,6 +207,10 @@ Template.livechatCurrentChats.events({
 			filter.agent = agents[0]._id;
 		}
 
+		// store user option on localStorage
+		console.log('I came second');
+		console.log(filter);
+		localStorage.setItem('status', filter.status);
 		instance.filter.set(filter);
 		instance.limit.set(20);
 	},
@@ -275,7 +280,6 @@ Template.livechatCurrentChats.onCreated(async function() {
 			this.customFields.set(customFields);
 		}
 	});
-
 });
 
 Template.livechatCurrentChats.onRendered(function() {
