@@ -65,9 +65,7 @@ Template.thread.onRendered(function() {
 	element.style.scrollBehavior = 'smooth';
 
 	this.sendToBottom = _.throttle(() => {
-		if (this.atBottom) {
-			element.scrollTop = element.scrollHeight;
-		}
+		element.scrollTop = element.scrollHeight;
 	}, 300);
 
 	this.autorun(() => {
@@ -86,7 +84,9 @@ Template.thread.onRendered(function() {
 		this.threadsObserve = Messages.find({ tmid }).observe({
 			added: ({ _id, ...message }) => {
 				this.Threads.upsert({ _id }, message);
-				this.sendToBottom();
+				if (this.atBottom) {
+					this.sendToBottom();
+				}
 			}, // Update message to re-render DOM
 			changed: ({ _id, ...message }) => this.Threads.update({ _id }, message), // Update message to re-render DOM
 			removed: ({ _id }) => this.Threads.remove(_id),
