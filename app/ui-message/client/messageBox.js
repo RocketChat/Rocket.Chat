@@ -55,15 +55,18 @@ Template.messageBox.onRendered(function() {
 			this.input = input;
 			onInputChanged && onInputChanged(input);
 
-			if (!input) {
+			if (input && rid) {
+				this.popupConfig.set({
+					rid,
+					getInput: () => input,
+				});
+			} else {
 				this.popupConfig.set(null);
-				return;
 			}
 
-			this.popupConfig.set({
-				rid,
-				getInput: () => input,
-			});
+			if (!input) {
+				return;
+			}
 
 			const $input = $(input);
 
@@ -82,6 +85,10 @@ Template.messageBox.onRendered(function() {
 Template.messageBox.helpers({
 	isAnonymousOrMustJoinWithCode() {
 		const { rid, subscription } = Template.currentData();
+		if (!rid) {
+			return false;
+		}
+
 		const roomData = Session.get(`roomData${ rid }`);
 		const isAnonymous = !Meteor.userId();
 		const mustJoinWithCode = !subscription && roomData && roomData.joinCodeRequired;
@@ -89,6 +96,10 @@ Template.messageBox.helpers({
 	},
 	isWritable() {
 		const { rid, subscription } = Template.currentData();
+		if (!rid) {
+			return true;
+		}
+
 		const roomData = Session.get(`roomData${ rid }`);
 		const isReadOnly = roomTypes.readOnly(rid, Meteor.user());
 		const isArchived = roomTypes.archived(rid) || (roomData && roomData.t === 'd' && subscription && subscription.archived);
@@ -116,6 +127,10 @@ Template.messageBox.helpers({
 	},
 	canSend() {
 		const { rid } = Template.currentData();
+		if (!rid) {
+			return true;
+		}
+
 		return roomTypes.verifyCanSendMessage(rid);
 	},
 	actions() {
@@ -128,6 +143,10 @@ Template.messageBox.helpers({
 	},
 	isBlockedOrBlocker() {
 		const { rid, subscription } = Template.currentData();
+		if (!rid) {
+			return true;
+		}
+
 		const roomData = Session.get(`roomData${ rid }`);
 		const isBlocked = (roomData && roomData.t === 'd' && subscription && subscription.blocked);
 		const isBlocker = (roomData && roomData.t === 'd' && subscription && subscription.blocker);
