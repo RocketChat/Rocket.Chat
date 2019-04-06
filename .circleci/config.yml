@@ -9,8 +9,8 @@ test-install-dependencies: &test-install-dependencies
   command: |
     wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-    echo "deb [ arch=amd64 ] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
-    echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+    echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
     sudo apt-get update
     sudo apt-get install -y mongodb-org-shell google-chrome-stable
 
@@ -34,7 +34,7 @@ test-configure-replicaset: &test-configure-replicaset
     mongo --eval 'rs.status()'
 
 test-docker-image: &test-docker-image
-  circleci/node:8.11-browsers
+  circleci/node:8.11-stretch-browsers
 
 test: &test
   <<: *defaults
@@ -74,7 +74,7 @@ jobs:
   build:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:8.11-stretch
 
     steps:
       - checkout
@@ -255,7 +255,7 @@ jobs:
   deploy:
     <<: *defaults
     docker:
-      - image: circleci/node:8.11
+      - image: circleci/node:8.11-stretch
 
     steps:
       - attach_workspace:
@@ -269,9 +269,9 @@ jobs:
             if [[ $CIRCLE_PULL_REQUESTS ]]; then exit 0; fi;
 
             sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3.4-dev
+            sudo apt-get -y -qq install python3.5-dev
             curl -O https://bootstrap.pypa.io/get-pip.py
-            python3.4 get-pip.py --user
+            python3.5 get-pip.py --user
             export PATH=~/.local/bin:$PATH
             pip install awscli --upgrade --user
 
@@ -287,7 +287,6 @@ jobs:
             source .circleci/setdeploydir.sh
             bash .circleci/setupsig.sh
             bash .circleci/namefiles.sh
-            # echo ".circleci/sandstorm.sh"
 
             aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
