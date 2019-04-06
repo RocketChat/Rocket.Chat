@@ -2,12 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
-
-import { mountReply } from './chatMessages';
 import { fileUploadHandler } from '../../../file-upload';
 import { Handlebars } from 'meteor/ui';
 import { t, fileUploadIsValidContentType } from '../../../utils';
-import { modal } from '../../../ui-utils';
+import { modal, prependReplies } from '../../../ui-utils';
 
 
 const readAsDataURL = (file, callback) => {
@@ -142,9 +140,9 @@ const getUploadPreview = async (file, preview) => {
 export const fileUpload = async (files, input, { rid, tmid }) => {
 	files = [].concat(files);
 
-	let msg = '';
-
-	msg += await mountReply(msg, input);
+	const replies = $(input).data('reply') || [];
+	const mention = $(input).data('mention-user') || false;
+	const msg = await prependReplies('', replies, mention);
 
 	const uploadNextFile = () => {
 		const file = files.pop();

@@ -5,13 +5,13 @@ import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { t, slashCommands, handleError } from '../../../utils';
 import {
-	MessageAction,
 	messageProperties,
 	MessageTypes,
 	readMessage,
 	modal,
 	call,
 	keyCodes,
+	prependReplies,
 } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -25,33 +25,6 @@ import _ from 'underscore';
 import moment from 'moment';
 import toastr from 'toastr';
 import { fileUpload } from './fileUpload';
-
-
-export const getPermaLinks = async (replies) => Promise.all(
-	replies.map(async ({ _id }) => MessageAction.getPermaLink(_id))
-);
-
-export const mountReply = async (msg, input) => {
-	const replies = $(input).data('reply');
-	const mentionUser = $(input).data('mention-user') || false;
-
-	if (replies && replies.length) {
-		const permalinks = await getPermaLinks(replies);
-
-		replies.forEach(async (reply, replyIndex) => {
-			if (reply !== undefined) {
-				msg += `[ ](${ permalinks[replyIndex] }) `;
-
-				const roomInfo = Rooms.findOne(reply.rid, { fields: { t: 1 } });
-				if (roomInfo.t !== 'd' && reply.u.username !== Meteor.user().username && mentionUser) {
-					msg += `@${ reply.u.username } `;
-				}
-			}
-		});
-	}
-
-	return msg;
-};
 
 const saveMessageBoxText = _.debounce((rid, value) => {
 	const key = `messagebox_${ rid }`;
@@ -82,10 +55,8 @@ export class ChatMessages {
 	}
 
 	recordInputAsDraft() {
-		const { id } = this.editing;
-
-		const message = ChatMessage.findOne(id);
-		const record = this.records[id] || {};
+		const message = ChatMessage.findOne(this.editing.id);
+		const record = this.records[this.editing.id] || {};
 		const draft = this.input.value;
 
 		if (draft === message.msg) {
@@ -94,7 +65,7 @@ export class ChatMessages {
 		}
 
 		record.draft = draft;
-		this.records[id] = record;
+		this.records[this.editing.id] = record;
 	}
 
 	clearCurrentDraft() {
@@ -110,7 +81,7 @@ export class ChatMessages {
 
 	toPrevMessage() {
 		const { index } = this.editing;
-		this.editByIndex((index != null) ? index - 1 : undefined);
+		this.editByIndex(index ? index - 1 : undefined);
 	}
 
 	toNextMessage() {
@@ -127,7 +98,7 @@ export class ChatMessages {
 
 		const messageElements = this.wrapper.querySelectorAll('.own:not(.system)');
 
-		if (index == null) {
+		if (!index) {
 			index = messageElements.length - 1;
 		}
 
@@ -141,7 +112,7 @@ export class ChatMessages {
 	}
 
 	edit(element, index) {
-		index = index != null ? index : this.getEditingIndex(element);
+		index = index || this.getEditingIndex(element);
 
 		const message = ChatMessage.findOne(element.getAttribute('id'));
 
@@ -149,15 +120,23 @@ export class ChatMessages {
 		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = message && message.u && message.u._id === Meteor.userId();
 
-		if (!hasPermission && (!editAllowed || !editOwn)) { return; }
-		if (element.classList.contains('system')) { return; }
+		if (!hasPermission && (!editAllowed || !editOwn)) {
+			return;
+		}
+		if (element.classList.contains('system')) {
+			return;
+		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (blockEditInMinutes && blockEditInMinutes !== 0) {
 			let currentTsDiff;
 			let msgTs;
-			if (message.ts != null) { msgTs = moment(message.ts); }
-			if (msgTs != null) { currentTsDiff = moment().diff(msgTs, 'minutes'); }
+			if (message.ts) {
+				msgTs = moment(message.ts);
+			}
+			if (msgTs) {
+				currentTsDiff = moment().diff(msgTs, 'minutes');
+			}
 			if (currentTsDiff > blockEditInMinutes) {
 				return;
 			}
@@ -207,11 +186,12 @@ export class ChatMessages {
 
 		this.input.value = this.editing.saved || '';
 		$(this.input).trigger('change').trigger('input');
-		const cursorPosition = this.editing.savedCursor != null ? this.editing.savedCursor : -1;
+		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : -1;
 		this.$input.setCursorPosition(cursorPosition);
 	}
 
 	async send(rid, input, done = () => {}) {
+		const threadsEnabled = false;
 		if (!ChatSubscription.findOne({ rid })) {
 			await call('joinRoom', rid);
 		}
@@ -221,11 +201,13 @@ export class ChatMessages {
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
 
-			let msg = '';
+			let msg = input.value;
+			const mention = $(input).data('mention-user') || false;
+			const replies = $(input).data('reply') || [];
+			if (!mention || !threadsEnabled) {
+				msg = await prependReplies(msg, replies, mention);
+			}
 
-			msg += await mountReply(msg, input);
-
-			msg += input.value;
 			this.$input.removeData('reply').trigger('dataChange');
 
 			if (msg.slice(0, 2) === '+:') {
@@ -240,7 +222,7 @@ export class ChatMessages {
 			}
 
 			// Run to allow local encryption, and maybe other client specific actions to be run before send
-			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg });
+			const msgObject = await promises.run('onClientBeforeSendMessage', { _id: Random.id(), rid, msg, ...(mention && threadsEnabled && replies.length && { tmid: replies[0]._id }) });
 
 			// checks for the final msgObject.msg size before actually sending the message
 			if (this.isMessageTooLong(msgObject.msg)) {
@@ -315,7 +297,6 @@ export class ChatMessages {
 	}
 
 	processSlashCommand(msgObject) {
-		// Check if message starts with /command
 		if (msgObject.msg[0] === '/') {
 			const match = msgObject.msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m);
 			if (match) {
@@ -399,9 +380,13 @@ export class ChatMessages {
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
 		if (blockDeleteInMinutes && forceDelete === false) {
 			let msgTs;
-			if (ts != null) { msgTs = moment(ts); }
+			if (ts) {
+				msgTs = moment(ts);
+			}
 			let currentTsDiff;
-			if (msgTs != null) { currentTsDiff = moment().diff(msgTs, 'minutes'); }
+			if (msgTs) {
+				currentTsDiff = moment().diff(msgTs, 'minutes');
+			}
 			if (currentTsDiff > blockDeleteInMinutes) {
 				toastr.error(t('Message_deleting_blocked'));
 				return;
@@ -462,7 +447,7 @@ export class ChatMessages {
 	keydown(rid, event) {
 		const { currentTarget: input, which: keyCode } = event;
 
-		if (keyCode === keyCodes.ESCAPE && this.editing.index != null) {
+		if (keyCode === keyCodes.ESCAPE && this.editing.index) {
 			if (!this.resetToDraft(this.editing.id)) {
 				this.clearCurrentDraft();
 				this.clearEditing();
