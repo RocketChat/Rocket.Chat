@@ -26,3 +26,14 @@ callbacks.add('afterDeleteMessage', function(message, { _id, prid } = {}) {
 callbacks.add('afterDeleteRoom', function(rid) {
 	Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => deleteRoom(_id));
 }, 'DeleteDiscussionChain');
+
+
+callbacks.add('afterDeleteRoom', function(drid) {
+	Messages.update({ drid }, {
+		$unset: {
+			dcount: 1,
+			dlm: 1,
+			drid: 1,
+		},
+	});
+}, 'CleanDiscussionMessage');
