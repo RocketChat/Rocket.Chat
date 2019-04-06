@@ -1,3 +1,4 @@
+import merge from 'lodash.merge';
 import { Meteor } from 'meteor/meteor';
 import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';
@@ -23,7 +24,7 @@ export const updateMessage = function(message, user, originalMessage) {
 		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageUpdatedModify', result));
 
 		if (typeof result === 'object') {
-			message = Object.assign(appMessage, result);
+			message = merge(appMessage, result);
 		}
 	}
 
