@@ -2,13 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { modal } from '../../../ui-utils';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { hasAtLeastOnePermission } from '../../../authorization';
 import { DateFormat } from '../../../lib';
-import { settings } from '../../../settings';
-import { t, handleError } from '../../../utils';
+import { t, handleError, canDeleteMessage } from '../../../utils/client';
 import { popover } from '../../../ui-utils';
 import { Template } from 'meteor/templating';
-import moment from 'moment';
 import _ from 'underscore';
 
 const roomFiles = new Mongo.Collection('room_files');
@@ -127,32 +124,11 @@ Template.uploadedFilesList.events({
 	'click .js-action'(e) {
 		e.currentTarget.parentElement.classList.add('active');
 
-		const canDelete = (() => {
-			const forceDelete = hasAtLeastOnePermission('force-delete-message', this.rid);
-			const hasPermission = hasAtLeastOnePermission('delete-message', this.rid);
-			const isDeleteAllowed = settings.get('Message_AllowDeleting');
-			const deleteOwn = this.file.userId === Meteor.userId();
-			if (!(hasPermission || (isDeleteAllowed && deleteOwn) || forceDelete)) {
-				return;
-			}
-			const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-			if (forceDelete) {
-				return true;
-			}
-			if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) {
-				let msgTs;
-				if (this.file.uploadedAt != null) {
-					msgTs = moment(this.file.uploadedAt);
-				}
-				let currentTsDiff;
-				if (msgTs != null) {
-					currentTsDiff = moment().diff(msgTs, 'minutes');
-				}
-				return currentTsDiff < blockDeleteInMinutes;
-			} else {
-				return true;
-			}
-		})();
+		const canDelete = canDeleteMessage({
+			rid: this.rid,
+			ts: this.file.uploadedAt,
+			uid: this.file.userId,
+		});
 
 		const config = {
 			columns: [
@@ -173,10 +149,14 @@ Template.uploadedFilesList.events({
 										a.remove();
 									},
 								},
-
-								...(canDelete ? [{
+							],
+						},
+						...(canDelete ? [{
+							items: [
+								{
 									icon: 'trash',
 									name: t('Delete'),
+									modifier: 'alert',
 									action: () => {
 										modal.open({
 											title: t('Are_you_sure'),
@@ -203,9 +183,9 @@ Template.uploadedFilesList.events({
 											});
 										});
 									},
-								}] : []),
+								},
 							],
-						},
+						}] : []),
 					],
 				},
 			],

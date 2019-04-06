@@ -250,28 +250,6 @@ Template.message.helpers({
 			return true;
 		}
 	},
-	canDelete() {
-		const hasPermission = hasAtLeastOnePermission('delete-message', this.rid);
-		const isDeleteAllowed = settings.get('Message_AllowDeleting');
-		const deleteOwn = this.u && this.u._id === Meteor.userId();
-		if (!(hasPermission || (isDeleteAllowed && deleteOwn))) {
-			return;
-		}
-		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-		if (blockDeleteInMinutes) {
-			let msgTs;
-			if (this.ts != null) {
-				msgTs = moment(this.ts);
-			}
-			let currentTsDiff;
-			if (msgTs != null) {
-				currentTsDiff = moment().diff(msgTs, 'minutes');
-			}
-			return currentTsDiff < blockDeleteInMinutes;
-		} else {
-			return true;
-		}
-	},
 	showEditedStatus() {
 		return settings.get('Message_ShowEditedStatus');
 	},
