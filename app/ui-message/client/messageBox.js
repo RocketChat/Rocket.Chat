@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
@@ -80,11 +81,19 @@ Template.messageBox.onRendered(function() {
 
 Template.messageBox.helpers({
 	isAnonymousOrMustJoinWithCode() {
-		const { isAnonymous, mustJoinWithCode } = this;
+		const { rid, subscription } = Template.currentData();
+		const roomData = Session.get(`roomData${ rid }`);
+		const isAnonymous = !Meteor.userId();
+		const mustJoinWithCode = !subscription && roomData && roomData.joinCodeRequired;
 		return isAnonymous || mustJoinWithCode;
 	},
-	canSend() {
-		const { isReadOnly, isArchived, isBlocked, isBlocker } = this;
+	isWritable() {
+		const { rid, subscription } = Template.currentData();
+		const roomData = Session.get(`roomData${ rid }`);
+		const isReadOnly = roomTypes.readOnly(rid, Meteor.user());
+		const isArchived = roomTypes.archived(rid) || (roomData && roomData.t === 'd' && subscription && subscription.archived);
+		const isBlocked = (roomData && roomData.t === 'd' && subscription && subscription.blocked);
+		const isBlocker = (roomData && roomData.t === 'd' && subscription && subscription.blocker);
 		return !isReadOnly && !isArchived && !isBlocked && !isBlocker;
 	},
 	popupConfig() {
@@ -105,8 +114,8 @@ Template.messageBox.helpers({
 	isSendIconDisabled() {
 		return !Template.instance().sendIconDisabled.get();
 	},
-	subscribed() {
-		const { rid } = this;
+	canSend() {
+		const { rid } = Template.currentData();
 		return roomTypes.verifyCanSendMessage(rid);
 	},
 	actions() {
@@ -118,7 +127,10 @@ Template.messageBox.helpers({
 		return formattingButtons.filter(({ condition }) => !condition || condition());
 	},
 	isBlockedOrBlocker() {
-		const { isBlocked, isBlocker } = this;
+		const { rid, subscription } = Template.currentData();
+		const roomData = Session.get(`roomData${ rid }`);
+		const isBlocked = (roomData && roomData.t === 'd' && subscription && subscription.blocked);
+		const isBlocker = (roomData && roomData.t === 'd' && subscription && subscription.blocker);
 		return isBlocked || isBlocker;
 	},
 });
@@ -195,14 +207,14 @@ const handleSubmit = (event, instance) => {
 };
 
 Template.messageBox.events({
-	'click .js-join'(event) {
+	async 'click .js-join'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
 		const joinCodeInput = Template.instance().find('[name=joinCode]');
 		const joinCode = joinCodeInput && joinCodeInput.value;
 
-		call('joinRoom', this.rid, joinCode);
+		await call('joinRoom', this.rid, joinCode);
 	},
 	'click .js-emoji-picker'(event, instance) {
 		event.stopPropagation();

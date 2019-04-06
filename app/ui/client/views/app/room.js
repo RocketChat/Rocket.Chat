@@ -314,7 +314,6 @@ Template.room.helpers({
 	messageboxData() {
 		const instance = Template.instance();
 		const { _id: rid } = this;
-		const roomData = Session.get(`roomData${ rid }`);
 		const subscription = ChatSubscription.findOne({
 			rid,
 		}, {
@@ -324,23 +323,12 @@ Template.room.helpers({
 				blocker: 1,
 			},
 		});
-		const isAnonymous = !Meteor.userId();
-		const mustJoinWithCode = !subscription && roomData && roomData.joinCodeRequired;
-		const isReadOnly = roomTypes.readOnly(rid, Meteor.user());
-		const isArchived = roomTypes.archived(rid) || (roomData && roomData.t === 'd' && subscription && subscription.archived);
-		const isBlocked = (roomData && roomData.t === 'd' && subscription && subscription.blocked);
-		const isBlocker = (roomData && roomData.t === 'd' && subscription && subscription.blocker);
 		const isEmbedded = Layout.isEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
 		return {
 			rid,
-			isAnonymous,
-			mustJoinWithCode,
-			isReadOnly,
-			isArchived,
-			isBlocked,
-			isBlocker,
+			subscription,
 			isEmbedded,
 			showFormattingTips: showFormattingTips && !isEmbedded,
 			onInputChanged: (input) => {

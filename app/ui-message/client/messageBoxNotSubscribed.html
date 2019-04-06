@@ -6,7 +6,9 @@
 			<div class="rc-message-box__join">
 				{{{_ "you_are_in_preview_mode_of" room_name=roomName}}}
 
+				{{#if isJoinCodeRequired}}
 				<input type="password" name="joinCode" placeholder="{{_ 'Password'}}" class="rc-input__element rc-message-box__join-code">
+				{{/if}}
 
 				<button class="rc-button rc-button--primary rc-button--small rc-message-box__join-button js-join-code">{{_ "join"}}</button>
 			</div>
