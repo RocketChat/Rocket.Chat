@@ -103,10 +103,10 @@
 
 		{{#if and settings.showReplyButton msg.tcount}}
 			<div class="message-discussion">
-					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--nude rc-button--no-padding rc-button--small js-open-thread" data-rid={{roomId}}>
-						{{> icon icon="thread"}}
-						<span class='reply-counter'>{{msg.tcount}}</span>&nbsp;{{_ i18nKeyReply}}
-					</button>
+				<button class="js-open-thread rc-button rc-button--primary rc-button--small rc-button--outline" data-rid={{roomId}}>
+					{{> icon icon="thread"}}
+					<span class='reply-counter'>{{msg.tcount}}</span>&nbsp;{{_ i18nKeyReply}}
+				</button>
 				<span class="discussion-reply-lm">{{ formatDate msg.tlm}}</span>
 			</div>
 		{{/if}}
@@ -154,7 +154,9 @@
 		{{/unless}}
 		{{# if broadcast}}
 			{{#with msg.u}}
-				<button type="button" class="rc-button rc-button--outline rc-button--primary rc-button-broadcast js-reply-broadcast" name="button">{{> icon block="rc-button-broadcast__icon" icon="reply"}} {{_'Reply'}} </button>
+				<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
+					{{> icon icon="reply"}} {{_'Reply'}}
+				</button>
 			{{/with}}
 		{{/if}}
 		{{# unless hideReactions}}
