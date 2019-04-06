@@ -167,7 +167,7 @@ const insertNewLine = (input) => {
 };
 
 const handleSubmit = (event, instance) => {
-	const { data: { rid, onSend }, input } = instance;
+	const { data: { rid, tmid, onSend }, input } = instance;
 	const { which: keyCode } = event;
 
 	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
@@ -183,7 +183,7 @@ const handleSubmit = (event, instance) => {
 	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
 
 	if (isSending) {
-		onSend && onSend(rid, input, () => {
+		onSend && onSend.call(this, event, { rid, tmid, value: input.value }, () => {
 			input.updateAutogrow();
 			input.focus();
 		});
@@ -247,12 +247,12 @@ Template.messageBox.events({
 			return;
 		}
 
-		const { rid, onKeyDown } = this;
-		onKeyDown && onKeyDown(rid, event, instance);
+		const { rid, tmid, onKeyDown } = this;
+		onKeyDown && onKeyDown.call(this, event, { rid, tmid });
 	},
-	'keyup .js-input-message'(event, instance) {
-		const { rid, onKeyUp } = this;
-		onKeyUp && onKeyUp(rid, event, instance);
+	'keyup .js-input-message'(event) {
+		const { rid, tmid, onKeyUp } = this;
+		onKeyUp && onKeyUp.call(this, event, { rid, tmid });
 	},
 	'paste .js-input-message'(event, instance) {
 		const { rid, tmid } = this;
@@ -291,8 +291,8 @@ Template.messageBox.events({
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
 
-		const { rid, onValueChanged } = this;
-		onValueChanged && onValueChanged(rid, event, instance);
+		const { rid, tmid, onValueChanged } = this;
+		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
 	'propertychange .js-input-message'(event, instance) {
 		if (event.originalEvent.propertyName !== 'value') {
@@ -310,13 +310,13 @@ Template.messageBox.events({
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
 
-		const { rid, onValueChanged } = this;
-		onValueChanged && onValueChanged(rid, event, instance);
+		const { rid, tmid, onValueChanged } = this;
+		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
 	async 'click .js-send'(event, instance) {
-		const { rid, onSend } = this;
 		const { input } = instance;
-		onSend && onSend(rid, input, () => {
+		const { rid, tmid, onSend } = this;
+		onSend && onSend.call(this, event, { rid, tmid, value: input.value }, () => {
 			input.updateAutogrow();
 			input.focus();
 		});

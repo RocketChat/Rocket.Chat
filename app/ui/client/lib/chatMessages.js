@@ -26,27 +26,84 @@ import moment from 'moment';
 import toastr from 'toastr';
 import { fileUpload } from './fileUpload';
 
-const saveMessageBoxText = _.debounce((rid, value) => {
-	const key = `messagebox_${ rid }`;
-	value ? localStorage.setItem(key, value) : localStorage.removeItem(key);
-}, 1000);
+const messageBoxState = {
+	saveValue: _.debounce(({ rid, tmid }, value) => {
+		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
+		value ? localStorage.setItem(key, value) : localStorage.removeItem(key);
+	}, 1000),
 
-const loadMessageBoxText = (rid) => localStorage.getItem(`messagebox_${ rid }`);
+	restoreValue: ({ rid, tmid }) => {
+		const key = ['messagebox', rid, tmid].filter(Boolean).join('_');
+		return localStorage.getItem(key);
+	},
 
-const purgeSavedMessageBoxTexts = () => {
-	Object.keys(localStorage)
-		.filter((key) => key.indexOf('messagebox_') === 0)
-		.forEach((key) => localStorage.removeItem(key));
+	restore: ({ rid, tmid }, input) => {
+		const value = messageBoxState.restoreValue({ rid, tmid });
+		if (typeof value === 'string') {
+			messageBoxState.set(input, value);
+		}
+	},
+
+	save: ({ rid, tmid }, input) => {
+		messageBoxState.saveValue({ rid, tmid }, input.value);
+	},
+
+	set: (input, value) => {
+		input.value = value;
+		$(input).trigger('change').trigger('input');
+	},
+
+	purgeAll: () => {
+		Object.keys(localStorage)
+			.filter((key) => key.indexOf('messagebox_') === 0)
+			.forEach((key) => localStorage.removeItem(key));
+	},
 };
 
+callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
+
 export class ChatMessages {
-	init(node) {
+	init(node, { rid, tmid }) {
 		this.editing = {};
 		this.records = {};
 		this.messageMaxSize = settings.get('Message_MaxAllowedSize');
 		this.wrapper = node.querySelector('.wrapper');
-		this.input = this.input || node.querySelector('.js-input-message');
+		this.initializeInput(this.input || node.querySelector('.js-input-message'), { rid, tmid });
+	}
+
+	initializeInput(input, { rid, tmid }) {
+		this.input = input;
 		this.$input = $(this.input);
+
+		if (!input) {
+			return;
+		}
+
+		messageBoxState.restore({ rid, tmid }, input);
+		this.restoreReplies();
+		this.requestInputFocus();
+	}
+
+	async restoreReplies() {
+		const mid = FlowRouter.getQueryParam('reply');
+		if (!mid) {
+			return;
+		}
+
+		const message = Messages.findOne(mid) || await call('getSingleMessage', mid);
+		if (!message) {
+			return;
+		}
+
+		this.$input.data('reply', [message]).trigger('dataChange');
+	}
+
+	requestInputFocus() {
+		setTimeout(() => {
+			if (this.input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
+				this.input.focus();
+			}
+		}, 200);
 	}
 
 	getEditingIndex(element) {
@@ -75,7 +132,7 @@ export class ChatMessages {
 	resetToDraft(id) {
 		const message = ChatMessage.findOne(id);
 		const oldValue = this.input.value;
-		this.input.value = message.msg;
+		messageBoxState.set(this.input, message.msg);
 		return oldValue !== message.msg;
 	}
 
@@ -157,11 +214,10 @@ export class ChatMessages {
 		element.classList.add('editing');
 
 		if (message.attachments && message.attachments[0].description) {
-			this.input.value = message.attachments[0].description;
+			messageBoxState.set(this.input, message.attachments[0].description);
 		} else {
-			this.input.value = msg;
+			messageBoxState.set(this.input, msg);
 		}
-		this.$input.trigger('change').trigger('input');
 
 		const cursorPosition = editingNext ? 0 : -1;
 		this.$input.setCursorPosition(cursorPosition);
@@ -178,32 +234,30 @@ export class ChatMessages {
 
 		this.recordInputAsDraft();
 		this.input.parentElement.classList.remove('editing');
-
 		this.editing.element.classList.remove('editing');
 		delete this.editing.id;
 		delete this.editing.element;
 		delete this.editing.index;
 
-		this.input.value = this.editing.saved || '';
-		$(this.input).trigger('change').trigger('input');
+		messageBoxState.set(this.input, this.editing.saved || '');
 		const cursorPosition = this.editing.savedCursor ? this.editing.savedCursor : -1;
 		this.$input.setCursorPosition(cursorPosition);
 	}
 
-	async send(rid, input, done = () => {}) {
+	async send(event, { rid, tmid, value }, done = () => {}) {
 		const threadsEnabled = false;
 		if (!ChatSubscription.findOne({ rid })) {
 			await call('joinRoom', rid);
 		}
 
-		if (input.value.trim()) {
+		if (value.trim()) {
 			readMessage.enable();
 			readMessage.readNow();
 			$('.message.first-unread').removeClass('first-unread');
 
-			let msg = input.value;
-			const mention = $(input).data('mention-user') || false;
-			const replies = $(input).data('reply') || [];
+			let msg = value;
+			const mention = this.$input.data('mention-user') || false;
+			const replies = this.$input.data('reply') || [];
 			if (!mention || !threadsEnabled) {
 				msg = await prependReplies(msg, replies, mention);
 			}
@@ -215,8 +269,7 @@ export class ChatMessages {
 				if (emoji.list[reaction]) {
 					const lastMessage = ChatMessage.findOne({ rid }, { fields: { ts: 1 }, sort: { ts: -1 } });
 					await call('setReaction', reaction, lastMessage._id);
-					input.value = '';
-					this.$input.trigger('change').trigger('input');
+					messageBoxState.set(this.input, '');
 					return;
 				}
 			}
@@ -242,12 +295,11 @@ export class ChatMessages {
 					const messageBlob = new Blob([msgObject.msg], { type: contentType });
 					const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
 					const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
-					fileUpload([{ file, name: fileName }], input, { rid });
+					fileUpload([{ file, name: fileName }], this.input, { rid });
 					this.clearCurrentDraft();
-					input.value = '';
-					this.$input.trigger('change').trigger('input');
+					messageBoxState.set(this.input, '');
 					MsgTyping.stop(rid);
-					saveMessageBoxText(rid, '');
+					messageBoxState.save({ rid, tmid }, this.input);
 					done();
 				}, done);
 			}
@@ -260,8 +312,7 @@ export class ChatMessages {
 			}
 
 			KonchatNotification.removeRoomNotification(rid);
-			input.value = '';
-			this.$input.trigger('change').trigger('input');
+			messageBoxState.set(this.input, '');
 
 			MsgTyping.stop(rid);
 
@@ -271,7 +322,7 @@ export class ChatMessages {
 
 			await call('sendMessage', msgObject);
 
-			saveMessageBoxText(rid, '');
+			messageBoxState.save({ rid, tmid }, this.input);
 
 			done();
 		}
@@ -408,43 +459,12 @@ export class ChatMessages {
 		}
 	}
 
-	async restoreText(rid) {
-		const text = loadMessageBoxText(rid);
-		if (typeof text === 'string' && this.input) {
-			this.input.value = text;
-			this.$input.trigger('input');
-		}
-		const msgId = FlowRouter.getQueryParam('reply');
-		if (!msgId) {
-			return;
-		}
-
-		const message = Messages.findOne(msgId);
-
-		if (message) {
-			this.$input.data('reply', [message]).trigger('dataChange');
-			return;
-		}
-
-		const msg = await call('getSingleMessage', msgId);
-		this.$input.data('reply', [msg]).trigger('dataChange');
+	isMessageTooLong(message) {
+		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message);
+		return messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
 	}
 
-	keyup(rid, event) {
-		const { currentTarget: input, which: keyCode } = event;
-
-		if (!Object.values(keyCodes).includes(keyCode)) {
-			if (input.value.trim()) {
-				MsgTyping.start(rid);
-			} else {
-				MsgTyping.stop(rid);
-			}
-		}
-
-		saveMessageBoxText(rid, input.value);
-	}
-
-	keydown(rid, event) {
+	keydown(event) {
 		const { currentTarget: input, which: keyCode } = event;
 
 		if (keyCode === keyCodes.ESCAPE && this.editing.index) {
@@ -491,10 +511,17 @@ export class ChatMessages {
 		}
 	}
 
-	isMessageTooLong(message) {
-		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message);
-		return messageProperties.length(adjustedMessage) > this.messageMaxSize && message;
+	keyup(event, { rid, tmid }) {
+		const { currentTarget: input, which: keyCode } = event;
+
+		if (!Object.values(keyCodes).includes(keyCode)) {
+			if (input.value.trim()) {
+				MsgTyping.start(rid);
+			} else {
+				MsgTyping.stop(rid);
+			}
+		}
+
+		messageBoxState.save({ rid, tmid }, input);
 	}
 }
-
-callbacks.add('afterLogoutCleanUp', purgeSavedMessageBoxTexts, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');

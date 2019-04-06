@@ -348,12 +348,7 @@ Template.room.helpers({
 					return;
 				}
 
-				chatMessages[rid].input = input;
-				chatMessages[rid].$input = $(input);
-
-				if (input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
-					input.focus();
-				}
+				chatMessages[rid].initializeInput(input, { rid });
 			},
 			onResize: () => {
 				if (instance.sendToBottomIfNecessaryDebounced) {
@@ -1036,8 +1031,7 @@ Template.room.onRendered(function() {
 	if (!chatMessages[rid]) {
 		chatMessages[rid] = new ChatMessages;
 	}
-	chatMessages[rid].init(this.firstNode);
-	chatMessages[rid].restoreText(rid);
+	chatMessages[rid].init(this.firstNode, { rid });
 
 	if (chatMessages[rid].input && window.matchMedia('screen and (min-device-width: 500px)').matches) {
 		chatMessages[rid].input.focus();
