@@ -1,6 +1,8 @@
-import { settings } from '/app/settings';
+import { HTTP } from 'meteor/http';
+
+import { settings } from '../../../settings';
+
 import { SMS } from '../SMS';
-const http = require('request');
 
 class Voxtelesys {
 	constructor() {
@@ -25,29 +27,28 @@ class Voxtelesys {
 	send(fromNumber, toNumber, message) {
 		const options = {
 			timeout: 30000,
-			followRedirect: false,
-			url: this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms',
-			auth: {
-				bearer: this.authToken,
+			followRedirects: false,
+			headers: {
+				Authorization: `Bearer ${ this.authToken }`,
 			},
-			agentOptions: {
-				ecdhCurve: 'auto',
-			},
-			forever: true,
-			json: true,
-			body: {
+			data: {
 				to: [toNumber],
 				from: fromNumber,
 				body: message,
 			},
+			npmRequestOptions: {
+				agentOptions: {
+					ecdhCurve: 'auto',
+				},
+				forever: true,
+			},
 		};
-		http.post(options, function(error, response, body) {
-			if (error) {
-				console.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
-			} else if (response.statusCode !== 200) {
-				console.error(`Error from Voxtelesys SMS API: ${ response.statusCode } ${ JSON.stringify(body) }`);
-			}
-		});
+
+		try {
+			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
+		} catch (error) {
+			console.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
+		}
 	}
 	response(/* message */) {
 		return {

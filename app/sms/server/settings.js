@@ -51,14 +51,14 @@ Meteor.startup(function() {
 				},
 				i18nLabel: 'Auth_Token',
 			});
-		});
-		this.add('SMS_Voxtelesys_URL', 'https://smsapi.voxtelesys.net/api/v1/sms', {
-			type: 'string',
-			enableQuery: {
-				_id: 'SMS_Service',
-				value: 'voxtelesys',
-			},
-			i18nLabel: 'URL',
+			this.add('SMS_Voxtelesys_URL', 'https://smsapi.voxtelesys.net/api/v1/sms', {
+				type: 'string',
+				enableQuery: {
+					_id: 'SMS_Service',
+					value: 'voxtelesys',
+				},
+				i18nLabel: 'URL',
+			});
 		});
 	});
 });
