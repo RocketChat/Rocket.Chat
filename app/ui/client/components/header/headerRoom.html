@@ -6,7 +6,7 @@
 				{{> burger}}
 			</div>
 
-			{{#if isThread}}
+			{{#if isDiscussion}}
 				<div class="rc-header__block rc-header__block--action js-open-parent-channel">
 					<span class="rc-header__first-icon">{{> icon block="rc-header__icon rc-header__icon" icon="back"}}</span>
 				</div>
@@ -18,15 +18,11 @@
 				</div>
 			{{/if}}
 
-
 			<!-- TODO: fix it style and helper -->
 			{{#if tokenAccessChannel}}
 				<i class="icon-tokenpass" aria-label="{{_ "Tokenpass_Channel_Label"}}"></i>
 			{{/if}}
 
-			{{#if encryptedChannel}}
-				<i class="icon-key" aria-label="{{_ "Encrypted_Channel_Label"}}"></i>
-			{{/if}}
 			<div class="rc-header__content rc-header__block">
 				{{#if isDirect}}
 				<div class="rc-header__block">
@@ -64,27 +60,16 @@
 			{{#if isSection}}
 			<span class="rc-header__block">{{_ sectionName}}</span>
 			{{/if}}
-
-			{{#if Template.contentBlock}}
-			{{> Template.contentBlock}}
-			{{/if}}
-
-			{{#unless isChannel}}
-			{{# unless hideHelp}}
-			<div class="rc-header__section-help"></div>
-			{{/unless}}
-			{{/unless}}
-
-			{{#with toolbarButtons}}
-			<div class="iframe-toolbar">
-				{{#each buttons}}
-				<button class="{{id}}">
-					{{#if icon}}<i class="{{icon}}"></i>{{/if}}
-					{{label}}
-				</button>
-				{{/each}}
+			{{#if encryptionState}}
+			<div class="rc-header__block rc-header__block-action rc-header__encryption">
+				<div class="rc-room-actions">
+					<button aria-label="{{_ 'E2E_Enabled'}}" class="rc-tooltip rc-tooltip--down rc-room-actions__action tab-button rc-header__toggle-encryption js-toggle-encryption {{encryptionState}}">{{> icon icon="key"}}</button>
+				</div>
 			</div>
-			{{/with}}
+			{{/if}}
+			{{#if Template.contentBlock}}
+				{{> Template.contentBlock}}
+			{{/if}}
 		</div>
 	</header>
 </template>

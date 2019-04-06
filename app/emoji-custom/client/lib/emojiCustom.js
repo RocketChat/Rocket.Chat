@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { isSetNotNull } from '../lib/function-isSet';
-import { RoomManager, call } from '/app/ui-utils';
-import { emoji, EmojiPicker } from '/app/emoji';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { RoomManager, call } from '../../../ui-utils';
+import { emoji, EmojiPicker } from '../../../emoji';
+import { CachedCollectionManager } from '../../../ui-cached-collection';
 
 export const getEmojiUrlFromName = function(name, extension) {
 	Session.get;
@@ -158,7 +158,7 @@ emoji.packages.emojiCustom = {
 };
 
 Meteor.startup(() =>
-	CachedCollectionManager.onLogin(async() => {
+	CachedCollectionManager.onLogin(async () => {
 		const emojis = await call('listEmojiCustom');
 
 		emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };

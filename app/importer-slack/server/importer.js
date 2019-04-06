@@ -6,11 +6,11 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '/app/importer';
-import { RocketChatFile } from '/app/file';
-import { getAvatarUrlFromUsername } from '/app/utils';
-import { Users, Rooms, Messages } from '/app/models';
-import { sendMessage } from '/app/lib';
+} from '../../importer/server';
+import { RocketChatFile } from '../../file';
+import { getAvatarUrlFromUsername } from '../../utils';
+import { Users, Rooms, Messages } from '../../models';
+import { sendMessage } from '../../lib';
 
 import _ from 'underscore';
 

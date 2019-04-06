@@ -1,26 +1,31 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Subscriptions } from '/app/models';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { hasPermission } from '/app/authorization';
+import { Users, Subscriptions } from '../../../models';
+import { settings } from '../../../settings';
+import { Notifications } from '../../../notifications';
+import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import s from 'underscore.string';
 
 export const _setRealName = function(userId, name) {
 	name = s.trim(name);
-	if (!userId || !name) {
+
+	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
 		return false;
 	}
 
 	const user = Users.findOneById(userId);
 
 	// User already has desired name, return
-	if (user.name === name) {
+	if (s.trim(user.name) === name) {
 		return user;
 	}
 
 	// Set new name
-	Users.setName(user._id, name);
+	if (name) {
+		Users.setName(user._id, name);
+	} else {
+		Users.unsetName(user._id);
+	}
 	user.name = name;
 
 	// if user has no username, there is no need to updated any direct messages (there is none)

@@ -1,4 +1,4 @@
-import { Importers } from '/app/importer';
+import { Importers } from '../../importer/server';
 import { HipChatImporterInfo } from '../lib/info';
 import { HipChatImporter } from './importer';
 

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { searchProviderService, SearchProvider } from '/app/search';
+import { searchProviderService, SearchProvider } from '../../../search/server';
 import Index from './index';
 import ChatpalLogger from '../utils/logger';
-import { Subscriptions } from '/app/models';
+import { Subscriptions } from '../../../models';
 
 /**
  * The chatpal search provider enables chatpal search. An appropriate backedn has to be specified by settings.
@@ -313,6 +313,7 @@ class ChatpalProvider extends SearchProvider {
 		if (!this.index) { return callback({ msg:'Chatpal_currently_not_active' }); }
 
 		const type = payload.resultType === 'All' ? ['message', 'user', 'room'] : ['message'];
+		const params = Object.assign({}, payload.custom);
 
 		this.index.query(
 			text,
@@ -321,7 +322,8 @@ class ChatpalProvider extends SearchProvider {
 			type,
 			payload.start || 0,
 			payload.rows || this._settings.get('PageSize'),
-			callback
+			callback,
+			params
 		);
 
 	}

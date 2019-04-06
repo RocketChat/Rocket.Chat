@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
+import { callbacks } from '../../callbacks';
 import { Template } from 'meteor/templating';
-import { ChatSubscription, Rooms, Users, Subscriptions } from '/app/models';
-import { UiTextContext, getUserPreference, roomTypes } from '/app/utils';
-import { settings } from '/app/settings';
+import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
+import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
+import { settings } from '../../settings';
 
 Template.roomList.helpers({
 	rooms() {
@@ -23,7 +23,7 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'settings.preferences.sidebarShowThreads': 1,
+				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
 			},
 		});
@@ -43,7 +43,10 @@ Template.roomList.helpers({
 
 		if (this.identifier === 'unread') {
 			query.alert = true;
-			query.hideUnreadStatus = { $ne: true };
+			query.$or = [
+				{ hideUnreadStatus: { $ne: true } },
+				{ unread: { $gt: 0 } },
+			];
 
 			return ChatSubscription.find(query, { sort });
 		}
@@ -59,12 +62,12 @@ Template.roomList.helpers({
 				types = ['c', 'p', 'd'];
 			}
 
-			if (this.identifier === 'thread') {
+			if (this.identifier === 'discussion') {
 				types = ['c', 'p', 'd'];
 				query.prid = { $exists: true };
 			}
 
-			if (this.identifier === 'unread' || this.identifier === 'tokens') {
+			if (this.identifier === 'tokens') {
 				types = ['c', 'p'];
 			}
 
@@ -74,15 +77,20 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			// if we display threads as a separate group, we should hide them from the other lists
-			if (getUserPreference(user, 'sidebarShowThreads')) {
+			// if we display discussions as a separate group, we should hide them from the other lists
+			if (getUserPreference(user, 'sidebarShowDiscussion')) {
 				query.prid = { $exists: false };
 			}
 
 			if (getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{ alert: { $ne: true } },
-					{ hideUnreadStatus: true },
+					{
+						$and: [
+							{ hideUnreadStatus: true },
+							{ unread: 0 },
+						],
+					},
 				];
 			}
 			query.t = { $in: types };

@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import { sendMessage, updateMessage } from '/app/lib';
-import { Messages, Rooms, Users } from '/app/models';
-import { FileUpload } from '/app/file-upload';
+import { sendMessage, updateMessage } from '../../../lib';
+import { Messages, Rooms, Users } from '../../../models';
+import { FileUpload } from '../../../file-upload';
 
-import FederatedResource from './FederatedResource';
-import FederatedRoom from './FederatedRoom';
-import FederatedUser from './FederatedUser';
-import peerClient from '../peerClient';
+import { FederatedResource } from './FederatedResource';
+import { FederatedRoom } from './FederatedRoom';
+import { FederatedUser } from './FederatedUser';
+import { Federation } from '../';
 
-class FederatedMessage extends FederatedResource {
+export class FederatedMessage extends FederatedResource {
 	constructor(localPeerIdentifier, message) {
 		super('message');
 
@@ -16,6 +16,7 @@ class FederatedMessage extends FederatedResource {
 			throw new Error('message param cannot be empty');
 		}
 
+		// Set local peer identifier to local object
 		this.localPeerIdentifier = localPeerIdentifier;
 
 		// Make sure room dates are correct
@@ -178,7 +179,7 @@ class FederatedMessage extends FederatedResource {
 
 				const { federation: { peer: identifier } } = localMessage;
 
-				const { upload, buffer } = peerClient.getUpload({ identifier, localMessage });
+				const { upload, buffer } = Federation.peerClient.getUpload({ identifier, localMessage });
 
 				const oldUploadId = upload._id;
 
@@ -260,5 +261,3 @@ FederatedMessage.loadOrCreate = function loadOrCreate(localPeerIdentifier, messa
 
 	return new FederatedMessage(localPeerIdentifier, message);
 };
-
-export default FederatedMessage;

@@ -1,6 +1,6 @@
 import { withFilter } from 'graphql-subscriptions';
-import { Rooms } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { Rooms } from '../../../../models';
+import { callbacks } from '../../../../callbacks';
 
 import { pubsub } from '../../subscriptions';
 import { authenticated } from '../../helpers/authenticated';

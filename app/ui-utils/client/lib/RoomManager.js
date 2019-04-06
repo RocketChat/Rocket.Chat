@@ -4,13 +4,13 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { roomTypes as _roomTypes } from '/app/utils';
+import { roomTypes as _roomTypes } from '../../../utils';
 import { fireGlobalEvent } from './fireGlobalEvent';
-import { promises } from '/app/promises';
-import { callbacks } from '/app/callbacks';
-import { Notifications } from '/app/notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '/app/models';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { promises } from '../../../promises/client';
+import { callbacks } from '../../../callbacks';
+import { Notifications } from '../../../notifications';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
+import { CachedCollectionManager } from '../../../ui-cached-collection';
 import _ from 'underscore';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
@@ -18,13 +18,13 @@ import { mainReady } from './mainReady';
 const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
 const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
-const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreThreads, users }) => {
+const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
 	const query = { rid, ts };
 	if (excludePinned) {
 		query.pinned = { $ne: true };
 	}
-	if (ignoreThreads) {
-		query.trid = { $exists: false };
+	if (ignoreDiscussion) {
+		query.drid = { $exists: false };
 	}
 	if (users && users.length) {
 		query['u.username'] = { $in: users };

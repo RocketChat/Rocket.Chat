@@ -1,9 +1,9 @@
 import os from 'os';
 import { HTTP } from 'meteor/http';
-import { Settings } from '/app/models';
-import { settings } from '/app/settings';
-import { Info } from '/app/utils';
-import { getWorkspaceAccessToken } from '/app/cloud';
+import { Settings } from '../../../models';
+import { settings } from '../../../settings';
+import { Info } from '../../../utils';
+import { getWorkspaceAccessToken } from '../../../cloud/server';
 import { MongoInternals } from 'meteor/mongo';
 
 export default () => {

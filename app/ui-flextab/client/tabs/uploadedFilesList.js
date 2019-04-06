@@ -1,8 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { DateFormat } from '/app/lib';
-import { t } from '/app/utils';
-import { popover } from '/app/ui-utils';
+import { DateFormat } from '../../../lib';
+import { t, getURL } from '../../../utils';
+import { popover } from '../../../ui-utils';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
@@ -29,7 +29,7 @@ Template.uploadedFilesList.helpers({
 	},
 
 	url() {
-		return `/file-upload/${ this._id }/${ this.name }`;
+		return getURL(`/file-upload/${ this._id }/${ this.name }`);
 	},
 
 	fileTypeClass() {
@@ -41,7 +41,7 @@ Template.uploadedFilesList.helpers({
 
 	thumb() {
 		if (/image/.test(this.type)) {
-			return this.url;
+			return getURL(this.url);
 		}
 	},
 	format(timestamp) {

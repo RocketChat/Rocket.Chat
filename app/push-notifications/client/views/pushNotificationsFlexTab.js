@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { getUserPreference, handleError, t } from '/app/utils';
-import { popover } from '/app/ui-utils';
-import { CustomSounds } from '/app/custom-sounds';
-import { ChatSubscription } from '/app/models';
+import { settings } from '../../../settings';
+import { getUserPreference, handleError, t } from '../../../utils';
+import { popover } from '../../../ui-utils';
+import { CustomSounds } from '../../../custom-sounds/client';
+import { ChatSubscription } from '../../../models';
 
 const notificationLabels = {
 	all: 'All_messages',
@@ -159,8 +159,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
 
-	this.saveSetting = async() => {
-		Object.keys(this.original).forEach(async(field) => {
+	this.saveSetting = async () => {
+		Object.keys(this.original).forEach(async (field) => {
 			if (this.original[field].get() === this.form[field].get()) {
 				return;
 			}

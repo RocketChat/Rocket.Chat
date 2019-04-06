@@ -3,10 +3,10 @@ import connect from 'connect';
 import http from 'http';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { Info } from '/app/utils';
-import { Migrations } from '/app/migrations';
-import { settings } from '/app/settings';
-import { Statistics } from '/app/models';
+import { Info } from '../../../utils';
+import { Migrations } from '../../../migrations';
+import { settings } from '../../../settings';
+import { Statistics } from '../../../models';
 
 client.collectDefaultMetrics();
 
@@ -77,7 +77,7 @@ metrics.totalPrivateGroupMessages = new client.Gauge({ name: 'rocketchat_private
 metrics.totalDirectMessages = new client.Gauge({ name: 'rocketchat_direct_messages_total', help: 'total of messages in direct rooms' });
 metrics.totalLivechatMessages = new client.Gauge({ name: 'rocketchat_livechat_messages_total', help: 'total of messages in livechat rooms' });
 
-const setPrometheusData = async() => {
+const setPrometheusData = async () => {
 	client.register.setDefaultLabels({
 		uniqueId: settings.get('uniqueID'),
 		siteUrl: settings.get('Site_Url'),
@@ -156,7 +156,7 @@ app.use('/', (req, res) => {
 const server = http.createServer(app);
 
 let timer;
-const updatePrometheusConfig = async() => {
+const updatePrometheusConfig = async () => {
 	const port = process.env.PROMETHEUS_PORT || settings.get('Prometheus_Port');
 	const enabled = settings.get('Prometheus_Enabled');
 	if (port == null || enabled == null) {
@@ -175,7 +175,7 @@ const updatePrometheusConfig = async() => {
 	}
 };
 
-Meteor.startup(async() => {
+Meteor.startup(async () => {
 	settings.get('Prometheus_Enabled', updatePrometheusConfig);
 	settings.get('Prometheus_Port', updatePrometheusConfig);
 });

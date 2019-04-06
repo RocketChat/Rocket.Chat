@@ -5,10 +5,10 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { t, roomTypes } from '/app/utils';
-import { hasAllPermission } from '/app/authorization';
+import { settings } from '../../../../settings';
+import { callbacks } from '../../../../callbacks';
+import { t, roomTypes } from '../../../../utils';
+import { hasAllPermission } from '../../../../authorization';
 import toastr from 'toastr';
 import _ from 'underscore';
 

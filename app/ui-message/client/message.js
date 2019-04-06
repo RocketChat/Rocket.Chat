@@ -5,16 +5,16 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import moment from 'moment';
-import { DateFormat } from '/app/lib';
-import { renderEmoji } from '/app/emoji';
-import { renderMessageBody, MessageTypes, MessageAction } from '/app/ui-utils';
-import { settings } from '/app/settings';
-import { RoomRoles, UserRoles, Roles, Subscriptions, Rooms } from '/app/models';
-import { AutoTranslate } from '/app/autotranslate';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { callbacks } from '/app/callbacks';
-import { Markdown } from '/app/markdown';
-import { t, getUserPreference, roomTypes } from '/app/utils';
+import { DateFormat } from '../../lib';
+import { renderEmoji } from '../../emoji';
+import { renderMessageBody, MessageTypes, MessageAction } from '../../ui-utils';
+import { settings } from '../../settings';
+import { RoomRoles, UserRoles, Roles, Subscriptions, Rooms } from '../../models';
+import { AutoTranslate } from '../../autotranslate/client';
+import { hasAtLeastOnePermission } from '../../authorization';
+import { callbacks } from '../../callbacks';
+import { Markdown } from '../../markdown/client';
+import { t, getUserPreference, roomTypes, getURL } from '../../utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -31,6 +31,7 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	if (!pdfLink || !/\.pdf$/i.test(pdfLink)) {
 		return;
 	}
+	pdfLink = getURL(pdfLink);
 
 	const canvas = document.getElementById(canvasId);
 	if (!canvas) {
@@ -68,6 +69,14 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 }
 
 Template.message.helpers({
+	i18nKeyReply() {
+		return this.dcount > 1
+			? 'messages'
+			: 'message';
+	},
+	dlm() {
+		return this.dlm && moment(this.dlm).format('LLL');
+	},
 	encodeURI(text) {
 		return encodeURI(text);
 	},
@@ -177,6 +186,9 @@ Template.message.helpers({
 	body() {
 		return Template.instance().body;
 	},
+	bodyClass() {
+		return MessageTypes.isSystemMessage(this) ? 'color-info-font-color' : 'color-primary-font-color';
+	},
 	system(returnClass) {
 		if (MessageTypes.isSystemMessage(this)) {
 			if (returnClass) {
@@ -284,32 +296,36 @@ Template.message.helpers({
 		return true;
 	},
 	reactions() {
-		const userUsername = Meteor.user() && Meteor.user().username;
-		return Object.keys(this.reactions || {}).map((emoji) => {
-			const reaction = this.reactions[emoji];
-			const total = reaction.usernames.length;
-			let usernames = reaction.usernames
-				.slice(0, 15)
-				.map((username) => (username === userUsername ? t('You').toLowerCase() : `@${ username }`))
-				.join(', ');
-			if (total > 15) {
-				usernames = `${ usernames } ${ t('And_more', {
-					length: total - 15,
-				}).toLowerCase() }`;
-			} else {
-				usernames = usernames.replace(/,([^,]+)$/, ` ${ t('and') }$1`);
-			}
-			if (usernames[0] !== '@') {
-				usernames = usernames[0].toUpperCase() + usernames.substr(1);
-			}
-			return {
-				emoji,
-				count: reaction.usernames.length,
-				usernames,
-				reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-				userReacted: reaction.usernames.indexOf(userUsername) > -1,
-			};
-		});
+		const { username: myUsername, name: myName } = Meteor.user() || {};
+
+		return Object.entries(this.reactions || {})
+			.map(([emoji, reaction]) => {
+				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
+				const displayNames = (reaction.names || reaction.usernames.map((username) => `@${ username }`));
+				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
+
+				if (displayNames.some((displayName) => displayName === myDisplayName)) {
+					selectedDisplayNames.unshift(t('You'));
+				}
+
+				let usernames;
+
+				if (displayNames.length > 15) {
+					usernames = `${ selectedDisplayNames.join(', ') }${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
+				} else if (displayNames.length > 1) {
+					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
+				} else {
+					usernames = selectedDisplayNames[0];
+				}
+
+				return {
+					emoji,
+					count: displayNames.length,
+					usernames,
+					reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
+					userReacted: displayNames.indexOf(myDisplayName) > -1,
+				};
+			});
 	},
 	markUserReaction(reaction) {
 		if (reaction.userReacted) {

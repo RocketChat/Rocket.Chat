@@ -3,11 +3,11 @@ import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import mime from 'mime-type/with-db';
-import { VRecDialog } from '/app/ui-vrecord';
-import { messageBox, modal } from '/app/ui-utils';
-import { fileUpload } from '/app/ui';
-import { settings } from '/app/settings';
-import { t } from '/app/utils';
+import { VRecDialog } from '../../../ui-vrecord/client';
+import { messageBox, modal } from '../../../ui-utils';
+import { fileUpload } from '../../../ui';
+import { settings } from '../../../settings';
+import { t } from '../../../utils';
 
 messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
@@ -26,7 +26,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
 	condition: () => settings.get('FileUpload_Enabled'),
-	action({ event }) {
+	action({ event, messageBox }) {
 		event.preventDefault();
 		const $input = $(document.createElement('input'));
 		$input.css('display', 'none');
@@ -49,7 +49,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.rc-message-box__textarea.js-input-message'));
+			fileUpload(filesToUpload, $('.js-input-message', messageBox));
 			$input.remove();
 		});
 

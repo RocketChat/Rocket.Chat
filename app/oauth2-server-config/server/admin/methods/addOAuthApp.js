@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { hasPermission } from '/app/authorization';
-import { Users, OAuthApps } from '/app/models';
+import { hasPermission } from '../../../../authorization';
+import { Users, OAuthApps } from '../../../../models';
 import _ from 'underscore';
 
 Meteor.methods({

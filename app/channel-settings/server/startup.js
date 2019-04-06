@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions } from '/app/models';
+import { Permissions } from '../../models';
 
 Meteor.startup(function() {
 	Permissions.upsert('post-readonly', { $setOnInsert: { roles: ['admin', 'owner', 'moderator'] } });

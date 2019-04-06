@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
 import _ from 'underscore';
 import s from 'underscore.string';
 import katex from 'katex';

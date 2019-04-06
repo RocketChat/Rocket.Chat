@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Messages } from '/app/models';
-import { settings } from '/app/settings';
+import { Messages } from '../../../models';
+import { settings } from '../../../settings';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({

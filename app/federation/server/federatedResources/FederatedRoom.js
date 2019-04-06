@@ -1,10 +1,10 @@
-import { createRoom } from '/app/lib';
-import { Rooms, Subscriptions, Users } from '/app/models';
+import { createRoom } from '../../../lib';
+import { Rooms, Subscriptions, Users } from '../../../models';
 
-import FederatedResource from './FederatedResource';
-import FederatedUser from './FederatedUser';
+import { FederatedResource } from './FederatedResource';
+import { FederatedUser } from './FederatedUser';
 
-class FederatedRoom extends FederatedResource {
+export class FederatedRoom extends FederatedResource {
 	constructor(localPeerIdentifier, room, extras = {}) {
 		super('room');
 
@@ -144,7 +144,7 @@ class FederatedRoom extends FederatedResource {
 		}
 	}
 
-	create() {
+	create(alertAndOpen = false) {
 		this.log('create');
 
 		// Get the local room object (with or without suffixes)
@@ -195,8 +195,8 @@ class FederatedRoom extends FederatedResource {
 
 			let createRoomOptions = {
 				subscriptionExtra: {
-					alert: true,
-					open: true,
+					alert: alertAndOpen,
+					open: alertAndOpen,
 				},
 			};
 
@@ -228,7 +228,7 @@ class FederatedRoom extends FederatedResource {
 	}
 }
 
-FederatedRoom.loadByFederationId = function loadByFederationId(localPeerIdentifier, federationId) {
+FederatedRoom.loadByFederationId = function _loadByFederationId(localPeerIdentifier, federationId) {
 	const localRoom = Rooms.findOne({ 'federation._id': federationId });
 
 	if (!localRoom) { return; }
@@ -236,13 +236,13 @@ FederatedRoom.loadByFederationId = function loadByFederationId(localPeerIdentifi
 	return new FederatedRoom(localPeerIdentifier, localRoom);
 };
 
-FederatedRoom.loadRoomUsers = function loadRoomUsers(room) {
+FederatedRoom.loadRoomUsers = function _loadRoomUsers(room) {
 	const subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id, { fields: { 'u._id': 1 } }).fetch();
 	const userIds = subscriptions.map((s) => s.u._id);
 	return Users.findUsersWithUsernameByIds(userIds).fetch();
 };
 
-FederatedRoom.isFederated = function isFederated(localPeerIdentifier, room, options = {}) {
+FederatedRoom.isFederated = function _isFederated(localPeerIdentifier, room, options = {}) {
 	this.log('federated-room', `${ room._id } - isFederated?`);
 
 	let isFederated = false;
@@ -266,5 +266,3 @@ FederatedRoom.isFederated = function isFederated(localPeerIdentifier, room, opti
 
 	return isFederated;
 };
-
-export default FederatedRoom;

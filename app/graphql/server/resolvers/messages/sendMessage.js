@@ -1,4 +1,4 @@
-import { processWebhookMessage } from '/app/lib';
+import { processWebhookMessage } from '../../../../lib';
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/sendMessage.graphqls';
 

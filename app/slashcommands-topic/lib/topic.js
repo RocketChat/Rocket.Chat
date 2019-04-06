@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { handleError, slashCommands } from '/app/utils';
-import { ChatRoom } from '/app/models';
-import { callbacks } from '/app/callbacks';
-import { hasPermission } from '/app/authorization';
+import { handleError, slashCommands } from '../../utils';
+import { ChatRoom } from '../../models';
+import { callbacks } from '../../callbacks';
+import { hasPermission } from '../../authorization';
 /*
  * Join is a named function that will replace /topic commands
  * @param {Object} message - The message object

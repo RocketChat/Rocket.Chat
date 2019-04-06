@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Users, Subscriptions } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { settings } from '/app/settings';
-import { getURL } from '/app/utils';
+import { Users, Subscriptions } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { settings } from '../../../settings';
+import { getURL } from '../../../utils';
 import {
 	validateCustomFields,
 	saveUser,
@@ -12,7 +12,7 @@ import {
 	checkUsernameAvailability,
 	setUserAvatar,
 	saveCustomFields,
-} from '/app/lib';
+} from '../../../lib';
 import { API } from '../api';
 import _ from 'underscore';
 import Busboy from 'busboy';
@@ -265,7 +265,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 		let user;
 		if (this.isUserFromParams()) {
 			user = Meteor.users.findOne(this.userId);
-		} else if (hasPermission(this.userId, 'edit-other-user-info')) {
+		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
 			user = this.getUserFromParams();
 		} else {
 			return API.v1.unauthorized();
@@ -403,7 +403,7 @@ API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 	get() {
 		const user = Users.findOneById(this.userId);
 		if (user.settings) {
-			const { preferences } = user.settings;
+			const { preferences = {} } = user.settings;
 			preferences.language = user.language;
 
 			return API.v1.success({

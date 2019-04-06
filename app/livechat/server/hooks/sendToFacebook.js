@@ -1,5 +1,5 @@
-import { callbacks } from '/app/callbacks';
-import { settings } from '/app/settings';
+import { callbacks } from '../../../callbacks';
+import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
 
 callbacks.add('afterSaveMessage', function(message, room) {

@@ -1,27 +1,39 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { hasRole } from '/app/authorization';
-import { Info } from '/app/utils';
-import { Users } from '/app/models';
-import { settings } from '/app/settings';
+import { hasRole } from '../../../authorization';
+import { Info } from '../../../utils';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import { API } from '../api';
 
+// DEPRECATED
+// Will be removed after v1.12.0
 API.v1.addRoute('info', { authRequired: false }, {
 	get() {
+		const warningMessage = 'The endpoint "/v1/info" is deprecated and will be removed after version v1.12.0';
+		console.warn(warningMessage);
 		const user = this.getLoggedInUser();
 
 		if (user && hasRole(user._id, 'admin')) {
-			return API.v1.success({
-				info: Info,
-			});
+			return API.v1.success(this.deprecationWarning({
+				endpoint: 'info',
+				versionWillBeRemoved: '1.12.0',
+				response: {
+					info: Info,
+				},
+			}));
 		}
 
-		return API.v1.success({
-			info: {
-				version: Info.version,
+		return API.v1.success(this.deprecationWarning({
+			endpoint: 'info',
+			versionWillBeRemoved: '1.12.0',
+			response: {
+				info: {
+					version: Info.version,
+				},
 			},
-		});
+		}));
 	},
 });
 

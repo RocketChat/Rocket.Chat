@@ -1,4 +1,4 @@
-import { Providers, GrantError } from '/app/grant';
+import { Providers, GrantError } from '../../grant';
 import { HTTP } from 'meteor/http';
 
 const userAgent = 'Meteor';

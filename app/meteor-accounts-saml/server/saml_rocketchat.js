@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Logger } from '/app/logger';
+import { Logger } from '../../logger';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 
 const logger = new Logger('steffo:meteor-accounts-saml', {
 	methods: {
@@ -79,7 +79,7 @@ Meteor.methods({
 			section: name,
 			i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
 		});
-		settings.add(`SAML_Custom_${ name }_button_color`, '#13679A', {
+		settings.add(`SAML_Custom_${ name }_button_color`, '#1d74f5', {
 			type: 'string',
 			group: 'SAML',
 			section: name,

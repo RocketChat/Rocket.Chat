@@ -2,19 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, getUserPreference, roomTypes } from '/app/utils';
+import { t, getUserPreference, roomTypes } from '../../utils';
 import moment from 'moment';
-import { popover, renderMessageBody } from '/app/ui-utils';
-import { Users, ChatSubscription } from '/app/models';
-import { settings } from '/app/settings';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { menu } from '/app/ui-utils';
+import { popover, renderMessageBody } from '../../ui-utils';
+import { Users, ChatSubscription } from '../../models';
+import { settings } from '../../settings';
+import { hasAtLeastOnePermission } from '../../authorization';
+import { menu } from '../../ui-utils';
 
 Template.sidebarItem.helpers({
-	or(...args) {
-		args.pop();
-		return args.some((arg) => arg);
-	},
 	streaming() {
 		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},
@@ -35,6 +31,9 @@ Template.sidebarItem.helpers({
 	},
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
+	},
+	showUnread() {
+		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
 });
 
@@ -102,6 +101,7 @@ Template.sidebarItem.events({
 		return menu.close();
 	},
 	'click .sidebar-item__menu'(e) {
+		e.stopPropagation(); // to not close the menu
 		e.preventDefault();
 
 		const canLeave = () => {

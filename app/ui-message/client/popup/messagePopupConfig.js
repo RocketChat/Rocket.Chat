@@ -5,24 +5,22 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Messages, Subscriptions, Users } from '/app/models';
-import { hasAllPermission, hasAtLeastOnePermission } from '/app/authorization';
-import { EmojiPicker, emoji } from '/app/emoji';
-import { RoomManager } from '/app/ui-utils';
-import { t, getUserPreference, slashCommands } from '/app/utils';
+import { Messages, Subscriptions, Users } from '../../../models';
+import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { EmojiPicker, emoji } from '../../../emoji';
+import { RoomManager } from '../../../ui-utils';
+import { t, getUserPreference, slashCommands } from '../../../utils';
 import _ from 'underscore';
 
 const usersFromRoomMessages = new Mongo.Collection(null);
 
-const reloadUsersFromRoomMessages = (userId, rid) => {
-	const user = Meteor.users.findOne(userId, { fields: { username: 1 } });
-
+const reloadUsersFromRoomMessages = (fromUsername, rid) => {
 	usersFromRoomMessages.remove({});
 	const uniqueMessageUsersControl = {};
 
 	Messages.find({
 		rid,
-		'u.username': { $ne: user.username },
+		'u.username': { $ne: fromUsername },
 		t: { $exists: false },
 	},
 	{
@@ -56,7 +54,12 @@ Meteor.startup(function() {
 			return;
 		}
 
-		reloadUsersFromRoomMessages(userId, rid);
+		const user = Meteor.users.findOne(userId, { fields: { username: 1 } });
+		if (!user || !user.username) {
+			return;
+		}
+
+		reloadUsersFromRoomMessages(user.username, rid);
 	});
 });
 

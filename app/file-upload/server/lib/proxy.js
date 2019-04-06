@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { Logger } from '/app/logger';
-import { isDocker } from '/app/utils';
+import { Logger } from '../../../logger';
+import { isDocker } from '../../../utils';
 import http from 'http';
 import URL from 'url';
 

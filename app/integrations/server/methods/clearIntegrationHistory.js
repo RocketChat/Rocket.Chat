@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { IntegrationHistory, Integrations } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { IntegrationHistory, Integrations } from '../../../models';
 
 Meteor.methods({
 	clearIntegrationHistory(integrationId) {
