@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 
 import _ from 'underscore';
 
+import { ChatMessages } from '../../../ui';
 import { call } from '../../../ui-utils';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models';
@@ -56,6 +57,18 @@ Template.thread.helpers({
 			},
 		};
 	},
+	messageBoxData() {
+		const instance = Template.instance();
+		const { mainMessage: { rid, _id: tmid } } = this;
+
+		return {
+			rid,
+			tmid,
+			onSend: (...args) => instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args),
+			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
+			onKeyDown: (...args) => instance.chatMessages && instance.chatMessages.keydown.apply(instance.chatMessages, args),
+		};
+	},
 });
 
 
@@ -67,6 +80,12 @@ Template.thread.onRendered(function() {
 	this.sendToBottom = _.throttle(() => {
 		element.scrollTop = element.scrollHeight;
 	}, 300);
+
+	const rid = Tracker.nonreactive(() => this.state.get('rid'));
+	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
+	this.chatMessages = new ChatMessages;
+	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
+	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
@@ -93,11 +112,18 @@ Template.thread.onRendered(function() {
 		});
 	});
 
+	this.autorun(() => {
+		const rid = this.state.get('rid');
+		const tmid = this.state.get('tmid');
+		this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
+	});
+
 	Tracker.afterFlush(() => {
 		this.autorun(async () => {
 			const { mainMessage } = Template.currentData();
 			this.state.set({
 				tmid: mainMessage._id,
+				rid: mainMessage.rid,
 			});
 		});
 	});
