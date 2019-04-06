@@ -582,12 +582,11 @@ export const Livechat = {
 
 	sendRequest(postData, callback, trying = 1) {
 		try {
-			const options = {
-				headers: {
-					'X-RocketChat-Livechat-Token': settings.get('Livechat_secret_token'),
-				},
-				data: postData,
-			};
+			const options = { data: postData };
+			const secretToken = settings.get('Livechat_secret_token');
+			if (secretToken !== '' && secretToken !== undefined) {
+				Object.assign(options, { headers: { 'X-RocketChat-Livechat-Token': secretToken } });
+			}
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
 			Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);

@@ -156,7 +156,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Webhook_URL',
 	});
 
-	settings.add('Livechat_secret_token', false, {
+	settings.add('Livechat_secret_token', '', {
 		type: 'string',
 		group: 'Livechat',
 		section: 'CRM_Integration',
