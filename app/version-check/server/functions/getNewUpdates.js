@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
-import { getWorkspaceAccessToken } from '../../../cloud';
+import { getWorkspaceAccessToken } from '../../../cloud/server';
 import { MongoInternals } from 'meteor/mongo';
 
 export default () => {

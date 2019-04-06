@@ -9,7 +9,7 @@ import { t, getUserPreference, slashCommands, handleError } from '../../../utils
 import { MessageAction, messageProperties, MessageTypes, readMessage, modal, call } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { promises } from '../../../promises';
+import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models';
 import { emoji } from '../../../emoji';
@@ -30,22 +30,22 @@ Meteor.startup(() => {
 	});
 });
 
-export const getPermaLinks = async(replies) => {
-	const promises = replies.map(async(reply) =>
+export const getPermaLinks = async (replies) => {
+	const promises = replies.map(async (reply) =>
 		MessageAction.getPermaLink(reply._id)
 	);
 
 	return Promise.all(promises);
 };
 
-export const mountReply = async(msg, input) => {
+export const mountReply = async (msg, input) => {
 	const replies = $(input).data('reply');
 	const mentionUser = $(input).data('mention-user') || false;
 
 	if (replies && replies.length) {
 		const permalinks = await getPermaLinks(replies);
 
-		replies.forEach(async(reply, replyIndex) => {
+		replies.forEach(async (reply, replyIndex) => {
 			if (reply !== undefined) {
 				msg += `[ ](${ permalinks[replyIndex] }) `;
 

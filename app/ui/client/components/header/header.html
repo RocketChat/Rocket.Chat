@@ -6,7 +6,11 @@
 				{{> burger}}
 			</div>
 
-			<span class="rc-header__block">{{_ sectionName}}</span>
+			{{#if rawSectionName}}
+				<span class="rc-header__block">{{rawSectionName}}</span>
+			{{else}}
+				<span class="rc-header__block">{{_ sectionName}}</span>
+			{{/if}}
 
 			{{#if Template.contentBlock}}
 				{{> Template.contentBlock}}

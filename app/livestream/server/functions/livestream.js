@@ -11,7 +11,7 @@ const p = (fn) => new Promise(function(resolve, reject) {
 	});
 });
 
-export const getBroadcastStatus = async({
+export const getBroadcastStatus = async ({
 	id,
 	access_token,
 	refresh_token,
@@ -32,7 +32,7 @@ export const getBroadcastStatus = async({
 	return result.items && result.items[0] && result.items[0].status.lifeCycleStatus;
 };
 
-export const statusStreamLiveStream = async({
+export const statusStreamLiveStream = async ({
 	id,
 	access_token,
 	refresh_token,
@@ -102,7 +102,7 @@ export const setBroadcastStatus = ({
 	}, resolve));
 };
 
-export const createLiveStream = async({
+export const createLiveStream = async ({
 	room,
 	access_token,
 	refresh_token,
