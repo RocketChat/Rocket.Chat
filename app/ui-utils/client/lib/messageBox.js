@@ -1,20 +1,7 @@
-import EventEmitter from 'wolfy87-eventemitter';
-
-export const messageBox = new EventEmitter;
-
-messageBox.actions = new class {
+class MessageBoxActions {
 	constructor() {
 		this.actions = {};
 	}
-
-	/* Add a action to messagebox
-	@param group
-	@param label
-	@param config
-	icon: icon class
-	action: action function
-	condition: condition to display the action
-	*/
 
 	add(group, label, config) {
 		if (!group && !label && !config) {
@@ -33,12 +20,14 @@ messageBox.actions = new class {
 
 		this.actions[group].push({ ...config, label });
 	}
+
 	remove(group, expression) {
 		if (!group || !this.actions[group]) {
 			return false;
 		}
 		return (this.actions[group] = this.actions[group].filter((action) => expression.test(action.id)));
 	}
+
 	get(group) {
 		if (!group) {
 			return Object.keys(this.actions).reduce((ret, key) => {
@@ -62,4 +51,8 @@ messageBox.actions = new class {
 
 		return actions.filter((action) => action.id === id);
 	}
+}
+
+export const messageBox = {
+	actions: new MessageBoxActions,
 };

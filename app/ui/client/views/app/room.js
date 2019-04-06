@@ -40,7 +40,7 @@ const favoritesEnabled = () => settings.get('Favorite_Rooms');
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Meteor.user());
 
 const openProfileTab = (e, instance, username) => {
-	const roomData = Session.get(`roomData${ Session.get('openedRoom') }`);
+	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
 
 	if (Layout.isEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
@@ -217,7 +217,7 @@ callbacks.add('enter-room', wipeFailedUploads);
 Template.room.helpers({
 	isTranslated() {
 		const sub = Template.instance().subscription;
-		settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
+		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
 
 	embeddedVersion() {
@@ -312,10 +312,27 @@ Template.room.helpers({
 	},
 
 	messageboxData() {
-		const { sendToBottomIfNecessaryDebounced } = Template.instance();
+		const { sendToBottomIfNecessaryDebounced, subscription } = Template.instance();
+		const { _id: rid } = this;
+		const isEmbedded = Layout.isEmbedded();
+		const showFormattingTips = settings.get('Message_ShowFormattingTips');
+
 		return {
-			_id: this._id,
+			rid,
+			subscription,
+			isEmbedded,
+			showFormattingTips: showFormattingTips && !isEmbedded,
+			onInputChanged: (input) => {
+				if (!chatMessages[rid]) {
+					return;
+				}
+
+				chatMessages[rid].initializeInput(input, { rid });
+			},
 			onResize: () => sendToBottomIfNecessaryDebounced && sendToBottomIfNecessaryDebounced(),
+			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
+			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
+			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
 		};
 	},
 
@@ -676,8 +693,8 @@ Template.room.events({
 		}
 	}, 500),
 
-	'click .new-message'() {
-		Template.instance().atBottom = true;
+	'click .new-message'(event, instance) {
+		instance.atBottom = true;
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
@@ -795,9 +812,7 @@ Template.room.events({
 			});
 		}
 
-		const { input } = chatMessages[RoomManager.openedRoom];
-
-		fileUpload(filesToUpload, input);
+		fileUpload(filesToUpload, chatMessages[RoomManager.openedRoom].input, { rid: RoomManager.openedRoom });
 	},
 
 	'load img'(e, template) {
@@ -1015,13 +1030,12 @@ Template.room.onDestroyed(function() {
 
 Template.room.onRendered(function() {
 	const { _id: rid } = this.data;
-	// $(this.find('.messages-box .wrapper')).perfectScrollbar();
 
 	if (!chatMessages[rid]) {
 		chatMessages[rid] = new ChatMessages;
 	}
-	chatMessages[rid].init(this.firstNode);
-	// ScrollListener.init()
+	chatMessages[rid].initializeWrapper(this.find('.wrapper'));
+	chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
 
 	const wrapper = this.find('.wrapper');
 	const wrapperUl = this.find('.wrapper > ul');

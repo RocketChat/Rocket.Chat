@@ -25,3 +25,6 @@ export { MessageTypes } from '../lib/MessageTypes';
 export { alerts } from './lib/alerts';
 export { Message } from '../lib/Message';
 export { openRoom } from './lib/openRoom';
+export * from './lib/rtl';
+export * from './lib/keyCodes';
+export * from './lib/prependReplies';
