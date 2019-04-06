@@ -7,8 +7,7 @@ import { RateLimiter } from '../lib';
 import s from 'underscore.string';
 
 export const _setRealName = function(userId, name) {
-	name = s.trim(name);
-	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
+	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !s.trim(name))) {
 		return false;
 	}
 
@@ -18,6 +17,8 @@ export const _setRealName = function(userId, name) {
 	if (user.name === name) {
 		return user;
 	}
+
+	name = s.trim(name);
 
 	// Set new name
 	if (name) {
