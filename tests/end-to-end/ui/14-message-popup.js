@@ -20,7 +20,7 @@ const users = new Array(10).fill(null)
 		isMentionable: i % 2 === 0,
 	}));
 
-const createTestUser = async({ email, name, username, password, isMentionable }) => {
+const createTestUser = async ({ email, name, username, password, isMentionable }) => {
 	await new Promise((done) => getCredentials(done));
 
 	await new Promise((done) => request.post(api('users.create'))
@@ -72,7 +72,7 @@ describe('[Message Popup]', () => {
 				Meteor.logout(done);
 			});
 
-			browser.call(async() => {
+			browser.call(async () => {
 				for (const user of users) {
 					await createTestUser(user);
 				}
