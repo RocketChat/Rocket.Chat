@@ -85,7 +85,7 @@ Migrations.add({
 		/*
 		 * Move visitor navigation history to messages
 		 */
-		Meteor.setTimeout(async() => {
+		Meteor.setTimeout(async () => {
 			const pages = pageVisitedCollection.find({});
 			const total = await pages.count();
 			await pages.close();

@@ -9,7 +9,7 @@ import {
 	SelectionChannel,
 	SelectionUser,
 	Imports,
-} from '../../importer';
+} from '../../importer/server';
 import { Messages, Users, Subscriptions, Rooms } from '../../models';
 import { insertMessage } from '../../lib';
 import { Readable } from 'stream';
@@ -466,7 +466,7 @@ export class HipChatEnterpriseImporter extends Base {
 		// This object will keep track of messages that have already been prepared so it doesn't try to do it twice
 		this.preparedMessages = {};
 
-		const promise = new Promise(async(resolve, reject) => {
+		const promise = new Promise(async (resolve, reject) => {
 			try {
 				await this._prepareFolderEntry(fullFolderPath, '.');
 				this._finishPreparationProcess(resolve, reject);
@@ -552,7 +552,7 @@ export class HipChatEnterpriseImporter extends Base {
 			},
 		}, {
 			$group: { _id: '$channels.id' },
-		}]).forEach(async(channel) => {
+		}]).forEach(async (channel) => {
 			const userIds = (await this.collection.model.rawCollection().aggregate([{
 				$match: {
 					$or: [
@@ -614,7 +614,7 @@ export class HipChatEnterpriseImporter extends Base {
 					pos += chunk.length;
 				}));
 
-				stream.on('end', Meteor.bindEnvironment(async() => {
+				stream.on('end', Meteor.bindEnvironment(async () => {
 					this.logger.info(`Processing the file: ${ header.name }`);
 					await this.prepareFile(info, data, header.name);
 					data = undefined;
@@ -879,7 +879,7 @@ export class HipChatEnterpriseImporter extends Base {
 		this._applyUserSelections(importSelection);
 
 		const startedByUserId = Meteor.userId();
-		Meteor.defer(async() => {
+		Meteor.defer(async () => {
 			try {
 				await super.updateProgress(ProgressStep.IMPORTING_USERS);
 				await this._importUsers(startedByUserId);
@@ -1106,7 +1106,7 @@ export class HipChatEnterpriseImporter extends Base {
 			'count.completed': this.progress.count.completed,
 		});
 
-		await Meteor.runAsUser(startedByUserId, async() => {
+		await Meteor.runAsUser(startedByUserId, async () => {
 			let msgCount = 0;
 			try {
 				for (const msg of list.messages) {

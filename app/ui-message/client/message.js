@@ -10,10 +10,10 @@ import { renderEmoji } from '../../emoji';
 import { renderMessageBody, MessageTypes, MessageAction } from '../../ui-utils';
 import { settings } from '../../settings';
 import { RoomRoles, UserRoles, Roles, Subscriptions, Rooms } from '../../models';
-import { AutoTranslate } from '../../autotranslate';
+import { AutoTranslate } from '../../autotranslate/client';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { callbacks } from '../../callbacks';
-import { Markdown } from '../../markdown';
+import { Markdown } from '../../markdown/client';
 import { t, getUserPreference, roomTypes } from '../../utils';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
@@ -68,6 +68,14 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 }
 
 Template.message.helpers({
+	i18nKeyReply() {
+		return this.dcount > 1
+			? 'messages'
+			: 'message';
+	},
+	dlm() {
+		return this.dlm && moment(this.dlm).format('LLL');
+	},
 	encodeURI(text) {
 		return encodeURI(text);
 	},
@@ -176,6 +184,9 @@ Template.message.helpers({
 	},
 	body() {
 		return Template.instance().body;
+	},
+	bodyClass() {
+		return MessageTypes.isSystemMessage(this) ? 'color-info-font-color' : 'color-primary-font-color';
 	},
 	system(returnClass) {
 		if (MessageTypes.isSystemMessage(this)) {

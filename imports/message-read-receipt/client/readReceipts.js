@@ -33,6 +33,7 @@ Template.readReceipts.onRendered(function readReceiptsOnRendered() {
 		if (!error) {
 			this.readReceipts.set(result);
 		}
+
 		this.loading.set(false);
 	});
 });
