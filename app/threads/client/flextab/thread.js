@@ -10,6 +10,8 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models';
 import { lazyloadtick } from '../../../lazy-load';
 
+import { upsert } from '../upsert';
+
 import './thread.html';
 
 // const LIST_SIZE = 5;
@@ -22,7 +24,10 @@ Template.thread.events({
 		const { close } = this;
 		return close && close();
 	},
-	'scroll .js-scroll-thread': () => lazyloadtick(),
+	'scroll .js-scroll-thread': _.throttle(({ currentTarget: e }, i) => {
+		lazyloadtick();
+		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
+	}, 500),
 });
 
 Template.thread.helpers({
@@ -57,6 +62,13 @@ Template.thread.helpers({
 Template.thread.onRendered(function() {
 	const element = this.find('.js-scroll-thread');
 	element.scrollTop = element.scrollHeight - element.clientHeight;
+	element.style.scrollBehavior = 'smooth';
+
+	this.sendToBottom = _.throttle(() => {
+		if (this.atBottom) {
+			element.scrollTop = element.scrollHeight;
+		}
+	}, 300);
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
@@ -72,44 +84,30 @@ Template.thread.onRendered(function() {
 		this.threadsObserve && this.threadsObserve.stop();
 
 		this.threadsObserve = Messages.find({ tmid }).observe({
-			added: ({ _id, ...message }) => this.Threads.upsert({ _id }, message), // Update message to re-render DOM
+			added: ({ _id, ...message }) => {
+				this.Threads.upsert({ _id }, message);
+				this.sendToBottom();
+			}, // Update message to re-render DOM
 			changed: ({ _id, ...message }) => this.Threads.update({ _id }, message), // Update message to re-render DOM
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
 	});
 
-	this.autorun(async () => {
-		const { mainMessage } = Template.currentData();
-		this.state.set({
-			tmid: mainMessage._id,
+	Tracker.afterFlush(() => {
+		this.autorun(async () => {
+			const { mainMessage } = Template.currentData();
+			this.state.set({
+				tmid: mainMessage._id,
+			});
 		});
 	});
-
-	this.loadMore = _.debounce(async () => {
-		if (this.state.get('loading')) {
-			return;
-		}
-
-		const { tmid } = Tracker.nonreactive(() => this.state.all());
-
-		this.state.set('loading', true);
-		const messages = await call('getThreadMessages', { tmid });
-
-		messages.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
-		this.state.set('loading', false);
-
-	}, 500);
 });
 
 Template.thread.onCreated(async function() {
 	// const element = this.find('.js-scroll-thread');
-	const { mainMessage } = this.data;
 	this.Threads = new Mongo.Collection(null);
 
-	this.state = new ReactiveDict({
-		tmid: mainMessage._id,
-		// limit: LIST_SIZE,
-	});
+	this.state = new ReactiveDict();
 
 	this.loadMore = _.debounce(async () => {
 		if (this.state.get('loading')) {
@@ -119,28 +117,15 @@ Template.thread.onCreated(async function() {
 		const { tmid } = Tracker.nonreactive(() => this.state.all());
 
 		this.state.set('loading', true);
+
 		const messages = await call('getThreadMessages', { tmid });
-		messages.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
+
+		upsert(this.Threads, messages);
+		// messages.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
+
 		this.state.set('loading', false);
 
 	}, 500);
-
-	// this.incLimit = () => {
-	// 	if (this.state.get('loading')) {
-	// 		return;
-	// 	}
-
-	// 	const { tmid, limit } = Tracker.nonreactive(() => this.state.all());
-
-	// 	const count = this.Threads.find({ tmid }).count();
-
-	// 	if (limit > count) {
-	// 		return;
-	// 	}
-
-	// 	// this.state.set('limit', this.state.get('limit') + LIST_SIZE);
-	// 	this.loadMore();
-	// };
 });
 
 Template.thread.onDestroyed(function() {

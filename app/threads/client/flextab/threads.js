@@ -11,6 +11,8 @@ import { Messages, Subscriptions } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 
+import { upsert } from '../upsert';
+
 import './threads.html';
 
 const LIST_SIZE = 50;
@@ -24,10 +26,10 @@ Template.threads.events({
 		e.stopPropagation();
 		return false;
 	},
-	'scroll .js-scroll-threads': _.throttle(({ currentTarget: e }, i) => {
+	'scroll .js-scroll-threads': _.throttle(({ currentTarget: e }, { incLimit }) => {
 		lazyloadtick();
-		if (e.offsetHeight + e.scrollTop === e.scrollHeight - 50) {
-			i.loadMore && i.incLimit();
+		if (e.offsetHeight + e.scrollTop <= e.scrollHeight - 50) {
+			incLimit && incLimit();
 		}
 	}, 500),
 });
@@ -56,7 +58,9 @@ Template.threads.helpers({
 Template.threads.onCreated(async function() {
 	this.state = new ReactiveDict({
 		rid: this.data.rid,
+		loading: true,
 	});
+
 	this.Threads = new Mongo.Collection(null);
 
 	this.incLimit = () => {
@@ -84,10 +88,23 @@ Template.threads.onCreated(async function() {
 
 		this.state.set('loading', true);
 		const threads = await call('getThreadsList', { rid, limit: LIST_SIZE, skip: limit - LIST_SIZE });
-		threads.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
+		upsert(this.Threads, threads);
+		// threads.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
 		this.state.set('loading', false);
 
 	}, 500);
+
+	Tracker.afterFlush(() => {
+		this.autorun(async () => {
+			const { rid, mid } = Template.currentData();
+			this.close = !!mid;
+
+			this.state.set({
+				mid,
+				rid,
+			});
+		});
+	});
 
 	this.autorun(() => {
 		const rid = this.state.get('rid');
@@ -135,16 +152,6 @@ Template.threads.onCreated(async function() {
 	this.autorun(async () => {
 		const mid = this.state.get('mid');
 		return this.state.set('thread', mid && this.Threads.findOne({ _id: mid }, { fields: { tcount: 0, tlm: 0, replies: 0, _updatedAt: 0 } }));
-	});
-
-	this.autorun(async () => {
-		const { rid, mid } = Template.currentData();
-		this.close = !!mid;
-
-		this.state.set({
-			mid,
-			rid,
-		});
 	});
 });
 
