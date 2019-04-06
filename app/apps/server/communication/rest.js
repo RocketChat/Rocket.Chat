@@ -206,7 +206,7 @@ export class AppsRestApi {
 				}
 
 				if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
-					const baseUrl = orchestrator.getMarketplaceUrl()
+					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
 					const token = getWorkspaceAccessToken();
