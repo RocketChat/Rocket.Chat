@@ -15,10 +15,11 @@ Meteor.methods({
 			roomId: String,
 			userId: Match.Optional(String),
 			departmentId: Match.Optional(String),
-			originalAgentId: Match.Optional(String),
+			originalAgent: Match.Optional(String),
 			timeout: Match.Optional(Match.Integer),
 			currentAgent: Match.Optional(Object),
-			expirationAt: Match.Optional(Match.Integer),
+			timeoutAgent: Match.Optional(Match.Integer),
+			expirationAt: Match.Optional(Date),
 		});
 
 		const room = LivechatRooms.findOneById(transferData.roomId);

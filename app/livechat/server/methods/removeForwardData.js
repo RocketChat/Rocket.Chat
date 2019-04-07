@@ -24,6 +24,6 @@ Meteor.methods({
 				// Update Livechat status
 				Livechat.removeForwardData(data);
 			}
-		}, data.expirationAt);
+		}, data.timeoutAgent);
 	},
 });

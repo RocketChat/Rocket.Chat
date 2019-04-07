@@ -338,10 +338,11 @@ export const Livechat = {
 			roomId: String,
 			userId: String,
 			departmentId: Match.Optional(String),
-			originalAgentId: Match.Optional(String),
+			originalAgent: Match.Optional(String),
 			currentAgent: Match.Optional(Object),
 			timeout: Match.Optional(Match.Integer),
-			expirationAt: Match.Optional(Match.Integer),
+			timeoutAgent: Match.Optional(Match.Integer),
+			expirationAt: Match.Optional(Date),
 		});
 
 		Rooms.findByRoomAddTranferData(transferData);
@@ -352,10 +353,11 @@ export const Livechat = {
 			roomId: String,
 			userId: String,
 			departmentId: Match.Optional(String),
-			originalAgentId: Match.Optional(String),
+			originalAgent: Match.Optional(String),
 			currentAgent: Match.Optional(Object),
 			timeout: Match.Optional(Match.Integer),
-			expirationAt: Match.Optional(Match.Integer),
+			timeoutAgent: Match.Optional(Match.Integer),
+			expirationAt: Match.Optional(Date),
 		});
 
 		Rooms.findByRoomRemoveTranferData(transferData);
