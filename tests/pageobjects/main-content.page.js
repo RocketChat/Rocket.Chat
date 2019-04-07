@@ -13,7 +13,7 @@ class MainContent extends Page {
 	get messageInput() { return browser.element('.js-input-message'); }
 	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
-	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
+	get recordBtn() { return browser.element('.js-audio-message-record'); }
 	get videoCamBtn() { return browser.element('.message-buttons .icon-videocam'); }
 	get emojiBtn() { return browser.element('.rc-message-box__icon.emoji-picker-icon'); }
 	get messagePopUp() { return browser.element('.message-popup'); }

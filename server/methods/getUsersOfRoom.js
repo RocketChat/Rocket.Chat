@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { Subscriptions } from '../../app/models';
+import { hasPermission } from '../../app/authorization';
+import { settings } from '../../app/settings';
 
 function findUsers({ rid, status, skip, limit }) {
-	return RocketChat.models.Subscriptions.model.rawCollection().aggregate([
+	return Subscriptions.model.rawCollection().aggregate([
 		{ $match: { rid } },
 		{
 			$lookup:
@@ -23,7 +26,7 @@ function findUsers({ rid, status, skip, limit }) {
 		...(status ? [{ $match: { 'u.status': status } }] : []),
 		{
 			$sort: {
-				[RocketChat.settings.get('UI_Use_Real_Name') ? 'u.name' : 'u.username']: 1,
+				[settings.get('UI_Use_Real_Name') ? 'u.name' : 'u.username']: 1,
 			},
 		},
 		...(skip > 0 ? [{ $skip: skip }] : []),
@@ -50,12 +53,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		if (room.broadcast && !RocketChat.authz.hasPermission(userId, 'view-broadcast-member-list', rid)) {
+		if (room.broadcast && !hasPermission(userId, 'view-broadcast-member-list', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const total = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
-
+		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 		const users = await findUsers({ rid, status: { $ne: 'offline' }, limit, skip });
 
 		if (showAll && users.length < limit) {
