@@ -1,4 +1,3 @@
-import { merge } from '../../../utils/lib/merge';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings';
@@ -143,7 +142,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
 
 		if (typeof result === 'object') {
-			message = merge(message, result);
+			message = Object.assign(message, result);
 		}
 	}
 

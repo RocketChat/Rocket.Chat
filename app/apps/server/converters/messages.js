@@ -1,5 +1,10 @@
+import { omit } from 'underscore';
 import { Random } from 'meteor/random';
 import { Messages, Rooms, Users } from '../../../models';
+
+function getUnmappedProperties(source, ...mappedFields) {
+	return mappedFields.reduce((result, map) => omit(result, (value, key) => map.hasOwnProperty(key)), source);
+}
 
 export class AppMessagesConverter {
 	constructor(orch) {
@@ -35,7 +40,7 @@ export class AppMessagesConverter {
 
 		const attachments = this._convertAttachmentsToApp(msgObj.attachments);
 
-		return {
+		const appMessage = {
 			id: msgObj._id,
 			room,
 			sender,
@@ -53,6 +58,21 @@ export class AppMessagesConverter {
 			reactions: msgObj.reactions,
 			parseUrls: msgObj.parseUrls,
 		};
+
+		appMessage._unmappedProperties_ = getUnmappedProperties(msgObj, appMessage, {
+			_id: 1,
+			msg: 1,
+			ts: 1,
+			_updatedAt: 1,
+			avatar: 1,
+			rid: 1,
+			u: 1,
+			editedBy: 1,
+			mentions: 1,
+			channels: 1,
+		});
+
+		return appMessage;
 	}
 
 	convertAppMessage(message) {
@@ -96,7 +116,7 @@ export class AppMessagesConverter {
 
 		const attachments = this._convertAppAttachments(message.attachments);
 
-		return {
+		const newMessage = {
 			_id: message.id || Random.id(),
 			rid: room._id,
 			u,
@@ -114,6 +134,8 @@ export class AppMessagesConverter {
 			reactions: message.reactions,
 			parseUrls: message.parseUrls,
 		};
+
+		return Object.assign(newMessage, message._unmappedProperties_);
 	}
 
 	_convertAppAttachments(attachments) {
@@ -121,7 +143,7 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		return attachments.map((attachment) => ({
+		return attachments.map((attachment) => Object.assign({
 			collapsed: attachment.collapsed,
 			color: attachment.color,
 			text: attachment.text,
@@ -150,7 +172,7 @@ export class AppMessagesConverter {
 			actions: attachment.actions,
 			type: attachment.type,
 			description: attachment.description,
-		}));
+		}, attachment._unmappedProperties_));
 	}
 
 	_convertAttachmentsToApp(attachments) {
@@ -177,7 +199,7 @@ export class AppMessagesConverter {
 				};
 			}
 
-			return {
+			const appAttachment = {
 				collapsed: attachment.collapsed,
 				color: attachment.color,
 				text: attachment.text,
@@ -203,6 +225,31 @@ export class AppMessagesConverter {
 				type: attachment.type,
 				description: attachment.description,
 			};
+
+			appAttachment._unmappedProperties_ = getUnmappedProperties(attachment, appAttachment, {
+				author_name: 1,
+				author_link: 1,
+				author_icon: 1,
+				title_link: 1,
+				title_link_download: 1,
+				button_alignment: 1,
+				ts: 1,
+				message_link: 1,
+				thumb_url : 1,
+				image_dimensions: 1,
+				image_preview: 1,
+				image_url: 1,
+				image_type: 1,
+				image_size: 1,
+				audio_url: 1,
+				audio_type: 1,
+				audio_size: 1,
+				video_url: 1,
+				video_type: 1,
+				video_size: 1,
+			});
+
+			return appAttachment;
 		});
 	}
 }

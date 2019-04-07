@@ -1,4 +1,3 @@
-import { merge } from '../../../utils/lib/merge';
 import { Meteor } from 'meteor/meteor';
 import { Users, Rooms, Subscriptions } from '../../../models';
 import { callbacks } from '../../../callbacks';
@@ -120,7 +119,7 @@ export const createRoom = function(type, name, owner, members, readOnly, extraDa
 		result = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomCreateModify', result));
 
 		if (typeof result === 'object') {
-			room = merge(room, result);
+			room = Object.assign(room, result);
 		}
 	}
 
