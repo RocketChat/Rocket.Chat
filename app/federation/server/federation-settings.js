@@ -33,6 +33,7 @@ Meteor.startup(function() {
 			i18nLabel: 'FEDERATION_Domain',
 			i18nDescription: 'FEDERATION_Domain_Description',
 			alert: 'FEDERATION_Domain_Alert',
+			disableReset: true,
 		});
 
 		this.add('FEDERATION_Public_Key', federationPublicKey, {
