@@ -265,7 +265,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 		let user;
 		if (this.isUserFromParams()) {
 			user = Meteor.users.findOne(this.userId);
-		} else if (hasPermission(this.userId, 'edit-other-user-info')) {
+		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
 			user = this.getUserFromParams();
 		} else {
 			return API.v1.unauthorized();
