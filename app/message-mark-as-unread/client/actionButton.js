@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RoomManager, MessageAction } from '../../ui-utils';
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { ChatSubscription } from '../../models';
 
@@ -11,7 +12,7 @@ Meteor.startup(() => {
 		label: 'Mark_as_unread',
 		context: ['message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			return Meteor.call('unreadMessages', message, function(error) {
 				if (error) {
 					return handleError(error);
@@ -27,7 +28,7 @@ Meteor.startup(() => {
 			});
 		},
 		condition(message) {
-			return message.u._id !== Meteor.user()._id;
+			return Meteor.userId() && message.u._id !== Meteor.userId();
 		},
 		order: 22,
 		group: 'menu',

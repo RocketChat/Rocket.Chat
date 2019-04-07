@@ -114,7 +114,7 @@
 	.message {
 		&:hover,
 		&.active {
-			background-color: rgba(0, 0, 0, 0.05);
+			background-color: rgba(15, 34, 0, 0.05);
 
 			& .message-actions {
 				display: flex;

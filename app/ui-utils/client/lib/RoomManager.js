@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { roomTypes as _roomTypes } from '../../../utils';
+import { roomTypes } from '../../../utils';
 import { fireGlobalEvent } from './fireGlobalEvent';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
@@ -17,7 +17,12 @@ import { mainReady } from './mainReady';
 
 const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
-const onDeleteMessageStream = (msg) => ChatMessage.remove({ _id: msg._id });
+const onDeleteMessageStream = (msg) => {
+	ChatMessage.remove({ _id: msg._id });
+
+	// remove thread refenrece from deleted message
+	ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
+};
 const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
 	const query = { rid, ts };
 	if (excludePinned) {
@@ -52,7 +57,7 @@ export const RoomManager = new function() {
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
 
-					const room = Tracker.nonreactive(() => _roomTypes.findRoom(type, name, user));
+					const room = Tracker.nonreactive(() => roomTypes.findRoom(type, name, user));
 
 					if (room != null) {
 						openedRooms[typeName].rid = room._id;
@@ -77,7 +82,7 @@ export const RoomManager = new function() {
 											};
 										}
 										msg.name = room.name;
-										Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+										RoomManager.updateMentionsMarksOfRoom(typeName);
 
 										callbacks.run('streamMessage', msg);
 
@@ -221,25 +226,20 @@ export const RoomManager = new function() {
 
 		updateMentionsMarksOfRoom(typeName) {
 			const dom = this.getDomOfRoom(typeName);
-			if ((dom == null)) {
+			if (!dom) {
 				return;
 			}
 
-			const ticksBar = $(dom).find('.ticks-bar');
-			$(dom).find('.ticks-bar > .tick').remove();
+			const [ticksBar] = dom.getElementsByClassName('ticks-bar');
+			const messagesBox = $('.messages-box', dom);
+			const scrollTop = messagesBox.find('> .wrapper').scrollTop() - 50;
+			const totalHeight = messagesBox.find(' > .wrapper > ul').height() + 40;
 
-			const scrollTop = $(dom).find('.messages-box > .wrapper').scrollTop() - 50;
-			const totalHeight = $(dom).find('.messages-box > .wrapper > ul').height() + 40;
-
-			return $('.messages-box .mention-link-me').each(function(index, item) {
-				const topOffset = $(item).offset().top + scrollTop;
+			ticksBar.innerHTML = Array.from(messagesBox[0].getElementsByClassName('mention-link-me')).map((item) => {
+				const topOffset = item.getBoundingClientRect().top + scrollTop;
 				const percent = (100 / totalHeight) * topOffset;
-				if ($(item).hasClass('mention-link-all')) {
-					return ticksBar.append(`<div class="tick background-attention-color" style="top: ${ percent }%;"></div>`);
-				} else {
-					return ticksBar.append(`<div class="tick background-primary-action-color" style="top: ${ percent }%;"></div>`);
-				}
-			});
+				return `<div class="tick ${ item.classList.contains('mention-link-all') ? 'background-attention-color' : 'background-primary-action-color' }" style="top: ${ percent }%;"></div>`;
+			}).join('');
 		}
 	};
 	Cls.initClass();
@@ -285,9 +285,10 @@ Meteor.startup(() => {
 		if ((currentUsername === undefined) && ((user != null ? user.username : undefined) != null)) {
 			currentUsername = user.username;
 			RoomManager.closeAllRooms();
-			const { roomTypes } = _roomTypes;
+			const { roomTypes: types } = roomTypes;
+
 			// Reload only if the current route is a channel route
-			const roomType = Object.keys(roomTypes).find((key) => roomTypes[key].route && roomTypes[key].route.name === FlowRouter.current().route.name);
+			const roomType = Object.keys(types).find((key) => types[key].route && types[key].route.name === FlowRouter.current().route.name);
 			if (roomType) {
 				FlowRouter.reload();
 			}
