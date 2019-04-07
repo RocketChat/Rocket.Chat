@@ -15,7 +15,6 @@ import { upsert } from '../upsert';
 
 import './thread.html';
 
-// const LIST_SIZE = 5;
 const sort = { ts: 1 };
 
 Template.thread.events({
@@ -41,9 +40,6 @@ Template.thread.helpers({
 	messages() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
-		// const count = Threads.find({ tmid: mainMessage._id }).count();
-		// const limit = Template.instance().state.get('limit');
-		// return Threads.find({ tmid: mainMessage._id }, { sort, skip: count > limit ? count - limit : 0 });
 		return Threads.find({ tmid }, { sort });
 	},
 	messageContext() {
@@ -73,19 +69,18 @@ Template.thread.helpers({
 
 
 Template.thread.onRendered(function() {
-	const element = this.find('.js-scroll-thread');
-	element.scrollTop = element.scrollHeight - element.clientHeight;
-	element.style.scrollBehavior = 'smooth';
-
-	this.sendToBottom = _.throttle(() => {
-		element.scrollTop = element.scrollHeight;
-	}, 300);
-
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
+
 	this.chatMessages = new ChatMessages;
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
+
+	this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight - this.chatMessages.wrapper.clientHeight;
+
+	this.sendToBottom = _.throttle(() => {
+		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
+	}, 300);
 
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
@@ -102,12 +97,15 @@ Template.thread.onRendered(function() {
 
 		this.threadsObserve = Messages.find({ tmid }).observe({
 			added: ({ _id, ...message }) => {
+				const { atBottom } = this;
 				this.Threads.upsert({ _id }, message);
-				if (this.atBottom) {
-					this.sendToBottom();
-				}
-			}, // Update message to re-render DOM
-			changed: ({ _id, ...message }) => this.Threads.update({ _id }, message), // Update message to re-render DOM
+				atBottom && this.sendToBottom();
+			},
+			changed: ({ _id, ...message }) => {
+				const { atBottom } = this;
+				this.Threads.update({ _id }, message);
+				atBottom && this.sendToBottom();
+			},
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
 	});
@@ -130,7 +128,6 @@ Template.thread.onRendered(function() {
 });
 
 Template.thread.onCreated(async function() {
-	// const element = this.find('.js-scroll-thread');
 	this.Threads = new Mongo.Collection(null);
 
 	this.state = new ReactiveDict();
@@ -147,7 +144,6 @@ Template.thread.onCreated(async function() {
 		const messages = await call('getThreadMessages', { tmid });
 
 		upsert(this.Threads, messages);
-		// messages.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
 
 		this.state.set('loading', false);
 
