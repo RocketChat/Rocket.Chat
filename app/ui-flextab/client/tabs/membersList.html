@@ -22,30 +22,30 @@
 			</form>
 
 			{{#unless loading}}
-			<div class="rc-user-info__row rc-user-info__row--separator">
-				<div class="rc-member-list__counter">{{{_ "Showing_online_users" total_showing=totalShowing online=totalOnline total=total}}}</div>
-			</div>
+				<div class="rc-user-info__row rc-user-info__row--separator">
+					<div class="rc-member-list__counter">{{{_ "Showing_online_users" total_showing=totalShowing online=totalOnline total=total}}}</div>
+				</div>
 			{{/unless}}
 		</div>
 		<div class="flex-tab__result list-view">
-				{{#if loading}}
-					{{> loading}}
-				{{else}}
-					<ul class='list clearfix lines'>
-						{{#each users}}
-							<li class='rc-member-list__user'>
-								{{> avatar username=user.username}}
-								<div class="rc-member-list__username">
-									<div class="rc-member-list__status rc-member-list__status--{{status}}"></div>
-									{{ignored}} {{displayName}} {{utcOffset}}
-									</div>
-								{{> icon user=. block="rc-member-list__menu js-more" icon="menu" }}
-							</li>
-						{{/each}}
-					</ul>
-				{{/if}}
+			{{#if loading}}
+				{{> loading}}
+			{{else}}
+				<ul class='list clearfix lines'>
+					{{#each users}}
+						<li class='rc-member-list__user'>
+							{{> avatar username=user.username}}
+							<div class="rc-member-list__username">
+								<div class="rc-member-list__status rc-member-list__status--{{status}}"></div>
+								{{ignored}} {{displayName}} {{utcOffset}}
+								</div>
+							{{> icon user=. block="rc-member-list__menu js-more" icon="menu" }}
+						</li>
+					{{/each}}
+				</ul>
+			{{/if}}
 			{{#if hasMore}}
-				<button class="rc-button rc-button--secondary show-more-users">{{_ "Show_more"}}</button>
+				<button class="rc-button rc-button--secondary show-more-users {{#if loadingMore}}loading{{/if}}">{{_ "Show_more"}}</button>
 			{{/if}}
 		</div>
 

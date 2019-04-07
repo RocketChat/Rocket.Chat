@@ -4,7 +4,7 @@ import { ChatSubscription, ChatMessage } from '../../../models';
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
 import _ from 'underscore';
-
+import EventEmitter from 'wolfy87-eventemitter';
 /* DEFINITIONS
 - If window loses focus user needs to scroll or click/touch some place
 - On hit ESC enable read, force read of current room and remove unread mark
@@ -18,10 +18,10 @@ import _ from 'underscore';
 // window.addEventListener 'focus', ->
 // readMessage.refreshUnreadMark(undefined, true)
 
-export const readMessage = new class {
+export const readMessage = new class extends EventEmitter {
 	constructor() {
+		super();
 		this.debug = false;
-		this.callbacks = [];
 		this.read = _.debounce((force) => this.readNow(force), 1000);
 		this.canReadMessage = false;
 	}
@@ -48,10 +48,10 @@ export const readMessage = new class {
 
 		if (force === true) {
 			if (this.debug) { console.log('readMessage -> readNow via force rid:', rid); }
-			return Meteor.call('readMessages', rid, function() {
+			return Meteor.call('readMessages', rid, () => {
 				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-				self.refreshUnreadMark();
-				return self.fireRead(rid);
+				this.refreshUnreadMark();
+				return this.emit(rid);
 			});
 		}
 
@@ -87,10 +87,10 @@ export const readMessage = new class {
 		}
 
 		if (this.debug) { console.log('readMessage -> readNow rid:', rid); }
-		Meteor.call('readMessages', rid, function() {
+		Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-			self.refreshUnreadMark();
-			return self.fireRead(rid);
+			this.refreshUnreadMark();
+			return this.emit(rid);
 		});
 	}
 
@@ -104,14 +104,6 @@ export const readMessage = new class {
 
 	isEnable() {
 		return this.canReadMessage === true;
-	}
-
-	onRead(cb) {
-		return this.callbacks.push(cb);
-	}
-
-	fireRead(rid) {
-		return Array.from(this.callbacks).map((cb) =>	cb(rid));
 	}
 
 	refreshUnreadMark(rid, force) {
