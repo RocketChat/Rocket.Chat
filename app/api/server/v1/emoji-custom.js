@@ -3,12 +3,50 @@ import { EmojiCustom } from '../../../models';
 import { API } from '../api';
 import Busboy from 'busboy';
 
+// DEPRECATED
+// Will be removed after v1.12.0
 API.v1.addRoute('emoji-custom', { authRequired: true }, {
 	get() {
+		const warningMessage = 'The endpoint "emoji-custom" is deprecated and will be removed after version v1.12.0';
+		console.warn(warningMessage);
 		const { query } = this.parseJsonQuery();
 		const emojis = Meteor.call('listEmojiCustom', query);
 
-		return API.v1.success({ emojis });
+		return API.v1.success(this.deprecationWarning({
+			endpoint: 'emoji-custom',
+			versionWillBeRemoved: '1.12.0',
+			response: {
+				emojis,
+			},
+		}));
+	},
+});
+
+API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
+	get() {
+		const { query } = this.parseJsonQuery();
+		const { updatedSince } = this.queryParams;
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+			return API.v1.success({
+				emojis: {
+					update: EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).fetch(),
+					remove: EmojiCustom.trashFindDeletedAfter(updatedSinceDate).fetch(),
+				},
+			});
+		}
+
+		return API.v1.success({
+			emojis: {
+				update: EmojiCustom.find(query).fetch(),
+				remove: [],
+			},
+		});
 	},
 });
 
