@@ -13,7 +13,8 @@ import mime from 'mime-type/with-db';
 import crypto from 'crypto';
 import sharp from 'sharp';
 
-mime.extensions['image/vnd.microsoft.icon'] = ['ico'];
+mime.define('image/vnd.microsoft.icon', { extensions: ['ico'] }, mime.dupAppend);
+mime.define('image/x-icon', { extensions: ['ico'] }, mime.dupAppend);
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',

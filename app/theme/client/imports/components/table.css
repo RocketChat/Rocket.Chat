@@ -139,6 +139,10 @@
 			width: 200px;
 		}
 	}
+
+	&-icon {
+		color: var(--color-dark-light);
+	}
 }
 
 .table-wrapper {
