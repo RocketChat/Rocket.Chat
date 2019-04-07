@@ -25622,6 +25622,186 @@
         }
       ]
     },
+    "0.74.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13474",
+          "title": "Release 0.74.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego",
+            "graywolf336",
+            "Hudell",
+            "d-gubert",
+            "rodrigok",
+            "BehindLoader",
+            "leonboot",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13471",
+          "title": "Room loading improvements",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13360",
+          "title": "[FIX] Invalid condition on getting next livechat agent over REST API endpoint",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.3",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13417",
+          "title": "[IMPROVE] Open rooms quicker",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13457",
+          "title": "[FIX] \"Test Desktop Notifications\" not triggering a notification",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13463",
+          "title": "[FIX] Translated and incorrect i18n variables",
+          "userLogin": "leonboot",
+          "milestone": "0.74.3",
+          "contributors": [
+            "leonboot",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13456",
+          "title": "Regression: Remove console.log on email translations",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13408",
+          "title": "[FIX] Properly escape custom emoji names for pattern matching",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13452",
+          "title": "[FIX] Not translated emails",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13437",
+          "title": "[FIX] XML-decryption module not found",
+          "userLogin": "Hudell",
+          "milestone": "0.74.3",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "13244",
+          "title": "[FIX] Update Russian localization",
+          "userLogin": "BehindLoader",
+          "milestone": "0.74.3",
+          "contributors": [
+            "BehindLoader",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13436",
+          "title": "[IMPROVE] Allow configure Prometheus port per process via Environment Variable",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13430",
+          "title": "[IMPROVE] Add API option \"permissionsRequired\"",
+          "userLogin": "d-gubert",
+          "milestone": "0.74.3",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13336",
+          "title": "[FIX] Several Problems on HipChat Importer",
+          "userLogin": "Hudell",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok",
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13423",
+          "title": "[FIX] Invalid push gateway configuration, requires the uniqueId",
+          "userLogin": "graywolf336",
+          "milestone": "0.74.3",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "13369",
+          "title": "[FIX] Notify private settings changes even on public settings changed",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13407",
+          "title": "[FIX] Misaligned upload progress bar \"cancel\" button",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
+    },
     "1.0.0-rc.0": {
       "node_version": "8.11.4",
       "npm_version": "6.4.1",
@@ -27913,6 +28093,531 @@
             "MarcosSpessatto",
             "rodrigok",
             "web-flow"
+          ]
+        },
+        {
+          "pr": "13474",
+          "title": "Release 0.74.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego",
+            "graywolf336",
+            "Hudell",
+            "d-gubert",
+            "rodrigok",
+            "BehindLoader",
+            "leonboot",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13471",
+          "title": "Room loading improvements",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13360",
+          "title": "[FIX] Invalid condition on getting next livechat agent over REST API endpoint",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.3",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13417",
+          "title": "[IMPROVE] Open rooms quicker",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13457",
+          "title": "[FIX] \"Test Desktop Notifications\" not triggering a notification",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13463",
+          "title": "[FIX] Translated and incorrect i18n variables",
+          "userLogin": "leonboot",
+          "milestone": "0.74.3",
+          "contributors": [
+            "leonboot",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13456",
+          "title": "Regression: Remove console.log on email translations",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13408",
+          "title": "[FIX] Properly escape custom emoji names for pattern matching",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13452",
+          "title": "[FIX] Not translated emails",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13437",
+          "title": "[FIX] XML-decryption module not found",
+          "userLogin": "Hudell",
+          "milestone": "0.74.3",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "13244",
+          "title": "[FIX] Update Russian localization",
+          "userLogin": "BehindLoader",
+          "milestone": "0.74.3",
+          "contributors": [
+            "BehindLoader",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13436",
+          "title": "[IMPROVE] Allow configure Prometheus port per process via Environment Variable",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13430",
+          "title": "[IMPROVE] Add API option \"permissionsRequired\"",
+          "userLogin": "d-gubert",
+          "milestone": "0.74.3",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13336",
+          "title": "[FIX] Several Problems on HipChat Importer",
+          "userLogin": "Hudell",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok",
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13423",
+          "title": "[FIX] Invalid push gateway configuration, requires the uniqueId",
+          "userLogin": "graywolf336",
+          "milestone": "0.74.3",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "13369",
+          "title": "[FIX] Notify private settings changes even on public settings changed",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13407",
+          "title": "[FIX] Misaligned upload progress bar \"cancel\" button",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
+    },
+    "1.0.0-rc.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13815",
+          "title": "[NEW] Add an option to delete file in files list",
+          "userLogin": "marceloschmidt",
+          "milestone": "1.0.0",
+          "contributors": [
+            "marceloschmidt",
+            "engelgabriel",
+            "web-flow",
+            "sampaiodiego",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "13996",
+          "title": "[NEW] Threads V 1.0",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "12834",
+          "title": "Add pagination to getUsersOfRoom",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "engelgabriel",
+            "sampaiodiego",
+            "Hudell",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13925",
+          "title": "OpenShift custom OAuth support",
+          "userLogin": "bsharrow",
+          "milestone": "1.0.0",
+          "contributors": [
+            "bsharrow",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14026",
+          "title": "Settings: disable reset button",
+          "userLogin": "alansikora",
+          "milestone": "1.0.0",
+          "contributors": [
+            "alansikora",
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14025",
+          "title": "Settings: hiding reset button for readonly fields",
+          "userLogin": "alansikora",
+          "milestone": "1.0.0",
+          "contributors": [
+            "alansikora",
+            "engelgabriel",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13510",
+          "title": "[NEW] Add support to updatedSince parameter in emoji-custom.list and deprecated old endpoint",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13884",
+          "title": "[IMPROVE] Add permission to change other user profile avatar",
+          "userLogin": "knrt10",
+          "milestone": "1.0.0",
+          "contributors": [
+            "knrt10",
+            "marceloschmidt",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13732",
+          "title": "[IMPROVE] UI of Permissions page",
+          "userLogin": "fliptrail",
+          "milestone": "1.0.0",
+          "contributors": [
+            "fliptrail",
+            "engelgabriel",
+            "web-flow",
+            "marceloschmidt"
+          ]
+        },
+        {
+          "pr": "13829",
+          "title": "[NEW] Chatpal: Enable custom search parameters",
+          "userLogin": "Peym4n",
+          "milestone": "1.0.0",
+          "contributors": [
+            "Peym4n",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13842",
+          "title": "[FIX] Closing sidebar when room menu is clicked.",
+          "userLogin": "Kailash0311",
+          "milestone": "1.0.0",
+          "contributors": [
+            "Kailash0311",
+            "sampaiodiego",
+            "web-flow",
+            "engelgabriel",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14021",
+          "title": "[FIX] Check settings for name requirement before validating",
+          "userLogin": "marceloschmidt",
+          "contributors": [
+            "marceloschmidt",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13979",
+          "title": "Fix debug logging not being enabled by the setting",
+          "userLogin": "graywolf336",
+          "milestone": "1.0.0",
+          "contributors": [
+            "graywolf336",
+            "geekgonecrazy",
+            "web-flow",
+            "engelgabriel",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13982",
+          "title": "[FIX] Links and upload paths when running in a subdir",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13532",
+          "title": "[FIX] users.getPreferences when the user doesn't have any preferences",
+          "userLogin": "thayannevls",
+          "milestone": "1.0.0",
+          "contributors": [
+            "thayannevls"
+          ]
+        },
+        {
+          "pr": "13495",
+          "title": "[FIX] Real names were not displayed in the reactions (API/UI)",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "tassoevan",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13798",
+          "title": "Deprecate /api/v1/info in favor of /api/info",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "13776",
+          "title": "Change dynamic dependency of FileUpload in Messages models",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "rodrigok",
+            "web-flow",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "14017",
+          "title": "Allow set env var METEOR_OPLOG_TOO_FAR_BEHIND",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok",
+            "geekgonecrazy",
+            "web-flow",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "14015",
+          "title": "[FIX] Theme CSS loading in subdir env",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13250",
+          "title": "[FIX] Fix rendering of links in the announcement modal",
+          "userLogin": "supra08",
+          "milestone": "1.0.0",
+          "contributors": [
+            "supra08",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13791",
+          "title": "[IMPROVE] Use SessionId for credential token in SAML request",
+          "userLogin": "MohammedEssehemy",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MohammedEssehemy",
+            "web-flow",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "13969",
+          "title": "[FIX] Add custom MIME types for *.ico extension",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13994",
+          "title": "[FIX] Groups endpoints permission validations",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13981",
+          "title": "[FIX] Focus on input when emoji picker box is open was not working",
+          "userLogin": "d-gubert",
+          "milestone": "1.0.0",
+          "contributors": [
+            "d-gubert",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13984",
+          "title": "Improve: Decrease padding for app buy modal",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.0",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "13983",
+          "title": "[NEW] - Add setting to request a comment when closing Livechat room",
+          "userLogin": "knrt10",
+          "milestone": "1.0.0",
+          "contributors": [
+            "knrt10",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13824",
+          "title": "[FIX] Auto hide Livechat room from sidebar on close",
+          "userLogin": "knrt10",
+          "milestone": "1.0.0",
+          "contributors": [
+            "knrt10",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13927",
+          "title": "[BREAK] Prevent start if incompatible mongo version",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.0",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "13820",
+          "title": "[FIX] Improve cloud section",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.0",
+          "contributors": [
+            "geekgonecrazy",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13746",
+          "title": "[FIX] Wrong permalink when running in subdir",
+          "userLogin": "ura14h",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ura14h",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13968",
+          "title": "[FIX] Change localStorage keys to work when server is running in a subdir",
+          "userLogin": "MarcosSpessatto",
+          "contributors": [
+            "MarcosSpessatto"
           ]
         }
       ]
