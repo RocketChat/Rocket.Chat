@@ -253,7 +253,7 @@
 	* Badge
 	*/
 	--badge-text-color: var(--color-white);
-	--badge-radius: var(--border-radius);
+	--badge-radius: 12px;
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
 	--badge-unread-background: var(--rc-color-button-primary);
@@ -330,4 +330,11 @@
 	--alerts-color: var(--color-white);
 	--alerts-font-size: var(--text-default-size);
 	--content-page-padding: 2.5rem;
+
+	/*
+	* badge
+	*/
+	--badge-size: 14px;
+	--badge-font-size: 0.625rem;
+
 }

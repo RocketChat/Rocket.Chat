@@ -1,10 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
-import { UserRoles, RoomRoles, ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
-import _ from 'underscore';
+import { /* UserRoles, RoomRoles,*/ ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+// import _ from 'underscore';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
+
+export const normalizeThreadMessage = (message) => {
+	if (message.msg) {
+		return message.msg;
+	}
+
+	if (message.attachments) {
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+
+		if (attachment.description) {
+			return attachment.description;
+		}
+
+		if (attachment.title) {
+			return attachment.title;
+		}
+	}
+};
 
 export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	const userId = msg.u && msg.u._id;
@@ -12,13 +30,24 @@ export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
 		msg.ignored = true;
 	}
-	const roles = [
-		(userId && UserRoles.findOne(userId, { fields: { roles: 1 } })) || {},
-		(userId && RoomRoles.findOne({ rid: msg.rid, 'u._id': userId })) || {},
-	].map((e) => e.roles);
-	msg.roles = _.union.apply(_.union, roles);
+
+	// const roles = [
+	// 	(userId && UserRoles.findOne(userId, { fields: { roles: 1 } })) || {},
+	// 	(userId && RoomRoles.findOne({ rid: msg.rid, 'u._id': userId })) || {},
+	// ].map((e) => e.roles);
+	// msg.roles = _.union.apply(_.union, roles);
+
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
+	}
+
+	if (msg.tcount) {
+		ChatMessage.update({ tmid: _id }, {
+			$set: {
+				threadMsg: normalizeThreadMessage(msg),
+				repliesCount: msg.tcount,
+			},
+		}, { multi: true });
 	}
 
 	return ChatMessage.upsert({ _id }, msg);
@@ -35,9 +64,10 @@ function upsertMessageBulk({ msgs, subscription }) {
 	});
 }
 
+const defaultLimit = parseInt(localStorage && localStorage.getItem('rc-defaultLimit')) || 50 ;
+
 export const RoomHistoryManager = new class {
 	constructor() {
-		this.defaultLimit = 50;
 		this.histories = {};
 	}
 	getRoom(rid) {
@@ -55,9 +85,8 @@ export const RoomHistoryManager = new class {
 		return this.histories[rid];
 	}
 
-	getMore(rid, limit) {
+	getMore(rid, limit = defaultLimit) {
 		let ts;
-		if (limit == null) { limit = this.defaultLimit; }
 		const room = this.getRoom(rid);
 		if (room.hasMore.curValue !== true) {
 			return;
@@ -126,8 +155,7 @@ export const RoomHistoryManager = new class {
 		});
 	}
 
-	getMoreNext(rid, limit) {
-		if (limit == null) { limit = this.defaultLimit; }
+	getMoreNext(rid, limit = defaultLimit) {
 		const room = this.getRoom(rid);
 		if (room.hasMoreNext.curValue !== true) {
 			return;
@@ -155,11 +183,11 @@ export const RoomHistoryManager = new class {
 
 		if (ts) {
 			return Meteor.call('loadNextMessages', rid, ts, limit, function(err, result) {
-				for (const msg of Array.from((result != null ? result.messages : undefined) || [])) {
-					if (msg.t !== 'command') {
-						upsertMessage({ msg, subscription });
-					}
-				}
+
+				upsertMessageBulk({
+					msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
+					subscription,
+				});
 
 				Meteor.defer(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
@@ -174,8 +202,7 @@ export const RoomHistoryManager = new class {
 		}
 	}
 
-	getSurroundingMessages(message, limit) {
-		if (limit == null) { limit = this.defaultLimit; }
+	getSurroundingMessages(message, limit = defaultLimit) {
 		if (!(message != null ? message.rid : undefined)) {
 			return;
 		}
