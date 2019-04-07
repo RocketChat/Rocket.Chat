@@ -256,7 +256,10 @@
 	--badge-radius: 12px;
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
-	--badge-unread-background: var(--rc-color-button-primary);
+	--badge-unread-background: var(--rc-color-primary-dark);
+	--badge-dm-background: var(--rc-color-primary-dark);
+	--badge-user-mentions-background: var(--rc-color-button-primary);
+	--badge-group-mentions-background: var(--rc-color-primary-dark);
 
 	/*
 	* Message box

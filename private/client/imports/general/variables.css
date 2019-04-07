@@ -256,7 +256,10 @@
 	--badge-radius: 12px;
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
-	--badge-unread-background: var(--rc-color-button-primary);
+	--badge-unread-background: var(--rc-color-primary-dark);
+	--badge-dm-background: var(--rc-color-primary-dark);
+	--badge-user-mentions-background: var(--rc-color-button-primary);
+	--badge-group-mentions-background: var(--rc-color-primary-dark);
 
 	/*
 	* Message box
@@ -282,6 +285,8 @@
 	--header-padding: 16px;
 	--header-toggle-favorite-color: var(--color-gray-medium);
 	--header-toggle-favorite-star-color: var(--rc-color-alert-light);
+	--header-toggle-encryption-off-color: var(--color-gray-medium);
+	--header-toggle-encryption-on-color: var(--rc-color-alert-message-secondary);
 	--header-title-username-color-darker: var(--color-dark);
 	--header-title-font-size: var(--text-default-size);
 	--header-title-font-size--subtitle: var(--text-small-size);
