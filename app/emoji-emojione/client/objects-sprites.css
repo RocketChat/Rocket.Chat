@@ -1,12 +1,7 @@
 /* stylelint-disable */
+
 .emojione-objects {
   background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
-
-  &._1f6c0-1f3fc {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 0% 0%;
-  }
 
   &._2328 {
     background-repeat: no-repeat;
@@ -614,34 +609,10 @@
     background-position: 71.42857142857143% 7.6923076923076925%;
   }
 
-  &._1f6c0-1f3fb {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 71.42857142857143% 15.384615384615385%;
-  }
-
   &._2692 {
     background-repeat: no-repeat;
     background-size: 1500% 1400%;
     background-position: 71.42857142857143% 23.076923076923077%;
-  }
-
-  &._1f6c0-1f3fd {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 71.42857142857143% 30.76923076923077%;
-  }
-
-  &._1f6c0-1f3fe {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 71.42857142857143% 38.46153846153846%;
-  }
-
-  &._1f6c0-1f3ff {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 71.42857142857143% 46.15384615384615%;
   }
 
   &._1f9f9 {
@@ -732,36 +703,6 @@
     background-repeat: no-repeat;
     background-size: 1500% 1400%;
     background-position: 78.57142857142857% 0%;
-  }
-
-  &._1f6cc-1f3fb {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 78.57142857142857% 7.6923076923076925%;
-  }
-
-  &._1f6cc-1f3fc {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 78.57142857142857% 15.384615384615385%;
-  }
-
-  &._1f6cc-1f3fd {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 78.57142857142857% 23.076923076923077%;
-  }
-
-  &._1f6cc-1f3fe {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 78.57142857142857% 30.76923076923077%;
-  }
-
-  &._1f6cc-1f3ff {
-    background-repeat: no-repeat;
-    background-size: 1500% 1400%;
-    background-position: 78.57142857142857% 38.46153846153846%;
   }
 
   &._1f9f8 {
@@ -1244,4 +1185,75 @@
     background-position: 100% 76.92307692307692%;
   }
 
+}
+
+
+.emojione-diversity._1f6c0-1f3fc {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 0% 0%;
+}
+
+.emojione-diversity._1f6c0-1f3fb {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 71.42857142857143% 15.384615384615385%;
+}
+
+.emojione-diversity._1f6c0-1f3fd {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 71.42857142857143% 30.76923076923077%;
+}
+
+.emojione-diversity._1f6c0-1f3fe {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 71.42857142857143% 38.46153846153846%;
+}
+
+.emojione-diversity._1f6c0-1f3ff {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 71.42857142857143% 46.15384615384615%;
+}
+
+.emojione-diversity._1f6cc-1f3fb {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 78.57142857142857% 7.6923076923076925%;
+}
+
+.emojione-diversity._1f6cc-1f3fc {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 78.57142857142857% 15.384615384615385%;
+}
+
+.emojione-diversity._1f6cc-1f3fd {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 78.57142857142857% 23.076923076923077%;
+}
+
+.emojione-diversity._1f6cc-1f3fe {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 78.57142857142857% 30.76923076923077%;
+}
+
+.emojione-diversity._1f6cc-1f3ff {
+  background-image: url('/packages/emojione/assets/sprites/objects-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 1500% 1400%;
+  background-position: 78.57142857142857% 38.46153846153846%;
 }

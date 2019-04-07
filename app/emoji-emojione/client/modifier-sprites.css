@@ -1,35 +1,42 @@
 /* stylelint-disable */
+
 .emojione-modifier {
   background-image: url('/packages/emojione/assets/sprites/modifier-sprites.png');
 
-  &._1f3fb {
-    background-repeat: no-repeat;
-    background-size: 300% 200%;
-    background-position: 0% 0%;
-  }
+}
 
-  &._1f3fc {
-    background-repeat: no-repeat;
-    background-size: 300% 200%;
-    background-position: 50% 0%;
-  }
 
-  &._1f3fd {
-    background-repeat: no-repeat;
-    background-size: 300% 200%;
-    background-position: 0% 100%;
-  }
+.emojione-diversity._1f3fb {
+  background-image: url('/packages/emojione/assets/sprites/modifier-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 300% 200%;
+  background-position: 0% 0%;
+}
 
-  &._1f3fe {
-    background-repeat: no-repeat;
-    background-size: 300% 200%;
-    background-position: 50% 100%;
-  }
+.emojione-diversity._1f3fc {
+  background-image: url('/packages/emojione/assets/sprites/modifier-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 300% 200%;
+  background-position: 50% 0%;
+}
 
-  &._1f3ff {
-    background-repeat: no-repeat;
-    background-size: 300% 200%;
-    background-position: 100% 0%;
-  }
+.emojione-diversity._1f3fd {
+  background-image: url('/packages/emojione/assets/sprites/modifier-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 300% 200%;
+  background-position: 0% 100%;
+}
 
+.emojione-diversity._1f3fe {
+  background-image: url('/packages/emojione/assets/sprites/modifier-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 300% 200%;
+  background-position: 50% 100%;
+}
+
+.emojione-diversity._1f3ff {
+  background-image: url('/packages/emojione/assets/sprites/modifier-sprites.png');
+  background-repeat: no-repeat;
+  background-size: 300% 200%;
+  background-position: 100% 0%;
 }

@@ -115,10 +115,15 @@ function generateEmojiPicker(data) {
 
 	for (let category in emojisByCategory) {
 		let srcList = [];
+		let diversityList = [];
 		const emojis = _.filter(emojiList, x => x.category === category);
 		const spritePath = `../../../public/packages/emojione/assets/sprites/${ category }-sprites.png`;
+
 		_.each(emojis, function (emoji) {
 			srcList.push(`${ assetFolder }/png/64/${ emoji.code_points.base }.png`);
+			if(emoji.diversity){
+				diversityList[emoji.code_points.base] = true;
+			}
 		});
 		spriteCss += `@import './${ category }-sprites.css';\n`;
 
@@ -134,6 +139,7 @@ function generateEmojiPicker(data) {
 			},
 			stylesheetOptions: {
 				prefix: '',
+				diversityList: diversityList,
 				category: category,
 				spritePath: `/packages/emojione/assets/sprites/${ category }-sprites.png`,
 				pixelRatio: 1
