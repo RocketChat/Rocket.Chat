@@ -154,7 +154,7 @@ Template.membersList.helpers({
 
 	loadingMore() {
 		return Template.instance().loadingMore.get();
-	}	
+	},
 });
 
 Template.membersList.events({
