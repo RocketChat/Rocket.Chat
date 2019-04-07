@@ -147,7 +147,8 @@ function generateEmojiPicker(data) {
 		});
 	}
 
-	spriteCss += `.emojione {
+	spriteCss += `
+.emojione {
 	position: relative;
 
 	display: inline-block;
@@ -160,11 +161,13 @@ function generateEmojiPicker(data) {
 	vertical-align: middle;
 	white-space: nowrap;
 	text-indent: 100%;
+
 	font-size: inherit;
 	line-height: normal;
 	image-rendering: -webkit-optimize-contrast;
 	image-rendering: optimizeQuality;
 }
+
 .emojione.big {
 	width: 44px;
 	height: 44px;
