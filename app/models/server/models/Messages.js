@@ -29,6 +29,10 @@ export class Messages extends Base {
 
 		// discussions
 		this.tryEnsureIndex({ drid: 1 }, { sparse: true });
+		// threads
+		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+
 	}
 
 	setReactions(messageId, reactions) {
@@ -989,6 +993,115 @@ export class Messages extends Base {
 				dlm,
 			},
 		}, { multi: 1 });
+	}
+
+	// //////////////////////////////////////////////////////////////////
+	// threads
+
+	removeThreadRefByThreadId(tmid) {
+		const query = { tmid };
+		const update = {
+			$unset: {
+				tmid: 1,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	updateRepliesByThreadId(tmid, replies, ts) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$addToSet: {
+				replies: {
+					$each: replies,
+				},
+			},
+			$set: {
+				tlm: ts,
+			},
+			$inc: {
+				tcount: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	getThreadFollowsByThreadId(tmid) {
+		const msg = this.findOneById(tmid, { fields: { replies: 1 } });
+		return msg && msg.replies;
+	}
+
+	getFirstReplyTsByThreadId(tmid) {
+		return this.findOne({ tmid }, { fields: { ts: 1 }, sort: { ts: 1 } });
+	}
+
+	unsetThreadByThreadId(tmid) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$unset: {
+				tcount: 1,
+				tlm: 1,
+				replies: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateThreadLastMessageAndCountByThreadId(tmid, tlm, tcount) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$set: {
+				tlm,
+			},
+			$inc: {
+				tcount,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	addThreadFollowerByThreadId(tmid, userId) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$addToSet: {
+				replies: userId,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	removeThreadFollowerByThreadId(tmid, userId) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$pull: {
+				replies: userId,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findThreadsByRoomId(rid, skip, limit) {
+		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
 	}
 }
 
