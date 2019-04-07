@@ -1,4 +1,5 @@
-import { Roles, Permissions } from '../../../models';
+import Roles from '../../../models/server/models/Roles';
+import Permissions from '../../../models/server/models/Permissions';
 
 function atLeastOne(userId, permissions = [], scope) {
 	return permissions.some((permissionId) => {

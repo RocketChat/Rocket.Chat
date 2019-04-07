@@ -52,6 +52,10 @@ class SideNav extends Page {
 
 	get sidebarWrap() { return browser.element('.sidebar-wrap'); }
 
+	get firstSidebarItem() { return browser.element('.sidebar-item'); }
+	get firstSidebarItemMenu() { return browser.element('.sidebar-item__menu'); }
+	get popoverOverlay() { return browser.element('.rc-popover.rc-popover--sidebar-item'); }
+
 	// Opens a channel via rooms list
 	openChannel(channelName) {
 		browser.waitForVisible(`.sidebar-item__ellipsis=${ channelName }`, 10000);

@@ -1,70 +1,74 @@
 .permissions-manager {
-	& h2 {
-		margin-top: 1em !important;
-		margin-bottom: 1em !important;
+	.permission-grid {
+		overflow-x: scroll;
 
-		border-bottom-width: 1px;
+		table-layout: fixed;
 
-		font-size: 16px;
-		font-weight: bold !important;
-	}
+		border-collapse: collapse;
 
-	& .permission-grid {
-		& table {
-			display: block;
-			overflow-x: auto;
+		.id-styler {
+			color: #7f7f7f;
 
-			white-space: nowrap;
+			font-size: smaller;
 		}
 
-		& th {
-			position: relative;
+		.role-name {
+			width: 70px;
+			height: 80px;
 
-			padding: 20px;
+			text-align: left;
+
+			vertical-align: middle;
+
+			border-right: 1px solid	black;
+			border-left: 1px solid black;
+		}
+
+		.role-name-edit-icon {
+			width: 70px;
+			height: 70px;
 
 			text-align: center;
-			white-space: nowrap;
+
+			vertical-align: middle;
+
+			border-right: 1px solid	black;
+			border-left: 1px solid black;
 		}
 
-		& td {
-			width: 10%;
+		.rotator {
+			transform: rotate(-90deg);
+		}
 
+		.admin-table-row {
+			height: 50px;
+		}
+
+		td {
+			overflow: hidden;
+		}
+
+		.permission-name {
+			width: 25%;
+			padding-left: 14px;
+
+			vertical-align: middle;
+		}
+
+		.admin-table-row .permission-name {
+			border-top: 1px solid black;
+			border-bottom: 1px solid black;
+		}
+
+		.permission-checkbox {
 			text-align: center;
+			vertical-align: middle;
+
+			border: 1px solid black;
 		}
 
-		& .icon-edit {
-			position: absolute;
-			top: 0;
-			left: 50%;
-
-			padding-left: 2px;
-
-			transform: translateX(-50%);
-
-			font-size: 80%;
-		}
-
-		& .permission-name {
-			cursor: default;
-			white-space: nowrap;
-		}
-	}
-
-	& .empty-role {
-		padding: 0.5em !important;
-	}
-
-	& .form-role {
-		& label {
-			display: inline-block;
-
-			width: 150px;
-
-			text-align: right;
-		}
-
-		& .form-buttons {
-			padding-left: 150px;
+		.icon-edit {
+			font-size: 1.5em;
 		}
 	}
 }
