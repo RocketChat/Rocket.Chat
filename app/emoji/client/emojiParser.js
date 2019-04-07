@@ -33,10 +33,6 @@ callbacks.add('renderMessage', (message) => {
 				const child = $(checkEmojiOnly[0].childNodes[childNode]);
 
 				if (child.hasClass('emoji') || child.hasClass('emojione')) {
-					if (child.is('[class*="emojione-24-"]')) {
-						child.addClass(child[0].classList[1].replace(/emojione-24/g, 'emojione-64'));
-						child.removeClass(child[0].classList[1]);
-					}
 					checkEmojiOnly[0].childNodes[childNode] = child.addClass('big');
 					continue;
 				}

@@ -10,14 +10,9 @@ emoji.packages.emojione.sprites = true;
 emoji.packages.emojione.emojisByCategory = emojisByCategory;
 emoji.packages.emojione.emojiCategories = emojiCategories;
 emoji.packages.emojione.toneList = toneList;
-emoji.packages.emojione.emojiSize = 24;
-emoji.packages.emojione.spriteSize = 24;
 
 emoji.packages.emojione.render = function(message) {
-	// For some reason toImage isn't respecting emojiSize or spriteSize when set to 24,
-	// so we have to do some string replacements here.
-
-	return emojione.toImage(message).replace(/emojione-32/g, `emojione-${ emoji.packages.emojione.emojiSize }`);
+	return emojione.toImage(message).replace(/class="emojione emojione-32-(\w+) _/g, 'class="emojione emojione-');
 };
 
 // http://stackoverflow.com/a/26990347 function isSet() from Gajus

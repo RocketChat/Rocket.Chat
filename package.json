@@ -104,6 +104,7 @@
 		"husky": "^1.2.0",
 		"mocha": "^5.2.0",
 		"mock-require": "^3.0.2",
+		"node-sprite-generator": "^0.10.2",
 		"postcss": "^7.0.6",
 		"postcss-custom-properties": "^8.0.9",
 		"postcss-easy-import": "^3.0.0",

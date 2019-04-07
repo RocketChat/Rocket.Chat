@@ -1,20 +1,22 @@
 /* eslint-disable */
-// emoji.json from emojione@4.5.0
 
 // node --experimental-modules generateEmojiIndex.mjs
 import fs from 'fs';
 import https from 'https';
-import request from 'request';
+import nsg from 'node-sprite-generator';
+import _ from 'underscore';
+import gm from 'gm';
 
-const emojiJsonUrl = 'https://raw.githubusercontent.com/emojione/emojione/4.5.0/emoji.json';
+const assetFolder = '../../../node_modules/emojione-assets';
+const emojiJsonFile = `${ assetFolder }/emoji.json`;
 
-request(emojiJsonUrl, function (error, response, res) {
-	if (error) {
-		console.error(error);
-		return;
-	}
-	generateEmojiPicker(res);
-});
+if (!fs.existsSync(emojiJsonFile)) {
+	console.error(`${ emojiJsonFile } doesn't exist.`);
+	console.error('Maybe you need to run \'meteor npm install emojione-assets\' or \'meteor npm install\'?');
+} else {
+	const emojiJson = fs.readFileSync(emojiJsonFile);
+	generateEmojiPicker(emojiJson);
+}
 
 function generateEmojiPicker(data) {
 	const emojiList = JSON.parse(data);
@@ -65,7 +67,6 @@ function generateEmojiPicker(data) {
 	};
 
 	// emojiCategories
-
 	output += `export const emojiCategories = {\n`;
 	for (let category in emojisByCategory) {
 		if (emojiCategoriesMapping[category]) {
@@ -77,7 +78,6 @@ function generateEmojiPicker(data) {
 	output += `};\n`;
 
 	// toneList
-
 	const needsQuotes = ['-'];
 	output += `export const toneList = {\n`;
 	for (let tone in toneList) {
@@ -108,4 +108,69 @@ function generateEmojiPicker(data) {
 		flag: 'w'
 	});
 	console.log('Generated emojiPicker.js!');
+
+	console.log('Generating sprite sheets....');
+
+	let spriteCss = '';
+
+	for (let category in emojisByCategory) {
+		let srcList = [];
+		const emojis = _.filter(emojiList, x => x.category === category);
+		const spritePath = `../../../public/packages/emojione/assets/sprites/${ category }-sprites.png`;
+		_.each(emojis, function (emoji) {
+			srcList.push(`${ assetFolder }/png/64/${ emoji.code_points.base }.png`);
+		});
+		spriteCss += `@import './${ category }-sprites.css';\n`;
+
+		nsg({
+			src: srcList,
+			spritePath: spritePath,
+			layout: 'packed',
+			stylesheet: 'emojione.tpl',
+			stylesheetPath: `../client/${ category }-sprites.css`, // we're going to generate our own stylesheets, so /dev/null
+			compositor: 'gm',
+			layoutOptions: {
+				scaling: 1,
+			},
+			stylesheetOptions: {
+				prefix: `emojione-`,
+				spritePath: `/packages/emojione/assets/sprites/${ category }-sprites.png`,
+				pixelRatio: 1
+			}
+		}, function (err) {
+			if (err) {
+				console.error(err);
+				return;
+			}
+			console.log(`${ category }'s sprite generated!`);
+		});
+	}
+
+	spriteCss += `.emojione {
+	position: relative;
+
+	display: inline-block;
+	overflow: hidden;
+
+	width: 22px;
+	height: 22px;
+	margin: 0 0.15em;
+
+	vertical-align: middle;
+	white-space: nowrap;
+	text-indent: 100%;
+	font-size: inherit;
+	line-height: normal;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: optimizeQuality;
+}
+.emojione.big {
+	width: 44px;
+	height: 44px;
+}
+`;
+	fs.writeFileSync("../client/emojione-sprites.css", spriteCss, {
+		encoding: 'utf8',
+		flag: 'w'
+	});
 }
