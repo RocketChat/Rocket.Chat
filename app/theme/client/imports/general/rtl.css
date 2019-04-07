@@ -87,11 +87,6 @@
 		right: 0;
 		left: auto;
 
-		& .edit-room-title {
-			margin-right: 4px;
-			margin-left: auto;
-		}
-
 		& .wrapper {
 			right: 0;
 			left: auto;

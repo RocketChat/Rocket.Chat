@@ -1,131 +1,101 @@
 import _ from 'underscore';
-const times = function(string, number) {
-	let r = '';
-	for (let i = 0; i < number; i++) { r += string; }
-	return r;
+
+const replaceWhitespaces = (whitespaces) => `${ '&nbsp;'.repeat(whitespaces.length - 1) } `;
+
+const getShadow = () => {
+	let shadow = document.getElementById('autogrow-shadow');
+
+	if (!shadow) {
+		shadow = document.createElement('div');
+		shadow.setAttribute('id', 'autogrow-shadow');
+		document.body.appendChild(shadow);
+	}
+
+	return shadow;
 };
 
-const runTimes = (space) => `${ times('&nbsp;', space.length - 1) } `;
-(function($) {
-	/**
-	 * Auto-growing textareas; technique ripped from Facebook
-	 *
-	 *
-	 * http://github.com/jaz303/jquery-grab-bag/tree/master/javascripts/jquery.autogrow-textarea.js
-	 */
-	$.fn.autogrow = function(options) {
-		let shadow = $('body > #autogrow-shadow');
-		if (!shadow.length) {
-			shadow = $('<div id="autogrow-shadow"></div>').addClass('autogrow-shadow').appendTo(document.body);
-		}
-		return this.filter('textarea').each(function() {
-			const self = this;
-			const $self = $(self);
-			const minHeight = $self.height();
+$.fn.autogrow = function({ postGrowCallback } = {}) {
+	const shadow = getShadow();
 
-			const settings = {
-				postGrowCallback: null,
-				...options,
-			};
+	return this.filter('textarea').each((i, textarea) => {
+		const $textarea = $(textarea);
 
-			const maxHeight = window.getComputedStyle(self)['max-height'].replace('px', '');
+		const trigger = _.debounce(() => $textarea.trigger('autogrow', []), 500);
 
-			const trigger = _.debounce(() => $self.trigger('autogrow', []), 500);
-			const getWidth = (() => {
-				let width = 0;
-				let expired = false;
-				let timer = null;
-				return () => {
-					if (timer) {
-						clearTimeout(timer);
-					}
-					timer = setTimeout(function() {
-						expired = true;
-						timer = null;
-					}, 300);
-					if (!width || expired) {
-						width = $self.width();
-						expired = false;
-					}
-					return width;
-				};
-			})();
+		const width = $textarea.width();
+		const minHeight = $textarea.height();
+		const maxHeight = window.getComputedStyle(textarea)['max-height'].replace('px', '');
 
-			const width = getWidth();
-			let lastWidth = width;
-			let lastHeight = minHeight;
+		let lastWidth = width;
+		let lastHeight = minHeight;
+		let length = 0;
 
-			let length = 0;
-			shadow.css({
-				position: 'absolute',
-				top: -10000,
-				left: -10000,
-				width,
-				fontSize: $self.css('fontSize'),
-				fontFamily: $self.css('fontFamily'),
-				fontWeight: $self.css('fontWeight'),
-				lineHeight: $self.css('lineHeight'),
-				resize: 'none',
-				wordWrap: 'break-word',
-			});
-			const update = function update(event) {
-				const width = getWidth();
-				if (lastHeight >= maxHeight && length && length < self.value.length && width === lastWidth) {
-					return true;
-				}
+		shadow.style.position = 'absolute';
+		shadow.style.top = '-10000px';
+		shadow.style.left = '-10000px';
+		shadow.style.width = `${ width }px`;
+		shadow.style.fontSize = $textarea.css('fontSize');
+		shadow.style.fontFamily = $textarea.css('fontFamily');
+		shadow.style.fontWeight = $textarea.css('fontWeight');
+		shadow.style.lineHeight = `${ $textarea.css('lineHeight') }px`;
+		shadow.style.resize = 'none';
+		shadow.style.wordWrap = 'break-word';
 
-				let val = self.value.replace(/</g, '&lt;')
-					.replace(/>/g, '&gt;')
-					.replace(/&/g, '&amp;')
-					.replace(/\n$/, '<br/>&nbsp;')
-					.replace(/\n/g, '<br/>')
-					.replace(/ {2,}/g, runTimes);
+		const update = (event) => {
+			const width = $textarea.width();
+			if (lastHeight >= maxHeight && length && length < textarea.value.length && width === lastWidth) {
+				return true;
+			}
 
-				// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
-				if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
-					val += '<br/>';
-				}
+			let val = textarea.value.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/&/g, '&amp;')
+				.replace(/\n$/, '<br/>&nbsp;')
+				.replace(/\n/g, '<br/>')
+				.replace(/ {2,}/g, replaceWhitespaces);
 
-				if (width !== lastWidth) {
-					shadow.css('width', width);
-					lastWidth = width;
-				}
+			// Did enter get pressed?  Resize in this keydown event so that the flicker doesn't occur.
+			if (event && event.data && event.data.event === 'keydown' && event.keyCode === 13 && (event.shiftKey || event.ctrlKey || event.altKey)) {
+				val += '<br/>';
+			}
 
-				shadow[0].innerHTML = val;
+			if (width !== lastWidth) {
+				shadow.style.width = `${ width }px`;
+				lastWidth = width;
+			}
 
-				let newHeight = Math.max(shadow[0].clientHeight + 1, minHeight) + 1;
+			shadow.innerHTML = val;
 
-				let overflow = 'hidden';
+			let newHeight = Math.max(shadow.clientHeight + 1, minHeight) + 1;
 
-				if (newHeight >= maxHeight) {
-					newHeight = maxHeight;
-					overflow = '';
-				} else {
-					length = self.value.length;
-				}
+			let overflow = 'hidden';
 
-				if (newHeight === lastHeight) {
-					return true;
-				}
+			if (newHeight >= maxHeight) {
+				newHeight = maxHeight;
+				overflow = '';
+			} else {
+				length = textarea.value.length;
+			}
 
-				lastHeight = newHeight;
+			if (newHeight === lastHeight) {
+				return true;
+			}
 
-				$self.css({ overflow, height: newHeight });
+			lastHeight = newHeight;
 
-				trigger();
+			$textarea.css({ overflow, height: newHeight });
 
-				if (settings.postGrowCallback !== null) {
-					settings.postGrowCallback($self);
-				}
-			};
+			trigger();
 
-			const updateThrottled = _.throttle(update, 300);
+			postGrowCallback && postGrowCallback($textarea);
+		};
 
-			$self.on('change input', updateThrottled);
-			$self.on('focus', update);
-			$(window).resize(updateThrottled);
-			update();
-			self.updateAutogrow = updateThrottled;
-		});
-	};
-}(jQuery));
+		const updateThrottled = _.throttle(update, 300);
+
+		$textarea.on('change input', updateThrottled);
+		$textarea.on('focus', update);
+		$(window).resize(updateThrottled);
+		update();
+		textarea.updateAutogrow = update;
+	});
+};
