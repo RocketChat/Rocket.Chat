@@ -1,0 +1,739 @@
+/* stylelint-disable */
+
+.emojione-travel {
+  background-image: url('/packages/emojione/assets/sprites/travel-sprites.png');
+
+  &._1f5ff {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 0%;
+  }
+
+  &._2693 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 0%;
+  }
+
+  &._1f697 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 10%;
+  }
+
+  &._1f695 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 10%;
+  }
+
+  &._1f699 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 0%;
+  }
+
+  &._1f68c {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 10%;
+  }
+
+  &._1f68e {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 20%;
+  }
+
+  &._1f3ce {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 20%;
+  }
+
+  &._1f693 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 20%;
+  }
+
+  &._1f691 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 0%;
+  }
+
+  &._1f692 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 10%;
+  }
+
+  &._1f690 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 20%;
+  }
+
+  &._1f69a {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 30%;
+  }
+
+  &._1f69b {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 30%;
+  }
+
+  &._1f69c {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 30%;
+  }
+
+  &._1f6f4 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 30%;
+  }
+
+  &._1f6b2 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 0%;
+  }
+
+  &._1f6f5 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 10%;
+  }
+
+  &._1f3cd {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 20%;
+  }
+
+  &._1f6a8 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 30%;
+  }
+
+  &._1f694 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 40%;
+  }
+
+  &._1f68d {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 40%;
+  }
+
+  &._1f698 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 40%;
+  }
+
+  &._1f696 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 40%;
+  }
+
+  &._1f6a1 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 40%;
+  }
+
+  &._1f6a0 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 0%;
+  }
+
+  &._1f69f {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 10%;
+  }
+
+  &._1f683 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 20%;
+  }
+
+  &._1f68b {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 30%;
+  }
+
+  &._1f69e {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 40%;
+  }
+
+  &._1f69d {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 50%;
+  }
+
+  &._1f684 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 50%;
+  }
+
+  &._1f685 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 50%;
+  }
+
+  &._1f688 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 50%;
+  }
+
+  &._1f682 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 50%;
+  }
+
+  &._1f686 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 50%;
+  }
+
+  &._1f687 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 0%;
+  }
+
+  &._1f68a {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 10%;
+  }
+
+  &._1f689 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 20%;
+  }
+
+  &._1f6eb {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 30%;
+  }
+
+  &._1f6ec {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 40%;
+  }
+
+  &._1f6e9 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 50%;
+  }
+
+  &._1f4ba {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 60%;
+  }
+
+  &._1f9f3 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 60%;
+  }
+
+  &._1f6f0 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 60%;
+  }
+
+  &._1f680 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 60%;
+  }
+
+  &._1f6f8 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 60%;
+  }
+
+  &._1f681 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 60%;
+  }
+
+  &._1f6f6 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 60%;
+  }
+
+  &._26f5 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 0%;
+  }
+
+  &._1f6a4 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 10%;
+  }
+
+  &._1f6e5 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 20%;
+  }
+
+  &._1f6f3 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 30%;
+  }
+
+  &._26f4 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 40%;
+  }
+
+  &._1f6a2 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 50%;
+  }
+
+  &._26fd {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 60%;
+  }
+
+  &._1f6a7 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 70%;
+  }
+
+  &._1f6a6 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 70%;
+  }
+
+  &._1f6a5 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 70%;
+  }
+
+  &._1f68f {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 70%;
+  }
+
+  &._1f5fa {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 70%;
+  }
+
+  &._2708 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 70%;
+  }
+
+  &._1f5fd {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 70%;
+  }
+
+  &._1f5fc {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 70%;
+  }
+
+  &._1f3f0 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 0%;
+  }
+
+  &._1f3ef {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 10%;
+  }
+
+  &._1f3df {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 20%;
+  }
+
+  &._1f3a1 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 30%;
+  }
+
+  &._1f3a2 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 40%;
+  }
+
+  &._1f3a0 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 50%;
+  }
+
+  &._26f2 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 60%;
+  }
+
+  &._26f1 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 70%;
+  }
+
+  &._1f3d6 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 80%;
+  }
+
+  &._1f3dd {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 80%;
+  }
+
+  &._1f3dc {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 80%;
+  }
+
+  &._1f30b {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 80%;
+  }
+
+  &._26f0 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 80%;
+  }
+
+  &._1f3d4 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 80%;
+  }
+
+  &._1f5fb {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 80%;
+  }
+
+  &._1f3d5 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 80%;
+  }
+
+  &._26fa {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 80%;
+  }
+
+  &._1f3e0 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 0%;
+  }
+
+  &._1f3e1 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 10%;
+  }
+
+  &._1f3d8 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 20%;
+  }
+
+  &._1f3da {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 30%;
+  }
+
+  &._1f3d7 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 40%;
+  }
+
+  &._1f3ed {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 50%;
+  }
+
+  &._1f3e2 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 60%;
+  }
+
+  &._1f3ec {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 70%;
+  }
+
+  &._1f3e3 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 80%;
+  }
+
+  &._1f3e4 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 90%;
+  }
+
+  &._1f3e5 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 90%;
+  }
+
+  &._1f3e6 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 90%;
+  }
+
+  &._1f3e8 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 90%;
+  }
+
+  &._1f3ea {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 90%;
+  }
+
+  &._1f3eb {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 90%;
+  }
+
+  &._1f3e9 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 90%;
+  }
+
+  &._1f492 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 90%;
+  }
+
+  &._1f3db {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 90%;
+  }
+
+  &._26ea {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 90%;
+  }
+
+  &._1f54c {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 0%;
+  }
+
+  &._1f54d {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 10%;
+  }
+
+  &._1f54b {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 20%;
+  }
+
+  &._26e9 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 30%;
+  }
+
+  &._1f6e4 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 40%;
+  }
+
+  &._1f6e3 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 50%;
+  }
+
+  &._1f5fe {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 60%;
+  }
+
+  &._1f391 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 70%;
+  }
+
+  &._1f3de {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 80%;
+  }
+
+  &._1f305 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 90%;
+  }
+
+  &._1f304 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 0% 100%;
+  }
+
+  &._1f320 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 9.090909090909092% 100%;
+  }
+
+  &._1f387 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 18.181818181818183% 100%;
+  }
+
+  &._1f386 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 27.272727272727273% 100%;
+  }
+
+  &._1f9e8 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 36.36363636363637% 100%;
+  }
+
+  &._1f307 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 45.45454545454545% 100%;
+  }
+
+  &._1f306 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 54.54545454545455% 100%;
+  }
+
+  &._1f3d9 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 63.63636363636363% 100%;
+  }
+
+  &._1f303 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 72.72727272727273% 100%;
+  }
+
+  &._1f30c {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 81.81818181818181% 100%;
+  }
+
+  &._1f309 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 90.9090909090909% 100%;
+  }
+
+  &._1f301 {
+    background-repeat: no-repeat;
+    background-size: 1200% 1100%;
+    background-position: 100% 0%;
+  }
+
+}
+

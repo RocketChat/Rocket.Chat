@@ -8,7 +8,7 @@ Template.message.helpers({
 		}
 
 		return {
-			readByEveryone: (!this.unread && 'read') || 'color-component-color',
+			readByEveryone: (!this.msg.unread && 'read') || 'color-component-color',
 		};
 	},
 });

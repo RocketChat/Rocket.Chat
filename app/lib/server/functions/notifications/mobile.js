@@ -70,10 +70,11 @@ export function shouldNotifyMobile({
 	hasMentionToAll,
 	isHighlighted,
 	hasMentionToUser,
+	hasReplyToThread,
 	statusConnection,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser) {
+	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
 
@@ -94,5 +95,5 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser;
+	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser || hasReplyToThread;
 }

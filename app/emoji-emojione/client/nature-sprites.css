@@ -1,0 +1,1069 @@
+/* stylelint-disable */
+
+.emojione-nature {
+  background-image: url('/packages/emojione/assets/sprites/nature-sprites.png');
+
+  &._1f42b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 0%;
+  }
+
+  &._2600 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 0%;
+  }
+
+  &._2602 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 8.333333333333334%;
+  }
+
+  &._2603 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 8.333333333333334%;
+  }
+
+  &._2604 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 0%;
+  }
+
+  &._2614 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 8.333333333333334%;
+  }
+
+  &._2618 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 16.666666666666668%;
+  }
+
+  &._2728 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 16.666666666666668%;
+  }
+
+  &._2744 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 16.666666666666668%;
+  }
+
+  &._1f436 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 0%;
+  }
+
+  &._1f431 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 8.333333333333334%;
+  }
+
+  &._1f42d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 16.666666666666668%;
+  }
+
+  &._1f439 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 25%;
+  }
+
+  &._1f430 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 25%;
+  }
+
+  &._1f98a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 25%;
+  }
+
+  &._1f99d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 25%;
+  }
+
+  &._1f43b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 0%;
+  }
+
+  &._1f43c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 8.333333333333334%;
+  }
+
+  &._1f998 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 16.666666666666668%;
+  }
+
+  &._1f9a1 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 25%;
+  }
+
+  &._1f428 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 33.333333333333336%;
+  }
+
+  &._1f42f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 33.333333333333336%;
+  }
+
+  &._1f981 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 33.333333333333336%;
+  }
+
+  &._1f42e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 33.333333333333336%;
+  }
+
+  &._1f437 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 33.333333333333336%;
+  }
+
+  &._1f43d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 0%;
+  }
+
+  &._1f438 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 8.333333333333334%;
+  }
+
+  &._1f435 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 16.666666666666668%;
+  }
+
+  &._1f648 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 25%;
+  }
+
+  &._1f649 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 33.333333333333336%;
+  }
+
+  &._1f64a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 41.666666666666664%;
+  }
+
+  &._1f412 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 41.666666666666664%;
+  }
+
+  &._1f414 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 41.666666666666664%;
+  }
+
+  &._1f427 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 41.666666666666664%;
+  }
+
+  &._1f426 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 41.666666666666664%;
+  }
+
+  &._1f424 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 41.666666666666664%;
+  }
+
+  &._1f423 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 0%;
+  }
+
+  &._1f425 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 8.333333333333334%;
+  }
+
+  &._1f986 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 16.666666666666668%;
+  }
+
+  &._1f9a2 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 25%;
+  }
+
+  &._1f985 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 33.333333333333336%;
+  }
+
+  &._1f989 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 41.666666666666664%;
+  }
+
+  &._1f99c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 50%;
+  }
+
+  &._1f99a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 50%;
+  }
+
+  &._1f987 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 50%;
+  }
+
+  &._1f43a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 50%;
+  }
+
+  &._1f417 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 50%;
+  }
+
+  &._1f434 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 50%;
+  }
+
+  &._1f984 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 50%;
+  }
+
+  &._1f41d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 0%;
+  }
+
+  &._1f41b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 8.333333333333334%;
+  }
+
+  &._1f98b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 16.666666666666668%;
+  }
+
+  &._1f40c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 25%;
+  }
+
+  &._1f41a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 33.333333333333336%;
+  }
+
+  &._1f41e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 41.666666666666664%;
+  }
+
+  &._1f41c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 50%;
+  }
+
+  &._1f997 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 58.333333333333336%;
+  }
+
+  &._1f577 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 58.333333333333336%;
+  }
+
+  &._1f578 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 58.333333333333336%;
+  }
+
+  &._1f982 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 58.333333333333336%;
+  }
+
+  &._1f99f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 58.333333333333336%;
+  }
+
+  &._1f9a0 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 58.333333333333336%;
+  }
+
+  &._1f422 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 58.333333333333336%;
+  }
+
+  &._1f40d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 58.333333333333336%;
+  }
+
+  &._1f98e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 0%;
+  }
+
+  &._1f996 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 8.333333333333334%;
+  }
+
+  &._1f995 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 16.666666666666668%;
+  }
+
+  &._1f419 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 25%;
+  }
+
+  &._1f991 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 33.333333333333336%;
+  }
+
+  &._1f990 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 41.666666666666664%;
+  }
+
+  &._1f980 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 50%;
+  }
+
+  &._1f99e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 58.333333333333336%;
+  }
+
+  &._1f421 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 66.66666666666667%;
+  }
+
+  &._1f420 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 66.66666666666667%;
+  }
+
+  &._1f41f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 66.66666666666667%;
+  }
+
+  &._1f42c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 66.66666666666667%;
+  }
+
+  &._1f433 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 66.66666666666667%;
+  }
+
+  &._1f40b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 66.66666666666667%;
+  }
+
+  &._1f988 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 66.66666666666667%;
+  }
+
+  &._1f40a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 66.66666666666667%;
+  }
+
+  &._1f405 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 66.66666666666667%;
+  }
+
+  &._1f406 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 0%;
+  }
+
+  &._1f993 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 8.333333333333334%;
+  }
+
+  &._1f98d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 16.666666666666668%;
+  }
+
+  &._1f418 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 25%;
+  }
+
+  &._1f98f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 33.333333333333336%;
+  }
+
+  &._1f99b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 41.666666666666664%;
+  }
+
+  &._1f42a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 50%;
+  }
+
+  &._2601 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 58.333333333333336%;
+  }
+
+  &._1f992 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 66.66666666666667%;
+  }
+
+  &._1f999 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 75%;
+  }
+
+  &._1f403 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 75%;
+  }
+
+  &._1f402 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 75%;
+  }
+
+  &._1f404 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 75%;
+  }
+
+  &._1f40e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 75%;
+  }
+
+  &._1f416 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 75%;
+  }
+
+  &._1f40f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 75%;
+  }
+
+  &._1f411 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 75%;
+  }
+
+  &._1f410 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 75%;
+  }
+
+  &._1f98c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 75%;
+  }
+
+  &._1f415 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 0%;
+  }
+
+  &._1f429 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 8.333333333333334%;
+  }
+
+  &._1f408 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 16.666666666666668%;
+  }
+
+  &._1f413 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 25%;
+  }
+
+  &._1f983 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 33.333333333333336%;
+  }
+
+  &._1f54a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 41.666666666666664%;
+  }
+
+  &._1f407 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 50%;
+  }
+
+  &._1f401 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 58.333333333333336%;
+  }
+
+  &._1f400 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 66.66666666666667%;
+  }
+
+  &._1f43f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 75%;
+  }
+
+  &._1f994 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 83.33333333333333%;
+  }
+
+  &._1f43e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 83.33333333333333%;
+  }
+
+  &._1f409 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 83.33333333333333%;
+  }
+
+  &._1f432 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 83.33333333333333%;
+  }
+
+  &._1f335 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 83.33333333333333%;
+  }
+
+  &._1f384 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 83.33333333333333%;
+  }
+
+  &._1f332 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 83.33333333333333%;
+  }
+
+  &._1f333 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 83.33333333333333%;
+  }
+
+  &._1f334 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 83.33333333333333%;
+  }
+
+  &._1f331 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 83.33333333333333%;
+  }
+
+  &._1f33f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 83.33333333333333%;
+  }
+
+  &._1f340 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 0%;
+  }
+
+  &._1f38d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 8.333333333333334%;
+  }
+
+  &._1f38b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 16.666666666666668%;
+  }
+
+  &._1f343 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 25%;
+  }
+
+  &._1f342 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 33.333333333333336%;
+  }
+
+  &._1f341 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 41.666666666666664%;
+  }
+
+  &._1f344 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 50%;
+  }
+
+  &._1f33e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 58.333333333333336%;
+  }
+
+  &._1f490 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 66.66666666666667%;
+  }
+
+  &._1f337 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 75%;
+  }
+
+  &._1f339 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 83.33333333333333%;
+  }
+
+  &._1f940 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 91.66666666666667%;
+  }
+
+  &._1f33a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 91.66666666666667%;
+  }
+
+  &._1f338 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 91.66666666666667%;
+  }
+
+  &._1f33c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 91.66666666666667%;
+  }
+
+  &._1f33b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 91.66666666666667%;
+  }
+
+  &._1f31e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 91.66666666666667%;
+  }
+
+  &._1f31d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 91.66666666666667%;
+  }
+
+  &._1f31b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 91.66666666666667%;
+  }
+
+  &._1f31c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 91.66666666666667%;
+  }
+
+  &._1f31a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 91.66666666666667%;
+  }
+
+  &._1f315 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 91.66666666666667%;
+  }
+
+  &._1f316 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 91.66666666666667%;
+  }
+
+  &._1f317 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 0%;
+  }
+
+  &._1f318 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 8.333333333333334%;
+  }
+
+  &._1f311 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 16.666666666666668%;
+  }
+
+  &._1f312 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 25%;
+  }
+
+  &._1f313 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 33.333333333333336%;
+  }
+
+  &._1f314 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 41.666666666666664%;
+  }
+
+  &._1f319 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 50%;
+  }
+
+  &._1f30e {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 58.333333333333336%;
+  }
+
+  &._1f30d {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 66.66666666666667%;
+  }
+
+  &._1f30f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 75%;
+  }
+
+  &._1f4ab {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 83.33333333333333%;
+  }
+
+  &._2b50 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 91.66666666666667%;
+  }
+
+  &._1f31f {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 0% 100%;
+  }
+
+  &._26a1 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 7.6923076923076925% 100%;
+  }
+
+  &._1f4a5 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 15.384615384615385% 100%;
+  }
+
+  &._1f525 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 23.076923076923077% 100%;
+  }
+
+  &._1f32a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 30.76923076923077% 100%;
+  }
+
+  &._1f308 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 38.46153846153846% 100%;
+  }
+
+  &._1f324 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 46.15384615384615% 100%;
+  }
+
+  &._26c5 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 53.84615384615385% 100%;
+  }
+
+  &._1f325 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 61.53846153846154% 100%;
+  }
+
+  &._1f326 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 69.23076923076923% 100%;
+  }
+
+  &._1f327 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 76.92307692307692% 100%;
+  }
+
+  &._26c8 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 84.61538461538461% 100%;
+  }
+
+  &._1f329 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 92.3076923076923% 100%;
+  }
+
+  &._1f328 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 100% 0%;
+  }
+
+  &._26c4 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 100% 8.333333333333334%;
+  }
+
+  &._1f32c {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 100% 16.666666666666668%;
+  }
+
+  &._1f4a8 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 100% 25%;
+  }
+
+  &._1f4a7 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 100% 33.333333333333336%;
+  }
+
+  &._1f4a6 {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 100% 41.666666666666664%;
+  }
+
+  &._1f30a {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 100% 50%;
+  }
+
+  &._1f32b {
+    background-repeat: no-repeat;
+    background-size: 1400% 1300%;
+    background-position: 100% 58.333333333333336%;
+  }
+
+}
+
