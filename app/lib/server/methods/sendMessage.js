@@ -2,28 +2,34 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+
+import moment from 'moment';
+
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
 import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
 import { messageProperties } from '../../../ui-utils';
-import { Subscriptions, Users } from '../../../models';
+import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
-import moment from 'moment';
+import { canSendMessage } from '../../../authorization/server';
 
 Meteor.methods({
 	sendMessage(message) {
 		check(message, Object);
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendMessage',
 			});
 		}
 
-		if (!message.rid) {
-			throw new Error('The \'rid\' property on the message object is missing.');
+		if (message.tmid && !settings.get('Threads_enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'not-allowed', {
+				method: 'sendMessage',
+			});
 		}
 
 		if (message.ts) {
@@ -51,45 +57,46 @@ Meteor.methods({
 			}
 		}
 
-		const user = Users.findOneById(Meteor.userId(), {
+		const user = Users.findOneById(uid, {
 			fields: {
 				username: 1,
-				name: 1,
+				...(!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 }),
 			},
 		});
+		let { rid } = message;
 
-		const room = Meteor.call('canAccessRoom', message.rid, user._id);
-		if (!room) {
-			return false;
+		// do not allow nested threads
+		if (message.tmid) {
+			const parentMessage = Messages.findOneById(message.tmid);
+			message.tmid = parentMessage.tmid || message.tmid;
+			rid = parentMessage.rid;
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId());
-		if (subscription && (subscription.blocked || subscription.blocker)) {
-			Notifications.notifyUser(Meteor.userId(), 'message', {
+		if (!rid) {
+			throw new Error('The \'rid\' property on the message object is missing.');
+		}
+
+		try {
+			const room = canSendMessage(rid, { uid, username: user.username });
+			if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
+				message.alias = user.name;
+			}
+
+			metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+			return sendMessage(user, message, room);
+
+		} catch (error) {
+			if (error === 'error-not-allowed') {
+				throw new Meteor.Error('error-not-allowed');
+			}
+
+			Notifications.notifyUser(uid, 'message', {
 				_id: Random.id(),
-				rid: room._id,
+				rid: message.rid,
 				ts: new Date,
-				msg: TAPi18n.__('room_is_blocked', {}, user.language),
+				msg: TAPi18n.__(error, {}, user.language),
 			});
-			throw new Meteor.Error('You can\'t send messages because you are blocked');
 		}
-
-		if ((room.muted || []).includes(user.username)) {
-			Notifications.notifyUser(Meteor.userId(), 'message', {
-				_id: Random.id(),
-				rid: room._id,
-				ts: new Date,
-				msg: TAPi18n.__('You_have_been_muted', {}, user.language),
-			});
-			throw new Meteor.Error('You can\'t send messages because you have been muted');
-		}
-
-		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
-			message.alias = user.name;
-		}
-
-		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return sendMessage(user, message, room);
 	},
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second

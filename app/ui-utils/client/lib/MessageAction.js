@@ -10,6 +10,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { t, handleError, roomTypes, canDeleteMessage } from '../../../utils/client';
+import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
@@ -156,7 +157,7 @@ Meteor.startup(async function() {
 		label: 'Reply',
 		context: ['message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			const { input } = chatMessages[message.rid];
 			const $input = $(input);
 
@@ -185,8 +186,8 @@ Meteor.startup(async function() {
 		label: 'Edit',
 		context: ['message', 'message-mobile'],
 		action() {
-			const messageId = this._arguments[1]._id;
-			chatMessages[Session.get('openedRoom')].edit(document.getElementById(messageId));
+			const { msg } = messageArgs(this);
+			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
 		},
 		condition(message) {
 			if (Subscriptions.findOne({
@@ -226,7 +227,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile'],
 		color: 'alert',
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
 		condition(message) {
@@ -251,7 +252,7 @@ Meteor.startup(async function() {
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
 		async action(event) {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			$(event.currentTarget).attr('data-clipboard-text', permalink);
 			toastr.success(TAPi18n.__('Copied'));
@@ -274,7 +275,7 @@ Meteor.startup(async function() {
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
 		action(event) {
-			const message = this._arguments[1].msg;
+			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', message);
 			toastr.success(TAPi18n.__('Copied'));
 		},
@@ -295,7 +296,7 @@ Meteor.startup(async function() {
 		label: 'Quote',
 		context: ['message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			const { input } = chatMessages[message.rid];
 			const $input = $(input);
 
@@ -327,7 +328,7 @@ Meteor.startup(async function() {
 		label: t('Ignore'),
 		context: ['message', 'message-mobile'],
 		action() {
-			const [, { rid, u: { _id } }] = this._arguments;
+			const { msg: { rid, u: { _id } } } = messageArgs(this);
 			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true }, success(() => toastr.success(t('User_has_been_ignored'))));
 		},
 		condition(message) {
@@ -345,7 +346,7 @@ Meteor.startup(async function() {
 		label: t('Unignore'),
 		context: ['message', 'message-mobile'],
 		action() {
-			const [, { rid, u: { _id } }] = this._arguments;
+			const { msg: { rid, u: { _id } } } = messageArgs(this);
 			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false }, success(() => toastr.success(t('User_has_been_unignored'))));
 
 		},
