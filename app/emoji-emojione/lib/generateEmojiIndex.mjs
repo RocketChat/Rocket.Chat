@@ -127,13 +127,14 @@ function generateEmojiPicker(data) {
 			spritePath: spritePath,
 			layout: 'packed',
 			stylesheet: 'emojione.tpl',
-			stylesheetPath: `../client/${ category }-sprites.css`, // we're going to generate our own stylesheets, so /dev/null
+			stylesheetPath: `../client/${ category }-sprites.css`,
 			compositor: 'gm',
 			layoutOptions: {
 				scaling: 1,
 			},
 			stylesheetOptions: {
-				prefix: `emojione-`,
+				prefix: '',
+				category: category,
 				spritePath: `/packages/emojione/assets/sprites/${ category }-sprites.png`,
 				pixelRatio: 1
 			}

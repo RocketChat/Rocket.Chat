@@ -1,106 +1,635 @@
-.emojione-1f35d { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 0%; }
-.emojione-2615 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 0%; }
-.emojione-1f34e { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 11.11111111111111%; }
-.emojione-1f350 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 11.11111111111111%; }
-.emojione-1f34a { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 0%; }
-.emojione-1f34b { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 11.11111111111111%; }
-.emojione-1f34c { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 22.22222222222222%; }
-.emojione-1f349 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 22.22222222222222%; }
-.emojione-1f347 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 22.22222222222222%; }
-.emojione-1f353 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 0%; }
-.emojione-1f348 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 11.11111111111111%; }
-.emojione-1f352 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 22.22222222222222%; }
-.emojione-1f351 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 33.333333333333336%; }
-.emojione-1f96d { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 33.333333333333336%; }
-.emojione-1f34d { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 33.333333333333336%; }
-.emojione-1f965 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 33.333333333333336%; }
-.emojione-1f95d { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 0%; }
-.emojione-1f345 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 11.11111111111111%; }
-.emojione-1f346 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 22.22222222222222%; }
-.emojione-1f951 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 33.333333333333336%; }
-.emojione-1f966 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 44.44444444444444%; }
-.emojione-1f96c { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 44.44444444444444%; }
-.emojione-1f952 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 44.44444444444444%; }
-.emojione-1f336 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 44.44444444444444%; }
-.emojione-1f33d { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 44.44444444444444%; }
-.emojione-1f955 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 0%; }
-.emojione-1f954 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 11.11111111111111%; }
-.emojione-1f360 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 22.22222222222222%; }
-.emojione-1f950 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 33.333333333333336%; }
-.emojione-1f35e { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 44.44444444444444%; }
-.emojione-1f956 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 55.55555555555556%; }
-.emojione-1f968 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 55.55555555555556%; }
-.emojione-1f96f { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 55.55555555555556%; }
-.emojione-1f9c0 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 55.55555555555556%; }
-.emojione-1f95a { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 55.55555555555556%; }
-.emojione-1f373 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 55.55555555555556%; }
-.emojione-1f95e { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 0%; }
-.emojione-1f953 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 11.11111111111111%; }
-.emojione-1f969 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 22.22222222222222%; }
-.emojione-1f357 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 33.333333333333336%; }
-.emojione-1f356 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 44.44444444444444%; }
-.emojione-1f32d { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 55.55555555555556%; }
-.emojione-1f354 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 66.66666666666667%; }
-.emojione-1f35f { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 66.66666666666667%; }
-.emojione-1f355 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 66.66666666666667%; }
-.emojione-1f96a { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 66.66666666666667%; }
-.emojione-1f959 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 66.66666666666667%; }
-.emojione-1f32e { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 66.66666666666667%; }
-.emojione-1f32f { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 66.66666666666667%; }
-.emojione-1f957 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 0%; }
-.emojione-1f958 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 11.11111111111111%; }
-.emojione-1f96b { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 22.22222222222222%; }
-.emojione-1f34f { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 33.333333333333336%; }
-.emojione-1f35c { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 44.44444444444444%; }
-.emojione-1f372 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 55.55555555555556%; }
-.emojione-1f35b { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 66.66666666666667%; }
-.emojione-1f363 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 77.77777777777777%; }
-.emojione-1f371 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 77.77777777777777%; }
-.emojione-1f364 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 77.77777777777777%; }
-.emojione-1f359 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 77.77777777777777%; }
-.emojione-1f35a { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 77.77777777777777%; }
-.emojione-1f358 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 77.77777777777777%; }
-.emojione-1f365 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 77.77777777777777%; }
-.emojione-1f960 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 77.77777777777777%; }
-.emojione-1f362 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 0%; }
-.emojione-1f361 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 11.11111111111111%; }
-.emojione-1f367 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 22.22222222222222%; }
-.emojione-1f368 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 33.333333333333336%; }
-.emojione-1f366 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 44.44444444444444%; }
-.emojione-1f967 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 55.55555555555556%; }
-.emojione-1f370 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 66.66666666666667%; }
-.emojione-1f382 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 77.77777777777777%; }
-.emojione-1f96e { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 88.88888888888889%; }
-.emojione-1f9c1 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 88.88888888888889%; }
-.emojione-1f36e { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 88.88888888888889%; }
-.emojione-1f36d { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 88.88888888888889%; }
-.emojione-1f36c { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 88.88888888888889%; }
-.emojione-1f36b { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 88.88888888888889%; }
-.emojione-1f37f { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 88.88888888888889%; }
-.emojione-1f9c2 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 88.88888888888889%; }
-.emojione-1f369 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 88.88888888888889%; }
-.emojione-1f95f { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 0%; }
-.emojione-1f36a { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 11.11111111111111%; }
-.emojione-1f330 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 22.22222222222222%; }
-.emojione-1f95c { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 33.333333333333336%; }
-.emojione-1f36f { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 44.44444444444444%; }
-.emojione-1f95b { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 55.55555555555556%; }
-.emojione-1f37c { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 66.66666666666667%; }
-.emojione-1f375 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 77.77777777777777%; }
-.emojione-1f964 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 88.88888888888889%; }
-.emojione-1f376 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 0% 100%; }
-.emojione-1f37a { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 10% 100%; }
-.emojione-1f37b { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 20% 100%; }
-.emojione-1f942 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 30% 100%; }
-.emojione-1f377 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 40% 100%; }
-.emojione-1f943 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 50% 100%; }
-.emojione-1f378 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 60% 100%; }
-.emojione-1f379 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 70% 100%; }
-.emojione-1f37e { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 80% 100%; }
-.emojione-1f944 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 90% 100%; }
-.emojione-1f374 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 100% 0%; }
-.emojione-1f37d { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 100% 11.11111111111111%; }
-.emojione-1f963 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 100% 22.22222222222222%; }
-.emojione-1f961 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 100% 33.333333333333336%; }
-.emojione-1f962 { background-repeat: no-repeat;	background-size: 1100% 1000%; background-image: url('/packages/emojione/assets/sprites/food-sprites.png'); background-position: 100% 44.44444444444444%; }
+/* stylelint-disable */
+.emojione-food {
+  background-image: url('/packages/emojione/assets/sprites/food-sprites.png');
 
+  &._1f35d {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 0%;
+  }
+
+  &._2615 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 0%;
+  }
+
+  &._1f34e {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 11.11111111111111%;
+  }
+
+  &._1f350 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 11.11111111111111%;
+  }
+
+  &._1f34a {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 0%;
+  }
+
+  &._1f34b {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 11.11111111111111%;
+  }
+
+  &._1f34c {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 22.22222222222222%;
+  }
+
+  &._1f349 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 22.22222222222222%;
+  }
+
+  &._1f347 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 22.22222222222222%;
+  }
+
+  &._1f353 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 0%;
+  }
+
+  &._1f348 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 11.11111111111111%;
+  }
+
+  &._1f352 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 22.22222222222222%;
+  }
+
+  &._1f351 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 33.333333333333336%;
+  }
+
+  &._1f96d {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 33.333333333333336%;
+  }
+
+  &._1f34d {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 33.333333333333336%;
+  }
+
+  &._1f965 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 33.333333333333336%;
+  }
+
+  &._1f95d {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 0%;
+  }
+
+  &._1f345 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 11.11111111111111%;
+  }
+
+  &._1f346 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 22.22222222222222%;
+  }
+
+  &._1f951 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 33.333333333333336%;
+  }
+
+  &._1f966 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 44.44444444444444%;
+  }
+
+  &._1f96c {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 44.44444444444444%;
+  }
+
+  &._1f952 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 44.44444444444444%;
+  }
+
+  &._1f336 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 44.44444444444444%;
+  }
+
+  &._1f33d {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 44.44444444444444%;
+  }
+
+  &._1f955 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 0%;
+  }
+
+  &._1f954 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 11.11111111111111%;
+  }
+
+  &._1f360 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 22.22222222222222%;
+  }
+
+  &._1f950 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 33.333333333333336%;
+  }
+
+  &._1f35e {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 44.44444444444444%;
+  }
+
+  &._1f956 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 55.55555555555556%;
+  }
+
+  &._1f968 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 55.55555555555556%;
+  }
+
+  &._1f96f {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 55.55555555555556%;
+  }
+
+  &._1f9c0 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 55.55555555555556%;
+  }
+
+  &._1f95a {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 55.55555555555556%;
+  }
+
+  &._1f373 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 55.55555555555556%;
+  }
+
+  &._1f95e {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 0%;
+  }
+
+  &._1f953 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 11.11111111111111%;
+  }
+
+  &._1f969 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 22.22222222222222%;
+  }
+
+  &._1f357 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 33.333333333333336%;
+  }
+
+  &._1f356 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 44.44444444444444%;
+  }
+
+  &._1f32d {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 55.55555555555556%;
+  }
+
+  &._1f354 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 66.66666666666667%;
+  }
+
+  &._1f35f {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 66.66666666666667%;
+  }
+
+  &._1f355 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 66.66666666666667%;
+  }
+
+  &._1f96a {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 66.66666666666667%;
+  }
+
+  &._1f959 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 66.66666666666667%;
+  }
+
+  &._1f32e {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 66.66666666666667%;
+  }
+
+  &._1f32f {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 66.66666666666667%;
+  }
+
+  &._1f957 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 0%;
+  }
+
+  &._1f958 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 11.11111111111111%;
+  }
+
+  &._1f96b {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 22.22222222222222%;
+  }
+
+  &._1f34f {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 33.333333333333336%;
+  }
+
+  &._1f35c {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 44.44444444444444%;
+  }
+
+  &._1f372 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 55.55555555555556%;
+  }
+
+  &._1f35b {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 66.66666666666667%;
+  }
+
+  &._1f363 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 77.77777777777777%;
+  }
+
+  &._1f371 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 77.77777777777777%;
+  }
+
+  &._1f364 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 77.77777777777777%;
+  }
+
+  &._1f359 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 77.77777777777777%;
+  }
+
+  &._1f35a {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 77.77777777777777%;
+  }
+
+  &._1f358 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 77.77777777777777%;
+  }
+
+  &._1f365 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 77.77777777777777%;
+  }
+
+  &._1f960 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 77.77777777777777%;
+  }
+
+  &._1f362 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 0%;
+  }
+
+  &._1f361 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 11.11111111111111%;
+  }
+
+  &._1f367 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 22.22222222222222%;
+  }
+
+  &._1f368 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 33.333333333333336%;
+  }
+
+  &._1f366 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 44.44444444444444%;
+  }
+
+  &._1f967 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 55.55555555555556%;
+  }
+
+  &._1f370 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 66.66666666666667%;
+  }
+
+  &._1f382 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 77.77777777777777%;
+  }
+
+  &._1f96e {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 88.88888888888889%;
+  }
+
+  &._1f9c1 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 88.88888888888889%;
+  }
+
+  &._1f36e {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 88.88888888888889%;
+  }
+
+  &._1f36d {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 88.88888888888889%;
+  }
+
+  &._1f36c {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 88.88888888888889%;
+  }
+
+  &._1f36b {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 88.88888888888889%;
+  }
+
+  &._1f37f {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 88.88888888888889%;
+  }
+
+  &._1f9c2 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 88.88888888888889%;
+  }
+
+  &._1f369 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 88.88888888888889%;
+  }
+
+  &._1f95f {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 0%;
+  }
+
+  &._1f36a {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 11.11111111111111%;
+  }
+
+  &._1f330 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 22.22222222222222%;
+  }
+
+  &._1f95c {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 33.333333333333336%;
+  }
+
+  &._1f36f {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 44.44444444444444%;
+  }
+
+  &._1f95b {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 55.55555555555556%;
+  }
+
+  &._1f37c {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 66.66666666666667%;
+  }
+
+  &._1f375 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 77.77777777777777%;
+  }
+
+  &._1f964 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 88.88888888888889%;
+  }
+
+  &._1f376 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 0% 100%;
+  }
+
+  &._1f37a {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 10% 100%;
+  }
+
+  &._1f37b {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 20% 100%;
+  }
+
+  &._1f942 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 30% 100%;
+  }
+
+  &._1f377 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 40% 100%;
+  }
+
+  &._1f943 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 50% 100%;
+  }
+
+  &._1f378 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 60% 100%;
+  }
+
+  &._1f379 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 70% 100%;
+  }
+
+  &._1f37e {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 80% 100%;
+  }
+
+  &._1f944 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 90% 100%;
+  }
+
+  &._1f374 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 100% 0%;
+  }
+
+  &._1f37d {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 100% 11.11111111111111%;
+  }
+
+  &._1f963 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 100% 22.22222222222222%;
+  }
+
+  &._1f961 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 100% 33.333333333333336%;
+  }
+
+  &._1f962 {
+    background-repeat: no-repeat;
+    background-size: 1100% 1000%;
+    background-position: 100% 44.44444444444444%;
+  }
+
+}

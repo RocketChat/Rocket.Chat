@@ -9,25 +9,24 @@
 @import './flags-sprites.css';
 @import './modifier-sprites.css';
 .emojione {
-		position: relative;
+	position: relative;
 
-		display: inline-block;
-		overflow: hidden;
+	display: inline-block;
+	overflow: hidden;
 
-		width: 22px;
-		height: 22px;
-		margin: 0 0.15em;
+	width: 22px;
+	height: 22px;
+	margin: 0 0.15em;
 
-		vertical-align: middle;
-		white-space: nowrap;
-		text-indent: 100%;
-		font-size: inherit;
-		line-height: normal;
-		image-rendering: -webkit-optimize-contrast;
-		image-rendering: optimizeQuality;
-	}
-	.emojione.big {
-		width: 44px;
-		height: 44px;
-	}
-	
+	vertical-align: middle;
+	white-space: nowrap;
+	text-indent: 100%;
+	font-size: inherit;
+	line-height: normal;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: optimizeQuality;
+}
+.emojione.big {
+	width: 44px;
+	height: 44px;
+}
