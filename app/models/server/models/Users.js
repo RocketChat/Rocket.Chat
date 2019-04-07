@@ -185,14 +185,14 @@ export class Users extends Base {
 	}
 
 	closeOffice() {
-		self = this;
+		const self = this;
 		self.findAgents().forEach(function(agent) {
 			self.setLivechatStatus(agent._id, 'not-available');
 		});
 	}
 
 	openOffice() {
-		self = this;
+		const self = this;
 		self.findAgents().forEach(function(agent) {
 			self.setLivechatStatus(agent._id, 'available');
 		});
