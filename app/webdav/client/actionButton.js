@@ -3,7 +3,7 @@ import { t, getURL } from '../../utils';
 import { Subscriptions, WebdavAccounts } from '../../models';
 import { settings } from '../../settings';
 import { MessageAction, modal } from '../../ui-utils';
-
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 Meteor.startup(function() {
 
 	MessageAction.addButton({
@@ -24,7 +24,7 @@ Meteor.startup(function() {
 			return settings.get('Webdav_Integration_Enabled');
 		},
 		action() {
-			const [, message] = this._arguments;
+			const { msg: message } = messageArgs(this);
 			const [attachment] = message.attachments;
 			const { file } = message;
 			const url = getURL(attachment.title_link, { full: true });

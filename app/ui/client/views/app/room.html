@@ -131,7 +131,11 @@
 											</li>
 										{{/if}}
 									{{/if}}
-									{{#each messagesHistory}}{{#nrr nrrargs 'message' .}}{{/nrr}}{{/each}}
+
+									{{# with messageContext}}
+										{{#each msg in messagesHistory}}{{#nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings u=u}}{{/nrr}}{{/each}}
+									{{/with}}
+
 									{{#if hasMoreNext}}
 										<li class="load-more">
 											{{#if isLoading}}
