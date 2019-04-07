@@ -1,11 +1,10 @@
-import querystring from 'querystring';
-
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { settings } from '../../../settings';
 import { Settings, Users } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
+import { userScopes } from '../oauthScopes';
 
 export function finishOAuthAuthorization(code, state) {
 	if (settings.get('Cloud_Workspace_Registration_State') !== state) {
@@ -16,19 +15,26 @@ export function finishOAuthAuthorization(code, state) {
 	const clientId = settings.get('Cloud_Workspace_Client_Id');
 	const clientSecret = settings.get('Cloud_Workspace_Client_Secret');
 
+	const scope = userScopes.join(' ');
+
 	let result;
 	try {
 		result = HTTP.post(`${ cloudUrl }/api/oauth/token`, {
-			data: {},
-			query: querystring.stringify({
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			params: {
 				client_id: clientId,
 				client_secret: clientSecret,
 				grant_type: 'authorization_code',
+				scope,
 				code,
 				redirect_uri: getRedirectUri(),
-			}),
+			},
 		});
 	} catch (e) {
+		if (e.response && e.response.data && e.response.data.error) {
+			console.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		}
+
 		return false;
 	}
 

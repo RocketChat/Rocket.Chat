@@ -36,6 +36,7 @@ export function findRoom(token, rid) {
 		departmentId: 1,
 		servedBy: 1,
 		open: 1,
+		v: 1,
 	};
 
 	if (!rid) {
