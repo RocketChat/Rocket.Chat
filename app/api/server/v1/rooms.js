@@ -252,7 +252,7 @@ API.v1.addRoute('rooms.getDiscussions', { authRequired: true }, {
 		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
-		const ourQuery = Object.assign({ prid: room._id }, query);
+		const ourQuery = Object.assign(query, { prid: room._id });
 
 		const discussions = Rooms.find(ourQuery, {
 			sort: sort ? sort : { fname: 1 },
