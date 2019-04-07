@@ -5,7 +5,7 @@ import { modal } from './modal';
 import { call } from './callMethod';
 import { RoomManager } from './RoomManager';
 
-export function hide(type, rid, name, hideAll = false) {
+export function hide(type, rid, name) {
 	const warnText = roomTypes.roomTypes[type].getUiText(UiTextContext.HIDE_WARNING);
 
 	modal.open({
@@ -21,9 +21,8 @@ export function hide(type, rid, name, hideAll = false) {
 			action: 'hideRoom',
 			label: t('Hide_room'),
 		},
-		hideAll: hideAll,
 		html: false,
-	}, async function () {
+	}, async function() {
 		if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && (Session.get('openedRoom') === rid)) {
 			FlowRouter.go('home');
 		}
@@ -49,7 +48,7 @@ export async function leave(type, rid, name) {
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
 		html: false,
-	}, async function (isConfirm) {
+	}, async function(isConfirm) {
 		if (!isConfirm) {
 			return;
 		}
@@ -82,7 +81,7 @@ export function erase(rid) {
 		cancelButtonText: t('Cancel'),
 		closeOnConfirm: false,
 		html: false,
-	}, async () => {
+	}, async() => {
 		await call('eraseRoom', rid);
 		modal.open({
 			title: t('Deleted'),
