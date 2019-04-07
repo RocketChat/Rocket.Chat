@@ -36,6 +36,7 @@
 	background-color: transparent;
 
 	font-size: var(--button-text-size);
+	font-weight: 600;
 
 	align-items: center;
 	justify-content: center;
@@ -88,6 +89,8 @@
 	&--nude {
 		border: none;
 		background-color: inherit;
+
+		font-weight: 400;
 	}
 
 	&--primary.rc-button--nude {
