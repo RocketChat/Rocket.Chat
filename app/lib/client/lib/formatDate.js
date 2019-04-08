@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { getUserPreference } from '../../../utils';
+import { getUserPreference, t } from '../../../utils';
 import { settings } from '../../../settings';
 import moment from 'moment';
 
@@ -23,6 +23,17 @@ export const formatDateAndTime = (time) => {
 		default:
 			return moment(time).format(settings.get('Message_TimeAndDateFormat'));
 	}
+};
+
+export const timeAgo = (time) => {
+	const now = new Date();
+	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+
+	return (
+		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
+		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
+		moment(time).format('L')
+	);
 };
 
 export const formatDate = (time) => moment(time).format(settings.get('Message_DateFormat'));

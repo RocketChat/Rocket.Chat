@@ -9,7 +9,7 @@ TabBar.addButton({
 	i18nTitle: 'Search_Messages',
 	icon: 'magnifier',
 	template: 'RocketSearch',
-	order: 1,
+	order: 2,
 });
 
 TabBar.addButton({

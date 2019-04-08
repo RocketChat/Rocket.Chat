@@ -153,17 +153,6 @@ Template.headerRoom.events({
 		);
 	},
 
-	'click .edit-room-title'(event) {
-		event.preventDefault();
-		Session.set('editRoomTitle', true);
-		$('.rc-header').addClass('visible');
-		return Meteor.setTimeout(() =>
-			$('#room-title-field')
-				.focus()
-				.select(),
-		10);
-	},
-
 	'click .js-open-parent-channel'(event, t) {
 		event.preventDefault();
 		const { prid } = t.currentChannel;

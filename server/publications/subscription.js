@@ -38,6 +38,7 @@ const fields = {
 	ignored: 1,
 	E2EKey: 1,
 	usernames: 1,
+	tunread: 1,
 };
 
 Meteor.methods({
