@@ -901,409 +901,417 @@ describe('[Chat]', function() {
 		});
 	});
 
-	describe('[/chat.getThreadsList]', () => {
-		let testChannel;
-		let threadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
-				.end((err, channel) => {
-					testChannel = channel.body.channel;
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Message to create thread',
-					}).end((err, message) => {
+	describe('Threads', () => {
+		after((done) => {
+			updateSetting('API_Upper_Count_Limit', 100)
+				.then(() => updatePermission('view-c-room', ['admin', 'user', 'bot']))
+				.then(done);
+		});
+
+		describe('[/chat.getThreadsList]', () => {
+			let testChannel;
+			let threadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
+					.end((err, channel) => {
+						testChannel = channel.body.channel;
 						sendSimpleMessage({
 							roomId: testChannel._id,
-							text: 'Thread Message',
-							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: message.body.message._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error when the limit is greater than the MAX LIMIT(100) allowed', (done) => {
+				updateSetting('API_Upper_Count_Limit', 105).then(() => {
+					request.get(api('chat.getThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+							count: 101,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'max limit: 100 [error-not-allowed]');
+						})
+						.end(() => updateSetting('API_Upper_Count_Limit', 100).then(done));
+				});
+			});
+
+			it('should return an error when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.get(api('chat.getThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updateSetting('Threads_enabled', true).then(() => {
+							updatePermission('view-c-room', []).then(() => {
+								request.get(api('chat.getThreadsList'))
+									.set(userCredentials)
+									.query({
+										rid: testChannel._id,
+									})
+									.expect('Content-Type', 'application/json')
+									.expect(400)
+									.expect((res) => {
+										expect(res.body).to.have.property('success', false);
+										expect(res.body).to.have.property('errorType', 'error-not-allowed');
+										expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+									})
+									.end(done);
+							});
 						});
 					});
 				});
-		});
+			});
 
-		it('should return an error when the limit is greater than the MAX LIMIT(100) allowed', (done) => {
-			updateSetting('API_Upper_Count_Limit', 105).then(() => {
-				request.get(api('chat.getThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-						count: 101,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'max limit: 100 [error-not-allowed]');
-					})
-					.end(() => updateSetting('API_Upper_Count_Limit', 100).then(done));
+			it('should return the room\'s thread list', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.get(api('chat.getThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('threads').and.to.be.an('array');
+							expect(res.body.threads).to.have.lengthOf(1);
+							expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+						})
+						.end(done);
+				});
 			});
 		});
 
-		it('should return an error when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request.get(api('chat.getThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
-					})
-					.end(done);
+		describe('[/chat.getThreadMessages]', () => {
+			let testChannel;
+			let threadMessage;
+			let createdThreadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
+					.end((err, res) => {
+						testChannel = res.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							createdThreadMessage = message.body.message;
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: createdThreadMessage._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error when the limit is greater than the MAX LIMIT(100) allowed', (done) => {
+				updateSetting('API_Upper_Count_Limit', 105).then(() => {
+					request.get(api('chat.getThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+							count: 101,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'max limit: 100 [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.get(api('chat.getThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updateSetting('Threads_enabled', true).then(() => {
+							updatePermission('view-c-room', []).then(() => {
+								request.get(api('chat.getThreadMessages'))
+									.set(userCredentials)
+									.query({
+										tmid: threadMessage.tmid,
+									})
+									.expect('Content-Type', 'application/json')
+									.expect(400)
+									.expect((res) => {
+										expect(res.body).to.have.property('success', false);
+										expect(res.body).to.have.property('errorType', 'error-not-allowed');
+										expect(res.body).to.have.property('error', 'Not allowed [error-not-allowed]');
+									})
+									.end(done);
+							});
+						});
+					});
+				});
+			});
+
+			it('should return the thread\'s message list', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.get(api('chat.getThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(res.body.messages).to.have.lengthOf(2);
+							expect(res.body.messages[0]._id).to.be.equal(createdThreadMessage._id);
+							expect(res.body.messages[1].tmid).to.be.equal(createdThreadMessage._id);
+						})
+						.end(done);
+				});
 			});
 		});
 
-		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
-				login(createdUser.username, password).then((userCredentials) => {
-					updateSetting('Threads_enabled', true).then(() => {
+		describe('[/chat.followMessage]', () => {
+			let testChannel;
+			let threadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `channel.test.threads.follow.${ Date.now() }` })
+					.end((err, res) => {
+						testChannel = res.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: message.body.message._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.post(api('chat.followMessage'))
+						.set(credentials)
+						.send({
+							mid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the message does not exist', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.post(api('chat.followMessage'))
+						.set(credentials)
+						.send({
+							mid: 'invalid-message-id',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-invalid-message');
+							expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
 						updatePermission('view-c-room', []).then(() => {
-							request.get(api('chat.getThreadsList'))
+							request.post(api('chat.followMessage'))
 								.set(userCredentials)
-								.query({
-									rid: testChannel._id,
+								.send({
+									mid: threadMessage.tmid,
 								})
 								.expect('Content-Type', 'application/json')
 								.expect(400)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
 									expect(res.body).to.have.property('errorType', 'error-not-allowed');
-									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+									expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
 								})
 								.end(done);
 						});
 					});
 				});
 			});
-		});
 
-		it('should return the room\'s thread list', (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request.get(api('chat.getThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('threads').and.to.be.an('array');
-						expect(res.body.threads).to.have.lengthOf(1);
-						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
-					})
-					.end(done);
+			it('should return success: true when it execute successfully', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.post(api('chat.followMessage'))
+						.set(credentials)
+						.send({
+							mid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
-	});
 
-	describe('[/chat.getThreadMessages]', () => {
-		let testChannel;
-		let threadMessage;
-		let createdThreadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
-				.end((err, res) => {
-					testChannel = res.body.channel;
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Message to create thread',
-					}).end((err, message) => {
-						createdThreadMessage = message.body.message;
+		describe('[/chat.unfollowMessage]', () => {
+			let testChannel;
+			let threadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `channel.test.threads.unfollow.${ Date.now() }` })
+					.end((err, res) => {
+						testChannel = res.body.channel;
 						sendSimpleMessage({
 							roomId: testChannel._id,
-							text: 'Thread Message',
-							tmid: createdThreadMessage._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: message.body.message._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
 						});
 					});
+			});
+
+			it('should return an error when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.post(api('chat.unfollowMessage'))
+						.set(credentials)
+						.send({
+							mid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+						})
+						.end(done);
 				});
-		});
-
-		it('should return an error when the limit is greater than the MAX LIMIT(100) allowed', (done) => {
-			updateSetting('API_Upper_Count_Limit', 105).then(() => {
-				request.get(api('chat.getThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-						count: 101,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'max limit: 100 [error-not-allowed]');
-					})
-					.end(() => updateSetting('API_Upper_Count_Limit', 100).then(done));
 			});
-		});
 
-		it('should return an error when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request.get(api('chat.getThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
-					})
-					.end(done);
+			it('should return an error when the message does not exist', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.post(api('chat.unfollowMessage'))
+						.set(credentials)
+						.send({
+							mid: 'invalid-message-id',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-invalid-message');
+							expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
+						})
+						.end(done);
+				});
 			});
-		});
 
-		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
-				login(createdUser.username, password).then((userCredentials) => {
-					updateSetting('Threads_enabled', true).then(() => {
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
 						updatePermission('view-c-room', []).then(() => {
-							request.get(api('chat.getThreadMessages'))
+							request.post(api('chat.unfollowMessage'))
 								.set(userCredentials)
-								.query({
-									tmid: threadMessage.tmid,
+								.send({
+									mid: threadMessage.tmid,
 								})
 								.expect('Content-Type', 'application/json')
 								.expect(400)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
 									expect(res.body).to.have.property('errorType', 'error-not-allowed');
-									expect(res.body).to.have.property('error', 'Not allowed [error-not-allowed]');
+									expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
 								})
 								.end(done);
 						});
 					});
 				});
 			});
-		});
 
-		it('should return the thread\'s message list', (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request.get(api('chat.getThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body.messages).to.have.lengthOf(2);
-						expect(res.body.messages[0]._id).to.be.equal(createdThreadMessage._id);
-						expect(res.body.messages[1].tmid).to.be.equal(createdThreadMessage._id);
-					})
-					.end(done);
-			});
-		});
-	});
-
-	describe('[/chat.followMessage]', () => {
-		let testChannel;
-		let threadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.follow.${ Date.now() }` })
-				.end((err, res) => {
-					testChannel = res.body.channel;
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Message to create thread',
-					}).end((err, message) => {
-						sendSimpleMessage({
-							roomId: testChannel._id,
-							text: 'Thread Message',
-							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
-						});
-					});
+			it('should return success: true when it execute successfully', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.post(api('chat.unfollowMessage'))
+						.set(credentials)
+						.send({
+							mid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
 				});
-		});
-
-		it('should return an error when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request.post(api('chat.followMessage'))
-					.set(credentials)
-					.send({
-						mid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when the message does not exist', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request.post(api('chat.followMessage'))
-					.set(credentials)
-					.send({
-						mid: 'invalid-message-id',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-message');
-						expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
-				login(createdUser.username, password).then((userCredentials) => {
-					updatePermission('view-c-room', []).then(() => {
-						request.post(api('chat.followMessage'))
-							.set(userCredentials)
-							.send({
-								mid: threadMessage.tmid,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
-							})
-							.end(done);
-					});
-				});
-			});
-		});
-
-		it('should return success: true when it execute successfully', (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request.post(api('chat.followMessage'))
-					.set(credentials)
-					.send({
-						mid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
-		});
-	});
-
-	describe('[/chat.unfollowMessage]', () => {
-		let testChannel;
-		let threadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.unfollow.${ Date.now() }` })
-				.end((err, res) => {
-					testChannel = res.body.channel;
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Message to create thread',
-					}).end((err, message) => {
-						sendSimpleMessage({
-							roomId: testChannel._id,
-							text: 'Thread Message',
-							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
-						});
-					});
-				});
-		});
-
-		it('should return an error when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request.post(api('chat.unfollowMessage'))
-					.set(credentials)
-					.send({
-						mid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when the message does not exist', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request.post(api('chat.unfollowMessage'))
-					.set(credentials)
-					.send({
-						mid: 'invalid-message-id',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-message');
-						expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
-				login(createdUser.username, password).then((userCredentials) => {
-					updatePermission('view-c-room', []).then(() => {
-						request.post(api('chat.unfollowMessage'))
-							.set(userCredentials)
-							.send({
-								mid: threadMessage.tmid,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(400)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
-							})
-							.end(done);
-					});
-				});
-			});
-		});
-
-		it('should return success: true when it execute successfully', (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request.post(api('chat.unfollowMessage'))
-					.set(credentials)
-					.send({
-						mid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
 			});
 		});
 	});
