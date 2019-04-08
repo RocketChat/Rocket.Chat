@@ -2,25 +2,13 @@ import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { MentionedMessage } from '../lib/MentionedMessage';
-
+import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 Template.mentionsFlexTab.helpers({
 	hasMessages() {
-		return MentionedMessage.find({
-			rid: this.rid,
-		}, {
-			sort: {
-				ts: -1,
-			},
-		}).count() > 0;
+		return Template.instance().cursor.count() > 0;
 	},
 	messages() {
-		return MentionedMessage.find({
-			rid: this.rid,
-		}, {
-			sort: {
-				ts: -1,
-			},
-		});
+		return Template.instance().cursor;
 	},
 	message() {
 		return _.extend(this, { customClass: 'mentions', actionContext: 'mentions' });
@@ -28,9 +16,17 @@ Template.mentionsFlexTab.helpers({
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
+	messageContext,
 });
 
 Template.mentionsFlexTab.onCreated(function() {
+	this.cursor = MentionedMessage.find({
+		rid: this.data.rid,
+	}, {
+		sort: {
+			ts: -1,
+		},
+	});
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
 	return this.autorun(() => {

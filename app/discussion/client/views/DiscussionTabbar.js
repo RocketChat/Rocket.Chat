@@ -1,25 +1,17 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-
+import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { DiscussionOfRoom } from '../lib/discussionsOfRoom';
 
 import './DiscussionTabbar.html';
 
 Template.discussionsTabbar.helpers({
 	hasMessages() {
-		return DiscussionOfRoom.find({
-			rid: this.rid,
-		}).count() > 0;
+		return Template.instance().cursor > 0;
 	},
 	messages() {
-		return DiscussionOfRoom.find({
-			rid: this.rid,
-		}, {
-			sort: {
-				ts: -1,
-			},
-		});
+		Template.instance().cursor;
 	},
 	message() {
 		return _.extend(this, { customClass: 'pinned', actionContext: 'pinned' });
@@ -27,9 +19,18 @@ Template.discussionsTabbar.helpers({
 	hasMore() {
 		return Template.instance().hasMore.get();
 	},
+	messageContext,
 });
 
 Template.discussionsTabbar.onCreated(function() {
+	this.rid = this.data.rid;
+	this.cursor = DiscussionOfRoom.find({
+		rid: this.rid,
+	}, {
+		sort: {
+			ts: -1,
+		},
+	});
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
 	return this.autorun(() => {
