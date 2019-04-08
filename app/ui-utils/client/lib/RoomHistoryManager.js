@@ -24,7 +24,7 @@ export const normalizeThreadMessage = mem((message) => {
 			return s.escapeHTML(attachment.title);
 		}
 	}
-});
+}, { maxAge: 1000 });
 
 export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	const userId = msg.u && msg.u._id;
