@@ -378,3 +378,29 @@ API.v1.addRoute('chat.getDeletedMessages', { authRequired: true }, {
 		});
 	},
 });
+
+API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
+	get() {
+		const { rid } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+
+		if (!rid) {
+			throw new Meteor.Error('The required "rid" query param is missing.');
+		}
+		const threads = Meteor.runAsUser(this.userId, () => Meteor.call('getThreadsList', { rid, limit: count, skip: offset }));
+		return API.v1.success({ threads });
+	},
+});
+
+API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
+	get() {
+		const { tmid } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+
+		if (!tmid) {
+			throw new Meteor.Error('The required "tmid" query param is missing.');
+		}
+		const messages = Meteor.runAsUser(this.userId, () => Meteor.call('getThreadMessages', { tmid, limit: count, skip: offset }));
+		return API.v1.success({ messages });
+	},
+});
