@@ -404,3 +404,27 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 		return API.v1.success({ messages });
 	},
 });
+
+API.v1.addRoute('chat.followMessage', { authRequired: true }, {
+	post() {
+		const { mid } = this.bodyParams;
+
+		if (!mid) {
+			throw new Meteor.Error('The required "mid" body param is missing.');
+		}
+		Meteor.runAsUser(this.userId, () => Meteor.call('followMessage', { mid }));
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('chat.unfollowMessage', { authRequired: true }, {
+	post() {
+		const { mid } = this.bodyParams;
+
+		if (!mid) {
+			throw new Meteor.Error('The required "mid" body param is missing.');
+		}
+		Meteor.runAsUser(this.userId, () => Meteor.call('unfollowMessage', { mid }));
+		return API.v1.success();
+	},
+});
