@@ -224,7 +224,8 @@ Template.message.helpers({
 		const { msg, subscription, settings } = this;
 		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== Meteor.userId() && !MessageTypes.isSystemMessage(msg)) {
 			const language = AutoTranslate.getLanguage(msg.rid);
-			return msg.autoTranslateFetching || (subscription && subscription.autoTranslate !== msg.autoTranslateShowInverse && msg.translations && msg.translations[language]);
+			const autoTranslate = subscription && subscription.autoTranslate;
+			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[language]);
 		}
 	},
 	edited() {
