@@ -20,8 +20,9 @@
 
 .thread-list {
 	overflow: auto;
-	flex-shrink: 1;
+
 	word-wrap: break-word;
+	flex-shrink: 1;
 }
 
 .thread-replied {

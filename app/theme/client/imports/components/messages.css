@@ -138,6 +138,10 @@
 	}
 }
 
+.message-oembed {
+	overflow: hidden;
+}
+
 .messages-box .rc-popover__list {
 	padding: 0;
 }
