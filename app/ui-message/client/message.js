@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
