@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import mime from 'mime-type/with-db';
-import { VRecDialog } from '../../../ui-vrecord';
+import { VRecDialog } from '../../../ui-vrecord/client';
 import { messageBox, modal } from '../../../ui-utils';
 import { fileUpload } from '../../../ui';
 import { settings } from '../../../settings';
@@ -19,14 +19,14 @@ messageBox.actions.add('Create_new', 'Video_message', {
 		settings.get('Message_VideoRecorderEnabled') &&
 		(!settings.get('FileUpload_MediaTypeWhiteList') ||
 			settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
-	action: ({ messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox)),
+	action: ({ rid, tmid, messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid })),
 });
 
 messageBox.actions.add('Add_files_from', 'Computer', {
 	id: 'file-upload',
 	icon: 'computer',
 	condition: () => settings.get('FileUpload_Enabled'),
-	action({ event }) {
+	action({ rid, tmid, event, messageBox }) {
 		event.preventDefault();
 		const $input = $(document.createElement('input'));
 		$input.css('display', 'none');
@@ -49,7 +49,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 				};
 			});
 
-			fileUpload(filesToUpload, $('.rc-message-box__textarea.js-input-message'));
+			fileUpload(filesToUpload, $('.js-input-message', messageBox).get(0), { rid, tmid });
 			$input.remove();
 		});
 
@@ -68,7 +68,7 @@ messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
 	condition: () => geolocation.get() !== false,
-	action({ rid }) {
+	action({ rid, tmid }) {
 		const position = geolocation.get();
 		const { latitude, longitude } = position.coords;
 		const text = `<div class="upload-preview"><div class="upload-preview-file" style="background-size: cover; box-shadow: 0 0 0px 1px #dfdfdf; border-radius: 2px; height: 250px; width:100%; max-width: 500px; background-image:url(https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ settings.get('MapView_GMapsAPIKey') })" ></div></div>`;
@@ -87,6 +87,7 @@ messageBox.actions.add('Share', 'My_location', {
 			Meteor.call('sendMessage', {
 				_id: Random.id(),
 				rid,
+				tmid,
 				msg: '',
 				location: {
 					type: 'Point',

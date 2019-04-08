@@ -3,18 +3,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, getUserPreference, roomTypes } from '../../utils';
-import moment from 'moment';
 import { popover, renderMessageBody } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { menu } from '../../ui-utils';
+import { timeAgo } from '../../lib/client/lib/formatDate';
 
 Template.sidebarItem.helpers({
-	or(...args) {
-		args.pop();
-		return args.some((arg) => arg);
-	},
 	streaming() {
 		return this.streamingOptions && Object.keys(this.streamingOptions).length;
 	},
@@ -36,18 +32,11 @@ Template.sidebarItem.helpers({
 	isLivechatQueue() {
 		return this.pathSection === 'livechat-queue';
 	},
+	showUnread() {
+		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
+	},
 });
 
-function timeAgo(time) {
-	const now = new Date();
-	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-
-	return (
-		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
-		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
-		moment(time).format('L')
-	);
-}
 function setLastMessageTs(instance, ts) {
 	if (instance.timeAgoInterval) {
 		clearInterval(instance.timeAgoInterval);
@@ -102,6 +91,7 @@ Template.sidebarItem.events({
 		return menu.close();
 	},
 	'click .sidebar-item__menu'(e) {
+		e.stopPropagation(); // to not close the menu
 		e.preventDefault();
 
 		const canLeave = () => {
