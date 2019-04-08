@@ -92,9 +92,6 @@ export function updateUsersSubscriptions(message, room, users) {
 		}
 	}
 
-	// Update all the room activity tracker fields
-	// This method take so long to execute on gient rooms cuz it will trugger the cache rebuild for the releations of that room
-	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 	// Update all other subscriptions to alert their owners but witout incrementing
 	// the unread counter, as it is only for mentions and direct messages
 	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
@@ -121,6 +118,9 @@ function notifyUsersOnMessage(message, room) {
 		Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}
+
+	// Update all the room activity tracker fields
+	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 
 	if (message.tmid) {
 		return message;
