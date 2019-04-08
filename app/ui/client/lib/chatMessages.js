@@ -1,9 +1,14 @@
+import _ from 'underscore';
+import moment from 'moment';
+import toastr from 'toastr';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { t, slashCommands, handleError } from '../../../utils';
+
+import { t, slashCommands, handleError } from '../../../utils/client';
 import {
 	messageProperties,
 	MessageTypes,
@@ -12,18 +17,16 @@ import {
 	call,
 	keyCodes,
 	prependReplies,
-} from '../../../ui-utils';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+} from '../../../ui-utils/client';
+import { settings } from '../../../settings/client';
+import { callbacks } from '../../../callbacks/client';
 import { promises } from '../../../promises/client';
-import { hasAtLeastOnePermission } from '../../../authorization';
-import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models';
-import { emoji } from '../../../emoji';
+import { hasAtLeastOnePermission } from '../../../authorization/client';
+import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
+import { emoji } from '../../../emoji/client';
+
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
-import _ from 'underscore';
-import moment from 'moment';
-import toastr from 'toastr';
 import { fileUpload } from './fileUpload';
 
 const messageBoxState = {
