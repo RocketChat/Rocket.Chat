@@ -1,4 +1,4 @@
-import { api, request, credentials, integration } from '../../data/api-data.js';
+import { api, request, getCredentials, credentials, integration } from '../../data/api-data.js';
 
 describe('Outgoing Integrations', function() {
 	before((done) => getCredentials(done));

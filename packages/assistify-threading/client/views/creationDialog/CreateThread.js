@@ -1,8 +1,12 @@
-/* globals TAPi18n, AutoComplete */
-/* globals _ */
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/TAPi18n';
+import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze, BlazeLayout } from 'meteor/blaze';
+import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import toastr from 'toastr';
+import _ from 'underscore';
 
 const parent = document.querySelector('.main-content');
 let oldRoute = '';

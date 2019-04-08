@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
+import { TAPi18n } from 'meteor/tap:i18n';
+
 
 Meteor.startup(function() {
 	RocketChat.MessageTypes.registerType({

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { TranslationProviderRegistry } from '../autotranslate';
 
 Meteor.methods({

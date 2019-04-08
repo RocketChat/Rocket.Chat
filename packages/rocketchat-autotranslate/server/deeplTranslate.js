@@ -4,6 +4,8 @@
 
 import { TranslationProviderRegistry, AutoTranslate } from 'meteor/rocketchat:autotranslate';
 import { SystemLogger } from 'meteor/rocketchat:logger';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 /**

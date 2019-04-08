@@ -1,10 +1,11 @@
-/* globals RocketChat */
 /**
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
+import { TAPi18n } from 'meteor/tap:i18n';
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from 'meteor/rocketchat:logger';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 /**

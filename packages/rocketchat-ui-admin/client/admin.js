@@ -435,19 +435,30 @@ Template.admin.events({
 		}
 
 		RocketChat.settings.batchSet(settings, (err) => {
+			const failedSettings = [];
 			if (err) {
-				return handleError(err);
+				// Handle error for every settings failed.
+				err.details.settingIds.forEach((settingId) => {
+					const error = Object.assign({}, err);
+					failedSettings.push(settingId);
+					error.details.settingIds = settingId;
+					handleError(error);
+				});
 			}
-
-			TempSettings.update({ changed: true }, { $unset: { changed: 1 } });
+			settings.forEach((setting) => {
+				if (!failedSettings.includes(setting._id)) {
+					TempSettings.update({ _id: setting._id }, { $unset: { changed: 1 } });
+				}
+			});
 
 			if (settings.some(({ _id }) => _id === 'Language')) {
 				const lng = Meteor.user().language
-					|| settings.filter(({ _id }) => _id === 'Language').shift().value
-					|| 'en';
+			|| settings.filter(({ _id }) => _id === 'Language').shift().value
+			|| 'en';
 				return TAPi18n._loadLanguage(lng).then(() => toastr.success(TAPi18n.__('Settings_updated', { lng })));
 			}
 			toastr.success(TAPi18n.__('Settings_updated'));
+
 		});
 
 	},

@@ -36,6 +36,7 @@ describe('[Threading]', function () {
 
 	describe('from context menu', function() {
 		before(() => {
+			browser.pause(2000);
 			sideNav.openChannel(parentChannelName);
 			mainContent.sendMessage(message);
 		});

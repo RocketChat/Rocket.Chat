@@ -2,6 +2,8 @@
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
 
 /*
  * When a repostedMessage is eligible to be answered as a independent question then it can be threaded into a new channel.

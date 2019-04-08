@@ -2,9 +2,12 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
+import { Meteor } from 'meteor/meteor';
 import { TranslationProviderRegistry, AutoTranslate } from 'meteor/rocketchat:autotranslate';
 import { SystemLogger } from 'meteor/rocketchat:logger';
 import { Promise } from 'meteor/promise';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 const cld = Npm.require('cld'); // import the local package dependencies

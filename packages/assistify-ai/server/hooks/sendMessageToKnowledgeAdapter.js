@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
 import { SystemLogger } from 'meteor/rocketchat:logger';
 import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';

@@ -1,4 +1,5 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.startup(() => {
 	const languageSetting = RocketChat.models.Settings.db.findOneById('Language');

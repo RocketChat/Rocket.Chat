@@ -1,4 +1,4 @@
-/* globals RocketChat */
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 import { SmartiAdapter } from './SmartiAdapter';
 import { ApiAiAdapter } from './AiApiAdapter';

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 Meteor.publish('threadParentAutocomplete', function(selector) {
 	if (!this.userId) {
 		return this.ready();

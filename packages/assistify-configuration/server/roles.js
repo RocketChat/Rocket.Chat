@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 const CONFIGURATION_ROLE_NAME = 'config-expert';
 const MANAGER_ROLE_NAME = 'manager';
 const USER_ROLE_NAME = 'user';

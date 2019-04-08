@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 function getParentChannels() {
 	const result = Meteor.call('getParentChannelList', { sort: 'name', default: -1 });
 

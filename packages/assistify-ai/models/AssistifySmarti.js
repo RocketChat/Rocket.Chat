@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 class AssistifySmarti extends RocketChat.models._Base {
 	constructor() {
 		super('assistify_smarti');

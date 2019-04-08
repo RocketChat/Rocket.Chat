@@ -1,5 +1,5 @@
 import _ from 'underscore';
-
+import { RoomManager } from 'meteor/rocketchat:ui-utils';
 export class PrivateSettingsCachedCollection extends RocketChat.CachedCollection {
 	constructor() {
 		super({

@@ -1,7 +1,7 @@
 const Keys = {
 	TAB: '\uE004',
 	ENTER: '\uE007',
-	ESCAPE: 'u\ue00c',
+	ESCAPE: '\ue00c',
 };
 
 const sendEnter = function() {

@@ -1,18 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Settings } from 'meteor/rocketchat:models';
-import { hasAtLeastOnePermission } from 'meteor/rocketchat:authorization';
 import { Notifications } from 'meteor/rocketchat:notifications';
+import { hasAtLeastOnePermission, hasPermission } from 'meteor/rocketchat:authorization';
 
 Meteor.methods({
-	'public-settings/get'(updatedAfter) {
+	'public-settings/get'(updatedAt) {
 		const records = Settings.findNotHiddenPublic().fetch();
 
-		if (updatedAfter instanceof Date) {
+		if (updatedAt instanceof Date) {
 			return {
 				update: records.filter(function(record) {
-					return record._updatedAfter > updatedAfter;
+					return record._updatedAt > updatedAt;
 				}),
-				remove: Settings.trashFindDeletedAfter(updatedAfter, {
+				remove: Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
 						$ne: true,
 					},
@@ -28,39 +28,31 @@ Meteor.methods({
 		return records;
 	},
 	'private-settings/get'(updatedAfter) {
+		function getAuthorizedSettings(updatedAfter) {
+			return Settings.findNotHidden({ updatedAfter }).fetch().filter(function(record) {
+				if (hasAtLeastOnePermission(Meteor.userId(), ['view-privileged-setting', 'edit-privileged-setting'])) {
+					return !record.hidden;
+				} else if (hasPermission(Meteor.userId(), 'manage-selected-settings')) {
+					return !record.hidden && hasPermission(Meteor.userId(), `change-setting-${ record._id }`);
+				} else {
+					return false;
+				}
+			});
+		}
+
 		if (!Meteor.userId()) {
 			return [];
 		}
-		const records = Settings.findNotHidden().fetch().filter(function(record) {
-			if (authz.hasAtLeastOnePermission(Meteor.userId(), ['view-privileged-setting', 'edit-privileged-setting'])) {
-				return record.hidden !== true;
-			} else if (authz.hasPermission(Meteor.userId(), 'manage-selected-settings')) {
-				return record.hidden !== true && authz.hasPermission(Meteor.userId(), `change-setting-${ record._id }`);
-			} else {
-				return false;
-			}
-		});
 
-		if (updatedAfter instanceof Date) {
-			return {
-				update: records.filter(function(record) {
-					return record._updatedAfter > updatedAfter;
-				}),
-				remove: Settings.trashFindDeletedAfter(updatedAfter, {
-					hidden: {
-						$ne: true,
-					},
-				}, {
-					fields: {
-						_id: 1,
-						_deletedAt: 1,
-					},
-				}).fetch(),
-			};
+		if (!(updatedAfter instanceof Date)) {
+			// this does not only imply an unfiltered setting range, it also identifies the caller's context:
+			// If called *with* filter (see below), the user wants a colllection as a result.
+			// in this case, it shall only be a plain array
+			return getAuthorizedSettings(new Date(0));
 		}
 
 		return {
-			update: records,
+			update: getAuthorizedSettings(),
 			remove: Settings.trashFindDeletedAfter(updatedAfter, {
 				hidden: {
 					$ne: true,
@@ -76,7 +68,7 @@ Meteor.methods({
 });
 
 Settings.on('change', ({ clientAction, id, data, diff }) => {
-	if (diff && Object.keys(diff).length === 1 && diff._updatedAfter) { // avoid useless changes
+	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) { // avoid useless changes
 		return;
 	}
 	switch (clientAction) {

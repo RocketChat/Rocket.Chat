@@ -1,6 +1,7 @@
-/* globals SystemLogger, RocketChat */
-
 import { SmartiAdapter } from './lib/SmartiAdapter';
+import { check, Match } from 'meteor/check';
+import { SystemLogger } from 'meteor/rocketchat:logger';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 /**
  * The SmartiRouter handles all incoming HTTP requests from Smarti.

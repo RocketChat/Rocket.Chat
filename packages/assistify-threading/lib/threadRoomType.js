@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { RocketChat, RoomTypeConfig } from 'meteor/rocketchat:lib';
 
 export class ThreadRoomType extends RoomTypeConfig {

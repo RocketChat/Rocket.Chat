@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check, Match } from 'meteor/check';
+
 Meteor.methods({
 	'getParentChannelList'({ sort, limit }) {
 		this.unblock();

@@ -1,3 +1,5 @@
+import { SHA256 } from 'meteor/meteor-sha';
+
 /**
  * This function adds anonymized statistics about how users interact (read and write) with the system
  */

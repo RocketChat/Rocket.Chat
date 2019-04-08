@@ -1,4 +1,4 @@
-/* globals RocketChat */
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Object.assign(RocketChat.models.Settings, {
 	renameSetting(oldId, newId) {

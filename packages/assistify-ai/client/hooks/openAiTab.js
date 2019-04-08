@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 /**
  * Makes the knowledge base panel open on opening a room in which it is active
  * (a request, an expertise or a livechat)
