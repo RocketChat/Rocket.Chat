@@ -69,7 +69,7 @@
 				{{#if and settings.showreply msg.tmid}}
 					<p class="thread-replied">
 						{{_ "Replied_on"}}:
-						<q aria-label="Open_thread" class="rc-tooltip thread-quote js-open-thread">
+						<q role="button" aria-label="{{_ "Open_thread"}}" class="thread-quote js-open-thread">
 							<span class="message-body--unstyled">{{{parentMessage}}}</span>
 						</q>
 					</p>
