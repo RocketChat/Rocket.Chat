@@ -346,7 +346,7 @@ Template.admin.helpers({
 	},
 	showResetButton() {
 		const setting = TempSettings.findOne({ _id: this._id }, { fields: { value: 1, packageValue: 1 } });
-		return !this.readonly && this.type !== 'asset' && setting.value !== setting.packageValue && !this.blocked;
+		return !this.disableReset && !this.readonly && this.type !== 'asset' && setting.value !== setting.packageValue && !this.blocked;
 	},
 });
 

@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { MessageAction } from '../../../ui-utils';
+import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { Messages } from '../../../models';
 import { AutoTranslate } from './autotranslate';
 
@@ -18,7 +19,7 @@ Meteor.startup(function() {
 					'message-mobile',
 				],
 				action() {
-					const message = this._arguments[1];
+					const { msg: message } = messageArgs(this);
 					const language = AutoTranslate.getLanguage(message.rid);
 					if ((!message.translations || !message.translations[language])) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						AutoTranslate.messageIdsToWait[message._id] = true;
