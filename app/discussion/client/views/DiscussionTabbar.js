@@ -3,15 +3,19 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { DiscussionOfRoom } from '../lib/discussionsOfRoom';
+import { Meteor } from 'meteor/meteor';
 
 import './DiscussionTabbar.html';
 
 Template.discussionsTabbar.helpers({
+	noMessages() {
+		return Template.instance().cursor.get().length === 0 ? true : false;
+	},
 	hasMessages() {
-		return Template.instance().cursor > 0;
+		return Template.instance().cursor.get().length > 0;
 	},
 	messages() {
-		Template.instance().cursor;
+		return Template.instance().cursor.get();
 	},
 	message() {
 		return _.extend(this, { customClass: 'pinned', actionContext: 'pinned' });
@@ -24,24 +28,23 @@ Template.discussionsTabbar.helpers({
 
 Template.discussionsTabbar.onCreated(function() {
 	this.rid = this.data.rid;
-	this.cursor = DiscussionOfRoom.find({
-		rid: this.rid,
-	}, {
-		sort: {
-			ts: -1,
-		},
-	});
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
-	return this.autorun(() => {
+	this.cursor = new ReactiveVar([]);
+	this.autorun(() => {
 		const data = Template.currentData();
-		return this.subscribe('discussionsOfRoom', data.rid, this.limit.get(), () => {
-			if (DiscussionOfRoom.find({
+		const handle = Meteor.subscribe('discussionsOfRoom', data.rid, this.limit.get());
+		const isReady = handle.ready();
+		// Wait for collection to be ready
+		if (isReady) {
+			const discussions = DiscussionOfRoom.find({
 				rid: data.rid,
-			}).count() < this.limit.get()) {
+			}).fetch();
+			this.cursor.set(discussions);
+			if (discussions.length < this.limit.get()) {
 				return this.hasMore.set(false);
 			}
-		});
+		}
 	});
 });
 
