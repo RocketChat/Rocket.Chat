@@ -4,8 +4,16 @@ import { Template } from 'meteor/templating';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
+import { hide } from '../../ui-utils/client/lib/ChannelActions';
+
+
 
 Template.roomList.helpers({
+	check(msg) {
+		if (msg == "Direct_Messages") {
+			return true
+		}
+	},
 	rooms() {
 		/*
 			modes:
@@ -117,7 +125,7 @@ Template.roomList.helpers({
 
 	roomType(room) {
 		if (room.header || room.identifier) {
-			return `type-${ room.header || room.identifier }`;
+			return `type-${room.header || room.identifier}`;
 		}
 	},
 
@@ -130,7 +138,25 @@ Template.roomList.helpers({
 		return getUserPreference(Meteor.userId(), 'roomCounterSidebar');
 	},
 });
+Template.roomList.events({
+	'click .delete-all-msgs'() {
 
+		var channels = this.collection._docs._map;
+		var test = [];
+		_.each(channels, function (value) {
+			if (value.t == 'd') {
+				test.push(value)
+			}
+		})
+		if (confirm('Are you sure you want to hide all messages?')) {
+			for (var i = 0; i < test.length; i++) {
+				hide(test[i].t, test[i].rid, test[i].name, true)
+			}
+		}
+
+	}
+
+})
 const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
@@ -157,13 +183,13 @@ const mergeRoomSub = (room) => {
 	Subscriptions.update({
 		rid: room._id,
 	}, {
-		$set: {
-			lastMessage: room.lastMessage,
-			lm: room._updatedAt,
-			streamingOptions: room.streamingOptions,
-			...getLowerCaseNames(room, sub.name, sub.fname),
-		},
-	});
+			$set: {
+				lastMessage: room.lastMessage,
+				lm: room._updatedAt,
+				streamingOptions: room.streamingOptions,
+				...getLowerCaseNames(room, sub.name, sub.fname),
+			},
+		});
 
 	return room;
 };
