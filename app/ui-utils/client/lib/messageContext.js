@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
-import { Subscriptions, Rooms } from '../../../models';
-import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
-import { getUserPreference } from '../../../utils';
+import { Subscriptions, Rooms, Users } from '../../../models/client';
+import { hasPermission } from '../../../authorization/client';
+import { settings } from '../../../settings/client';
+import { getUserPreference } from '../../../utils/client';
 
 export function messageContext() {
 	const { rid } = Template.instance();
+	const uid = Meteor.userId();
 	return {
-		u: Meteor.user(),
+		u: Users.findOne({ _id: uid }, { fields: { name: 1, username: 1 } }),
 		room: Rooms.findOne({ _id: rid }, {
 			reactive: false,
 			fields: {
@@ -27,7 +28,7 @@ export function messageContext() {
 			showreply: true,
 			showReplyButton: true,
 			hasPermissionDeleteMessage: hasPermission('delete-message', rid),
-			hideRoles: !settings.get('UI_DisplayRoles') || getUserPreference(Meteor.userId(), 'hideRoles'),
+			hideRoles: !settings.get('UI_DisplayRoles') || getUserPreference(uid, 'hideRoles'),
 			UI_Use_Real_Name: settings.get('UI_Use_Real_Name'),
 			Chatops_Username: settings.get('Chatops_Username'),
 			AutoTranslate_Enabled: settings.get('AutoTranslate_Enabled'),
