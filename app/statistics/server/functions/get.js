@@ -132,8 +132,6 @@ statistics.get = function _getStatistics() {
 		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
 		statistics.mongoVersion = version;
 		statistics.mongoStorageEngine = storageEngine.name;
-
-		console.log(version, storageEngine);
 	} catch (e) {
 		console.error('Error getting MongoDB info');
 	}
