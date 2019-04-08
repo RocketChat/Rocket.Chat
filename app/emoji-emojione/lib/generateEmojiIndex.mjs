@@ -61,16 +61,17 @@ function generateEmojiPicker(data) {
 		{ key: 'travel', i18n: 'Travel_and_Places' },
 		{ key: 'objects', i18n: 'Objects' },
 		{ key: 'symbols', i18n: 'Symbols' },
-		{ key: 'flags', i18n: 'Flags' },
 		{ key: 'regional', i18n: 'Regional' },
+		{ key: 'flags', i18n: 'Flags' },
 		{ key: 'modifier', i18n: 'Modifier' },
 	];
 
 	// emojiCategories
 	output += `export const emojiCategories = [\n`;
 	for (let category in emojisByCategory) {
-		if (emojiCategoriesMapping[category]) {
-			output += `\t{ key: '${category}', i18n: '${emojiCategoriesMapping[category]}' },\n`;
+		const map = emojiCategoriesMapping.find(o => o.key === category);
+		if (map) {
+			output += `\t{ key: '${category}', i18n: '${map.i18n}' },\n`;
 		} else {
 			console.error(`No emojiCategory mapping for ${category}`);
 		}
