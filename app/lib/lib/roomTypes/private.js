@@ -4,6 +4,7 @@ import { openRoom } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
 import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../../utils';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -107,5 +108,17 @@ export class PrivateRoomType extends RoomTypeConfig {
 			default:
 				return '';
 		}
+	}
+
+	getAvatarPath(roomData) {
+		if (roomData.prid) {
+			let { topic } = roomData;
+			if (!topic) {
+				const room = ChatRoom.findOne({ _id: roomData.rid || roomData._id }, { fields: { topic: 1 } });
+				topic = room && room.topic;
+			}
+			return getAvatarURL(encodeURIComponent(`@${ topic }`));
+		}
+		return getAvatarURL(encodeURIComponent(`@${ roomData.name }`));
 	}
 }
