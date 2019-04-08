@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { MessageAction } from './MessageAction';
-import { Rooms, Users } from '../../../models';
+import { Rooms, Users } from '../../../models/client';
 
 export const prependReplies = async (msg, replies = [], mention = false) => {
 	const { username } = Users.findOne({ _id: Meteor.userID() }, { fields: { username: 1 } });

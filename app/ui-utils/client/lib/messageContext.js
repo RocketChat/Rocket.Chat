@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
-import { Subscriptions, Rooms, Users } from '../../../models';
-import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
-import { getUserPreference } from '../../../utils';
+import { Subscriptions, Rooms, Users } from '../../../models/client';
+import { hasPermission } from '../../../authorization/client';
+import { settings } from '../../../settings/client';
+import { getUserPreference } from '../../../utils/client';
 
 export function messageContext() {
 	const { rid } = Template.instance();
