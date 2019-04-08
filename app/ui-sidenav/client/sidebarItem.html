@@ -53,7 +53,9 @@
 					<div class="sidebar-item__message-bottom">
 						{{#if extended}}
 							{{#if lastMessage}}
-								<div class="sidebar-item__last-message">{{{lastMessage}}}</div>
+								<div class="sidebar-item__last-message">
+									<span class="message-body--unstyled">{{{lastMessage}}}</span>
+								</div>
 							{{/if}}
 						{{/if}}
 						{{#if unread}}

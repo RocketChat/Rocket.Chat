@@ -42,10 +42,6 @@
 	cursor: pointer;
 
 	color: var(--rc-color-link-active);
-
-	font-style: normal;
-
-	line-height: initial;
 }
 
 .contextual-bar__content.thread,
