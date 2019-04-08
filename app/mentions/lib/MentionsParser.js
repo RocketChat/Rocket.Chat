@@ -39,8 +39,8 @@ export class MentionsParser {
 		return new RegExp(`(^|\\s|<p>)#(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
 	}
 
-	replaceUsers(msg, { mentions = [], temp }, me) {
-		return msg.replace(this.userMentionRegex, (match, prefix, mention) => {
+	replaceUsers = (msg, { mentions, temp }, me) => msg
+		.replace(this.userMentionRegex, (match, prefix, mention) => {
 			const isGroupMention = ['all', 'here'].includes(mention);
 			const className = [
 				'mention-link',
@@ -55,31 +55,31 @@ export class MentionsParser {
 				return `${ prefix }<a class="${ className }">${ mention }</a>`;
 			}
 
-			const label = (mentions || [])
-				.filter(({ username }) => username === mention)
-				.map(({ name, username }) => (this.useRealName ? name : username))
-				.map((label) => s.escapeHTML(label))[0];
+			const label = temp ?
+				mention && s.escapeHTML(mention) :
+				(mentions || [])
+					.filter(({ username }) => username === mention)
+					.map(({ name, username }) => (this.useRealName ? name : username))
+					.map((label) => label && s.escapeHTML(label))[0];
 
-			if (!temp && !label) {
+			if (!label) {
 				return match;
 			}
 
 			return `${ prefix }<a class="${ className }" data-username="${ mention }" title="${ this.useRealName ? mention : label }">${ label }</a>`;
-		});
-	}
+		})
 
-	replaceChannels(str, message) {
-		// since apostrophe escaped contains # we need to unescape it
-		return str.replace(/&#39;/g, '\'').replace(this.channelMentionRegex, (match, prefix, name) => {
-			if (!message.temp && !(message.channels && message.channels.find((c) => c.name === name))) {
+	replaceChannels = (msg, { temp, channels }) => msg
+		.replace(/&#39;/g, '\'')
+		.replace(this.channelMentionRegex, (match, prefix, mention) => {
+			if (!temp && !(channels && channels.find((c) => c.name === mention))) {
 				return match;
 			}
 
-			const channel = message.channels && message.channels.find((c) => c.name === name);
-			const roomNameorId = channel ? channel._id : name;
-			return `${ prefix }<a class="mention-link mention-link--room" data-channel="${ roomNameorId }">${ `#${ name }` }</a>`;
-		});
-	}
+			const channel = channels && channels.find(({ name }) => name === mention);
+			const reference = channel ? channel._id : mention;
+			return `${ prefix }<a class="mention-link mention-link--room" data-channel="${ reference }">${ `#${ mention }` }</a>`;
+		})
 
 	getUserMentions(str) {
 		return (str.match(this.userMentionRegex) || []).map((match) => match.trim());
