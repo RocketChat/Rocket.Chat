@@ -62,6 +62,7 @@ statistics.get = function _getStatistics() {
 	statistics.nonActiveUsers = statistics.totalUsers - statistics.activeUsers;
 	statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
 	statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
+	statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers;
 
 	// Room statistics
@@ -128,10 +129,13 @@ statistics.get = function _getStatistics() {
 	}
 
 	try {
-		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));
+		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
 		statistics.mongoVersion = version;
+		statistics.mongoStorageEngine = storageEngine.name;
+
+		console.log(version, storageEngine);
 	} catch (e) {
-		console.error('Error getting MongoDB version');
+		console.error('Error getting MongoDB info');
 	}
 
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
