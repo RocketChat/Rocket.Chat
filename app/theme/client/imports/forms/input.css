@@ -1,8 +1,8 @@
 textarea.rc-input__element {
 	height: auto;
+	padding: 0.5rem 1rem;
 
 	font-family: inherit;
-	line-height: 0.5rem 1rem;
 }
 
 .rc-input {
