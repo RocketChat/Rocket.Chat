@@ -85,7 +85,7 @@
 							<span class="rc-switch__button-inside"></span>
 						</span>
 						<span class="rc-switch__text">{{_ "Enabled"}}</span>
-					</label>					
+					</label>
 					<label class="rc-switch__label">
 						<input class="rc-switch__input js-input-check" type="checkbox" name="registrationFormNameFieldEnabled" {{registrationFormNameFieldEnabled}}/>
 						<span class="rc-switch__button">
@@ -99,7 +99,11 @@
 							<span class="rc-switch__button-inside"></span>
 						</span>
 						<span class="rc-switch__text">{{_ "Show_email_field"}}</span>
-					</label>							
+					</label>
+					<div class="input-line">
+						<label for="registrationFormMessage">{{_ "Livechat_Registration_form_message"}}</label>
+						<textarea class="preview-settings rc-input__element" name="registrationFormMessage" id="registrationFormMessage">{{registrationFormMessage}}</textarea>
+					</div>
 				</fieldset>
 				<fieldset>
 					<legend>{{_ "Conversation_finished"}}</legend>

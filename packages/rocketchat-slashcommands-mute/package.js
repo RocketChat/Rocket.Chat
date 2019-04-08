@@ -11,6 +11,5 @@ Package.onUse(function(api) {
 		'check',
 		'rocketchat:lib',
 	]);
-
-	api.addFiles(['server/mute.js', 'server/unmute.js'], 'server');
+	api.mainModule('server/index.js', 'server');
 });

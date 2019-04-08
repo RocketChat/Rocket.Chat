@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { findGuest, findRoom, getRoom, settings } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/room', {
@@ -32,8 +37,7 @@ RocketChat.API.v1.addRoute('livechat/room.close', {
 				token: String,
 			});
 
-			const { rid } = this.bodyParams;
-			const { token } = this.bodyParams;
+			const { rid, token } = this.bodyParams;
 
 			const visitor = findGuest(token);
 			if (!visitor) {
@@ -49,7 +53,7 @@ RocketChat.API.v1.addRoute('livechat/room.close', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			const language = RocketChat.settings.get('language') || 'en';
+			const language = RocketChat.settings.get('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
 			if (!RocketChat.Livechat.closeRoom({ visitor, room, comment })) {
@@ -72,8 +76,7 @@ RocketChat.API.v1.addRoute('livechat/room.transfer', {
 				department: String,
 			});
 
-			const { rid } = this.bodyParams;
-			const { token, department } = this.bodyParams;
+			const { rid, token, department } = this.bodyParams;
 
 			const guest = findGuest(token);
 			if (!guest) {
@@ -112,8 +115,7 @@ RocketChat.API.v1.addRoute('livechat/room.survey', {
 				})],
 			});
 
-			const { rid } = this.bodyParams;
-			const { token, data } = this.bodyParams;
+			const { rid, token, data } = this.bodyParams;
 
 			const visitor = findGuest(token);
 			if (!visitor) {
@@ -149,5 +151,11 @@ RocketChat.API.v1.addRoute('livechat/room.survey', {
 		} catch (e) {
 			return RocketChat.API.v1.failure(e);
 		}
+	},
+});
+
+RocketChat.API.v1.addRoute('livechat/room.forward', { authRequired: true }, {
+	post() {
+		RocketChat.API.v1.success(Meteor.runAsUser(this.userId, () => Meteor.call('livechat:transfer', this.bodyParams)));
 	},
 });

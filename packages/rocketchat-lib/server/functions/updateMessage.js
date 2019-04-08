@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 RocketChat.updateMessage = function(message, user, originalMessage) {
 	if (!originalMessage) {
 		originalMessage = RocketChat.models.Messages.findOneById(message._id);

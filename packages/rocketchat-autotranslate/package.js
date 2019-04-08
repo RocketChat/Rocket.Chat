@@ -10,34 +10,11 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'ddp-rate-limiter',
 		'rocketchat:lib',
+		'templating',
+		'rocketchat:utils',
 	]);
-
-	api.use('templating', 'client');
-
-	api.addFiles([
-		'client/stylesheets/autotranslate.css',
-		'client/lib/autotranslate.js',
-		'client/lib/actionButton.js',
-		'client/lib/tabBar.js',
-		'client/views/autoTranslateFlexTab.html',
-		'client/views/autoTranslateFlexTab.js',
-	], 'client');
-
-	api.addFiles([
-		'server/settings.js',
-		'server/permissions.js',
-		'server/autotranslate.js',
-		'server/googleTranslate.js',
-		'server/deeplTranslate.js',
-		'server/dbsTranslate.js',
-		'server/models/Messages.js',
-		'server/models/Settings.js',
-		'server/models/Subscriptions.js',
-		'server/methods/getProviderUiMetadata.js',
-		'server/methods/saveSettings.js',
-		'server/methods/translateMessage.js',
-		'server/methods/getSupportedLanguages.js',
-	], 'server');
+	api.addFiles('client/stylesheets/autotranslate.css', 'client');
+	api.mainModule('client/index.js', 'client');
 	api.mainModule('server/index.js', 'server');
 });
 

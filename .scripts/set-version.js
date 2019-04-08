@@ -26,7 +26,7 @@ const files = [
 	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
 	'./.docker/Dockerfile.rhel',
-	'./packages/rocketchat-lib/rocketchat.info',
+	'./packages/rocketchat-utils/rocketchat.info',
 ];
 const readFile = (file) => new Promise((resolve, reject) => {
 	fs.readFile(file, 'utf8', (error, result) => {
@@ -84,8 +84,6 @@ git.status()
 			.then((data) => writeFile(file, data.replace(pkgJson.version, version)))));
 	})
 	.then(() =>
-	// execSync('conventional-changelog --config .github/changelog.js -i HISTORY.md -s');
-
 		inquirer.prompt([{
 			type: 'confirm',
 			message: 'Commit files?',

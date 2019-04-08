@@ -1,6 +1,10 @@
+import { ReactiveVar } from 'meteor/reactive-var';
+import { RocketChatTabBar, SideNav, TabBar } from 'meteor/rocketchat:ui-utils';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { CustomSounds } from 'meteor/rocketchat:models';
 import s from 'underscore.string';
-
-import { RocketChatTabBar } from 'meteor/rocketchat:lib';
 
 Template.adminSounds.helpers({
 	isReady() {
@@ -45,7 +49,7 @@ Template.adminSounds.onCreated(function() {
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	this.tabBarData = new ReactiveVar();
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['custom-sounds', 'custom-sounds-selected'],
 		id: 'add-sound',
 		i18nTitle: 'Custom_Sound_Add',
@@ -58,7 +62,7 @@ Template.adminSounds.onCreated(function() {
 		order: 1,
 	});
 
-	RocketChat.TabBar.addButton({
+	TabBar.addButton({
 		groups: ['custom-sounds-selected'],
 		id: 'admin-sound-info',
 		i18nTitle: 'Custom_Sound_Info',
@@ -85,7 +89,7 @@ Template.adminSounds.onCreated(function() {
 
 		const limit = (instance.limit != null) ? instance.limit.get() : 0;
 
-		return RocketChat.models.CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
+		return CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
 	};
 });
 
@@ -113,7 +117,7 @@ Template.adminSounds.events({
 
 	'click .sound-info'(e, instance) {
 		e.preventDefault();
-		instance.tabBarData.set(RocketChat.models.CustomSounds.findOne({ _id: this._id }));
+		instance.tabBarData.set(CustomSounds.findOne({ _id: this._id }));
 		instance.tabBar.showGroup('custom-sounds-selected');
 		instance.tabBar.open('admin-sound-info');
 	},

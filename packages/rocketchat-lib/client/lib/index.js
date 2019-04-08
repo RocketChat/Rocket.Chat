@@ -9,8 +9,7 @@
 import { RocketChatTabBar } from './RocketChatTabBar';
 import { RocketChatAnnouncement } from './RocketChatAnnouncement';
 import { RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../lib/RoomTypeConfig';
-import { hide, hideOldSubscriptions, leave, erase } from './ChannelActions';
-import { call } from './callMethod';
+import { hide, hideOldSubscriptions, leave, erase, call } from 'meteor/rocketchat:ui-utils';
 import { LoginPresence } from './LoginPresence';
 import * as DateFormat from './formatDate';
 

@@ -1,9 +1,8 @@
-/* globals SystemLogger, RocketChat */
-
-import s from 'underscore.string';
-import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { RocketChat } from 'meteor/rocketchat:lib';
-
+import { Logger } from 'meteor/rocketchat:logger';
+import _ from 'underscore';
+import s from 'underscore.string';
 
 export class TranslationProviderRegistry {
 	static registerProvider(provider) {
@@ -275,7 +274,7 @@ export class AutoTranslate {
 		};
 	 */
 	_getProviderMetadata() {
-		SystemLogger.warn('must be implemented by subclass!', '_getProviderMetadata');
+		Logger.warn('must be implemented by subclass!', '_getProviderMetadata');
 	}
 
 
@@ -287,7 +286,7 @@ export class AutoTranslate {
 	 * @returns [{ language, name }]
 	 */
 	getSupportedLanguages(target) {
-		SystemLogger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
+		Logger.warn('must be implemented by subclass!', 'getSupportedLanguages', target);
 	}
 
 	/**
@@ -300,7 +299,7 @@ export class AutoTranslate {
 	 * @return {object}
 	 */
 	_translateMessage(message, targetLanguages) {
-		SystemLogger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
+		Logger.warn('must be implemented by subclass!', '_translateMessage', message, targetLanguages);
 	}
 
 	/**
@@ -312,7 +311,7 @@ export class AutoTranslate {
 	 * @returns {object} translated messages for each target language
 	 */
 	_translateAttachmentDescriptions(attachment, targetLanguages) {
-		SystemLogger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
+		Logger.warn('must be implemented by subclass!', '_translateAttachmentDescriptions', attachment, targetLanguages);
 	}
 }
 

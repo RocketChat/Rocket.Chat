@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { ChatSubscription } from 'meteor/rocketchat:models';
+
 Template.ThreadList.onCreated(function() {
 	this.threadSubscriptions = new ReactiveVar([]);
 });

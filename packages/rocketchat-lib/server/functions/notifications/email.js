@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 import s from 'underscore.string';
 import * as Mailer from 'meteor/rocketchat:mailer';
 
@@ -13,7 +15,7 @@ Meteor.startup(() => {
 });
 
 function getEmailContent({ message, user, room }) {
-	const lng = (user && user.language) || RocketChat.settings.get('language') || 'en';
+	const lng = (user && user.language) || RocketChat.settings.get('Language') || 'en';
 
 	const roomName = s.escapeHTML(`#${ RocketChat.roomTypes.getRoomName(room.t, room) }`);
 	const userName = s.escapeHTML(RocketChat.settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
@@ -143,7 +145,7 @@ export function shouldNotifyEmail({
 
 	// no user or room preference
 	if (emailNotifications == null) {
-		if (disableAllMessageNotifications) {
+		if (disableAllMessageNotifications && !isHighlighted && !hasMentionToUser) {
 			return false;
 		}
 

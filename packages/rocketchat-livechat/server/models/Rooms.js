@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 
 /**
@@ -345,4 +347,12 @@ RocketChat.models.Rooms.removeAgentByRoomId = function(roomId) {
 	};
 
 	this.update(query, update);
+};
+
+RocketChat.models.Rooms.removeByVisitorToken = function(token) {
+	const query = {
+		'v.token': token,
+	};
+
+	this.remove(query);
 };

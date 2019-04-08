@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { roomFiles } from '../lib/roomFiles';
 
 Meteor.publish('roomFilesWithSearchText', function(rid, searchText, limit = 50) {

@@ -1,3 +1,12 @@
+import { SHA256 } from 'meteor/sha';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { modal, SideNav } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';

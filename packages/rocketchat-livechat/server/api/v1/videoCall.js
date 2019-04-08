@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 
 RocketChat.API.v1.addRoute('livechat/video.call/:token', {

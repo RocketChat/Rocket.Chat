@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.messagePopupEmoji.helpers({
 	value() {
 		const { length } = this.data;

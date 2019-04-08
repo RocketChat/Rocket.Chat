@@ -11,6 +11,10 @@ mock('meteor/meteor', {
 	},
 });
 
+mock('meteor/blaze', {
+	Blaze: {},
+});
+
 mock('meteor/rocketchat:lib', {
 	RocketChat: {
 		settings: {
@@ -18,6 +22,8 @@ mock('meteor/rocketchat:lib', {
 				switch (setting) {
 					case 'Markdown_SupportSchemesForLink':
 						return 'http,https';
+					case 'Markdown_Parser':
+						return 'original';
 					case 'Markdown_Headers':
 					// case 'Markdown_Marked_GFM':
 					// case 'Markdown_Marked_Tables':
@@ -29,6 +35,14 @@ mock('meteor/rocketchat:lib', {
 					default:
 						throw new Error(`Missing setting mock ${ setting }`);
 				}
+			},
+		},
+		callbacks: {
+			add() {
+
+			},
+			priority: {
+				HIGH: 1,
 			},
 		},
 	},

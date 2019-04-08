@@ -1,3 +1,14 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat, handleError } from 'meteor/rocketchat:lib';
+import { t } from 'meteor/rocketchat:utils';
+import toastr from 'toastr';
+
 const cannotSetup = () => {
 	const showSetupWizard = RocketChat.settings.get('Show_Setup_Wizard');
 	if (!showSetupWizard) {
@@ -61,6 +72,14 @@ const persistSettings = (state, callback) => {
 		.concat([
 			{
 				_id: 'Statistics_reporting',
+				value: state.registerServer,
+			},
+			{
+				_id: 'Apps_Framework_enabled',
+				value: state.registerServer,
+			},
+			{
+				_id: 'Register_Server',
 				value: state.registerServer,
 			},
 			{

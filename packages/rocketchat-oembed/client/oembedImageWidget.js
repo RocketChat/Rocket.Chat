@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.oembedImageWidget.helpers({
 	loadImage() {
 		if (RocketChat.getUserPreference(Meteor.userId(), 'autoImageLoad') === false && this.downloadImages == null) {

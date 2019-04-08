@@ -15,9 +15,9 @@ RocketChat.settings.addGroup('Settings_Group', function() {
         this.add('Setting_Inside_Section', 'default_value', {
             type: 'boolean',
             public: true,
-            enableQuery: { 
-                _id: 'SettingInGroup', 
-                value: true 
+            enableQuery: {
+                _id: 'SettingInGroup',
+                value: true
             }
         });
     });
@@ -113,7 +113,7 @@ class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasAllPermission('view-l-room');
+		return RocketChat.settings.get('Livechat_enabled') && RocketChat.authz.hasPermission('view-l-room');
 	}
 }
 ```
@@ -144,7 +144,7 @@ AccountBox.addItem({
     icon: 'icon-chat-empty',
     class: 'livechat-manager',
     condition: () => {
-        return RocketChat.authz.hasAllPermission('view-livechat-manager');
+        return RocketChat.authz.hasPermission('view-livechat-manager');
     }
 });
 ```

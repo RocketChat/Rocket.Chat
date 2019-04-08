@@ -1,6 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
+import moment from 'moment';
 
 RocketChat.callbacks.add('beforeSaveMessage', function(message) {
+	// If the message was edited, or is older than 60 seconds (imported)
+	// the notifications will be skipped, so we can also skip this validation
+	if (message.editedAt || (message.ts && Math.abs(moment(message.ts).diff()) > 60000)) {
+		return message;
+	}
+
 	// Test if the message mentions include @all.
 	if (message.mentions != null &&
 		_.pluck(message.mentions, '_id').some((item) => item === 'all')) {

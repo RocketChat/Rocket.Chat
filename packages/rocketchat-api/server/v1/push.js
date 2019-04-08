@@ -1,4 +1,7 @@
-/* globals Push */
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { Push } from 'meteor/rocketchat:push';
 
 RocketChat.API.v1.addRoute('push.token', { authRequired: true }, {
 	post() {

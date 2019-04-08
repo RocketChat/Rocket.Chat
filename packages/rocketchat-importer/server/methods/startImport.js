@@ -1,9 +1,11 @@
+import { Meteor } from 'meteor/meteor';
 import {
 	Importers,
 	Selection,
 	SelectionChannel,
 	SelectionUser,
 } from 'meteor/rocketchat:importer';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 Meteor.methods({
 	startImport(key, input) {

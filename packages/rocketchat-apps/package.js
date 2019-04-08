@@ -8,10 +8,11 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 		'rocketchat:api',
+		'rocketchat:utils',
 		'templating',
 	]);
 
-	api.use(['reactive-var', 'kadira:flow-router', 'underscore'], 'client');
+	api.use(['reactive-var', 'kadira:flow-router', 'kadira:blaze-layout', 'underscore'], 'client');
 
 	api.addFiles('lib/Apps.js', ['client', 'server']);
 

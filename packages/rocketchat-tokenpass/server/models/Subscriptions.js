@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Subscriptions.findByRoomIds = function(roomIds) {
 	const query = {
 		rid: {

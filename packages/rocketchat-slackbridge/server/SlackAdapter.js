@@ -1,9 +1,13 @@
-/* globals logger*/
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { getAvatarUrlFromUsername } from 'meteor/rocketchat:utils';
+import { FileUpload } from 'meteor/rocketchat:file-upload';
+import { logger } from './logger';
 import _ from 'underscore';
 import url from 'url';
 import http from 'http';
 import https from 'https';
-
 
 export default class SlackAdapter {
 

@@ -1,4 +1,5 @@
-/* globals changeCase */
+import { changeCase } from 'meteor/konecty:change-case';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';

@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Random } from 'meteor/random';
+import { Uploads } from 'meteor/rocketchat:models';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+import { FileUpload } from '../lib/FileUpload';
 import _ from 'underscore';
 
 Meteor.methods({
@@ -20,7 +26,7 @@ Meteor.methods({
 			msg: Match.Optional(String),
 		});
 
-		RocketChat.models.Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
+		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
 		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(file.name) }`;
 
@@ -74,7 +80,7 @@ Meteor.methods({
 
 		msg = Meteor.call('sendMessage', msg);
 
-		Meteor.defer(() => RocketChat.callbacks.run('afterFileUpload', { user, room, message: msg }));
+		Meteor.defer(() => callbacks.run('afterFileUpload', { user, room, message: msg }));
 
 		return msg;
 	},

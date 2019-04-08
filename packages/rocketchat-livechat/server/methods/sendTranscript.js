@@ -1,4 +1,7 @@
-/* globals DDPRateLimiter */
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 Meteor.methods({
 	'livechat:sendTranscript'(token, rid, email) {

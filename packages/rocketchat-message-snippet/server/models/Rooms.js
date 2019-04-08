@@ -1,3 +1,5 @@
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 RocketChat.models.Rooms.setLastMessageSnippeted = function(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
 	const query =	{ _id: roomId };
 

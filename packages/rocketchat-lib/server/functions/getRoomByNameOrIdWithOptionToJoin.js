@@ -1,4 +1,4 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 RocketChat.getRoomByNameOrIdWithOptionToJoin = function _getRoomByNameOrIdWithOptionToJoin({ currentUserId, nameOrId, type = '', tryDirectByUserIdOnly = false, joinChannel = true, errorOnEmpty = true }) {

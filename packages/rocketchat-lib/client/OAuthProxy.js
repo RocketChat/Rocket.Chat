@@ -1,5 +1,5 @@
-/* globals OAuth */
 import _ from 'underscore';
+import { OAuth } from 'meteor/oauth';
 
 OAuth.launchLogin = _.wrap(OAuth.launchLogin, function(func, options) {
 	const proxy = RocketChat.settings.get('Accounts_OAuth_Proxy_services').replace(/\s/g, '').split(',');

@@ -1,4 +1,13 @@
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Template } from 'meteor/templating';
+import { ChatRoom } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
+import { LivechatDepartment } from '../../../collections/LivechatDepartment';
+import { AgentUsers } from '../../../collections/AgentUsers';
 import toastr from 'toastr';
+
 Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
@@ -10,7 +19,13 @@ Template.visitorForward.helpers({
 		return LivechatDepartment.find({ enabled: true });
 	},
 	agents() {
-		return AgentUsers.find({ _id: { $ne: Meteor.userId() } }, { sort: { name: 1, username: 1 } });
+		const query = {
+			_id: { $ne: Meteor.userId() },
+			status: { $ne: 'offline' },
+			statusLivechat: 'available',
+		};
+
+		return AgentUsers.find(query, { sort: { name: 1, username: 1 } });
 	},
 	agentName() {
 		return this.name || this.username;

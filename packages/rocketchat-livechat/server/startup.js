@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Meteor.startup(() => {
 	RocketChat.roomTypes.setRoomFind('l', (_id) => RocketChat.models.Rooms.findLivechatById(_id).fetch());
 
@@ -17,7 +21,7 @@ Meteor.startup(() => {
 			return user;
 		}
 		throw new Meteor.Error(TAPi18n.__('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
-			lng: user.language || RocketChat.settings.get('language') || 'en',
+			lng: user.language || RocketChat.settings.get('Language') || 'en',
 		}));
 	}, RocketChat.callbacks.priority.LOW, 'cant-leave-room');
 });

@@ -1,9 +1,15 @@
-/* globals ChatPermissions */
-import { permissionLevel } from '../../lib/rocketchat';
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { Template } from 'meteor/templating';
+import { Roles } from 'meteor/rocketchat:models';
+import { ChatPermissions } from '../lib/ChatPermissions';
+import { hasAllPermission } from '../hasPermission';
+import { t } from 'meteor/rocketchat:utils';
 
 const whereNotSetting = {
 	$where: function() {
-		return this.level !== permissionLevel.SETTING;
+		return this.level !== 'setting';
 	}.toString(),
 };
 
@@ -24,7 +30,7 @@ Template.permissions.helpers({
 
 	settingPermissions() {
 		return ChatPermissions.find({
-			level: permissionLevel.SETTING,
+			level: 'setting',
 		},
 		{
 			sort: { // sorting seems not to be copied from the publication, we need to request it explicitly in find()
@@ -77,7 +83,7 @@ Template.permissionsTable.helpers({
 	},
 
 	permissionName(permission) {
-		if (permission.level === permissionLevel.SETTING) {
+		if (permission.level === 'setting') {
 			let path = '';
 			if (permission.group) {
 				path = `${ t(permission.group) } > `;
@@ -97,7 +103,7 @@ Template.permissionsTable.helpers({
 	},
 
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('access-permissions');
+		return hasAllPermission('access-permissions');
 	},
 });
 
@@ -116,6 +122,7 @@ Template.permissionsTable.events({
 });
 
 Template.permissionsTable.onCreated(function() {
+	this.roles = new ReactiveVar([]);
 	this.permissionByRole = {};
 	this.actions = {
 		added: {},
@@ -123,7 +130,9 @@ Template.permissionsTable.onCreated(function() {
 	};
 
 	Tracker.autorun(() => {
-		const observer = {
+		this.roles.set(Roles.find().fetch());
+
+		const observer = ChatPermissions.find().observeChanges({
 			added: (id, fields) => {
 				this.permissionByRole[id] = fields.roles;
 			},
@@ -133,13 +142,14 @@ Template.permissionsTable.onCreated(function() {
 			removed: (id) => {
 				delete this.permissionByRole[id];
 			},
-		};
+		});
+
 		if (this.data.collection === 'Chat') {
 			ChatPermissions.find(whereNotSetting).observeChanges(observer);
 		}
 
 		if (this.data.collection === 'Setting') {
-			ChatPermissions.find({ level: permissionLevel.SETTING }).observeChanges(observer);
+			ChatPermissions.find({ level: 'setting' }).observeChanges(observer);
 		}
 	});
 });

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
 		check(message, Object);

@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
 		if (value[field] != null) {
@@ -55,9 +58,17 @@ const validateAttachment = (attachment) => {
 		title: String,
 		title_link: String,
 		title_link_download: Boolean,
+		image_dimensions: Object,
 		image_url: String,
+		image_preview: String,
+		image_type: String,
+		image_size: Number,
 		audio_url: String,
+		audio_type: String,
+		audio_size: Number,
 		video_url: String,
+		video_type: String,
+		video_size: Number,
 		fields: [Match.Any],
 	}));
 

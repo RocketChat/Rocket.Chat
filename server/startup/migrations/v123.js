@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 let pageVisitedCollection;
 let messageCollection;
 let roomCollection;

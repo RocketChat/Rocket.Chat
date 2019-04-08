@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
 Meteor.methods({
@@ -14,7 +16,9 @@ Meteor.methods({
 		if (!originalMessage || !originalMessage._id) {
 			return;
 		}
-
+		if (originalMessage.msg === message.msg) {
+			return;
+		}
 		const hasPermission = RocketChat.authz.hasPermission(Meteor.userId(), 'edit-message', message.rid);
 		const editAllowed = RocketChat.settings.get('Message_AllowEditing');
 		const editOwn = originalMessage.u && originalMessage.u._id === Meteor.userId();

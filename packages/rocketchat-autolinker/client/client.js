@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { RocketChat } from 'meteor/rocketchat:lib';
 
 //
 // AutoLinker is a named function that will replace links on messages

@@ -1,10 +1,4 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
-import { getCredentials, api, login, request, credentials, integration, log } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
+import { api, request, credentials, integration } from '../../data/api-data.js';
 
 describe('Outgoing Integrations', function() {
 	before((done) => getCredentials(done));

@@ -1,6 +1,8 @@
 /**
  * Webdav Accounts model
  */
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 class WebdavAccounts extends RocketChat.models._Base {
 	constructor() {
 		super('webdav_accounts');

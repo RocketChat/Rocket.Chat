@@ -1,7 +1,3 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
-
 import {
 	getCredentials,
 	api,
@@ -9,6 +5,10 @@ import {
 	credentials,
 	message,
 } from '../../data/api-data.js';
+import { password } from '../../data/user';
+import { createRoom } from '../../data/rooms.helper.js';
+import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper.js';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('[Chat]', function() {
 	this.retries(0);
@@ -346,6 +346,107 @@ describe('[Chat]', function() {
 		});
 	});
 
+	describe('[/chat.delete]', () => {
+		let msgId;
+		let user;
+		let userCredentials;
+		before((done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					user = res.body.user;
+					done();
+				});
+		});
+		before((done) => {
+			request.post(api('login'))
+				.send({
+					user: user.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					userCredentials = {};
+					userCredentials['X-Auth-Token'] = res.body.data.authToken;
+					userCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		after((done) => {
+			request.post(api('users.delete')).set(credentials).send({
+				userId: user._id,
+			}).end(done);
+			user = undefined;
+		});
+		beforeEach((done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					msgId = res.body.message._id;
+				})
+				.end(done);
+		});
+		it('should delete a message successfully', (done) => {
+			request.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('sending message as another user...', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(userCredentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					msgId = res.body.message._id;
+				})
+				.end(done);
+		});
+		it('should delete a message successfully when the user deletes a message send by another user', (done) => {
+			request.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId,
+					asUser: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
 	describe('/chat.search', () => {
 		it('should return a list of messages when execute successfully', (done) => {
 			request.get(api('chat.search'))
@@ -566,4 +667,236 @@ describe('[Chat]', function() {
 		});
 	});
 
+	describe('[/chat.getDeletedMessages]', () => {
+		let roomId;
+		before((done) => {
+			createRoom({
+				type: 'c',
+				name: `channel.test.${ Date.now() }`,
+			}).end((err, res) => {
+				roomId = res.body.channel._id;
+				sendSimpleMessage({ roomId })
+					.end((err, res) => {
+						const msgId = res.body.message._id;
+						deleteMessage({ roomId, msgId }).end(done);
+					});
+			});
+		});
+
+		describe('when execute successfully', () => {
+			it('should return a list of deleted messages', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						since: new Date('20 December 2018 17:51 UTC').toISOString(),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages.length).to.be.equal(1);
+					})
+					.end(done);
+			});
+			it('should return a list of deleted messages when the user sets count query parameter', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						since: new Date('20 December 2018 17:51 UTC').toISOString(),
+						count: 1,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages.length).to.be.equal(1);
+					})
+					.end(done);
+			});
+			it('should return a list of deleted messages when the user sets count and offset query parameters', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						since: new Date('20 December 2018 17:51 UTC').toISOString(),
+						count: 1,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages.length).to.be.equal(1);
+					})
+					.end(done);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should return statusCode 400 and an error when "roomId" is not provided', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						since: new Date('20 December 2018 17:51 UTC').toISOString(),
+						count: 1,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('The required "roomId" query param is missing.');
+					})
+					.end(done);
+			});
+			it('should return statusCode 400 and an error when "since" is not provided', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						count: 1,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('The required "since" query param is missing.');
+					})
+					.end(done);
+			});
+			it('should return statusCode 400 and an error when "since" is provided but it is invalid ISODate', (done) => {
+				request.get(api('chat.getDeletedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						since: 'InvalidaDate',
+						count: 1,
+						offset: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.errorType).to.be.equal('The "since" query parameter must be a valid date.');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.pinMessage]', () => {
+		it('should return an error when pinMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowPinning', false).then(() => {
+				request.post(api('chat.pinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when pinMessage is allowed in server but user dont have permission', (done) => {
+			updateSetting('Message_AllowPinning', true).then(() => {
+				updatePermission('pin-message', []).then(() => {
+					request.post(api('chat.pinMessage'))
+						.set(credentials)
+						.send({
+							messageId: message._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should pin Message successfully', (done) => {
+			updatePermission('pin-message', ['admin']).then(() => {
+				request.post(api('chat.pinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.unPinMessage]', () => {
+		it('should return an error when pinMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowPinning', false).then(() => {
+				request.post(api('chat.unPinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return an error when pinMessage is allowed in server but users dont have permission', (done) => {
+			updateSetting('Message_AllowPinning', true).then(() => {
+				updatePermission('pin-message', []).then(() => {
+					request.post(api('chat.unPinMessage'))
+						.set(credentials)
+						.send({
+							messageId: message._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should unpin Message successfully', (done) => {
+			updatePermission('pin-message', ['admin']).then(() => {
+				request.post(api('chat.unPinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
 });

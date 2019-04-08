@@ -1,22 +1,7 @@
-RocketChat.MessageTypes = new class {
-	constructor() {
-		this.types = {};
-	}
+import { Meteor } from 'meteor/meteor';
+import { MessageTypes } from 'meteor/rocketchat:ui-utils';
 
-	registerType(options) {
-		return this.types[options.id] = options;
-	}
-
-	getType(message) {
-		return this.types[message && message.t];
-	}
-
-	isSystemMessage(message) {
-		const type = this.types[message && message.t];
-		return type && type.system;
-	}
-
-};
+RocketChat.MessageTypes = MessageTypes;
 
 Meteor.startup(function() {
 	RocketChat.MessageTypes.registerType({

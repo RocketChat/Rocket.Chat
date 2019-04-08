@@ -1,4 +1,10 @@
-/* globals ChatSubscription, RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Random } from 'meteor/random';
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+import { ChatSubscription } from 'meteor/rocketchat:ui';
+import { t } from 'meteor/rocketchat:utils';
 import _ from 'underscore';
 import toastr from 'toastr';
 

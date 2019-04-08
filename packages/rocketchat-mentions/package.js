@@ -10,8 +10,6 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'rocketchat:lib',
 	]);
-
-	api.addFiles('server/server.js', 'server');
-	api.addFiles('server/methods/getUserMentionsByChannel.js', 'server');
-	api.addFiles('client/client.js', 'client');
+	api.mainModule('client/index.js', 'client');
+	api.mainModule('server/index.js', 'server');
 });

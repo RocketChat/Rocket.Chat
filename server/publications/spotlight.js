@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 
 function fetchRooms(userId, rooms) {
@@ -33,6 +35,7 @@ Meteor.methods({
 			fields: {
 				t: 1,
 				name: 1,
+				joinCodeRequired: 1,
 				lastMessage: 1,
 			},
 			sort: {

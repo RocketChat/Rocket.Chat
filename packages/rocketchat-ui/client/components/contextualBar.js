@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.contextualBar.events({
 	'click .js-close'(e, t) {
 		t.tabBar.close();

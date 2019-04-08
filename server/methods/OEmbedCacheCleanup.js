@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.methods({
 	OEmbedCacheCleanup() {
 		if (Meteor.userId() && !RocketChat.authz.hasRole(Meteor.userId(), 'admin')) {

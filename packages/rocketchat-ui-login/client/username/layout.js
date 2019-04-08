@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { RocketChat } from 'meteor/rocketchat:lib';
+
 Template.usernameLayout.helpers({
 	backgroundUrl() {
 		const asset = RocketChat.settings.get('Assets_background');

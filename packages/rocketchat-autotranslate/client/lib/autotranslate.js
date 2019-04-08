@@ -1,5 +1,10 @@
-/* globals RocketChat */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { RocketChat } from 'meteor/rocketchat:lib';
 import _ from 'underscore';
+import mem from 'mem';
+
+const findSubscriptionByRid = mem((rid) => RocketChat.models.Subscriptions.findOne({ rid }));
 
 RocketChat.AutoTranslate = {
 	messageIdsToWait: {},
@@ -8,7 +13,7 @@ RocketChat.AutoTranslate = {
 	getLanguage(rid) {
 		let subscription = {};
 		if (rid) {
-			subscription = RocketChat.models.Subscriptions.findOne({ rid }, { fields: { autoTranslateLanguage: 1 } });
+			subscription = findSubscriptionByRid(rid);
 		}
 		const language = (subscription && subscription.autoTranslateLanguage) || Meteor.user().language || window.defaultUserLanguage();
 		if (language.indexOf('-') !== -1) {
@@ -50,7 +55,7 @@ RocketChat.AutoTranslate = {
 		Tracker.autorun(() => {
 			if (RocketChat.settings.get('AutoTranslate_Enabled') && RocketChat.authz.hasAtLeastOnePermission(['auto-translate'])) {
 				RocketChat.callbacks.add('renderMessage', (message) => {
-					const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+					const subscription = findSubscriptionByRid(message.rid);
 					const autoTranslateLanguage = this.getLanguage(message.rid);
 					if (message.u && message.u._id !== Meteor.userId()) {
 						if (!message.translations) {
@@ -74,7 +79,7 @@ RocketChat.AutoTranslate = {
 
 				RocketChat.callbacks.add('streamMessage', (message) => {
 					if (message.u && message.u._id !== Meteor.userId()) {
-						const subscription = RocketChat.models.Subscriptions.findOne({ rid: message.rid }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
+						const subscription = findSubscriptionByRid(message.rid);
 						const language = this.getLanguage(message.rid);
 						if (subscription && subscription.autoTranslate === true && ((message.msg && (!message.translations || !message.translations[language])))) { // || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 							RocketChat.models.Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });

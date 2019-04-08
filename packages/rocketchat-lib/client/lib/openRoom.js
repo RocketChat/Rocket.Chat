@@ -1,9 +1,44 @@
-/* globals fireGlobalEvent readMessage currentTracker*/
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Session } from 'meteor/session';
+import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from 'meteor/rocketchat:ui-utils';
+import { ChatSubscription } from 'meteor/rocketchat:models';
 import _ from 'underscore';
 
-currentTracker = undefined;
+export let currentTracker = undefined;
 
-function openRoom(type, name) {
+let loadingDom;
+function getDomOfLoading() {
+	if (loadingDom) {
+		return loadingDom;
+	}
+
+	loadingDom = document.createElement('div');
+	const contentAsFunc = (content) => () => content;
+
+	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
+	Blaze.render(template, loadingDom);
+
+	return loadingDom;
+}
+
+function replaceCenterDomBy(dom) {
+	const mainNode = document.querySelector('.main-content');
+	if (mainNode) {
+		for (const child of Array.from(mainNode.children)) {
+			if (child) { mainNode.removeChild(child); }
+		}
+		mainNode.appendChild(dom);
+	}
+
+	return mainNode;
+}
+
+openRoom = function(type, name) {
 	Session.set('openedRoom', null);
 
 	return Meteor.defer(() =>
@@ -15,9 +50,10 @@ function openRoom(type, name) {
 			}
 
 			if (RoomManager.open(type + name).ready() !== true) {
-				BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
+				replaceCenterDomBy(getDomOfLoading());
 				return;
 			}
+
 			if (currentTracker) {
 				currentTracker = undefined;
 			}
@@ -51,20 +87,17 @@ function openRoom(type, name) {
 				return;
 			}
 
-			const mainNode = document.querySelector('.main-content');
+			const roomDom = RoomManager.getDomOfRoom(type + name, room._id);
+			const mainNode = replaceCenterDomBy(roomDom);
+
 			if (mainNode) {
-				for (const child of Array.from(mainNode.children)) {
-					if (child) { mainNode.removeChild(child); }
-				}
-				const roomDom = RoomManager.getDomOfRoom(type + name, room._id);
-				mainNode.appendChild(roomDom);
 				if (roomDom.classList.contains('room-container')) {
 					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
 				}
 			}
 
 			Session.set('openedRoom', room._id);
-			RocketChat.openedRoom = room._id;
+			RoomManager.openedRoom = room._id;
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
@@ -90,6 +123,4 @@ function openRoom(type, name) {
 			return RocketChat.callbacks.run('enter-room', sub);
 		})
 	);
-}
-export { openRoom };
-this.openRoom = openRoom;
+};
