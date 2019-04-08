@@ -5,7 +5,7 @@
 	min-width: 400px;
 	max-width: 500px;
 	height: auto;
-	max-height: 98%;
+	max-height: 90%;
 
 	animation: dropdown-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
