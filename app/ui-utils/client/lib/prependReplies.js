@@ -3,7 +3,7 @@ import { MessageAction } from './MessageAction';
 import { Rooms, Users } from '../../../models/client';
 
 export const prependReplies = async (msg, replies = [], mention = false) => {
-	const { username } = Users.findOne({ _id: Meteor.userID() }, { fields: { username: 1 } });
+	const { username } = Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } });
 
 	const chunks = await Promise.all(replies.map(async ({ _id, rid, u }) => {
 		const permalink = await MessageAction.getPermaLink(_id);
