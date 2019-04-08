@@ -597,8 +597,6 @@
   "Cloud_connect": "Połączenie z Chmurą Rocket.Chat",
   "Cloud_what_is_it": "Co to jest?",
   "Cloud_what_is_it_description": "Połączenie z Chmurą Rocket.Chat pozwala Ci na złączenie Twojej lokalnej instancji Rocket.Chat z naszą chmurą. Pozwoli Ci to na zarządzanie swoimi licencjami, rachunkami oraz wsparciem w Chmurze Rocket.Chat.",
-  "Cloud_workspace_connected_plus_account": "Twoja przestrzeń robocza jest teraz połączona z Chmurą Rocket.Chat, a konto powiązane.",
-  "Cloud_workspace_connected_without_account": "Twoja przestrzeń robocza jest teraz połączona z Chmurą Rocket.Chat. Jeśli chcesz, możesz zalogować się do Chmury Rocket.Chat i powiązać tą przestrzeń z Twoim kontem w chmurze.",
   "Cloud_login_to_cloud": "Zaloguj się do Chmury Rocket.Chat",
   "Cloud_address_to_send_registration_to": "Adres do wysyłki wiadomości rejestrującej w Chmurze",
   "Cloud_update_email": "Zaktualizuj email",
