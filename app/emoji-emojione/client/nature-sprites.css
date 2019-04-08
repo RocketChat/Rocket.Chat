@@ -1,7 +1,7 @@
 /* stylelint-disable */
 
 .emojione-nature {
-  background-image: url('/packages/emojione/assets/sprites/nature-sprites.png');
+  background-image: url('/packages/emojione/nature-sprites.png');
 
   &._1f42b {
     background-repeat: no-repeat;
