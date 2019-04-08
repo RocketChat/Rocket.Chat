@@ -13,7 +13,6 @@ export const modal = {
 		config.showConfirmButton = config.showConfirmButton == null ? true : config.showConfirmButton;
 		config.showFooter = config.showConfirmButton === true || config.showCancelButton === true;
 		config.confirmOnEnter = config.confirmOnEnter == null ? true : config.confirmOnEnter;
-		config.hideAll = config.hideAll == null ? false : config.hideAll
 
 		if (config.type === 'input') {
 			config.input = true;
@@ -32,7 +31,7 @@ export const modal = {
 		if (config.dontAskAgain) {
 			const dontAskAgainList = getUserPreference(Meteor.userId(), 'dontAskAgainList');
 
-			if ((dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) || config.hideAll) {
+			if (dontAskAgainList && dontAskAgainList.some((dontAsk) => dontAsk.action === config.dontAskAgain.action)) {
 				this.confirm(true);
 				return;
 			}
@@ -103,7 +102,7 @@ Template.rc_modal.helpers({
 		return !!this.action;
 	},
 	type() {
-		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${this.type}`;
+		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
 
 	},
 	modalIcon() {
@@ -115,12 +114,12 @@ Template.rc_modal.helpers({
 			case 'info':
 				return 'info-circled';
 			default:
-				return `modal-${this.type}`;
+				return `modal-${ this.type }`;
 		}
 	},
 });
 
-Template.rc_modal.onRendered(function () {
+Template.rc_modal.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
@@ -132,7 +131,7 @@ Template.rc_modal.onRendered(function () {
 	document.addEventListener('keydown', modal.onKeydown);
 });
 
-Template.rc_modal.onDestroyed(function () {
+Template.rc_modal.onDestroyed(function() {
 	document.removeEventListener('keydown', modal.onKeydown);
 });
 
@@ -162,7 +161,7 @@ Template.rc_modal.events({
 				dontAskAgainList = [dontAskAgainObject];
 			}
 
-			Meteor.call('saveUserPreferences', { dontAskAgainList }, function (error) {
+			Meteor.call('saveUserPreferences', { dontAskAgainList }, function(error) {
 				if (error) {
 					return handleError(error);
 				}
