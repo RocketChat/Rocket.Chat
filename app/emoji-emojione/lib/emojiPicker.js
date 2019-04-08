@@ -5,18 +5,19 @@
  * Mapping category hashes into human readable and translated names
  */
 
-export const emojiCategories = {
-	symbols: 'Symbols',
-	objects: 'Objects',
-	nature: 'Animals_and_Nature',
-	food: 'Food_and_Drink',
-	people: 'Smileys_and_People',
-	travel: 'Travel_and_Places',
-	activity: 'Activity',
-	regional: 'Regional',
-	flags: 'Flags',
-	modifier: 'Modifier',
-};
+export const emojiCategories = [
+	{ key: 'people', i18n: 'Smileys_and_People' },
+	{ key: 'nature', i18n: 'Animals_and_Nature' },
+	{ key: 'food', i18n: 'Food_and_Drink' },
+	{ key: 'activity', i18n: 'Activity' },
+	{ key: 'travel', i18n: 'Travel_and_Places' },
+	{ key: 'objects', i18n: 'Objects' },
+	{ key: 'symbols', i18n: 'Symbols' },
+	{ key: 'regional', i18n: 'Regional' },
+	{ key: 'flags', i18n: 'Flags' },
+	{ key: 'modifier', i18n: 'Modifier' },
+];
+
 export const toneList = {
 	snowboarder: 1,
 	person_lifting_weights: 1,

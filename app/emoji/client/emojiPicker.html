@@ -25,17 +25,17 @@
 		</div>
 		<div class="filter">
 			<ul class="filter-list">
-				{{#each category}}
-					<li class="filter-item border-secondary-background-color {{activeCategory .}}" title="{{categoryName .}}">
-						<a href="#{{.}}" class="category-link color-info-font-color"><i class="category-icon icon-{{.}}"></i></a>
+				{{#each category in emojiCategories}}
+					<li class="filter-item border-secondary-background-color {{activeCategory category.key}}" title="{{_ category.i18n}}">
+						<a href="#{{category.key}}" class="category-link color-info-font-color"><i class="category-icon icon-{{category.key}}"></i></a>
 					</li>
 				{{/each}}
 			</ul>
 		</div>
 		<div class="emojis">
-			{{#each category}}
-				<ul class="{{.}} emoji-list {{isVisible .}}">
-					{{{emojiList .}}}
+			{{#each category in emojiCategories}}
+				<ul class="{{category.key}} emoji-list {{isVisible category.key}}">
+					{{{emojiList category.key}}}
 				</ul>
 			{{/each}}
 		</div>

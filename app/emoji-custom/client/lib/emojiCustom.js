@@ -124,7 +124,8 @@ export const updateEmojiCustom = function(emojiData) {
 };
 
 emoji.packages.emojiCustom = {
-	emojiCategories: { rocket: 'Custom' },
+	emojiCategories: [{ key: 'rocket', i18n: 'Custom' }],
+	categoryIndex: 1,
 	toneList: {},
 	list: [],
 	_regexpSignature: null,

@@ -53,29 +53,29 @@ function generateEmojiPicker(data) {
  */\n\n`;
 
 
-	const emojiCategoriesMapping = {
-		people: 'Smileys_and_People',
-		nature: 'Animals_and_Nature',
-		food: 'Food_and_Drink',
-		activity: 'Activity',
-		travel: 'Travel_and_Places',
-		objects: 'Objects',
-		symbols: 'Symbols',
-		flags: 'Flags',
-		regional: 'Regional',
-		modifier: 'Modifier'
-	};
+	const emojiCategoriesMapping = [
+		{ key: 'people', i18n: 'Smileys_and_People' },
+		{ key: 'nature', i18n: 'Animals_and_Nature' },
+		{ key: 'food', i18n: 'Food_and_Drink' },
+		{ key: 'activity', i18n: 'Activity' },
+		{ key: 'travel', i18n: 'Travel_and_Places' },
+		{ key: 'objects', i18n: 'Objects' },
+		{ key: 'symbols', i18n: 'Symbols' },
+		{ key: 'flags', i18n: 'Flags' },
+		{ key: 'regional', i18n: 'Regional' },
+		{ key: 'modifier', i18n: 'Modifier' },
+	];
 
 	// emojiCategories
-	output += `export const emojiCategories = {\n`;
+	output += `export const emojiCategories = [\n`;
 	for (let category in emojisByCategory) {
 		if (emojiCategoriesMapping[category]) {
-			output += `\t${category}: '${emojiCategoriesMapping[category]}',\n`;
+			output += `\t{ key: '${category}', i18n: '${emojiCategoriesMapping[category]}' },\n`;
 		} else {
 			console.error(`No emojiCategory mapping for ${category}`);
 		}
 	}
-	output += `};\n`;
+	output += `];\n`;
 
 	// toneList
 	const needsQuotes = ['-'];

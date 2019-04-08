@@ -1,31 +1,8 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { emoji } from '../lib/rocketchat';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
 import { isSetNotNull } from './function-isSet';
 import { EmojiPicker } from './lib/EmojiPicker';
-
-const emojiCategories = {};
-/**
- * Turns category hash to a nice readable translated name
- * @param {string} category hash
- * @return {string} readable and translated
- */
-function categoryName(category) {
-	for (const emojiPackage in emoji.packages) {
-		if (emoji.packages.hasOwnProperty(emojiPackage)) {
-			if (emoji.packages[emojiPackage].emojiCategories.hasOwnProperty(category)) {
-				const categoryTag = emoji.packages[emojiPackage].emojiCategories[category];
-				return TAPi18n.__(categoryTag);
-			}
-		}
-	}
-	if (emojiCategories.hasOwnProperty(category)) {
-		return emojiCategories[category];
-	}
-	// unknown category; better hash than nothing
-	return category;
-}
 
 function getEmojisByCategory(category) {
 	const t = Template.instance();
@@ -102,18 +79,8 @@ function getEmojisBySearchTerm(searchTerm) {
 }
 
 Template.emojiPicker.helpers({
-	category() {
-		const categories = [];
-		for (const emojiPackage in emoji.packages) {
-			if (emoji.packages.hasOwnProperty(emojiPackage)) {
-				for (const key in emoji.packages[emojiPackage].emojisByCategory) {
-					if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
-						categories.push(key);
-					}
-				}
-			}
-		}
-		return categories;
+	emojiCategories() {
+		return Template.instance().categoriesList;
 	},
 	emojiByCategory(category) {
 		let emojisByCategory = [];
@@ -159,22 +126,13 @@ Template.emojiPicker.helpers({
 	activeCategory(category) {
 		return Template.instance().currentCategory.get() === category ? 'active' : '';
 	},
-	categoryName,
 	/**
 	 * Returns currently active emoji category hash
 	 *
 	 * @return {string} category hash
 	 */
 	currentCategory() {
-		const t = Template.instance();
-		const hash = t.currentCategory.get();
-		const searchTerm = t.currentSearchTerm.get();
-
-		if (searchTerm.length > 0) {
-			return TAPi18n.__('Search');
-		} else {
-			return categoryName(hash);
-		}
+		return Template.instance().currentCategory.get();
 	},
 });
 
@@ -270,6 +228,19 @@ Template.emojiPicker.onCreated(function() {
 	this.recentNeedsUpdate = new ReactiveVar(false);
 	this.currentCategory = new ReactiveVar(recent.length > 0 ? 'recent' : 'people');
 	this.currentSearchTerm = new ReactiveVar('');
+
+	this.categoriesList = [];
+	for (const emojiPackage in emoji.packages) {
+		if (emoji.packages.hasOwnProperty(emojiPackage)) {
+			if (emoji.packages[emojiPackage].emojiCategories) {
+				if (typeof emoji.packages[emojiPackage].categoryIndex !== 'undefined') {
+					this.categoriesList.splice(emoji.packages[emojiPackage].categoryIndex, 0, ...emoji.packages[emojiPackage].emojiCategories);
+				} else {
+					this.categoriesList = this.categoriesList.concat(emoji.packages[emojiPackage].emojiCategories);
+				}
+			}
+		}
+	}
 
 	recent.forEach((_emoji) => {
 		emoji.packages.base.emojisByCategory.recent.push(_emoji);
