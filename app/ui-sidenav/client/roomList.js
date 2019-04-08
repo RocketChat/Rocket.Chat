@@ -123,6 +123,7 @@ Template.roomList.helpers({
 	},
 });
 <<<<<<< HEAD
+<<<<<<< HEAD
 Template.roomList.events({
 	'click .delete-all-msgs'() {
 
@@ -140,6 +141,8 @@ Template.roomList.events({
 		}
 
 	}
+=======
+>>>>>>> parent of a0ac58579... added functionality to hide direct messages with one button
 =======
 >>>>>>> parent of a0ac58579... added functionality to hide direct messages with one button
 
