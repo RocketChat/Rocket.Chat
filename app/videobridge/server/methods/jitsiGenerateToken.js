@@ -3,7 +3,7 @@ import { settings } from '../../../settings';
 import { jws } from 'jsrsasign';
 
 Meteor.methods({
-	'jitsi:generateAccessToken': () => {
+	'jitsi:generateAccessToken': (jitsiRoom) => {
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:generateToken' });
@@ -12,6 +12,7 @@ Meteor.methods({
 		const jitsiDomain = settings.get('Jitsi_Domain');
 		const jitsiApplicationId = settings.get('Jitsi_Application_ID');
 		const jitsiApplicationSecret = settings.get('Jitsi_Application_Secret');
+		const jitsiLimitTokenToRoom = settings.get('Jitsi_Limit_Token_To_Room');
 
 		function addUserContextToPayload(payload) {
 			const user = Meteor.user();
@@ -45,7 +46,7 @@ Meteor.methods({
 			nbf: jws.IntDate.get('now'),
 			exp: jws.IntDate.get(`now + ${ JITSI_OPTIONS.jitsi_lifetime_token }`),
 			aud: 'RocketChat',
-			room: '*',
+			room: (jitsiLimitTokenToRoom) ? jitsiRoom : '*',
 			context: '', // first empty
 		};
 

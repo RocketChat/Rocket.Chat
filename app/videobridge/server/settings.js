@@ -160,6 +160,16 @@ Meteor.startup(function() {
 				i18nLabel: 'Jitsi_Application_Secret',
 				public: true,
 			});
+
+			this.add('Jitsi_Limit_Token_To_Room', true, {
+				type: 'boolean',
+				enableQuery: [
+					{ _id: 'Jitsi_Enabled', value: true },
+					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
+				],
+				i18nLabel: 'Jitsi_Limit_Token_To_Room',
+				public: true,
+			});
 		});
 	});
 });
