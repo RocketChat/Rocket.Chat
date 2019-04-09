@@ -60,6 +60,12 @@ function setLastMessageTs(instance, ts) {
 	}, 60000);
 }
 
+Template.sidebarItem.onRendered(function() {
+	if (window.location.href.includes(this.find('.sidebar-item__link').getAttribute('href'))) {
+		this.find('.sidebar-item__link').parentElement.style.backgroundColor = '#9ea2a8';
+	}
+});
+
 Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
 
@@ -188,6 +194,15 @@ Template.sidebarItem.events({
 		};
 
 		popover.open(config);
+	},
+	'click .sidebar-item'(e) {
+		const menu = e.currentTarget;
+		if ($(menu).find('.sidebar-item__link').length) {
+			$('.sidebar-item').each((i, ele) => {
+				$(ele).css('background-color', '');
+			});
+			$(menu).css('background-color', '#9ea2a8');
+		}
 	},
 });
 
