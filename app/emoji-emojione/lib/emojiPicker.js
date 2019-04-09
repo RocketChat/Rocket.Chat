@@ -15,7 +15,6 @@ export const emojiCategories = [
 	{ key: 'symbols', i18n: 'Symbols' },
 	{ key: 'regional', i18n: 'Regional' },
 	{ key: 'flags', i18n: 'Flags' },
-	{ key: 'modifier', i18n: 'Modifier' },
 ];
 
 export const toneList = {

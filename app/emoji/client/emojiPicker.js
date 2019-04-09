@@ -3,35 +3,37 @@ import { emoji } from '../lib/rocketchat';
 import { Template } from 'meteor/templating';
 import { isSetNotNull } from './function-isSet';
 import { EmojiPicker } from './lib/EmojiPicker';
+import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
 
-function getEmojisByCategory(category) {
-	const t = Template.instance();
-	const actualTone = t.tone;
+const emojiPickerContent = new ReactiveVar('');
+
+function getEmojis(instance) {
+	const categories = instance.categoriesList;
+	const actualTone = instance.tone;
 	let html = '';
-	for (const emojiPackage in emoji.packages) {
-		if (emoji.packages.hasOwnProperty(emojiPackage)) {
-			if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(category)) {
-				const total = emoji.packages[emojiPackage].emojisByCategory[category].length;
-				for (let i = 0; i < total; i++) {
-					const _emoji = emoji.packages[emojiPackage].emojisByCategory[category][i];
-					let tone = '';
-
-					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-						tone = `_tone${ actualTone }`;
-					}
-
-					// set correctPackage here to allow for recent emojis to work properly
-					if (isSetNotNull(() => emoji.list[`:${ _emoji }:`].emojiPackage)) {
-						const correctPackage = emoji.list[`:${ _emoji }:`].emojiPackage;
-						const image = emoji.packages[correctPackage].render(`:${ _emoji }${ tone }:`);
-
-						html += `<li class="emoji-${ _emoji }" data-emoji="${ _emoji }" title="${ _emoji }">${ image }</li>`;
-					}
-				}
+	_.each(emoji.packages, function(emojiPackage) {
+		_.each(emojiPackage.emojisByCategory, function(emojis, category) {
+			if (emojis.length === 0 || category === 'modifier') {
+				return;
 			}
-		}
-	}
-	return html;
+			const cat = categories.find((o) => o.key === category);
+
+			html += `<h4 id="emoji-list-category-${ category }">${ TAPi18n.__(cat.i18n) }</h4>`;
+			_.each(emojis, function(_emoji) {
+				let tone = '';
+				if (actualTone > 0 && emojiPackage.toneList.hasOwnProperty(_emoji)) {
+					tone = `_tone${ actualTone }`;
+				}
+				if (isSetNotNull(() => emoji.list[`:${ _emoji }:`].emojiPackage)) {
+					const correctPackage = emoji.list[`:${ _emoji }:`].emojiPackage;
+					const image = emoji.packages[correctPackage].render(`:${ _emoji }${ tone }:`);
+					html += `<li class="emoji-${ _emoji }" data-emoji="${ _emoji }" title="${ _emoji }">${ image }</li>`;
+				}
+			});
+		});
+	});
+	emojiPickerContent.set(html);
 }
 
 function getEmojisBySearchTerm(searchTerm) {
@@ -93,25 +95,17 @@ Template.emojiPicker.helpers({
 		}
 		return emojisByCategory;
 	},
-	isVisible(category) {
-		return Template.instance().currentCategory.get() === category ? 'visible' : '';
-	},
-	emojiList(category) {
+	emojiList() {
 		const t = Template.instance();
 		const searchTerm = t.currentSearchTerm.get();
-		const activeCategory = t.currentCategory.get();
+
 		// this will cause the reflow when recent list gets updated
 		t.recentNeedsUpdate.get();
-
-		// we only need to replace the active category, since switching tabs resets the filter
-		if (activeCategory !== category) {
-			return;
-		}
 
 		if (searchTerm.length > 0) {
 			return getEmojisBySearchTerm(searchTerm);
 		} else {
-			return getEmojisByCategory(category);
+			return emojiPickerContent.get();
 		}
 	},
 	currentTone() {
@@ -145,10 +139,15 @@ Template.emojiPicker.events({
 		event.stopPropagation();
 		event.preventDefault();
 
-		instance.$('.emoji-filter .search').val('').change();
-		instance.$('.emoji-filter .search').focus();
+		instance.$('.emoji-picker .js-emojipicker-search').val('').change();
+		instance.$('.emoji-picker .js-emojipicker-search').focus();
 
 		instance.currentCategory.set(event.currentTarget.hash.substr(1));
+
+		instance.$('.emoji-picker .emojis')[0].scrollTo(top);
+		instance.$('.emoji-picker .emojis').animate({
+			scrollTop: ($(`#emoji-list-category-${ event.currentTarget.hash.substr(1) }`).offset().top - $('.emoji-picker .emojis').offset().top),
+		}, 300);
 
 		return false;
 	},
@@ -204,7 +203,7 @@ Template.emojiPicker.events({
 			}
 		}
 
-		const input = $('.emoji-filter input.search');
+		const input = $('.emoji-picker .js-emojipicker-search');
 		if (input) {
 			input.val('');
 		}
@@ -257,4 +256,6 @@ Template.emojiPicker.onCreated(function() {
 			this.recentNeedsUpdate.set(false);
 		}
 	});
+	const instance = Template.instance();
+	getEmojis(instance);
 });

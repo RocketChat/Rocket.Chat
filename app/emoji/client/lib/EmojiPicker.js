@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 export const EmojiPicker = {
 	width: 365,
-	height: 290,
+	height: 441,
 	initiated: false,
 	input: null,
 	source: null,
@@ -65,7 +65,7 @@ export const EmojiPicker = {
 		const isLargerThanWindow = this.width + windowBorder > windowWidth;
 
 		if (top + this.height >= windowHeight) {
-			cssProperties.top = windowHeight - this.height - windowBorder;
+			cssProperties.top = windowHeight - this.height - windowBorder - 75;
 		}
 
 		if (left < windowBorder) {

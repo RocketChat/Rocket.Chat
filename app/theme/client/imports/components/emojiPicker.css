@@ -26,12 +26,15 @@
 
 	display: none;
 
-	width: 100%;
-	max-width: 365px;
+	max-width: 700px;
+
+	margin-right: 22px;
 
 	white-space: initial;
 
 	opacity: 1;
+
+	background-color: rgba(255, 255, 255, 0.98);
 
 	&.show {
 		display: block;
@@ -66,12 +69,10 @@
 	& .emojis {
 		overflow-y: auto;
 
-		height: 160px;
+		height: 300px;
 		padding: 3px 0 0 2px;
 
 		& .emoji-list {
-			display: none;
-
 			& li {
 				display: inline-block;
 
@@ -82,6 +83,11 @@
 				transition: transform 0.2s ease;
 
 				border-radius: 4px;
+
+				& span {
+					width: 32px;
+					height: 32px;
+				}
 
 				&:hover {
 					transform: scale(1.2);
@@ -102,13 +108,17 @@
 }
 
 .emoji-footer {
+	position: relative;
+
+	top: 5px;
+
 	padding-top: 5px;
 
 	text-align: center;
 
 	color: var(--rc-color-primary-light);
 
-	font-size: 12px;
+	font-size: 13px;
 
 	font-weight: 500;
 }

@@ -63,7 +63,6 @@ function generateEmojiPicker(data) {
 		{ key: 'symbols', i18n: 'Symbols' },
 		{ key: 'regional', i18n: 'Regional' },
 		{ key: 'flags', i18n: 'Flags' },
-		{ key: 'modifier', i18n: 'Modifier' },
 	];
 
 	// emojiCategories
@@ -73,7 +72,9 @@ function generateEmojiPicker(data) {
 		if (map) {
 			output += `\t{ key: '${category}', i18n: '${map.i18n}' },\n`;
 		} else {
-			console.error(`No emojiCategory mapping for ${category}`);
+			if(category !== 'modifier'){
+				console.error(`No emojiCategory mapping for ${category}`);
+			}
 		}
 	}
 	output += `];\n`;

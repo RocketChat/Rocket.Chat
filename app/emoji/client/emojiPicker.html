@@ -33,11 +33,9 @@
 			</ul>
 		</div>
 		<div class="emojis">
-			{{#each category in emojiCategories}}
-				<ul class="{{category.key}} emoji-list {{isVisible category.key}}">
-					{{{emojiList category.key}}}
-				</ul>
-			{{/each}}
+			<ul class="emoji-list">
+					{{{emojiList}}}
+			</ul>
 		</div>
 		<div class="emoji-footer">{{{_"Emoji_provided_by_JoyPixels"}}}</div>
 	</div>

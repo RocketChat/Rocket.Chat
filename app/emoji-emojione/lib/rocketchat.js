@@ -12,7 +12,7 @@ emoji.packages.emojione.emojiCategories = emojiCategories;
 emoji.packages.emojione.toneList = toneList;
 
 emoji.packages.emojione.render = function(message) {
-	return emojione.toImage(message).replace(/class="emojione emojione-32-/g, 'class="emojione emojione-');
+	return emojione.shortnameToImage(message).replace(/class="emojione emojione-32-/g, 'class="emojione emojione-');
 };
 
 // http://stackoverflow.com/a/26990347 function isSet() from Gajus
