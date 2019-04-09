@@ -37,13 +37,22 @@ Template.sidebarItem.helpers({
 	},
 	badgeClass() {
 		const { t, unread, userMentions, groupMentions } = this;
-		return [
-			'badge',
-			unread && 'badge--unread',
-			unread && t === 'd' && 'badge--dm',
-			userMentions && 'badge--user-mentions',
-			groupMentions && 'badge--group-mentions',
-		].filter(Boolean).join(' ');
+
+		const badges = ['badge'];
+
+		if (unread) {
+			badges.push('badge--unread');
+		}
+
+		if (unread && t === 'd') {
+			badges.push('badge--dm');
+		} else if (userMentions) {
+			badges.push('badge--user-mentions');
+		} else if (groupMentions) {
+			badges.push('badge--group-mentions');
+		}
+
+		return badges.join(' ');
 	},
 });
 
