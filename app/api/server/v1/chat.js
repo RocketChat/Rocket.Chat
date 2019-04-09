@@ -387,8 +387,12 @@ API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
 		if (!roomId) {
 			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 		}
+		const room = Meteor.call('canAccessRoom', roomId, this.userId);
+		if (!room) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
 
-		const cursor = Messages.findPinnedByRoom(roomId, {
+		const cursor = Messages.findPinnedByRoom(room._id, {
 			skip: offset,
 			limit: count,
 		});
