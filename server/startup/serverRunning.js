@@ -20,9 +20,11 @@ Meteor.startup(function() {
 	}
 
 	let mongoDbVersion;
+	let mongoDbEngine;
 	try {
-		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));
+		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
 		mongoDbVersion = version;
+		mongoDbEngine = storageEngine.name;
 	} catch (e) {
 		mongoDbVersion = 'Error getting version';
 		console.error('Error getting MongoDB version');
@@ -36,6 +38,7 @@ Meteor.startup(function() {
 			`Rocket.Chat Version: ${ Info.version }`,
 			`     NodeJS Version: ${ process.versions.node } - ${ process.arch }`,
 			`    MongoDB Version: ${ mongoDbVersion }`,
+			`     MongoDB Engine: ${ mongoDbEngine }`,
 			`           Platform: ${ process.platform }`,
 			`       Process Port: ${ process.env.PORT }`,
 			`           Site URL: ${ settings.get('Site_Url') }`,

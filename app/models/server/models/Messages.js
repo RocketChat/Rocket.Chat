@@ -998,6 +998,10 @@ export class Messages extends Base {
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
+	countThreads() {
+		return this.find({ tcount: { $exists: true } }).count();
+	}
+
 	removeThreadRefByThreadId(tmid) {
 		const query = { tmid };
 		const update = {

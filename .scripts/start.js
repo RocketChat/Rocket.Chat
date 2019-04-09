@@ -5,6 +5,7 @@ const fs = require('fs');
 const extend = require('util')._extend;
 const { exec } = require('child_process');
 const processes = [];
+let exitCode;
 
 const baseDir = path.resolve(__dirname, '..');
 const srcDir = path.resolve(baseDir);
@@ -43,12 +44,21 @@ function startProcess(opts, callback) {
 		proc.stderr.pipe(logStream);
 	}
 
-	proc.on('close', function(code) {
-		console.log(opts.name, `exited with code ${ code }`);
-		for (let i = 0; i < processes.length; i += 1) {
-			processes[i].kill();
+	proc.on('exit', function(code, signal) {
+		if (code != null) {
+			exitCode = code;
+			console.log(opts.name, `exited with code ${ code }`);
+		} else {
+			console.log(opts.name, `exited with signal ${ signal }`);
 		}
-		process.exit(code);
+
+		processes.splice(processes.indexOf(proc), 1);
+
+		processes.forEach((p) => p.kill());
+
+		if (processes.length === 0) {
+			process.exit(exitCode);
+		}
 	});
 	processes.push(proc);
 }
