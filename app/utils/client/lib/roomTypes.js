@@ -45,7 +45,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			rid: roomId,
 		}).count() > 0;
 	}
-	readOnly(roomId, user) {
+	readOnly(rid, user) {
 		const fields = {
 			ro: 1,
 		};
@@ -53,7 +53,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			fields.muted = 1;
 		}
 		const room = ChatRoom.findOne({
-			_id: roomId,
+			_id: rid,
 		}, {
 			fields,
 		});
@@ -61,7 +61,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			return room && room.ro;
 		}
 		const userOwner = RoomRoles.findOne({
-			rid: roomId,
+			rid,
 			'u._id': user._id,
 			roles: 'owner',
 		}, {

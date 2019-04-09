@@ -185,15 +185,6 @@ Template.toolbar.events({
 		toolbarSearch.shortcut = false;
 	},
 
-	'keyup [role="search"] input'(e) {
-		if (e.which === 27) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			toolbarSearch.clear();
-		}
-	},
-
 	'click [role="search"] button, touchend [role="search"] button'(e) {
 		if (hasAtLeastOnePermission(['create-c', 'create-p'])) {
 			// TODO: resolve this name menu/sidebar/sidebav/flex...

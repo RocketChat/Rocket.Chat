@@ -752,6 +752,16 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	unsetName(_id) {
+		const update = {
+			$unset: {
+				name,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
 	setCustomFields(_id, fields) {
 		const values = {};
 		Object.keys(fields).forEach((key) => {
