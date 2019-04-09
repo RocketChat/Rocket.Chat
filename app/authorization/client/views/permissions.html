@@ -44,17 +44,16 @@
 		{{#if hasSettingPermission}}
 			{{# header sectionName=Setting_permissions}}
 			<div class="section-title-right">
-					<button class="button primary js-toggle-setting-permissions"><span>
-						{{#if settingPermissionExpanded }}
-							{{_ "Collapse"}}
-						{{else}}
-							{{_ "Expand"}}
-						{{/if}}
-					</span>
-					</button>
-				</div>
+				<button class="button primary js-toggle-setting-permissions"><span>
+					{{#if settingPermissionExpanded }}
+						{{_ "Collapse"}}
+					{{else}}
+						{{_ "Expand"}}
+					{{/if}}
+				</span>
+				</button>
 			</div>
-			{{/ header}}
+			{{/header}}
 			<div class="section-content border-component-color">
 					{{#if settingPermissionExpanded }}
 					<div class="content">
@@ -64,7 +63,7 @@
 						{{_ "Not_authorized"}}
 					{{/if}}
 				</div>
-		{{/ if}}
+		{{/if}}
 		{{#if hasNoPermission}}
 		<div class="content">
 				{{#if i18nPageTitle}} {{> header sectionName=i18nPageTitle}} {{else}} {{> header sectionName=pageTitle}} {{/if}}
