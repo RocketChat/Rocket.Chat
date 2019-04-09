@@ -8,7 +8,7 @@ import { updateRecentEmoji } from '../../client/emojiPicker';
 
 export const EmojiPicker = {
 	width: 365,
-	height: 370,
+	height: 285,
 	initiated: false,
 	input: null,
 	source: null,

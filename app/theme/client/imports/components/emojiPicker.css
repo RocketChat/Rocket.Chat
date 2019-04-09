@@ -26,10 +26,10 @@
 
 	display: none;
 
-	width: 400px;
+	width: 365px;
 	max-width: 100%;
 
-	height: 370px;
+	height: 285px;
 
 	margin-right: 22px;
 
@@ -73,6 +73,7 @@
 		overflow-y: auto;
 
 		flex: 1;
+
 		padding: 3px 0 0 2px;
 
 		& .emoji-list {
@@ -88,11 +89,6 @@
 				transition: transform 0.2s ease;
 
 				border-radius: 4px;
-
-				& span {
-					width: 32px;
-					height: 32px;
-				}
 
 				&:hover {
 					transform: scale(1.2);
