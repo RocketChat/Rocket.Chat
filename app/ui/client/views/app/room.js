@@ -37,7 +37,7 @@ export const chatMessages = {};
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
-const userCanDrop = (_id) => !roomTypes.readOnly(_id, Meteor.user());
+const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
 const openProfileTab = (e, instance, username) => {
 	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);

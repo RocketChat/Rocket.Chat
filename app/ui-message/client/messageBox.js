@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
+import { Users } from '../../models';
 import { settings } from '../../settings';
 import {
 	fileUpload,
@@ -34,14 +36,55 @@ import './messageBox.html';
 
 
 Template.messageBox.onCreated(function() {
+	this.state = new ReactiveDict();
 	EmojiPicker.init();
 	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar();
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
+
+	this.send = (event) => {
+		if (!this.input) {
+			return;
+		}
+
+		const { rid, tmid, onSend } = this.data;
+		const { value } = this.input;
+		this.input.value = '';
+		onSend && onSend.call(this.data, event, { rid, tmid, value }, () => {
+			this.input.updateAutogrow();
+			this.input.focus();
+		});
+	};
 });
 
 Template.messageBox.onRendered(function() {
+
+	this.autorun(() => {
+		const { rid, subscription } = Template.currentData();
+		const room = Session.get(`roomData${ rid }`);
+
+		if (!room) {
+			return this.state.set({
+				room: false,
+				isBlockedOrBlocker: false,
+				mustJoinWithCode: false,
+			});
+		}
+
+		const isBlocked = (room && room.t === 'd' && subscription && subscription.blocked);
+		const isBlocker = (room && room.t === 'd' && subscription && subscription.blocker);
+		const isBlockedOrBlocker = isBlocked || isBlocker;
+
+		const mustJoinWithCode = !subscription && room.joinCodeRequired;
+
+		return this.state.set({
+			room: false,
+			isBlockedOrBlocker,
+			mustJoinWithCode,
+		});
+	});
+
 	this.autorun(() => {
 		const { rid, onInputChanged, onResize } = Template.currentData();
 
@@ -84,15 +127,14 @@ Template.messageBox.onRendered(function() {
 
 Template.messageBox.helpers({
 	isAnonymousOrMustJoinWithCode() {
-		const { rid, subscription } = Template.currentData();
+		const instance = Template.instance();
+		const { rid } = Template.currentData();
 		if (!rid) {
 			return false;
 		}
 
-		const roomData = Session.get(`roomData${ rid }`);
 		const isAnonymous = !Meteor.userId();
-		const mustJoinWithCode = !subscription && roomData && roomData.joinCodeRequired;
-		return isAnonymous || mustJoinWithCode;
+		return isAnonymous || instance.state.get('mustJoinWithCode');
 	},
 	isWritable() {
 		const { rid, subscription } = Template.currentData();
@@ -100,12 +142,16 @@ Template.messageBox.helpers({
 			return true;
 		}
 
-		const roomData = Session.get(`roomData${ rid }`);
-		const isReadOnly = roomTypes.readOnly(rid, Meteor.user());
-		const isArchived = roomTypes.archived(rid) || (roomData && roomData.t === 'd' && subscription && subscription.archived);
-		const isBlocked = (roomData && roomData.t === 'd' && subscription && subscription.blocked);
-		const isBlocker = (roomData && roomData.t === 'd' && subscription && subscription.blocker);
-		return !isReadOnly && !isArchived && !isBlocked && !isBlocker;
+		const isBlockedOrBlocker = Template.instance().state.get('isBlockedOrBlocker');
+
+		if (isBlockedOrBlocker) {
+			return false;
+		}
+
+		const isReadOnly = roomTypes.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
+		const isArchived = roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
+
+		return !isReadOnly && !isArchived;
 	},
 	popupConfig() {
 		return Template.instance().popupConfig.get();
@@ -142,15 +188,7 @@ Template.messageBox.helpers({
 		return formattingButtons.filter(({ condition }) => !condition || condition());
 	},
 	isBlockedOrBlocker() {
-		const { rid, subscription } = Template.currentData();
-		if (!rid) {
-			return true;
-		}
-
-		const roomData = Session.get(`roomData${ rid }`);
-		const isBlocked = (roomData && roomData.t === 'd' && subscription && subscription.blocked);
-		const isBlocker = (roomData && roomData.t === 'd' && subscription && subscription.blocker);
-		return isBlocked || isBlocker;
+		return Template.instance().state.get('isBlockedOrBlocker');
 	},
 });
 
@@ -198,7 +236,7 @@ const insertNewLine = (input) => {
 };
 
 const handleSubmit = (event, instance) => {
-	const { data: { rid, tmid, onSend }, input } = instance;
+	const { input } = instance;
 	const { which: keyCode } = event;
 
 	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
@@ -214,10 +252,7 @@ const handleSubmit = (event, instance) => {
 	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
 
 	if (isSending) {
-		onSend && onSend.call(this, event, { rid, tmid, value: input.value }, () => {
-			input.updateAutogrow();
-			input.focus();
-		});
+		instance.send(event);
 		return true;
 	}
 
@@ -345,12 +380,7 @@ Template.messageBox.events({
 		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
 	async 'click .js-send'(event, instance) {
-		const { input } = instance;
-		const { rid, tmid, onSend } = this;
-		onSend && onSend.call(this, event, { rid, tmid, value: input.value }, () => {
-			input.updateAutogrow();
-			input.focus();
-		});
+		instance.send(event);
 	},
 	'click .js-action-menu'(event, instance) {
 		const groups = messageBox.actions.get();
