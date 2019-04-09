@@ -1,25 +1,28 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Permissions } from '../../../app/models';
+
+Migrations.add({
 	version: 84,
 	up() {
-		if (RocketChat.models && RocketChat.models.Permissions) {
+		if (Permissions) {
 
 			// Update permission name, copy values from old name
-			const oldPermission = RocketChat.models.Permissions.findOne('add-user-to-room');
+			const oldPermission = Permissions.findOne('add-user-to-room');
 			if (oldPermission && oldPermission.roles.length) {
-				RocketChat.models.Permissions.upsert({ _id: 'add-user-to-joined-room' }, { $set: { roles: oldPermission.roles } });
-				RocketChat.models.Permissions.remove({ _id: 'add-user-to-room' });
+				Permissions.upsert({ _id: 'add-user-to-joined-room' }, { $set: { roles: oldPermission.roles } });
+				Permissions.remove({ _id: 'add-user-to-room' });
 			}
 		}
 	},
 
 	down() {
-		if (RocketChat.models && RocketChat.models.Permissions) {
+		if (Permissions) {
 
 			// Revert permission name, copy values from updated name
-			const newPermission = RocketChat.models.Permissions.findOne('add-user-to-joined-room');
+			const newPermission = Permissions.findOne('add-user-to-joined-room');
 			if (newPermission && newPermission.roles.length) {
-				RocketChat.models.Permissions.upsert({ _id: 'add-user-to-room' }, { $set: { roles: newPermission.roles } });
-				RocketChat.models.Permissions.remove({ _id: 'add-user-to-joined-room' });
+				Permissions.upsert({ _id: 'add-user-to-room' }, { $set: { roles: newPermission.roles } });
+				Permissions.remove({ _id: 'add-user-to-joined-room' });
 			}
 		}
 	},

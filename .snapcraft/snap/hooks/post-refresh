@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Initialize the CADDY_URL to a default
+caddy="$(snapctl get caddy)"
+if [ -z "$caddy" ]; then
+  snapctl set caddy=disable
+fi
+
+# Initialize the PORT to a default
+port="$(snapctl get port)"
+if [ -z "$port" ]; then
+  snapctl set port=3000
+fi
+
+# Initialize the MONGO_URL to a default
+mongourl="$(snapctl get mongo-url)"
+if [ -z "$mongourl" ]; then
+  snapctl set mongo-url=mongodb://localhost:27017/parties
+fi
+
+# Initialize the MONGO_OPLOG_URL to a default
+mongooplogurl="$(snapctl get mongo-oplog-url)"
+if [ -z "$mongooplogurl" ]; then
+  snapctl set mongo-oplog-url=mongodb://localhost:27017/local
+fi
+
+# Initialize the protocol to a default
+https="$(snapctl get https)"
+if [ -z "$https" ]; then
+  snapctl set https=disable
+fi
+

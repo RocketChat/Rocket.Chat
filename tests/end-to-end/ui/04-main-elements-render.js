@@ -1,6 +1,3 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
@@ -25,7 +22,7 @@ describe('[Main Elements Render]', function() {
 			});
 
 			it('it should show the new channel button', () => {
-				sideNav.newChannelBtn.isVisible().should.be.true;
+				sideNav.newChannelBtnToolbar.isVisible().should.be.true;
 			});
 
 			it('it should show "general" channel', () => {
@@ -151,7 +148,7 @@ describe('[Main Elements Render]', function() {
 
 			// issues with the new message box action button and the no animations on tests
 
-			it.skip('it should show the audio recording button', () => {
+			it('it should show the audio recording button', () => {
 				mainContent.recordBtn.isVisible().should.be.true;
 			});
 

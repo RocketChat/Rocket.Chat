@@ -1,17 +1,33 @@
-/* globals MongoInternals, SystemLogger */
-
 import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
+import { SystemLogger } from '../../app/logger';
+import { settings } from '../../app/settings';
+import { Info } from '../../app/utils';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
 Meteor.startup(function() {
 	let oplogState = 'Disabled';
-	if (MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry) {
+
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry) {
 		oplogState = 'Enabled';
-		if (RocketChat.settings.get('Force_Disable_OpLog_For_Cache') === true) {
+		if (settings.get('Force_Disable_OpLog_For_Cache') === true) {
 			oplogState += ' (Disabled for Cache Sync)';
 		}
+	}
+
+	let mongoDbVersion;
+	let mongoDbEngine;
+	try {
+		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
+		mongoDbVersion = version;
+		mongoDbEngine = storageEngine.name;
+	} catch (e) {
+		mongoDbVersion = 'Error getting version';
+		console.error('Error getting MongoDB version');
 	}
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
@@ -19,32 +35,40 @@ Meteor.startup(function() {
 
 	return Meteor.setTimeout(function() {
 		let msg = [
-			`Rocket.Chat Version: ${ RocketChat.Info.version }`,
+			`Rocket.Chat Version: ${ Info.version }`,
 			`     NodeJS Version: ${ process.versions.node } - ${ process.arch }`,
+			`    MongoDB Version: ${ mongoDbVersion }`,
+			`     MongoDB Engine: ${ mongoDbEngine }`,
 			`           Platform: ${ process.platform }`,
 			`       Process Port: ${ process.env.PORT }`,
-			`           Site URL: ${ RocketChat.settings.get('Site_Url') }`,
+			`           Site URL: ${ settings.get('Site_Url') }`,
 			`   ReplicaSet OpLog: ${ oplogState }`,
 		];
 
-		if (RocketChat.Info.commit && RocketChat.Info.commit.hash) {
-			msg.push(`        Commit Hash: ${ RocketChat.Info.commit.hash.substr(0, 10) }`);
+		if (Info.commit && Info.commit.hash) {
+			msg.push(`        Commit Hash: ${ Info.commit.hash.substr(0, 10) }`);
 		}
 
-		if (RocketChat.Info.commit && RocketChat.Info.commit.branch) {
-			msg.push(`      Commit Branch: ${ RocketChat.Info.commit.branch }`);
+		if (Info.commit && Info.commit.branch) {
+			msg.push(`      Commit Branch: ${ Info.commit.branch }`);
 		}
 
 		msg = msg.join('\n');
 
-		if (semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
-			return SystemLogger.startup_box(msg, 'SERVER RUNNING');
+		if (!semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
+			msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${ desiredNodeVersionMajor }.X.X`].join('\n');
+			SystemLogger.error_box(msg, 'SERVER ERROR');
+
+			return process.exit();
 		}
 
-		msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${ desiredNodeVersionMajor }.X.X`].join('\n');
+		if (!semver.satisfies(mongoDbVersion, '>=3.2.0')) {
+			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.2 OR LATER'].join('\n');
+			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-		SystemLogger.error_box(msg, 'SERVER ERROR');
+			return process.exit();
+		}
 
-		return process.exit();
+		return SystemLogger.startup_box(msg, 'SERVER RUNNING');
 	}, 100);
 });
