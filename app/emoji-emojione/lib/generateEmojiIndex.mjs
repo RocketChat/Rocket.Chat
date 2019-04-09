@@ -95,7 +95,6 @@ function generateEmojiPicker(data) {
 		output += `\t${category}: [\n`;
 
 		for (let emoji in emojisByCategory[category]) {
-			console.log('up', emojiList[emojisByCategory[category][emoji]]);
 			output += `\t\t'${emojiList[emojisByCategory[category][emoji]].shortname.replace(/:/g,'')}',\n`;
 		}
 
