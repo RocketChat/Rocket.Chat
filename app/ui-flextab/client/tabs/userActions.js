@@ -386,7 +386,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				}
 				modal.open({
 					title: t('Are_you_sure'),
-					text: t('The_user_will_be_removed_from_s', room.name),
+					text: t('The_user_will_be_removed_from_s', room.fname),
 					type: 'warning',
 					showCancelButton: true,
 					confirmButtonColor: '#DD6B55',
@@ -397,7 +397,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				}, () => Meteor.call('removeUserFromRoom', { rid, username: user.username }, success(() => {
 					modal.open({
 						title: t('Removed'),
-						text: t('User_has_been_removed_from_s', room.name),
+						text: t('User_has_been_removed_from_s', room.fname),
 						type: 'success',
 						timer: 2000,
 						showConfirmButton: false,
