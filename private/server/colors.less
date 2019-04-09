@@ -27,6 +27,29 @@
 @transparent-lighter: rgba(255, 255, 255, 0.3);
 @transparent-lightest: rgba(255, 255, 255, 0.6);
 
+:root {
+	--legacy-default-action-color: @default-action-color;
+	--legacy-default-action-contrast: @default-action-contrast;
+	--legacy-primary-background-contrast: @primary-background-contrast;
+	--legacy-primary-action-contrast: @primary-action-contrast;
+	--legacy-secondary-background-contrast: @secondary-background-contrast;
+	--legacy-secondary-action-contrast: @secondary-action-contrast;
+	--legacy-selection-background: @selection-background;
+	--legacy-success-background: @success-background;
+	--legacy-success-border: @success-border;
+	--legacy-error-background: @error-background;
+	--legacy-error-border: @error-border;
+	--legacy-error-contrast: @error-contrast;
+	--legacy-pending-background: @pending-background;
+	--legacy-pending-border: @pending-border;
+	--legacy-transparent-darkest: @transparent-darkest;
+	--legacy-transparent-darker: @transparent-darker;
+	--legacy-transparent-dark: @transparent-dark;
+	--legacy-transparent-light: @transparent-light;
+	--legacy-transparent-lighter: @transparent-lighter;
+	--legacy-transparent-lightest: @transparent-lightest;
+}
+
 /** ----------------------------------------------------------------------------
  * Mixins
  */
@@ -570,20 +593,6 @@ input:-webkit-autofill {
 
 		&:hover {
 			color: darken(@link-font-color, 10%);
-		}
-	}
-
-	.mention-link {
-		background-color: fade(@rc-color-button-primary, 20%);
-
-		&.mention-link-me {
-			background: @primary-action-color;
-			color: @primary-action-contrast;
-		}
-
-		&.mention-link-all {
-			background: @attention-color;
-			color: @primary-action-contrast;
 		}
 	}
 

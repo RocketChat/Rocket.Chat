@@ -1,28 +1,30 @@
+import mem from 'mem';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
-import { /* UserRoles, RoomRoles,*/ ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
-// import _ from 'underscore';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
+import { renderMessageBody } from './renderMessageBody';
 
-export const normalizeThreadMessage = (message) => {
+export const normalizeThreadMessage = mem((message) => {
 	if (message.msg) {
-		return message.msg;
+		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}
 
 	if (message.attachments) {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment.description) {
-			return attachment.description;
+			return s.escapeHTML(attachment.description);
 		}
 
 		if (attachment.title) {
-			return attachment.title;
+			return s.escapeHTML(attachment.title);
 		}
 	}
-};
+}, { maxAge: 1000 });
 
 export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	const userId = msg.u && msg.u._id;
