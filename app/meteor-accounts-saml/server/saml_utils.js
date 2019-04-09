@@ -103,6 +103,31 @@ SAML.prototype.generateAuthorizeRequest = function(req) {
 	return request;
 };
 
+SAML.prototype.generateLogoutResponse = function() {
+	const id = `_${ this.generateUniqueID() }`;
+	const instant = this.generateInstant();
+
+
+	const response = `${ '<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  ' +
+		'ID="' }${ id }" ` +
+		'Version="2.0" ' +
+		`IssueInstant="${ instant }" ` +
+		`Destination="${ this.options.idpSLORedirectURL }" ` +
+		'>' +
+		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>` +
+		'<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>' +
+		'</samlp:LogoutResponse>';
+
+	debugLog('------- SAML Logout response -----------');
+	debugLog(response);
+
+	return {
+		response,
+		id,
+	};
+
+};
+
 SAML.prototype.generateLogoutRequest = function(options) {
 	// options should be of the form
 	// nameId: <nameId as submitted during SAML SSO>
@@ -112,13 +137,7 @@ SAML.prototype.generateLogoutRequest = function(options) {
 	const id = `_${ this.generateUniqueID() }`;
 	const instant = this.generateInstant();
 
-	let request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ' +
-		'xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="' }${ id }" Version="2.0" IssueInstant="${ instant }" Destination="${ this.options.idpSLORedirectURL }">` +
-		`<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">${ this.options.issuer }</saml:Issuer>` +
-		`<saml:NameID Format="${ this.options.identifierFormat }">${ options.nameID }</saml:NameID>` +
-		'</samlp:LogoutRequest>';
-
-	request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  ' +
+	const request = `${ '<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"  ' +
 		'ID="' }${ id }" ` +
 		'Version="2.0" ' +
 		`IssueInstant="${ instant }" ` +
@@ -140,6 +159,42 @@ SAML.prototype.generateLogoutRequest = function(options) {
 		request,
 		id,
 	};
+};
+
+SAML.prototype.logoutResponseToUrl = function(response, callback) {
+	const self = this;
+
+	zlib.deflateRaw(response, function(err, buffer) {
+		if (err) {
+			return callback(err);
+		}
+
+		const base64 = buffer.toString('base64');
+		let target = self.options.idpSLORedirectURL;
+
+		if (target.indexOf('?') > 0) {
+			target += '&';
+		} else {
+			target += '?';
+		}
+
+		// TBD. We should really include a proper RelayState here
+		const relayState = Meteor.absoluteUrl();
+
+		const samlResponse = {
+			SAMLResponse: base64,
+			RelayState: relayState,
+		};
+
+		if (self.options.privateCert) {
+			samlResponse.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+			samlResponse.Signature = self.signRequest(querystring.stringify(samlResponse));
+		}
+
+		target += querystring.stringify(samlResponse);
+
+		return callback(null, target);
+	});
 };
 
 SAML.prototype.requestToUrl = function(request, operation, callback) {
@@ -275,6 +330,41 @@ SAML.prototype.validateSignature = function(xml, cert) {
 	sig.loadSignature(signature);
 
 	return sig.checkSignature(xml);
+};
+
+SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
+	const compressedSAMLRequest = new Buffer(samlRequest, 'base64');
+	zlib.inflateRaw(compressedSAMLRequest, function(err, decoded) {
+		if (err) {
+			debugLog(`Error while inflating. ${ err }`);
+		} else {
+			debugLog(`>>>> ${ decoded }`);
+			const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
+
+			if (doc) {
+				const request = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutRequest')[0];
+				if (request) {
+					let idpSession;
+					let nameID;
+					try {
+						const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
+						idpSession = sessionNode.childNodes[0].nodeValue;
+						const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
+						nameID = nameIdNode.childNodes[0].nodeValue;
+
+					} catch (e) {
+						if (Meteor.settings.debug) {
+							debugLog(`Caught error: ${ e }`);
+							const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+							debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
+						}
+					}
+
+					callback(null, { idpSession, nameID });
+				}
+			}
+		}
+	});
 };
 
 SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {

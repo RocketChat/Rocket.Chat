@@ -268,19 +268,22 @@ const middleware = function(req, res, next) {
 			case 'logout':
 				// This is where we receive SAML LogoutResponse
 				_saml = new SAML(service);
-				_saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
-					if (!err) {
-						const logOutUser = function(inResponseTo) {
-							if (Accounts.saml.settings.debug) {
-								console.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
-							}
+				if (req.query.SAMLRequest) {
+					_saml.validateLogoutRequest(req.query.SAMLRequest, function(err, result) {
+						if (err) {
+							console.error(err);
+							throw new Meteor.Error('Unable to Validate Logout Request');
+						}
+
+						const logOutUser = function(samlInfo) {
 							const loggedOutUser = Meteor.users.find({
-								'services.saml.inResponseTo': inResponseTo,
+								$or: [
+									{ 'services.saml.nameID': samlInfo.nameID },
+									{ 'services.saml.idpSession': samlInfo.idpSession },
+								],
 							}).fetch();
+
 							if (loggedOutUser.length === 1) {
-								if (Accounts.saml.settings.debug) {
-									console.log(`Found user ${ loggedOutUser[0]._id }`);
-								}
 								Meteor.users.update({
 									_id: loggedOutUser[0]._id,
 								}, {
@@ -288,6 +291,7 @@ const middleware = function(req, res, next) {
 										'services.resume.loginTokens': [],
 									},
 								});
+
 								Meteor.users.update({
 									_id: loggedOutUser[0]._id,
 								}, {
@@ -295,25 +299,81 @@ const middleware = function(req, res, next) {
 										'services.saml': '',
 									},
 								});
-							} else {
-								throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
 							}
+
 						};
 
 						fiber(function() {
 							logOutUser(result);
 						}).run();
 
-
-						res.writeHead(302, {
-							Location: req.query.RelayState,
+						const { response } = _saml.generateLogoutResponse({
+							nameID: result.nameID,
+							sessionIndex: result.idpSession,
 						});
-						res.end();
-					}
-					//  else {
-					// 	// TBD thinking of sth meaning full.
-					// }
-				});
+
+						_saml.logoutResponseToUrl(response, function(err, url) {
+							if (err) {
+								console.error(err);
+								throw new Meteor.Error('Unable to generate SAML logout Response Url');
+							}
+
+							res.writeHead(302, {
+								Location: url,
+							});
+							res.end();
+
+						});
+
+					});
+				} else {
+					_saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
+						if (!err) {
+							const logOutUser = function(inResponseTo) {
+								if (Accounts.saml.settings.debug) {
+									console.log(`Logging Out user via inResponseTo ${ inResponseTo }`);
+								}
+								const loggedOutUser = Meteor.users.find({
+									'services.saml.inResponseTo': inResponseTo,
+								}).fetch();
+								if (loggedOutUser.length === 1) {
+									if (Accounts.saml.settings.debug) {
+										console.log(`Found user ${ loggedOutUser[0]._id }`);
+									}
+									Meteor.users.update({
+										_id: loggedOutUser[0]._id,
+									}, {
+										$set: {
+											'services.resume.loginTokens': [],
+										},
+									});
+									Meteor.users.update({
+										_id: loggedOutUser[0]._id,
+									}, {
+										$unset: {
+											'services.saml': '',
+										},
+									});
+								} else {
+									throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
+								}
+							};
+
+							fiber(function() {
+								logOutUser(result);
+							}).run();
+
+
+							res.writeHead(302, {
+								Location: req.query.RelayState,
+							});
+							res.end();
+						}
+						//  else {
+						// 	// TBD thinking of sth meaning full.
+						// }
+					});
+				}
 				break;
 			case 'sloRedirect':
 				res.writeHead(302, {
