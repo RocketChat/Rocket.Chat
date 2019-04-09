@@ -9,6 +9,7 @@ import { Users } from '../../models/client';
 import { t } from '../../utils/client';
 import { emoji } from '../lib/rocketchat';
 import { EmojiPicker } from './lib/EmojiPicker';
+import { emojioneRenderFromShort } from '../../emoji-emojione/lib/emojioneRender';
 
 const emojiPickerContent = new ReactiveVar('');
 
@@ -45,7 +46,7 @@ const createPickerEmojis = _.throttle((instance) => {
 
 			return emojiPackage.emojisByCategory[category.key].map((current) => {
 				const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${ actualTone }` : '';
-				return getEmojiElement(current, emojiPackage.render(`:${ current }${ tone }:`));
+				return getEmojiElement(current, emojioneRenderFromShort(`:${ current }${ tone }:`));
 			}).join('');
 		}).join('') || `<li>${ t('No_emojis_found') }</li>`;
 		html += '</ul>';
