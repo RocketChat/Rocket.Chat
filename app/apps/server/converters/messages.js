@@ -1,10 +1,6 @@
-import { omit } from 'underscore';
 import { Random } from 'meteor/random';
 import { Messages, Rooms, Users } from '../../../models';
-
-function getUnmappedProperties(source, ...mappedFields) {
-	return mappedFields.reduce((result, map) => omit(result, (value, key) => map.hasOwnProperty(key)), source);
-}
+import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
 	constructor(orch) {
@@ -22,57 +18,50 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		const room = this.orch.getConverters().get('rooms').convertById(msgObj.rid);
+		const map = {
+			id: '_id',
+			reactions: 'reactions',
+			parseUrls: 'parseUrls',
+			text: 'msg',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			editedAt: 'editedAt',
+			emoji: 'emoji',
+			avatarUrl: 'avatar',
+			alias: 'alias',
+			customFields: 'customFields',
+			groupable: 'groupable',
+			room: (message) => {
+				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
+				delete message.rid;
+				return result;
+			},
+			editor: (message) => {
+				const result = this.orch.getConverters().get('users').convertById(message.editedBy._id);
+				delete message.editedBy;
+				return result;
+			},
+			attachments: (message) => {
+				const result = this._convertAttachmentsToApp(message.attachments);
+				delete message.attachments;
+				return result;
+			},
+			sender: (message) => {
+				let result;
 
-		let sender;
-		if (msgObj.u && msgObj.u._id) {
-			sender = this.orch.getConverters().get('users').convertById(msgObj.u._id);
+				if (msgObj.u && msgObj.u._id) {
+					result = this.orch.getConverters().get('users').convertById(message.u._id);
+				} else {
+					result = this.orch.getConverters().get('users').convertToApp(message.u);
+				}
 
-			if (!sender) {
-				sender = this.orch.getConverters().get('users').convertToApp(msgObj.u);
-			}
-		}
+				delete message.u;
 
-		let editor;
-		if (msgObj.editedBy) {
-			editor = this.orch.getConverters().get('users').convertById(msgObj.editedBy._id);
-		}
-
-		const attachments = this._convertAttachmentsToApp(msgObj.attachments);
-
-		const appMessage = {
-			id: msgObj._id,
-			room,
-			sender,
-			text: msgObj.msg,
-			createdAt: msgObj.ts,
-			updatedAt: msgObj._updatedAt,
-			editor,
-			editedAt: msgObj.editedAt,
-			emoji: msgObj.emoji,
-			avatarUrl: msgObj.avatar,
-			alias: msgObj.alias,
-			customFields: msgObj.customFields,
-			groupable: msgObj.groupable,
-			attachments,
-			reactions: msgObj.reactions,
-			parseUrls: msgObj.parseUrls,
+				return result;
+			},
 		};
 
-		appMessage._unmappedProperties_ = getUnmappedProperties(msgObj, appMessage, {
-			_id: 1,
-			msg: 1,
-			ts: 1,
-			_updatedAt: 1,
-			avatar: 1,
-			rid: 1,
-			u: 1,
-			editedBy: 1,
-			mentions: 1,
-			channels: 1,
-		});
-
-		return appMessage;
+		return transformMappedData(msgObj, map);
 	}
 
 	convertAppMessage(message) {
@@ -180,6 +169,21 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
+		// const map = {
+		// 	collapsed: 'collapsed',
+		// 	color: 'color',
+		// 	text: 'text',
+		// 	timestampLink: 'message_link',
+		// 	imageDimensions: 'image_dimensions',
+		// 	imagePreview: 'image_preview',
+
+		// 	timestamp: (attachment) => {
+		// 		const result = new Date(attachment.ts);
+		// 		delete attachment.ts;
+		// 		return result;
+		// 	},
+		// }
+
 		return attachments.map((attachment) => {
 			let author;
 			if (attachment.author_name || attachment.author_link || attachment.author_icon) {
@@ -226,28 +230,28 @@ export class AppMessagesConverter {
 				description: attachment.description,
 			};
 
-			appAttachment._unmappedProperties_ = getUnmappedProperties(attachment, appAttachment, {
-				author_name: 1,
-				author_link: 1,
-				author_icon: 1,
-				title_link: 1,
-				title_link_download: 1,
-				button_alignment: 1,
-				ts: 1,
-				message_link: 1,
-				thumb_url : 1,
-				image_dimensions: 1,
-				image_preview: 1,
-				image_url: 1,
-				image_type: 1,
-				image_size: 1,
-				audio_url: 1,
-				audio_type: 1,
-				audio_size: 1,
-				video_url: 1,
-				video_type: 1,
-				video_size: 1,
-			});
+			// appAttachment._unmappedProperties_ = getUnmappedProperties(attachment, appAttachment, {
+			// 	author_name: 1,
+			// 	author_link: 1,
+			// 	author_icon: 1,
+			// 	title_link: 1,
+			// 	title_link_download: 1,
+			// 	button_alignment: 1,
+			// 	ts: 1,
+			// 	message_link: 1,
+			// 	thumb_url : 1,
+			// 	image_dimensions: 1,
+			// 	image_preview: 1,
+			// 	image_url: 1,
+			// 	image_type: 1,
+			// 	image_size: 1,
+			// 	audio_url: 1,
+			// 	audio_type: 1,
+			// 	audio_size: 1,
+			// 	video_url: 1,
+			// 	video_type: 1,
+			// 	video_size: 1,
+			// });
 
 			return appAttachment;
 		});
