@@ -1,8 +1,12 @@
+import _ from 'underscore';
+
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { TAPi18n } from 'meteor/tap:i18n';
 import { Template } from 'meteor/templating';
 
+import { Users } from '../../models/client';
+import { t } from '../../utils/client';
 import { emoji } from '../lib/rocketchat';
 import { EmojiPicker } from './lib/EmojiPicker';
 
@@ -18,21 +22,21 @@ export function updateRecentEmoji() {
 			return;
 		}
 
-		return emojiPackage.emojisByCategory.recent.map((current) => {
-			return getEmojiElement(current, emojiPackage.render(`:${ current }:`));
-		}).join('');
-	}).join('') || `<li>${ TAPi18n.__('No_emojis_found') }</li>`;
+		return emojiPackage.emojisByCategory.recent.map(
+			(current) => getEmojiElement(current, emojiPackage.render(`:${ current }:`))
+		).join('');
+	}).join('') || `<li>${ t('No_emojis_found') }</li>`;
 
 	document.querySelector('.emoji-category-recent').innerHTML = html;
 }
 
-function getEmojis(instance) {
+const createPickerEmojis = _.throttle((instance) => {
 	const categories = instance.categoriesList;
 	const actualTone = instance.tone;
 	let html = '';
 
 	categories.forEach((category) => {
-		html += `<h4 id="emoji-list-category-${ category.key }">${ TAPi18n.__(category.i18n) }</h4>`;
+		html += `<h4 id="emoji-list-category-${ category.key }">${ t(category.i18n) }</h4>`;
 		html += `<ul class="emoji-list emoji-category-${ category.key }">`;
 		html += Object.values(emoji.packages).map((emojiPackage) => {
 			if (!emojiPackage.emojisByCategory[category.key]) {
@@ -43,12 +47,12 @@ function getEmojis(instance) {
 				const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${ actualTone }` : '';
 				return getEmojiElement(current, emojiPackage.render(`:${ current }${ tone }:`));
 			}).join('');
-		}).join('') || `<li>${ TAPi18n.__('No_emojis_found') }</li>`;
+		}).join('') || `<li>${ t('No_emojis_found') }</li>`;
 		html += '</ul>';
 	});
 
 	emojiPickerContent.set(html);
-}
+}, 300);
 
 function getEmojisBySearchTerm(searchTerm) {
 	let html = '<ul class="emoji-list">';
@@ -279,6 +283,14 @@ Template.emojiPicker.onCreated(function() {
 			recentEmojisNeedsUpdate.set(false);
 		}
 	});
-	const instance = Template.instance();
-	getEmojis(instance);
+
+	// rewrite emoji picker after getting user's language
+	this.autorun(() => {
+		if (!Meteor.userId()) {
+			return;
+		}
+		Users.findOne(Meteor.userId(), { fields: { language: 1 } });
+
+		createPickerEmojis(this);
+	});
 });
