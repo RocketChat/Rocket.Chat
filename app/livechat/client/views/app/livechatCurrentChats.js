@@ -31,6 +31,9 @@ Template.livechatCurrentChats.helpers({
 		return this.servedBy && this.servedBy.username;
 	},
 	status() {
+		if (localStorage.getItem('status')) {
+			return localStorage.getItem('status');
+		}
 		return this.open ? t('Opened') : t('Closed');
 	},
 	isClosed() {
@@ -208,9 +211,9 @@ Template.livechatCurrentChats.events({
 		}
 
 		// store user option on localStorage
-		console.log('I came second');
-		console.log(filter);
-		localStorage.setItem('status', filter.status);
+		if (filter.status || filter.status === '') {
+			localStorage.setItem('status', filter.status);
+		}
 		instance.filter.set(filter);
 		instance.limit.set(20);
 	},
@@ -288,4 +291,7 @@ Template.livechatCurrentChats.onRendered(function() {
 		todayHighlight: true,
 		format: moment.localeData().longDateFormat('L').toLowerCase(),
 	});
+
+	// Set value of select
+	this.$('#status').val(this.filter.get().status);
 });
