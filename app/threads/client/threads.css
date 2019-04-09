@@ -20,6 +20,8 @@
 
 .thread-list {
 	overflow: auto;
+
+	word-wrap: break-word;
 	flex-shrink: 1;
 }
 
@@ -42,10 +44,6 @@
 	cursor: pointer;
 
 	color: var(--rc-color-link-active);
-
-	font-style: normal;
-
-	line-height: initial;
 }
 
 .contextual-bar__content.thread,
