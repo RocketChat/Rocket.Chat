@@ -61,7 +61,6 @@ function generateEmojiPicker(data) {
 		{ key: 'travel', i18n: 'Travel_and_Places' },
 		{ key: 'objects', i18n: 'Objects' },
 		{ key: 'symbols', i18n: 'Symbols' },
-		{ key: 'regional', i18n: 'Regional' },
 		{ key: 'flags', i18n: 'Flags' },
 	];
 
@@ -72,7 +71,7 @@ function generateEmojiPicker(data) {
 		if (map) {
 			output += `\t{ key: '${category}', i18n: '${map.i18n}' },\n`;
 		} else {
-			if(category !== 'modifier'){
+			if(category !== 'modifier' || category !== 'regional'){
 				console.error(`No emojiCategory mapping for ${category}`);
 			}
 		}

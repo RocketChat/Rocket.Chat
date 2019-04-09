@@ -4,7 +4,7 @@ import { emoji } from '../../lib/rocketchat';
 import _ from 'underscore';
 
 export const EmojiPicker = {
-	width: 365,
+	width: 624,
 	height: 441,
 	initiated: false,
 	input: null,

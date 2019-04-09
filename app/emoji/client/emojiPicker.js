@@ -14,7 +14,7 @@ function getEmojis(instance) {
 	let html = '';
 	_.each(emoji.packages, function(emojiPackage) {
 		_.each(emojiPackage.emojisByCategory, function(emojis, category) {
-			if (emojis.length === 0 || category === 'modifier') {
+			if (emojis.length === 0 || category === 'modifier' || category === 'regional') {
 				return;
 			}
 			const cat = categories.find((o) => o.key === category);

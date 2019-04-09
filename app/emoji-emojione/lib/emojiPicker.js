@@ -13,7 +13,6 @@ export const emojiCategories = [
 	{ key: 'travel', i18n: 'Travel_and_Places' },
 	{ key: 'objects', i18n: 'Objects' },
 	{ key: 'symbols', i18n: 'Symbols' },
-	{ key: 'regional', i18n: 'Regional' },
 	{ key: 'flags', i18n: 'Flags' },
 ];
 
