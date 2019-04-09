@@ -293,5 +293,9 @@ Template.livechatCurrentChats.onRendered(function() {
 	});
 
 	// Set value of select
-	this.$('#status').val(this.filter.get().status);
+	if (localStorage.getItem('status') || localStorage.getItem('status') === '') {
+		this.$('#status').val(localStorage.getItem('status'));
+	} else {
+		this.$('#status').val(this.filter.get().status);
+	}
 });
