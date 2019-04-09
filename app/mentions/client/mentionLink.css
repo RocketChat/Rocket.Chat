@@ -1,27 +1,37 @@
+.message .mention-link,
 .mention-link {
 	padding: 0 6px 2px;
 
 	transition: border-radius 0.3s;
 
-	color: var(--mention-link-text-color) !important;
+	color: var(--mention-link-text-color);
 
 	border-radius: var(--mention-link-radius);
 
-	background-color: var(--mention-link-background) !important;
+	background-color: var(--mention-link-background);
 
 	font-weight: 700;
 
 	&:hover {
-		border-radius: var(--border-radius);
+		opacity: 0.6;
+		color: var(--mention-link-text-color);
 	}
 
 	&--me {
-		color: var(--mention-link-me-text-color) !important;
-		background-color: var(--mention-link-me-background) !important;
+		color: var(--mention-link-me-text-color);
+		background-color: var(--mention-link-me-background);
+
+		&:hover {
+			color: var(--mention-link-me-text-color);
+		}
 	}
 
 	&--group {
-		color: var(--mention-link-group-text-color) !important;
-		background-color: var(--mention-link-group-background) !important;
+		color: var(--mention-link-group-text-color);
+		background-color: var(--mention-link-group-background);
+
+		&:hover {
+			color: var(--mention-link-group-text-color);
+		}
 	}
 }
