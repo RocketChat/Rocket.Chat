@@ -1,5 +1,5 @@
 <template name="discussionsTabbar">
-	{{#if noMessages}}
+	{{#if initialLoadCompleted}}
 		{{#unless hasMessages}}
 			<div class="list-view discussions-list flex-tab__header">
 					<h2>{{_ "No_discussions_yet"}}</h2>
