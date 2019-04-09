@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { fileUploadHandler } from '../../file-upload';
 import { settings } from '../../settings';
-import { AudioRecorder, chatMessages } from '../../ui';
+import { AudioRecorder } from '../../ui';
 import { call } from '../../ui-utils';
 import { t } from '../../utils';
 import './messageBoxAudioMessage.html';
@@ -39,7 +39,7 @@ const unregisterUploadProgress = (upload) => setTimeout(() => {
 	Session.set('uploading', uploads.filter(({ id }) => id !== upload.id));
 }, 2000);
 
-const uploadRecord = async({ rid, blob }) => {
+const uploadRecord = async ({ rid, tmid, blob }) => {
 	const upload = fileUploadHandler('Uploads', {
 		name: `${ t('Audio record') }.mp3`,
 		size: blob.size,
@@ -59,7 +59,7 @@ const uploadRecord = async({ rid, blob }) => {
 			upload.start((error, ...args) => (error ? reject(error) : resolve(args)));
 		});
 
-		await call('sendFileMessage', rid, storage, file);
+		await call('sendFileMessage', rid, storage, file, { tmid });
 
 		unregisterUploadProgress(upload);
 	} catch (error) {
@@ -135,7 +135,6 @@ Template.messageBoxAudioMessage.events({
 			return;
 		}
 
-		chatMessages[this.rid].recording = true;
 		instance.state.set('recording');
 
 		try {
@@ -153,7 +152,6 @@ Template.messageBoxAudioMessage.events({
 		} catch (error) {
 			instance.state.set(null);
 			instance.isMicrophoneDenied.set(true);
-			chatMessages[this.rid].recording = false;
 		}
 	},
 
@@ -171,7 +169,6 @@ Template.messageBoxAudioMessage.events({
 		await stopRecording();
 
 		instance.state.set(null);
-		chatMessages[this.rid].recording = false;
 	},
 
 	async 'click .js-audio-message-done'(event, instance) {
@@ -190,8 +187,8 @@ Template.messageBoxAudioMessage.events({
 		const blob = await stopRecording();
 
 		instance.state.set(null);
-		chatMessages[this.rid].recording = false;
 
-		await uploadRecord({ rid: this.rid, blob });
+		const { rid, tmid } = this;
+		await uploadRecord({ rid, tmid, blob });
 	},
 });

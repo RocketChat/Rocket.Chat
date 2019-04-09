@@ -43,7 +43,10 @@ Template.roomList.helpers({
 
 		if (this.identifier === 'unread') {
 			query.alert = true;
-			query.hideUnreadStatus = { $ne: true };
+			query.$or = [
+				{ hideUnreadStatus: { $ne: true } },
+				{ unread: { $gt: 0 } },
+			];
 
 			return ChatSubscription.find(query, { sort });
 		}
@@ -64,7 +67,7 @@ Template.roomList.helpers({
 				query.prid = { $exists: true };
 			}
 
-			if (this.identifier === 'unread' || this.identifier === 'tokens') {
+			if (this.identifier === 'tokens') {
 				types = ['c', 'p'];
 			}
 
@@ -82,7 +85,12 @@ Template.roomList.helpers({
 			if (getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{ alert: { $ne: true } },
-					{ hideUnreadStatus: true },
+					{
+						$and: [
+							{ hideUnreadStatus: true },
+							{ unread: 0 },
+						],
+					},
 				];
 			}
 			query.t = { $in: types };

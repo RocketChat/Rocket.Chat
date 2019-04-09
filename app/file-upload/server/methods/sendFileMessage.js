@@ -24,6 +24,7 @@ Meteor.methods({
 			alias: Match.Optional(String),
 			groupable: Match.Optional(Boolean),
 			msg: Match.Optional(String),
+			tmid: Match.Optional(String),
 		});
 
 		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));

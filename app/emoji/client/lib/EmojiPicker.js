@@ -88,7 +88,7 @@ export const EmojiPicker = {
 		const containerEl = this.setPosition();
 		containerEl.addClass('show');
 
-		const emojiInput = containerEl.find('.emoji-filter input.search');
+		const emojiInput = containerEl.find('.js-emojipicker-search');
 		if (emojiInput) {
 			emojiInput.focus();
 		}
