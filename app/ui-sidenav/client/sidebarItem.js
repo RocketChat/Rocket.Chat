@@ -35,6 +35,16 @@ Template.sidebarItem.helpers({
 	showUnread() {
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
+	badgeClass() {
+		const { t, unread, userMentions, groupMentions } = this;
+		return [
+			'badge',
+			unread && 'badge--unread',
+			unread && t === 'd' && 'badge--dm',
+			userMentions && 'badge--user-mentions',
+			groupMentions && 'badge--group-mentions',
+		].filter(Boolean).join(' ');
+	},
 });
 
 function setLastMessageTs(instance, ts) {

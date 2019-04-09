@@ -293,11 +293,6 @@
 			fill: var(--color-white);
 		}
 	}
-
-	& .mention-link {
-		color: inherit;
-		background: transparent;
-	}
 }
 
 .flex-nav .sidebar-item__message {
