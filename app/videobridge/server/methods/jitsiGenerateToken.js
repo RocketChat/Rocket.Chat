@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { settings } from '../../../settings';
 import { jws } from 'jsrsasign';
 
 Meteor.methods({
@@ -9,9 +9,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:generateToken' });
 		}
 
-		const jitsiDomain = RocketChat.settings.get('Jitsi_Domain');
-		const jitsiApplicationId = RocketChat.settings.get('Jitsi_Application_ID');
-		const jitsiApplicationSecret = RocketChat.settings.get('Jitsi_Application_Secret');
+		const jitsiDomain = settings.get('Jitsi_Domain');
+		const jitsiApplicationId = settings.get('Jitsi_Application_ID');
+		const jitsiApplicationSecret = settings.get('Jitsi_Application_Secret');
 
 		function addUserContextToPayload(payload) {
 			const user = Meteor.user();

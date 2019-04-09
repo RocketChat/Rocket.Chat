@@ -108,13 +108,11 @@ Template.videoFlexTab.onRendered(function() {
 			if (isEnabledTokenAuth) {
 				accessToken = await new Promise((resolve, reject) => {
 					Meteor.call('jitsi:generateAccessToken', (error, result) => {
-						console.log(error)
 						if (error) {
 							return reject(error);
 						}
-						console.log(result)
 						resolve(result);
-					})
+					});
 				});
 			}
 
