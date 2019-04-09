@@ -41,9 +41,14 @@ const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
-const openProfileTab = (e, instance, username) => {
-	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
+const openMembersListTab = (instance, group) => {
+	instance.userDetail.set(null);
+	instance.groupDetail.set(group);
+	instance.tabBar.setTemplate('membersList');
+	instance.tabBar.open();
+};
 
+const openProfileTab = (e, instance, username) => {
 	if (Layout.isEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
@@ -51,10 +56,12 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 
+	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
 	if (roomTypes.roomTypes[roomData.t].enableMembersListProfile()) {
-		instance.setUserDetail(username);
+		instance.userDetail.set(username);
 	}
 
+	instance.groupDetail.set('all');
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.open();
 };
@@ -408,6 +415,7 @@ Template.room.helpers({
 			data: {
 				rid: this._id,
 				userDetail: Template.instance().userDetail.get(),
+				groupDetail: Template.instance().groupDetail.get(),
 				clearUserDetail: Template.instance().clearUserDetail,
 			},
 		};
@@ -746,7 +754,9 @@ Template.room.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		const channel = $(e.currentTarget).data('channel');
+
+		const { currentTarget: { dataset: { channel, group, username } } } = e;
+
 		if (channel) {
 			if (Layout.isEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
@@ -754,9 +764,18 @@ Template.room.events({
 			FlowRouter.goToRoomById(channel);
 			return;
 		}
-		const username = $(e.currentTarget).data('username');
 
-		openProfileTabOrOpenDM(e, instance, username);
+		if (group) {
+			e.stopPropagation();
+			e.preventDefault();
+			openMembersListTab(instance, group);
+			return;
+		}
+
+		if (username) {
+			openProfileTabOrOpenDM(e, instance, username);
+			return;
+		}
 	},
 
 	'click .image-to-download'(event) {
@@ -931,6 +950,7 @@ Template.room.onCreated(function() {
 	this.flexTemplate = new ReactiveVar;
 
 	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
+	this.groupDetail = new ReactiveVar('all');
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);

@@ -36,7 +36,6 @@
 	--color-gray-lightest: #f2f3f5;
 	--color-black: #000000;
 	--color-white: #ffffff;
-
 	--rc-color-error: var(--color-red);
 	--rc-color-error-light: #e1364c;
 	--rc-color-alert: var(--color-yellow);
