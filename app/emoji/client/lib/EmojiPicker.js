@@ -1,11 +1,14 @@
+import _ from 'underscore';
+
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+
 import { emoji } from '../../lib/rocketchat';
-import _ from 'underscore';
+import { updateRecentEmoji } from '../../client/emojiPicker';
 
 export const EmojiPicker = {
 	width: 365,
-	height: 441,
+	height: 370,
 	initiated: false,
 	input: null,
 	source: null,
@@ -118,12 +121,8 @@ export const EmojiPicker = {
 		this.updateRecent();
 	},
 	updateRecent() {
-		const instance = Template.instance();
-		if (instance) {
-			instance.recentNeedsUpdate.set(true);
-		} else {
-			this.refreshDynamicEmojiLists();
-		}
+		updateRecentEmoji();
+		this.refreshDynamicEmojiLists();
 	},
 	refreshDynamicEmojiLists() {
 		const dynamicEmojiLists = [

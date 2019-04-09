@@ -1,8 +1,11 @@
+import emojione from 'emojione';
+
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
+import { emojioneRender } from './emojioneRender';
 import { emoji } from '../../emoji';
 import { getUserPreference } from '../../utils';
-import emojione from 'emojione';
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 
 emoji.packages.emojione = emojione;
@@ -11,9 +14,7 @@ emoji.packages.emojione.emojisByCategory = emojisByCategory;
 emoji.packages.emojione.emojiCategories = emojiCategories;
 emoji.packages.emojione.toneList = toneList;
 
-emoji.packages.emojione.render = function(message) {
-	return emojione.shortnameToImage(message).replace(/class="emojione emojione-32-/g, 'class="emojione emojione-');
-};
+emoji.packages.emojione.render = emojioneRender;
 
 // http://stackoverflow.com/a/26990347 function isSet() from Gajus
 function isSetNotNull(fn) {

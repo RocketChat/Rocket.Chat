@@ -1,3 +1,5 @@
+import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
+
 export const emoji = {
 	packages: {
 		base: {
@@ -7,9 +9,7 @@ export const emoji = {
 				recent: [],
 			},
 			toneList: {},
-			render(html) {
-				return html;
-			},
+			render: emojioneRender,
 		},
 	},
 	list: {},
