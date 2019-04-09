@@ -289,8 +289,8 @@ Meteor.startup(async function() {
 		order: 5,
 		group: 'menu',
 	});
-
-	MessageAction.addButton({
+	if(!window.location.href.includes('/direct/')){
+		MessageAction.addButton({
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
@@ -320,6 +320,8 @@ Meteor.startup(async function() {
 		order: 6,
 		group: 'menu',
 	});
+
+	}
 
 
 	MessageAction.addButton({
