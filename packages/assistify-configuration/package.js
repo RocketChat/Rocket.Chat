@@ -8,8 +8,6 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.use('ecmascript');
-	api.use('rocketchat:lib');
-	api.use('rocketchat:authorization');
 	api.use('assistify:ai');
 
 	api.addFiles('server/config.js', 'server');

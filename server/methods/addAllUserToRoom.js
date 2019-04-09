@@ -1,5 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { hasRole } from '../../app/authorization';
+import { Users, Rooms, Subscriptions, Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	addAllUserToRoom(rid, activeUsersOnly = false) {
@@ -7,15 +11,15 @@ Meteor.methods({
 		check (rid, String);
 		check (activeUsersOnly, Boolean);
 
-		if (RocketChat.authz.hasRole(this.userId, 'admin') === true) {
-			const userCount = RocketChat.models.Users.find().count();
-			if (userCount > RocketChat.settings.get('API_User_Limit')) {
+		if (hasRole(this.userId, 'admin') === true) {
+			const userCount = Users.find().count();
+			if (userCount > settings.get('API_User_Limit')) {
 				throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 					method: 'addAllToRoom',
 				});
 			}
 
-			const room = RocketChat.models.Rooms.findOneById(rid);
+			const room = Rooms.findOneById(rid);
 			if (room == null) {
 				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 					method: 'addAllToRoom',
@@ -27,15 +31,15 @@ Meteor.methods({
 				userFilter.active = true;
 			}
 
-			const users = RocketChat.models.Users.find(userFilter).fetch();
+			const users = Users.find(userFilter).fetch();
 			const now = new Date();
 			users.forEach(function(user) {
-				const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+				const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 				if (subscription != null) {
 					return;
 				}
-				RocketChat.callbacks.run('beforeJoinRoom', user, room);
-				RocketChat.models.Subscriptions.createWithRoomAndUser(room, user, {
+				callbacks.run('beforeJoinRoom', user, room);
+				Subscriptions.createWithRoomAndUser(room, user, {
 					ts: now,
 					open: true,
 					alert: true,
@@ -43,11 +47,11 @@ Meteor.methods({
 					userMentions: 1,
 					groupMentions: 0,
 				});
-				RocketChat.models.Messages.createUserJoinWithRoomIdAndUser(rid, user, {
+				Messages.createUserJoinWithRoomIdAndUser(rid, user, {
 					ts: now,
 				});
 				Meteor.defer(function() {});
-				return RocketChat.callbacks.run('afterJoinRoom', user, room);
+				return callbacks.run('afterJoinRoom', user, room);
 			});
 			return true;
 		} else {

@@ -11,14 +11,14 @@ describe('[Resolution]', () => {
 	describe('[Mobile Render]', () => {
 		before(() => {
 			checkIfUserIsValid(username, email, password);
-			sideNav.getChannelFromList('general').waitForExist(5000);
+			sideNav.getChannelFromList('general').waitForExist(10000);
 			sideNav.openChannel('general');
 			Global.setWindowSize(650, 800);
 		});
 
 		after(() => {
 			Global.setWindowSize(1600, 1600);
-			sideNav.spotlightSearchIcon.waitForVisible(5000);
+			sideNav.spotlightSearchIcon.waitForVisible(10000);
 		});
 
 		describe('moving elements:', () => {
@@ -27,11 +27,21 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 
 			it('it should open de sidenav', () => {
 				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
+			});
+
+			it('it should not close sidebar on pressing the sidebar item menu', () => {
+				sideNav.firstSidebarItem.moveToObject();
+				sideNav.firstSidebarItemMenu.waitForVisible(10000);
+				sideNav.firstSidebarItemMenu.click();
+				browser.pause(100);
+				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
+				sideNav.popoverOverlay.click();
 			});
 
 			it('it should open general channel', () => {
@@ -43,18 +53,19 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 
 			it('it should open the user preferences screen', () => {
-				sideNav.sidebarUserMenu.waitForVisible();
+				sideNav.sidebarUserMenu.waitForVisible(10000);
 				sideNav.sidebarUserMenu.click();
-				sideNav.account.waitForVisible();
+				sideNav.account.waitForVisible(10000);
 				sideNav.account.click();
 			});
 
 			it('it should press the preferences link', () => {
-				sideNav.preferences.waitForVisible(5000);
+				sideNav.preferences.waitForVisible(10000);
 				sideNav.preferences.click();
 			});
 
@@ -63,11 +74,12 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 
 			it('it should press the profile link', () => {
-				sideNav.profile.waitForVisible(5000);
+				sideNav.profile.waitForVisible(10000);
 				sideNav.profile.click();
 			});
 
@@ -76,16 +88,18 @@ describe('[Resolution]', () => {
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 
 			it('it should close de sidenav', () => {
-				sideNav.preferencesClose.waitForVisible(5000);
+				sideNav.preferencesClose.waitForVisible(10000);
 				sideNav.preferencesClose.click();
 				sideNav.sidebarWrap.click();
 			});
 
 			it('it should press the navbar button', () => {
+				sideNav.burgerBtn.waitForVisible(10000);
 				sideNav.burgerBtn.click();
 			});
 		});

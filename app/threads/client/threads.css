@@ -1,0 +1,58 @@
+.message.thread-main {
+	padding-top: var(--default-padding);
+	padding-bottom: var(--default-padding);
+
+	border-bottom: 1px solid var(--color-gray-light);
+}
+
+.message.thread-message {
+	padding-top: 16px;
+	padding-bottom: 8px;
+}
+
+.thread-message + .thread-message {
+	border-top: 1px solid var(--color-gray-light);
+}
+
+.thread-empty {
+	padding: calc(2 * var(--default-padding));
+}
+
+.thread-list {
+	overflow: auto;
+	flex-shrink: 1;
+}
+
+.thread-replied {
+	overflow: hidden;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+
+	color: var(--color-gray);
+
+	font-size: 14px;
+}
+
+.message.sequential > .body > .thread-replied {
+	display: none;
+}
+
+.thread-quote {
+	cursor: pointer;
+
+	color: var(--rc-color-link-active);
+
+	font-style: normal;
+
+	line-height: initial;
+}
+
+.contextual-bar__content.thread,
+.contextual-bar__content.threads {
+	padding: 0;
+}
+
+.js-open-thread {
+	cursor: pointer;
+}
