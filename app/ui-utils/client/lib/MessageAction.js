@@ -16,7 +16,7 @@ import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
-	Meteor.call(method, ...args, function (err, data) {
+	Meteor.call(method, ...args, function(err, data) {
 		if (err) {
 			return reject(err);
 		}
@@ -25,7 +25,7 @@ const call = (method, ...args) => new Promise((resolve, reject) => {
 });
 
 const success = function success(fn) {
-	return function (error, result) {
+	return function(error, result) {
 		if (error) {
 			return handleError(error);
 		}
@@ -111,7 +111,7 @@ export const MessageAction = new class {
 		}
 
 		if (message) {
-			allButtons = _.compact(_.map(allButtons, function (button) {
+			allButtons = _.compact(_.map(allButtons, function(button) {
 				if (button.context == null || button.context.includes(context)) {
 					if (button.condition == null || button.condition(message, context)) {
 						return button;
@@ -145,11 +145,11 @@ export const MessageAction = new class {
 
 		const subData = Subscriptions.findOne({ rid: roomData._id, 'u._id': Meteor.userId() });
 		const roomURL = roomTypes.getURL(roomData.t, subData || roomData);
-		return `${roomURL}?msg=${msgId}`;
+		return `${ roomURL }?msg=${ msgId }`;
 	}
 };
 
-Meteor.startup(async function () {
+Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
 	MessageAction.addButton({
 		id: 'reply-message',
@@ -290,6 +290,36 @@ Meteor.startup(async function () {
 		group: 'menu',
 	});
 
+	MessageAction.addButton({
+		id: 'quote-message',
+		icon: 'quote',
+		label: 'Quote',
+		context: ['message', 'message-mobile'],
+		action() {
+			const { msg: message } = messageArgs(this);
+			const { input } = chatMessages[message.rid];
+			const $input = $(input);
+
+			let messages = $input.data('reply') || [];
+
+			messages = addMessageToList(messages, message, input);
+
+			$input
+				.focus()
+				.data('mention-user', false)
+				.data('reply', messages)
+				.trigger('dataChange');
+		},
+		condition(message) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+				return false;
+			}
+
+			return true;
+		},
+		order: 6,
+		group: 'menu',
+	});
 
 
 	MessageAction.addButton({
@@ -299,7 +329,7 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile'],
 		action() {
 			const { msg: { rid, u: { _id } } } = messageArgs(this);
-			Meteor.call('ignoreUser', { rid, userId: _id, ignore: true }, success(() => toastr.success(t('User_has_been_ignored'))));
+			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true }, success(() => toastr.success(t('User_has_been_ignored'))));
 		},
 		condition(message) {
 			const subscription = Subscriptions.findOne({ rid: message.rid });
@@ -317,7 +347,7 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile'],
 		action() {
 			const { msg: { rid, u: { _id } } } = messageArgs(this);
-			Meteor.call('ignoreUser', { rid, userId: _id, ignore: false }, success(() => toastr.success(t('User_has_been_unignored'))));
+			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false }, success(() => toastr.success(t('User_has_been_unignored'))));
 
 		},
 		condition(message) {
