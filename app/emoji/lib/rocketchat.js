@@ -1,4 +1,4 @@
-import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
+import { emojioneRender, emojioneRenderFromShort } from '../../emoji-emojione/lib/emojioneRender';
 
 export const emoji = {
 	packages: {
@@ -10,6 +10,7 @@ export const emoji = {
 			},
 			toneList: {},
 			render: emojioneRender,
+			renderPicker: emojioneRenderFromShort,
 		},
 	},
 	list: {},

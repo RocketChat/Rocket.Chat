@@ -9,7 +9,6 @@ import { Users } from '../../models/client';
 import { t } from '../../utils/client';
 import { emoji } from '../lib/rocketchat';
 import { EmojiPicker } from './lib/EmojiPicker';
-import { emojioneRenderFromShort } from '../../emoji-emojione/lib/emojioneRender';
 
 const emojiPickerContent = new ReactiveVar('');
 
@@ -46,7 +45,7 @@ const createPickerEmojis = _.throttle((instance) => {
 
 			return emojiPackage.emojisByCategory[category.key].map((current) => {
 				const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${ actualTone }` : '';
-				return getEmojiElement(current, emojioneRenderFromShort(`:${ current }${ tone }:`));
+				return getEmojiElement(current, emojiPackage.renderPicker(`:${ current }${ tone }:`));
 			}).join('');
 		}).join('') || `<li>${ t('No_emojis_found') }</li>`;
 		html += '</ul>';
@@ -92,7 +91,7 @@ function getEmojisBySearchTerm(searchTerm) {
 			}
 
 			if (emojiFound) {
-				const image = emoji.packages[emojiPackage].render(`:${ current }${ tone }:`);
+				const image = emoji.packages[emojiPackage].renderPicker(`:${ current }${ tone }:`);
 				html += getEmojiElement(current, image);
 			}
 		}
