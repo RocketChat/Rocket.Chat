@@ -193,13 +193,13 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 
 	const query = {
-		...(usersInThread && { 'u._id': { $in: usersInThread } }),
 		rid: room._id,
 		ignored: { $ne: sender._id },
 		disableNotifications: { $ne: true },
-		$or: [{
-			'userHighlights.0': { $exists: 1 },
-		}],
+		$or: [
+			{ 'userHighlights.0': { $exists: 1 } },
+			...(usersInThread.length > 0 ? [{ 'u._id': { $in: usersInThread } }] : []),
+		],
 	};
 
 	['audio', 'desktop', 'mobile', 'email'].forEach((kind) => {
