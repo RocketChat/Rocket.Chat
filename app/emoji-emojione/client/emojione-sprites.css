@@ -1,11 +1,11 @@
 @import './symbols-sprites.css';
+@import './activity-sprites.css';
 @import './objects-sprites.css';
 @import './nature-sprites.css';
 @import './food-sprites.css';
 @import './people-sprites.css';
-@import './travel-sprites.css';
-@import './activity-sprites.css';
 @import './regional-sprites.css';
+@import './travel-sprites.css';
 @import './flags-sprites.css';
 @import './modifier-sprites.css';
 
