@@ -28621,6 +28621,125 @@
           ]
         }
       ]
+    },
+    "1.0.0-rc.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14057",
+          "title": "Prioritize user-mentions badge",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14047",
+          "title": "[IMPROVE] Include more information to help with bug reports and debugging",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.0",
+          "contributors": [
+            "geekgonecrazy",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14030",
+          "title": "[IMPROVE] New sidebar item badges, mention links, and ticks",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14049",
+          "title": "Proper thread quote, clear message box on send, and other nice things to have",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14054",
+          "title": "Fix: Tests were not exiting RC instances",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14048",
+          "title": "Fix shield indentation",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14052",
+          "title": "Fix modal scroll",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14041",
+          "title": "Fix race condition of lastMessage set",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14044",
+          "title": "Fix room re-rendering",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14043",
+          "title": "Fix sending notifications to mentions on threads and discussion email sender",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14018",
+          "title": "Fix discussions issues after room deletion and translation actions not being shown",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "engelgabriel",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
