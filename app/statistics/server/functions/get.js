@@ -1,12 +1,24 @@
-import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
+
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, LivechatVisitors } from '../../../models';
-import { settings } from '../../../settings';
-import { Info } from '../../../utils';
-import { Migrations } from '../../../migrations';
+
+import {
+	Sessions,
+	Settings,
+	Users,
+	Rooms,
+	Subscriptions,
+	Uploads,
+	Messages,
+	LivechatVisitors,
+} from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/server';
+import { Migrations } from '../../../migrations/server';
+
 import { statistics } from '../statisticsNamespace';
 
 const wizardFields = [
@@ -71,6 +83,8 @@ statistics.get = function _getStatistics() {
 	statistics.totalPrivateGroups = Rooms.findByType('p').count();
 	statistics.totalDirect = Rooms.findByType('d').count();
 	statistics.totalLivechat = Rooms.findByType('l').count();
+	statistics.totalDiscussions = Rooms.countDiscussions();
+	statistics.totalThreads = Messages.countThreads();
 
 	// livechat visitors
 	statistics.totalLivechatVisitors = LivechatVisitors.find().count();

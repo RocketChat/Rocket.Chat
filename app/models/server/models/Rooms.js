@@ -1413,6 +1413,10 @@ export class Rooms extends Base {
 
 		return this.update(query, update);
 	}
+
+	countDiscussions() {
+		return this.find({ prid: { $exists: true } }).count();
+	}
 }
 
 export default new Rooms('room', true);
