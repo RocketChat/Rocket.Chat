@@ -228,7 +228,6 @@ export class ChatMessages {
 		const cursorPosition = editingNext ? 0 : -1;
 		this.$input.setCursorPosition(cursorPosition);
 		this.input.focus();
-		return this.input;
 	}
 
 	clearEditing() {
@@ -259,6 +258,8 @@ export class ChatMessages {
 			await call('joinRoom', rid);
 		}
 
+		messageBoxState.save({ rid, tmid }, this.input);
+
 		let msg = value;
 		if (value.trim()) {
 			const mention = this.$input.data('mention-user') || false;
@@ -288,8 +289,6 @@ export class ChatMessages {
 
 			try {
 				await this.processMessageSend(message);
-				messageBoxState.set(this.input, '');
-				messageBoxState.save({ rid, tmid }, this.input);
 				this.$input.removeData('reply').trigger('dataChange');
 			} catch (error) {
 				console.error(error);
