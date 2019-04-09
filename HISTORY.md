@@ -1,6 +1,38 @@
 
 # 1.0.0 (Under Release Candidate Process)
 
+## 1.0.0-rc.2
+`2019-04-09  ·  2 🚀  ·  9 🔍  ·  6 👩‍💻👨‍💻`
+
+### 🚀 Improvements
+
+- Include more information to help with bug reports and debugging ([#14047](https://github.com/RocketChat/Rocket.Chat/pull/14047))
+- New sidebar item badges, mention links, and ticks ([#14030](https://github.com/RocketChat/Rocket.Chat/pull/14030))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Prioritize user-mentions badge ([#14057](https://github.com/RocketChat/Rocket.Chat/pull/14057))
+- Proper thread quote, clear message box on send, and other nice things to have ([#14049](https://github.com/RocketChat/Rocket.Chat/pull/14049))
+- Fix: Tests were not exiting RC instances ([#14054](https://github.com/RocketChat/Rocket.Chat/pull/14054))
+- Fix shield indentation ([#14048](https://github.com/RocketChat/Rocket.Chat/pull/14048))
+- Fix modal scroll ([#14052](https://github.com/RocketChat/Rocket.Chat/pull/14052))
+- Fix race condition of lastMessage set ([#14041](https://github.com/RocketChat/Rocket.Chat/pull/14041))
+- Fix room re-rendering ([#14044](https://github.com/RocketChat/Rocket.Chat/pull/14044))
+- Fix sending notifications to mentions on threads and discussion email sender ([#14043](https://github.com/RocketChat/Rocket.Chat/pull/14043))
+- Fix discussions issues after room deletion and translation actions not being shown ([#14018](https://github.com/RocketChat/Rocket.Chat/pull/14018))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 1.0.0-rc.1
 `2019-04-07  ·  1 ️️️⚠️  ·  5 🎉  ·  3 🚀  ·  14 🐛  ·  9 🔍  ·  22 👩‍💻👨‍💻`
 
