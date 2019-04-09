@@ -256,7 +256,21 @@
 	--badge-radius: 12px;
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
-	--badge-unread-background: var(--rc-color-button-primary);
+	--badge-unread-background: var(--rc-color-primary-dark);
+	--badge-dm-background: var(--rc-color-primary-dark);
+	--badge-user-mentions-background: var(--rc-color-button-primary);
+	--badge-group-mentions-background: var(--rc-color-primary-dark);
+
+	/*
+	* Mention link
+	*/
+	--mention-link-radius: 10px;
+	--mention-link-background: rgba(29, 116, 245, 0.2);
+	--mention-link-text-color: var(--rc-color-button-primary);
+	--mention-link-me-background: var(--rc-color-button-primary);
+	--mention-link-me-text-color: var(--color-white);
+	--mention-link-group-background: var(--rc-color-primary-dark);
+	--mention-link-group-text-color: var(--color-white);
 
 	/*
 	* Message box
