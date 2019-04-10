@@ -2766,7 +2766,7 @@
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "The message is a discussion you will not be able to recover the messages!",
   "The_peer__peer__does_not_exist": "The peer <em>__peer__</em> does not exist.",
   "The_redirectUri_is_required": "The redirectUri is required",
-  "The server will restart in %s seconds": "The server will restart in %s seconds",
+  "The_server_will_restart_in_s_seconds": "The server will restart in %s seconds",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "The setting <strong>%s</strong> is configured to <strong>%s</strong> and you are accessing from <strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "The user will be removed from %s",
   "The_user_s_will_be_removed_from_role_s": "The user %s will be removed from role %s",
