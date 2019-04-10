@@ -37,6 +37,10 @@ export class AppMessagesConverter {
 				return result;
 			},
 			editor: (message) => {
+				if (!message.editedBy) {
+					return undefined;
+				}
+
 				const result = this.orch.getConverters().get('users').convertById(message.editedBy._id);
 				delete message.editedBy;
 				return result;
@@ -169,91 +173,61 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		// const map = {
-		// 	collapsed: 'collapsed',
-		// 	color: 'color',
-		// 	text: 'text',
-		// 	timestampLink: 'message_link',
-		// 	imageDimensions: 'image_dimensions',
-		// 	imagePreview: 'image_preview',
+		const map = {
+			collapsed: 'collapsed',
+			color: 'color',
+			text: 'text',
+			timestampLink: 'message_link',
+			thumbnailUrl: 'thumb_url',
+			imageDimensions: 'image_dimensions',
+			imagePreview: 'image_preview',
+			imageUrl: 'image_url',
+			imageType: 'image_type',
+			imageSize: 'image_size',
+			audioUrl: 'audio_url',
+			audioType: 'audio_type',
+			audioSize: 'audio_size',
+			videoUrl: 'video_url',
+			videoType: 'video_type',
+			videoSize: 'video_size',
+			fields: 'fields',
+			actionButtonsAlignment: 'button_alignment',
+			actions: 'actions',
+			type: 'type',
+			description: 'description',
+			author: (attachment) => {
+				const {
+					author_name: name,
+					author_link: link,
+					author_icon: icon,
+				} = attachment;
 
-		// 	timestamp: (attachment) => {
-		// 		const result = new Date(attachment.ts);
-		// 		delete attachment.ts;
-		// 		return result;
-		// 	},
-		// }
+				delete attachment.author_name;
+				delete attachment.author_link;
+				delete attachment.author_icon;
 
-		return attachments.map((attachment) => {
-			let author;
-			if (attachment.author_name || attachment.author_link || attachment.author_icon) {
-				author = {
-					name: attachment.author_name,
-					link: attachment.author_link,
-					icon: attachment.author_icon,
-				};
-			}
+				return { name, link, icon };
+			},
+			title: (attachment) => {
+				const {
+					title: value,
+					title_link: link,
+					title_link_download: displayDownloadLink,
+				} = attachment;
 
-			let title;
-			if (attachment.title || attachment.title_link || attachment.title_link_download) {
-				title = {
-					value: attachment.title,
-					link: attachment.title_link,
-					displayDownloadLink: attachment.title_link_download,
-				};
-			}
+				delete attachment.title;
+				delete attachment.title_link;
+				delete attachment.title_link_download;
 
-			const appAttachment = {
-				collapsed: attachment.collapsed,
-				color: attachment.color,
-				text: attachment.text,
-				timestamp: new Date(attachment.ts),
-				timestampLink: attachment.message_link,
-				thumbnailUrl: attachment.thumb_url,
-				author,
-				title,
-				imageDimensions: attachment.image_dimensions,
-				imagePreview: attachment.image_preview,
-				imageUrl: attachment.image_url,
-				imageType: attachment.image_type,
-				imageSize: attachment.image_size,
-				audioUrl: attachment.audio_url,
-				audioType: attachment.audio_type,
-				audioSize: attachment.audio_size,
-				videoUrl: attachment.video_url,
-				videoType: attachment.video_type,
-				videoSize: attachment.video_size,
-				fields: attachment.fields,
-				actionButtonsAlignment: attachment.button_alignment,
-				actions: attachment.actions,
-				type: attachment.type,
-				description: attachment.description,
-			};
+				return { value, link, displayDownloadLink };
+			},
+			timestamp: (attachment) => {
+				const result = new Date(attachment.ts);
+				delete attachment.ts;
+				return result;
+			},
+		};
 
-			// appAttachment._unmappedProperties_ = getUnmappedProperties(attachment, appAttachment, {
-			// 	author_name: 1,
-			// 	author_link: 1,
-			// 	author_icon: 1,
-			// 	title_link: 1,
-			// 	title_link_download: 1,
-			// 	button_alignment: 1,
-			// 	ts: 1,
-			// 	message_link: 1,
-			// 	thumb_url : 1,
-			// 	image_dimensions: 1,
-			// 	image_preview: 1,
-			// 	image_url: 1,
-			// 	image_type: 1,
-			// 	image_size: 1,
-			// 	audio_url: 1,
-			// 	audio_type: 1,
-			// 	audio_size: 1,
-			// 	video_url: 1,
-			// 	video_type: 1,
-			// 	video_size: 1,
-			// });
-
-			return appAttachment;
-		});
+		return attachments.map((attachment) => transformMappedData(attachment, map));
 	}
 }

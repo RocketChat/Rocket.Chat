@@ -90,6 +90,8 @@ Meteor.methods({
 				throw new Meteor.Error('error-not-allowed');
 			}
 
+			// TODO add some more logging information... this makes it very hard to debug the cause of the problem
+			console.error(error);
 			Notifications.notifyUser(uid, 'message', {
 				_id: Random.id(),
 				rid: message.rid,

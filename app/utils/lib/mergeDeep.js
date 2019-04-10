@@ -11,7 +11,7 @@ export const mergeDeep = (target, source) => {
 			}
 
 			target[key] = target[key].concat(source[key]);
-		} else if (typeof source[key] === 'object') {
+		} else if (typeof source[key] === 'object' && Object.keys(source[key]).length) {
 			if (!target[key]) {
 				target[key] = {};
 			}

@@ -2,14 +2,13 @@ import { mergeDeep } from '../../../utils/lib/mergeDeep';
 
 /**
  * Transforms a `data` source object to another object,
- * essentially applying to -> from mapping provided by
+ * essentially applying a to -> from mapping provided by
  * `map`.
  *
  * It also inserts in the `transformedObject` a new property
  * called `_unmappedProperties_` which contains properties from
- * the original `data` that have not been mapped.
- *
- * E.g.:
+ * the original `data` that have not been mapped to its transformed
+ * counterpart. E.g.:
  *
  * ```javascript
  * const data = { _id: 'abcde123456', size: 10 };
@@ -21,7 +20,7 @@ import { mergeDeep } from '../../../utils/lib/mergeDeep';
  *
  * In order to compute the unmapped properties, this function will
  * ignore any property on `data` that has been named on the "from" part
- * of the `map`.
+ * of the `map`, and will consider properties not mentioned as unmapped.
  *
  * You can also define the "from" part as a function, so you can derive a
  * new value for your property from the original `data`. This function will
@@ -31,18 +30,50 @@ import { mergeDeep } from '../../../utils/lib/mergeDeep';
  * ignore any field you've used to derive your new value. For that, you're
  * going to need to delete the value from the received parameter. E.g:
  *
+ * ```javascript
+ * const data = { _id: 'abcde123456', size: 10 };
+ *
+ * // It will look like the `size` property is not mapped
+ * const map = {
+ *     id: '_id',
+ *     newSize: (data) => data.size + 10
+ * };
+ *
+ * transformMappedData(data, map);
+ * // { id: 'abcde123456', newSize: 20, _unmappedProperties_: { size: 10 } }
+ *
+ * // You need to explicitly remove it from the original `data`
+ * const map = {
+ *     id: '_id',
+ *     newSize: (data) => {
+ *         const result = data.size + 10;
+ *         delete data.size;
+ *         return result;
+ *     }
+ * };
+ *
+ * transformMappedData(data, map);
+ * // { id: 'abcde123456', newSize: 20, _unmappedProperties_: {} }
+ * ```
  * @param Object data The data to be transformed
  * @param Object map The map with transformations to be applied
  *
  * @returns Object The data after transformations have been applied
  */
+
 export const transformMappedData = (data, map) => {
 	const originalData = mergeDeep({}, data);
+	console.log({ originalData: data, copy: originalData });
 	const transformedData = {};
 
 	Object.entries(map).forEach(([to, from]) => {
 		if (typeof from === 'function') {
-			transformedData[to] = from(originalData);
+			const result = from(originalData);
+
+			// TODO check if we should do this
+			if (typeof result !== 'undefined') {
+				transformedData[to] = result;
+			}
 		} else if (typeof from === 'string') {
 			transformedData[to] = originalData[from];
 			delete originalData[from];
