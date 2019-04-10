@@ -1,14 +1,17 @@
+import { Meteor } from 'meteor/meteor';
+import { Rooms } from '../../app/models';
+
 Meteor.methods({
 	getTotalChannels() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'getTotalChannels'
+				method: 'getTotalChannels',
 			});
 		}
 
 		const query = {
-			t: 'c'
+			t: 'c',
 		};
-		return RocketChat.models.Rooms.find(query).count();
-	}
+		return Rooms.find(query).count();
+	},
 });

@@ -1,4 +1,7 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Messages, Uploads } from '../../../app/models';
+
+Migrations.add({
 	version: 20,
 	up() {
 		/*
@@ -10,38 +13,36 @@ RocketChat.Migrations.add({
 		// list of channel messages which were created after uploading a file
 		const msgQuery = {
 			rid: {
-				$exists: true
+				$exists: true,
 			},
 			'file._id': {
-				$exists: true
-			}
+				$exists: true,
+			},
 		};
 
 		const msgOptions = {
 			fields: {
 				_id: 1,
 				rid: 1,
-				'file._id': 1
-			}
+				'file._id': 1,
+			},
 		};
 
-		const cursorFileMessages = RocketChat.models.Messages.find(msgQuery, msgOptions);
+		const cursorFileMessages = Messages.find(msgQuery, msgOptions);
 		if (!cursorFileMessages.count()) {
 			return;
 		}
 
-		cursorFileMessages.fetch().forEach((msg) => {
-			return RocketChat.models.Uploads.update({
-				_id: msg.file && msg.file._id
-			}, {
-				$set: {
-					rid: msg.rid
-				}
-			}, {
-				$multi: true
-			});
-		});
+		cursorFileMessages.fetch().forEach((msg) => Uploads.update({
+			_id: msg.file && msg.file._id,
+		}, {
+			$set: {
+				rid: msg.rid,
+			},
+		}, {
+			$multi: true,
+		}));
 
 		return console.log('Updated rocketchat_uploads documents to include the room Id in which they were sent.');
-	}
+	},
 });

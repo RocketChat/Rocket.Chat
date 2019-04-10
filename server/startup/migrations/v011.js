@@ -1,17 +1,20 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Rooms } from '../../../app/models';
+
+Migrations.add({
 	version: 11,
 	up() {
 		/*
 		 * Set GENERAL room to be default
 		 */
-		RocketChat.models.Rooms.update({
-			_id: 'GENERAL'
+		Rooms.update({
+			_id: 'GENERAL',
 		}, {
 			$set: {
-				'default': true
-			}
+				default: true,
+			},
 		});
 
 		return console.log('Set GENERAL room to be default');
-	}
+	},
 });

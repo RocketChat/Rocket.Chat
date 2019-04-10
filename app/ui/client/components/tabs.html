@@ -1,0 +1,9 @@
+<template name="tabs">
+	<div class="tabs">
+		<div class="tabs-wrapper">
+			{{#each tabs}}
+				<div class="tab {{#if isActive value}}active{{/if}}" data-value={{value}}>{{label}}</div>
+			{{/each}}
+		</div>
+	</div>
+</template>

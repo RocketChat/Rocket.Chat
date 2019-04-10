@@ -23,6 +23,7 @@ class FlexTab extends Page {
 	get editAnnouncementTextInput() { return browser.element('.channel-settings input[name="announcement"]'); }
 	get editDescriptionTextInput() { return browser.element('.channel-settings input[name="description"]'); }
 	get editNameSave() { return browser.element('.channel-settings .save'); }
+	get deleteBtn() { return browser.element('.channel-settings .js-delete'); }
 
 	// Members Tab
 	get membersTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--team'); }
@@ -77,7 +78,7 @@ class FlexTab extends Page {
 	get thirdSetting() { return browser.element('.clearfix li:nth-child(3) .current-setting'); }
 	get fourthSetting() { return browser.element('.clearfix li:nth-child(4) .current-setting'); }
 
-	//admin view flextab items
+	// admin view flextab items
 	get usersSendInvitationTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--send'); }
 	get usersAddUserTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--plus'); }
 	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
@@ -135,7 +136,7 @@ class FlexTab extends Page {
 	}
 
 	operateFlexTab(desiredTab, desiredState) {
-		//desiredState true=open false=closed
+		// desiredState true=open false=closed
 		switch (desiredTab) {
 			case 'info':
 				if ((!this.channelSettings.isVisible() && desiredState) || (this.channelSettings.isVisible() && !desiredState)) {

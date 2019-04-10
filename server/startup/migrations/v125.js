@@ -1,12 +1,17 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
+
+Migrations.add({
 	version: 125,
 	up() {
-		RocketChat.models.Users.update({}, {
-			$rename: {
-				'settings.preferences.groupByType': 'settings.preferences.sidebarGroupByType'
-			}
+		Users.update({
+			'settings.preferences.groupByType': { $exists: true },
 		}, {
-			multi: true
+			$rename: {
+				'settings.preferences.groupByType': 'settings.preferences.sidebarGroupByType',
+			},
+		}, {
+			multi: true,
 		});
-	}
+	},
 });

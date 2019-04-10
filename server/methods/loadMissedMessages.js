@@ -1,3 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+
 Meteor.methods({
 	loadMissedMessages(rid, start) {
 		check(rid, String);
@@ -5,7 +10,7 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadMissedMessages'
+				method: 'loadMissedMessages',
 			});
 		}
 
@@ -16,16 +21,16 @@ Meteor.methods({
 
 		const options = {
 			sort: {
-				ts: -1
-			}
+				ts: -1,
+			},
 		};
 
-		if (!RocketChat.settings.get('Message_ShowEditedStatus')) {
+		if (!settings.get('Message_ShowEditedStatus')) {
 			options.fields = {
-				'editedAt': 0
+				editedAt: 0,
 			};
 		}
 
-		return RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
-	}
+		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
+	},
 });

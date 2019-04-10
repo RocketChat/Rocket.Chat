@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Migrations } from '../../../app/migrations';
+import { Messages, Rooms, LivechatPageVisited } from '../../../app/models';
+
 let pageVisitedCollection;
 let messageCollection;
 let roomCollection;
@@ -14,12 +18,12 @@ async function migrateHistory(total, current) {
 	const tokens = items.filter((item) => item.token && !roomIdByToken[item.token]).map((item) => item.token);
 	const rooms = await roomCollection.find({
 		'v.token': {
-			$in: tokens
-		}
+			$in: tokens,
+		},
 	}, {
 		fields: {
-			'v.token': 1
-		}
+			'v.token': 1,
+		},
 	}).toArray();
 
 	rooms.forEach((room) => {
@@ -34,13 +38,13 @@ async function migrateHistory(total, current) {
 			msg: `${ item.page.title } - ${ item.page.location.href }`,
 			u: {
 				_id : 'rocket.cat',
-				username : 'rocket.cat'
+				username : 'rocket.cat',
 			},
 			groupable : false,
 			navigation : {
 				page: item.page,
-				token: item.token
-			}
+				token: item.token,
+			},
 		};
 		if (!roomIdByToken[item.token] && item.expireAt) {
 			msg.expireAt = item.expireAt;
@@ -51,10 +55,17 @@ async function migrateHistory(total, current) {
 		return result;
 	}, { insert: [], remove: [] });
 
-	const batch = Promise.all([
-		messageCollection.insertMany(actions.insert),
-		pageVisitedCollection.removeMany({ _id: { $in: actions.remove } })
-	]);
+	const ops = [];
+
+	if (actions.insert.length > 0) {
+		ops.push(messageCollection.insertMany(actions.insert));
+	}
+
+	if (actions.remove.length > 0) {
+		ops.push(pageVisitedCollection.removeMany({ _id: { $in: actions.remove } }));
+	}
+
+	const batch = Promise.all(ops);
 	if (actions.remove.length === batchSize) {
 		await batch;
 		return migrateHistory(total, current + batchSize);
@@ -64,17 +75,17 @@ async function migrateHistory(total, current) {
 }
 
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 123,
 	up() {
-		pageVisitedCollection = RocketChat.models.LivechatPageVisited.model.rawCollection();
-		messageCollection = RocketChat.models.Messages.model.rawCollection();
-		roomCollection = RocketChat.models.Rooms.model.rawCollection();
+		pageVisitedCollection = LivechatPageVisited.model.rawCollection();
+		messageCollection = Messages.model.rawCollection();
+		roomCollection = Rooms.model.rawCollection();
 
 		/*
 		 * Move visitor navigation history to messages
 		 */
-		Meteor.setTimeout(async() => {
+		Meteor.setTimeout(async () => {
 			const pages = pageVisitedCollection.find({});
 			const total = await pages.count();
 			await pages.close();
@@ -85,5 +96,5 @@ RocketChat.Migrations.add({
 
 			console.log('Livechat visitors navigation history migration finished.');
 		}, 1000);
-	}
+	},
 });

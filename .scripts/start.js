@@ -3,8 +3,9 @@
 const path = require('path');
 const fs = require('fs');
 const extend = require('util')._extend;
-const exec = require('child_process').exec;
+const { exec } = require('child_process');
 const processes = [];
+let exitCode;
 
 const baseDir = path.resolve(__dirname, '..');
 const srcDir = path.resolve(baseDir);
@@ -12,8 +13,8 @@ const srcDir = path.resolve(baseDir);
 const appOptions = {
 	env: {
 		PORT: 3000,
-		ROOT_URL: 'http://localhost:3000'
-	}
+		ROOT_URL: 'http://localhost:3000',
+	},
 };
 
 function startProcess(opts, callback) {
@@ -38,17 +39,26 @@ function startProcess(opts, callback) {
 	}
 
 	if (opts.logFile) {
-		const logStream = fs.createWriteStream(opts.logFile, {flags: 'a'});
+		const logStream = fs.createWriteStream(opts.logFile, { flags: 'a' });
 		proc.stdout.pipe(logStream);
 		proc.stderr.pipe(logStream);
 	}
 
-	proc.on('close', function(code) {
-		console.log(opts.name, `exited with code ${ code }`);
-		for (let i = 0; i < processes.length; i += 1) {
-			processes[i].kill();
+	proc.on('exit', function(code, signal) {
+		if (code != null) {
+			exitCode = code;
+			console.log(opts.name, `exited with code ${ code }`);
+		} else {
+			console.log(opts.name, `exited with signal ${ signal }`);
 		}
-		process.exit(code);
+
+		processes.splice(processes.indexOf(proc), 1);
+
+		processes.forEach((p) => p.kill());
+
+		if (processes.length === 0) {
+			process.exit(exitCode);
+		}
 	});
 	processes.push(proc);
 }
@@ -60,8 +70,8 @@ function startApp(callback) {
 		waitForMessage: appOptions.waitForMessage,
 		options: {
 			cwd: srcDir,
-			env: extend(appOptions.env, process.env)
-		}
+			env: extend(appOptions.env, process.env),
+		},
 	}, callback);
 }
 
@@ -73,9 +83,9 @@ function startChimp() {
 			env: Object.assign({}, process.env, {
 				NODE_PATH: `${ process.env.NODE_PATH +
 					path.delimiter + srcDir +
-					path.delimiter + srcDir }/node_modules`
-			})
-		}
+					path.delimiter + srcDir }/node_modules`,
+			}),
+		},
 	});
 }
 

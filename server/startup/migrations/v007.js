@@ -1,15 +1,17 @@
-/* globals OEmbed */
+import { OEmbed } from '../../../app/oembed/server';
+import { Migrations } from '../../../app/migrations';
+import { Messages } from '../../../app/models';
 import _ from 'underscore';
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 7,
 	up() {
 		console.log('Populate urls in messages');
 
-		const query = RocketChat.models.Messages.find({
+		const query = Messages.find({
 			'urls.0': {
-				$exists: true
-			}
+				$exists: true,
+			},
 		});
 
 		const count = query.count();
@@ -20,7 +22,7 @@ RocketChat.Migrations.add({
 			message.urls = message.urls.map((url) => {
 				if (_.isString(url)) {
 					return {
-						url
+						url,
 					};
 				}
 				return url;
@@ -30,5 +32,5 @@ RocketChat.Migrations.add({
 		});
 
 		return console.log('End');
-	}
+	},
 });

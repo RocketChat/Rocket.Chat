@@ -1,12 +1,9 @@
-/* eslint-env mocha */
-/* globals expect */
-
-import {getCredentials, api, request, credentials} from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
 describe('[Settings]', function() {
 	this.retries(0);
 
-	before(done => getCredentials(done));
+	before((done) => getCredentials(done));
 
 	describe('[/settings.public]', () => {
 		it('should return public settings', (done) => {

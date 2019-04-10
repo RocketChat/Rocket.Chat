@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
+import { Users, Rooms } from '../../app/models';
+import { canAccessRoom } from '../../app/authorization';
+import { settings } from '../../app/settings';
+
 Meteor.methods({
 	canAccessRoom(rid, userId, extraData) {
 		check(rid, String);
@@ -6,45 +12,47 @@ Meteor.methods({
 		let user;
 
 		if (userId) {
-			user = RocketChat.models.Users.findOneById(userId, {
+			user = Users.findOneById(userId, {
 				fields: {
-					username: 1
-				}
+					username: 1,
+				},
 			});
 
 			if (!user || !user.username) {
 				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'canAccessRoom'
+					method: 'canAccessRoom',
 				});
 			}
 		}
 
 		if (!rid) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'canAccessRoom'
+				method: 'canAccessRoom',
 			});
 		}
 
-		const room = RocketChat.models.Rooms.findOneById(rid);
-		if (room) {
-			if (RocketChat.authz.canAccessRoom.call(this, room, user, extraData)) {
-				if (user) {
-					room.username = user.username;
-				}
-				return room;
-			}
+		const room = Rooms.findOneById(rid);
 
-			if (!userId && RocketChat.settings.get('Accounts_AllowAnonymousRead') === false) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'canAccessRoom'
-				});
-			}
-
-			return false;
-		} else {
+		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'canAccessRoom'
+				method: 'canAccessRoom',
+			});
+
+		}
+
+		if (canAccessRoom.call(this, room, user, extraData)) {
+			if (user) {
+				room.username = user.username;
+			}
+			return room;
+		}
+
+		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'canAccessRoom',
 			});
 		}
-	}
+
+		return false;
+	},
 });

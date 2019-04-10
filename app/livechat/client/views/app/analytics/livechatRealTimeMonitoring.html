@@ -1,0 +1,76 @@
+<template name="livechatRealTimeMonitoring">
+	{{#requiresPermission 'view-livechat-analytics'}}
+	<div class="lc-analytics-overview">
+		{{#each conversationsOverview}}
+		<div class="lc-analytics-ov-col">
+			<div class="lc-analytics-ov-case">
+				<span class="title">{{_ title}}</span>
+				<span class="value">{{value}}</span>
+			</div>
+		</div>
+		{{/each}}
+		{{#with totalVisitors}}
+		<div class="lc-analytics-ov-col">
+			<div class="lc-analytics-ov-case">
+				<span class="title">{{_ title}}</span>
+				<span class="value">{{value}}</span>
+			</div>
+		</div>
+		{{/with}}
+	</div>
+	<div class="lc-monitoring-flex">
+		<div class="section lc-monitoring-doughnut-chart">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-chats-chart"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="section lc-monitoring-line-chart">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-chats-per-agent-chart"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="section lc-monitoring-doughnut-chart">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-agents-chart"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="lc-chats-per-dept-chart-section section lc-monitoring-line-chart">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-chats-per-dept-chart"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="section lc-monitoring-line-chart-full">
+			<div class="section-content border-component-color">
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-chat-duration-chart"></canvas>
+				</div>
+			</div>
+		</div>
+		<div class="section lc-monitoring-line-chart-full">
+			<div class="section-content border-component-color">
+				<div class="lc-analytics-overview">
+					{{#each timingOverview}}
+					<div class="lc-analytics-ov-col">
+						<div class="lc-analytics-ov-case">
+							<span class="title">{{_ title}}</span>
+							<span class="value">{{value}}</span>
+						</div>
+					</div>
+					{{/each}}
+				</div>
+				<div class="lc-monitoring-chart-container">
+					<canvas id="lc-reaction-response-times-chart"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{/requiresPermission}}
+</template>

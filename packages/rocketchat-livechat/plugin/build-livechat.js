@@ -1,7 +1,7 @@
-const path = Npm.require('path');
-const shell = Npm.require('shelljs');
-const fs = Npm.require('fs');
-const UglifyJS = Npm.require('uglify-js');
+import path from 'path';
+import shell from 'shelljs';
+import fs from 'fs';
+import UglifyJS from 'uglify-js';
 
 const result = UglifyJS.minify(path.resolve('packages', 'rocketchat-livechat', 'assets', 'rocket-livechat.js'));
 

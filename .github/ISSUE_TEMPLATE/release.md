@@ -20,48 +20,40 @@ When you find a bug that is a regression, please open a new issue and link it to
 - [ ] Sync translations from [LingoHub](https://translate.lingohub.com/rocketchat/rocket-dot-chat/dashboard)
 
 ## Release Candidate 1 - On the 20th
-- [ ] Delete branch `release-candidate`
-- [ ] Create branch `release-candidate` based on `develop`
-- [ ] On branch `release-candidate` run `npm run release` and follow the steps
-- [ ] Publish the branch and the generated tag
-- [ ] Edit the tag on GitHub and paste the generated History removing the version from the first line and mark the checkbox **This is a pre-release**
+- [ ] Execute action `Release Candidate` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
+- [ ] Check if `release-candidate` branch was published
+- [ ] Check if the tag was published and contains the history
 - [ ] Ensure the build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
-- [ ] Ensure the build is passing on [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/builds/)
+- [ ] Ensure the image was sent to [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/tags/)
 
 <!-- Copy following block for next release candidates
-## Release Candidate {release-candidate-version}
-- [ ] Merge `develop` into `release-candidate` branch
-- [ ] On branch `release-candidate` run `npm run release` and follow the steps
-- [ ] Publish the branch and the generated tag
-- [ ] Edit the tag on GitHub and paste the generated History removing the version from the first line and mark the checkbox **This is a pre-release**
+## Release Candidate {release-candidate-version} - On the {day}
+- [ ] Execute action `Release Candidate` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
+- [ ] Check if `release-candidate` branch was published
+- [ ] Check if the tag was published and contains the history
 - [ ] Ensure the build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
-- [ ] Ensure the build is passing on [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/builds/)
+- [ ] Ensure the image was sent to [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/tags/)
 -->
 
 ## Final Release - On the 27th
-- [ ] Merge `develop` into `release-candidate` branch
-- [ ] Create a new branch `release-{version}` based on `release-candidate`
-- [ ] On branch `release-{version}` run `npm run release` and follow the steps **TODO: fix the history**
-- [ ] Publish only the branch
-- [ ] **Draft a new release** on GitHub
-  - [ ] Enter tag version as {version}
-  - [ ] Select target **master**
-  - [ ] Enter release title as {version}
-  - [ ] Paste the history removing the version from the first line
-  - [ ] Save as **draft**
-- [ ] Create a PR from the branch `release-{version}` with the same history from the tag/release
-- [ ] Ensure the build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
-- [ ] Ensure the build is passing on [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/builds/)
-- [ ] When build is passing ask for approval
+- [ ] Execute action `Final Release` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
+- [ ] Check if `release-{version}` branch was published
+- [ ] Check if the release was created as **draft** and contains the history
+- [ ] Check if the release Pull Request was created and contains the history
+- [ ] Ensure the **Pull Request** build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
+- [ ] When build is passing ask for Pull Request approval
 - [ ] When approved merge it!
-- [ ] When merged edit the release/tag and publish it
+- [ ] Ensure the **Tag** build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
+- [ ] Ensure the image was sent to [Docker Hub](https://hub.docker.com/r/rocketchat/rocket.chat/tags/)
+- [ ] After all edit the release/tag and publish it
 
 ## After Release - Conclusion - 1 business day after the 27th
 - [ ] Ensure all of the related issues were closed
 - [ ] Determine if all of the related issues were correctly assigned to the this version's milestone
 - [ ] Get an update from Marketing Team about the release Blog Post
 - [ ] Check with the Documentation Team about the Docs release
-- [ ] Create a Sync PR to merge `master` back into `develop`
-- [ ] Ensure the build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
-- [ ] When build has passed, ask for approval and wait
-- [ ] Merge Sync PR
+- [ ] Sync develop
+  - [ ] Execute action `Develop Sync` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
+  - [ ] Ensure the **Pull Request** build is passing on [CircleCI](https://circleci.com/gh/RocketChat/Rocket.Chat)
+  - [ ] When build has passed, ask for approval and wait
+  - [ ] Merge Sync PR

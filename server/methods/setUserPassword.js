@@ -1,3 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import { Users } from '../../app/models';
+import { passwordPolicy } from '../../app/lib';
+
 Meteor.methods({
 	setUserPassword(password) {
 		check(password, String);
@@ -6,24 +12,24 @@ Meteor.methods({
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'setUserPassword'
+				method: 'setUserPassword',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		if (user && user.requirePasswordChange !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'setUserPassword'
+				method: 'setUserPassword',
 			});
 		}
 
-		RocketChat.passwordPolicy.validate(password);
+		passwordPolicy.validate(password);
 
 		Accounts.setPassword(userId, password, {
-			logout: false
+			logout: false,
 		});
 
-		return RocketChat.models.Users.unsetRequirePasswordChange(userId);
-	}
+		return Users.unsetRequirePasswordChange(userId);
+	},
 });
