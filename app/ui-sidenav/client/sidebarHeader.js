@@ -326,11 +326,12 @@ Template.sidebarHeader.events({
 				const status = userStatus.list[key];
 				const customName = status.localizeName ? null : status.name;
 				const name = status.localizeName ? t(status.name) : status.name;
+				const modifier = status.statusType || user.status;
 
 				return {
 					icon: 'circle',
 					name,
-					modifier: status.statusType,
+					modifier,
 					action: () => setStatus(status.statusType, customName),
 				};
 			});

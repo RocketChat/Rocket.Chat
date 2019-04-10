@@ -16,6 +16,7 @@
 				<div class="input-line">
 					<label for="statusType">{{_ "StatusType"}}</label>
 					<select id="statusType" name="statusType" class="content-background-color">
+						<option value="">{{_ "None"}}</option>
 						{{#each options}}
 						<option value="{{value}}" {{selected}}>{{name}}</option>
 						{{/each}}

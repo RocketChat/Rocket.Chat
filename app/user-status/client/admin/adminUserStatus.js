@@ -18,7 +18,7 @@ Template.adminUserStatus.helpers({
 	customUserStatus() {
 		return Template.instance().customUserStatus().map((userStatus) => {
 			const { _id, name, statusType } = userStatus;
-			const localizedStatusType = t(statusType);
+			const localizedStatusType = statusType ? t(statusType) : '';
 
 			return {
 				_id,

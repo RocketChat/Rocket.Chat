@@ -12,7 +12,7 @@ Template.userStatusEdit.helpers({
 	},
 
 	options() {
-		const userStatusType = this.userStatus ? this.userStatus.statusType : 'online';
+		const userStatusType = this.userStatus ? this.userStatus.statusType : '';
 
 		return [{
 			value: 'online',
@@ -82,9 +82,6 @@ Template.userStatusEdit.onCreated(function() {
 		const errors = [];
 		if (!userStatusData.name) {
 			errors.push('Name');
-		}
-		if (!userStatusData.statusType) {
-			errors.push('StatusType');
 		}
 
 		for (const error of errors) {

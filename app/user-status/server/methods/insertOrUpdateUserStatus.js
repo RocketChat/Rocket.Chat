@@ -13,9 +13,6 @@ Meteor.methods({
 		if (!s.trim(userStatusData.name)) {
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateUserStatus', field: 'Name' });
 		}
-		if (!s.trim(userStatusData.statusType)) {
-			throw new Meteor.Error('error-the-field-is-required', 'The field Status Type is required', { method: 'insertOrUpdateUserStatus', field: 'StatusType' });
-		}
 
 		// allow all characters except >, <, &, ", '
 		// more practical than allowing specific sets of characters; also allows foreign languages
@@ -38,7 +35,7 @@ Meteor.methods({
 		}
 
 		const validStatusTypes = ['online', 'away', 'busy', 'offline'];
-		if (validStatusTypes.indexOf(userStatusData.statusType) < 0) {
+		if (userStatusData.statusType && validStatusTypes.indexOf(userStatusData.statusType) < 0) {
 			throw new Meteor.Error('error-input-is-not-a-valid-field', `${ userStatusData.statusType } is not a valid status type`, { method: 'insertOrUpdateUserStatus', input: userStatusData.statusType, field: 'StatusType' });
 		}
 
@@ -46,7 +43,7 @@ Meteor.methods({
 			// insert user status
 			const createUserStatus = {
 				name: userStatusData.name,
-				statusType: userStatusData.statusType,
+				statusType: userStatusData.statusType || null,
 			};
 
 			const _id = CustomUserStatus.create(createUserStatus);
