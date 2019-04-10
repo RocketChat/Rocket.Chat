@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -69,9 +68,6 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 }
 
 Template.message.helpers({
-	hover() {
-		return Template.instance().hover.get();
-	},
 	and(a, b) {
 		return a && b;
 	},
@@ -392,7 +388,7 @@ const findParentMessage = (() => {
 				return;
 			}
 			const { _id, ...msg } = message;
-			Messages.update({ tmid: _id }, {
+			Messages.update({ tmid: _id, repliesCount: { $exists: 0 } }, {
 				$set: {
 					threadMsg: normalizeThreadMessage(msg),
 					repliesCount: msg.tcount,
@@ -410,7 +406,12 @@ const findParentMessage = (() => {
 		const message = Messages.findOne({ _id: tmid });
 
 		if (message) {
-			return;
+			return Messages.update({ tmid, repliesCount: { $exists: 0 } }, {
+				$set: {
+					threadMsg: normalizeThreadMessage(message),
+					repliesCount: message.tcount,
+				},
+			}, { multi: true });
 		}
 
 		waiting.push(tmid);
@@ -422,12 +423,6 @@ const findParentMessage = (() => {
 const renderBody = (msg, settings) => {
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
-	if (msg.thread_message) {
-		msg.reply = Markdown.parse(TAPi18n.__('Thread_message', {
-			username: msg.u.username,
-			msg: msg.thread_message.msg,
-		}));
-	}
 
 	if (messageType.render) {
 		msg = messageType.render(msg);
@@ -450,13 +445,12 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.onCreated(function() {
-	this.hover = new ReactiveVar(false);
 	// const [, currentData] = Template.currentData()._arguments;
 	// const { msg, settings } = currentData.hash;
 	const { msg, settings } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.thread_message) {
+	if (msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
 	return this.body = renderBody(msg, settings);
@@ -516,7 +510,10 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 
 Template.message.onViewRendered = function(context) {
 	const [, currentData] = Template.currentData()._arguments;
-	const { settings, forceDate, noDate } = currentData.hash;
+	const { settings, forceDate, noDate, msg } = currentData.hash;
+	if (msg.tmid && !msg.threadMsg) {
+		findParentMessage(msg.tmid);
+	}
 	return this._domrange.onAttached((domRange) => {
 		if (context.file && context.file.type === 'application/pdf') {
 			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
