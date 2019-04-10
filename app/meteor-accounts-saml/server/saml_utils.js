@@ -337,33 +337,35 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 	zlib.inflateRaw(compressedSAMLRequest, function(err, decoded) {
 		if (err) {
 			debugLog(`Error while inflating. ${ err }`);
-		} else {
-			debugLog(`>>>> ${ decoded }`);
-			const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
+			return callback(err, null)
+		}
 
-			if (doc) {
-				const request = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutRequest')[0];
-				if (request) {
-					let idpSession;
-					let nameID;
-					try {
-						const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
-						idpSession = sessionNode.childNodes[0].nodeValue;
-						const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
-						nameID = nameIdNode.childNodes[0].nodeValue;
+		debugLog(`LogoutRequest: ${ decoded }`);
+		const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
 
-					} catch (e) {
-						if (Meteor.settings.debug) {
-							debugLog(`Caught error: ${ e }`);
-							const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
-							debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
-						}
-					}
+		if (doc) {
+			const request = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutRequest')[0];
+			if (request) {
+				try {
+					const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
+					const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
 
-					callback(null, { idpSession, nameID });
+					const idpSession = sessionNode.childNodes[0].nodeValue;
+					const nameID = nameIdNode.childNodes[0].nodeValue;
+
+					return callback(null, { idpSession, nameID });
+
+				} catch (e) {
+					debugLog(`Caught error: ${ e }`);
+
+					const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+					debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
+
+					return callback(e, null);
 				}
 			}
 		}
+
 	});
 };
 
@@ -373,38 +375,35 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 	zlib.inflateRaw(compressedSAMLResponse, function(err, decoded) {
 		if (err) {
 			debugLog(`Error while inflating. ${ err }`);
-		} else {
-			debugLog(`constructing new DOM parser: ${ Object.prototype.toString.call(decoded) }`);
-			debugLog(`>>>> ${ decoded }`);
-			const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
-			if (doc) {
-				const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse')[0];
-				if (response) {
+			return callback(err, null);
+		}
 
-					// TBD. Check if this msg corresponds to one we sent
-					let inResponseTo;
-					try {
-						inResponseTo = response.getAttribute('InResponseTo');
-						debugLog(`In Response to: ${ inResponseTo }`);
-					} catch (e) {
-						if (Meteor.settings.debug) {
-							debugLog(`Caught error: ${ e }`);
-							const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
-							debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
-						}
-					}
+		debugLog(`LogoutResponse: ${ decoded }`);
+		const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
+		if (doc) {
+			const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse')[0];
+			if (response) {
 
-					const statusValidateObj = self.validateStatus(doc);
-
-					if (statusValidateObj.success) {
-						callback(null, inResponseTo);
-					} else {
-						callback('Error. Logout not confirmed by IDP', null);
-
-					}
-				} else {
-					callback('No Response Found', null);
+				// TBD. Check if this msg corresponds to one we sent
+				let inResponseTo;
+				try {
+					inResponseTo = response.getAttribute('InResponseTo');
+					debugLog(`In Response to: ${ inResponseTo }`);
+				} catch (e) {
+					debugLog(`Caught error: ${ e }`);
+					const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+					debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
 				}
+
+				const statusValidateObj = self.validateStatus(doc);
+
+				if (statusValidateObj.success) {
+					return callback(null, inResponseTo);
+				} else {
+					return callback('Error. Logout not confirmed by IDP', null);
+				}
+			} else {
+				return callback('No Response Found', null);
 			}
 		}
 

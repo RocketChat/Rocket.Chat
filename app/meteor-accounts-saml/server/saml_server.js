@@ -5,8 +5,9 @@ import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import { CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
-import bodyParser from 'body-parser';
 import { SAML } from './saml_utils';
+import bodyParser from 'body-parser';
+import fiber from 'fibers';
 import _ from 'underscore';
 
 if (!Accounts.saml) {
@@ -19,7 +20,6 @@ if (!Accounts.saml) {
 	};
 }
 
-import fiber from 'fibers';
 RoutePolicy.declare('/_saml/', 'network');
 
 /**
@@ -229,6 +229,28 @@ const samlUrlToObject = function(url) {
 	return result;
 };
 
+const logoutRemoveTokens = function (userId) {
+	if (Accounts.saml.settings.debug) {
+		console.log(`Found user ${ loggedOutUser[0]._id }`);
+	}
+
+	Meteor.users.update({
+		_id: userId,
+	}, {
+		$set: {
+			'services.resume.loginTokens': [],
+		},
+	});
+
+	Meteor.users.update({
+		_id: userId,
+	}, {
+		$unset: {
+			'services.saml': '',
+		},
+	});
+};
+
 const middleware = function(req, res, next) {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
@@ -284,21 +306,7 @@ const middleware = function(req, res, next) {
 							}).fetch();
 
 							if (loggedOutUser.length === 1) {
-								Meteor.users.update({
-									_id: loggedOutUser[0]._id,
-								}, {
-									$set: {
-										'services.resume.loginTokens': [],
-									},
-								});
-
-								Meteor.users.update({
-									_id: loggedOutUser[0]._id,
-								}, {
-									$unset: {
-										'services.saml': '',
-									},
-								});
+								logoutRemoveTokens(loggedOutUser[0]._id);
 							}
 
 						};
@@ -337,23 +345,7 @@ const middleware = function(req, res, next) {
 									'services.saml.inResponseTo': inResponseTo,
 								}).fetch();
 								if (loggedOutUser.length === 1) {
-									if (Accounts.saml.settings.debug) {
-										console.log(`Found user ${ loggedOutUser[0]._id }`);
-									}
-									Meteor.users.update({
-										_id: loggedOutUser[0]._id,
-									}, {
-										$set: {
-											'services.resume.loginTokens': [],
-										},
-									});
-									Meteor.users.update({
-										_id: loggedOutUser[0]._id,
-									}, {
-										$unset: {
-											'services.saml': '',
-										},
-									});
+									logoutRemoveTokens(loggedOutUser[0]._id);
 								} else {
 									throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
 								}
