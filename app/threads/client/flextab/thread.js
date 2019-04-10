@@ -95,7 +95,7 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ tmid }).observe({
+		this.threadsObserve = Messages.find({ tmid, _updatedAt: { $gt: new Date() } }).observe({
 			added: ({ _id, ...message }) => {
 				const { atBottom } = this;
 				this.Threads.upsert({ _id }, message);
