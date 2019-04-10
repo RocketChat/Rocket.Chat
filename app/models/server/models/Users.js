@@ -185,17 +185,11 @@ export class Users extends Base {
 	}
 
 	closeOffice() {
-		self = this;
-		self.findAgents().forEach(function(agent) {
-			self.setLivechatStatus(agent._id, 'not-available');
-		});
+		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'not-available'));
 	}
 
 	openOffice() {
-		self = this;
-		self.findAgents().forEach(function(agent) {
-			self.setLivechatStatus(agent._id, 'available');
-		});
+		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'available'));
 	}
 
 	getAgentInfo(agentId) {

@@ -35,6 +35,25 @@ Template.sidebarItem.helpers({
 	showUnread() {
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
+	badgeClass() {
+		const { t, unread, userMentions, groupMentions } = this;
+
+		const badges = ['badge'];
+
+		if (unread) {
+			badges.push('badge--unread');
+		}
+
+		if (unread && t === 'd') {
+			badges.push('badge--dm');
+		} else if (userMentions) {
+			badges.push('badge--user-mentions');
+		} else if (groupMentions) {
+			badges.push('badge--group-mentions');
+		}
+
+		return badges.join(' ');
+	},
 });
 
 function setLastMessageTs(instance, ts) {
