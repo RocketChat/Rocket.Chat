@@ -1,3 +1,9 @@
+import _ from 'underscore';
+import url from 'url';
+import http from 'http';
+import https from 'https';
+import { RTMClient } from '@slack/client';
+
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { getAvatarUrlFromUsername } from '../../utils';
@@ -15,17 +21,13 @@ import {
 import { saveRoomName, saveRoomTopic } from '../../channel-settings';
 import { FileUpload } from '../../file-upload';
 import { logger } from './logger';
-import _ from 'underscore';
-import url from 'url';
-import http from 'http';
-import https from 'https';
+import { SlackAPI } from './SlackAPI';
 
 export default class SlackAdapter {
 
 	constructor(slackBridge) {
 		logger.slack.debug('constructor');
 		this.slackBridge = slackBridge;
-		this.slackClient = require('@slack/client');
 		this.rtm = {};	// slack-client Real Time Messaging API
 		this.apiToken = {};	// Slack API Token passed in via Connect
 		// On Slack, a rocket integration bot will be added to slack channels, this is the list of those channels, key is Rocket Ch ID
@@ -40,10 +42,10 @@ export default class SlackAdapter {
 	connect(apiToken) {
 		this.apiToken = apiToken;
 
-		const { RTMClient } = this.slackClient;
 		if (RTMClient != null) {
 			RTMClient.disconnect;
 		}
+		this.slackAPI = new SlackAPI(apiToken);
 		this.rtm = new RTMClient(this.apiToken);
 		this.rtm.start();
 		this.registerForEvents();
@@ -332,7 +334,7 @@ export default class SlackAdapter {
 	 */
 	onReactionRemoved(slackReactionMsg) {
 		if (slackReactionMsg) {
-			if (! this.slackBridge.isReactionsEnabled) {
+			if (!this.slackBridge.isReactionsEnabled) {
 				return;
 			}
 			const rocketUser = this.rocket.getUser(slackReactionMsg.user);
@@ -376,7 +378,7 @@ export default class SlackAdapter {
 	 */
 	onReactionAdded(slackReactionMsg) {
 		if (slackReactionMsg) {
-			if (! this.slackBridge.isReactionsEnabled) {
+			if (!this.slackBridge.isReactionsEnabled) {
 				return;
 			}
 			const rocketUser = this.rocket.getUser(slackReactionMsg.user);
@@ -451,25 +453,22 @@ export default class SlackAdapter {
 
 	postGetChannelInfo(slackChID) {
 		logger.slack.debug('Getting slack channel info', slackChID);
-		const response = HTTP.get('https://slack.com/api/channels.info', { params: { token: this.apiToken, channel: slackChID } });
-		if (response && response.data) {
-			return response.data.channel;
-		}
+		return this.slackAPI.getChannelInfo(slackChID);
 	}
 
 	postFindChannel(rocketChannelName) {
 		logger.slack.debug('Searching for Slack channel or group', rocketChannelName);
-		let response = HTTP.get('https://slack.com/api/channels.list', { params: { token: this.apiToken } });
-		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
-			for (const channel of response.data.channels) {
+		const channels = this.slackAPI.getChannels();
+		if (channels && channels.length > 0) {
+			for (const channel of channels) {
 				if (channel.name === rocketChannelName && channel.is_member === true) {
 					return channel;
 				}
 			}
 		}
-		response = HTTP.get('https://slack.com/api/groups.list', { params: { token: this.apiToken } });
-		if (response && response.data && _.isArray(response.data.groups) && response.data.groups.length > 0) {
-			for (const group of response.data.groups) {
+		const groups = this.slackAPI.getGroups();
+		if (groups && groups.length > 0) {
+			for (const group of groups) {
 				if (group.name === rocketChannelName) {
 					return group;
 				}
@@ -532,9 +531,9 @@ export default class SlackAdapter {
 	}
 
 	populateMembershipChannelMapByChannels() {
-		const response = HTTP.get('https://slack.com/api/channels.list', { params: { token: this.apiToken } });
-		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
-			for (const slackChannel of response.data.channels) {
+		const channels = this.slackAPI.getChannels();
+		if (channels && channels.length > 0) {
+			for (const slackChannel of channels) {
 				const rocketchat_room = Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } });
 				if (rocketchat_room) {
 					if (slackChannel.is_member) {
@@ -546,9 +545,9 @@ export default class SlackAdapter {
 	}
 
 	populateMembershipChannelMapByGroups() {
-		const response = HTTP.get('https://slack.com/api/conversations.list', { params: { token: this.apiToken, types: 'private_channel' } });
-		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
-			for (const slackGroup of response.data.channels) {
+		const groups = this.slackAPI.getGroups();
+		if (groups && groups.length > 0) {
+			for (const slackGroup of groups) {
 				const rocketchat_room = Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } });
 				if (rocketchat_room) {
 					if (slackGroup.is_member) {
@@ -578,8 +577,8 @@ export default class SlackAdapter {
 			};
 
 			logger.slack.debug('Posting Add Reaction to Slack');
-			const postResult = HTTP.post('https://slack.com/api/reactions.add', { params: data });
-			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+			const postResult = this.slackAPI.react(data);
+			if (postResult) {
 				logger.slack.debug('Reaction added to Slack');
 			}
 		}
@@ -1132,7 +1131,7 @@ export default class SlackAdapter {
 		logger.slack.info('importMessages: ', rid);
 		const rocketchat_room = Rooms.findOneById(rid);
 		if (rocketchat_room) {
-			if (this.getSlackChannel(rid)) {
+			if (this.getSlackChannel(rid) && false) {
 				this.copyChannelInfo(rid, this.getSlackChannel(rid));
 
 				logger.slack.debug('Importing messages from Slack to Rocket.Chat', this.getSlackChannel(rid), rid);
