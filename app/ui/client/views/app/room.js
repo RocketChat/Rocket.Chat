@@ -32,6 +32,7 @@ import Clipboard from 'clipboard';
 import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
+import { isURL } from '../../../../utils/lib/isURL';
 
 export const chatMessages = {};
 
@@ -560,7 +561,7 @@ Template.room.events({
 			return;
 		}
 
-		if (e.target && (e.target.nodeName === 'A') && /^https?:\/\/.+/.test(e.target.getAttribute('href'))) {
+		if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -589,7 +590,7 @@ Template.room.events({
 			return;
 		}
 
-		if (e.target && (e.target.nodeName === 'A') && /^https?:\/\/.+/.test(e.target.getAttribute('href'))) {
+		if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
 			if (touchMoved === true) {
 				e.preventDefault();
 				e.stopPropagation();

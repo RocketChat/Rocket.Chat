@@ -7,6 +7,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
 import _ from 'underscore';
+import { isURL } from '../../utils/lib/isURL';
 
 const logger = new Logger('CustomOAuth');
 
@@ -70,11 +71,11 @@ export class CustomOAuth {
 			this.identityTokenSentVia = this.tokenSentVia;
 		}
 
-		if (!/^https?:\/\/.+/.test(this.tokenPath)) {
+		if (!isURL(this.tokenPath)) {
 			this.tokenPath = this.serverURL + this.tokenPath;
 		}
 
-		if (!/^https?:\/\/.+/.test(this.identityPath)) {
+		if (!isURL(this.identityPath)) {
 			this.identityPath = this.serverURL + this.identityPath;
 		}
 
