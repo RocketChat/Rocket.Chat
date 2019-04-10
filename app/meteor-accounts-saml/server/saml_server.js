@@ -229,9 +229,9 @@ const samlUrlToObject = function(url) {
 	return result;
 };
 
-const logoutRemoveTokens = function (userId) {
+const logoutRemoveTokens = function(userId) {
 	if (Accounts.saml.settings.debug) {
-		console.log(`Found user ${ loggedOutUser[0]._id }`);
+		console.log(`Found user ${ userId }`);
 	}
 
 	Meteor.users.update({

@@ -337,7 +337,7 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 	zlib.inflateRaw(compressedSAMLRequest, function(err, decoded) {
 		if (err) {
 			debugLog(`Error while inflating. ${ err }`);
-			return callback(err, null)
+			return callback(err, null);
 		}
 
 		debugLog(`LogoutRequest: ${ decoded }`);
