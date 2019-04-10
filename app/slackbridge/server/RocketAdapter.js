@@ -300,8 +300,8 @@ export default class RocketAdapter {
 					roomUpdate.topic = rocketChannelData.purpose.value;
 				}
 				Rooms.addImportIds(rocketChannelData.rocketId, rocketChannelData.id);
-				this.slack.addSlackChannel(rocketChannelData.rocketId, slackChannelID);
 			}
+			this.slack.addSlackChannel(rocketChannelData.rocketId, slackChannelID);
 			return Rooms.findOneById(rocketChannelData.rocketId);
 		}
 		logger.rocket.debug('Channel not added');

@@ -546,9 +546,9 @@ export default class SlackAdapter {
 	}
 
 	populateMembershipChannelMapByGroups() {
-		const response = HTTP.get('https://slack.com/api/groups.list', { params: { token: this.apiToken } });
-		if (response && response.data && _.isArray(response.data.groups) && response.data.groups.length > 0) {
-			for (const slackGroup of response.data.groups) {
+		const response = HTTP.get('https://slack.com/api/conversations.list', { params: { token: this.apiToken, types: 'private_channel' } });
+		if (response && response.data && _.isArray(response.data.channels) && response.data.channels.length > 0) {
+			for (const slackGroup of response.data.channels) {
 				const rocketchat_room = Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } });
 				if (rocketchat_room) {
 					if (slackGroup.is_member) {
