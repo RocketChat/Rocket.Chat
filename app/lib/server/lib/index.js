@@ -14,3 +14,4 @@ export { processDirectEmail } from './processDirectEmail';
 export { msgStream } from './msgStream';
 
 import './notifyUsersOnMessage';
+import './meteorFixes';
