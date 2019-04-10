@@ -222,6 +222,10 @@ Template.userInfo.events({
 	'click .js-close-info'(e, instance) {
 		return instance.clear();
 	},
+	'click .js-close'(e, instance) {
+		return instance.clear();
+	},
+
 	'click .js-back'(e, instance) {
 		return instance.clear();
 	},
