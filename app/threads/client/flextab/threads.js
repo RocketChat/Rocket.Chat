@@ -35,10 +35,13 @@ Template.threads.events({
 });
 
 Template.threads.helpers({
+	doDotLoadThreads() {
+		return Template.instance().state.get('close');
+	},
 	close() {
-		const instance = Template.instance();
-		const { tabBar } = instance.data;
-		return () => (instance.close ? tabBar.close() : instance.state.set('mid', null));
+		const { state, data } = Template.instance();
+		const { tabBar } = data;
+		return () => (state.get('close') ? tabBar.close() : state.set('mid', null));
 	},
 	message() {
 		return Template.instance().state.get('thread');
@@ -46,8 +49,8 @@ Template.threads.helpers({
 	isLoading() {
 		return Template.instance().state.get('loading');
 	},
-	hasThreads() {
-		return Template.instance().Threads.find({ rid: Template.instance().state.get('rid') }, { sort }).count();
+	hasNoThreads() {
+		return !Template.instance().state.get('loading') && Template.instance().Threads.find({ rid: Template.instance().state.get('rid') }, { sort }).count() === 0;
 	},
 	threads() {
 		return Template.instance().Threads.find({ rid: Template.instance().state.get('rid') }, { sort, limit: Template.instance().state.get('limit') });
@@ -56,17 +59,19 @@ Template.threads.helpers({
 });
 
 Template.threads.onCreated(async function() {
+	this.Threads = new Mongo.Collection(null);
+	const { rid, mid, msg } = this.data;
 	this.state = new ReactiveDict({
-		rid: this.data.rid,
+		rid,
+		close: !!mid,
 		loading: true,
+		mid,
+		thread: msg,
 	});
 
-	this.Threads = new Mongo.Collection(null);
 
 	this.incLimit = () => {
-		if (this.state.get('loading')) {
-			return;
-		}
+
 		const { rid, limit } = Tracker.nonreactive(() => this.state.all());
 
 		const count = this.Threads.find({ rid }).count();
@@ -80,13 +85,13 @@ Template.threads.onCreated(async function() {
 	};
 
 	this.loadMore = _.debounce(async () => {
-		if (this.state.get('loading')) {
+		const { rid, limit } = Tracker.nonreactive(() => this.state.all());
+		if (this.state.get('loading') === rid) {
 			return;
 		}
 
-		const { rid, limit } = Tracker.nonreactive(() => this.state.all());
 
-		this.state.set('loading', true);
+		this.state.set('loading', rid);
 		const threads = await call('getThreadsList', { rid, limit: LIST_SIZE, skip: limit - LIST_SIZE });
 		upsert(this.Threads, threads);
 		// threads.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
@@ -97,9 +102,9 @@ Template.threads.onCreated(async function() {
 	Tracker.afterFlush(() => {
 		this.autorun(async () => {
 			const { rid, mid } = Template.currentData();
-			this.close = !!mid;
 
 			this.state.set({
+				close: !!mid,
 				mid,
 				rid,
 			});
@@ -111,7 +116,6 @@ Template.threads.onCreated(async function() {
 		this.rid = rid;
 		this.state.set({
 			limit: LIST_SIZE,
-			loading: false,
 		});
 		this.loadMore();
 	});
@@ -119,7 +123,7 @@ Template.threads.onCreated(async function() {
 	this.autorun(() => {
 		const rid = this.state.get('rid');
 		this.threadsObserve && this.threadsObserve.stop();
-		this.threadsObserve = Messages.find({ rid, tcount: { $exists: true } }).observe({
+		this.threadsObserve = Messages.find({ rid, _updatedAt: { $gt: new Date() }, tcount: { $exists: true } }).observe({
 			added: ({ _id, ...message }) => {
 				this.Threads.upsert({ _id }, message);
 			}, // Update message to re-render DOM

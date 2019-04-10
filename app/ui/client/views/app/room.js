@@ -514,11 +514,12 @@ Template.room.events({
 	'click .js-open-thread'() {
 		const { tabBar } = Template.instance();
 
-		const { msg: { rid, _id, tmid } } = messageArgs(this);
+		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
 		const $flexTab = $('.flex-tab-container .flex-tab');
 		$flexTab.attr('template', 'thread');
 
 		tabBar.setData({
+			msg,
 			rid,
 			mid: tmid || _id,
 			label: 'Threads',
