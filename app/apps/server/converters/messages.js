@@ -37,13 +37,14 @@ export class AppMessagesConverter {
 				return result;
 			},
 			editor: (message) => {
-				if (!message.editedBy) {
+				const { editedBy } = message;
+				delete message.editedBy;
+
+				if (!editedBy) {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters().get('users').convertById(message.editedBy._id);
-				delete message.editedBy;
-				return result;
+				return this.orch.getConverters().get('users').convertById(editedBy._id);
 			},
 			attachments: (message) => {
 				const result = this._convertAttachmentsToApp(message.attachments);

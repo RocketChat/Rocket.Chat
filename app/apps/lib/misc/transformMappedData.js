@@ -1,9 +1,9 @@
-import { mergeDeep } from '../../../utils/lib/mergeDeep';
+import cloneDeep from 'lodash.clonedeep';
 
 /**
  * Transforms a `data` source object to another object,
  * essentially applying a to -> from mapping provided by
- * `map`.
+ * `map`. It does not mutate the `data` object.
  *
  * It also inserts in the `transformedObject` a new property
  * called `_unmappedProperties_` which contains properties from
@@ -55,6 +55,7 @@ import { mergeDeep } from '../../../utils/lib/mergeDeep';
  * transformMappedData(data, map);
  * // { id: 'abcde123456', newSize: 20, _unmappedProperties_: {} }
  * ```
+ *
  * @param Object data The data to be transformed
  * @param Object map The map with transformations to be applied
  *
@@ -62,19 +63,17 @@ import { mergeDeep } from '../../../utils/lib/mergeDeep';
  */
 
 export const transformMappedData = (data, map) => {
-	const originalData = mergeDeep({}, data);
-	console.log({ originalData: data, copy: originalData });
+	const originalData = cloneDeep(data);
 	const transformedData = {};
 
 	Object.entries(map).forEach(([to, from]) => {
 		if (typeof from === 'function') {
 			const result = from(originalData);
 
-			// TODO check if we should do this
 			if (typeof result !== 'undefined') {
 				transformedData[to] = result;
 			}
-		} else if (typeof from === 'string') {
+		} else if (typeof from === 'string' && typeof originalData[from] !== 'undefined') {
 			transformedData[to] = originalData[from];
 			delete originalData[from];
 		}
