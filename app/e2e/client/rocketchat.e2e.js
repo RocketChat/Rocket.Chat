@@ -166,8 +166,8 @@ class E2E {
 				this.started = false;
 				failedToDecodeKey = true;
 				this.openAlert({
-					title: TAPi18n.__('Wasn\'t possible to decode your encryption key to be imported.'),
-					html: '<div>Your encryption password seems wrong. Click here to try again.</div>',
+					title: TAPi18n.__('E2E_password_decode_error'),
+					html: TAPi18n.__('E2E_password_decode_error_html'),
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
