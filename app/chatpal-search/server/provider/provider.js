@@ -228,6 +228,7 @@ class ChatpalProvider extends SearchProvider {
 				config.language = this._settings.get('Main_Language');
 				config.searchpath = '/search/search';
 				config.updatepath = '/search/update';
+				config.fileupdatepath = '/search/update/extract';
 				config.pingpath = '/search/ping';
 				config.clearpath = '/search/clear';
 				config.suggestionpath = '/search/suggest';
@@ -241,6 +242,7 @@ class ChatpalProvider extends SearchProvider {
 				config.language = this._settings.get('Main_Language');
 				config.searchpath = '/chatpal/search';
 				config.updatepath = '/chatpal/update';
+				config.fileupdatepath = '/chatpal/update/extract';
 				config.pingpath = '/chatpal/ping';
 				config.clearpath = '/chatpal/clear';
 				config.suggestionpath = '/chatpal/suggest';

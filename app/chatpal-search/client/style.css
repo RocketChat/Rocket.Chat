@@ -219,7 +219,8 @@
 
 .chatpal-search-result-single .chatpal-message,
 .chatpal-search-result-single .chatpal-file-name,
-.chatpal-search-result-single .chatpal-file-desc {
+.chatpal-search-result-single .chatpal-file-desc,
+.chatpal-search-result-single .chatpal-file-content {
 
 	overflow-x: hidden;
 
@@ -243,6 +244,10 @@
 
 .chatpal-search-result-single .chatpal-file-desc {
 	font-size: 17px;
+}
+
+.chatpal-search-result-single .chatpal-file-content {
+	font-size: 15px;
 }
 
 .chatpal-search-result-single .chatpal-size {

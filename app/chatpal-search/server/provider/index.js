@@ -3,6 +3,8 @@ import { HTTP } from 'meteor/http';
 import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
 import { Rooms, Messages, Uploads } from '../../../models';
+import { FileUpload } from '../../../file-upload';
+const getFileBuffer = Meteor.wrapAsync(FileUpload.getBuffer, FileUpload);
 
 /**
  * Enables HTTP functions on Chatpal Backend
@@ -38,6 +40,39 @@ class Backend {
 		} catch (e) {
 			// TODO how to deal with this
 			ChatpalLogger.error('indexing failed', JSON.stringify(e, null, 2));
+			return false;
+		}
+
+	}
+
+	/**
+	 * index a single file
+	 * @param docs
+	 * @returns {boolean}
+	 */
+	indexFile(fileObj) {
+		const options = Object.assign({
+			params: { language:this._options.language },
+			...this._options.httpOptions,
+		}, fileObj);
+
+		const logObj = Object.assign({}, options);
+		delete logObj.content;
+		ChatpalLogger.debug('file index options:', JSON.stringify(logObj, null, 2));
+
+		try {
+
+			const response = HTTP.call('POST', `${ this._options.baseurl }${ this._options.fileupdatepath }`, options);
+
+			if (response.statusCode >= 200 && response.statusCode < 300) {
+				ChatpalLogger.debug('indexed file', JSON.stringify(response.data, null, 2));
+			} else {
+				throw new Error(response);
+			}
+
+		} catch (e) {
+			// TODO how to deal with this
+			ChatpalLogger.error('file indexing failed', JSON.stringify(e, null, 2));
 			return false;
 		}
 
@@ -437,6 +472,8 @@ export default class Index {
 		if (type === 'message' && doc.file && doc.file._id) {
 			const file = Uploads.findOneById(doc.file._id);
 			if (file) {
+				const maxFileSize = 20 * Math.pow(1024, 2);
+
 				file.mid = doc._id;
 				const attachment = doc.attachments.filter((a) => a.type === 'file')[0];
 				if (attachment) {
@@ -445,8 +482,41 @@ export default class Index {
 					file.description = attachment.description;
 				}
 
-				// TODO: Index file's binary data along with file details ( Get binary data using FileUpload.getBuffer(file, cb) )
-				this._batchIndexer.add(this._getIndexDocument('file', file));
+				ChatpalLogger.debug('Indexing file:', file);
+
+				try {
+					let data = '';
+					if (file.size >= maxFileSize) {
+						ChatpalLogger.warn(`File size exceeds maximum allowed size (${ maxFileSize }), skipping file content indexing.`);
+					} else {
+						data = getFileBuffer(file);
+					}
+
+					const fileIndexOptions = {
+						content: data,
+						params: {
+							'resource.name': file.name,
+							'literal.id': file._id,
+							'literal.rid': file.rid,
+							'literal.mid': file.mid,
+							'literal.user': file.userId,
+							'literal.uploaded': file.uploadedAt,
+							'literal.updated': file._updatedAt,
+							'literal.file_name': file.name,
+							'literal.file_desc': file.description,
+							'literal.file_type': file.type,
+							'literal.file_size': file.size,
+							'literal.file_store': file.store,
+							'literal.file_link': file.link,
+						},
+						headers: {
+							'Content-Type': file.type,
+						},
+					};
+					this._backend.indexFile(fileIndexOptions);
+				} catch (err) {
+					ChatpalLogger.error('Error while retrieving file content:', err);
+				}
 			}
 
 			// Skip message indexing
