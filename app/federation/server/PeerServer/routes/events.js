@@ -53,7 +53,7 @@ API.v1.addRoute(
 				return API.v1.failure('Event was not sent');
 			}
 
-			Federation.peerServer.log(`Received event:${ e.t }`);
+			Federation.peerServer.log(`Received event:${e.t}`);
 
 			try {
 				switch (e.t) {
@@ -103,7 +103,7 @@ API.v1.addRoute(
 						Federation.peerServer.handleMessagesUnsetReactionEvent(e);
 						break;
 					default:
-						throw new Error(`Invalid event:${ e.t }`);
+						throw new Error(`Invalid event:${e.t}`);
 				}
 
 				Federation.peerServer.log('Success, responding...');
@@ -112,11 +112,11 @@ API.v1.addRoute(
 				return API.v1.success();
 			} catch (err) {
 				Federation.peerServer.log(
-					`Error handling event:${ e.t } - ${ err.toString() }`
+					`Error handling event:${e.t} - ${err.toString()}`
 				);
 
 				return API.v1.failure(
-					`Error handling event:${ e.t } - ${ err.toString() }`,
+					`Error handling event:${e.t} - ${err.toString()}`,
 					err.error || 'unknown-error'
 				);
 			}

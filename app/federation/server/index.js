@@ -10,6 +10,7 @@ import { logger } from './logger';
 import { PeerClient } from './PeerClient';
 import { PeerDNS } from './PeerDNS';
 import { PeerHTTP } from './PeerHTTP';
+import { PeerPinger } from './PeerPinger';
 import { PeerServer } from './PeerServer';
 import * as SettingsUpdater from './settingsUpdater';
 
@@ -20,6 +21,7 @@ import { ping } from './methods/ping';
 const peerClient = new PeerClient();
 const peerDNS = new PeerDNS();
 const peerHTTP = new PeerHTTP();
+const peerPinger = new PeerPinger();
 const peerServer = new PeerServer();
 
 export const Federation = {
@@ -33,6 +35,7 @@ export const Federation = {
 	peerClient,
 	peerDNS,
 	peerHTTP,
+	peerPinger,
 	peerServer,
 };
 
@@ -63,8 +66,11 @@ peerClient.start();
 // Start the server, setting up all the endpoints
 peerServer.start();
 
+// Start the pinger, to check the status of other peers
+peerPinger.start();
+
 const updateSettings = _.debounce(
-	Meteor.bindEnvironment(function() {
+	Meteor.bindEnvironment(function () {
 		const _enabled = settings.get('FEDERATION_Enabled');
 
 		if (!_enabled) {
