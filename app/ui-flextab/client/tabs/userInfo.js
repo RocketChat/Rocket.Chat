@@ -129,6 +129,11 @@ Template.userInfo.helpers({
 		return Template.instance().user.get();
 	},
 
+	notDirectRoom() {
+		const roomType = Template.instance().directRoom.get();
+		return roomType === 'direct' ? false : true;
+	},
+
 	hasEmails() {
 		return _.isArray(this.emails);
 	},
@@ -232,7 +237,6 @@ Template.userInfo.onCreated(function() {
 	this.user = new ReactiveVar;
 	this.actions = new ReactiveVar;
 
-
 	this.autorun(() => {
 		const user = this.user.get();
 		if (!user) {
@@ -250,7 +254,8 @@ Template.userInfo.onCreated(function() {
 	this.loadingUserInfo = new ReactiveVar(true);
 	this.loadedUsername = new ReactiveVar;
 	this.tabBar = Template.currentData().tabBar;
-
+	this.directRoom = new ReactiveVar;
+	this.directRoom.set(this.tabBar.group.get());
 	Meteor.setInterval(() => this.now.set(moment()), 30000);
 
 	this.autorun(() => {

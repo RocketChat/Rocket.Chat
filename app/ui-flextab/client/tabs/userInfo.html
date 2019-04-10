@@ -112,7 +112,9 @@
 						</div>
 					</div>
 					{{#if ../showAll}}
-						<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
+                                                {{#if notDirectRoom}}
+                                                        <button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
+                                                {{/if}}
 					{{/if}}
 				</section>
 			{{/with}}
