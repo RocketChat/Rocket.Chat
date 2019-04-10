@@ -54,7 +54,7 @@ export class AppMessagesConverter {
 			sender: (message) => {
 				let result;
 
-				if (msgObj.u && msgObj.u._id) {
+				if (message.u && message.u._id) {
 					result = this.orch.getConverters().get('users').convertById(message.u._id);
 				} else {
 					result = this.orch.getConverters().get('users').convertToApp(message.u);
