@@ -5,11 +5,11 @@ import { ChatPermissions } from './lib/ChatPermissions';
 
 function atLeastOne(permissions = [], scope) {
 	return permissions.some((permissionId) => {
-		const permission = ChatPermissions.findOne(permissionId);
+		const permission = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {
-			const role = Models.Roles.findOne(roleName);
+			const role = Models.Roles.findOne(roleName, { fields: { scope: 1 } });
 			const roleScope = role && role.scope;
 			const model = Models[roleScope];
 
@@ -20,11 +20,11 @@ function atLeastOne(permissions = [], scope) {
 
 function all(permissions = [], scope) {
 	return permissions.every((permissionId) => {
-		const permission = ChatPermissions.findOne(permissionId);
+		const permission = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {
-			const role = Models.Roles.findOne(roleName);
+			const role = Models.Roles.findOne(roleName, { fields: { scope: 1 } });
 			const roleScope = role && role.scope;
 			const model = Models[roleScope];
 
