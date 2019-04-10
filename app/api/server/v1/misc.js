@@ -50,8 +50,8 @@ let onlineCacheDate = 0;
 const cacheInvalid = 60000; // 1 minute
 API.v1.addRoute('shield.svg', { authRequired: false }, {
 	get() {
-		const { type, name, icon } = this.queryParams;
-		let { channel } = this.queryParams;
+		const { type, icon } = this.queryParams;
+		let { channel, name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/shield.svg' });
 		}
@@ -120,6 +120,7 @@ API.v1.addRoute('shield.svg', { authRequired: false }, {
 
 		channel = s.escapeHTML(channel);
 		text = s.escapeHTML(text);
+		name = s.escapeHTML(name);
 
 		return {
 			headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' },
