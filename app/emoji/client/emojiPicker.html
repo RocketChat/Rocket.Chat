@@ -33,7 +33,16 @@
 			</ul>
 		</div>
 		<div class="emojis">
-			{{{emojiList}}}
+			{{#if searching}}
+				{{{searchResults}}}
+			{{else}}
+				{{#each category in emojiCategories}}
+					<h4 id="emoji-list-category-{{category.key}}">{{_ category.i18n}}</h4>
+					<ul class="emoji-list emoji-category-{{category.key}}">
+						{{{emojiList category.key}}}
+					</ul>
+				{{/each}}
+			{{/if}}
 		</div>
 		<div class="emoji-footer">{{{_"Emoji_provided_by_JoyPixels"}}}</div>
 	</div>

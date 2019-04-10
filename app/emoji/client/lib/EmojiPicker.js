@@ -8,7 +8,7 @@ import { updateRecentEmoji } from '../../client/emojiPicker';
 
 export const EmojiPicker = {
 	width: 365,
-	height: 285,
+	height: 300,
 	initiated: false,
 	input: null,
 	source: null,
@@ -118,27 +118,9 @@ export const EmojiPicker = {
 
 		window.localStorage.setItem('emoji.recent', this.recent);
 		emoji.packages.base.emojisByCategory.recent = this.recent;
-		this.updateRecent();
+		this.updateRecent('recent');
 	},
-	updateRecent() {
-		updateRecentEmoji();
-		this.refreshDynamicEmojiLists();
-	},
-	refreshDynamicEmojiLists() {
-		const dynamicEmojiLists = [
-			emoji.packages.base.emojisByCategory.recent,
-			emoji.packages.emojiCustom.emojisByCategory.rocket,
-		];
-
-		dynamicEmojiLists.forEach((category) => {
-			if (category) {
-				for (let i = 0; i < category.length; i++) {
-					const _emoji = category[i];
-					if (!emoji.list[`:${ _emoji }:`]) {
-						category = _.without(category, _emoji);
-					}
-				}
-			}
-		});
+	updateRecent(category) {
+		updateRecentEmoji(category);
 	},
 };

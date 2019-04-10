@@ -44,7 +44,7 @@ export const deleteEmojiCustom = function(emojiData) {
 			}
 		}
 	}
-	EmojiPicker.updateRecent();
+	EmojiPicker.updateRecent('rocket');
 };
 
 export const updateEmojiCustom = function(emojiData) {
@@ -120,7 +120,7 @@ export const updateEmojiCustom = function(emojiData) {
 		}
 	}
 
-	EmojiPicker.updateRecent();
+	EmojiPicker.updateRecent('rocket');
 };
 
 const customRender = (html) => {

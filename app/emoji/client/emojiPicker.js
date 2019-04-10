@@ -1,57 +1,44 @@
 import _ from 'underscore';
 
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
-import { Users } from '../../models/client';
 import { t } from '../../utils/client';
 import { emoji } from '../lib/rocketchat';
 import { EmojiPicker } from './lib/EmojiPicker';
 
-const emojiPickerContent = new ReactiveVar('');
-
 export const recentEmojisNeedsUpdate = new ReactiveVar(false);
+
+const emojiListByCategory = new ReactiveDict('emojiList');
 
 const getEmojiElement = (emoji, image) => `<li class="emoji-${ emoji } emoji-picker-item" data-emoji="${ emoji }" title="${ emoji }">${ image }</li>`;
 
-export function updateRecentEmoji() {
+const createEmojiList = (category, actualTone) => {
 	const html = Object.values(emoji.packages).map((emojiPackage) => {
-		if (!emojiPackage.emojisByCategory.recent) {
+		if (!emojiPackage.emojisByCategory[category]) {
 			return;
 		}
 
-		return emojiPackage.emojisByCategory.recent.map(
-			(current) => getEmojiElement(current, emojiPackage.render(`:${ current }:`))
-		).join('');
+		return emojiPackage.emojisByCategory[category].map((current) => {
+			const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${ actualTone }` : '';
+			return getEmojiElement(current, emojiPackage.renderPicker(`:${ current }${ tone }:`));
+		}).join('');
 	}).join('') || `<li>${ t('No_emojis_found') }</li>`;
 
-	document.querySelector('.emoji-category-recent').innerHTML = html;
+	return html;
+};
+
+export function updateRecentEmoji(category) {
+	emojiListByCategory.set(category, createEmojiList(category));
 }
 
 const createPickerEmojis = _.throttle((instance) => {
 	const categories = instance.categoriesList;
 	const actualTone = instance.tone;
-	let html = '';
 
-	categories.forEach((category) => {
-		html += `<h4 id="emoji-list-category-${ category.key }">${ t(category.i18n) }</h4>`;
-		html += `<ul class="emoji-list emoji-category-${ category.key }">`;
-		html += Object.values(emoji.packages).map((emojiPackage) => {
-			if (!emojiPackage.emojisByCategory[category.key]) {
-				return;
-			}
-
-			return emojiPackage.emojisByCategory[category.key].map((current) => {
-				const tone = actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${ actualTone }` : '';
-				return getEmojiElement(current, emojiPackage.renderPicker(`:${ current }${ tone }:`));
-			}).join('');
-		}).join('') || `<li>${ t('No_emojis_found') }</li>`;
-		html += '</ul>';
-	});
-
-	emojiPickerContent.set(html);
+	categories.forEach((category) => emojiListByCategory.set(category.key, createEmojiList(category.key, actualTone)));
 }, 300);
 
 function getEmojisBySearchTerm(searchTerm) {
@@ -116,18 +103,14 @@ Template.emojiPicker.helpers({
 		}
 		return emojisByCategory;
 	},
-	emojiList() {
-		const t = Template.instance();
-		const searchTerm = t.currentSearchTerm.get();
-
-		// this will cause the reflow when recent list gets updated
-		recentEmojisNeedsUpdate.get();
-
-		if (searchTerm.length > 0) {
-			return getEmojisBySearchTerm(searchTerm);
-		} else {
-			return emojiPickerContent.get();
-		}
+	searching() {
+		return Template.instance().currentSearchTerm.get().length > 0;
+	},
+	searchResults() {
+		return getEmojisBySearchTerm(Template.instance().currentSearchTerm.get());
+	},
+	emojiList(category) {
+		return emojiListByCategory.get(category);
 	},
 	currentTone() {
 		return `tone-${ Template.instance().tone }`;
@@ -284,13 +267,5 @@ Template.emojiPicker.onCreated(function() {
 		}
 	});
 
-	// rewrite emoji picker after getting user's language
-	this.autorun(() => {
-		if (!Meteor.userId()) {
-			return;
-		}
-		Users.findOne(Meteor.userId(), { fields: { language: 1 } });
-
-		createPickerEmojis(this);
-	});
+	createPickerEmojis(this);
 });
