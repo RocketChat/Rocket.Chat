@@ -124,17 +124,20 @@
 				color: var(--status-online);
 			}
 		}
+
 		&--away {
 			& .rc-popover__icon {
 				color: var(--status-away);
 			}
 		}
+
 		&--busy {
 			& .rc-popover__icon {
 				color: var(--status-busy);
 			}
 		}
-		&--invisible {
+
+		&--offline {
 			& .rc-popover__icon {
 				color: var(--status-invisible);
 			}
