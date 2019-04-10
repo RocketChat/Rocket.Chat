@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
@@ -30,7 +32,8 @@ Meteor.methods({
 
 		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		const fileUrl = `/file-upload/${ file._id }`;
+		const fileNameConversion = path.normalize(file.name).replace(/^(\.\.(\/|\\|$))+/, ' ');
+		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(fileNameConversion) }`;
 
 		const attachment = {
 			title: file.name,

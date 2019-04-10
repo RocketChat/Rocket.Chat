@@ -4,7 +4,7 @@ import { FileUpload } from './FileUpload';
 import { Uploads } from '../../../models';
 
 WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
-	const match = /^\/(.*)/.exec(req.url);
+	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match && match[1]) {
 		const file = Uploads.findOneById(match[1]);

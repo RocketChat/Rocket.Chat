@@ -7,6 +7,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { DateFormat } from '../../../lib/client';
 import { canDeleteMessage, getURL, handleError, t } from '../../../utils/client';
 import { popover, modal } from '../../../ui-utils/client';
+import path from 'path';
 
 const roomFiles = new Mongo.Collection('room_files');
 
@@ -31,7 +32,8 @@ Template.uploadedFilesList.helpers({
 	},
 
 	url() {
-		return `/file-upload/${ this._id }`;
+		const fileNameConversion = path.normalize(this.name).replace(/^(\.\.(\/|\\|$))+/, ' ');
+		return `/file-upload/${ this._id }/${ encodeURI(fileNameConversion) }`;
 	},
 
 	fileTypeClass() {

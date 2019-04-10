@@ -4,6 +4,7 @@ import { Random } from 'meteor/random';
 
 import { Rooms, LivechatVisitors } from '../../../models';
 import { FileUpload } from '../../../file-upload';
+import path from 'path';
 
 Meteor.methods({
 	async 'sendFileLivechatMessage'(roomId, visitorToken, file, msgData = {}) {
@@ -27,7 +28,8 @@ Meteor.methods({
 			msg: Match.Optional(String),
 		});
 
-		const fileUrl = `/file-upload/${ file._id }`;
+		const fileNameConversion = path.normalize(file.name).replace(/^(\.\.(\/|\\|$))+/, ' ');
+		const fileUrl = `/file-upload/${ file._id }/${ encodeURI(fileNameConversion) }`;
 
 		const attachment = {
 			title: file.name,
