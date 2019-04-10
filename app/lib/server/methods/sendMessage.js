@@ -14,6 +14,7 @@ import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
+import { SystemLogger } from '../../../logger/server';
 
 Meteor.methods({
 	sendMessage(message) {
@@ -90,8 +91,8 @@ Meteor.methods({
 				throw new Meteor.Error('error-not-allowed');
 			}
 
-			// TODO add some more logging information... this makes it very hard to debug the cause of the problem
-			console.error(error);
+			SystemLogger.error('Error sending message:', error);
+
 			Notifications.notifyUser(uid, 'message', {
 				_id: Random.id(),
 				rid: message.rid,
