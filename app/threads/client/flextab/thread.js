@@ -117,7 +117,7 @@ Template.thread.onRendered(function() {
 	});
 
 	Tracker.afterFlush(() => {
-		this.autorun(async() => {
+		this.autorun(async () => {
 			const { mainMessage } = Template.currentData();
 			this.state.set({
 				tmid: mainMessage._id,
@@ -132,7 +132,7 @@ Template.thread.onCreated(async function() {
 
 	this.state = new ReactiveDict();
 
-	this.loadMore = _.debounce(async() => {
+	this.loadMore = _.debounce(async () => {
 		if (this.state.get('loading')) {
 			return;
 		}

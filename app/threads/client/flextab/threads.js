@@ -79,7 +79,7 @@ Template.threads.onCreated(async function() {
 		this.loadMore();
 	};
 
-	this.loadMore = _.debounce(async() => {
+	this.loadMore = _.debounce(async () => {
 		if (this.state.get('loading')) {
 			return;
 		}
@@ -95,7 +95,7 @@ Template.threads.onCreated(async function() {
 	}, 500);
 
 	Tracker.afterFlush(() => {
-		this.autorun(async() => {
+		this.autorun(async () => {
 			const { rid, mid } = Template.currentData();
 			this.close = !!mid;
 
@@ -149,7 +149,7 @@ Template.threads.onCreated(async function() {
 		});
 	});
 
-	this.autorun(async() => {
+	this.autorun(async () => {
 		const mid = this.state.get('mid');
 		return this.state.set('thread', mid && this.Threads.findOne({ _id: mid }, { fields: { tcount: 0, tlm: 0, replies: 0, _updatedAt: 0 } }));
 	});
