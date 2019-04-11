@@ -169,6 +169,11 @@ Template.ChatpalSearchSingleFile.helpers({
 	date() {
 		return DateFormat.formatDate(this.updated);
 	},
+	textMatchingFilename() {
+		const text = this.text instanceof Array ? this.text[0] : this.text;
+		const fname = this.file_name instanceof Array ? this.file_name[0] : this.file_name;
+		return text === fname;
+	},
 });
 
 Template.ChatpalSearchSingleRoom.helpers({

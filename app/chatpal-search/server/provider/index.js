@@ -71,8 +71,11 @@ class Backend {
 			}
 
 		} catch (e) {
-			// TODO how to deal with this
-			ChatpalLogger.error('file indexing failed', JSON.stringify(e, null, 2));
+			if (e.response.statusCode === 404) {
+				ChatpalLogger.warn('Current Chatpal backend doesn\'t support file content extraction!');
+			} else {
+				ChatpalLogger.error('file indexing failed', JSON.stringify(e, null, 2));
+			}
 			return false;
 		}
 
@@ -487,21 +490,21 @@ export default class Index {
 				try {
 					let data = '';
 					if (file.size >= maxFileSize) {
-						ChatpalLogger.warn(`File size exceeds maximum allowed size (${ maxFileSize }), skipping file content indexing.`);
+						ChatpalLogger.warn(`File size (${ file.size }) exceeds maximum allowed size (${ maxFileSize }), skipping file content indexing.`);
 					} else {
 						data = getFileBuffer(file);
 					}
 
 					const fileIndexOptions = {
-						content: data,
+						content: data || file.name,
 						params: {
 							'resource.name': file.name,
 							'literal.id': file._id,
 							'literal.rid': file.rid,
 							'literal.mid': file.mid,
 							'literal.user': file.userId,
-							'literal.uploaded': file.uploadedAt,
-							'literal.updated': file._updatedAt,
+							'literal.uploaded': file.uploadedAt.toISOString(),
+							'literal.updated': file._updatedAt.toISOString(),
 							'literal.file_name': file.name,
 							'literal.file_desc': file.description,
 							'literal.file_type': file.type,
@@ -510,7 +513,7 @@ export default class Index {
 							'literal.file_link': file.link,
 						},
 						headers: {
-							'Content-Type': file.type,
+							'Content-Type': data ? file.type : 'text/plain',
 						},
 					};
 					this._backend.indexFile(fileIndexOptions);
