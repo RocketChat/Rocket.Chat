@@ -142,7 +142,7 @@ this.ChatMessages = class ChatMessages {
 			});
 		};
 
-		if ((!visitor.getId()) || (visitor.getDepartment() !== Livechat.department)) {
+		if (!visitor.getId() || visitor.getDepartment() !== Livechat.department) {
 			const guest = {
 				token: visitor.getToken(),
 			};
