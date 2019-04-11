@@ -38,6 +38,9 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 	let message = false;
 	if (pmid) {
 		message = Messages.findOne({ _id: pmid });
+		if (!message) {
+			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'DiscussionCreation' });
+		}
 		if (prid) {
 			if (prid !== getParentRoom(message.rid)._id) {
 				throw new Meteor.Error('error-invalid-arguments', { method: 'DiscussionCreation' });
@@ -52,7 +55,9 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 	}
 
 	const p_room = Rooms.findOne(prid);
-
+	if (!p_room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'DiscussionCreation' });
+	}
 	if (p_room.prid) {
 		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', { method: 'DiscussionCreation' });
 	}
