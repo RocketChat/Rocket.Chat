@@ -32,8 +32,6 @@ import Clipboard from 'clipboard';
 import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import { emojione } from 'meteor/emojione:emojione';
-import s from 'underscore.string';
 
 export const chatMessages = {};
 

@@ -1,10 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { settings } from '../../../settings';
-import { Users } from '../../../models';
-import s from 'underscore.string';
 import { RateLimiter } from '../../../lib';
-import { Notifications } from '../../../notifications';
 import { setStatusMessage } from '../../../lib';
 
 Meteor.methods({
