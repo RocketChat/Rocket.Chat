@@ -6,6 +6,7 @@ import xmldom from 'xmldom';
 import querystring from 'querystring';
 import xmlbuilder from 'xmlbuilder';
 import array2string from 'arraybuffer-to-string';
+import xmlenc from 'xml-encryption';
 // var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
 
 
@@ -342,30 +343,32 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 
 		debugLog(`LogoutRequest: ${ decoded }`);
 		const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
-
-		if (doc) {
-			const request = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutRequest')[0];
-			if (request) {
-				try {
-					const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
-					const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
-
-					const idpSession = sessionNode.childNodes[0].nodeValue;
-					const nameID = nameIdNode.childNodes[0].nodeValue;
-
-					return callback(null, { idpSession, nameID });
-
-				} catch (e) {
-					debugLog(`Caught error: ${ e }`);
-
-					const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
-					debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
-
-					return callback(e, null);
-				}
-			}
+		if (!doc) {
+			return callback('No Doc Found');
 		}
 
+		const request = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutRequest')[0];
+		if (!request) {
+			return callback('No Request Found');
+		}
+
+		try {
+			const sessionNode = request.getElementsByTagName('samlp:SessionIndex')[0];
+			const nameIdNode = request.getElementsByTagName('saml:NameID')[0];
+
+			const idpSession = sessionNode.childNodes[0].nodeValue;
+			const nameID = nameIdNode.childNodes[0].nodeValue;
+
+			return callback(null, { idpSession, nameID });
+
+		} catch (e) {
+			debugLog(`Caught error: ${ e }`);
+
+			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+			debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
+
+			return callback(e, null);
+		}
 	});
 };
 
@@ -380,33 +383,31 @@ SAML.prototype.validateLogoutResponse = function(samlResponse, callback) {
 
 		debugLog(`LogoutResponse: ${ decoded }`);
 		const doc = new xmldom.DOMParser().parseFromString(array2string(decoded), 'text/xml');
-		if (doc) {
-			const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse')[0];
-			if (response) {
-
-				// TBD. Check if this msg corresponds to one we sent
-				let inResponseTo;
-				try {
-					inResponseTo = response.getAttribute('InResponseTo');
-					debugLog(`In Response to: ${ inResponseTo }`);
-				} catch (e) {
-					debugLog(`Caught error: ${ e }`);
-					const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
-					debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
-				}
-
-				const statusValidateObj = self.validateStatus(doc);
-
-				if (statusValidateObj.success) {
-					return callback(null, inResponseTo);
-				} else {
-					return callback('Error. Logout not confirmed by IDP', null);
-				}
-			} else {
-				return callback('No Response Found', null);
-			}
+		if (!doc) {
+			return callback('No Doc Found');
 		}
 
+		const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse')[0];
+		if (!response) {
+			return callback('No Response Found', null);
+		}
+
+		// TBD. Check if this msg corresponds to one we sent
+		let inResponseTo;
+		try {
+			inResponseTo = response.getAttribute('InResponseTo');
+			debugLog(`In Response to: ${ inResponseTo }`);
+		} catch (e) {
+			debugLog(`Caught error: ${ e }`);
+			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+			debugLog(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);
+		}
+
+		const statusValidateObj = self.validateStatus(doc);
+		if (!statusValidateObj.success) {
+			return callback('Error. Logout not confirmed by IDP', null);
+		}
+		return callback(null, inResponseTo);
 	});
 };
 
@@ -468,123 +469,120 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 	debugLog(`Validating response with relay state: ${ xml }`);
 
 	const doc = new xmldom.DOMParser().parseFromString(xml, 'text/xml');
+	if (!doc) {
+		return callback('No Doc Found');
+	}
 
-	if (doc) {
-		debugLog('Verify status');
-		const statusValidateObj = self.validateStatus(doc);
+	debugLog('Verify status');
+	const statusValidateObj = self.validateStatus(doc);
 
-		if (statusValidateObj.success) {
-			debugLog('Status ok');
+	if (!statusValidateObj.success) {
+		return callback(new Error(`Status is:  ${ statusValidateObj.statusCode }`), null, false);
+	}
+	debugLog('Status ok');
 
-			// Verify signature
-			debugLog('Verify signature');
-			if (self.options.cert && !self.validateSignature(xml, self.options.cert)) {
-				debugLog('Signature WRONG');
-				return callback(new Error('Invalid signature'), null, false);
+	// Verify signature
+	debugLog('Verify signature');
+	if (self.options.cert && !self.validateSignature(xml, self.options.cert)) {
+		debugLog('Signature WRONG');
+		return callback(new Error('Invalid signature'), null, false);
+	}
+	debugLog('Signature OK');
+
+	const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response')[0];
+	if (!response) {
+		const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
+
+		if (!logoutResponse) {
+			return callback(new Error('Unknown SAML response message'), null, false);
+		}
+		return callback(null, null, true);
+	}
+	debugLog('Got response');
+
+	let assertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')[0];
+	const encAssertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion')[0];
+
+	const options = { key: this.options.privateKey };
+
+	if (typeof encAssertion !== 'undefined') {
+		xmlenc.decrypt(encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+			assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+		});
+	}
+
+	if (!assertion) {
+		return callback(new Error('Missing SAML assertion'), null, false);
+	}
+
+	const profile = {};
+
+	if (response.hasAttribute('InResponseTo')) {
+		profile.inResponseToId = response.getAttribute('InResponseTo');
+	}
+
+	const issuer = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')[0];
+	if (issuer) {
+		profile.issuer = issuer.textContent;
+	}
+
+	let subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
+	const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
+
+	if (typeof encSubject !== 'undefined') {
+		xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
+			subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
+		});
+	}
+
+	if (subject) {
+		const nameID = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')[0];
+		if (nameID) {
+			profile.nameID = nameID.textContent;
+
+			if (nameID.hasAttribute('Format')) {
+				profile.nameIDFormat = nameID.getAttribute('Format');
 			}
-			debugLog('Signature OK');
-
-			const response = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response')[0];
-			if (response) {
-				debugLog('Got response');
-
-				let assertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')[0];
-				const encAssertion = response.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedAssertion')[0];
-
-				const xmlenc = require('xml-encryption');
-				const options = { key: this.options.privateKey };
-
-				if (typeof encAssertion !== 'undefined') {
-					xmlenc.decrypt(encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
-						assertion = new xmldom.DOMParser().parseFromString(result, 'text/xml');
-					});
-				}
-
-				if (!assertion) {
-					return callback(new Error('Missing SAML assertion'), null, false);
-				}
-
-				const profile = {};
-
-				if (response.hasAttribute('InResponseTo')) {
-					profile.inResponseToId = response.getAttribute('InResponseTo');
-				}
-
-				const issuer = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')[0];
-				if (issuer) {
-					profile.issuer = issuer.textContent;
-				}
-
-				let subject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
-				const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
-
-				if (typeof encSubject !== 'undefined') {
-					xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err, result) {
-						subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
-					});
-				}
-
-				if (subject) {
-					const nameID = subject.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')[0];
-					if (nameID) {
-						profile.nameID = nameID.textContent;
-
-						if (nameID.hasAttribute('Format')) {
-							profile.nameIDFormat = nameID.getAttribute('Format');
-						}
-					}
-				}
-
-				const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
-
-				if (authnStatement) {
-					if (authnStatement.hasAttribute('SessionIndex')) {
-
-						profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
-						debugLog(`Session Index: ${ profile.sessionIndex }`);
-					} else {
-						debugLog('No Session Index Found');
-					}
-				} else {
-					debugLog('No AuthN Statement found');
-				}
-
-				const attributeStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeStatement')[0];
-				if (attributeStatement) {
-					this.mapAttributes(attributeStatement, profile);
-				} else {
-					debugLog('No Attribute Statement found in SAML response.');
-				}
-
-				if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
-					profile.email = profile.nameID;
-				}
-
-				const profileKeys = Object.keys(profile);
-				for (let i = 0; i < profileKeys.length; i++) {
-					const key = profileKeys[i];
-
-					if (key.match(/\./)) {
-						profile[key.replace(/\./g, '-')] = profile[key];
-						delete profile[key];
-					}
-				}
-
-				debugLog(`NameID: ${ JSON.stringify(profile) }`);
-				callback(null, profile, false);
-			} else {
-				const logoutResponse = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse');
-
-				if (logoutResponse) {
-					callback(null, null, true);
-				} else {
-					return callback(new Error('Unknown SAML response message'), null, false);
-				}
-			}
-		} else {
-			return callback(new Error(`Status is:  ${ statusValidateObj.statusCode }`), null, false);
 		}
 	}
+
+	const authnStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AuthnStatement')[0];
+
+	if (authnStatement) {
+		if (authnStatement.hasAttribute('SessionIndex')) {
+
+			profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
+			debugLog(`Session Index: ${ profile.sessionIndex }`);
+		} else {
+			debugLog('No Session Index Found');
+		}
+	} else {
+		debugLog('No AuthN Statement found');
+	}
+
+	const attributeStatement = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'AttributeStatement')[0];
+	if (attributeStatement) {
+		this.mapAttributes(attributeStatement, profile);
+	} else {
+		debugLog('No Attribute Statement found in SAML response.');
+	}
+
+	if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
+		profile.email = profile.nameID;
+	}
+
+	const profileKeys = Object.keys(profile);
+	for (let i = 0; i < profileKeys.length; i++) {
+		const key = profileKeys[i];
+
+		if (key.match(/\./)) {
+			profile[key.replace(/\./g, '-')] = profile[key];
+			delete profile[key];
+		}
+	}
+
+	debugLog(`NameID: ${ JSON.stringify(profile) }`);
+	return callback(null, profile, false);
 };
 
 let decryptionCert;
