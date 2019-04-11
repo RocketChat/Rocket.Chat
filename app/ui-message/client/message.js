@@ -146,7 +146,10 @@ Template.message.helpers({
 		}
 	},
 	sequentialClass() {
-		const { msg, groupable } = this;
+		const { msg, groupable, settings: { showreply } } = this;
+		if (msg.tmid && showreply) {
+			return;
+		}
 		return groupable !== false && msg.groupable !== false && 'sequential';
 	},
 	avatarFromUsername() {
@@ -368,6 +371,20 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.actionContext === 'snippeted';
 	},
+	isThreadReply() {
+		const { msg: { tmid }, settings: { showreply } } = this;
+		return !!(tmid && showreply);
+	},
+	collapsed() {
+		const { msg: { tmid, collapsed }, settings: { showreply } } = this;
+		if (tmid && showreply && collapsed !== false) {
+			return 'collapsed';
+		}
+	},
+	collapseSwitchClass() {
+		const { msg: { collapsed = true } } = this;
+		return collapsed ? 'icon-right-dir' : 'icon-down-dir';
+	},
 	parentMessage() {
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
@@ -533,7 +550,7 @@ Template.message.onViewRendered = function() {
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.tmid !== currentDataset.tmid || nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 					nextNode.classList.remove('sequential');
-				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp')) {
+				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
 					nextNode.classList.add('sequential');
 				}
 			}

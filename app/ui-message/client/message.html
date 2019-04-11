@@ -1,5 +1,5 @@
 <template name="message">
-	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
 		{{#if avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
@@ -50,6 +50,15 @@
 			{{#if private}}
 				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 			{{/if}}
+			{{#if isThreadReply}}
+				<span class="thread-replied">
+					{{> icon icon="thread"}}
+					<q role="button" aria-label="{{_ "Open_thread"}}" class="thread-quote js-open-thread">
+						<span class="message-body--unstyled">{{{parentMessage}}}</span>
+					</q>
+					<span class="js-toggle-thread-reply thread-replied-switch {{collapseSwitchClass}}"></span>
+				</span>
+			{{/if}}
 		</span>
 		{{#if fromSearch}}
 			<span class="user color-info-font-color">
@@ -66,19 +75,7 @@
 			{{#if isDecrypting}}
 				<span>******</span>
 			{{else}}
-				{{#if and settings.showreply msg.tmid}}
-					<p class="thread-replied">
-						{{_ "Replied_on"}}:
-						<q role="button" aria-label="{{_ "Open_thread"}}" class="thread-quote js-open-thread">
-							<span class="message-body--unstyled">{{{parentMessage}}}</span>
-						</q>
-					</p>
-					<blockquote>
-						{{{body}}}
-					</blockquote>
-				{{else}}
-					{{{body}}}
-				{{/if}}
+				{{{body}}}
 			{{/if}}
 			{{#if hasOembed}}
 				{{#each msg.urls}}

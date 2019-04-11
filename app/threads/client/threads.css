@@ -26,24 +26,68 @@
 }
 
 .thread-replied {
+
+	display: inline-flex;
 	overflow: hidden;
+
+	cursor: pointer;
 
 	white-space: nowrap;
 	text-overflow: ellipsis;
 
-	color: var(--color-gray);
+	color: var(--rc-color-link-active);
 
 	font-size: 14px;
+	align-items: baseline;
+	flex-flow: row nowrap;
+
+	& .rc-icon {
+		position: relative;
+		bottom: -0.15rem;
+	}
+
+	& .thread-quote {
+		overflow: hidden;
+
+		max-width: 200px;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+}
+
+.message.collapsed {
+	min-height: 25px;
+	padding: 2px 50px 2px 70px;
+
+	& .thumb {
+		top: 3px;
+
+		width: 20px;
+		height: 20px;
+		margin-left: 16px;
+
+		& .avatar {
+			width: 20px !important;
+			height: 20px !important;
+		}
+	}
+
+	& .body,
+	& .message-oembed,
+	& .attachment {
+		display: none;
+	}
+}
+
+.compact .message.collapsed {
+	& .thumb {
+		margin-left: 0;
+	}
 }
 
 .message.sequential > .body > .thread-replied {
 	display: none;
-}
-
-.thread-quote {
-	cursor: pointer;
-
-	color: var(--rc-color-link-active);
 }
 
 .contextual-bar__content.thread,
