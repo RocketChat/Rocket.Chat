@@ -1,5 +1,6 @@
+/* eslint-disable complexity */
 import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
@@ -8,6 +9,7 @@ import { Logger } from '../../logger';
 import { Users } from '../../models';
 import _ from 'underscore';
 import { isURL } from '../../utils/lib/isURL';
+import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 
 const logger = new Logger('CustomOAuth');
 
@@ -40,6 +42,7 @@ export class CustomOAuth {
 		Accounts.oauth.registerService(this.name);
 		this.registerService();
 		this.addHookToProcessUser();
+		this.registerAccessTokenService(this.name);
 	}
 
 	configure(options) {
@@ -338,8 +341,39 @@ export class CustomOAuth {
 		});
 
 	}
-}
 
+	registerAccessTokenService(name) {
+		const self = this;
+		registerAccessTokenService(name, function(options) {
+			check(options, Match.ObjectIncluding({
+				accessToken: String,
+				expiresIn: Match.Integer,
+				scope: Match.Maybe(String),
+				identity: Match.Maybe(Object),
+			}));
+
+			const identity = options.identity || self.getIdentity(options.accessToken);
+
+			const serviceData = {
+				accessToken: options.accessToken,
+				expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
+				scope: options.scopes || self.getScopes(options.accessToken),
+			};
+
+			// TODO:
+			// check for whitelistedFields
+
+			return {
+				serviceData,
+				options: {
+					profile: {
+						name: identity.name,
+					},
+				},
+			};
+		});
+	}
+}
 
 const { updateOrCreateUserFromExternalService } = Accounts;
 Accounts.updateOrCreateUserFromExternalService = function(...args /* serviceName, serviceData, options*/) {
