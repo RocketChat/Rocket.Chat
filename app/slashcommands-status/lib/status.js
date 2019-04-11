@@ -13,7 +13,8 @@ function Status(command, params, item) {
 	if (command === 'status') {
 		if ((Meteor.isClient && hasPermission('edit-other-user-info')) || (Meteor.isServer && hasPermission(Meteor.userId(), 'edit-other-user-info'))) {
 			const user = Meteor.users.findOne(Meteor.userId());
-			Meteor.call('setStatusMessage', params, (err) => {
+
+			Meteor.call('setUserStatus', null, params, (err) => {
 				if (err) {
 					if (Meteor.isClient) {
 						return handleError(err);
@@ -25,14 +26,8 @@ function Status(command, params, item) {
 								ts: new Date,
 								msg: TAPi18n.__('StatusMessage_Change_Disabled', null, user.language),
 							});
-						} else if (err.error === 'error-status-message-too-long') {
-							Notifications.notifyUser(Meteor.userId(), 'message', {
-								_id: Random.id(),
-								rid: item.rid,
-								ts: new Date,
-								msg: TAPi18n.__('StatusMessage_Too_Long', null, user.language),
-							});
 						}
+
 						throw err;
 					}
 				} else {

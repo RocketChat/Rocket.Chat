@@ -48,8 +48,8 @@ Meteor.methods({
 			Meteor.call('setUsername', settings.username);
 		}
 
-		if (settings.statusText || (settings.statusText && settings.statusText.length === 0)) {
-			Meteor.call('setStatusMessage', settings.statusText);
+		if (settings.statusText || settings.statusText === '') {
+			Meteor.call('setUserStatus', null, settings.statusText);
 		}
 
 		if (settings.email) {

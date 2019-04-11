@@ -251,7 +251,7 @@ export const saveUser = function(userId, userData) {
 
 	setRealName(userData._id, userData.name);
 
-	if (userData.statusText) {
+	if (typeof userData.statusText === 'string') {
 		setStatusMessage(userData._id, userData.statusText);
 	}
 

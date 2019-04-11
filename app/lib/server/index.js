@@ -64,7 +64,6 @@ import './methods/sendSMTPTestEmail';
 import './methods/setAdminStatus';
 import './methods/setEmail';
 import './methods/setRealName';
-import './methods/setStatusMessage';
 import './methods/setUsername';
 import './methods/unarchiveRoom';
 import './methods/unblockUser';
