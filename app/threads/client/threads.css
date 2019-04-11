@@ -54,6 +54,16 @@
 		white-space: nowrap;
 		text-overflow: ellipsis;
 	}
+
+	& .thread-reply-preview {
+		display: none;
+		overflow: hidden;
+
+		max-width: 200px;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
 }
 
 .message.collapsed {
@@ -73,6 +83,10 @@
 		}
 	}
 
+	& .thread-reply-preview {
+		display: initial;
+	}
+
 	& .body,
 	& .message-oembed,
 	& .attachment {
@@ -83,6 +97,12 @@
 .compact .message.collapsed {
 	& .thumb {
 		margin-left: 0;
+	}
+}
+
+@media (width < 500px) {
+	.message.collapsed .thread-replied {
+		display: flex;
 	}
 }
 
