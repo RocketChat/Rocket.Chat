@@ -21,6 +21,7 @@ import {
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { promises } from '../../../../promises/client';
@@ -872,29 +873,31 @@ Template.room.events({
 		const id = e.currentTarget.dataset.message;
 		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	},
-	'click .js-actionButton-sendMessage'(event, instance) {
+	async 'click .js-actionButton-sendMessage'(event, instance) {
 		const rid = instance.data._id;
 		const msg = event.currentTarget.value;
-		const msgObject = { _id: Random.id(), rid, msg };
+		let msgObject = { _id: Random.id(), rid, msg };
 		if (!msg) {
 			return;
 		}
-		promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
-			const _chatMessages = chatMessages[rid];
-			if (_chatMessages && _chatMessages.processSlashCommand(msgObject)) {
-				return;
-			}
 
-			Meteor.call('sendMessage', msgObject);
-		});
+		msgObject = await promises.run('onClientBeforeSendMessage', msgObject);
+
+		const _chatMessages = chatMessages[rid];
+		if (_chatMessages && await _chatMessages.processSlashCommand(msgObject)) {
+			return;
+		}
+
+		await call('sendMessage', msgObject);
 	},
-	'click .js-actionButton-respondWithMessage'(event) {
+	'click .js-actionButton-respondWithMessage'(event, instance) {
+		const rid = instance.data._id;
 		const msg = event.currentTarget.value;
 		if (!msg) {
 			return;
 		}
 
-		const { input } = chatMessages[RoomManager.openedRoom];
+		const { input } = chatMessages[rid];
 		input.value = msg;
 		input.focus();
 	},
