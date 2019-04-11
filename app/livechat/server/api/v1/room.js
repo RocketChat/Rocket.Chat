@@ -28,7 +28,7 @@ API.v1.addRoute('livechat/room', {
 			const agentObj = agentId && findAgent(agentId);
 			if (agentObj) {
 				const { username } = agentObj;
-				Object.assign(agent, { agentId, username });
+				agent = Object.assign({}, { agentId, username });
 			}
 
 			const rid = this.queryParams.rid || Random.id();
