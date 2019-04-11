@@ -598,8 +598,8 @@ describe('[Rooms]', function() {
 							expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 						})
 						.end(() => {
-							updatePermission('start-discussion', ['admin'])
-								.then(() => updatePermission('start-discussion-other-user', ['admin']))
+							updatePermission('start-discussion', ['admin', 'user', 'guest'])
+								.then(() => updatePermission('start-discussion-other-user', ['admin', 'user', 'guest']))
 								.then(done);
 						});
 				});
