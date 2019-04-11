@@ -46,7 +46,7 @@ Meteor.methods({
 		if (!realname) {
 			invitee = user.username;
 		} else {
-			invitee = realname
+			invitee = realname;
 		}
 
 		let body;
@@ -61,7 +61,7 @@ Meteor.methods({
 				lng,
 			});
 		}
-		body = RocketChat.placeholders.replace(body, {name: invitee});
+		body = RocketChat.placeholders.replace(body, { name: invitee });
 		validPhones.forEach((phone) => {
 			try {
 				twilioService.send(messageFrom, phone, body);
