@@ -123,20 +123,17 @@
 		{{/with}}
 		{{#unless system}}
 			<div class="message-actions">
-				{{#if messageActions 'message'}}
-					<div class="message-actions__buttons">
-						{{#each action in messageActions 'message'}}
-							<button class="message-actions__button"  data-message-action="{{action.id}}">
-									{{> icon block="message-actions__button-icon" icon=action.icon}}
-							</button>
-						{{/each}}
-					</div>
-				{{/if}}
-				{{#if messageActions 'menu'}}
-					<div class="message-actions__menu">
-						{{> icon block="message-actions__menu-icon" icon="menu"}}
-					</div>
-				{{/if}}
+
+				<div class="message-actions__buttons">
+					{{#each action in messageActions 'message'}}
+						<button class="message-actions__button"  data-message-action="{{action.id}}">
+								{{> icon block="message-actions__button-icon" icon=action.icon}}
+						</button>
+					{{/each}}
+				</div>
+				<div class="message-actions__menu">
+					{{> icon block="message-actions__menu-icon" icon="menu"}}
+				</div>
 			</div>
 		{{/unless}}
 		{{#unless hideActionLinks}}
