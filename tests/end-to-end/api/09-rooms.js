@@ -555,7 +555,7 @@ describe('[Rooms]', function() {
 		let testChannel;
 		const testChannelName = `channel.test.${ Date.now() }`;
 		let messageSent;
-		it('create an channel', (done) => {
+		before((done) => {
 			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -740,22 +740,24 @@ describe('[Rooms]', function() {
 	describe('/rooms.getDiscussions', () => {
 		let testChannel;
 		const testChannelName = `channel.test.getDiscussions${ Date.now() }`;
-		it('create an channel', (done) => {
+		let discussion;
+		before((done) => {
 			createRoom({ type: 'c', name: testChannelName })
 				.end((err, res) => {
 					testChannel = res.body.channel;
-					done();
+					request.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testChannel._id,
+							t_name: `discussion-create-from-tests-${ testChannel.name }`,
+						})
+						.end((err, res) => {
+							discussion = res.body.discussion;
+							done();
+						});
 				});
 		});
-		it('create a discussion', (done) => {
-			request.post(api('rooms.createDiscussion'))
-				.set(credentials)
-				.send({
-					prid: testChannel._id,
-					t_name: `discussion-create-from-tests-${ testChannel.name }`,
-				})
-				.end(done);
-		});
+		after((done) => closeRoom({ type: 'p', roomId: discussion._id }).then(done));
 		it('should throw an error when the user tries to gets a list of discussion without a required parameter "roomId"', (done) => {
 			request.get(api('rooms.getDiscussions'))
 				.set(credentials)
@@ -777,7 +779,7 @@ describe('[Rooms]', function() {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error', 'Not Allowed');
 					})
-					.end(() => updatePermission('view-c-room', ['admin']).then(done));
+					.end(() => updatePermission('view-c-room', ['admin', 'user', 'bot', 'anonymous']).then(done));
 			});
 		});
 		it('should return a list of discussions with ONE discussion', (done) => {
