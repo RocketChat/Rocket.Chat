@@ -7,6 +7,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
 import _ from 'underscore';
+import { isURL } from '../../utils/lib/isURL';
 
 const logger = new Logger('CustomOAuth');
 
@@ -70,11 +71,11 @@ export class CustomOAuth {
 			this.identityTokenSentVia = this.tokenSentVia;
 		}
 
-		if (!/^https?:\/\/.+/.test(this.tokenPath)) {
+		if (!isURL(this.tokenPath)) {
 			this.tokenPath = this.serverURL + this.tokenPath;
 		}
 
-		if (!/^https?:\/\/.+/.test(this.identityPath)) {
+		if (!isURL(this.identityPath)) {
 			this.identityPath = this.serverURL + this.identityPath;
 		}
 
@@ -223,6 +224,12 @@ export class CustomOAuth {
 				// Fix Keycloak-like identities having 'sub' instead of 'id'
 				if (identity.sub && !identity.id) {
 					identity.id = identity.sub;
+				}
+
+				// Fix OpenShift identities where id is in 'metadata' object
+				if (!identity.id && identity.metadata && identity.metadata.uid) {
+					identity.id = identity.metadata.uid;
+					identity.name = identity.fullName;
 				}
 
 				// Fix general 'userid' instead of 'id' from provider

@@ -1,7 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Users } from '../../models';
 import { settings } from '../../settings';
+
+let Users;
+if (Meteor.isServer) {
+	Users = require('../../models/server/models/Users').default;
+}
 
 export const RoomSettingsEnum = {
 	NAME: 'roomName',
@@ -232,7 +236,10 @@ export class RoomTypeConfig {
 	 * @return {object} Sender's object from db
 	 */
 	getMsgSender(senderId) {
-		return Meteor.isServer ? Users.findOneById(senderId) : {};
+		if (Meteor.isServer && Users) {
+			return Users.findOneById(senderId);
+		}
+		return {};
 	}
 
 	/**
