@@ -1,7 +1,7 @@
 import { Messages, Subscriptions } from '../../models/server';
 
-export const reply = ({ tmid }, { rid, ts, u }, parentMessage) => {
-	if (!tmid) {
+export const reply = ({ tmid }, { rid, ts, u, editedAt }, parentMessage) => {
+	if (!tmid || editedAt) {
 		return false;
 	}
 
