@@ -64,7 +64,7 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
-export function getRoom(guest, rid, roomInfo) {
+export function getRoom({ guest, rid, roomInfo, agent }) {
 	const token = guest && guest.token;
 
 	const message = {
@@ -75,7 +75,7 @@ export function getRoom(guest, rid, roomInfo) {
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo);
+	return Livechat.getRoom(guest, message, roomInfo, agent);
 }
 
 export function findAgent(agentId) {
