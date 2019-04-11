@@ -37,7 +37,6 @@
 
 	color: var(--rc-color-link-active);
 
-	font-size: 14px;
 	align-items: baseline;
 	flex-flow: row nowrap;
 
@@ -70,21 +69,27 @@
 	min-height: 25px;
 	padding: 2px 50px 2px 70px;
 
+	font-size: 12px;
+
 	& > .thumb {
 		top: 3px;
 
 		width: 20px;
 		height: 20px;
-		margin-left: 16px;
+		margin-left: 18px;
 
 		& .avatar {
-			width: 20px !important;
-			height: 20px !important;
+			width: 18px !important;
+			height: 18px !important;
 		}
 	}
 
 	& .thread-reply-preview {
 		display: initial;
+	}
+
+	& .user {
+		font-weight: initial;
 	}
 
 	& .body,
