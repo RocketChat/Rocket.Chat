@@ -10,7 +10,7 @@ Meteor.startup(() => {
 });
 
 Meteor.methods({
-	sendInvitationEmail(emails, language) {
+	sendInvitationEmail(emails, language, realname) {
 		check(emails, [String]);
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -24,6 +24,14 @@ Meteor.methods({
 		}
 		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
+        let invitee;
+		if (!realname) {
+			invitee = Meteor.user().username;
+		} else {
+	        invitee = realname;
+		}
+		
+
 		const subject = RocketChat.settings.get('Invitation_Subject');
 		return validEmails.filter((email) => {
 			try {
@@ -35,7 +43,8 @@ Meteor.methods({
 					data: {
 						email,
 						Invite_Link:Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
-						Username:Meteor.user().username,
+						// Username:Meteor.user().username,
+						Username:invitee
 						Avatar_Link:`${ RocketChat.settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
 					},
 					lng: language,

@@ -6,7 +6,7 @@ import _ from 'underscore';
 const supportedLanguages = ['en', 'es'];
 
 Meteor.methods({
-	sendInvitationSMS(phones, language) {
+	sendInvitationSMS(phones, language, realname) {
 		const twilioService = RocketChat.SMS.getService('twilio');
 		if (!RocketChat.SMS.enabled || !twilioService) {
 			throw new Meteor.Error('error-twilio-not-active', 'Twilio service not active', {
@@ -41,6 +41,14 @@ Meteor.methods({
 			}
 		}));
 		const user = Meteor.user();
+
+		let invitee;
+		if (!realname) {
+			invitee = user.username;
+		} else {
+			invitee = realname
+		}
+
 		let body;
 		if (RocketChat.settings.get('Invitation_SMS_Customized')) {
 			body = RocketChat.settings.get('Invitation_SMS_Customized_Body');
@@ -53,7 +61,7 @@ Meteor.methods({
 				lng,
 			});
 		}
-		body = RocketChat.placeholders.replace(body);
+		body = RocketChat.placeholders.replace(body, {name: invitee});
 		validPhones.forEach((phone) => {
 			try {
 				twilioService.send(messageFrom, phone, body);
