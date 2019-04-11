@@ -30,6 +30,8 @@
 	display: inline-flex;
 	overflow: hidden;
 
+	margin-left: 3px;
+
 	cursor: pointer;
 
 	white-space: nowrap;
@@ -43,12 +45,12 @@
 	& .rc-icon {
 		position: relative;
 		bottom: -0.15rem;
+
+		min-width: 18px;
 	}
 
 	& .thread-quote {
 		overflow: hidden;
-
-		max-width: 200px;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -58,10 +60,39 @@
 		display: none;
 		overflow: hidden;
 
-		max-width: 200px;
-
 		white-space: nowrap;
 		text-overflow: ellipsis;
+	}
+}
+
+.message {
+	& .title {
+		display: flex;
+		flex-direction: row;
+
+		line-height: 20px;
+		align-items: center;
+	}
+
+	& .user {
+		line-height: inherit;
+	}
+
+	& .info {
+		display: flex;
+		overflow: hidden;
+
+		flex-direction: row;
+
+		line-height: inherit;
+
+		align-items: center;
+
+		& .role-tag {
+			margin-right: 3px;
+
+			line-height: initial;
+		}
 	}
 }
 
@@ -97,6 +128,7 @@
 	& .attachment,
 	& .reactions,
 	& .edited,
+	& .role-tag,
 	&:hover .message-actions {
 		display: none;
 	}

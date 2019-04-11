@@ -2838,13 +2838,14 @@ rc-old select,
 			display: none;
 		}
 
-		& .info {
+		& .title {
 			position: absolute;
 			left: 5px;
 
 			width: 60px;
 
 			text-align: right;
+			justify-content: flex-end;
 
 			& .time,
 			& .role-tag,
@@ -3104,11 +3105,14 @@ rc-old select,
 				display: inline-block;
 			}
 
-			& .info {
+			& .title {
 				position: relative;
 				left: 0;
 
-				text-align: right;
+				width: auto;
+
+				text-align: left;
+				justify-content: initial;
 
 				& .time,
 				& .edited {
