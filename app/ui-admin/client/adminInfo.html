@@ -113,6 +113,15 @@
 							<td class="border-component-color">{{statistics.process.nodeVersion}}</td>
 						</tr>
 						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Mongo_version"}}</th>
+							<td class="border-component-color">{{statistics.mongoVersion}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Mongo_storageEngine"}}</th>
+							<td class="border-component-color">{{statistics.mongoStorageEngine}}</td>
+						</tr>
+
+						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "OS_Uptime"}}</th>
 							<td class="border-component-color">{{humanReadableTime statistics.os.uptime}}</td>
 						</tr>
@@ -174,6 +183,10 @@
 							<td class="border-component-color">{{statistics.nonActiveUsers}}</td>
 						</tr>
 						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Stats_Total_Connected_Users"}}</th>
+							<td class="border-component-color">{{statistics.totalConnectedUsers}}</td>
+						</tr>
+						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "Stats_Online_Users"}}</th>
 							<td class="border-component-color">{{statistics.onlineUsers}}</td>
 						</tr>
@@ -204,6 +217,14 @@
 						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Livechat_Rooms"}}</th>
 							<td class="border-component-color">{{statistics.totalLivechat}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Total_Discussions"}}</th>
+							<td class="border-component-color">{{statistics.totalDiscussions}}</td>
+						</tr>
+						<tr class="admin-table-row">
+							<th class="content-background-color border-component-color">{{_ "Total_Threads"}}</th>
+							<td class="border-component-color">{{statistics.totalThreads}}</td>
 						</tr>
 						<tr class="admin-table-row">
 							<th class="content-background-color border-component-color">{{_ "Stats_Total_Messages"}}</th>
