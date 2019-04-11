@@ -42,8 +42,7 @@
 			{{/if}}
 			{{#if edited}}
 				<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
-					<i class="icon-edit" aria-label="{{_ "Edited"}}"></i>
-					<button class="thumb thumb-small user-card-message" data-username="{{editedBy}}" tabindex="1">{{> avatar username=editedBy}}</button>
+					<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
 				</span>
 			{{/if}}
 			{{#if msg.alert}}<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div> {{/if}}

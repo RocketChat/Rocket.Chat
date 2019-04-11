@@ -393,11 +393,6 @@
 		& .info .edited {
 			margin-right: 3px;
 			margin-left: auto;
-			padding-right: 3px;
-			padding-left: auto;
-
-			border-right: 1px dotted #bab8d8;
-			border-left: unset;
 		}
 
 		& .private {

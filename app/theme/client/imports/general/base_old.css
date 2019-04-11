@@ -2807,9 +2807,6 @@ rc-old select,
 
 		& .edited {
 			margin-left: 3px;
-			padding-left: 3px;
-
-			border-left: 1px dotted;
 		}
 
 		& .is-bot,
