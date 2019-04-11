@@ -549,7 +549,7 @@ export class SlackImporter extends Base {
 
 				this.channels.channels.forEach((channel) => {
 					if (channel.do_import && channel.is_archived) {
-						Meteor.runAsUser(startedByUserId, function () {
+						Meteor.runAsUser(startedByUserId, function() {
 							Meteor.call('archiveRoom', channel.rocketId);
 						});
 					}
