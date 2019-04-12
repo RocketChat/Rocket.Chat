@@ -82,6 +82,10 @@ export function findAgent(agentId) {
 	return Users.getAgentInfo(agentId);
 }
 
+export function normalizeHttpHeaderData(headers = {}) {
+	const httpHeaders = Object.assign({}, headers);
+	return { httpHeaders };
+}
 export function settings() {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = findTriggers();
