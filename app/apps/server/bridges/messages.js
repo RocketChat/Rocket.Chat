@@ -29,10 +29,6 @@ export class AppMessageBridge {
 
 	async update(message, appId) {
 		this.orch.debugLog(`The App ${ appId } is updating a message.`);
-		if (!this.updateMessage) {
-			const { updateMessage } = await import('meteor/rocketchat:lib');
-			this.updateMessage = updateMessage;
-		}
 
 		if (!message.editor) {
 			throw new Error('Invalid editor assigned to the message for the update.');
