@@ -67,6 +67,7 @@ export class CustomOAuth {
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+		this.mergeRoles = options.mergeRoles || false;
 		this.rolesClaim = options.rolesClaim || 'roles';
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
@@ -250,8 +251,10 @@ export class CustomOAuth {
 				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
 					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 				}
-				const user = Users.findOneByEmailAddress(identity.email);
-				mapRolesFromSSO(user, identity, this.rolesClaim || 'roles');
+				if (this.mergeRoles) {
+					const user = Users.findOneByEmailAddress(identity.email);
+					mapRolesFromSSO(user, identity, this.rolesClaim || 'roles');
+				}
 			}
 
 			// console.log 'id:', JSON.stringify identity, null, '  '
