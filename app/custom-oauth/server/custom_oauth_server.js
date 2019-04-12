@@ -41,7 +41,7 @@ export class CustomOAuth {
 		Accounts.oauth.registerService(this.name);
 		this.registerService();
 		this.addHookToProcessUser();
-		this.registerAccessTokenService(this.name);
+		this.registerAccessTokenService(this.name, this.paramName);
 	}
 
 	configure(options) {
@@ -61,6 +61,10 @@ export class CustomOAuth {
 			options.identityPath = '/me';
 		}
 
+		if (!Match.test(options.paramName, String)) {
+			options.paramName = 'access_token';
+		}
+
 		this.serverURL = options.serverURL;
 		this.tokenPath = options.tokenPath;
 		this.identityPath = options.identityPath;
@@ -68,6 +72,7 @@ export class CustomOAuth {
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+		this.paramName = options.paramName;
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
@@ -136,7 +141,7 @@ export class CustomOAuth {
 		}
 	}
 
-	getIdentity(accessToken, name) {
+	getIdentity(accessToken, paramName) {
 		const params = {};
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
@@ -144,10 +149,8 @@ export class CustomOAuth {
 
 		if (this.identityTokenSentVia === 'header') {
 			headers.Authorization = `Bearer ${ accessToken }`;
-		} else if (name === 'gitlab') {
-			params.private_token = accessToken;
 		} else {
-			params.access_token = accessToken;
+			params[paramName] = accessToken;
 		}
 
 		try {
@@ -179,7 +182,7 @@ export class CustomOAuth {
 			const accessToken = self.getAccessToken(query);
 			// console.log 'at:', accessToken
 
-			let identity = self.getIdentity(accessToken, this.name);
+			let identity = self.getIdentity(accessToken, this.paramName);
 
 			if (identity) {
 				// Set 'id' to '_id' for any sources that provide it
@@ -343,7 +346,7 @@ export class CustomOAuth {
 
 	}
 
-	registerAccessTokenService(name) {
+	registerAccessTokenService(name, paramName) {
 		const self = this;
 		const whitelisted = [
 			'id',
@@ -354,11 +357,10 @@ export class CustomOAuth {
 			check(options, Match.ObjectIncluding({
 				accessToken: String,
 				expiresIn: Match.Integer,
-				scope: Match.Maybe(String),
 				identity: Match.Maybe(Object),
 			}));
 
-			const identity = options.identity || self.getIdentity(options.accessToken, name);
+			const identity = options.identity || self.getIdentity(options.accessToken, paramName);
 
 			const serviceData = {
 				accessToken: options.accessToken,

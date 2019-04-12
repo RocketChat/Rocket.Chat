@@ -19,6 +19,7 @@ const config = {
 		forLoggedInUser: ['services.drupal'],
 		forOtherUsers: ['services.drupal.name'],
 	},
+	paramName: 'access_token',
 };
 
 const Drupal = new CustomOAuth('drupal', config);
