@@ -1540,7 +1540,7 @@
   "invisible": "invisible",
   "Invisible": "Invisible",
   "Invitation": "Invitation",
-  "Invitation_Email_Default":"Hi, a friend (username=[Username]) has invited you to chat on [Site_Name]. Click [Invite_Link] to respond.",
+  "Invitation_Email_Default":"Hi, your friend [Username] has invited you to chat on [Site_Name]. Click [Invite_Link] to respond.",
   "Invitation_Email_Description": "You may use the following placeholders: <br/><ul><li>[email] for the recipient email.</li><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively. [Invite_Link] for Invitation dynamic link, and [Username] for the user who is sending the invite.</li></ul>",
   "Invitation_Subject": "Invitation Subject",
   "Invitation_Subject_Default": "Invitation to chat from your friend [Username] on [Site_Name]",

@@ -1428,7 +1428,7 @@
   "invisible": "invisible",
   "Invisible": "Invisible",
   "Invitation": "Invitación",
-  "Invitation_Email_Default":"Hola, un amigo (username = [Username]) lo ha invitado a chatear en [Site_Name]. Haga clic en [Invite_Link] para responder.",
+  "Invitation_Email_Default":"Hola, un amigo [Username] lo ha invitado a chatear en [Site_Name]. Haga clic en [Invite_Link] para responder.",
   "Invitation_Email_Description": "Es posible utilizar los siguientes marcadores: <br/><ul><li> [email] para el correo electrónico del destinatario. </li><li> [Site_Name] y [Site_URL] para el nombre de la aplicación y la URL, respectivamente. [Invite_Link] para el enlace dinámico de Invitación, y [Username] para el usuario que envía la invitación.</li></ul>",
   "Invitation_Subject": "Invitation Subject",
   "Invitation_Subject_Default": "Invitación al chat de su amigo [Username] en [Site_Name]",
