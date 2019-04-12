@@ -304,8 +304,8 @@ export class CustomOAuth {
 					return;
 				}
 
-				// User already created or merged
-				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id) {
+				// User already created or merged and has identical name as before
+				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id && user.name === serviceData.name) {
 					return;
 				}
 
@@ -316,6 +316,7 @@ export class CustomOAuth {
 				const serviceIdKey = `services.${ serviceName }.id`;
 				const update = {
 					$set: {
+						name: serviceData.name,
 						[serviceIdKey]: serviceData.id,
 					},
 				};
