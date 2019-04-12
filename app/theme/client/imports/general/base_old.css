@@ -2766,7 +2766,7 @@ rc-old select,
 		margin-right: 5px;
 
 		font-family: inherit;
-		font-size: inherit;
+		font-size: 14px;
 
 		font-weight: 600;
 	}
@@ -2802,7 +2802,7 @@ rc-old select,
 		}
 	}
 
-	& .info {
+	& .title {
 		font-size: 12px;
 
 		& .edited {
@@ -3077,7 +3077,7 @@ rc-old select,
 			}
 		}
 
-		& .info {
+		& .title {
 			& .avatar-image {
 				border-radius: 2px;
 			}

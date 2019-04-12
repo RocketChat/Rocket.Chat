@@ -78,21 +78,10 @@
 		line-height: inherit;
 	}
 
-	& .info {
-		display: flex;
-		overflow: hidden;
+	& .role-tag {
+		margin-right: 3px;
 
-		flex-direction: row;
-
-		line-height: inherit;
-
-		align-items: center;
-
-		& .role-tag {
-			margin-right: 3px;
-
-			line-height: initial;
-		}
+		line-height: initial;
 	}
 }
 
@@ -120,6 +109,7 @@
 	}
 
 	& .user {
+		font-size: 12px;
 		font-weight: initial;
 	}
 
@@ -158,8 +148,14 @@
 }
 
 @media (width < 500px) {
-	.message.collapsed .thread-replied {
-		display: flex;
+	.message {
+		& .title {
+			flex-wrap: wrap;
+		}
+
+		& .thread-replied {
+			flex-basis: 100%;
+		}
 	}
 }
 
@@ -185,11 +181,9 @@
 	}
 
 	.message {
-		& .info {
-			& .role-tag {
-				margin-right: auto;
-				margin-left: 3px;
-			}
+		& .role-tag {
+			margin-right: auto;
+			margin-left: 3px;
 		}
 	}
 }

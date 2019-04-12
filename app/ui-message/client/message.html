@@ -21,48 +21,46 @@
 				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">{{> avatar username=msg.u.username}}</button>
 			{{/if}}
 		{{/if}}
-		<div class="title">
+		<div class="title border-component-color color-info-font-color">
 			<button type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="1">{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}</button>
-			<span class="info border-component-color color-info-font-color">
-				{{#each role in roleTags}}
-					<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
-				{{/each}}
-				{{#if isBot}}
-					<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
-				{{/if}}
-				<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
-				{{#if showTranslated}}
-					<span class="translated">
-						<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+			{{#each role in roleTags}}
+				<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
+			{{/each}}
+			{{#if isBot}}
+				<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
+			{{/if}}
+			<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+			{{#if showTranslated}}
+				<span class="translated">
+					<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+				</span>
+			{{/if}}
+			{{#if sentByEmail}}
+				<span class="sent-by-email">
+					<i class="icon-mail" title='{{_ "Message_sent_by_email"}}' aria-label='{{_ "Message_sent_by_email"}}'></i>
+				</span>
+			{{/if}}
+			{{#if edited}}
+				<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
+					<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
+				</span>
+			{{/if}}
+			{{#if msg.alert}}<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div> {{/if}}
+			{{#if private}}
+				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
+			{{/if}}
+			{{#if isThreadReply}}
+				<span class="thread-replied">
+					{{> icon icon="thread"}}
+					<q role="button" aria-label="{{_ "Open_thread"}}" class="js-open-thread thread-quote">
+						<span class="message-body--unstyled">{{{parentMessage}}}</span>
+					</q>
+					<span class="js-toggle-thread-reply thread-reply-switch {{collapseSwitchClass}}"></span>
+					<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
+						<span class="message-body--unstyled">{{{body}}}</span>
 					</span>
-				{{/if}}
-				{{#if sentByEmail}}
-					<span class="sent-by-email">
-						<i class="icon-mail" title='{{_ "Message_sent_by_email"}}' aria-label='{{_ "Message_sent_by_email"}}'></i>
-					</span>
-				{{/if}}
-				{{#if edited}}
-					<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
-						<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
-					</span>
-				{{/if}}
-				{{#if msg.alert}}<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div> {{/if}}
-				{{#if private}}
-					<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
-				{{/if}}
-				{{#if isThreadReply}}
-					<span class="thread-replied">
-						{{> icon icon="thread"}}
-						<q role="button" aria-label="{{_ "Open_thread"}}" class="js-open-thread thread-quote">
-							<span class="message-body--unstyled">{{{parentMessage}}}</span>
-						</q>
-						<span class="js-toggle-thread-reply thread-reply-switch {{collapseSwitchClass}}"></span>
-						<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
-							<span class="message-body--unstyled">{{{body}}}</span>
-						</span>
-					</span>
-				{{/if}}
-			</span>
+				</span>
+			{{/if}}
 			{{#if fromSearch}}
 				<span class="user color-info-font-color">
 					{{>icon icon=roomIcon}}{{channelName}}
