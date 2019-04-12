@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
@@ -137,7 +136,7 @@ export class CustomOAuth {
 		}
 	}
 
-	getIdentity(accessToken) {
+	getIdentity(accessToken, name) {
 		const params = {};
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
@@ -145,6 +144,8 @@ export class CustomOAuth {
 
 		if (this.identityTokenSentVia === 'header') {
 			headers.Authorization = `Bearer ${ accessToken }`;
+		} else if (name === 'gitlab') {
+			params.private_token = accessToken;
 		} else {
 			params.access_token = accessToken;
 		}
@@ -178,7 +179,7 @@ export class CustomOAuth {
 			const accessToken = self.getAccessToken(query);
 			// console.log 'at:', accessToken
 
-			let identity = self.getIdentity(accessToken);
+			let identity = self.getIdentity(accessToken, this.name);
 
 			if (identity) {
 				// Set 'id' to '_id' for any sources that provide it
@@ -344,6 +345,11 @@ export class CustomOAuth {
 
 	registerAccessTokenService(name) {
 		const self = this;
+		const whitelisted = [
+			'id',
+			'email',
+			'name'];
+
 		registerAccessTokenService(name, function(options) {
 			check(options, Match.ObjectIncluding({
 				accessToken: String,
@@ -352,16 +358,17 @@ export class CustomOAuth {
 				identity: Match.Maybe(Object),
 			}));
 
-			const identity = options.identity || self.getIdentity(options.accessToken);
+			const identity = options.identity || self.getIdentity(options.accessToken, name);
 
 			const serviceData = {
 				accessToken: options.accessToken,
 				expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
-				scope: options.scopes || self.getScopes(options.accessToken),
 			};
 
 			// TODO:
-			// check for whitelistedFields
+			// check for more whitelistedFields
+			const fields = _.pick(identity, whitelisted);
+			_.extend(serviceData, fields);
 
 			return {
 				serviceData,
