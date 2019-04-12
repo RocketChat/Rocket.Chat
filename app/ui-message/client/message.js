@@ -464,8 +464,6 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.onCreated(function() {
-	// const [, currentData] = Template.currentData()._arguments;
-	// const { msg, settings } = currentData.hash;
 	const { msg, settings } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
@@ -476,7 +474,6 @@ Template.message.onCreated(function() {
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
-
 
 const getPreviousSentMessage = (currentNode) => {
 	if (hasTempClass(currentNode)) {
@@ -492,20 +489,20 @@ const getPreviousSentMessage = (currentNode) => {
 };
 
 const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate) => {
-	const { classList } = currentNode;
+	const { classList, dataset: currentDataset } = currentNode;
 
-	if (previousNode == null) {
-
+	if (!previousNode) {
 		classList.remove('sequential');
-		return !noDate && classList.add('new-day');
+		!noDate && classList.add('new-day');
+		return;
 	}
 
-	const previousDataset = previousNode.dataset;
-	const currentDataset = currentNode.dataset;
+	const { dataset: previousDataset } = previousNode;
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
 	if (!noDate && (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString())) {
+		classList.remove('sequential');
 		classList.add('new-day');
 	}
 
@@ -520,7 +517,6 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
 		return classList.remove('sequential');
 	}
-
 };
 
 Template.message.onViewRendered = function() {
