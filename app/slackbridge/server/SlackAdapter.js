@@ -45,7 +45,7 @@ export default class SlackAdapter {
 		if (RTMClient != null) {
 			RTMClient.disconnect;
 		}
-		this.slackAPI = new SlackAPI(apiToken);
+		this.slackAPI = new SlackAPI(this.apiToken);
 		this.rtm = new RTMClient(this.apiToken);
 		this.rtm.start();
 		this.registerForEvents();
@@ -453,7 +453,7 @@ export default class SlackAdapter {
 
 	postGetChannelInfo(slackChID) {
 		logger.slack.debug('Getting slack channel info', slackChID);
-		return this.slackAPI.getChannelInfo(slackChID);
+		return this.slackAPI.getRoomInfo(slackChID);
 	}
 
 	postFindChannel(rocketChannelName) {
@@ -597,8 +597,8 @@ export default class SlackAdapter {
 			};
 
 			logger.slack.debug('Posting Remove Reaction to Slack');
-			const postResult = HTTP.post('https://slack.com/api/reactions.remove', { params: data });
-			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+			const postResult = this.slackAPI.removeReaction(data);
+			if (postResult) {
 				logger.slack.debug('Reaction removed from Slack');
 			}
 		}
@@ -617,8 +617,8 @@ export default class SlackAdapter {
 				};
 
 				logger.slack.debug('Post Delete Message to Slack', data);
-				const postResult = HTTP.post('https://slack.com/api/chat.delete', { params: data });
-				if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+				const postResult = this.slackAPI.removeMessage(data);
+				if (postResult) {
 					logger.slack.debug('Message deleted on Slack');
 				}
 			}
@@ -640,7 +640,7 @@ export default class SlackAdapter {
 				link_names: 1,
 			};
 			logger.slack.debug('Post Message To Slack', data);
-			const postResult = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
+			const postResult = this.slackAPI.sendMessage(data);
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.message && postResult.data.message.bot_id && postResult.data.message.ts) {
 				Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts);
 				logger.slack.debug(`RocketMsgID=${ rocketMessage._id } SlackMsgID=${ postResult.data.message.ts } SlackBotID=${ postResult.data.message.bot_id }`);
@@ -661,8 +661,8 @@ export default class SlackAdapter {
 				as_user: true,
 			};
 			logger.slack.debug('Post UpdateMessage To Slack', data);
-			const postResult = HTTP.post('https://slack.com/api/chat.update', { params: data });
-			if (postResult.statusCode === 200 && postResult.data && postResult.data.ok === true) {
+			const postResult = this.slackAPI.updateMessage(data);
+			if (postResult) {
 				logger.slack.debug('Message updated on Slack');
 			}
 		}
@@ -1040,10 +1040,10 @@ export default class SlackAdapter {
 
 	importFromHistory(family, options) {
 		logger.slack.debug('Importing messages history');
-		const response = HTTP.get(`https://slack.com/api/${ family }.history`, { params: _.extend({ token: this.apiToken }, options) });
-		if (response && response.data && _.isArray(response.data.messages) && response.data.messages.length > 0) {
+		const data = this.slackAPI.getHistory(family, options);
+		if (Array.isArray(data.messages) && data.messages.length) {
 			let latest = 0;
-			for (const message of response.data.messages.reverse()) {
+			for (const message of data.messages.reverse()) {
 				logger.slack.debug('MESSAGE: ', message);
 				if (!latest || message.ts > latest) {
 					latest = message.ts;
@@ -1051,16 +1051,17 @@ export default class SlackAdapter {
 				message.channel = options.channel;
 				this.onMessage(message, true);
 			}
-			return { has_more: response.data.has_more, ts: latest };
+			return { has_more: data.has_more, ts: latest };
 		}
 	}
 
 	copyChannelInfo(rid, channelMap) {
 		logger.slack.debug('Copying users from Slack channel to Rocket.Chat', channelMap.id, rid);
-		const response = HTTP.get(`https://slack.com/api/${ channelMap.family }.info`, { params: { token: this.apiToken, channel: channelMap.id } });
-		if (response && response.data) {
-			const data = channelMap.family === 'channels' ? response.data.channel : response.data.group;
-			if (data && _.isArray(data.members) && data.members.length > 0) {
+		const channel = this.slackAPI.getRoomInfo(channelMap.id);
+		if (channel) {
+			const data = channel;
+			const members = this.slackAPI.getMembers(channelMap.id);
+			if (members && Array.isArray(members) && members.length) {
 				for (const member of data.members) {
 					const user = this.rocket.findUser(member) || this.rocket.addUser(member);
 					if (user) {
@@ -1100,9 +1101,9 @@ export default class SlackAdapter {
 	}
 
 	copyPins(rid, channelMap) {
-		const response = HTTP.get('https://slack.com/api/pins.list', { params: { token: this.apiToken, channel: channelMap.id } });
-		if (response && response.data && _.isArray(response.data.items) && response.data.items.length > 0) {
-			for (const pin of response.data.items) {
+		const items = this.slackAPI.getPins(channelMap.id);
+		if (items && Array.isArray(items) && items.length) {
+			for (const pin of items) {
 				if (pin.message) {
 					const user = this.rocket.findUser(pin.message.user);
 					const msgObj = {
@@ -1131,7 +1132,7 @@ export default class SlackAdapter {
 		logger.slack.info('importMessages: ', rid);
 		const rocketchat_room = Rooms.findOneById(rid);
 		if (rocketchat_room) {
-			if (this.getSlackChannel(rid) && false) {
+			if (this.getSlackChannel(rid)) {
 				this.copyChannelInfo(rid, this.getSlackChannel(rid));
 
 				logger.slack.debug('Importing messages from Slack to Rocket.Chat', this.getSlackChannel(rid), rid);

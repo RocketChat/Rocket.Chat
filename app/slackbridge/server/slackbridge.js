@@ -33,6 +33,7 @@ class SlackBridgeClass {
 			if (settings.get('SlackBridge_Out_Enabled')) {
 				this.rocket.connect();
 			}
+			this.rocket.setSlackAPI(this.apiToken);
 
 			this.connected = true;
 			logger.connection.info('Enabled');
