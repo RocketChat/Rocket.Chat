@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -15,6 +14,7 @@ import { AutoTranslate } from '../../autotranslate/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -69,9 +69,6 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 }
 
 Template.message.helpers({
-	hover() {
-		return Template.instance().hover.get();
-	},
 	and(a, b) {
 		return a && b;
 	},
@@ -94,8 +91,8 @@ Template.message.helpers({
 		return encodeURI(text);
 	},
 	broadcast() {
-		const { msg, room = {} } = this;
-		return !msg.private && !msg.t && msg.u._id !== Meteor.userId() && room && room.broadcast;
+		const { msg, room = {}, u } = this;
+		return !msg.private && !msg.t && msg.u._id !== u._id && room && room.broadcast;
 	},
 	isIgnored() {
 		const { msg } = this;
@@ -149,8 +146,8 @@ Template.message.helpers({
 		}
 	},
 	sequentialClass() {
-		const { msg } = this;
-		return msg.groupable !== false && 'sequential';
+		const { msg, groupable } = this;
+		return groupable !== false && msg.groupable !== false && 'sequential';
 	},
 	avatarFromUsername() {
 		const { msg } = this;
@@ -221,8 +218,8 @@ Template.message.helpers({
 		}
 	},
 	showTranslated() {
-		const { msg, subscription, settings } = this;
-		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== Meteor.userId() && !MessageTypes.isSystemMessage(msg)) {
+		const { msg, subscription, settings, u } = this;
+		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
 			const language = AutoTranslate.getLanguage(msg.rid);
 			const autoTranslate = subscription && subscription.autoTranslate;
 			return msg.autoTranslateFetching || (!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[language]);
@@ -270,8 +267,7 @@ Template.message.helpers({
 		return true;
 	},
 	reactions() {
-		const { username: myUsername, name: myName } = Meteor.user() || {};
-		const { msg: { reactions = {} } } = this;
+		const { msg: { reactions = {} }, u: { username: myUsername, name: myName } } = this;
 
 		return Object.entries(reactions)
 			.map(([emoji, reaction]) => {
@@ -392,7 +388,7 @@ const findParentMessage = (() => {
 				return;
 			}
 			const { _id, ...msg } = message;
-			Messages.update({ tmid: _id }, {
+			Messages.update({ tmid: _id, repliesCount: { $exists: 0 } }, {
 				$set: {
 					threadMsg: normalizeThreadMessage(msg),
 					repliesCount: msg.tcount,
@@ -410,7 +406,12 @@ const findParentMessage = (() => {
 		const message = Messages.findOne({ _id: tmid });
 
 		if (message) {
-			return;
+			return Messages.update({ tmid, repliesCount: { $exists: 0 } }, {
+				$set: {
+					threadMsg: normalizeThreadMessage(message),
+					repliesCount: message.tcount,
+				},
+			}, { multi: true });
 		}
 
 		waiting.push(tmid);
@@ -422,12 +423,6 @@ const findParentMessage = (() => {
 const renderBody = (msg, settings) => {
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
-	if (msg.thread_message) {
-		msg.reply = Markdown.parse(TAPi18n.__('Thread_message', {
-			username: msg.u.username,
-			msg: msg.thread_message.msg,
-		}));
-	}
 
 	if (messageType.render) {
 		msg = messageType.render(msg);
@@ -450,13 +445,12 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.onCreated(function() {
-	this.hover = new ReactiveVar(false);
 	// const [, currentData] = Template.currentData()._arguments;
 	// const { msg, settings } = currentData.hash;
 	const { msg, settings } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.thread_message) {
+	if (msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
 	return this.body = renderBody(msg, settings);
@@ -479,11 +473,8 @@ const getPreviousSentMessage = (currentNode) => {
 };
 
 const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate) => {
-
-
 	const { classList } = currentNode;
 
-	// const $nextNode = $(nextNode);
 	if (previousNode == null) {
 
 		classList.remove('sequential');
@@ -499,7 +490,6 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 		classList.add('new-day');
 	}
 
-
 	if (previousDataset.tmid !== currentDataset.tmid) {
 		return classList.remove('sequential');
 	}
@@ -514,12 +504,16 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 
 };
 
-Template.message.onViewRendered = function(context) {
-	const [, currentData] = Template.currentData()._arguments;
-	const { settings, forceDate, noDate } = currentData.hash;
+Template.message.onViewRendered = function() {
+	const { settings, forceDate, noDate, groupable, msg } = messageArgs(Template.currentData());
+
+	if (noDate && !groupable) {
+		return;
+	}
+
 	return this._domrange.onAttached((domRange) => {
-		if (context.file && context.file.type === 'application/pdf') {
-			Meteor.defer(() => { renderPdfToCanvas(context.file._id, context.attachments[0].title_link); });
+		if (msg.file && msg.file.type === 'application/pdf') {
+			Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
 		}
 		const currentNode = domRange.lastNode();
 		const currentDataset = currentNode.dataset;
@@ -544,7 +538,7 @@ Template.message.onViewRendered = function(context) {
 				}
 			}
 		} else {
-			const [el] = $(`#chat-window-${ context.rid }`);
+			const [el] = $(`#chat-window-${ msg.rid }`);
 			const view = el && Blaze.getView(el);
 			const templateInstance = view && view.templateInstance();
 			if (!templateInstance) {
@@ -556,7 +550,5 @@ Template.message.onViewRendered = function(context) {
 			}
 			templateInstance.sendToBottomIfNecessary();
 		}
-
 	});
-
 };

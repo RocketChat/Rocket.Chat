@@ -42,6 +42,20 @@ Template.messageBox.onCreated(function() {
 	this.replyMessageData = new ReactiveVar();
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
+
+	this.send = (event) => {
+		if (!this.input) {
+			return;
+		}
+
+		const { rid, tmid, onSend } = this.data;
+		const { value } = this.input;
+		this.input.value = '';
+		onSend && onSend.call(this.data, event, { rid, tmid, value }, () => {
+			this.input.updateAutogrow();
+			this.input.focus();
+		});
+	};
 });
 
 Template.messageBox.onRendered(function() {
@@ -222,7 +236,7 @@ const insertNewLine = (input) => {
 };
 
 const handleSubmit = (event, instance) => {
-	const { data: { rid, tmid, onSend }, input } = instance;
+	const { input } = instance;
 	const { which: keyCode } = event;
 
 	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
@@ -238,10 +252,7 @@ const handleSubmit = (event, instance) => {
 	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
 
 	if (isSending) {
-		onSend && onSend.call(this, event, { rid, tmid, value: input.value }, () => {
-			input.updateAutogrow();
-			input.focus();
-		});
+		instance.send(event);
 		return true;
 	}
 
@@ -369,12 +380,7 @@ Template.messageBox.events({
 		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
 	async 'click .js-send'(event, instance) {
-		const { input } = instance;
-		const { rid, tmid, onSend } = this;
-		onSend && onSend.call(this, event, { rid, tmid, value: input.value }, () => {
-			input.updateAutogrow();
-			input.focus();
-		});
+		instance.send(event);
 	},
 	'click .js-action-menu'(event, instance) {
 		const groups = messageBox.actions.get();
