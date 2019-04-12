@@ -67,6 +67,7 @@ export class CustomOAuth {
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+		this.rolesClaim = options.rolesClaim || 'roles';
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
@@ -250,7 +251,7 @@ export class CustomOAuth {
 					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 				}
 				const user = Users.findOneByEmailAddress(identity.email);
-				mapRolesFromSSO(user, identity);
+				mapRolesFromSSO(user, identity, this.rolesClaim || 'roles');
 			}
 
 			// console.log 'id:', JSON.stringify identity, null, '  '

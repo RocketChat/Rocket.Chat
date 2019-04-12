@@ -92,6 +92,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token 路径",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token 发送自",
   "Accounts_OAuth_Custom_Username_Field": "用户名字段",
+  "Accounts_OAuth_Custom_Roles_Claim": "角色/组字段名称",
   "Accounts_OAuth_Drupal": "启用 Drupal 登录",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 重定向 URI 地址",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 客户端 ID",

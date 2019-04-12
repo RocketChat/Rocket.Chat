@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token yolu",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Via göndərdi",
   "Accounts_OAuth_Custom_Username_Field": "İstifadəçi adı",
+  "Accounts_OAuth_Custom_Roles_Claim": "Rollər / Qruplar sahəsinin adı",
   "Accounts_OAuth_Drupal": "Drupal Giriş Aktiv Edildi",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Müştəri ID",

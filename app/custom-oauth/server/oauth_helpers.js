@@ -1,33 +1,33 @@
-
-import { Roles } from '../../models';
+import { addUserRoles, removeUserFromRoles } from '../../authorization';
 
 /**
 */
-export function mapRolesFromSSO(user, identity) {
-	// Adding roles
-	if (user && identity.roles) {
-		// loop through all assigned roles and drop if not assigned anymore
-		user.roles.forEach(function(roleFromOAuthProvider) {
-			if (identity.roles.length === 0) {
-				Roles.removeUserFromRoles(user._id, roleFromOAuthProvider);
-			}
-			if (identity.roles.indexOf(roleFromOAuthProvider) === -1) {
-				Roles.removeUserFromRoles(user._id, roleFromOAuthProvider);
-			}
-		});
-		// loop through all roles from SSO Provider and add them if needed
-		identity.roles.forEach(function(roleFromOAuthProvider) {
-			if (user.roles.indexOf(roleFromOAuthProvider) === -1
-				/* filter OpenID pseudo roles */
-				&& roleFromOAuthProvider !== 'offline_access' && roleFromOAuthProvider !== 'uma_authorization') {
-				Roles.addUserRoles(user._id, roleFromOAuthProvider);
-			}
-		});
-	} else {
-		// else drop all roles
-		user.roles.forEach(function(roleFromOAuthProvider) {
-			Roles.removeUserFromRoles(user._id, roleFromOAuthProvider);
-		});
+export function mapRolesFromSSO(user, identity, roleClaimName) {
+	if (user && roleClaimName) {
+		// Adding roles
+		if (identity[roleClaimName]) {
+			// loop through all assigned roles and drop if not assigned anymore
+			user[roleClaimName].forEach(function(roleFromOAuthProvider) {
+				if (identity[roleClaimName].length === 0) {
+					removeUserFromRoles(user._id, roleFromOAuthProvider);
+				}
+				if (identity[roleClaimName].indexOf(roleFromOAuthProvider) === -1) {
+					removeUserFromRoles(user._id, roleFromOAuthProvider);
+				}
+			});
+			// loop through all roles from SSO Provider and add them if needed
+			identity[roleClaimName].forEach(function(roleFromOAuthProvider) {
+				if (user[roleClaimName].indexOf(roleFromOAuthProvider) === -1
+					/* filter OpenID pseudo roles */
+					&& roleFromOAuthProvider !== 'offline_access' && roleFromOAuthProvider !== 'uma_authorization') {
+					addUserRoles(user._id, roleFromOAuthProvider);
+				}
+			});
+		} else {
+			// else drop all roles
+			user[roleClaimName].forEach(function(roleFromOAuthProvider) {
+				removeUserFromRoles(user._id, roleFromOAuthProvider);
+			});
+		}
 	}
-	return true;
 }

@@ -45,6 +45,7 @@ function _OAuthServicesUpdate() {
 				data.tokenSentVia = settings.get(`${ service.key }-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${ service.key }-identity_token_sent_via`);
 				data.usernameField = settings.get(`${ service.key }-username_field`);
+				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
 				new CustomOAuth(serviceName.toLowerCase(), {
 					serverURL: data.serverURL,
@@ -56,6 +57,7 @@ function _OAuthServicesUpdate() {
 					tokenSentVia: data.tokenSentVia,
 					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
+					rolesClaim: data.rolesClaim,
 					mergeUsers: data.mergeUsers,
 				});
 			}
