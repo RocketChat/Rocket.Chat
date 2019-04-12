@@ -132,6 +132,16 @@
 	&:hover .message-actions {
 		display: none;
 	}
+
+	&.system {
+		& .title {
+			display: inline-flex;
+		}
+
+		& .body {
+			display: inline-flex;
+		}
+	}
 }
 
 .compact .message.collapsed {

@@ -376,8 +376,10 @@ Template.message.helpers({
 		return !!(tmid && showreply);
 	},
 	collapsed() {
-		const { msg: { tmid, collapsed }, settings: { showreply } } = this;
-		if (tmid && showreply && collapsed !== false) {
+		const { msg, msg: { tmid, collapsed }, settings: { showreply } } = this;
+		const isCollapsedThreadReply = tmid && showreply && collapsed !== false;
+		const isSystemMessage = MessageTypes.isSystemMessage(msg);
+		if (isCollapsedThreadReply || isSystemMessage) {
 			return 'collapsed';
 		}
 	},
