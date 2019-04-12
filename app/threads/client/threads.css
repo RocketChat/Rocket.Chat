@@ -175,3 +175,21 @@
 .js-open-thread {
 	cursor: pointer;
 }
+
+.rtl {
+	& .message.collapsed {
+		& > .thumb {
+			margin-right: 18px;
+			margin-left: auto;
+		}
+	}
+
+	.message {
+		& .info {
+			& .role-tag {
+				margin-right: auto;
+				margin-left: 3px;
+			}
+		}
+	}
+}

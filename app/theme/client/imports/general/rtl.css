@@ -403,7 +403,7 @@
 		&.sequential {
 			padding-top: 4px;
 
-			& .info {
+			& .title {
 				right: 5px;
 				left: auto;
 
