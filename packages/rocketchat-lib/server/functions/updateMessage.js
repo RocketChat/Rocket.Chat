@@ -25,7 +25,7 @@ RocketChat.updateMessage = function(message, user, originalMessage) {
 
 	// If we keep history of edits, insert a new message to store history information
 	if (RocketChat.settings.get('Message_KeepHistory')) {
-		RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
+		RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id, user._id);
 	}
 
 	message.editedAt = new Date();

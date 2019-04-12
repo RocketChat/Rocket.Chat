@@ -15,7 +15,7 @@ RocketChat.deleteMessage = function(message, user) {
 
 	if (keepHistory) {
 		if (showDeletedStatus) {
-			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
+			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id, user._id);
 		} else {
 			RocketChat.models.Messages.setHiddenById(message._id, true);
 		}

@@ -56,7 +56,7 @@ Meteor.methods({
 
 		// If we keep history of edits, insert a new message to store history information
 		if (RocketChat.settings.get('Message_KeepHistory')) {
-			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id);
+			RocketChat.models.Messages.cloneAndSaveAsHistoryById(message._id, userId);
 		}
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 		const me = RocketChat.models.Users.findOneById(userId);
@@ -139,7 +139,7 @@ Meteor.methods({
 
 		// If we keep history of edits, insert a new message to store history information
 		if (RocketChat.settings.get('Message_KeepHistory')) {
-			RocketChat.models.Messages.cloneAndSaveAsHistoryById(originalMessage._id);
+			RocketChat.models.Messages.cloneAndSaveAsHistoryById(originalMessage._id, Meteor.userId());
 		}
 
 		const me = RocketChat.models.Users.findOneById(Meteor.userId());

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { settings } from 'meteor/rocketchat:settings';
 import { Base } from './_Base';
@@ -369,14 +368,14 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	cloneAndSaveAsHistoryById(_id) {
-		const me = Users.findOneById(Meteor.userId());
+	cloneAndSaveAsHistoryById(_id, userId) {
+		const me = Users.findOneById(userId);
 		const record = this.findOneById(_id);
 		record._hidden = true;
 		record.parent = record._id;
 		record.editedAt = new Date;
 		record.editedBy = {
-			_id: Meteor.userId(),
+			_id: userId,
 			username: me.username,
 		};
 		delete record._id;
@@ -520,7 +519,7 @@ export class Messages extends Base {
 		} else {
 			update = {
 				$pull: {
-					starred: { _id: Meteor.userId() },
+					starred: { _id: userId },
 				},
 			};
 		}
