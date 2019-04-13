@@ -37,6 +37,6 @@ Meteor.methods({
 		settings.add(`Accounts_OAuth_Custom-${ name }-button_color`           , '#1d74f5'         , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Button_Color', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-username_field`         , ''                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Username_Field', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-roles_claim`            , 'roles'           , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Roles_Claim', persistent: true });
-		settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles`         	  , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles', persistent: true });
+		settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles`						, false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles', persistent: true });
 		settings.add(`Accounts_OAuth_Custom-${ name }-merge_users`            , false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Users', persistent: true });
 	} });
