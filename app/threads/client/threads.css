@@ -25,120 +25,53 @@
 	flex-shrink: 1;
 }
 
-.thread-replied {
-
-	display: inline-flex;
-	overflow: hidden;
-
-	margin-left: 3px;
-
-	cursor: pointer;
-
-	white-space: nowrap;
-	text-overflow: ellipsis;
-
-	color: var(--rc-color-link-active);
-
-	align-items: baseline;
-	flex-flow: row nowrap;
-
-	& .rc-icon {
-		position: relative;
-		bottom: -0.15rem;
-
-		min-width: 18px;
-	}
-
-	& .thread-quote {
-		overflow: hidden;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-
-	& .thread-reply-preview {
-		display: none;
-		overflow: hidden;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-}
-
 .message {
-	& .title {
-		display: flex;
-		flex-direction: row;
+	& .thread-replied {
 
-		line-height: 20px;
-		align-items: center;
-	}
+		display: inline-flex;
+		overflow: hidden;
 
-	& .user {
-		line-height: inherit;
-	}
+		margin-left: 3px;
 
-	& .role-tag {
-		margin-right: 3px;
+		cursor: pointer;
 
-		line-height: initial;
-	}
-}
+		white-space: nowrap;
+		text-overflow: ellipsis;
 
-.message.collapsed {
-	min-height: 25px;
-	padding: 2px 50px 2px 70px;
+		color: var(--rc-color-link-active);
 
-	font-size: 12px;
+		align-items: baseline;
+		flex-flow: row nowrap;
 
-	& > .thumb {
-		top: 3px;
+		& .rc-icon {
+			position: relative;
+			bottom: -0.15rem;
 
-		width: 20px;
-		height: 20px;
-		margin-left: 18px;
+			min-width: 18px;
+		}
 
-		& .avatar {
-			width: 18px !important;
-			height: 18px !important;
+		& .thread-quote {
+			overflow: hidden;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		& .thread-reply-preview {
+			display: none;
+			overflow: hidden;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
 		}
 	}
 
-	& .thread-reply-preview {
+	&.collapsed .thread-reply-preview {
 		display: initial;
-	}
-
-	& .user {
-		font-size: 12px;
-		font-weight: initial;
-	}
-
-	& .body,
-	& .message-oembed,
-	& .attachment,
-	& .reactions,
-	& .edited,
-	& .role-tag,
-	&:hover .message-actions {
-		display: none;
-	}
-
-	&.system {
-		& .title {
-			display: inline-flex;
-		}
-
-		& .body {
-			display: inline-flex;
-		}
 	}
 }
 
 .compact .message.collapsed {
-	& .thumb {
-		margin-left: 0;
-	}
-
 	& .thread-replied {
 		& .thread-reply-switch,
 		& .thread-reply-preview {
@@ -166,24 +99,4 @@
 .contextual-bar__content.thread,
 .contextual-bar__content.threads {
 	padding: 0;
-}
-
-.js-open-thread {
-	cursor: pointer;
-}
-
-.rtl {
-	& .message.collapsed {
-		& > .thumb {
-			margin-right: 18px;
-			margin-left: auto;
-		}
-	}
-
-	.message {
-		& .role-tag {
-			margin-right: auto;
-			margin-left: 3px;
-		}
-	}
 }

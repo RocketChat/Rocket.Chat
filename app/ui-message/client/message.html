@@ -51,7 +51,7 @@
 			{{/if}}
 			{{#if isThreadReply}}
 				<span class="thread-replied">
-					{{> icon icon="thread"}}
+					{{> icon icon="thread" classes="js-open-thread"}}
 					<q role="button" aria-label="{{_ "Open_thread"}}" class="js-open-thread thread-quote">
 						<span class="message-body--unstyled">{{{parentMessage}}}</span>
 					</q>

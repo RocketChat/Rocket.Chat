@@ -54,6 +54,16 @@
 			right: 50%;
 			left: auto;
 		}
+
+		&.compact {
+			& .message {
+				padding: 5px 45px 0 15px;
+
+				&.collapsed .thumb {
+					margin: 0;
+				}
+			}
+		}
 	}
 
 	& .terminal {
@@ -424,6 +434,12 @@
 					margin-right: 1px;
 					margin-left: auto;
 				}
+			}
+		}
+
+		&.collapsed {
+			& > .thumb {
+				margin: 0 16px 0 0;
 			}
 		}
 	}
