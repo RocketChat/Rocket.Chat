@@ -175,6 +175,23 @@ const toolbarButtons = (user) => [{
 			});
 		};
 
+		const createDiscussion = (e) => {
+			e.preventDefault();
+			modal.open({
+				title: t('Discussion_title'),
+				content: 'CreateDiscussion',
+				data: {
+					onCreate() {
+						modal.close();
+					},
+				},
+				modifier: 'modal',
+				showConfirmButton: false,
+				showCancelButton: false,
+				confirmOnEnter: false,
+			});
+		};
+
 		const discussionEnabled = settings.get('Discussion_enabled');
 		if (!discussionEnabled) {
 			return createChannel(e);
@@ -193,22 +210,7 @@ const toolbarButtons = (user) => [{
 								{
 									icon: 'discussion',
 									name: t('Discussion'),
-									action: (e) => {
-										e.preventDefault();
-										modal.open({
-											title: t('Discussion_title'),
-											content: 'CreateDiscussion',
-											data: {
-												onCreate() {
-													modal.close();
-												},
-											},
-											modifier: 'modal',
-											showConfirmButton: false,
-											showCancelButton: false,
-											confirmOnEnter: false,
-										});
-									},
+									action: createDiscussion,
 								},
 							],
 						},
