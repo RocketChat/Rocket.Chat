@@ -342,7 +342,7 @@ export class CustomOAuth {
 			}
 
 			if (this.mergeRoles) {
-				user = mapRolesFromSSO(user, user.services[this.name], this.rolesClaim);
+				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim);
 			}
 
 			return true;

@@ -2,31 +2,42 @@ import { addUserRoles, removeUserFromRoles } from '../../authorization';
 import { Roles } from '../../models';
 
 
-/**
-*/
-export function mapRolesFromSSO(user, identity, roleClaimName) {
-	if (user && identity && roleClaimName) {
+// Returns list of roles from SSO identity
+export function mapRolesFromSSO(identity, roleClaimName) {
+	let roles = [];
+
+	if (identity && roleClaimName) {
 		// Adding roles
 		if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-			user.roles = identity[roleClaimName].filter((val) => val !== 'offline_access' && val !== 'uma_authorization');
+			roles = identity[roleClaimName].filter((val) => val !== 'offline_access' && val !== 'uma_authorization');
 		}
 	}
-	return user;
+
+	return roles;
 }
 
-/**
-*/
+// Updates the user with roles from SSO identity
 export function updateRolesFromSSO(user, identity, roleClaimName) {
 	if (user && identity && roleClaimName) {
-		// loop through all assigned roles and drop if not assigned anymore
-		user.roles.forEach(function(role) {
+		const rolesFromSSO = mapRolesFromSSO(identity, roleClaimName);
+
+		if (!Array.isArray(user.roles)) {
+			user.roles = [];
+		}
+
+		const toRemove = user.roles.filter((val) => !rolesFromSSO.includes(val));
+
+		// loop through roles that user has that sso doesnt have and remove
+		toRemove.forEach(function(role) {
 			if (Roles.findOneByIdOrName(role)) {
 				removeUserFromRoles(user._id, role);
 			}
 		});
-		user = mapRolesFromSSO(user, identity, roleClaimName);
-		// loop through all roles from SSO Provider and add them if needed
-		user.roles.forEach(function(role) {
+
+		const toAdd = rolesFromSSO.filter((val) => !user.roles.includes(val));
+
+		// loop through roles sso has that user doesnt and add
+		toAdd.forEach(function(role) {
 			if (Roles.findOneByIdOrName(role)) {
 				addUserRoles(user._id, role);
 			}
