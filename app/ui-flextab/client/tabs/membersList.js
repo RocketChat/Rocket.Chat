@@ -9,6 +9,7 @@ import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
 import { getActions } from './userActions';
+import _ from 'underscore';
 
 Template.membersList.helpers({
 	ignored() {
@@ -125,7 +126,7 @@ Template.membersList.helpers({
 			default:
 				break;
 		}
-    
+
 		const usersTotal = users.length;
 		const { total, loading, usersLimit, loadingMore } = Template.instance();
 		const hasMore = loadingMore.get() || (usersTotal < total.get() && usersLimit.get() <= usersTotal);
@@ -206,7 +207,7 @@ Template.membersList.helpers({
 
 	showUserRoles() {
 		return (Template.instance().sortingMode.get() === 2);
-  },
+	},
 
 	loadingMore() {
 		return Template.instance().loadingMore.get();
