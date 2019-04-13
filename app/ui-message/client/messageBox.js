@@ -1,224 +1,163 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { EmojiPicker } from '../../emoji';
-import { katex } from '../../katex/client';
-import { Markdown } from '../../markdown/client';
-import { ChatSubscription } from '../../models';
+import { Users } from '../../models';
 import { settings } from '../../settings';
 import {
-	ChatMessages,
-	chatMessages,
 	fileUpload,
 	KonchatNotification,
 } from '../../ui';
-import { Layout, messageBox, popover, RoomManager, call } from '../../ui-utils';
-import { t, roomTypes, getUserPreference } from '../../utils';
+import {
+	messageBox,
+	popover,
+	call,
+	keyCodes,
+	isRTL,
+} from '../../ui-utils';
+import {
+	t,
+	roomTypes,
+	getUserPreference,
+} from '../../utils';
 import moment from 'moment';
-
+import {
+	formattingButtons,
+	applyFormatting,
+} from './messageBoxFormatting';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 
-const formattingButtons = [
-	{
-		label: 'bold',
-		icon: 'bold',
-		pattern: '*{{text}}*',
-		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
-	},
-	{
-		label: 'bold',
-		icon: 'bold',
-		pattern: '**{{text}}**',
-		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
-	},
-	{
-		label: 'italic',
-		icon: 'italic',
-		pattern: '_{{text}}_',
-		command: 'i',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
-	},
-	{
-		label: 'strike',
-		icon: 'strike',
-		pattern: '~{{text}}~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
-	},
-	{
-		label: 'strike',
-		icon: 'strike',
-		pattern: '~~{{text}}~~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
-	},
-	{
-		label: 'inline_code',
-		icon: 'code',
-		pattern: '`{{text}}`',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
-	},
-	{
-		label: 'multi_line',
-		icon: 'multiline',
-		pattern: '```\n{{text}}\n``` ',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
-	},
-	{
-		label: 'KaTeX',
-		text: () => {
-			if (!katex.isEnabled()) {
-				return;
-			}
-			if (katex.isDollarSyntaxEnabled()) {
-				return '$$KaTeX$$';
-			}
-			if (katex.isParenthesisSyntaxEnabled()) {
-				return '\\[KaTeX\\]';
-			}
-		},
-		link: 'https://khan.github.io/KaTeX/function-support.html',
-		condition: () => katex.isEnabled(),
-	},
-];
-
-
-function applyFormatting(event, instance) {
-	event.preventDefault();
-	const { input } = chatMessages[RoomManager.openedRoom];
-	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
-	const initText = input.value.slice(0, selectionStart);
-	const selectedText = input.value.slice(selectionStart, selectionEnd);
-	const finalText = input.value.slice(selectionEnd, input.value.length);
-
-	const [btn] = instance.findAll(`.js-format[aria-label=${ this.label }]`);
-	if (btn) {
-		btn.classList.add('active');
-		setTimeout(() => {
-			btn.classList.remove('active');
-		}, 100);
-	}
-	input.focus();
-
-	const startPattern = this.pattern.substr(0, this.pattern.indexOf('{{text}}'));
-	const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.substr(selectionStart - index - 1, 1) === char);
-
-	if (startPatternFound) {
-		const endPattern = this.pattern.substr(this.pattern.indexOf('{{text}}') + '{{text}}'.length);
-		const endPatternFound = [...endPattern].every((char, index) => input.value.substr(selectionEnd + index, 1) === char);
-
-		if (endPatternFound) {
-			input.selectionStart = selectionStart - startPattern.length;
-			input.selectionEnd = selectionEnd + endPattern.length;
-
-			if (!document.execCommand || !document.execCommand('insertText', false, selectedText)) {
-				input.value = initText.substr(0, initText.length - startPattern.length) + selectedText + finalText.substr(endPattern.length);
-			}
-
-			input.selectionStart = selectionStart - startPattern.length;
-			input.selectionEnd = input.selectionStart + selectedText.length;
-			$(input).change();
-			return;
-		}
-	}
-
-	if (!document.execCommand || !document.execCommand('insertText', false, this.pattern.replace('{{text}}', selectedText))) {
-		input.value = initText + this.pattern.replace('{{text}}', selectedText) + finalText;
-	}
-
-	input.selectionStart = selectionStart + this.pattern.indexOf('{{text}}');
-	input.selectionEnd = input.selectionStart + selectedText.length;
-	$(input).change();
-}
-
 
 Template.messageBox.onCreated(function() {
+	this.state = new ReactiveDict();
 	EmojiPicker.init();
+	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar();
-	this.isMessageFieldEmpty = new ReactiveVar(true);
 	this.isMicrophoneDenied = new ReactiveVar(true);
 	this.sendIconDisabled = new ReactiveVar(false);
-	messageBox.emit('created', this);
+
+	this.send = (event) => {
+		if (!this.input) {
+			return;
+		}
+
+		const { rid, tmid, onSend } = this.data;
+		const { value } = this.input;
+		this.input.value = '';
+		onSend && onSend.call(this.data, event, { rid, tmid, value }, () => {
+			this.input.updateAutogrow();
+			this.input.focus();
+		});
+	};
 });
 
 Template.messageBox.onRendered(function() {
+
 	this.autorun(() => {
-		const subscribed = roomTypes.verifyCanSendMessage(this.data._id);
+		const { rid, subscription } = Template.currentData();
+		const room = Session.get(`roomData${ rid }`);
+
+		if (!room) {
+			return this.state.set({
+				room: false,
+				isBlockedOrBlocker: false,
+				mustJoinWithCode: false,
+			});
+		}
+
+		const isBlocked = (room && room.t === 'd' && subscription && subscription.blocked);
+		const isBlocker = (room && room.t === 'd' && subscription && subscription.blocker);
+		const isBlockedOrBlocker = isBlocked || isBlocker;
+
+		const mustJoinWithCode = !subscription && room.joinCodeRequired;
+
+		return this.state.set({
+			room: false,
+			isBlockedOrBlocker,
+			mustJoinWithCode,
+		});
+	});
+
+	this.autorun(() => {
+		const { rid, onInputChanged, onResize } = Template.currentData();
 
 		Tracker.afterFlush(() => {
-			const input = subscribed && this.find('.js-input-message');
+			const input = this.find('.js-input-message');
+
+			if (this.input === input) {
+				return;
+			}
+
+			this.input = input;
+			onInputChanged && onInputChanged(input);
+
+			if (input && rid) {
+				this.popupConfig.set({
+					rid,
+					getInput: () => input,
+				});
+			} else {
+				this.popupConfig.set(null);
+			}
 
 			if (!input) {
 				return;
 			}
 
 			const $input = $(input);
-			$input.on('dataChange', () => { // TODO: remove jQuery event layer dependency
-				const reply = $input.data('reply');
-				this.replyMessageData.set(reply);
+
+			$input.on('dataChange', () => {
+				const messages = $input.data('reply') || [];
+				this.replyMessageData.set(messages);
 			});
 
-			$input.autogrow({
-				animate: true,
-				onInitialize: true,
-			})
-				.on('autogrow', () => {
-					this.data && this.data.onResize && this.data.onResize();
-				});
-
-			chatMessages[RoomManager.openedRoom] = chatMessages[RoomManager.openedRoom] || new ChatMessages;
-			chatMessages[RoomManager.openedRoom].input = input;
+			$input.autogrow().on('autogrow', () => {
+				onResize && onResize();
+			});
 		});
 	});
 });
 
 Template.messageBox.helpers({
-	isEmbedded() {
-		return Layout.isEmbedded();
-	},
-	subscribed() {
-		return roomTypes.verifyCanSendMessage(this._id);
-	},
-	canSend() {
-		if (roomTypes.readOnly(this._id, Meteor.user())) {
+	isAnonymousOrMustJoinWithCode() {
+		const instance = Template.instance();
+		const { rid } = Template.currentData();
+		if (!rid) {
 			return false;
 		}
-		if (roomTypes.archived(this._id)) {
+
+		const isAnonymous = !Meteor.userId();
+		return isAnonymous || instance.state.get('mustJoinWithCode');
+	},
+	isWritable() {
+		const { rid, subscription } = Template.currentData();
+		if (!rid) {
+			return true;
+		}
+
+		const isBlockedOrBlocker = Template.instance().state.get('isBlockedOrBlocker');
+
+		if (isBlockedOrBlocker) {
 			return false;
 		}
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (roomData && roomData.t === 'd') {
-			const subscription = ChatSubscription.findOne({
-				rid: this._id,
-			}, {
-				fields: {
-					archived: 1,
-					blocked: 1,
-					blocker: 1,
-				},
-			});
-			if (subscription && (subscription.archived || subscription.blocked || subscription.blocker)) {
-				return false;
-			}
-		}
-		return true;
+
+		const isReadOnly = roomTypes.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
+		const isArchived = roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
+
+		return !isReadOnly && !isArchived;
 	},
 	popupConfig() {
-		const template = Template.instance();
-		return {
-			getInput() {
-				return template.find('.js-input-message');
-			},
-		};
+		return Template.instance().popupConfig.get();
 	},
 	input() {
-		return Template.instance().find('.js-input-message');
+		return Template.instance().input;
 	},
 	replyMessageData() {
 		return Template.instance().replyMessageData.get();
@@ -232,53 +171,106 @@ Template.messageBox.helpers({
 	isSendIconDisabled() {
 		return !Template.instance().sendIconDisabled.get();
 	},
+	canSend() {
+		const { rid } = Template.currentData();
+		if (!rid) {
+			return true;
+		}
+
+		return roomTypes.verifyCanSendMessage(rid);
+	},
 	actions() {
 		const actionGroups = messageBox.actions.get();
 		return Object.values(actionGroups)
 			.reduce((actions, actionGroup) => [...actions, ...actionGroup], []);
 	},
-	isAnonymousOrJoinCode() {
-		const room = Session.get(`roomData${ this._id }`);
-		return !Meteor.userId() || (!ChatSubscription.findOne({
-			rid: this._id,
-		}) && room && room.joinCodeRequired);
-	},
-	showFormattingTips() {
-		return settings.get('Message_ShowFormattingTips');
-	},
 	formattingButtons() {
-		return formattingButtons.filter((button) => !button.condition || button.condition());
+		return formattingButtons.filter(({ condition }) => !condition || condition());
 	},
 	isBlockedOrBlocker() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (roomData && roomData.t === 'd') {
-			const subscription = ChatSubscription.findOne({
-				rid: this._id,
-			}, {
-				fields: {
-					blocked: 1,
-					blocker: 1,
-				},
-			});
-			if (subscription && (subscription.blocked || subscription.blocker)) {
-				return true;
-			}
-		}
+		return Template.instance().state.get('isBlockedOrBlocker');
 	},
 });
 
+const handleFormattingShortcut = (event, instance) => {
+	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
+	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
+
+	if (!isCmdOrCtrlPressed) {
+		return false;
+	}
+
+	const key = event.key.toLowerCase();
+
+	const { pattern } = formattingButtons
+		.filter(({ condition }) => !condition || condition())
+		.find(({ command }) => command === key) || {};
+
+	if (!pattern) {
+		return false;
+	}
+
+	const { input } = instance;
+	applyFormatting(pattern, input);
+	return true;
+};
+
+const insertNewLine = (input) => {
+	if (document.selection) {
+		input.focus();
+		const sel = document.selection.createRange();
+		sel.text = '\n';
+	} else if (input.selectionStart || input.selectionStart === 0) {
+		const newPosition = input.selectionStart + 1;
+		const before = input.value.substring(0, input.selectionStart);
+		const after = input.value.substring(input.selectionEnd, input.value.length);
+		input.value = `${ before }\n${ after }`;
+		input.selectionStart = input.selectionEnd = newPosition;
+	} else {
+		input.value += '\n';
+	}
+
+	input.blur();
+	input.focus();
+	input.updateAutogrow();
+};
+
+const handleSubmit = (event, instance) => {
+	const { input } = instance;
+	const { which: keyCode } = event;
+
+	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+
+	if (!isSubmitKey) {
+		return false;
+	}
+
+	const sendOnEnter = getUserPreference(Meteor.userId(), 'sendOnEnter');
+	const sendOnEnterActive = sendOnEnter == null || sendOnEnter === 'normal' ||
+		(sendOnEnter === 'desktop' && Meteor.Device.isDesktop());
+	const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
+	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
+
+	if (isSending) {
+		instance.send(event);
+		return true;
+	}
+
+	insertNewLine(input);
+	return true;
+};
+
 Template.messageBox.events({
-	'click .js-join'(event) {
+	async 'click .js-join'(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
 		const joinCodeInput = Template.instance().find('[name=joinCode]');
 		const joinCode = joinCodeInput && joinCodeInput.value;
 
-		call('joinRoom', this._id, joinCode);
+		await call('joinRoom', this.rid, joinCode);
 	},
-
-	'click .emoji-picker-icon'(event) {
+	'click .js-emoji-picker'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
 
@@ -293,7 +285,8 @@ Template.messageBox.events({
 
 		EmojiPicker.open(event.currentTarget, (emoji) => {
 			const emojiValue = `:${ emoji }: `;
-			const { input } = chatMessages[RoomManager.openedRoom];
+
+			const { input } = instance;
 
 			const caretPos = input.selectionStart;
 			const textAreaTxt = input.value;
@@ -308,29 +301,28 @@ Template.messageBox.events({
 			input.selectionEnd = caretPos + emojiValue.length;
 		});
 	},
-	'focus .js-input-message'(event, instance) {
-		KonchatNotification.removeRoomNotification(this._id);
-		if (chatMessages[this._id]) {
-			chatMessages[this._id].input = instance.find('.js-input-message');
+	'focus .js-input-message'() {
+		KonchatNotification.removeRoomNotification(this.rid);
+	},
+	'keydown .js-input-message'(event, instance) {
+		const isEventHandled = handleFormattingShortcut(event, instance) || handleSubmit(event, instance);
+
+		if (isEventHandled) {
+			event.preventDefault();
+			event.stopPropagation();
+			return;
 		}
-	},
-	'click .cancel-reply'(event, instance) {
 
-		const input = instance.find('.js-input-message');
-		const messages = $(input).data('reply') || [];
-		const filtered = messages.filter((msg) => msg._id !== this._id);
-
-		$(input)
-			.data('reply', filtered)
-			.trigger('dataChange');
+		const { rid, tmid, onKeyDown } = this;
+		onKeyDown && onKeyDown.call(this, event, { rid, tmid });
 	},
-	'keyup .js-input-message'(event, instance) {
-		chatMessages[this._id].keyup(this._id, event, instance);
-		instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
+	'keyup .js-input-message'(event) {
+		const { rid, tmid, onKeyUp } = this;
+		onKeyUp && onKeyUp.call(this, event, { rid, tmid });
 	},
 	'paste .js-input-message'(event, instance) {
-		const { $input } = chatMessages[RoomManager.openedRoom];
-		const [input] = $input;
+		const { rid, tmid } = this;
+		const { input } = instance;
 		setTimeout(() => {
 			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
 		}, 50);
@@ -349,37 +341,46 @@ Template.messageBox.events({
 
 		if (files.length) {
 			event.preventDefault();
-			fileUpload(files, input);
+			fileUpload(files, input, { rid, tmid });
+			return;
+		}
+	},
+	'input .js-input-message'(event, instance) {
+		const { input } = instance;
+		if (!input) {
 			return;
 		}
 
-		instance.isMessageFieldEmpty.set(false);
-	},
-	'keydown .js-input-message'(event, instance) {
-		const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-		if (isMacOS && (event.metaKey || event.ctrlKey)) {
-			const action = formattingButtons.find(
-				(action) => action.command === event.key.toLowerCase() && (!action.condition || action.condition()));
-			action && applyFormatting.apply(action, [event, instance]);
+		instance.sendIconDisabled.set(!!input.value);
+
+		if (input.value.length > 0) {
+			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
 		}
-		chatMessages[this._id].keydown(this._id, event, Template.instance());
+
+		const { rid, tmid, onValueChanged } = this;
+		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
-	'input .js-input-message'(event, instance) {
-		instance.sendIconDisabled.set(event.target.value !== '');
-		chatMessages[this._id].valueChanged(this._id, event, Template.instance());
-	},
-	'propertychange .js-input-message'(event) {
-		if (event.originalEvent.propertyName === 'value') {
-			chatMessages[this._id].valueChanged(this._id, event, Template.instance());
+	'propertychange .js-input-message'(event, instance) {
+		if (event.originalEvent.propertyName !== 'value') {
+			return;
 		}
+
+		const { input } = instance;
+		if (!input) {
+			return;
+		}
+
+		instance.sendIconDisabled.set(!!input.value);
+
+		if (input.value.length > 0) {
+			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
+		}
+
+		const { rid, tmid, onValueChanged } = this;
+		onValueChanged && onValueChanged.call(this, event, { rid, tmid });
 	},
 	async 'click .js-send'(event, instance) {
-		const { input } = chatMessages[RoomManager.openedRoom];
-		chatMessages[this._id].send(this._id, input, () => {
-			input.updateAutogrow();
-			instance.isMessageFieldEmpty.set(chatMessages[this._id].isEmpty());
-			input.focus();
-		});
+		instance.send(event);
 	},
 	'click .js-action-menu'(event, instance) {
 		const groups = messageBox.actions.get();
@@ -408,7 +409,8 @@ Template.messageBox.events({
 			direction: 'top-inverted',
 			currentTarget: event.currentTarget.firstElementChild.firstElementChild,
 			data: {
-				rid: this._id,
+				rid: this.rid,
+				tmid: this.tmid,
 				messageBox: instance.firstNode,
 			},
 			activeElement: event.currentTarget,
@@ -423,13 +425,26 @@ Template.messageBox.events({
 			.filter(({ action }) => !!action)
 			.forEach(({ action }) => {
 				action.call(null, {
-					rid: this._id,
+					rid: this.rid,
+					tmid: this.tmid,
 					messageBox: instance.firstNode,
 					event,
 				});
 			});
 	},
-	'click .js-format'(e, t) {
-		applyFormatting.apply(this, [e, t]);
+	'click .js-format'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const { id } = event.currentTarget.dataset;
+		const { pattern } = formattingButtons
+			.filter(({ condition }) => !condition || condition())
+			.find(({ label }) => label === id) || {};
+
+		if (!pattern) {
+			return;
+		}
+
+		applyFormatting(pattern, instance.input);
 	},
 });

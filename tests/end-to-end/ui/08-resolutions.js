@@ -35,6 +35,15 @@ describe('[Resolution]', () => {
 				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
 			});
 
+			it('it should not close sidebar on pressing the sidebar item menu', () => {
+				sideNav.firstSidebarItem.moveToObject();
+				sideNav.firstSidebarItemMenu.waitForVisible(10000);
+				sideNav.firstSidebarItemMenu.click();
+				browser.pause(100);
+				mainContent.mainContent.getLocation().should.not.deep.equal({ x:0 });
+				sideNav.popoverOverlay.click();
+			});
+
 			it('it should open general channel', () => {
 				sideNav.openChannel('general');
 			});

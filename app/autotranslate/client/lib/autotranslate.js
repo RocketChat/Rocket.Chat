@@ -61,7 +61,7 @@ export const AutoTranslate = {
 						if (!message.translations) {
 							message.translations = {};
 						}
-						if (subscription && subscription.autoTranslate !== message.autoTranslateShowInverse) {
+						if (!!(subscription && subscription.autoTranslate) !== !!message.autoTranslateShowInverse) {
 							message.translations.original = message.html;
 							if (message.translations[autoTranslateLanguage]) {
 								message.html = message.translations[autoTranslateLanguage];
