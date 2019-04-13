@@ -6,7 +6,7 @@ import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
-import { mapRolesFromSSO } from './oauth_helpers';
+import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import _ from 'underscore';
 import { isURL } from '../../utils/lib/isURL';
 
@@ -306,8 +306,9 @@ export class CustomOAuth {
 				if (!user) {
 					return;
 				}
+
 				if (this.mergeRoles) {
-					mapRolesFromSSO(user, serviceData, this.rolesClaim || 'roles');
+					updateRolesFromSSO(user, serviceData, this.rolesClaim);
 				}
 
 				// User already created or merged and has identical name as before
@@ -338,6 +339,10 @@ export class CustomOAuth {
 
 			if (this.usernameField) {
 				user.username = this.getUsername(user.services[this.name]);
+			}
+
+			if (this.mergeRoles) {
+				user = mapRolesFromSSO(user, user.services[this.name], this.rolesClaim);
 			}
 
 			return true;
