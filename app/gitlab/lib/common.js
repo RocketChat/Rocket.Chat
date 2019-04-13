@@ -11,7 +11,7 @@ const config = {
 		forLoggedInUser: ['services.gitlab'],
 		forOtherUsers: ['services.gitlab.username'],
 	},
-	paramName: 'private_token',
+	accessTokenParam: 'private_token',
 };
 
 const Gitlab = new CustomOAuth('gitlab', config);
