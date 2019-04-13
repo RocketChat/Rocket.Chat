@@ -251,10 +251,6 @@ export class CustomOAuth {
 				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
 					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 				}
-				if (this.mergeRoles) {
-					const user = Users.findOneByEmailAddress(identity.email);
-					mapRolesFromSSO(user, identity, this.rolesClaim || 'roles');
-				}
 			}
 
 			// console.log 'id:', JSON.stringify identity, null, '  '
@@ -309,6 +305,9 @@ export class CustomOAuth {
 				const user = Users.findOneByUsername(username);
 				if (!user) {
 					return;
+				}
+				if (this.mergeRoles) {
+					mapRolesFromSSO(user, serviceData, this.rolesClaim || 'roles');
 				}
 
 				// User already created or merged and has identical name as before

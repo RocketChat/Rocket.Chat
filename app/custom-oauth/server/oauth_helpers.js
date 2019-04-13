@@ -3,7 +3,7 @@ import { addUserRoles, removeUserFromRoles } from '../../authorization';
 /**
 */
 export function mapRolesFromSSO(user, identity, roleClaimName) {
-	if (user && roleClaimName) {
+	if (user && identity && roleClaimName) {
 		// Adding roles
 		if (identity[roleClaimName]) {
 			if (Array.isArray(identity[roleClaimName])) {
