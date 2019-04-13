@@ -1,3 +1,5 @@
+import { Accounts } from 'meteor/accounts-base';
+
 export const APIClient = {
 	delete(endpoint, params) {
 		return APIClient._jqueryCall('DELETE', endpoint, params);
@@ -47,8 +49,8 @@ export const APIClient = {
 				url: `${ document.baseURI }api/${ endpoint }${ query }`,
 				headers: {
 					'Content-Type': 'application/json',
-					'X-User-Id': localStorage['Meteor.userId'],
-					'X-Auth-Token': localStorage['Meteor.loginToken'],
+					'X-User-Id': localStorage[Accounts.USER_ID_KEY],
+					'X-Auth-Token': localStorage[Accounts.LOGIN_TOKEN_KEY],
 				},
 				data: JSON.stringify(body),
 				success: function _rlGetSuccess(result) {
@@ -74,8 +76,8 @@ export const APIClient = {
 			jQuery.ajax({
 				url: `${ document.baseURI }api/${ endpoint }${ query }`,
 				headers: {
-					'X-User-Id': localStorage['Meteor.userId'],
-					'X-Auth-Token': localStorage['Meteor.loginToken'],
+					'X-User-Id': localStorage[Accounts.USER_ID_KEY],
+					'X-Auth-Token': localStorage[Accounts.LOGIN_TOKEN_KEY],
 				},
 				data: formData,
 				processData: false,
