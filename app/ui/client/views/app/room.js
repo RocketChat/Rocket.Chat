@@ -21,6 +21,7 @@ import {
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { promises } from '../../../../promises/client';
@@ -32,6 +33,7 @@ import Clipboard from 'clipboard';
 import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
+import { isURL } from '../../../../utils/lib/isURL';
 
 export const chatMessages = {};
 
@@ -68,7 +70,7 @@ const openProfileTabOrOpenDM = (e, instance, username) => {
 				}
 			}
 
-			if ((result != null ? result.rid : undefined) != null) {
+			if (result && result.rid) {
 				FlowRouter.go('direct', { username }, FlowRouter.current().queryParams);
 			}
 		});
@@ -376,8 +378,8 @@ Template.room.helpers({
 			{ count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
 
 		const room = RoomManager.getOpenedRoomByRid(this._id);
-		if (room != null) {
-			data.since = room.unreadSince != null ? room.unreadSince.get() : undefined;
+		if (room) {
+			data.since = room.unreadSince ? room.unreadSince.get() : undefined;
 		}
 
 		return data;
@@ -393,7 +395,9 @@ Template.room.helpers({
 	},
 
 	formatUnreadSince() {
-		if ((this.since == null)) { return; }
+		if (!this.since) {
+			return;
+		}
 
 		return moment(this.since).calendar(null, { sameDay: 'LT' });
 	},
@@ -466,8 +470,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return subscription != null;
-
+		return !subscription;
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -561,7 +564,7 @@ Template.room.events({
 			return;
 		}
 
-		if (e.target && (e.target.nodeName === 'A') && /^https?:\/\/.+/.test(e.target.getAttribute('href'))) {
+		if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -590,7 +593,7 @@ Template.room.events({
 			return;
 		}
 
-		if (e.target && (e.target.nodeName === 'A') && /^https?:\/\/.+/.test(e.target.getAttribute('href'))) {
+		if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
 			if (touchMoved === true) {
 				e.preventDefault();
 				e.stopPropagation();
@@ -871,29 +874,31 @@ Template.room.events({
 		const id = e.currentTarget.dataset.message;
 		document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 	},
-	'click .js-actionButton-sendMessage'(event, instance) {
+	async 'click .js-actionButton-sendMessage'(event, instance) {
 		const rid = instance.data._id;
 		const msg = event.currentTarget.value;
-		const msgObject = { _id: Random.id(), rid, msg };
+		let msgObject = { _id: Random.id(), rid, msg };
 		if (!msg) {
 			return;
 		}
-		promises.run('onClientBeforeSendMessage', msgObject).then((msgObject) => {
-			const _chatMessages = chatMessages[rid];
-			if (_chatMessages && _chatMessages.processSlashCommand(msgObject)) {
-				return;
-			}
 
-			Meteor.call('sendMessage', msgObject);
-		});
+		msgObject = await promises.run('onClientBeforeSendMessage', msgObject);
+
+		const _chatMessages = chatMessages[rid];
+		if (_chatMessages && await _chatMessages.processSlashCommand(msgObject)) {
+			return;
+		}
+
+		await call('sendMessage', msgObject);
 	},
-	'click .js-actionButton-respondWithMessage'(event) {
+	'click .js-actionButton-respondWithMessage'(event, instance) {
+		const rid = instance.data._id;
 		const msg = event.currentTarget.value;
 		if (!msg) {
 			return;
 		}
 
-		const { input } = chatMessages[RoomManager.openedRoom];
+		const { input } = chatMessages[rid];
 		input.value = msg;
 		input.focus();
 	},
@@ -1078,12 +1083,12 @@ Template.room.onRendered(function() {
 
 	template.sendToBottomIfNecessary();
 
-	if ((window.MutationObserver == null)) {
-		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
-	} else {
+	if (window.MutationObserver) {
 		const observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
 
 		observer.observe(wrapperUl, { childList: true });
+	} else {
+		wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
 	}
 	// observer.disconnect()
 
@@ -1138,31 +1143,33 @@ Template.room.onRendered(function() {
 		}
 	};
 
-	const subscription = Subscriptions.findOne({ rid: template.data._id }, { reactive: false });
 	const updateUnreadCount = _.throttle(function() {
 		const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
-		if (lastInvisibleMessageOnScreen == null || lastInvisibleMessageOnScreen.id == null) {
+		if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
 			return template.unreadCount.set(0);
 		}
 
 		const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
-		if (lastMessage == null) {
+		if (!lastMessage) {
 			return template.unreadCount.set(0);
 		}
 
+		const subscription = Subscriptions.findOne({ rid: template.data._id }, { reactive: false });
 		const count = ChatMessage.find({ rid: template.data._id, ts: { $lte: lastMessage.ts, $gt: subscription && subscription.ls } }).count();
 		template.unreadCount.set(count);
 	}, 300);
 
-	readMessage.on(template.data._id, () => template.unreadCount.set(0));
+	readMessage.on(template.data._id, () => {
+		template.unreadCount.set(0);
+	});
 
 	wrapper.addEventListener('scroll', () => updateUnreadCount());
 	// salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date);
 
 	const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
-	if (webrtc != null) {
+	if (webrtc) {
 		this.autorun(() => {
 			const remoteItems = webrtc.remoteItems.get();
 			if (remoteItems && remoteItems.length > 0) {
@@ -1170,7 +1177,7 @@ Template.room.onRendered(function() {
 				this.tabBar.open();
 			}
 
-			if (webrtc.localUrl.get() != null) {
+			if (webrtc.localUrl.get()) {
 				this.tabBar.setTemplate('membersList');
 				this.tabBar.open();
 			}
