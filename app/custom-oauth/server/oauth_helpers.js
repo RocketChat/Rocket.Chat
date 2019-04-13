@@ -27,7 +27,9 @@ export function updateRolesFromSSO(user, identity, roleClaimName) {
 		user = mapRolesFromSSO(user, identity, roleClaimName);
 		// loop through all roles from SSO Provider and add them if needed
 		user.roles.forEach(function(role) {
-			addUserRoles(user._id, role);
+			if (Roles.findOneByIdOrName(role)) {
+				addUserRoles(user._id, role);
+			}
 		});
 	}
 }
