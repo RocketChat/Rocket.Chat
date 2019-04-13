@@ -413,7 +413,16 @@ const findParentMessage = (() => {
 					repliesCount: msg.tcount,
 				},
 			}, { multi: true });
-			Messages.upsert({ _id }, msg);
+			if (!Messages.findOne({ _id })) {
+				/**
+				 * Delete rid from message to not render it and to not be considred in last message
+				 * find from load history method what was preveting the load of some messages in
+				 * between the reals last loaded message and this one if this one is older than
+				 * the real last loaded message.
+				 */
+				delete msg.rid;
+				Messages.upsert({ _id }, msg);
+			}
 		});
 	}, 500);
 
