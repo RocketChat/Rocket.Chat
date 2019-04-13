@@ -95,12 +95,8 @@ describe('[Resolution]', () => {
 			it('it should close de sidenav', () => {
 				sideNav.preferencesClose.waitForVisible(10000);
 				sideNav.preferencesClose.click();
-				sideNav.sidebarWrap.click();
-			});
 
-			it('it should press the navbar button', () => {
-				sideNav.burgerBtn.waitForVisible(10000);
-				sideNav.burgerBtn.click();
+				sideNav.preferencesClose.waitForVisible(10000, true);
 			});
 		});
 	});

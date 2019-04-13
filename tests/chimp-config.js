@@ -28,7 +28,7 @@ module.exports = {
 	screenshotsOnError: true,
 	screenshotsPath: '.screenshots',
 	captureAllStepScreenshots: true,
-	saveScreenshotsToDisk: true,
+	saveScreenshotsToDisk: false,
 	// 	// Note: With a large viewport size and captureAllStepScreenshots enabled,
 	// 	// you may run out of memory. Use browser.setViewportSize to make the
 	// 	// viewport size smaller.
