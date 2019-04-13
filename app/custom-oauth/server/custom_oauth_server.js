@@ -65,6 +65,7 @@ export class CustomOAuth {
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
+		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
@@ -248,6 +249,11 @@ export class CustomOAuth {
 				if (!identity.email && (identity.emails && Array.isArray(identity.emails) && identity.emails.length >= 1)) {
 					identity.email = identity.emails[0].address ? identity.emails[0].address : undefined;
 				}
+
+				if (this.avatarField) {
+					identity.avatarUrl = this.getAvatarUrl(identity);
+				}
+
 			}
 
 			// console.log 'id:', JSON.stringify identity, null, '  '
@@ -288,6 +294,17 @@ export class CustomOAuth {
 			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
 		}
 		return username;
+	}
+
+	getAvatarUrl(data) {
+		const avatarUrl = this.avatarField.split('.').reduce(function(prev, curr) {
+			return prev ? prev[curr] : undefined;
+		}, data);
+		if (!avatarUrl) {
+			throw new Meteor.Error('field_not_found', `Avatar field "${ this.avatarField }" not found in data`, data);
+		}
+
+		return avatarUrl;
 	}
 
 	addHookToProcessUser() {
