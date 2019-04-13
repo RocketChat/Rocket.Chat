@@ -60,6 +60,11 @@ export default {
 		return this.token.get();
 	},
 
+	getDepartment() {
+		const data = this.getData();
+		return data && data.department;
+	},
+
 	setToken(token) {
 		if (!token || token === this.token.get()) {
 			return;

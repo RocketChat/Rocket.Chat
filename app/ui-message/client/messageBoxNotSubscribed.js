@@ -11,17 +11,17 @@ import './messageBoxNotSubscribed.html';
 
 Template.messageBoxNotSubscribed.helpers({
 	customTemplate() {
-		return roomTypes.getNotSubscribedTpl(this._id);
+		return roomTypes.getNotSubscribedTpl(this.rid);
 	},
 	canJoinRoom() {
-		return Meteor.userId() && roomTypes.verifyShowJoinLink(this._id);
+		return Meteor.userId() && roomTypes.verifyShowJoinLink(this.rid);
 	},
 	roomName() {
-		const room = Session.get(`roomData${ this._id }`);
+		const room = Session.get(`roomData${ this.rid }`);
 		return roomTypes.getRoomName(room.t, room);
 	},
 	isJoinCodeRequired() {
-		const room = Session.get(`roomData${ this._id }`);
+		const room = Session.get(`roomData${ this.rid }`);
 		return room && room.joinCodeRequired;
 	},
 	isAnonymousReadAllowed() {
@@ -43,16 +43,14 @@ Template.messageBoxNotSubscribed.events({
 		const joinCodeInput = Template.instance().find('[name=joinCode]');
 		const joinCode = joinCodeInput && joinCodeInput.value;
 
-		await call('joinRoom', this._id, joinCode);
+		await call('joinRoom', this.rid, joinCode);
 
-		if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this._id).loaded === 0) {
-			RoomManager.getOpenedRoomByRid(this._id).streamActive = false;
-			RoomManager.getOpenedRoomByRid(this._id).ready = false;
-			RoomHistoryManager.getRoom(this._id).loaded = null;
+		if (hasAllPermission('preview-c-room') === false && RoomHistoryManager.getRoom(this.rid).loaded === 0) {
+			RoomManager.getOpenedRoomByRid(this.rid).streamActive = false;
+			RoomManager.getOpenedRoomByRid(this.rid).ready = false;
+			RoomHistoryManager.getRoom(this.rid).loaded = null;
 			RoomManager.computation.invalidate();
 		}
-
-
 	},
 	'click .js-register'(event) {
 		event.stopPropagation();
@@ -60,7 +58,6 @@ Template.messageBoxNotSubscribed.events({
 
 		Session.set('forceLogin', true);
 	},
-
 	async 'click .js-register-anonymous'(event) {
 		event.stopPropagation();
 		event.preventDefault();
