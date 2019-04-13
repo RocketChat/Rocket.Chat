@@ -9,7 +9,7 @@ export function mapRolesFromSSO(identity, roleClaimName) {
 	if (identity && roleClaimName) {
 		// Adding roles
 		if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-			roles = identity[roleClaimName].filter((val) => val !== 'offline_access' && val !== 'uma_authorization');
+			roles = identity[roleClaimName].filter((val) => val !== 'offline_access' && val !== 'uma_authorization' && Roles.findOneByIdOrName(val));
 		}
 	}
 
@@ -29,18 +29,14 @@ export function updateRolesFromSSO(user, identity, roleClaimName) {
 
 		// loop through roles that user has that sso doesnt have and remove
 		toRemove.forEach(function(role) {
-			if (Roles.findOneByIdOrName(role)) {
-				removeUserFromRoles(user._id, role);
-			}
+			removeUserFromRoles(user._id, role);
 		});
 
 		const toAdd = rolesFromSSO.filter((val) => !user.roles.includes(val));
 
 		// loop through roles sso has that user doesnt and add
 		toAdd.forEach(function(role) {
-			if (Roles.findOneByIdOrName(role)) {
-				addUserRoles(user._id, role);
-			}
+			addUserRoles(user._id, role);
 		});
 	}
 }
