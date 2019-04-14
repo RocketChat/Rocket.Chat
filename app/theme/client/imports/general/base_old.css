@@ -1524,6 +1524,7 @@ rc-old select,
 
 		.setting-action {
 			margin: 0 4px;
+			height: auto;
 		}
 
 		& .settings-description {
