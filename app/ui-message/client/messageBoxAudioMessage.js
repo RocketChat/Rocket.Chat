@@ -39,7 +39,7 @@ const unregisterUploadProgress = (upload) => setTimeout(() => {
 	Session.set('uploading', uploads.filter(({ id }) => id !== upload.id));
 }, 2000);
 
-const uploadRecord = async ({ rid, tmid, blob }) => {
+const uploadRecord = async({ rid, tmid, blob }) => {
 	const upload = fileUploadHandler('Uploads', {
 		name: `${ t('Audio record') }.mp3`,
 		size: blob.size,

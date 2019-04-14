@@ -51,7 +51,7 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 		}));
 };
 
-const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
+const fetchUsersFromServer = _.throttle(async(filterText, records, rid, cb) => {
 	const usernames = records.map(({ username }) => username);
 
 	const { users } = await call('spotlight', filterText, usernames, { users: true }, rid);
@@ -79,7 +79,7 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 	cb && cb(records);
 }, 1000);
 
-const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => {
+const fetchRoomsFromServer = _.throttle(async(filterText, records, rid, cb) => {
 	if (!hasAllPermission('view-outside-room')) {
 		cb && cb([]);
 		return;

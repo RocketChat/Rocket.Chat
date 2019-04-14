@@ -114,7 +114,7 @@ const getGenericUploadPreview = (file) => `\
 </div>
 </div>`;
 
-const getUploadPreview = async (file, preview) => {
+const getUploadPreview = async(file, preview) => {
 	if (file.type === 'audio') {
 		return getAudioUploadPreview(file, preview);
 	}
@@ -137,7 +137,7 @@ const getUploadPreview = async (file, preview) => {
 	return getGenericUploadPreview(file, preview);
 };
 
-export const fileUpload = async (files, input, { rid, tmid }) => {
+export const fileUpload = async(files, input, { rid, tmid }) => {
 	files = [].concat(files);
 
 	const replies = $(input).data('reply') || [];
@@ -170,7 +170,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			return;
 		}
 
-		showUploadPreview(file, async (file, preview) => modal.open({
+		showUploadPreview(file, async(file, preview) => modal.open({
 			title: t('Upload_file_question'),
 			text: await getUploadPreview(file, preview),
 			showCancelButton: true,
