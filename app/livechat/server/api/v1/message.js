@@ -5,7 +5,7 @@ import { Messages, Rooms, LivechatVisitors } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api';
 import { loadMessageHistory } from '../../../../lib';
-import { findGuest, findRoom } from '../lib/livechat';
+import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/message', {
@@ -238,7 +238,11 @@ API.v1.addRoute('livechat/messages', { authRequired: true }, {
 			}
 		} else {
 			rid = Random.id();
-			const visitorId = Livechat.registerGuest(this.bodyParams.visitor);
+
+			const guest = this.bodyParams.visitor;
+			guest.connectionData = normalizeHttpHeaderData(this.request.headers);
+
+			const visitorId = Livechat.registerGuest(guest);
 			visitor = LivechatVisitors.findOneById(visitorId);
 		}
 
