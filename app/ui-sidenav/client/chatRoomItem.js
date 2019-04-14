@@ -19,8 +19,6 @@ Template.chatRoomItem.helpers({
 
 		const archivedClass = this.archived ? 'archived' : false;
 
-		this.alert = !this.hideUnreadStatus && this.alert; // && (!hasFocus || FlowRouter.getParam('_id') !== this.rid);
-
 		const icon = this.t !== 'd' && roomTypes.getIcon(this);
 		const avatar = !icon;
 
@@ -40,7 +38,7 @@ Template.chatRoomItem.helpers({
 		};
 		roomData.username = roomData.username || roomData.name;
 
-		// hide icon for threads
+		// hide icon for discussions
 		if (this.prid) {
 			roomData.darken = true;
 		}

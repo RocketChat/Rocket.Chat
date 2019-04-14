@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { t, handleError } from '../../../utils';
+import { handleError } from '../../../utils/client/lib/handleError';
+import { t } from '../../../utils/lib/tapi18n';
 import { Roles } from '../../../models';
 import { hasAllPermission } from '../hasPermission';
 import { modal } from '../../../ui-utils/client/lib/modal';
@@ -115,6 +116,7 @@ Template.permissionsRole.events({
 		e.preventDefault();
 		modal.open({
 			title: t('Are_you_sure'),
+			text: t('The_user_s_will_be_removed_from_role_s', this.username, FlowRouter.getParam('name')),
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#DD6B55',

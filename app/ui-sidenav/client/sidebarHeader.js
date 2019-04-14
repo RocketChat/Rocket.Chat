@@ -42,19 +42,8 @@ const extendedViewOption = (user) => {
 
 const showToolbar = new ReactiveVar(false);
 
-const selectorSearch = '.toolbar__search .rc-input__element';
 export const toolbarSearch = {
 	shortcut: false,
-	clear() {
-		const $inputMessage = $('.js-input-message');
-
-		if (0 === $inputMessage.length) {
-			return;
-		}
-
-		$inputMessage.focus();
-		$(selectorSearch).val('');
-	},
 	show(fromShortcut) {
 		menu.open();
 		showToolbar.set(true);
@@ -167,6 +156,29 @@ const toolbarButtons = (user) => [{
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
 	action: (e) => {
+
+
+		const createChannel = (e) => {
+			e.preventDefault();
+			modal.open({
+				title: t('Create_A_New_Channel'),
+				content: 'createChannel',
+				data: {
+					onCreate() {
+						modal.close();
+					},
+				},
+				modifier: 'modal',
+				showConfirmButton: false,
+				showCancelButton: false,
+				confirmOnEnter: false,
+			});
+		};
+
+		const discussionEnabled = settings.get('Discussion_enabled');
+		if (!discussionEnabled) {
+			return createChannel(e);
+		}
 		const config = {
 			columns: [
 				{
@@ -176,37 +188,22 @@ const toolbarButtons = (user) => [{
 								{
 									icon: 'hashtag',
 									name: t('Channel'),
-									action: (e) => {
-										e.preventDefault();
-										modal.open({
-											title: t('Create_A_New_Channel'),
-											content: 'createChannel',
-											data: {
-												onCreate() {
-													modal.close();
-												},
-											},
-											modalClass: 'modal',
-											showConfirmButton: false,
-											showCancelButton: false,
-											confirmOnEnter: false,
-										});
-									},
+									action: createChannel,
 								},
 								{
-									icon: 'thread',
-									name: t('Thread'),
+									icon: 'discussion',
+									name: t('Discussion'),
 									action: (e) => {
 										e.preventDefault();
 										modal.open({
-											title: t('Threading_title'),
-											content: 'CreateThread',
+											title: t('Discussion_title'),
+											content: 'CreateDiscussion',
 											data: {
 												onCreate() {
 													modal.close();
 												},
 											},
-											modalClass: 'modal',
+											modifier: 'modal',
 											showConfirmButton: false,
 											showCancelButton: false,
 											confirmOnEnter: false,

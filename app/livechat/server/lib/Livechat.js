@@ -86,7 +86,7 @@ export const Livechat = {
 				return true;
 			}
 			const onlineAgents = LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			return onlineAgents.count() > 0;
+			return onlineAgents && onlineAgents.count() > 0;
 		});
 	},
 	getRoom(guest, message, roomInfo, agent) {
@@ -176,7 +176,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username } = {}) {
+	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
 
 		let userId;
@@ -204,12 +204,14 @@ export const Livechat = {
 					username,
 				};
 
-				const storeHttpHeaderData = settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations');
+				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 
-				if (this.connection && storeHttpHeaderData) {
-					userData.userAgent = this.connection.httpHeaders['user-agent'];
-					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.httpHeaders['x-forwarded-for'] || this.connection.clientAddress;
-					userData.host = this.connection.httpHeaders.host;
+					const connection = this.connection || connectionData;
+					if (connection && connection.httpHeaders) {
+						userData.userAgent = connection.httpHeaders['user-agent'];
+						userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
+						userData.host = connection.httpHeaders.host;
+					}
 				}
 
 				userId = LivechatVisitors.insert(userData);
@@ -232,7 +234,9 @@ export const Livechat = {
 			updateUser.$set.name = name;
 		}
 
-		if (department) {
+		if (!department) {
+			Object.assign(updateUser, { $unset: { department: 1 } });
+		} else {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
@@ -313,6 +317,9 @@ export const Livechat = {
 			msg: comment,
 			groupable: false,
 		};
+
+		// Retreive the closed room
+		room = Rooms.findOneByIdOrName(room._id);
 
 		sendMessage(user, message, room);
 
@@ -533,13 +540,8 @@ export const Livechat = {
 		const agentIds = [];
 		// get the agents of the department
 		if (departmentId) {
-			let agents = Livechat.getOnlineAgents(departmentId);
-
-			if (agents.count() === 0 && settings.get('Livechat_guest_pool_with_no_agents')) {
-				agents = Livechat.getAgents(departmentId);
-			}
-
-			if (agents.count() === 0) {
+			const agents = Livechat.getAgents(departmentId);
+			if (!agents || agents.count() === 0) {
 				return false;
 			}
 

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Importers } from '../..';
+import { Importers } from '..';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';

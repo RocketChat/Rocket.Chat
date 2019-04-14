@@ -23,7 +23,7 @@ export class RealAppBridges extends AppBridges {
 		this._apiBridge = new AppApisBridge(orch);
 		this._detBridge = new AppDetailChangesBridge(orch);
 		this._envBridge = new AppEnvironmentalVariableBridge(orch);
-		this._httpBridge = new AppHttpBridge();
+		this._httpBridge = new AppHttpBridge(orch);
 		this._lisnBridge = new AppListenerBridge(orch);
 		this._msgBridge = new AppMessageBridge(orch);
 		this._persistBridge = new AppPersistenceBridge(orch);

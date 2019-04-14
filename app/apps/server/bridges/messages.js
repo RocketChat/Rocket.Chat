@@ -10,7 +10,7 @@ export class AppMessageBridge {
 	}
 
 	async create(message, appId) {
-		console.log(`The App ${ appId } is creating a new message.`);
+		this.orch.debugLog(`The App ${ appId } is creating a new message.`);
 
 		let msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 
@@ -22,13 +22,13 @@ export class AppMessageBridge {
 	}
 
 	async getById(messageId, appId) {
-		console.log(`The App ${ appId } is getting the message: "${ messageId }"`);
+		this.orch.debugLog(`The App ${ appId } is getting the message: "${ messageId }"`);
 
 		return this.orch.getConverters().get('messages').convertById(messageId);
 	}
 
 	async update(message, appId) {
-		console.log(`The App ${ appId } is updating a message.`);
+		this.orch.debugLog(`The App ${ appId } is updating a message.`);
 
 		if (!message.editor) {
 			throw new Error('Invalid editor assigned to the message for the update.');
@@ -45,7 +45,7 @@ export class AppMessageBridge {
 	}
 
 	async notifyUser(user, message, appId) {
-		console.log(`The App ${ appId } is notifying a user.`);
+		this.orch.debugLog(`The App ${ appId } is notifying a user.`);
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 
@@ -58,7 +58,7 @@ export class AppMessageBridge {
 	}
 
 	async notifyRoom(room, message, appId) {
-		console.log(`The App ${ appId } is notifying a room's users.`);
+		this.orch.debugLog(`The App ${ appId } is notifying a room's users.`);
 
 		if (room) {
 			const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
