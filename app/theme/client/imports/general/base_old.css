@@ -1523,8 +1523,8 @@ rc-old select,
 		}
 
 		.setting-action {
-			margin: 0 4px;
 			height: auto;
+			margin: 0 4px;
 		}
 
 		& .settings-description {
