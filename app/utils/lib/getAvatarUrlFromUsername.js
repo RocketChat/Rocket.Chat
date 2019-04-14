@@ -7,7 +7,12 @@ export const getAvatarUrlFromUsername = function(username) {
 		return externalSource.replace('{username}', username);
 	}
 	const key = `avatar_random_${ username }`;
-	const random = typeof Session !== 'undefined' && typeof Session.keys[key] !== 'undefined' ? Session.keys[key] : 0;
+	let _dc = Session.get(key);
+	if (!_dc) {
+		const now = Date.now();
+		Session.set(key, now);
+		_dc = now;
+	}
 	if (username == null) {
 		return;
 	}
@@ -17,5 +22,5 @@ export const getAvatarUrlFromUsername = function(username) {
 	if (cdnPrefix) {
 		path = cdnPrefix + pathPrefix;
 	}
-	return `${ path }/avatar/${ encodeURIComponent(username) }?_dc=${ random }`;
+	return `${ path }/avatar/${ encodeURIComponent(username) }?_dc=${ _dc }`;
 };

@@ -15,7 +15,6 @@ Template.avatar.helpers({
 			if (username == null) {
 				return;
 			}
-			Session.get(`avatar_random_${ username }`);
 
 			if (this.roomIcon) {
 				username = `@${ username }`;

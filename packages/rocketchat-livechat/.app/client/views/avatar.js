@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import visitor from '../../imports/client/visitor';
 
@@ -15,8 +14,6 @@ Template.avatar.helpers({
 		if (!username || (currentUser && currentUser.username === username)) {
 			return;
 		}
-
-		Session.get(`avatar_random_${ username }`);
 
 		return `background-image:url(${ getAvatarUrlFromUsername(username) });`;
 	},
