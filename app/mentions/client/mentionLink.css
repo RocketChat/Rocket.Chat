@@ -2,7 +2,7 @@
 .mention-link {
 	padding: 0 6px 2px;
 
-	transition: border-radius 0.3s;
+	transition: opacity 0.3s, background-color 0.3s, color 0.3s;
 
 	color: var(--mention-link-text-color);
 

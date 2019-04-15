@@ -61,7 +61,7 @@ const openProfileTab = (e, instance, username) => {
 		instance.userDetail.set(username);
 	}
 
-	instance.groupDetail.set('all');
+	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('membersList');
 	instance.tabBar.open();
 };
@@ -950,7 +950,7 @@ Template.room.onCreated(function() {
 	this.flexTemplate = new ReactiveVar;
 
 	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
-	this.groupDetail = new ReactiveVar('all');
+	this.groupDetail = new ReactiveVar();
 
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
