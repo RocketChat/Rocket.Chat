@@ -65,6 +65,45 @@ API.v1.addRoute('livechat/message', {
 });
 
 API.v1.addRoute('livechat/message/:_id', {
+	get() {
+		try {
+			check(this.urlParams, {
+				_id: String,
+			});
+
+			check(this.queryParams, {
+				token: String,
+				rid: String,
+			});
+
+			const { token, rid } = this.queryParams;
+			const { _id } = this.urlParams;
+
+			const guest = findGuest(token);
+			if (!guest) {
+				throw new Meteor.Error('invalid-token');
+			}
+
+			const room = findRoom(token, rid);
+			if (!room) {
+				throw new Meteor.Error('invalid-room');
+			}
+
+			const message = Messages.findOneById(_id);
+			if (!message) {
+				throw new Meteor.Error('invalid-message');
+			}
+
+			const { msg, u, ts, attachments, tmid } = message;
+			return API.v1.success({
+				message: { _id, rid, msg, u, ts, attachments, tmid },
+			});
+
+		} catch (e) {
+			return API.v1.failure(e.error);
+		}
+	},
+
 	put() {
 		try {
 			check(this.urlParams, {
