@@ -9,6 +9,7 @@ import '../app/authorization';
 import '../app/autolinker/server';
 import '../app/autotranslate/server';
 import '../app/bot-helpers';
+import '../app/broadcast/server';
 import '../app/cas/server';
 import '../app/channel-settings';
 import '../app/channel-settings-mail-messages/server';

@@ -174,11 +174,6 @@ const toolbarButtons = (user) => [{
 				confirmOnEnter: false,
 			});
 		};
-
-		const discussionEnabled = settings.get('Discussion_enabled');
-		if (!discussionEnabled) {
-			return createChannel(e);
-		}
 		const config = {
 			columns: [
 				{
@@ -190,26 +185,6 @@ const toolbarButtons = (user) => [{
 									name: t('Channel'),
 									action: createChannel,
 								},
-								{
-									icon: 'discussion',
-									name: t('Discussion'),
-									action: (e) => {
-										e.preventDefault();
-										modal.open({
-											title: t('Discussion_title'),
-											content: 'CreateDiscussion',
-											data: {
-												onCreate() {
-													modal.close();
-												},
-											},
-											modifier: 'modal',
-											showConfirmButton: false,
-											showCancelButton: false,
-											confirmOnEnter: false,
-										});
-									},
-								},
 							],
 						},
 					],
@@ -218,6 +193,54 @@ const toolbarButtons = (user) => [{
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
+		const broadcastEnabled = settings.get('Broadcast_enabled');
+		const discussionEnabled = settings.get('Discussion_enabled');
+		if (discussionEnabled) {
+			const discussionConfig = {
+				icon: 'discussion',
+				name: t('Discussion'),
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Discussion_title'),
+						content: 'CreateDiscussion',
+						data: {
+							onCreate() {
+								modal.close();
+							},
+						},
+						modifier: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			};
+			config['columns'][0]['groups'][0]['items'].push(discussionConfig);
+		}
+		if (broadcastEnabled) {
+			const broadcastConfig = {
+				icon: 'send-active',
+				name: t('Broadcast'),
+				action: (e) => {
+					e.preventDefault();
+					modal.open({
+						title: t('Broadcast_title'),
+						content: 'createBroadcast',
+						data: {
+							onCreate() {
+								modal.close();
+							},
+						},
+						modifier: 'modal',
+						showConfirmButton: false,
+						showCancelButton: false,
+						confirmOnEnter: false,
+					});
+				},
+			};
+			config['columns'][0]['groups'][0]['items'].push(broadcastConfig);
+		}
 		popover.open(config);
 	},
 },

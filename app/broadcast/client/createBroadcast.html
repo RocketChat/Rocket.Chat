@@ -1,0 +1,60 @@
+<template name="createBroadcast">
+    <section class="create-channel">
+        <div class="create-channel__wrapper">
+            <p class="create-channel__description">{{_ "Broadcast_description"}}</p>
+            <form id="create-discussion" class="create-channel__content">
+                <div class="create-channel__inputs">
+                    <div class="rc-input">
+                        <label class="rc-input__label">
+                            <div class="rc-input__wrapper">
+                                <div class="rc-input__icon">
+                                    {{> icon block="rc-input__icon-svg" icon="at"}}
+                                </div>
+                                <div class="rc-tags">
+                                    {{#each user in selectedUsers}}
+                                        {{> userTag user}}
+                                    {{/each}}
+                                    <input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}"
+                                            name="users" autocomplete="off"/>
+                                </div>
+                            </div>
+                            {{#with config}}
+								{{#if autocomplete 'isShowing'}}
+									<div class="dropdown-in">
+
+										{{> popupList data=config items=items}}
+
+									</div>
+								{{/if}}
+							{{/with}}
+                        </label>
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Discussion_first_message_title"}}</div>
+							<div class="rc-input__wrapper">
+								<textarea rows="5" name="discussion_message" id="discussion_message" class="rc-input__element" placeholder="{{_ 'New_broadcast_first_message'}}"
+									maxlength="{{maxMessageLength}}"></textarea>
+							</div>
+						</label>
+					</div>
+                </div>
+            </form>
+            <div class="create-channel__inputs">
+                <input form='create-discussion' class="rc-button rc-button--primary js-save-discussion" type='submit' {{createIsDisabled}} value="{{_ "Send"}}" />
+            </div>
+        </div>
+    </section>
+</template>
+
+<template name='userTag'>
+        <span class="rc-tags__tag">
+            {{#if username}}
+                <span class="rc-tags__tag-image">
+                    {{> avatar username=username}}
+                </span>
+                <span class="rc-tags__tag-text">{{username}}</span>
+            {{else}}
+                <span class="rc-tags__tag-text">{{text}}</span>
+            {{/if}}
+            {{> icon block="rc-tags__tag-icon" icon="cross"}}
+        </span>
+    </template>
