@@ -87,6 +87,7 @@
   "Accounts_OAuth_Custom_Identity_Token_Sent_Via": "Identity Token Sent Via",
   "Accounts_OAuth_Custom_Login_Style": "Login Style",
   "Accounts_OAuth_Custom_Merge_Users": "Merge users",
+  "Accounts_OAuth_Custom_Access_Token_Param": "Param Name for access token",
   "Accounts_OAuth_Custom_Scope": "Scope",
   "Accounts_OAuth_Custom_Secret": "Secret",
   "Accounts_OAuth_Custom_Token_Path": "Token Path",

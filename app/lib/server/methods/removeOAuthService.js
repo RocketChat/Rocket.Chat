@@ -25,6 +25,7 @@ Meteor.methods({
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-identity_path`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-authorize_path`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-scope`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-access_token_param`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-token_sent_via`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-identity_token_sent_via`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-id`);
