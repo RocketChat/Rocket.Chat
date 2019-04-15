@@ -3,6 +3,9 @@ import { Match } from 'meteor/check';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
+import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { Notifications } from '../../../notifications';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -65,7 +68,22 @@ Meteor.methods({
 					method: 'addUsersToRoom',
 				});
 			}
-			addUserToRoom(data.rid, newUser, user);
+			// addUserToRoom(data.rid, newUser, user);
+
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
+			if (!subscription) {
+				addUserToRoom(data.rid, newUser, user);
+			} else {
+				Notifications.notifyUser(userId, 'message', {
+					_id: Random.id(),
+					rid: data.rid,
+					ts: new Date,
+					msg: TAPi18n.__('Username_is_already_in_here', {
+						postProcess: 'sprintf',
+						sprintf: [newUser.username],
+					}, user.language),
+				});
+			}
 		});
 
 		return true;
