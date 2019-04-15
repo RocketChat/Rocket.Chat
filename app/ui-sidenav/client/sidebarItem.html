@@ -53,11 +53,13 @@
 					<div class="sidebar-item__message-bottom">
 						{{#if extended}}
 							{{#if lastMessage}}
-								<div class="sidebar-item__last-message">{{{lastMessage}}}</div>
+								<div class="sidebar-item__last-message">
+									<span class="message-body--unstyled">{{{lastMessage}}}</span>
+								</div>
 							{{/if}}
 						{{/if}}
 						{{#if unread}}
-							<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
+							<span class="{{badgeClass}}">{{unread}}</span>
 						{{/if}}
 					</div>
 				</div>

@@ -67,7 +67,12 @@
 				<span>******</span>
 			{{else}}
 				{{#if and settings.showreply msg.tmid}}
-					<p class="thread-replied"> {{_ "Replied_on"}}: <q aria-label="Open_thread" class="rc-tooltip thread-quote js-open-thread">{{parentMessage}}</q> </p>
+					<p class="thread-replied">
+						{{_ "Replied_on"}}:
+						<q role="button" aria-label="{{_ "Open_thread"}}" class="thread-quote js-open-thread">
+							<span class="message-body--unstyled">{{{parentMessage}}}</span>
+						</q>
+					</p>
 					<blockquote>
 						{{{body}}}
 					</blockquote>
@@ -118,20 +123,17 @@
 		{{/with}}
 		{{#unless system}}
 			<div class="message-actions">
-				{{#if messageActions 'message'}}
-					<div class="message-actions__buttons">
-						{{#each action in messageActions 'message'}}
-							<button class="message-actions__button"  data-message-action="{{action.id}}">
-									{{> icon block="message-actions__button-icon" icon=action.icon}}
-							</button>
-						{{/each}}
-					</div>
-				{{/if}}
-				{{#if messageActions 'menu'}}
-					<div class="message-actions__menu">
-						{{> icon block="message-actions__menu-icon" icon="menu"}}
-					</div>
-				{{/if}}
+
+				<div class="message-actions__buttons">
+					{{#each action in messageActions 'message'}}
+						<button class="message-actions__button"  data-message-action="{{action.id}}">
+								{{> icon block="message-actions__button-icon" icon=action.icon}}
+						</button>
+					{{/each}}
+				</div>
+				<div class="message-actions__menu">
+					{{> icon block="message-actions__menu-icon" icon="menu"}}
+				</div>
 			</div>
 		{{/unless}}
 		{{#unless hideActionLinks}}
