@@ -301,7 +301,7 @@ export class CustomOAuth {
 			return prev ? prev[curr] : undefined;
 		}, data);
 		if (!avatarUrl) {
-			throw new Meteor.Error('field_not_found', `Avatar field "${ this.avatarField }" not found in data`, data);
+			logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
 		}
 
 		return avatarUrl;
