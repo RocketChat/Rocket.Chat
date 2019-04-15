@@ -4,6 +4,7 @@ import mock from 'mock-require';
 import chai from 'chai';
 
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
+import { appMessageMock, rocketchatMessageMock, appMessageInvalidRoomMock } from './mocks/data/messages.data';
 
 chai.use(require('chai-datetime'));
 const { expect } = chai;
@@ -67,19 +68,6 @@ describe('The AppMessagesConverter instance', function() {
 	const updatedAt = new Date('2019-03-30T01:22:08.412Z');
 
 	describe('when converting a message from Rocket.Chat to the Engine schema', function() {
-		const rocketchatMessageMock = {
-			_id : 'bojapwB2udErwrvCZ',
-			t : 'uj',
-			rid : 'GENERAL',
-			ts : createdAt,
-			msg : 'rocket.cat',
-			u : {
-				_id : 'rocket.cat',
-				username : 'rocket.cat',
-			},
-			groupable : false,
-			_updatedAt : updatedAt,
-		};
 
 		it('should return `undefined` when `msgObj` is falsy', function() {
 			const appMessage = messagesConverter.convertMessage(undefined);
@@ -96,6 +84,14 @@ describe('The AppMessagesConverter instance', function() {
 			expect(appMessage).to.have.property('groupable', false);
 			expect(appMessage).to.have.property('sender').which.includes({ id: 'rocket.cat' });
 			expect(appMessage).to.have.property('room').which.includes({ id: 'GENERAL' });
+
+			expect(appMessage).not.to.have.property('editor');
+			expect(appMessage).not.to.have.property('attachments');
+			expect(appMessage).not.to.have.property('reactions');
+			expect(appMessage).not.to.have.property('avatarUrl');
+			expect(appMessage).not.to.have.property('alias');
+			expect(appMessage).not.to.have.property('customFields');
+			expect(appMessage).not.to.have.property('emoji');
 		});
 
 		it('should not mutate the original message object', function() {
@@ -127,63 +123,6 @@ describe('The AppMessagesConverter instance', function() {
 	});
 
 	describe('when converting a message from the Engine schema back to Rocket.Chat', function() {
-		const appMessageMock = {
-			id: 'bojapwB2udErwrvCZ',
-			text: 'rocket.cat',
-			createdAt,
-			updatedAt,
-			groupable: false,
-			room: {
-				id: 'GENERAL',
-				displayName: 'Mocked Room',
-				slugifiedName: 'mocked-room',
-				type: 'c',
-				creator: {
-					username: 'rocket.cat',
-					emails: [
-						{
-							address: 'rocketcat@rocket.chat',
-							verified: true,
-						},
-					],
-					type: 'bot',
-					isEnabled: true,
-					name: 'Rocket.Cat',
-					roles: [
-						'bot',
-					],
-					status: 'online',
-					statusConnection: 'online',
-					utcOffset: 0,
-					createdAt: '2019-04-13T01:33:14.191Z',
-					updatedAt: '2019-04-13T01:33:14.191Z',
-				},
-			},
-			sender: {
-				id: 'rocket.cat',
-				username: 'rocket.cat',
-				emails: [
-					{
-						address: 'rocketcat@rocket.chat',
-						verified: true,
-					},
-				],
-				type: 'bot',
-				isEnabled: true,
-				name: 'Rocket.Cat',
-				roles: [
-					'bot',
-				],
-				status: 'online',
-				statusConnection: 'online',
-				utcOffset: 0,
-				createdAt: '2019-04-13T01:33:14.191Z',
-				updatedAt: '2019-04-13T01:33:14.191Z',
-			},
-			_unmappedProperties_: {
-				t: 'uj',
-			},
-		};
 
 		it('should return `undefined` when `message` is falsy', function() {
 			const rocketchatMessage = messagesConverter.convertAppMessage(undefined);
@@ -211,6 +150,10 @@ describe('The AppMessagesConverter instance', function() {
 
 			expect(rocketchatMessage).not.to.have.property('_unmappedProperties_');
 			expect(rocketchatMessage).to.have.property('t', 'uj');
+		});
+
+		it('should throw if message has an invalid room', function() {
+			expect(() => messagesConverter.convertAppMessage(appMessageInvalidRoomMock)).to.throw;
 		});
 	});
 });
