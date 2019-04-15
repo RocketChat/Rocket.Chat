@@ -419,11 +419,17 @@ export default class SlackAdapter {
 	onChannelLeft(channelLeftMsg) {
 		this.removeSlackChannel(channelLeftMsg.channel);
 	}
+
 	/**
 	 * We have received a message from slack and we need to save/delete/update it into rocket
 	 * https://api.slack.com/events/message
 	 */
 	onMessage(slackMessage, isImporting) {
+		const isAFileShare = slackMessage && slackMessage.files && Array.isArray(slackMessage.files) && slackMessage.files.length;
+		if (isAFileShare) {
+			this.processFileShare(slackMessage);
+			return;
+		}
 		if (slackMessage.subtype) {
 			switch (slackMessage.subtype) {
 				case 'message_deleted':
@@ -434,9 +440,6 @@ export default class SlackAdapter {
 					break;
 				case 'channel_join':
 					this.processChannelJoin(slackMessage);
-					break;
-				case 'file_share':
-					this.processFileShare(slackMessage);
 					break;
 				default:
 					// Keeping backwards compatability for now, refactor later
@@ -674,11 +677,12 @@ export default class SlackAdapter {
 	}
 
 	processFileShare(slackMessage) {
-		if (! settings.get('SlackBridge_FileUpload_Enabled')) {
+		if (!settings.get('SlackBridge_FileUpload_Enabled')) {
 			return;
 		}
+		const file = slackMessage.files[0];
 
-		if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
+		if (file && file.url_private_download !== undefined) {
 			const rocketChannel = this.rocket.getChannel(slackMessage);
 			const rocketUser = this.rocket.getUser(slackMessage.user);
 
@@ -688,8 +692,8 @@ export default class SlackAdapter {
 			// If the text includes the file link, simply use the same text for the rocket message.
 			// If the link was not included, then use it instead of the message.
 
-			if (slackMessage.text.indexOf(slackMessage.file.permalink) < 0) {
-				slackMessage.text = slackMessage.file.permalink;
+			if (slackMessage.text.indexOf(file.permalink) < 0) {
+				slackMessage.text = file.permalink;
 			}
 
 			const ts = new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000);
