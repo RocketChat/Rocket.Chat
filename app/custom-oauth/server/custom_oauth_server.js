@@ -6,6 +6,7 @@ import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
+import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import _ from 'underscore';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
@@ -72,6 +73,8 @@ export class CustomOAuth {
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+		this.mergeRoles = options.mergeRoles || false;
+		this.rolesClaim = options.rolesClaim || 'roles';
 		this.accessTokenParam = options.accessTokenParam;
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
@@ -319,6 +322,10 @@ export class CustomOAuth {
 					return;
 				}
 
+				if (this.mergeRoles) {
+					updateRolesFromSSO(user, serviceData, this.rolesClaim);
+				}
+
 				// User already created or merged and has identical name as before
 				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id && user.name === serviceData.name) {
 					return;
@@ -349,6 +356,10 @@ export class CustomOAuth {
 				user.username = this.getUsername(user.services[this.name]);
 			}
 
+			if (this.mergeRoles) {
+				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim);
+			}
+
 			return true;
 		});
 
@@ -360,7 +371,9 @@ export class CustomOAuth {
 			'id',
 			'email',
 			'username',
-			'name'];
+			'name',
+			this.rolesClaim,
+		];
 
 		registerAccessTokenService(name, function(options) {
 			check(options, Match.ObjectIncluding({

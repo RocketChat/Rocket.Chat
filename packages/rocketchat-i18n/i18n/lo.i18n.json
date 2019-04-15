@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "ເສັ້ນທາງກ້າວສູ່ token",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token ສົ່ງຜ່ານ",
   "Accounts_OAuth_Custom_Username_Field": "ຊື່ຜູ້ໃຊ້ພາກສະຫນາມ",
+  "Accounts_OAuth_Custom_Roles_Claim": "ຊື່ພາກສະຫນາມ / ກຸ່ມຊື່",
   "Accounts_OAuth_Drupal": "Drupal Login Enabled",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client ID",

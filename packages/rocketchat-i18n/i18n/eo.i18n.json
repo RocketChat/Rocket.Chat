@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token Path",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Sendita Vojo",
   "Accounts_OAuth_Custom_Username_Field": "Uzulnomo kampo",
+  "Accounts_OAuth_Custom_Roles_Claim": "Rola / Grupaj kampa nomo",
   "Accounts_OAuth_Drupal": "Drupalo Salutnomo Enabled",
   "Accounts_OAuth_Drupal_callback_url": "Drupalo oAuth2 Alidirektila URI",
   "Accounts_OAuth_Drupal_id": "Drupalo oAuth2 Kliento-ID",
