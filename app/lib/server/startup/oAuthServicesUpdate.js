@@ -38,6 +38,7 @@ function _OAuthServicesUpdate() {
 				data.identityPath = settings.get(`${ service.key }-identity_path`);
 				data.authorizePath = settings.get(`${ service.key }-authorize_path`);
 				data.scope = settings.get(`${ service.key }-scope`);
+				data.accessTokenParam = settings.get(`${ service.key }-access_token_param`);
 				data.buttonLabelText = settings.get(`${ service.key }-button_label_text`);
 				data.buttonLabelColor = settings.get(`${ service.key }-button_label_color`);
 				data.loginStyle = settings.get(`${ service.key }-login_style`);
@@ -57,6 +58,7 @@ function _OAuthServicesUpdate() {
 					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
 					mergeUsers: data.mergeUsers,
+					accessTokenParam: data.accessTokenParam,
 				});
 			}
 			if (serviceName === 'Facebook') {
