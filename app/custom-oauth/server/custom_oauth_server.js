@@ -384,7 +384,7 @@ export class CustomOAuth {
 
 	}
 
-	registerAccessTokenService(name, accessTokenParam) {
+	registerAccessTokenService(name) {
 		const self = this;
 		const whitelisted = [
 			'id',
