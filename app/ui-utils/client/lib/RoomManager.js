@@ -235,7 +235,7 @@ export const RoomManager = new function() {
 			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
 			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
 
-			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll('.mention-link--me, .mention-link--group'))
+			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll('.message .body .mention-link--me, .message .body .mention-link--group'))
 				.map((mentionLink) => {
 					const topOffset = $(mentionLink).offset().top + scrollTop;
 					const percent = (100 / totalHeight) * topOffset;
