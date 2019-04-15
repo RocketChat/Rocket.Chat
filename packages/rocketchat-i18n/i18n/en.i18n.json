@@ -94,6 +94,8 @@
   "Accounts_OAuth_Custom_Token_Path": "Token Path",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Sent Via",
   "Accounts_OAuth_Custom_Username_Field": "Username field",
+  "Accounts_OAuth_Custom_Roles_Claim": "Roles/Groups field name",
+  "Accounts_OAuth_Custom_Merge_Roles": "Merge Roles from SSO",
   "Accounts_OAuth_Drupal": "Drupal Login Enabled",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client ID",

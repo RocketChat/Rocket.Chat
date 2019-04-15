@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Path token",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Sent Via",
   "Accounts_OAuth_Custom_Username_Field": "Qada bikarhêner",
+  "Accounts_OAuth_Custom_Roles_Claim": "Roles/Groups field name",
   "Accounts_OAuth_Drupal": "Têketina Drupal Enabled",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 URI Beralîkirin",
   "Accounts_OAuth_Drupal_id": "Nasnameya oleuth2 Drupal",

@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Tokeno kelias",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Sent Via",
   "Accounts_OAuth_Custom_Username_Field": "Vartotojo laukas",
+  "Accounts_OAuth_Custom_Roles_Claim": "Vaidų / grupių lauko pavadinimas",
   "Accounts_OAuth_Drupal": "Drupal prisijungimas įjungtas",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 nukreipimo URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 kliento ID",
