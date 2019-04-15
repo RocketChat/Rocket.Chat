@@ -207,6 +207,10 @@ Template.message.helpers({
 	body() {
 		return Template.instance().body;
 	},
+	normalizedBody() {
+		const { msg } = this;
+		return normalizeThreadMessage(msg);
+	},
 	bodyClass() {
 		const { msg } = this;
 		return MessageTypes.isSystemMessage(msg) ? 'color-info-font-color' : 'color-primary-font-color';
