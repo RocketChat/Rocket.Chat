@@ -1,11 +1,8 @@
-import _ from 'underscore';
 import url from 'url';
 import http from 'http';
 import https from 'https';
 import { RTMClient } from '@slack/client';
-
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { getAvatarUrlFromUsername } from '../../utils';
 import { Messages, Rooms, Users } from '../../models';
 import { settings } from '../../settings';
