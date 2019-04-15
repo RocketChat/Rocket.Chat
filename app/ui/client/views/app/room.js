@@ -780,6 +780,13 @@ Template.room.events({
 		}
 	},
 
+	'click .js-toggle-thread-reply'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		const { msg: { _id, collapsed = true } } = messageArgs(this);
+		ChatMessage.update({ _id }, { $set: { collapsed: !collapsed } });
+	},
+
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
 		if (types != null && types.length > 0 && _.every(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1) && userCanDrop(this._id)) {

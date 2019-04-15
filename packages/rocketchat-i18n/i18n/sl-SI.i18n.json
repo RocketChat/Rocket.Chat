@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Pot do žetonov",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Žeton poslan preko",
   "Accounts_OAuth_Custom_Username_Field": "Polje z uporabniškim imenom",
+  "Accounts_OAuth_Custom_Roles_Claim": "Naziv polja uloga / grupa",
   "Accounts_OAuth_Drupal": "Prijava v Drupal omogočena",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Preusmeritveni URI",
   "Accounts_OAuth_Drupal_id": "ID stranke Drupal oAuth2",

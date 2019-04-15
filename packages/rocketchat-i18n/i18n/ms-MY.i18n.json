@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token Path",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Dihantar Via",
   "Accounts_OAuth_Custom_Username_Field": "Medan pengguna",
+  "Accounts_OAuth_Custom_Roles_Claim": "Rolle / Groepe veldnaam",
   "Accounts_OAuth_Drupal": "Log masuk Drupal Diaktifkan",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "ID Pelanggan Drupal oAuth2",
