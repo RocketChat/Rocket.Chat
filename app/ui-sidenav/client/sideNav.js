@@ -22,7 +22,7 @@ Template.sideNav.helpers({
 	},
 
 	threadingFromSidebar() {
-		return RocketChat.getUserPreference(Meteor.userId(), 'sidebarShowThreads') && !Meteor.isCordova;
+		return getUserPreference(Meteor.userId(), 'sidebarShowThreads') && !Meteor.isCordova;
 	},
 
 	roomType() {

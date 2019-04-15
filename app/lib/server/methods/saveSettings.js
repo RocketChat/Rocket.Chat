@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { Settings } from '../../../models';
+import { hasAllPermission } from '../../../authorization/server';
+import { Settings } from '../../../models/server/models/Settings';
 
 Meteor.methods({
 	saveSettings(params = []) {
@@ -21,7 +22,7 @@ Meteor.methods({
 				settingsNotAllowed.push(_id);
 				return;
 			}
-			const setting = RocketChat.models.Settings.db.findOneById(_id);
+			const setting = Settings.db.findOneById(_id);
 
 			// Verify the value is what it should be
 			switch (setting.type) {

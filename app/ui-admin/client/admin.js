@@ -9,11 +9,11 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { settings } from '../../settings';
 import { SideNav, modal } from '../../ui-utils';
 import { t, handleError } from '../../utils';
-import { CachedCollection } from '../../ui-cached-collection';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
 import { PrivateSettingsCachedCollection } from './SettingsCachedCollection';
+import { hasAtLeastOnePermission } from '../../authorization/client';
 
 const TempSettings = new Mongo.Collection(null);
 
@@ -50,11 +50,7 @@ const setFieldValue = function(settingId, value, type, editor) {
 
 Template.admin.onCreated(function() {
 	if (settings.cachedCollectionPrivate == null) {
-		settings.cachedCollectionPrivate = new CachedCollection({
-			name: 'private-settings',
-			eventType: 'onLogged',
-			useCache: false,
-		});
+		settings.cachedCollectionPrivate = new PrivateSettingsCachedCollection();
 		settings.collectionPrivate = settings.cachedCollectionPrivate.collection;
 		settings.cachedCollectionPrivate.init();
 	}
@@ -93,7 +89,7 @@ Template.admin.onDestroyed(function() {
 
 Template.admin.helpers({
 	hasSettingPermission() {
-		return RocketChat.authz.hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
+		return hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']);
 	},
 	languages() {
 		const languages = TAPi18n.getLanguages();
@@ -432,6 +428,8 @@ Template.admin.events({
 		if (rcSettings.length === 0) {
 			return;
 		}
+
+		const failedSettings = [];
 
 		settings.batchSet(rcSettings, (err) => {
 			if (err) {

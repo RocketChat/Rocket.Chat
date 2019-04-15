@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from './hasPermission';
+import { AdminBox } from '../../ui-utils/client';
 
 Meteor.startup(() => {
 

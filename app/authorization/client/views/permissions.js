@@ -6,6 +6,7 @@ import { Roles } from '../../../models';
 import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
 import { t } from 'meteor/rocketchat:utils';
+import { hasAtLeastOnePermission } from '..';
 
 const whereNotSetting = {
 	$where: function() {
@@ -42,15 +43,15 @@ Template.permissions.helpers({
 	},
 
 	hasPermission() {
-		return RocketChat.authz.hasAllPermission('access-permissions');
+		return hasAllPermission('access-permissions');
 	},
 
 	hasSettingPermission() {
-		return RocketChat.authz.hasAllPermission('access-setting-permissions');
+		return hasAllPermission('access-setting-permissions');
 	},
 
 	hasNoPermission() {
-		return !RocketChat.authz.hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']);
+		return !hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']);
 	},
 
 	settingPermissionExpanded() {
@@ -69,7 +70,7 @@ Template.permissions.onCreated(function() {
 	this.roles = new ReactiveVar([]);
 
 	Tracker.autorun(() => {
-		this.roles.set(RocketChat.models.Roles.find().fetch());
+		this.roles.set(Roles.find().fetch());
 	});
 });
 

@@ -1,6 +1,7 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
-import { Roles, Permissions } from '../../models';
+import { Roles, Permissions, Settings } from '../../models';
+import { settings } from '../../settings/server';
 
 Meteor.startup(function() {
 	// Note:
@@ -117,7 +118,7 @@ Meteor.startup(function() {
 			selector.settingId = settingId;
 		}
 
-		RocketChat.models.Permissions.find(selector).fetch().forEach(
+		Permissions.find(selector).fetch().forEach(
 			function(permission) {
 				previousSettingPermissions[permission._id] = permission;
 			});
@@ -146,21 +147,21 @@ Meteor.startup(function() {
 		if (setting.section) {
 			permission.sectionPermissionId = getSettingPermissionId(setting.section);
 		}
-		RocketChat.models.Permissions.upsert(permission._id, { $set: permission });
+		Permissions.upsert(permission._id, { $set: permission });
 		delete previousSettingPermissions[permissionId];
 	};
 
 	const createPermissionsForExistingSettings = function() {
 		const previousSettingPermissions = getPreviousPermissions();
 
-		RocketChat.models.Settings.findNotHidden().fetch().forEach((setting) => {
+		Settings.findNotHidden().fetch().forEach((setting) => {
 			createSettingPermission(setting, previousSettingPermissions);
 		});
 
 		// remove permissions for non-existent settings
 		for (const obsoletePermission in previousSettingPermissions) {
 			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
-				RocketChat.models.Permissions.remove({ _id: obsoletePermission });
+				Permissions.remove({ _id: obsoletePermission });
 			}
 		}
 	};
@@ -171,7 +172,7 @@ Meteor.startup(function() {
 	// register a callback for settings for be create in higher-level-packages
 	const createPermissionForAddedSetting = function(settingId) {
 		const previousSettingPermissions = getPreviousPermissions(settingId);
-		const setting = RocketChat.models.Settings.findOneById(settingId);
+		const setting = Settings.findOneById(settingId);
 		if (setting) {
 			if (!setting.hidden) {
 				createSettingPermission(setting, previousSettingPermissions);
@@ -179,5 +180,5 @@ Meteor.startup(function() {
 		}
 	};
 
-	RocketChat.settings.onload('*', createPermissionForAddedSetting);
+	settings.onload('*', createPermissionForAddedSetting);
 });

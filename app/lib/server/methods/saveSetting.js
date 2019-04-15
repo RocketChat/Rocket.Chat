@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
+import { hasAllPermission } from '../../../authorization/server';
 
 Meteor.methods({
 	saveSetting(_id, value, editor) {

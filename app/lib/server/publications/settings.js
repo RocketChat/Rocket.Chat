@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Settings } from 'meteor/rocketchat:models';
-import { Notifications } from 'meteor/rocketchat:notifications';
-import { hasAtLeastOnePermission, hasPermission } from 'meteor/rocketchat:authorization';
+import { Settings } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { Notifications } from '../../../notifications';
+import { hasAtLeastOnePermission } from '../../../authorization/server';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {

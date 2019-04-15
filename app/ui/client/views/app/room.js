@@ -749,12 +749,17 @@ Template.room.events({
 			}
 			FlowRouter.goToRoomById(channel);
 			return;
-		} else {
-			const username = $(e.currentTarget).data('username');
-
-			openProfileTabOrOpenDM(e, instance, username);
 		}
 		const username = $(e.currentTarget).data('username');
+
+		openProfileTabOrOpenDM(e, instance, username);
+	},
+
+	'click .recognized-term'(e) {
+		if (!Meteor.userId()) {
+			return;
+		}
+		const term = $(e.currentTarget).get(0).innerText;
 
 		Meteor.setTimeout(() => {
 			if ($('.messages-container-wrapper .contextual-bar').length === 0) { // the tab bar is closed

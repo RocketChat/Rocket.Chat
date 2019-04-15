@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
+import { getUsages } from './getUsages';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, LivechatVisitors } from '../../../models';
 import { settings } from '../../../settings';
@@ -126,6 +127,8 @@ statistics.get = function _getStatistics() {
 	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && settings.get('Force_Disable_OpLog_For_Cache') !== true) {
 		statistics.oplogEnabled = true;
 	}
+
+	statistics.usages = getUsages();
 
 	try {
 		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));

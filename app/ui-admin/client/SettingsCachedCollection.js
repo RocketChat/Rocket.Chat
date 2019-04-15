@@ -1,6 +1,9 @@
 import _ from 'underscore';
 import { RoomManager } from 'meteor/rocketchat:ui-utils';
-export class PrivateSettingsCachedCollection extends RocketChat.CachedCollection {
+import { CachedCollection } from '../../ui-cached-collection';
+import { Notifications } from '../../notifications/client';
+import { hasAllPermission, hasAtLeastOnePermission } from '../../authorization/client';
+export class PrivateSettingsCachedCollection extends CachedCollection {
 	constructor() {
 		super({
 			name: 'private-settings',
@@ -13,11 +16,11 @@ export class PrivateSettingsCachedCollection extends RocketChat.CachedCollection
 		super.setupListener(eventType, eventName);
 
 		// private settings also need to listen to a change of authorizationsfor the setting-based authorizations
-		RocketChat.Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
+		Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
 			this.log('record received', t, record);
 			if (t === 'auth') {
-				if (! (RocketChat.authz.hasAllPermission([`change-setting-${ record._id }`, 'manage-selected-settings'])
-					|| RocketChat.authz.hasAtLeastOnePermission('view-privileged-setting', 'edit-privileged-setting'))) {
+				if (! (hasAllPermission([`change-setting-${ record._id }`, 'manage-selected-settings'])
+					|| hasAtLeastOnePermission('view-privileged-setting', 'edit-privileged-setting'))) {
 					this.collection.remove(record._id);
 					RoomManager.close(record.t + record.name);
 				} else {

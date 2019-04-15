@@ -102,8 +102,3 @@ webapp
 webapp-hashing
 rocketchat:oauth2-server
 rocketchat:i18n
-
-assistify:ai
-assistify:migrations
-assistify:configuration
-overture8:wordcloud2

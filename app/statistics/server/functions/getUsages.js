@@ -1,15 +1,16 @@
 import hasha from 'hasha';
-import { RocketChat } from 'meteor/rocketchat:lib';
+import { Users, Statistics, Subscriptions } from '../../../models/server/';
+import { Messages } from '../../../models/server';
 
 /**
  * This function adds anonymized statistics about how users interact (read and write) with the system
  */
 export function getUsages() {
-	const lastStatistics = RocketChat.models.Statistics.findLast();
+	const lastStatistics = Statistics.findLast();
 	const lastStatisticsCreatedAt = lastStatistics ? lastStatistics.createdAt : new Date();
-	const userDB = RocketChat.models.Users.model.rawCollection();
-	const subDB = RocketChat.models.Subscriptions.model.rawCollection();
-	const messageDB = RocketChat.models.Messages.model.rawCollection();
+	const userDB = Users.model.rawCollection();
+	const subDB = Subscriptions.model.rawCollection();
+	const messageDB = Messages.model.rawCollection();
 	const usages = [];
 	const usersAggregationCursor = userDB.aggregate([
 		{
