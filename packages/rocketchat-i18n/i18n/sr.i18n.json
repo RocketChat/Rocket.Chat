@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "токен Пут",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Токен послата преко",
   "Accounts_OAuth_Custom_Username_Field": "Поље корисничког имена",
+  "Accounts_OAuth_Custom_Roles_Claim": "Име поља улоге / групе",
   "Accounts_OAuth_Drupal": "Друпал Логин Енаблед",
   "Accounts_OAuth_Drupal_callback_url": "Друпал оАутх2 Редирецт УРИ",
   "Accounts_OAuth_Drupal_id": "Друпал оАутх2 Клијент ИД",

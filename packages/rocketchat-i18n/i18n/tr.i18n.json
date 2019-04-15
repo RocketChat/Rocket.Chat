@@ -92,6 +92,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token Yolu",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token'ı Gönder",
   "Accounts_OAuth_Custom_Username_Field": "Kullanıcı adı alanı",
+  "Accounts_OAuth_Custom_Roles_Claim": "Roller / Gruplar alan adı",
   "Accounts_OAuth_Drupal": "Drupal ile giriş yapma aktifleştirildi",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Yönlendirme URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Müşteri Kimliği",
