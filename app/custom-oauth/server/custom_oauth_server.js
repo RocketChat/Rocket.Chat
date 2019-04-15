@@ -145,7 +145,7 @@ export class CustomOAuth {
 		}
 	}
 
-	getIdentity(accessToken, accessTokenParam) {
+	getIdentity(accessToken) {
 		const params = {};
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
@@ -154,7 +154,7 @@ export class CustomOAuth {
 		if (this.identityTokenSentVia === 'header') {
 			headers.Authorization = `Bearer ${ accessToken }`;
 		} else {
-			params[accessTokenParam] = accessToken;
+			params[this.accessTokenParam] = accessToken;
 		}
 
 		try {
@@ -185,7 +185,7 @@ export class CustomOAuth {
 		OAuth.registerService(this.name, 2, null, (query) => {
 			const accessToken = self.getAccessToken(query);
 
-			const identity = self.getIdentity(accessToken, this.accessTokenParam);
+			const identity = self.getIdentity(accessToken);
 
 			const serviceData = {
 				_OAuthCustom: true,
@@ -401,7 +401,7 @@ export class CustomOAuth {
 				identity: Match.Maybe(Object),
 			}));
 
-			const identity = options.identity || self.getIdentity(options.accessToken, accessTokenParam);
+			const identity = options.identity || self.getIdentity(options.accessToken);
 
 			const serviceData = {
 				accessToken: options.accessToken,
