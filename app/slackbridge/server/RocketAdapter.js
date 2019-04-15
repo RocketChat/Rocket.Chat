@@ -178,14 +178,6 @@ export default class RocketAdapter {
 		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0);
 	}
 
-	getFileDownloadUrl(rocketMessage) {
-		const attachment = this.getMessageAttachment(rocketMessage);
-
-		if (attachment) {
-			return attachment.title_link;
-		}
-	}
-
 	processFileShare(rocketMessage) {
 		if (!settings.get('SlackBridge_FileUpload_Enabled')) {
 			return;
@@ -254,7 +246,7 @@ export default class RocketAdapter {
 	}
 
 	getRocketUserCreator(slackChannel) {
-		return slackChannel.creator ? this.findUser(slackChannel.creator) || this.addUser(slackChannel.creator) : null
+		return slackChannel.creator ? this.findUser(slackChannel.creator) || this.addUser(slackChannel.creator) : null;
 	}
 
 	addChannel(slackChannelID, hasRetried = false) {

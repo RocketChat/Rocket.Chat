@@ -61,7 +61,7 @@ export default class SlackAdapter {
 	 * Unregister for slack events and disconnect from Slack
 	 */
 	disconnect() {
-		this.rtm.disconnect && this.rtm.disconnect;
+		this.rtm.disconnect && this.rtm.disconnect();
 	}
 
 	setRocket(rocket) {
@@ -449,11 +449,6 @@ export default class SlackAdapter {
 			// Simple message
 			this.processNewMessage(slackMessage, isImporting);
 		}
-	}
-
-	postGetChannelInfo(slackChID) {
-		logger.slack.debug('Getting slack channel info', slackChID);
-		return this.slackAPI.getRoomInfo(slackChID);
 	}
 
 	postFindChannel(rocketChannelName) {
