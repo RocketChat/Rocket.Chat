@@ -588,7 +588,7 @@ Template.admin.events({
 		selectedRooms[this.id] = (selectedRooms[this.id] || []).concat(doc);
 		instance.selectedRooms.set(selectedRooms);
 		const value = selectedRooms[this.id];
-		TempSettings.update({ _id: this.id }, { $set: { value } });
+		TempSettings.update({ _id: this.id }, { $set: { value, changed: JSON.stringify(settings.collectionPrivate.findOne(this.id).value) !== JSON.stringify(value) } });
 		event.currentTarget.value = '';
 		event.currentTarget.focus();
 	},
@@ -604,6 +604,7 @@ Template.admin.events({
 		TempSettings.update({ _id: settingId }, {
 			$set: {
 				value,
+				changed: JSON.stringify(settings.collectionPrivate.findOne(settingId).value) !== JSON.stringify(value),
 			},
 		});
 	},
