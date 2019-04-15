@@ -1055,10 +1055,9 @@ export default class SlackAdapter {
 		logger.slack.debug('Copying users from Slack channel to Rocket.Chat', channelMap.id, rid);
 		const channel = this.slackAPI.getRoomInfo(channelMap.id);
 		if (channel) {
-			const data = channel;
 			const members = this.slackAPI.getMembers(channelMap.id);
 			if (members && Array.isArray(members) && members.length) {
-				for (const member of data.members) {
+				for (const member of members) {
 					const user = this.rocket.findUser(member) || this.rocket.addUser(member);
 					if (user) {
 						logger.slack.debug('Adding user to room', user.username, rid);
@@ -1070,21 +1069,21 @@ export default class SlackAdapter {
 			let topic = '';
 			let topic_last_set = 0;
 			let topic_creator = null;
-			if (data && data.topic && data.topic.value) {
-				topic = data.topic.value;
-				topic_last_set = data.topic.last_set;
-				topic_creator = data.topic.creator;
+			if (channel && channel.topic && channel.topic.value) {
+				topic = channel.topic.value;
+				topic_last_set = channel.topic.last_set;
+				topic_creator = channel.topic.creator;
 			}
 
-			if (data && data.purpose && data.purpose.value) {
+			if (channel && channel.purpose && channel.purpose.value) {
 				if (topic_last_set) {
-					if (topic_last_set < data.purpose.last_set) {
-						topic = data.purpose.topic;
-						topic_creator = data.purpose.creator;
+					if (topic_last_set < channel.purpose.last_set) {
+						topic = channel.purpose.topic;
+						topic_creator = channel.purpose.creator;
 					}
 				} else {
-					topic = data.purpose.topic;
-					topic_creator = data.purpose.creator;
+					topic = channel.purpose.topic;
+					topic_creator = channel.purpose.creator;
 				}
 			}
 
