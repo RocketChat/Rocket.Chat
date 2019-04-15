@@ -35,19 +35,35 @@ export class SlackAPI {
 			params: {
 				token: this.apiToken,
 				channel: roomId,
+				include_num_members: true,
 			},
 		});
 		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.channel;
 	}
 
 	getMembers(channelId) {
-		const response = HTTP.get('https://slack.com/api/conversations.members', {
-			params: {
-				token: this.apiToken,
-				channel: channelId,
-			},
-		});
-		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.members;
+		const { num_members } = this.getRoomInfo(channelId);
+		const MAX_MEMBERS_PER_CALL = 100;
+		let members = [];
+		let currentCursor = '';
+		for (let index = 0; index < num_members; index += MAX_MEMBERS_PER_CALL) {
+			const response = HTTP.get('https://slack.com/api/conversations.members', {
+				params: {
+					token: this.apiToken,
+					channel: channelId,
+					limit: MAX_MEMBERS_PER_CALL,
+					cursor: currentCursor,
+				},
+			});
+			if (response && response.data && response.statusCode === 200 && response.data.ok && Array.isArray(response.data.members)) {
+				members = members.concat(response.data.members);
+				const hasMoreItems = response.data.response_metadata && response.data.response_metadata.next_cursor;
+				if (hasMoreItems) {
+					currentCursor = response.data.response_metadata.next_cursor;
+				}
+			}
+		}
+		return members;
 	}
 
 	react(data) {
