@@ -319,7 +319,7 @@ export class CustomOAuth {
 		}
 
 		return avatarUrl;
-  }
+	}
 
 	getName(identity) {
 		const name = identity.name || identity.username || identity.nickname || identity.CharacterName || identity.userName || identity.preferred_username || (identity.user && identity.user.name);
