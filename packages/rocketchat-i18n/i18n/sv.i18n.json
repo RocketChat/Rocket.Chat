@@ -90,6 +90,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Sökväg Token",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token sänd via",
   "Accounts_OAuth_Custom_Username_Field": "Fält för användarnamn",
+  "Accounts_OAuth_Custom_Roles_Claim": "Roller / Grupper fältnamn",
   "Accounts_OAuth_Drupal": "Drupalinloggning aktiverad",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 redirect URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client ID",

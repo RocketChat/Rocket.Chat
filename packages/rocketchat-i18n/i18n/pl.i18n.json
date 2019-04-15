@@ -92,6 +92,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Ścieżka tokenu",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token wysyłany przez",
   "Accounts_OAuth_Custom_Username_Field": "Pole nazwa użytkownika",
+  "Accounts_OAuth_Custom_Roles_Claim": "Nazwa pola Role / Grupy",
   "Accounts_OAuth_Drupal": "Logowanie Drupal jest włączone",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Przekierowanie URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Identyfikator klienta",
