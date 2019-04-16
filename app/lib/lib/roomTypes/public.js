@@ -4,7 +4,7 @@ import { ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
-import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -120,6 +120,6 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getRoomAvatarURL(roomData.rid || roomData._id);
+		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
 	}
 }

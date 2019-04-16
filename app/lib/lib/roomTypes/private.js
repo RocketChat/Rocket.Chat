@@ -5,6 +5,7 @@ import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
 import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext } from '../../../utils';
 import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -111,6 +112,10 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
+		// if room is not a discussion, returns an avatar with its name
+		if (!roomData.prid) {
+			return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		}
 		return getRoomAvatarURL(roomData.rid || roomData._id);
 	}
 }
