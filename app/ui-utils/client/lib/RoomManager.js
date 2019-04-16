@@ -15,6 +15,8 @@ import _ from 'underscore';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 
+
+
 const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
 const onDeleteMessageStream = (msg) => {
@@ -235,7 +237,9 @@ export const RoomManager = new function() {
 			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
 			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
 
-			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll('.message .body .mention-link--me, .message .body .mention-link--group'))
+			// TODO: thread quotes should NOT have mention links at all
+			const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
+			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll(mentionsSelector))
 				.map((mentionLink) => {
 					const topOffset = $(mentionLink).offset().top + scrollTop;
 					const percent = (100 / totalHeight) * topOffset;
