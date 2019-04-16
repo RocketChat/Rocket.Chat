@@ -15,6 +15,8 @@ class AppServerOrchestrator {
 			Permissions.createOrUpdate('manage-apps', ['admin']);
 		}
 
+		this._marketplaceUrl = 'https://marketplace.rocket.chat';
+
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
 		this._persistModel = new AppsPersistenceModel();
@@ -77,6 +79,21 @@ class AppServerOrchestrator {
 		return this.getManager().areAppsLoaded();
 	}
 
+	isDebugging() {
+		return settings.get('Apps_Framework_Development_Mode');
+	}
+
+	debugLog() {
+		if (this.isDebugging()) {
+			// eslint-disable-next-line
+			console.log(...arguments);
+		}
+	}
+
+	getMarketplaceUrl() {
+		return this._marketplaceUrl;
+	}
+
 	load() {
 		// Don't try to load it again if it has
 		// already been loaded
@@ -106,6 +123,16 @@ settings.addGroup('General', function() {
 	this.section('Apps', function() {
 		this.add('Apps_Framework_enabled', true, {
 			type: 'boolean',
+			hidden: false,
+		});
+
+		this.add('Apps_Framework_Development_Mode', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'Apps_Framework_enabled',
+				value: true,
+			},
+			public: true,
 			hidden: false,
 		});
 	});

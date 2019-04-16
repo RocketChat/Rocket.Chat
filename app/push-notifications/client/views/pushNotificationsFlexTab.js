@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { settings } from '../../../settings';
 import { getUserPreference, handleError, t } from '../../../utils';
 import { popover } from '../../../ui-utils';
-import { CustomSounds } from '../../../custom-sounds';
+import { CustomSounds } from '../../../custom-sounds/client';
 import { ChatSubscription } from '../../../models';
 
 const notificationLabels = {
@@ -159,8 +159,8 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
 	};
 
-	this.saveSetting = async() => {
-		Object.keys(this.original).forEach(async(field) => {
+	this.saveSetting = async () => {
+		Object.keys(this.original).forEach(async (field) => {
 			if (this.original[field].get() === this.form[field].get()) {
 				return;
 			}

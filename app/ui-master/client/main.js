@@ -5,7 +5,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { t, getUserPreference } from '../../utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent } from '../../ui-utils';
+import { chatMessages } from '../../ui';
+import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription } from '../../models';
@@ -78,8 +79,8 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('.rc-message-box__textarea');
-		if (inputMessage.length === 0) {
+		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
+		if (!inputMessage) {
 			return;
 		}
 		inputMessage.focus();
@@ -217,13 +218,7 @@ Template.main.events({
 
 Template.main.onRendered(function() {
 	$('#initial-page-loading').remove();
-	window.addEventListener('focus', function() {
-		return Meteor.setTimeout(function() {
-			if (!$(':focus').is('INPUT,TEXTAREA')) {
-				return $('.input-message').focus();
-			}
-		}, 100);
-	});
+
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();
 		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');

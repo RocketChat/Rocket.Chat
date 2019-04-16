@@ -3,8 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { roomTypes } from '../../../utils';
+import { roomTypes, getURL } from '../../../utils';
 import { Subscriptions } from '../../../models';
+
+const getAvatarUrl = (username) => getURL(`/avatar/${ username }?_dc=undefined`);
+const getDMUrl = (username) => getURL(`/direct/${ username }`);
 
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
@@ -126,6 +129,7 @@ Template.ChatpalSearchSingleMessage.helpers({
 	date() {
 		return DateFormat.formatDate(this.created);
 	},
+	getAvatarUrl,
 });
 
 Template.ChatpalSearchSingleFile.helpers({
@@ -180,6 +184,7 @@ Template.ChatpalSearchSingleFile.helpers({
 		const fname = this.file_name instanceof Array ? this.file_name[0] : this.file_name;
 		return text === fname;
 	},
+	getAvatarUrl,
 });
 
 Template.ChatpalSearchSingleRoom.helpers({
@@ -205,4 +210,6 @@ Template.ChatpalSearchSingleUser.helpers({
 		const name = this.user_name instanceof Array ? this.user_name[0] : this.user_name;
 		return uname === name;
 	},
+	getAvatarUrl,
+	getDMUrl,
 });
