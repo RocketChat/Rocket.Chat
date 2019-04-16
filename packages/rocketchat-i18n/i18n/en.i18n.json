@@ -78,6 +78,7 @@
   "Accounts_LoginExpiration": "Login Expiration in Days",
   "Accounts_ManuallyApproveNewUsers": "Manually Approve New Users",
   "Accounts_OAuth_Custom_Authorize_Path": "Authorize Path",
+  "Accounts_OAuth_Custom_Avatar_Field": "Avatar field",
   "Accounts_OAuth_Custom_Button_Color": "Button Color",
   "Accounts_OAuth_Custom_Button_Label_Color": "Button Text Color",
   "Accounts_OAuth_Custom_Button_Label_Text": "Button Text",
