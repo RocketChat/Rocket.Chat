@@ -32,8 +32,8 @@
 	</table>
 </template>
 <template name="permissions">
-	<section class="page-container">
-		<section class="permissions-manager page-home page-static page-list">
+	<div class="page-container permissions-manager">
+		<section class="page-home page-static page-list">
 			{{#if hasPermission}}
 			{{# header sectionName=pageTitle}}
 			<div class="rc-header__section-button">
@@ -59,7 +59,7 @@
 				</button>
 			</div>
 			{{/header}}
-			<section class="permissions-manager page-home page-static page-list">
+			<section class="page-home page-static page-list">
 				{{#if settingPermissionExpanded }}
 				<div class="content">
 					{{> permissionsTable permissions=settingPermissions allRoles=roles collection='Setting'}}
@@ -75,5 +75,5 @@
 			</div>
 			{{/if}}
 		</section>
-	</section>
+	</div>
 </template>

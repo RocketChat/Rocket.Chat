@@ -44,7 +44,7 @@ class Administration extends Page {
 	get rolesNewRoleScope() { return browser.element('[name="scope"]'); }
 	get rolesAddBtn() { return browser.element('button.add'); }
 	get rolesRoomsSearchForm() { return browser.element('.search [name="room"]'); }
-	get rolesSettingPermissionsButton() { return browser.element('.button.primary.js-toggle-setting-permissions'); }
+	get rolesSettingPermissionsButton() { return browser.element('.js-toggle-setting-permissions'); }
 
 	// permissions grids checkboxes
 
@@ -224,8 +224,8 @@ class Administration extends Page {
 	get accountsUsernameChangeTrue() { return browser.element('label:nth-of-type(1) [name="Accounts_AllowUsernameChange"]'); }
 	get accountsUsernameChangeFalse() { return browser.element('label:nth-of-type(2) [name="Accounts_AllowUsernameChange"]'); }
 
-	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .button.expand'); }
-	get buttonFirstSectionExpand() { return browser.element('.section:nth-of-type(1) .button.expand'); }
+	get layoutButtonExpandContent() { return browser.element('.section:nth-of-type(2) .rc-button'); }
+	// get layoutButton() { return browser.element('.sidebar-item__link[href$="/admin/Layout"]'); }
 
 	checkUserList(user) {
 		const element = browser.element(`td=adminCreated${ user }`);

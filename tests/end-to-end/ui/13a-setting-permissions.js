@@ -80,8 +80,6 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 		it('Change titlepage title is allowed', function(done) {
 			admin.layoutLink.waitForVisible(10000);
 			admin.layoutLink.click();
-			admin.buttonFirstSectionExpand.waitForVisible(5000);
-			admin.buttonFirstSectionExpand.click();
 			admin.generalLayoutTitle.waitForVisible(5000);
 			admin.generalLayoutTitle.setValue(newTitle);
 			browser.pause(2000);
