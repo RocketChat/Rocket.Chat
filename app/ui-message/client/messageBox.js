@@ -305,11 +305,17 @@ Template.messageBox.events({
 		KonchatNotification.removeRoomNotification(this.rid);
 	},
 	'keydown .js-input-message'(event, instance) {
-		const isEventHandled = handleFormattingShortcut(event, instance) || handleSubmit(event, instance);
+		const isFormattingHandled = handleFormattingShortcut(event, instance);
+		const isSubmitHandled = !isFormattingHandled && handleSubmit(event, instance);
 
-		if (isEventHandled) {
+		if (isFormattingHandled || isSubmitHandled) {
 			event.preventDefault();
 			event.stopPropagation();
+
+			if (isSubmitHandled && instance.input) {
+				instance.sendIconDisabled.set(!!instance.input.value);
+			}
+
 			return;
 		}
 
