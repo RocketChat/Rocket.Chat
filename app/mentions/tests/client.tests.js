@@ -215,7 +215,7 @@ describe('replace methods', function() {
 	describe('replaceUsers', () => {
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
-			assert.equal('<a class="mention-link mention-link--user mention-link--all mention-link--group">all</a>', result);
+			assert.equal(result, '<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
 		const str2 = 'rocket.cat';
@@ -237,7 +237,7 @@ describe('replace methods', function() {
 
 		it('should render for me', () => {
 			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link--user mention-link--me" data-username="me" title="me">me</a>');
+			assert.equal(result, 'hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">me</a>');
 		});
 	});
 
@@ -248,7 +248,7 @@ describe('replace methods', function() {
 
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
-			assert.equal(result, '<a class="mention-link mention-link--user mention-link--all mention-link--group">all</a>');
+			assert.equal(result, '<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
 		const str2 = 'rocket.cat';
@@ -284,7 +284,7 @@ describe('replace methods', function() {
 
 		it('should render for me', () => {
 			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
-			assert.equal(result, 'hello <a class="mention-link mention-link--user mention-link--me" data-username="me" title="me">Me</a>');
+			assert.equal(result, 'hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">Me</a>');
 		});
 	});
 
