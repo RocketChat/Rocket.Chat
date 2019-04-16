@@ -92,6 +92,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Tokensti",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token sendt via",
   "Accounts_OAuth_Custom_Username_Field": "Brugernavnefelt",
+  "Accounts_OAuth_Custom_Roles_Claim": "Roller / Grupper feltnavn",
   "Accounts_OAuth_Drupal": "Drupal-login aktiveret",
   "Accounts_OAuth_Drupal_callback_url": "Omdirigerings-uri for Drupals oAuth2",
   "Accounts_OAuth_Drupal_id": "Klient-id for Drupals oAuth2",

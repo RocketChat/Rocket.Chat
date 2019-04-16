@@ -35,6 +35,8 @@ Meteor.methods({
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-button_color`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-login_style`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-username_field`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-roles_claim`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_roles`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_users`);
 	},
 });
