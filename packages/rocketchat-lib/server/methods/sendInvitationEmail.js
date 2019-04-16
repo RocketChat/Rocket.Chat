@@ -24,11 +24,11 @@ Meteor.methods({
 		}
 		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
-		let invitee;
+		let inviter;
 		if (!realname) {
-			invitee = Meteor.user().username;
+			inviter = Meteor.user().username;
 		} else {
-			invitee = realname;
+			inviter = realname;
 		}
 
 		const subject = RocketChat.settings.get('Invitation_Subject');
@@ -42,7 +42,7 @@ Meteor.methods({
 					data: {
 						email,
 						Invite_Link:Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
-						Username:invitee,
+						Username:inviter,
 						Avatar_Link:`${ RocketChat.settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
 					},
 					lng: language,
