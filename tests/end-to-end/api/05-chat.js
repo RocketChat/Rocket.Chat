@@ -1012,6 +1012,148 @@ describe('[Chat]', function() {
 			});
 		});
 
+		describe('[/chat.syncThreadsList]', () => {
+			let testChannel;
+			let threadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `.threads.sync.${ Date.now() }` })
+					.end((err, channel) => {
+						testChannel = channel.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: message.body.message._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.get(api('chat.getThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the required param "rid" is missing', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadsList'))
+						.set(credentials)
+						.query({
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-room-id-param-not-provided');
+							expect(res.body).to.have.property('error', 'The required \"rid\" query param is missing. [error-room-id-param-not-provided]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the required param "updatedSince" is missing', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
+							expect(res.body).to.have.property('error', 'The required param \"updatedSince\" is missing. [error-updatedSince-param-invalid]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the param "updatedSince" is an invalid date', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+							updatedSince: 'invalid-date',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
+							expect(res.body).to.have.property('error', 'The \"updatedSince\" query parameter must be a valid date. [error-updatedSince-param-invalid]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updatePermission('view-c-room', []).then(() => {
+							request.get(api('chat.syncThreadsList'))
+								.set(userCredentials)
+								.query({
+									rid: testChannel._id,
+									updatedSince: new Date().toISOString(),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(400)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('errorType', 'error-not-allowed');
+									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+
+			it('should return the room\'s thread synced list', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.get(api('chat.syncThreadsList'))
+						.set(credentials)
+						.query({
+							rid: testChannel._id,
+							updatedSince: new Date('2019-04-01').toISOString(),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('threads').and.to.be.an('object');
+							expect(res.body.threads).to.have.property('update').and.to.be.an('array');
+							expect(res.body.threads).to.have.property('remove').and.to.be.an('array');
+							expect(res.body.threads.update).to.have.lengthOf(1);
+							expect(res.body.threads.remove).to.have.lengthOf(0);
+							expect(res.body.threads.update[0]._id).to.be.equal(threadMessage.tmid);
+						})
+						.end(done);
+				});
+			});
+		});
+
 		describe('[/chat.getThreadMessages]', () => {
 			let testChannel;
 			let threadMessage;
@@ -1113,6 +1255,150 @@ describe('[Chat]', function() {
 							expect(res.body.messages).to.have.lengthOf(2);
 							expect(res.body.messages[0]._id).to.be.equal(createdThreadMessage._id);
 							expect(res.body.messages[1].tmid).to.be.equal(createdThreadMessage._id);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		describe('[/chat.syncThreadMessages]', () => {
+			let testChannel;
+			let threadMessage;
+			let createdThreadMessage;
+			before((done) => {
+				createRoom({ type: 'c', name: `message.threads.${ Date.now() }` })
+					.end((err, res) => {
+						testChannel = res.body.channel;
+						sendSimpleMessage({
+							roomId: testChannel._id,
+							text: 'Message to create thread',
+						}).end((err, message) => {
+							createdThreadMessage = message.body.message;
+							sendSimpleMessage({
+								roomId: testChannel._id,
+								text: 'Thread Message',
+								tmid: createdThreadMessage._id,
+							}).end((err, res) => {
+								threadMessage = res.body.message;
+								done();
+							});
+						});
+					});
+			});
+
+			it('should return an error when threads are not allowed in this server', (done) => {
+				updateSetting('Threads_enabled', false).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-not-allowed');
+							expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the required param "tmid" is missing', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-invalid-params');
+							expect(res.body).to.have.property('error', 'The required \"tmid\" query param is missing. [error-invalid-params]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the required param "updatedSince" is missing', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
+							expect(res.body).to.have.property('error', 'The required param \"updatedSince\" is missing. [error-updatedSince-param-invalid]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the param "updatedSince" is an invalid date', (done) => {
+				updateSetting('Threads_enabled', true).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+							updatedSince: 'invalid-date',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
+							expect(res.body).to.have.property('error', 'The \"updatedSince\" query parameter must be a valid date. [error-updatedSince-param-invalid]');
+						})
+						.end(done);
+				});
+			});
+
+			it('should return an error when the user is not allowed access the room', (done) => {
+				createUser().then((createdUser) => {
+					login(createdUser.username, password).then((userCredentials) => {
+						updatePermission('view-c-room', []).then(() => {
+							request.get(api('chat.syncThreadMessages'))
+								.set(userCredentials)
+								.query({
+									tmid: threadMessage.tmid,
+									updatedSince: new Date().toISOString(),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(400)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('errorType', 'error-not-allowed');
+									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+
+			it('should return the thread\'s message list', (done) => {
+				updatePermission('view-c-room', ['admin', 'user']).then(() => {
+					request.get(api('chat.syncThreadMessages'))
+						.set(credentials)
+						.query({
+							tmid: threadMessage.tmid,
+							updatedSince: new Date('2019-04-01').toISOString(),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('object');
+							expect(res.body.messages).to.have.property('update').and.to.be.an('array');
+							expect(res.body.messages).to.have.property('remove').and.to.be.an('array');
+							expect(res.body.messages.update).to.have.lengthOf(1);
+							expect(res.body.messages.remove).to.have.lengthOf(0);
+							expect(res.body.messages.update[0].id).to.be.equal(createdThreadMessage.tmid);
 						})
 						.end(done);
 				});
