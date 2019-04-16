@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { getAvatarUrlFromUsername } from '../../../utils';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 Template.avatar.helpers({
 	src() {
@@ -21,7 +21,7 @@ Template.avatar.helpers({
 				username = `@${ username }`;
 			}
 
-			url = getAvatarUrlFromUsername(username);
+			url = getUserAvatarURL(username);
 		}
 		return url;
 	},

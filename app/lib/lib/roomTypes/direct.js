@@ -5,7 +5,7 @@ import { openRoom } from '../../../ui-utils';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { getAvatarUrlFromUsername } from '../../../utils';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -152,6 +152,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getAvatarUrlFromUsername(roomData.name);
+		return getUserAvatarURL(roomData.name);
 	}
 }
