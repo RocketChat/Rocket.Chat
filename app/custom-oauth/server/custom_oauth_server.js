@@ -194,7 +194,7 @@ export class CustomOAuth {
 				expiresAt: (+new Date) + (1000 * parseInt(response.expires_in, 10)),
 			};
       
-      // only set the token in serviceData if it's there. this ensures
+			// only set the token in serviceData if it's there. this ensures
 			// that we don't lose old ones (since we only get this on the first
 			// log in attempt)
 			if (response.refresh_token) {
