@@ -46,6 +46,76 @@ export function findRoom(token, rid) {
 	return Rooms.findLivechatByIdAndVisitorToken(rid, token, fields);
 }
 
+export function findOpenLiveChatRoom() {
+	const query = {
+		t: 'l',
+		open: true,
+	};
+
+	const options = {
+		fields: {
+			fname: 1,
+			t: 1,
+			servedBy: 1,
+			v: 1,
+			open: 1,
+			responseBy: 1,
+		},
+	};
+
+	return Rooms.find(query, options);
+}
+
+export function findClosedLiveChatRoom() {
+	const query = {
+		t: 'l',
+		closedAt: {
+			$exists: true,
+		},
+		closedBy: {
+			$exists: true,
+		},
+		closer: {
+			$exists: true,
+		},
+	};
+
+	const options = {
+		fields: {
+			fname: 1,
+			t: 1,
+			servedBy: 1,
+			v: 1,
+			responseBy: 1,
+			closedAt: 1,
+			closedBy: 1,
+			closer: 1,
+		},
+	};
+	return Rooms.find(query, options);
+}
+
+export function findAllLiveChatRoom() {
+	const query = {
+		t: 'l',
+	};
+
+	const options = {
+		fields: {
+			fname: 1,
+			t: 1,
+			servedBy: 1,
+			v: 1,
+			open: 1,
+			responseBy: 1,
+			closedAt: 1,
+			closedBy: 1,
+			closer: 1,
+		},
+	};
+	return Rooms.find(query, options);
+}
+
 export function findOpenRoom(token, departmentId) {
 	const options = {
 		fields: {
