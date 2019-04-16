@@ -27,7 +27,7 @@ module.exports = {
 	// 	chai: false,
 	screenshotsOnError: true,
 	screenshotsPath: '.screenshots',
-	captureAllStepScreenshots: false,
+	captureAllStepScreenshots: true,
 	saveScreenshotsToDisk: true,
 	// 	// Note: With a large viewport size and captureAllStepScreenshots enabled,
 	// 	// you may run out of memory. Use browser.setViewportSize to make the

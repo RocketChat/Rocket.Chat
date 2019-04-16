@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Διαδρομή Token",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token που Αποστέλλεται Μέσω",
   "Accounts_OAuth_Custom_Username_Field": "Πεδίο ονόματος χρήστη",
+  "Accounts_OAuth_Custom_Roles_Claim": "Ονόματα πεδίων / ομάδων",
   "Accounts_OAuth_Drupal": "Η Σύνδεση Drupal είναι Ενεργοποιημένη",
   "Accounts_OAuth_Drupal_callback_url": "URI Ανακατεύθυνσης Drupal oAuth2",
   "Accounts_OAuth_Drupal_id": "Αναγνωριστικό Πελάτη Drupal oAuth2",

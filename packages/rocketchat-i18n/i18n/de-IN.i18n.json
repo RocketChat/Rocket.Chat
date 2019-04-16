@@ -87,6 +87,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Pfad des Token",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token gesendet über",
   "Accounts_OAuth_Custom_Username_Field": "Feld für Benutzernamen",
+  "Accounts_OAuth_Custom_Roles_Claim": "Rollen/Gruppen Feld",
   "Accounts_OAuth_Drupal_callback_url": "Drupal OAuth Redirect Url",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client ID",
   "Accounts_OAuth_Drupal_secret": "Geheimer Drupal oAuth2 Client Schlüssel",
