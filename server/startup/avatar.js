@@ -150,7 +150,8 @@ WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res,
 		return;
 	}
 
-	let svg;
+	let svg = renderSVGLetters(requestUsername, avatarSize);
+
 	if (settings.get('UI_Use_Name_Avatar')) {
 		const user = Users.findOneByUsername(requestUsername, {
 			fields: {
@@ -161,8 +162,6 @@ WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res,
 		if (user && user.name) {
 			svg = renderSVGLetters(user.name, avatarSize);
 		}
-	} else {
-		svg = renderSVGLetters(requestUsername, avatarSize);
 	}
 
 	serveAvatar(svg, req, res);
