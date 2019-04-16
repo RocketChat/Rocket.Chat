@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "เส้นทางโทเค็น",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token ส่งทาง",
   "Accounts_OAuth_Custom_Username_Field": "ฟิลด์ชื่อผู้ใช้",
+  "Accounts_OAuth_Custom_Roles_Claim": "ชื่อฟิลด์บทบาท / กลุ่ม",
   "Accounts_OAuth_Drupal": "เข้าสู่ระบบ Drupal Login แล้ว",
   "Accounts_OAuth_Drupal_callback_url": "เปลี่ยนเส้นทาง URI ของ Drupal oAuth2",
   "Accounts_OAuth_Drupal_id": "รหัสลูกค้า Drupal oAuth2",

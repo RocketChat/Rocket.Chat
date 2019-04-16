@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Llwybr Tocynnau",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Tocynnau a Dderbyniwyd Drwy",
   "Accounts_OAuth_Custom_Username_Field": "Maes enw defnyddiwr",
+  "Accounts_OAuth_Custom_Roles_Claim": "Enw maes Rolau / Grwpiau",
   "Accounts_OAuth_Drupal": "Galluogi Mewngofnodi Drupal",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Ailgyfeirio URI",
   "Accounts_OAuth_Drupal_id": "ID Cleient Drupal oAuth2",

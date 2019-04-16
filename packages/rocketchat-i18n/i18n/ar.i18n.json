@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "مسار رمزي",
   "Accounts_OAuth_Custom_Token_Sent_Via": "رمزي المرسلة عن طريق",
   "Accounts_OAuth_Custom_Username_Field": "حقل اسم المستخدم",
+  "Accounts_OAuth_Custom_Roles_Claim": "اسم حقل الأدوار / المجموعات",
   "Accounts_OAuth_Drupal": "تم تفعيل تسجيل الدخول عبر دوربال",
   "Accounts_OAuth_Drupal_callback_url": "دروبال oAuth2 إعادة توجيه عنوان أوري",
   "Accounts_OAuth_Drupal_id": "رمز تعريف العميل الخاص بدوربال oAuth2",

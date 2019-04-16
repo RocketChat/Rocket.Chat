@@ -89,6 +89,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Ruta del Token",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token enviado vía",
   "Accounts_OAuth_Custom_Username_Field": "Campo de Nombre de Usuario",
+  "Accounts_OAuth_Custom_Roles_Claim": "Nombre del campo roles / grupos",
   "Accounts_OAuth_Drupal": "Inicio de sesión Drupal habilitado",
   "Accounts_OAuth_Drupal_callback_url": "URI de rediccionamiento de Drupal oAuth2",
   "Accounts_OAuth_Drupal_id": "ID del cliente de Drupal oAuth2",

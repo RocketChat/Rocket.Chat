@@ -90,6 +90,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token 경로",
   "Accounts_OAuth_Custom_Token_Sent_Via": "보내진 토큰",
   "Accounts_OAuth_Custom_Username_Field": "사용자 이름 필드",
+  "Accounts_OAuth_Custom_Roles_Claim": "역할 / 그룹 필드 이름",
   "Accounts_OAuth_Drupal": "듀팔 로그인 이 활성화 되었습니다.",
   "Accounts_OAuth_Drupal_callback_url": "듀팔 oAuth2 리다이렉트 URI",
   "Accounts_OAuth_Drupal_id": "듀팔 oAuth2 클라이언트 ID",

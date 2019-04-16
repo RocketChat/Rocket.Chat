@@ -83,6 +83,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Đường dẫn lấy Token (Token Path)",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token được gửi qua",
   "Accounts_OAuth_Custom_Username_Field": "Trường username",
+  "Accounts_OAuth_Custom_Roles_Claim": "Tên trường vai trò / nhóm",
   "Accounts_OAuth_Drupal": "Cho phép đăng nhập qua Drupal",
   "Accounts_OAuth_Drupal_callback_url": "Dạng chuyển hướng URL của Drupal oAuth2",
   "Accounts_OAuth_Drupal_id": "ID máy khách Drupal oAuth2",

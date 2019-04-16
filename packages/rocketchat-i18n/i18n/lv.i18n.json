@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Žetona ceļš",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Žetons nosūtīts caur",
   "Accounts_OAuth_Custom_Username_Field": "Lietotājvārda lauks",
+  "Accounts_OAuth_Custom_Roles_Claim": "Lomu / grupu lauka nosaukums",
   "Accounts_OAuth_Drupal": "Drupal pieteikšanās ir iespējota",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 klienta ID",

@@ -90,6 +90,7 @@
   "Accounts_OAuth_Custom_Token_Path": "ទីទាំង Token",
   "Accounts_OAuth_Custom_Token_Sent_Via": "សញ្ញាសម្ងាត់បានផ្ញើតាមរយៈ",
   "Accounts_OAuth_Custom_Username_Field": "វាលឈ្មោះអ្នកប្រើ",
+  "Accounts_OAuth_Custom_Roles_Claim": "ឈ្មោះវាល / ក្រុម",
   "Accounts_OAuth_Drupal": "Drupal Login Enabled",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 ប្ដូរទិស URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 លេខសម្គាល់អតិថិជន",

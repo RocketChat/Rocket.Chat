@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "டோக்கன் பாதை",
   "Accounts_OAuth_Custom_Token_Sent_Via": "டோக்கன் அனுப்பப்பட்டது வழியாக",
   "Accounts_OAuth_Custom_Username_Field": "பயனாளர் புலம்",
+  "Accounts_OAuth_Custom_Roles_Claim": "பங்களிப்புகள் / குழுக்கள் புலம் பெயர்",
   "Accounts_OAuth_Drupal": "Drupal Login இயக்கப்பட்டது",
   "Accounts_OAuth_Drupal_callback_url": "Drupal OAuth2 URI ஐ திருப்பி விடுகிறது",
   "Accounts_OAuth_Drupal_id": "Drupal OAuth2 கிளையண்ட் ஐடி",

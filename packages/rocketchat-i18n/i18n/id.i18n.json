@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token Path",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Dikirim Via",
   "Accounts_OAuth_Custom_Username_Field": "Bidang Username",
+  "Accounts_OAuth_Custom_Roles_Claim": "Nama bidang Peran / Grup",
   "Accounts_OAuth_Drupal": "Login Drupal Diaktifkan",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "ID Klien Drupal oAuth2",

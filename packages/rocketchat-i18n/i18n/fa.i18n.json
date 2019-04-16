@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Merge_Users": "ادغام کاربران",
   "Accounts_OAuth_Custom_Scope": "محدوده",
   "Accounts_OAuth_Custom_Secret": "رمز",
+  "Accounts_OAuth_Custom_Roles_Claim": "نام زمینه / نام گروه",
   "Accounts_OAuth_Custom_Token_Path": "مسیر توکن",
   "Accounts_OAuth_Custom_Token_Sent_Via": "توکن فرستاده شد با",
   "Accounts_OAuth_Custom_Username_Field": "فیلد نام کاربری",
