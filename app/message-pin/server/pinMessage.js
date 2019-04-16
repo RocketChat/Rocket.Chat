@@ -58,12 +58,13 @@ Meteor.methods({
 			});
 		}
 
+		const me = Users.findOneById(userId);
+
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			Messages.cloneAndSaveAsHistoryById(message._id);
+			Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-		const me = Users.findOneById(userId);
 
 		originalMessage.pinned = true;
 		originalMessage.pinnedAt = pinnedAt || Date.now;
@@ -141,12 +142,13 @@ Meteor.methods({
 			});
 		}
 
+		const me = Users.findOneById(Meteor.userId());
+
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			Messages.cloneAndSaveAsHistoryById(originalMessage._id);
+			Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
 		}
 
-		const me = Users.findOneById(Meteor.userId());
 		originalMessage.pinned = false;
 		originalMessage.pinnedBy = {
 			_id: Meteor.userId(),

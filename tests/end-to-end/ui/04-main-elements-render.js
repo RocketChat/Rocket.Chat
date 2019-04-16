@@ -41,6 +41,7 @@ describe('[Main Elements Render]', function() {
 
 			it('it should click the spotlight and show the channel list', () => {
 				sideNav.spotlightSearch.waitForVisible(5000);
+				browser.pause(100);
 				sideNav.spotlightSearch.click();
 				sideNav.spotlightSearchPopUp.waitForVisible(5000);
 				sideNav.spotlightSearchPopUp.isVisible().should.be.true;
