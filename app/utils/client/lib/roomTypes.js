@@ -38,7 +38,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			rid: roomId,
 		}).count() > 0;
 	}
-	readOnly(rid, user) {
+	readOnly(roomId, user) {
 		const fields = {
 			ro: 1,
 			t: 1,
@@ -47,7 +47,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			fields.muted = 1;
 		}
 		const room = ChatRoom.findOne({
-			_id: rid,
+			_id: roomId,
 		}, {
 			fields,
 		});
@@ -61,7 +61,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			return room && room.ro;
 		}
 		const userOwner = RoomRoles.findOne({
-			rid,
+			rid: roomId,
 			'u._id': user._id,
 			roles: 'owner',
 		}, {
@@ -112,16 +112,28 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}
 		return this.roomTypes[roomType].showJoinLink(roomId);
 	}
-	getTemplate(roomId, templateName) {
+	getNotSubscribedTpl(roomId) {
 		const room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
 		const roomType = room.t;
-		if (this.roomTypes[roomType] && !this.roomTypes[roomType][templateName]) {
+		if (this.roomTypes[roomType] && !this.roomTypes[roomType].notSubscribedTpl) {
 			return false;
 		}
-		return this.roomTypes[roomType][templateName];
+		return this.roomTypes[roomType].notSubscribedTpl;
+	}
+
+	getReadOnlyTpl(roomId) {
+		const room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } });
+		if (!room || !room.t) {
+			return;
+		}
+		const roomType = room.t;
+		if (this.roomTypes[roomType] && !this.roomTypes[roomType].readOnlyTpl) {
+			return false;
+		}
+		return this.roomTypes[roomType].readOnlyTpl;
 	}
 
 	openRouteLink(roomType, subData, queryParams) {

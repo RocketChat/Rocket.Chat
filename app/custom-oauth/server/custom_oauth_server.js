@@ -141,7 +141,7 @@ export class CustomOAuth {
 		if (data.error) { // if the http response was a json object with an error attribute
 			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
 		} else {
-			return data.access_token;
+			return data;
 		}
 	}
 
@@ -183,14 +183,23 @@ export class CustomOAuth {
 	registerService() {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
-			const accessToken = self.getAccessToken(query);
 
-			const identity = self.getIdentity(accessToken);
+			const response = self.getAccessToken(query);
+			const identity = self.getIdentity(response.access_token);
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken,
+				accessToken: response.access_token,
+				idToken: response.id_token,
+				expiresAt: (+new Date) + (1000 * parseInt(response.expires_in, 10)),
 			};
+
+			// only set the token in serviceData if it's there. this ensures
+			// that we don't lose old ones (since we only get this on the first
+			// log in attempt)
+			if (response.refresh_token) {
+				serviceData.refreshToken = response.refresh_token;
+			}
 
 			_.extend(serviceData, identity);
 

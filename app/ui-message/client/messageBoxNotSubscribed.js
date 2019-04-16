@@ -11,7 +11,7 @@ import './messageBoxNotSubscribed.html';
 
 Template.messageBoxNotSubscribed.helpers({
 	customTemplate() {
-		return roomTypes.getTemplate(this.rid, 'notSubscribedTpl');
+		return roomTypes.getNotSubscribedTpl(this.rid);
 	},
 	canJoinRoom() {
 		return Meteor.userId() && roomTypes.verifyShowJoinLink(this.rid);

@@ -4,6 +4,6 @@ import './messageBoxReadOnly.html';
 
 Template.messageBoxReadOnly.helpers({
 	customTemplate() {
-		return roomTypes.getTemplate(this.rid, 'readOnlyTpl');
+		return roomTypes.getReadOnlyTpl(this.rid);
 	},
 });
