@@ -41,7 +41,7 @@
 .chatpal-search-typefilter li {
 
 	display: flex;
-	flex: 0 0 33%;
+	flex: 1;
 
 	height: 35px;
 	padding-top: 10px;

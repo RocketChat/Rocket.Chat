@@ -195,11 +195,11 @@ class ChatpalProvider extends SearchProvider {
 
 		const maxTimeout = 200000;
 
-		const stats = Index.ping(config);
+		const data = Index.ping(config);
 
-		if (stats) {
+		if (data.stats || data.api) {
 			ChatpalLogger.debug('ping was successfull');
-			resolve({ config, stats });
+			resolve(Object.assign({}, { config }, data));
 		} else {
 
 			ChatpalLogger.warn(`ping failed, retry in ${ timeout } ms`);
@@ -285,9 +285,15 @@ class ChatpalProvider extends SearchProvider {
 		ChatpalLogger.debug(`clear = ${ clear } with reason '${ reason }'`);
 
 		this._getIndexConfig().then((server) => {
-			this._indexConfig = server.config;
-
 			this._stats = server.stats;
+			this._indexConfig = server.config;
+			this._indexConfig.api = {};
+			this._customParams = {};
+			if (server.api) {
+				this._indexConfig.api = server.api;
+				this._indexConfig.api.supportsFileSearch = this._indexConfig.api.features.indexOf('FILE_SEARCH') > -1;
+				this._customParams.supportsFileSearch = this._indexConfig.api.supportsFileSearch;
+			}
 
 			ChatpalLogger.debug('config:', JSON.stringify(this._indexConfig, null, 2));
 			ChatpalLogger.debug('stats:', JSON.stringify(this._stats, null, 2));
@@ -314,7 +320,7 @@ class ChatpalProvider extends SearchProvider {
 	 */
 	_getResultTypes(resultTypeName) {
 		switch (resultTypeName) {
-			case 'All': return ['message', 'user', 'room', 'file'];
+			case 'All': return ['message', 'user', 'room'].concat(this._indexConfig.api.supportsFileSearch ? ['file'] : []);
 			case 'Messages': return ['message'];
 			case 'Files': return ['file'];
 		}

@@ -116,6 +116,10 @@ export default class SearchProvider {
 		return this._settings.map();
 	}
 
+	get customParams() {
+		return this._customParams || {};
+	}
+
 	/* --- templates ---*/
 	get resultTemplate() {
 		return 'DefaultSearchResultTemplate';

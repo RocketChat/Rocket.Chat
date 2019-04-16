@@ -9,6 +9,9 @@ import { Subscriptions } from '../../../models';
 Template.ChatpalSearchResultTemplate.onCreated(function() {
 	this.badRequest = new ReactiveVar(false);
 	this.resultType = new ReactiveVar(this.data.settings.DefaultResultType);
+	if (this.resultType.get() === 'Files' && !this.data.customParams.supportsFileSearch) {
+		this.resultType.set('All');
+	}
 	this.data.parentPayload.resultType = this.resultType.get();
 });
 
@@ -92,6 +95,9 @@ Template.ChatpalSearchResultTemplate.helpers({
 				numOfPages: Math.ceil(result[type].numFound / pageSize),
 			};
 		}
+	},
+	fileSearchSupported() {
+		return Template.instance().data.customParams.supportsFileSearch;
 	},
 });
 

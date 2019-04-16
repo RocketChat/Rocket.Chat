@@ -207,7 +207,7 @@ class Backend {
 			const response = HTTP.call('GET', config.baseurl + config.pingpath, options);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
-				return response.data.stats;
+				return response.data;
 			} else {
 				return false;
 			}
@@ -473,6 +473,10 @@ export default class Index {
 	indexDoc(type, doc, flush = true) {
 		// Detect messages with file attachment
 		if (type === 'message' && doc.file && doc.file._id) {
+			if (!this._options.api.supportsFileSearch) {
+				return false;
+			}
+
 			const file = Uploads.findOneById(doc.file._id);
 			if (file) {
 				const maxFileSize = 20 * Math.pow(1024, 2);
@@ -504,6 +508,7 @@ export default class Index {
 							'literal.mid': file.mid,
 							'literal.user': file.userId,
 							'literal.uploaded': file.uploadedAt.toISOString(),
+							'literal.created': file.uploadedAt.toISOString(),
 							'literal.updated': file._updatedAt.toISOString(),
 							'literal.file_name': file.name,
 							'literal.file_desc': file.description,

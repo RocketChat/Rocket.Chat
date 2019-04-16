@@ -3,7 +3,7 @@
 		<ul class="chatpal-search-typefilter">
 			<li value="All" class="{{navSelected 'All'}}">{{_ "Chatpal_All_Results"}}</li>
 			<li value="Messages" class="{{navSelected 'Messages'}}">{{_ "Chatpal_Messages"}}</li>
-			<li value="Files" class="{{navSelected 'Files'}}">{{_ "Chatpal_Files"}}</li>
+			{{#if fileSearchSupported}}<li value="Files" class="{{navSelected 'Files'}}">{{_ "Chatpal_Files"}}</li>{{/if}}
 		</ul>
 		<div class="chatpal-search-result">
 			{{#if searching}}
@@ -37,17 +37,19 @@
 							{{/each}}
 						</div>
 					{{/if}}
-					{{#if result.file.docs}}
-						<div class="chatpal-search-result-header">
-							{{_ "Chatpal_Files"}}
-						</div>
-						<div class="chatpal-search-result-list">
-							{{#each result.file.docs}}
-								{{> ChatpalSearchSingleFile}}
-							{{/each}}
-						</div>
-						{{#if moreThanDisplayed 'file'}}
-							<div class="chatpal-show-more more-files">{{_ "Chatpal_More"}}</div>
+					{{#if fileSearchSupported}}
+						{{#if result.file.docs}}
+							<div class="chatpal-search-result-header">
+								{{_ "Chatpal_Files"}}
+							</div>
+							<div class="chatpal-search-result-list">
+								{{#each result.file.docs}}
+									{{> ChatpalSearchSingleFile}}
+								{{/each}}
+							</div>
+							{{#if moreThanDisplayed 'file'}}
+								<div class="chatpal-show-more more-files">{{_ "Chatpal_More"}}</div>
+							{{/if}}
 						{{/if}}
 					{{/if}}
 					{{#if result.message.docs}}
@@ -105,36 +107,38 @@
 						{{/if}}
 					{{/if}}
 				{{/if}}
-				{{#if $eq resultType "Files"}}
-					<div class="chatpal-search-result-header">
-						<h2 class="chatpal-search-number">
-							{{resultNumFound}}
-						</h2>
-					</div>
-					{{#if result.file}}
-						<div class="chatpal-search-result-list">
-							{{#each result.file.docs}}
-								{{> ChatpalSearchSingleFile}}
-							{{/each}}
+				{{#if fileSearchSupported}}
+					{{#if $eq resultType "Files"}}
+						<div class="chatpal-search-result-header">
+							<h2 class="chatpal-search-number">
+								{{resultNumFound}}
+							</h2>
 						</div>
-					{{/if}}
-					{{#if resultPaging}}
-						{{#if $neq resultPaging.numOfPages 0}}
-							<div class="chatpal-paging">
-								{{#if $gt resultPaging.currentPage 1}}
-									<div class="chatpal-paging-prev chatpal-paging-button">
-										<i class="icon-left-circled2"></i>
-									</div>
-								{{/if}}
-								<div class="chatpal-paging-text">{{_ "Chatpal_search_page_of"
-									resultPaging.currentPage
-									resultPaging.numOfPages}}</div>
-								{{#if $lt resultPaging.currentPage resultPaging.numOfPages}}
-									<div class="chatpal-paging-next chatpal-paging-button">
-										<i class="icon-right-circled2"></i>
-									</div>
-								{{/if}}
+						{{#if result.file}}
+							<div class="chatpal-search-result-list">
+								{{#each result.file.docs}}
+									{{> ChatpalSearchSingleFile}}
+								{{/each}}
 							</div>
+						{{/if}}
+						{{#if resultPaging}}
+							{{#if $neq resultPaging.numOfPages 0}}
+								<div class="chatpal-paging">
+									{{#if $gt resultPaging.currentPage 1}}
+										<div class="chatpal-paging-prev chatpal-paging-button">
+											<i class="icon-left-circled2"></i>
+										</div>
+									{{/if}}
+									<div class="chatpal-paging-text">{{_ "Chatpal_search_page_of"
+										resultPaging.currentPage
+										resultPaging.numOfPages}}</div>
+									{{#if $lt resultPaging.currentPage resultPaging.numOfPages}}
+										<div class="chatpal-paging-next chatpal-paging-button">
+											<i class="icon-right-circled2"></i>
+										</div>
+									{{/if}}
+								</div>
+							{{/if}}
 						{{/if}}
 					{{/if}}
 				{{/if}}
