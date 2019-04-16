@@ -5,8 +5,8 @@ import { Template } from 'meteor/templating';
 import { Roles } from '../../../models';
 import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';
-import { t } from 'meteor/rocketchat:utils';
 import { hasAtLeastOnePermission } from '..';
+import { t } from '../../../utils/client';
 
 const whereNotSetting = {
 	$where: function() {

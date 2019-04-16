@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import Permissions from '../../../models/server/models/Permissions';
-import Settings from '../../../models/server/models/Settings';
+import { Permissions, Settings } from '../../../models/server';
 import { Notifications } from '../../../notifications';
 
 Meteor.methods({

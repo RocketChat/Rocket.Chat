@@ -17,6 +17,10 @@ export class TranslationProviderRegistry {
 		TranslationProviderRegistry._providers[metadata.name] = provider;
 	}
 
+	static getActiveProvider() {
+		return TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
+	}
+
 	static loadActiveServiceProvider() {
 		settings.get('AutoTranslate_ServiceProvider', (key, value) => {
 			TranslationProviderRegistry._activeProvider = value;

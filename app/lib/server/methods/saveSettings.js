@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { hasAllPermission } from '../../../authorization/server';
-import { Settings } from '../../../models/server/models/Settings';
+import { Settings } from '../../../models/server';
 
 Meteor.methods({
 	saveSettings(params = []) {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { hasPermission } from '../../../authorization';
-import AutoTranslate from '../autotranslate';
+import { TranslationProviderRegistry } from '..';
 
 Meteor.methods({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {
@@ -9,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings' });
 		}
 
-		return AutoTranslate.getSupportedLanguages(targetLanguage);
+		return TranslationProviderRegistry.getActiveProvider().getSupportedLanguages(targetLanguage);
 	},
 });
 
