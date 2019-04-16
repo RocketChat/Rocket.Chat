@@ -1,16 +1,16 @@
 <template name="livechatReadOnly">
-    {{#if roomOpen}}
-        {{#if guestPool}}
-            {{#if inquiryOpen}}
-                <div class="rc-message-box__join">
-				    {{{_ "you_are_in_preview_mode_of_incoming_livechat"}}}
-				    <button class="rc-button rc-button--primary rc-button--small rc-message-box__take-it-button js-take-it">{{_ "Take_it"}}</button>
-                </div>
-            {{else}}
-                {{_ "room_is_read_only"}}
-            {{/if}}
-        {{/if}}
-    {{else}}
-        <p>{{_ "This_conversation_is_already_closed"}}</p>
+	{{#if roomOpen}}
+		{{#if guestPool}}
+			{{#if inquiryOpen}}
+				<div class="rc-message-box__join">
+					{{{_ "you_are_in_preview_mode_of_incoming_livechat"}}}
+					<button class="rc-button rc-button--primary rc-button--small rc-message-box__take-it-button js-take-it">{{_ "Take_it"}}</button>
+				</div>
+			{{else}}
+				{{_ "room_is_read_only"}}
+			{{/if}}
+		{{/if}}
+	{{else}}
+		<p>{{_ "This_conversation_is_already_closed"}}</p>
 	{{/if}}
 </template>

@@ -25,13 +25,13 @@ Template.livechatReadOnly.helpers({
 });
 
 Template.livechatReadOnly.events({
-	'click .js-take-it'(event, instance) {
+	async 'click .js-take-it'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
 		const inquiry = instance.inquiry.get();
 		const { _id } = inquiry;
-		call('livechat:takeInquiry', _id, (error /* ,result */) => {
+		await call('livechat:takeInquiry', _id, (error /* ,result */) => {
 			if (error) {
 				return handleError(error);
 			}

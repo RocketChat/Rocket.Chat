@@ -26,7 +26,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		if (!(room && room.t === 'l' && user)) {
+		if (!user || !room || room.t !== 'l') {
 			return;
 		}
 
