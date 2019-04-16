@@ -307,22 +307,6 @@ export default class Index {
 					user_name: doc.name,
 					user_email: doc.emails && doc.emails.map((e) => e.address),
 				};
-			case 'file':
-				return {
-					id: doc._id,
-					rid: doc.rid,
-					mid: doc.mid,
-					user: doc.userId,
-					uploaded: doc.uploadedAt,
-					updated: doc._updatedAt,
-					type,
-					file_name: doc.name,
-					file_desc: doc.description,
-					file_type: doc.type,
-					file_size: doc.size,
-					file_store: doc.store,
-					file_link: doc.link,
-				};
 			default: throw new Error(`Cannot index type '${ type }'`);
 		}
 	}
