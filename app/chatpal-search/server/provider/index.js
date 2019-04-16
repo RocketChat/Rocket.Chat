@@ -479,8 +479,6 @@ export default class Index {
 
 			const file = Uploads.findOneById(doc.file._id);
 			if (file) {
-				const maxFileSize = 20 * Math.pow(1024, 2);
-
 				file.mid = doc._id;
 				const attachment = doc.attachments.filter((a) => a.type === 'file')[0];
 				if (attachment) {
@@ -493,14 +491,14 @@ export default class Index {
 
 				try {
 					let data = '';
-					if (file.size >= maxFileSize) {
-						ChatpalLogger.warn(`File size (${ file.size }) exceeds maximum allowed size (${ maxFileSize }), skipping file content indexing.`);
+					if (file.size >= this._options.api.config.maxFileSize) {
+						ChatpalLogger.warn(`File size (${ file.size }) exceeds maximum allowed size (${ this._options.api.config.maxFileSize }), skipping file content indexing.`);
 					} else {
 						data = getFileBuffer(file);
 					}
 
 					const fileIndexOptions = {
-						content: data || file.name,
+						content: data || file.name, // use file name as placeholder, it will be ignored in the UI
 						params: {
 							'resource.name': file.name,
 							'literal.id': file._id,
