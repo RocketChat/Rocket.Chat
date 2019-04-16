@@ -90,6 +90,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token locatie",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Verstuurd Via",
   "Accounts_OAuth_Custom_Username_Field": "Gebruikersnaam veld",
+  "Accounts_OAuth_Custom_Roles_Claim": "Rol / Groepen veldnaam",
   "Accounts_OAuth_Drupal": "Drupal Login Ingeschakeld",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 URI omleiden",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client-ID",
