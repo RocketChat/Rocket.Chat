@@ -30,10 +30,12 @@ export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 
 	const reqModifiedHeader = req.headers['if-modified-since'];
 	if (!wasFallbackModified(reqModifiedHeader, res)) {
+		res.writeHead(304);
+		res.end();
 		return;
 	}
 
 	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size));
 
-	return serveAvatar(svg, req, res);
+	return serveAvatar(svg, req.query.format, res);
 });

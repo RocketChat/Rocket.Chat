@@ -28,7 +28,7 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 	// if request starts with @ always return the svg letters
 	if (requestUsername[0] === '@') {
 		const svg = renderSVGLetters(requestUsername.substr(1), avatarSize);
-		serveAvatar(svg, req, res);
+		serveAvatar(svg, req.query.format, res);
 		return;
 	}
 
@@ -54,6 +54,8 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 
 	// if still using "letters fallback"
 	if (!wasFallbackModified(reqModifiedHeader, res)) {
+		res.writeHead(304);
+		res.end();
 		return;
 	}
 
@@ -71,6 +73,6 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 		}
 	}
 
-	serveAvatar(svg, req, res);
+	serveAvatar(svg, req.query.format, res);
 	return;
 });
