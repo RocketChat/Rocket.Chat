@@ -31,11 +31,11 @@ Template.livechatReadOnly.events({
 
 		const inquiry = instance.inquiry.get();
 		const { _id } = inquiry;
-		await call('livechat:takeInquiry', _id, (error /* ,result */) => {
-			if (error) {
-				return handleError(error);
-			}
-		});
+		try {
+			await call('livechat:takeInquiry', _id);
+		} catch (error) {
+			handleError(error);
+		}
 	},
 });
 
