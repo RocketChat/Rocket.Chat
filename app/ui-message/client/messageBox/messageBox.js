@@ -4,31 +4,32 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { EmojiPicker } from '../../emoji';
-import { Users } from '../../models';
-import { settings } from '../../settings';
+import { EmojiPicker } from '../../../emoji';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import {
 	fileUpload,
 	KonchatNotification,
-} from '../../ui';
+} from '../../../ui';
 import {
 	messageBox,
 	popover,
 	call,
 	keyCodes,
 	isRTL,
-} from '../../ui-utils';
+} from '../../../ui-utils';
 import {
 	t,
 	roomTypes,
 	getUserPreference,
-} from '../../utils';
+} from '../../../utils';
 import moment from 'moment';
 import { setupAutogrow } from './messageBoxAutogrow';
 import {
 	formattingButtons,
 	applyFormatting,
 } from './messageBoxFormatting';
+import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';

@@ -15,6 +15,7 @@ import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import './message.html';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||

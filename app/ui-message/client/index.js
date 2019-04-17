@@ -1,4 +1,3 @@
-import './message.html';
 import './messageDropdown.html';
 import './popup/messagePopup.html';
 import './popup/messagePopupChannel.html';
@@ -9,9 +8,8 @@ import './popup/messagePopupSlashCommandPreview.html';
 import './popup/messagePopupSlashCommandPreview';
 import './popup/messagePopupUser.html';
 import './message';
-import './messageBox';
+import './messageBox/messageBox';
 import './popup/messagePopup';
 import './popup/messagePopupChannel';
 import './popup/messagePopupConfig';
 import './popup/messagePopupEmoji';
-import './startup';
