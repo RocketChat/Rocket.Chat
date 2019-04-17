@@ -8,11 +8,11 @@ let me;
 let useRealName;
 let pattern;
 
-Tracker.autorun(() => {
+Meteor.startup(() => Tracker.autorun(() => {
 	me = Meteor.userId() && Meteor.user().username;
 	pattern = settings.get('UTF8_Names_Validation');
 	useRealName = settings.get('UI_Use_Real_Name');
-});
+}));
 
 
 const instance = new MentionsParser({
