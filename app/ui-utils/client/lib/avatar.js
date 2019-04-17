@@ -27,7 +27,7 @@ export const getAvatarAsPng = function(username, cb) {
 };
 
 export const updateAvatarOfUsername = function(username) {
-	Session.set(`avatar_random_${ username }`, Math.round(Math.random() * 1000));
+	Session.set(`avatar_random_${ username }`, Date.now());
 	const url = getUserAvatarURL(username);
 
 	// force reload of avatars of messages

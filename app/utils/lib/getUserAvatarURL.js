@@ -1,4 +1,5 @@
 import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
 import { settings } from '../../settings';
 import { getAvatarURL } from './getAvatarURL';
 
@@ -11,7 +12,7 @@ export const getUserAvatarURL = function(username) {
 		return;
 	}
 	const key = `avatar_random_${ username }`;
-	const cache = typeof Session !== 'undefined' && typeof Session.keys[key] !== 'undefined' ? Session.keys[key] : 0;
+	const cache = Tracker.nonreactive(() => Session.get(key));
 
 	return getAvatarURL({ username, cache });
 };
