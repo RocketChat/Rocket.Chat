@@ -8,26 +8,31 @@ import { callbacks } from '../../callbacks';
 import { getUserPreference } from '../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
-import { highlightWords } from './helper';
-
-let to_highlight;
+import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from './helper';
 
 Tracker.autorun(() => {
-	to_highlight = getUserPreference(Meteor.userId(), 'highlights');
-});
+	const toHighlight = (getUserPreference(Meteor.userId(), 'highlights') || []).filter((highlight) => !s.isBlank(highlight)).map((highlight) => ({
+		highlight,
+		regex: getRegexHighlight(highlight),
+		urlRegex: getRegexHighlightUrl(highlight),
+	}));
 
-function HighlightWordsClient(message) {
-	let msg = message;
-	if (!_.isString(message)) {
-		if (s.trim(message.html)) {
-			msg = message.html;
-		} else {
-			return message;
-		}
+	if (!toHighlight.length) {
+		return callbacks.remove('renderMessage', 'highlight-words');
 	}
 
-	message.html = highlightWords(msg, to_highlight);
-	return message;
-}
+	function HighlightWordsClient(message) {
+		let msg = message;
 
-callbacks.add('renderMessage', HighlightWordsClient, callbacks.priority.MEDIUM + 1, 'highlight-words');
+		if (!_.isString(message)) {
+			if (!s.trim(message.html)) {
+				return message;
+			}
+			msg = message.html;
+		}
+
+		message.html = highlightWords(msg, toHighlight);
+		return message;
+	}
+	callbacks.add('renderMessage', HighlightWordsClient, callbacks.priority.MEDIUM + 1, 'highlight-words');
+});

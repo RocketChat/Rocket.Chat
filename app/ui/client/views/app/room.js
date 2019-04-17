@@ -697,7 +697,7 @@ Template.room.events({
 		const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
 
 		if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-			if (hasMore === true && lastScrollTop <= height / 3) {
+			if (hasMore === true && lastScrollTop <= height / 4) {
 				RoomHistoryManager.getMore(this._id);
 			} else if (hasMoreNext === true && Math.ceil(lastScrollTop) >= e.target.scrollHeight - height) {
 				RoomHistoryManager.getMoreNext(this._id);
