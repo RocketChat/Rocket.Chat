@@ -79,13 +79,13 @@ jobs:
     steps:
       - checkout
 
-      # - restore_cache:
-      #     keys:
-      #       - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+      - restore_cache:
+          keys:
+            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
 
-      # - restore_cache:
-      #     keys:
-      #       - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+      - restore_cache:
+          keys:
+            - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
 
       - run:
           name: Install Meteor
@@ -134,9 +134,9 @@ jobs:
           command: |
             meteor npm run testunit
 
-      # - restore_cache:
-      #     keys:
-      #       - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+      - restore_cache:
+          keys:
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
       # - restore_cache:
       #     keys:
@@ -170,15 +170,15 @@ jobs:
             cd /tmp/build-test/bundle/programs/server
             npm install
 
-      # - save_cache:
-      #     key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
-      #     paths:
-      #       - ./node_modules
+      - save_cache:
+          key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
 
-      # - save_cache:
-      #     key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
-      #     paths:
-      #       - ./.meteor/local
+      - save_cache:
+          key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+          paths:
+            - ./.meteor/local
 
       # - save_cache:
       #     key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
@@ -190,10 +190,10 @@ jobs:
       #     paths:
       #       - ./packages/rocketchat-livechat/app/.meteor/local
 
-      # - save_cache:
-      #     key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
-      #     paths:
-      #       - ~/.meteor
+      - save_cache:
+          key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+          paths:
+            - ~/.meteor
 
       - persist_to_workspace:
           root: /tmp/
