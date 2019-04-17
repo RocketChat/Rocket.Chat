@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Blaze } from 'meteor/blaze';
+import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -225,7 +226,7 @@ callbacks.add('enter-room', wipeFailedUploads);
 
 Template.room.helpers({
 	isTranslated() {
-		const sub = Template.instance().subscription;
+		const sub = Tracker.nonreactive(() => Template.instance().subscription.get());
 		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
 	},
 
@@ -234,7 +235,7 @@ Template.room.helpers({
 	},
 
 	subscribed() {
-		return Template.instance().subscription;
+		return Tracker.nonreactive(() => Template.instance().subscription.get());
 	},
 
 	messagesHistory() {
@@ -328,7 +329,7 @@ Template.room.helpers({
 
 		return {
 			rid,
-			subscription,
+			subscription: subscription.get(),
 			isEmbedded,
 			showFormattingTips: showFormattingTips && !isEmbedded,
 			onInputChanged: (input) => {
@@ -428,7 +429,7 @@ Template.room.helpers({
 	},
 
 	showToggleFavorite() {
-		const { subscription } = Template.instace();
+		const subscription = Tracker.nonreactive(() => Template.instace().subscription.get());
 		return subscription && favoritesEnabled();
 	},
 
@@ -478,7 +479,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return !subscription;
+		return !Tracker.nonreactive(() => subscription.get());
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -942,7 +943,12 @@ Template.room.onCreated(function() {
 	lazyloadtick();
 	const rid = this.data._id;
 	this.rid = rid;
-	this.subscription = Subscriptions.findOne({ rid });
+
+	this.subscription = new ReactiveVar();
+	this.autorun(() => {
+		this.subscription.set(Subscriptions.findOne({ rid }));
+	});
+
 	this.room = Rooms.findOne({ _id: rid });
 
 	this.showUsersOffline = new ReactiveVar(false);
