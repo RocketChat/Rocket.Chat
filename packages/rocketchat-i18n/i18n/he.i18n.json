@@ -86,6 +86,7 @@
   "Accounts_OAuth_Meteor_secret": "סיסמת Meteor",
   "Accounts_OAuth_Twitter": "התחברות באמצעות טוויטר",
   "Accounts_OAuth_Twitter_callback_url": "כתובת האתר Callback Twitter",
+  "Accounts_OAuth_Custom_Roles_Claim": "שם שדה / קבוצות",
   "Accounts_OAuth_Twitter_id": "זיהוי טוויטר",
   "Accounts_OAuth_Twitter_secret": "סיסמת Twitter",
   "Accounts_OAuth_Wordpress": "התחברות WordPress",
