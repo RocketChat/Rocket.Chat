@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import { Rooms, Users, Subscriptions } from '../../models/server';
 import { sendMessage } from '../../lib/server';
 import { settings } from '../../settings/server';
@@ -50,7 +51,7 @@ function createDirectRoom(source, target, extraData, options) {
 }
 
 Meteor.methods({
-    sendBroadcastMessage(reply, users) {
+  sendBroadcastMessage(reply, users) {
 		check(reply, String);
 		check(users, Match.Optional([String]));
 
@@ -66,7 +67,7 @@ Meteor.methods({
 			const members = [user.username, username];
 			let room = Rooms.findDirectRoomContainingAllUsernames(members, {});
 			if (!room) {
-				let target = Users.findOneByUsername(username, {});
+				const target = Users.findOneByUsername(username, {});
 				room = createDirectRoom(user, target, {}, {});
 			}
 			sendMessage(user, { msg: reply }, room);
@@ -74,3 +75,4 @@ Meteor.methods({
 		return true;
 	},
 });
+

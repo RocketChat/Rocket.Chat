@@ -46,7 +46,7 @@ const filterNames = (old) => {
 };
 
 Template.createBroadcast.helpers({
-    autocomplete(key) {
+	autocomplete(key) {
 		const instance = Template.instance();
 		const param = instance.ac[key];
 		return typeof param === 'function' ? param.apply(instance.ac) : param;
@@ -69,9 +69,9 @@ Template.createBroadcast.helpers({
 	},
 	selectedUsers() {
 		return Template.instance().selectedUsers.get();
-    },
-    createIsDisabled() {
-        const instance = Template.instance();
+  },
+  createIsDisabled() {
+    const instance = Template.instance();
 		const selectedUsers = instance.selectedUsers.get();
 		const reply = instance.reply.get();
 
@@ -83,16 +83,16 @@ Template.createBroadcast.helpers({
 });
 
 Template.createBroadcast.events({
-    ...acEvents,
+  ...acEvents,
 	'click .rc-tags__tag'({ target }, t) {
 		const { username } = Blaze.getData(target);
 		t.selectedUsers.set(t.selectedUsers.get().filter((user) => user.username !== username));
 	},
-    'input #discussion_message'(e, t) {
+  'input #discussion_message'(e, t) {
 		const { value } = e.target;
 		t.reply.set(value);
-    },
-    'input [name="users"]'(e, t) {
+  },
+  'input [name="users"]'(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const { length } = input.value;
@@ -101,23 +101,23 @@ Template.createBroadcast.events({
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
 
 		t.userFilter.set(modified);
-    },
-    async 'submit #create-discussion, click .js-save-discussion'(event, instance) {
-        event.preventDefault();
-        event.stopPropagation();
-        const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
-        const reply = instance.reply.get();
-        Meteor.call('sendBroadcastMessage', reply, users, function(err, result) {
-            if (err) {
-                toastr.error(err.message);
+  },
+  async 'submit #create-discussion, click .js-save-discussion'(event, instance) {
+    event.preventDefault();
+    event.stopPropagation();
+    const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
+    const reply = instance.reply.get();
+    Meteor.call('sendBroadcastMessage', reply, users, function(err, result) {
+      if (err) {
+        toastr.error(err.message);
 				return;
-            }
-            if (result) {
-                toastr.success(t('Broadcast_sent'));
-                modal.close();
-            }
-        });
-    }
+      }
+      if (result) {
+        toastr.success(t('Broadcast_sent'));
+        modal.close();
+      }
+    });
+  },
 });
 
 Template.createBroadcast.onRendered(function() {
@@ -134,40 +134,39 @@ Template.createBroadcast.onRendered(function() {
 });
 
 Template.createBroadcast.onCreated(function() {
-    this.selectedUsers = new ReactiveVar([]);
-    const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
-    Tracker.autorun(() => {
+  this.selectedUsers = new ReactiveVar([]);
+  const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
+  Tracker.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
-    });
-    this.reply = new ReactiveVar('');
-    this.userFilter = new ReactiveVar('');
-    this.ac = new AutoComplete(
-		{
-			selector:{
-				anchor: '.rc-input__label',
-				item: '.rc-popup-list__item',
-				container: '.rc-popup-list__list',
-			},
-			position:'fixed',
-			limit: 10,
-			inputDelay: 300,
-			rules: [
-				{
-				// @TODO maybe change this 'collection' and/or template
-
-					collection: 'UserAndRoom',
-					subscription: 'userAutocomplete',
-					field: 'username',
-					matchAll: true,
-					filter,
-					doNotChangeWidth: false,
-					selector(match) {
-						return { term: match };
-					},
-					sort: 'username',
+  });
+  this.reply = new ReactiveVar('');
+  this.userFilter = new ReactiveVar('');
+  this.ac = new AutoComplete(
+	{
+		selector:{
+			anchor: '.rc-input__label',
+			item: '.rc-popup-list__item',
+			container: '.rc-popup-list__list',
+		},
+		position:'fixed',
+		limit: 10,
+		inputDelay: 300,
+		rules: [
+			{
+				collection: 'UserAndRoom',
+				subscription: 'userAutocomplete',
+				field: 'username',
+				matchAll: true,
+				filter,
+				doNotChangeWidth: false,
+				selector(match) {
+					return { term: match };
 				},
-			],
+				sort: 'username',
+			},
+		],
 
-		});
+	});
 	this.ac.tmplInst = this;
 });
+

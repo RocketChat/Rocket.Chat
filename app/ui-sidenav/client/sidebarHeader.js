@@ -216,7 +216,7 @@ const toolbarButtons = (user) => [{
 					});
 				},
 			};
-			config['columns'][0]['groups'][0]['items'].push(discussionConfig);
+			config.columns[0].groups[0].items.push(discussionConfig);
 		}
 		if (broadcastEnabled) {
 			const broadcastConfig = {
@@ -239,7 +239,7 @@ const toolbarButtons = (user) => [{
 					});
 				},
 			};
-			config['columns'][0]['groups'][0]['items'].push(broadcastConfig);
+			config.columns[0].groups[0].items.push(broadcastConfig);
 		}
 		popover.open(config);
 	},
