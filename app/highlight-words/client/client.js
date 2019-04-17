@@ -3,11 +3,18 @@
  * @param {Object} message - The message object
  */
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { callbacks } from '../../callbacks';
 import { getUserPreference } from '../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { highlightWords } from './helper';
+
+let to_highlight;
+
+Tracker.autorun(() => {
+	to_highlight = getUserPreference(Meteor.userId(), 'highlights');
+});
 
 function HighlightWordsClient(message) {
 	let msg = message;
@@ -19,10 +26,7 @@ function HighlightWordsClient(message) {
 		}
 	}
 
-	const to_highlight = getUserPreference(Meteor.user(), 'highlights');
-	msg = highlightWords(msg, to_highlight);
-
-	message.html = msg;
+	message.html = highlightWords(msg, to_highlight);
 	return message;
 }
 

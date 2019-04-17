@@ -1,10 +1,17 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { getUserPreference, t } from '../../../utils';
 import { settings } from '../../../settings';
 import moment from 'moment';
 
+let clockMode;
+
+Tracker.autorun(() => {
+	clockMode = getUserPreference(Meteor.userId(), 'clockMode', false);
+});
+
 export const formatTime = (time) => {
-	switch (getUserPreference(Meteor.userId(), 'clockMode', false)) {
+	switch (clockMode) {
 		case 1:
 			return moment(time).format('h:mm A');
 		case 2:
@@ -15,7 +22,7 @@ export const formatTime = (time) => {
 };
 
 export const formatDateAndTime = (time) => {
-	switch (getUserPreference(Meteor.userId(), 'clockMode', false)) {
+	switch (clockMode) {
 		case 1:
 			return moment(time).format('MMMM D, Y h:mm A');
 		case 2:

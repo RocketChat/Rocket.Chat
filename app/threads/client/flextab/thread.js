@@ -76,7 +76,7 @@ Template.thread.onRendered(function() {
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
-	this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight - this.chatMessages.wrapper.clientHeight;
+	// this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight - this.chatMessages.wrapper.clientHeight;
 
 	this.sendToBottom = _.throttle(() => {
 		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
