@@ -128,7 +128,7 @@
 		"@google-cloud/language": "^2.0.0",
 		"@google-cloud/storage": "^2.3.1",
 		"@google-cloud/vision": "^0.23.0",
-		"@rocket.chat/apps-engine": "1.4.1",
+		"@rocket.chat/apps-engine": "1.4.2",
 		"@slack/client": "^4.8.0",
 		"adm-zip": "^0.4.13",
 		"apollo-server-express": "^1.3.6",
