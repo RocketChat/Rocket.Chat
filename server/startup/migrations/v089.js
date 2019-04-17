@@ -1,17 +1,20 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Integrations } from '../../../app/models';
+
+Migrations.add({
 	version: 89,
 	up() {
-		const outgoingIntegrations = RocketChat.models.Integrations.find({ type: 'webhook-outgoing' }, { fields: { name: 1 }}).fetch();
+		const outgoingIntegrations = Integrations.find({ type: 'webhook-outgoing' }, { fields: { name: 1 } }).fetch();
 
 		outgoingIntegrations.forEach((i) => {
-			RocketChat.models.Integrations.update(i._id, { $set: { event: 'sendMessage', retryFailedCalls: true, retryCount: 6, retryDelay: 'powers-of-ten' }});
+			Integrations.update(i._id, { $set: { event: 'sendMessage', retryFailedCalls: true, retryCount: 6, retryDelay: 'powers-of-ten' } });
 		});
 	},
 	down() {
-		const outgoingIntegrations = RocketChat.models.Integrations.find({ type: 'webhook-outgoing', event: { $ne: 'sendMessage' }}, { fields: { name: 1 }}).fetch();
+		const outgoingIntegrations = Integrations.find({ type: 'webhook-outgoing', event: { $ne: 'sendMessage' } }, { fields: { name: 1 } }).fetch();
 
 		outgoingIntegrations.forEach((i) => {
-			RocketChat.models.Integrations.update(i._id, { $set: { enabled: false }});
+			Integrations.update(i._id, { $set: { enabled: false } });
 		});
-	}
+	},
 });

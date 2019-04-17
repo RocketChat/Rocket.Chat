@@ -1,17 +1,14 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import Global from '../../pageobjects/global';
 
-import {username, email, password} from '../../data/user.js';
-import {checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated} from '../../data/checks';
-import {publicChannelName} from '../../data/channel.js';
-import {targetUser} from '../../data/interactions.js';
+import { username, email, password } from '../../data/user.js';
+import { checkIfUserIsValid, publicChannelCreated, setPublicChannelCreated } from '../../data/checks';
+import { publicChannelName } from '../../data/channel.js';
+import { targetUser } from '../../data/interactions.js';
 
-describe('[Channel]', ()=> {
+describe('[Channel]', () => {
 	before(() => {
 		checkIfUserIsValid(username, email, password);
 		if (!publicChannelCreated) {
@@ -21,7 +18,7 @@ describe('[Channel]', ()=> {
 		}
 		sideNav.openChannel('general');
 	});
-	describe('[Search]', ()=> {
+	describe('[Search]', () => {
 		describe.skip('[SpotlightSearch]', () => {
 			describe('rocket.cat:', () => {
 				it('it should search rocket cat', () => {
@@ -100,13 +97,13 @@ describe('[Channel]', ()=> {
 		});
 	});
 
-	describe.skip('[Usage]', ()=> {
+	describe.skip('[Usage]', () => {
 		before(() => {
 			sideNav.openChannel(publicChannelName);
 		});
 
 		describe('Adding a user to the room:', () => {
-			before(()=> {
+			before(() => {
 				if (Global.toastAlert.isVisible()) {
 					Global.dismissToast();
 					Global.toastAlert.waitForVisible(5000, true);
@@ -114,7 +111,7 @@ describe('[Channel]', ()=> {
 				flexTab.operateFlexTab('members', true);
 			});
 
-			after(()=> {
+			after(() => {
 				if (Global.toastAlert.isVisible()) {
 					Global.dismissToast();
 					Global.toastAlert.waitForVisible(5000, true);
@@ -129,9 +126,9 @@ describe('[Channel]', ()=> {
 
 		});
 
-		describe('Channel settings:', ()=> {
-			describe('Channel name edit', ()=> {
-				before(()=> {
+		describe('Channel settings:', () => {
+			describe('Channel name edit', () => {
+				before(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -140,7 +137,7 @@ describe('[Channel]', ()=> {
 
 				});
 
-				after(()=> {
+				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -148,38 +145,38 @@ describe('[Channel]', ()=> {
 					flexTab.operateFlexTab('info', false);
 				});
 
-				it('it should show the old name', ()=> {
+				it('it should show the old name', () => {
 					flexTab.firstSetting.waitForVisible();
 					flexTab.firstSetting.getText().should.equal(publicChannelName);
 				});
 
-				it('it should click the edit name', ()=> {
+				it('it should click the edit name', () => {
 					flexTab.editNameBtn.waitForVisible();
 					flexTab.editNameBtn.click();
 				});
 
-				it('it should edit the name input', ()=> {
+				it('it should edit the name input', () => {
 					flexTab.editNameTextInput.waitForVisible();
 					flexTab.editNameTextInput.setValue(`NAME-EDITED-${ publicChannelName }`);
 				});
 
-				it('it should save the name', ()=> {
+				it('it should save the name', () => {
 					flexTab.editNameSave.click();
 				});
 
-				it('it should show the new name', ()=> {
+				it('it should show the new name', () => {
 					const channelName = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);
 					channelName.waitForVisible(5000);
 					channelName.getText().should.equal(`NAME-EDITED-${ publicChannelName }`);
 				});
 			});
 
-			describe('Channel topic edit', ()=> {
-				before(()=> {
+			describe('Channel topic edit', () => {
+				before(() => {
 					flexTab.operateFlexTab('info', true);
 				});
 
-				after(()=> {
+				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -187,31 +184,31 @@ describe('[Channel]', ()=> {
 					flexTab.operateFlexTab('info', false);
 				});
 
-				it('it should click the edit topic', ()=> {
+				it('it should click the edit topic', () => {
 					flexTab.editTopicBtn.waitForVisible(5000);
 					flexTab.editTopicBtn.click();
 				});
 
-				it('it should edit the topic input', ()=> {
+				it('it should edit the topic input', () => {
 					flexTab.editTopicTextInput.waitForVisible(5000);
 					flexTab.editTopicTextInput.setValue('TOPIC EDITED');
 				});
 
-				it('it should save the topic', ()=> {
+				it('it should save the topic', () => {
 					flexTab.editNameSave.click();
 				});
 
-				it('it should show the new topic', ()=> {
+				it('it should show the new topic', () => {
 					flexTab.secondSetting.getText().should.equal('TOPIC EDITED');
 				});
 			});
 
-			describe('Channel announcement edit', ()=> {
-				before(()=> {
+			describe('Channel announcement edit', () => {
+				before(() => {
 					flexTab.operateFlexTab('info', true);
 				});
 
-				after(()=> {
+				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -219,31 +216,31 @@ describe('[Channel]', ()=> {
 					flexTab.operateFlexTab('info', false);
 				});
 
-				it('it should click the edit announcement', ()=> {
+				it('it should click the edit announcement', () => {
 					flexTab.editAnnouncementBtn.waitForVisible(5000);
 					flexTab.editAnnouncementBtn.click();
 				});
 
-				it('it should edit the announcement input', ()=> {
+				it('it should edit the announcement input', () => {
 					flexTab.editAnnouncementTextInput.waitForVisible(5000);
 					flexTab.editAnnouncementTextInput.setValue('ANNOUNCEMENT EDITED');
 				});
 
-				it('it should save the announcement', ()=> {
+				it('it should save the announcement', () => {
 					flexTab.editNameSave.click();
 				});
 
-				it('it should show the new announcement', ()=> {
+				it('it should show the new announcement', () => {
 					flexTab.thirdSetting.getText().should.equal('ANNOUNCEMENT EDITED');
 				});
 			});
 
-			describe('Channel description edit', ()=> {
-				before(()=> {
+			describe('Channel description edit', () => {
+				before(() => {
 					flexTab.operateFlexTab('info', true);
 				});
 
-				after(()=> {
+				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -251,21 +248,21 @@ describe('[Channel]', ()=> {
 					flexTab.operateFlexTab('info', false);
 				});
 
-				it('it should click the edit description', ()=> {
+				it('it should click the edit description', () => {
 					flexTab.editDescriptionBtn.waitForVisible();
 					flexTab.editDescriptionBtn.click();
 				});
 
-				it('it should edit the description input', ()=> {
+				it('it should edit the description input', () => {
 					flexTab.editDescriptionTextInput.waitForVisible(5000);
 					flexTab.editDescriptionTextInput.setValue('DESCRIPTION EDITED');
 				});
 
-				it('it should save the description', ()=> {
+				it('it should save the description', () => {
 					flexTab.editNameSave.click();
 				});
 
-				it('it should show the new description', ()=> {
+				it('it should show the new description', () => {
 					flexTab.fourthSetting.getText().should.equal('DESCRIPTION EDITED');
 				});
 			});
@@ -273,21 +270,21 @@ describe('[Channel]', ()=> {
 
 		describe('Members tab usage:', () => {
 			describe('User muted', () => {
-				before(()=> {
+				before(() => {
 					flexTab.operateFlexTab('members', true);
 				});
 
-				after(()=> {
+				after(() => {
 					flexTab.operateFlexTab('members', false);
 				});
 
-				it('it should mute rocket cat', ()=> {
+				it('it should mute rocket cat', () => {
 					flexTab.muteUser(targetUser);
 				});
 			});
 
 			describe('Owner added', () => {
-				before(()=> {
+				before(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -295,7 +292,7 @@ describe('[Channel]', ()=> {
 					flexTab.operateFlexTab('members', true);
 				});
 
-				after(()=> {
+				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -303,28 +300,28 @@ describe('[Channel]', ()=> {
 					flexTab.operateFlexTab('members', false);
 				});
 
-				it('it should set rocket cat as owner', ()=> {
+				it('it should set rocket cat as owner', () => {
 					flexTab.setUserOwner(targetUser);
 				});
 
-				it('it should dismiss the toast', ()=> {
+				it('it should dismiss the toast', () => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
 				});
 
-				it('it should the last message should be a subscription role added', ()=> {
+				it('it should the last message should be a subscription role added', () => {
 					mainContent.lastMessageRoleAdded.isVisible().should.be.true;
 				});
 
-				it('it should show the target username in owner add message', ()=> {
+				it('it should show the target username in owner add message', () => {
 					mainContent.lastMessage.getText().should.have.string(targetUser);
 				});
 			});
 
 			describe('Moderator added', () => {
-				before(()=> {
+				before(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -333,7 +330,7 @@ describe('[Channel]', ()=> {
 
 				});
 
-				after(()=> {
+				after(() => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
@@ -341,27 +338,27 @@ describe('[Channel]', ()=> {
 					flexTab.operateFlexTab('members', false);
 				});
 
-				it('it should set rocket cat as moderator', ()=> {
+				it('it should set rocket cat as moderator', () => {
 					flexTab.setUserModerator(targetUser);
 				});
 
-				it('it should dismiss the toast', ()=> {
+				it('it should dismiss the toast', () => {
 					if (Global.toastAlert.isVisible()) {
 						Global.dismissToast();
 						Global.toastAlert.waitForVisible(5000, true);
 					}
 				});
 
-				it('it should be that the last message is a subscription role added', ()=> {
+				it('it should be that the last message is a subscription role added', () => {
 					mainContent.lastMessageRoleAdded.isVisible().should.be.true;
 				});
 
-				it('it should show the target username in moderator add message', ()=> {
+				it('it should show the target username in moderator add message', () => {
 					mainContent.lastMessage.getText().should.have.string(targetUser);
 				});
 			});
 
-			//no channel quit at the moment
+			// no channel quit at the moment
 			describe.skip('channel quit and enter', () => {
 				it('it should leave the channel', () => {
 					const channel = sideNav.getChannelFromList(`NAME-EDITED-${ publicChannelName }`);

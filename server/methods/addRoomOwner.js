@@ -1,3 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+import { hasPermission } from '../../app/authorization';
+import { Users, Subscriptions, Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { Notifications } from '../../app/notifications';
+
 Meteor.methods({
 	addRoomOwner(rid, userId) {
 		check(rid, String);
@@ -5,63 +12,63 @@ Meteor.methods({
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'set-owner', rid)) {
+		if (!hasPermission(Meteor.userId(), 'set-owner', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
 		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('owner') === true) {
 			throw new Meteor.Error('error-user-already-owner', 'User is already an owner', {
-				method: 'addRoomOwner'
+				method: 'addRoomOwner',
 			});
 		}
 
-		RocketChat.models.Subscriptions.addRoleById(subscription._id, 'owner');
+		Subscriptions.addRoleById(subscription._id, 'owner');
 
-		const fromUser = RocketChat.models.Users.findOneById(Meteor.userId());
+		const fromUser = Users.findOneById(Meteor.userId());
 
-		RocketChat.models.Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
+		Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
 			u: {
 				_id: fromUser._id,
-				username: fromUser.username
+				username: fromUser.username,
 			},
-			role: 'owner'
+			role: 'owner',
 		});
 
-		if (RocketChat.settings.get('UI_DisplayRoles')) {
-			RocketChat.Notifications.notifyLogged('roles-change', {
+		if (settings.get('UI_DisplayRoles')) {
+			Notifications.notifyLogged('roles-change', {
 				type: 'added',
 				_id: 'owner',
 				u: {
 					_id: user._id,
 					username: user.username,
-					name: user.name
+					name: user.name,
 				},
-				scope: rid
+				scope: rid,
 			});
 		}
 
 		return true;
-	}
+	},
 });

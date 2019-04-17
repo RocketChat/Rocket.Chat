@@ -1,23 +1,20 @@
-/* eslint-env mocha */
-/* eslint-disable func-names, prefer-arrow-callback */
-
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import Global from '../../pageobjects/global';
 
-//test data imports
-import {username, email, password} from '../../data/user.js';
-import {publicChannelName, privateChannelName} from '../../data/channel.js';
-import {targetUser, imgURL} from '../../data/interactions.js';
-import {checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated} from '../../data/checks';
+// test data imports
+import { username, email, password } from '../../data/user.js';
+import { publicChannelName, privateChannelName } from '../../data/channel.js';
+import { targetUser, imgURL } from '../../data/interactions.js';
+import { checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated } from '../../data/checks';
 
 
-//Test data
+// Test data
 const message = `message from ${ username }`;
 let currentTest = 'none';
 
 function messagingTest() {
-	describe('Normal message:', ()=> {
+	describe('Normal message:', () => {
 		it('it should send a message', () => {
 			mainContent.sendMessage(message);
 		});
@@ -39,7 +36,7 @@ function messagingTest() {
 		}
 	});
 
-	describe.skip('fileUpload:', ()=> {
+	describe.skip('fileUpload:', () => {
 		after(() => {
 		});
 		it('it should send a attachment', () => {
@@ -95,11 +92,11 @@ function messagingTest() {
 }
 
 function messageActionsTest() {
-	describe('[Actions]', ()=> {
+	describe('[Actions]', () => {
 		before(() => {
 			mainContent.sendMessage('Message for Message Actions Tests');
 		});
-		describe('Render:', ()=> {
+		describe('Render:', () => {
 			before(() => {
 				mainContent.openMessageActionMenu();
 			});
@@ -170,8 +167,8 @@ function messageActionsTest() {
 				});
 
 				it('it should check if the message was replied', () => {
-					mainContent.lastMessageTextAttachment.waitForVisible(5000);
-					mainContent.lastMessageTextAttachment.getText().should.equal(mainContent.beforeLastMessage.getText());
+					mainContent.lastMessageQuote.waitForVisible(5000);
+					mainContent.lastMessageQuote.getText().should.equal(mainContent.beforeLastMessage.getText());
 				});
 			});
 
@@ -257,13 +254,13 @@ function messageActionsTest() {
 }
 
 describe('[Message]', () => {
-	before(()=>{
+	before(() => {
 		checkIfUserIsValid(username, email, password);
 	});
 
 
 	describe('[GENERAL Channel]', () => {
-		before(()=>{
+		before(() => {
 			checkIfUserIsValid(username, email, password);
 			sideNav.spotlightSearchIcon.click();
 			sideNav.spotlightSearch.waitForVisible(10000);
@@ -275,7 +272,7 @@ describe('[Message]', () => {
 	});
 
 	describe('[Public Channel]', () => {
-		before(()=>{
+		before(() => {
 			if (!publicChannelCreated) {
 				sideNav.createChannel(publicChannelName, false, false);
 				setPublicChannelCreated(true);
@@ -289,7 +286,7 @@ describe('[Message]', () => {
 	});
 
 	describe('[Private Channel]', () => {
-		before(()=>{
+		before(() => {
 			if (!privateChannelCreated) {
 				sideNav.createChannel(privateChannelName, true, false);
 				setPrivateChannelCreated(true);
@@ -303,7 +300,7 @@ describe('[Message]', () => {
 	});
 
 	describe('[Direct Message]', () => {
-		before(()=>{
+		before(() => {
 			if (!directMessageCreated) {
 				sideNav.searchChannel(targetUser);
 				setDirectMessageCreated(true);

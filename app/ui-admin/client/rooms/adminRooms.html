@@ -1,0 +1,74 @@
+<template name="adminRooms">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			{{> header sectionName="Rooms" fixedHeight="true" fullpage="true"}}
+			<div class="content">
+				{{#unless hasPermission 'view-room-administration'}}
+					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+				{{else}}
+					<form class="search-form" role="form">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{#if isReady}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+								{{else}}
+									{{> loading }}
+								{{/if}}
+							</div>
+							<input id="rooms-filter" type="text" class="rc-input__element"
+									 placeholder="{{_ "Search"}}" autofocus dir="auto">
+						</div>
+						<label><input type="checkbox" name="room-type" value="c"> {{_ "Channels"}}</label>
+						<label><input type="checkbox" name="room-type" value="d"> {{_ "Direct_Messages"}}</label>
+						<label><input type="checkbox" name="room-type" value="p"> {{_ "Private_Groups"}}</label>
+					</form>
+					<div class="results">
+						{{{_ "Showing_results" roomCount}}}
+					</div>
+					{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+						<thead>
+							<tr>
+								<th width="30%"><div class="table-fake-th">{{_ "Name"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Type"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Users"}}</div></th>
+								<th width="10%"><div class="table-fake-th">{{_ "Msgs"}}</div></th>
+								<th width="20%"><div class="table-fake-th">{{_ "Default"}}</div></th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each rooms}}
+								<tr>
+									<td width="30%"><div class="rc-table-wrapper">
+										<div class="rc-table-avatar">{{> avatar username=name roomIcon="true"}}</div>
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{>icon icon="hashtag" block="rc-table-icon"}} {{name}}
+											</span>
+										</div>
+									</div></td>
+									<td width="20%"><div class="rc-table-wrapper">{{type}}</div></td>
+									<td width="20%"><div class="rc-table-wrapper">{{usersCount}}</div></td>
+									<td width="10%"><div class="rc-table-wrapper">{{msgs}}</div></td>
+									<td width="20%"><div class="rc-table-wrapper">{{default}}</div></td>
+								</tr>
+							 {{else}} {{# with searchText}}
+							<tr class="table-no-click">
+								<td>{{_ "No_results_found_for"}} {{.}}</td>
+							</tr>
+							{{/with}}
+							{{/each}}
+							{{#unless isReady}}
+								<tr class="table-no-click">
+									<td class="table-loading-td" colspan="{{#if showLastMessage}}5{{else}}4{{/if}}">{{> loading}}</td>
+								</tr>
+							{{/unless}}
+						</tbody>
+					{{/table}}
+				{{/unless}}
+			</div>
+		</section>
+		{{#with flexData}}
+			{{> flexTabBar}}
+		{{/with}}
+	</div>
+</template>

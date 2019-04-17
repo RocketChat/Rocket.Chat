@@ -2,23 +2,23 @@
 // import {isCI} from '../lib/ci';
 
 module.exports = {
-// 	// - - - - CHIMP - - - -
-// 	watch: false,
-// 	watchTags: '@watch,@focus',
-// 	domainSteps: null,
-// 	e2eSteps: null,
-// 	fullDomain: false,
-// 	domainOnly: false,
-// 	e2eTags: '@e2e',
-// 	watchWithPolling: false,
-// 	server: false,
-// 	serverPort: 8060,
-// 	serverHost: 'localhost',
-// 	sync: true,
-// 	offline: false,
-// 	showXolvioMessages: true,
+	// - - - - CHIMP - - - -
+	// 	watch: false,
+	// 	watchTags: '@watch,@focus',
+	// 	domainSteps: null,
+	// 	e2eSteps: null,
+	// 	fullDomain: false,
+	// 	domainOnly: false,
+	// 	e2eTags: '@e2e',
+	// 	watchWithPolling: false,
+	// 	server: false,
+	// 	serverPort: 8060,
+	// 	serverHost: 'localhost',
+	// 	sync: true,
+	// 	offline: false,
+	// 	showXolvioMessages: true,
 
-// 	// - - - - CUCUMBER - - - -
+	// - - - - CUCUMBER - - - -
 	path: 'tests/end-to-end',
 	// 	format: 'pretty',
 	// 	tags: '~@ignore',
@@ -27,7 +27,7 @@ module.exports = {
 	// 	chai: false,
 	screenshotsOnError: true,
 	screenshotsPath: '.screenshots',
-	captureAllStepScreenshots: false,
+	captureAllStepScreenshots: true,
 	saveScreenshotsToDisk: true,
 	// 	// Note: With a large viewport size and captureAllStepScreenshots enabled,
 	// 	// you may run out of memory. Use browser.setViewportSize to make the
@@ -37,7 +37,7 @@ module.exports = {
 	// 	compiler: 'js:' + path.resolve(__dirname, '../lib/babel-register.js'),
 	// 	conditionOutput: true,
 
-	// 	// - - - - SELENIUM  - - - -
+	// - - - - SELENIUM  - - - -
 	// 	browser: null,
 	// 	platform: 'ANY',
 	// 	name: '',
@@ -47,7 +47,7 @@ module.exports = {
 	// 	host: null,
 	// 	// deviceName: null,
 
-	// 	// - - - - WEBDRIVER-IO  - - - -
+	// - - - - WEBDRIVER-IO  - - - -
 	// 	webdriverio: {
 	// 		desiredCapabilities: {},
 	// 		logLevel: 'silent',
@@ -62,7 +62,7 @@ module.exports = {
 	// 		waitforInterval: 250,
 	// 	},
 
-	// 	// - - - - SELENIUM-STANDALONE
+	// - - - - SELENIUM-STANDALONE
 	// 	seleniumStandaloneOptions: {
 	// 		// check for more recent versions of selenium here:
 	// 		// http://selenium-release.storage.googleapis.com/index.html
@@ -93,16 +93,16 @@ module.exports = {
 	// 		}
 	// 	},
 
-	// 	// - - - - SESSION-MANAGER  - - - -
+	// - - - - SESSION-MANAGER  - - - -
 	// 	noSessionReuse: false,
 
-	// 	// - - - - SIMIAN  - - - -
+	// - - - - SIMIAN  - - - -
 	// 	simianResultEndPoint: 'api.simian.io/v1.0/result',
 	// 	simianAccessToken: false,
 	// 	simianResultBranch: null,
 	// 	simianRepositoryId: null,
 
-	// 	// - - - - MOCHA  - - - -
+	// - - - - MOCHA  - - - -
 	mocha: true,
 	mochaCommandLineOptions: ['--color'],
 	mochaConfig: {
@@ -112,11 +112,11 @@ module.exports = {
 		timeout: 40000,
 		reporter: 'spec',
 		slow: 100,
-		//retries: 3,
-		bail: true // bail after first test failure
+		// retries: 3,
+		bail: true, // bail after first test failure
 	},
 
-	// 	// - - - - JASMINE  - - - -
+	// - - - - JASMINE  - - - -
 	// 	jasmine: false,
 	// 	jasmineConfig: {
 	// 		specDir: '.',
@@ -134,21 +134,21 @@ module.exports = {
 	// 		// See: http://jasmine.github.io/2.4/node.html#section-Reporters
 	// 	},
 
-	// 	// - - - - METEOR  - - - -
-	ddp: 'http://localhost:3000'
-// 	serverExecuteTimeout: 10000,
+	// - - - - METEOR  - - - -
+	ddp: 'http://localhost:3000',
+	// 	serverExecuteTimeout: 10000,
 
-// 	// - - - - PHANTOM  - - - -
-// 	phantom_w: 1280,
-// 	phantom_h: 1024,
-// 	phantom_ignoreSSLErrors: false,
+	// - - - - PHANTOM  - - - -
+	// 	phantom_w: 1280,
+	// 	phantom_h: 1024,
+	// 	phantom_ignoreSSLErrors: false,
 
-// 	// - - - - DEBUGGING  - - - -
-// 	log: 'info',
-// 	debug: false,
-// 	seleniumDebug: null,
-// 	debugCucumber: null,
-// 	debugBrkCucumber: null,
-// 	debugMocha: null,
-// 	debugBrkMocha: null,
+	// - - - - DEBUGGING  - - - -
+	// 	log: 'info',
+	// 	debug: false,
+	// 	seleniumDebug: null,
+	// 	debugCucumber: null,
+	// 	debugBrkCucumber: null,
+	// 	debugMocha: null,
+	// 	debugBrkMocha: null,
 };

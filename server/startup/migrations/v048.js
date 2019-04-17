@@ -1,40 +1,43 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
+
+Migrations.add({
 	version: 48,
 	up() {
-		if (RocketChat && RocketChat.models && RocketChat.models.Settings) {
+		if (Settings) {
 
-			const RocketBot_Enabled = RocketChat.models.Settings.findOne({
-				_id: 'RocketBot_Enabled'
+			const RocketBot_Enabled = Settings.findOne({
+				_id: 'RocketBot_Enabled',
 			});
 			if (RocketBot_Enabled) {
-				RocketChat.models.Settings.remove({
-					_id: 'RocketBot_Enabled'
+				Settings.remove({
+					_id: 'RocketBot_Enabled',
 				});
-				RocketChat.models.Settings.upsert({
-					_id: 'InternalHubot_Enabled'
+				Settings.upsert({
+					_id: 'InternalHubot_Enabled',
 				}, {
 					$set: {
-						value: RocketBot_Enabled.value
-					}
+						value: RocketBot_Enabled.value,
+					},
 				});
 			}
 
-			const RocketBot_Name = RocketChat.models.Settings.findOne({
-				_id: 'RocketBot_Name'
+			const RocketBot_Name = Settings.findOne({
+				_id: 'RocketBot_Name',
 			});
 			if (RocketBot_Name) {
-				RocketChat.models.Settings.remove({
-					_id: 'RocketBot_Name'
+				Settings.remove({
+					_id: 'RocketBot_Name',
 				});
-				RocketChat.models.Settings.upsert({
-					_id: 'InternalHubot_Username'
+				Settings.upsert({
+					_id: 'InternalHubot_Username',
 				}, {
 					$set: {
-						value: RocketBot_Name.value
-					}
+						value: RocketBot_Name.value,
+					},
 				});
 			}
 
 		}
-	}
+	},
 });

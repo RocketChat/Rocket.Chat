@@ -1,6 +1,12 @@
-/* globals UserPresence, fireGlobalEvent, isRtl */
-
-import moment from 'moment';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
+import { TimeSync } from 'meteor/mizzao:timesync';
+import { UserPresence } from 'meteor/konecty:user-presence';
+import { fireGlobalEvent } from '../../app/ui-utils';
+import { settings } from '../../app/settings';
+import { Users } from '../../app/models';
+import { getUserPreference } from '../../app/utils';
 import toastr from 'toastr';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
@@ -17,115 +23,50 @@ if (window.DISABLE_ANIMATION) {
 Meteor.startup(function() {
 	TimeSync.loggingEnabled = false;
 
-	const userHasPreferences = (user) => {
-		if (!user) {
-			return false;
-		}
-
-		const userHasSettings = user.hasOwnProperty('settings');
-
-		if (!userHasSettings) {
-			return false;
-		}
-
-		return user.settings.hasOwnProperty('preferences');
-	};
-
-	Meteor.subscribe('activeUsers');
-
 	Session.setDefault('AvatarRandom', 0);
 
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 
-	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n');
-
-	const defaultAppLanguage = function() {
-		let lng = window.navigator.userLanguage || window.navigator.language || 'en';
-		// Fix browsers having all-lowercase language settings eg. pt-br, en-us
-		const re = /([a-z]{2}-)([a-z]{2})/;
-		if (re.test(lng)) {
-			lng = lng.replace(re, (match, ...parts) => {
-				return parts[0] + parts[1].toUpperCase();
-			});
-		}
-		return lng;
-	};
-
-	window.defaultUserLanguage = function() {
-		return RocketChat.settings.get('Language') || defaultAppLanguage();
-	};
-
-	const availableLanguages = TAPi18n.getLanguages();
-	const loadedLanguages = [];
-
-	window.setLanguage = function(language) {
-		if (!language) {
+	Tracker.autorun(function(computation) {
+		if (!Meteor.userId() && !settings.get('Accounts_AllowAnonymousRead')) {
 			return;
 		}
+		Meteor.subscribe('userData');
+		Meteor.subscribe('activeUsers');
+		computation.stop();
+	});
 
-		if (loadedLanguages.indexOf(language) > -1) {
+	let status = undefined;
+	Tracker.autorun(function() {
+		if (!Meteor.userId()) {
 			return;
 		}
-
-		loadedLanguages.push(language);
-
-		if (isRtl(language)) {
-			$('html').addClass('rtl');
-		} else {
-			$('html').removeClass('rtl');
-		}
-
-		if (!availableLanguages[language]) {
-			language = language.split('-').shift();
-		}
-
-		TAPi18n.setLanguage(language);
-
-		language = language.toLowerCase();
-		if (language !== 'en') {
-			Meteor.call('loadLocale', language, (err, localeFn) => {
-				Function(localeFn).call({moment});
-				moment.locale(language);
-			});
-		}
-	};
-
-	const defaultIdleTimeLimit = 300;
-
-	Meteor.subscribe('userData', function() {
-		const user = Meteor.user();
-		const userLanguage = user && user.language ? user.language : window.defaultUserLanguage();
-
-		if (!userHasPreferences(user)) {
-			UserPresence.awayTime = defaultIdleTimeLimit * 1000;
-			UserPresence.start();
-		} else {
-			UserPresence.awayTime = (user.settings.preferences.idleTimeLimit || defaultIdleTimeLimit) * 1000;
-
-			if (user.settings.preferences.hasOwnProperty('enableAutoAway')) {
-				user.settings.preferences.enableAutoAway && UserPresence.start();
-			} else {
-				UserPresence.start();
-			}
-		}
-
-		if (localStorage.getItem('userLanguage') !== userLanguage) {
-			localStorage.setItem('userLanguage', userLanguage);
-		}
-
-		window.setLanguage(userLanguage);
-
-		let status = undefined;
-		Tracker.autorun(function() {
-			if (!Meteor.userId()) {
-				return;
-			}
-
-			if (user && user.status !== status) {
-				status = user.status;
-				fireGlobalEvent('status-changed', status);
-			}
+		const user = Users.findOne(Meteor.userId(), {
+			fields: {
+				status: 1,
+				'settings.preferences.idleTimeLimit': 1,
+				'settings.preferences.enableAutoAway': 1,
+			},
 		});
+
+		if (!user) {
+			return;
+		}
+
+		if (getUserPreference(user, 'enableAutoAway')) {
+			const idleTimeLimit = getUserPreference(user, 'idleTimeLimit') || 300;
+			UserPresence.awayTime = idleTimeLimit * 1000;
+		} else {
+			delete UserPresence.awayTime;
+			UserPresence.stopTimer();
+		}
+
+		UserPresence.start();
+
+		if (user.status !== status) {
+			status = user.status;
+			fireGlobalEvent('status-changed', status);
+		}
 	});
 });

@@ -1,3 +1,46 @@
-#!/bin/sh
-cp $SNAP/bin/Caddyfile  $SNAP_DATA/Caddyfile
-echo "Replace $SNAP_DATA/Caddyfile with your own to customize reverse proxy" 
+#!/bin/bash
+
+# Config options for Caddyfile
+#options="site path port"
+options="caddy-url port"
+
+refresh_opt_in_config() {
+# replace an option inside the config file.
+    opt=$1
+    value="$2"
+    if $(grep -q "_${opt}_" $Caddyfile); then
+        sed "s,_${opt}_,$value," $Caddyfile 2>/dev/null > ${Caddyfile}.new
+        mv -f ${Caddyfile}.new $Caddyfile 2>/dev/null
+    else
+        echo "Fail to update $opt in Caddyfile" 
+    fi
+}
+
+create_caddyfile(){
+# Copy template to config Caddyfile
+cp $SNAP/bin/Caddyfile $SNAP_DATA/Caddyfile
+}
+
+update_caddyfile(){
+# Config file path for Caddyfile
+Caddyfile=$SNAP_DATA/Caddyfile
+
+# Iterate through the config options array
+for opt in $options
+    do
+    # Use snapctl to get the value registered by the snap set command
+    refresh_opt_in_config $opt $(snapctl get $opt)
+done
+}
+
+caddy="$(snapctl get caddy)"
+if [[ $caddy == "disable" ]]; then
+  echo "Caddy is not enabled, please set caddy-url=<your_url> and caddy=enable"
+  exit 1
+fi
+
+create_caddyfile
+update_caddyfile
+
+echo "Your URL was successfully configured - Please restart rocketchat and caddy services to apply configuration changes"
+
