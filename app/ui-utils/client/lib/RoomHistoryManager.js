@@ -16,11 +16,11 @@ export const normalizeThreadMessage = mem((message) => {
 	if (message.attachments) {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
-		if (attachment.description) {
+		if (attachment && attachment.description) {
 			return s.escapeHTML(attachment.description);
 		}
 
-		if (attachment.title) {
+		if (attachment && attachment.title) {
 			return s.escapeHTML(attachment.title);
 		}
 	}
