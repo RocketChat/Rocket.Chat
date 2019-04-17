@@ -1,4 +1,3 @@
-import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../../app/models/server';
@@ -10,7 +9,7 @@ import {
 	setCacheAndDispositionHeaders,
 } from './utils';
 
-WebApp.connectHandlers.use('/avatar/room/', Meteor.bindEnvironment(function(req, res/* , next*/) {
+export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 	const roomId = req.url.substr(1);
 	const requestRoom = Rooms.findOneById(roomId, { fields: { name: 1, prid: 1 } });
 
@@ -33,4 +32,4 @@ WebApp.connectHandlers.use('/avatar/room/', Meteor.bindEnvironment(function(req,
 	const svg = renderSVGLetters(room.name, req.query.size && parseInt(req.query.size));
 
 	return serveAvatar(svg, req, res);
-}));
+});

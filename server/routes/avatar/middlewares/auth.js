@@ -1,12 +1,9 @@
-import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
-import {
-	userCanAccessAvatar,
-} from '../utils';
+import { userCanAccessAvatar } from '../utils';
 
 // protect all avatar endpoints
-WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res, next) {
+export const protectAvatars = Meteor.bindEnvironment((req, res, next) => {
 	if (!userCanAccessAvatar(req)) {
 		res.writeHead(403);
 		res.write('Forbidden');
@@ -15,4 +12,4 @@ WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res,
 	}
 
 	return next();
-}));
+});

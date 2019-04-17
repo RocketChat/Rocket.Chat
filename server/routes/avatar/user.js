@@ -1,4 +1,3 @@
-import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../app/file-upload';
@@ -13,7 +12,7 @@ import {
 } from './utils';
 
 // request /avatar/@name forces returning the svg
-WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res) {
+export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 	const requestUsername = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
 
 	if (!requestUsername) {
@@ -74,5 +73,4 @@ WebApp.connectHandlers.use('/avatar/', Meteor.bindEnvironment(function(req, res)
 
 	serveAvatar(svg, req, res);
 	return;
-}));
-
+});
