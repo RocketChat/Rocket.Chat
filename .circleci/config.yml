@@ -151,7 +151,9 @@ jobs:
           environment:
             TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
-            if [[ $CIRCLE_TAG ]]; then meteor reset; fi
+            if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == 'develop' ]]; then
+              meteor reset;
+            fi
 
             export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
             if [[ -z $CIRCLE_PR_NUMBER ]]; then
