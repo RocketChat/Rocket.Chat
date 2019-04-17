@@ -51,7 +51,7 @@ function createDirectRoom(source, target, extraData, options) {
 }
 
 Meteor.methods({
-  sendBroadcastMessage(reply, users) {
+	sendBroadcastMessage(reply, users) {
 		check(reply, String);
 		check(users, Match.Optional([String]));
 
