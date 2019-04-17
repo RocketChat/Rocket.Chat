@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Token Path",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Jeton Trimis Via",
   "Accounts_OAuth_Custom_Username_Field": "Numele câmpului",
+  "Accounts_OAuth_Custom_Roles_Claim": "Numele câmpului Roluri / Grupuri",
   "Accounts_OAuth_Drupal": "Conectare Drupal activată",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "Codul clientului Drupal oAuth2",

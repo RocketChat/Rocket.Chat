@@ -13,6 +13,7 @@ const config = {
 		forLoggedInUser: ['services.wordpress'],
 		forOtherUsers: ['services.wordpress.user_login'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const WordPress = new CustomOAuth('wordpress', config);
