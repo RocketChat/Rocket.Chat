@@ -950,7 +950,7 @@ describe('[Chat]', function() {
 				});
 			});
 
-			it('should return an error when threads are not allowed in this server', (done) => {
+			it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.get(api('chat.getThreadsList'))
 						.set(credentials)
@@ -1035,7 +1035,7 @@ describe('[Chat]', function() {
 					});
 			});
 
-			it('should return an error when threads are not allowed in this server', (done) => {
+			it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.get(api('chat.getThreadsList'))
 						.set(credentials)
@@ -1198,7 +1198,7 @@ describe('[Chat]', function() {
 				});
 			});
 
-			it('should return an error when threads are not allowed in this server', (done) => {
+			it('should return an error for chat.getThreadMessages when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.get(api('chat.getThreadMessages'))
 						.set(credentials)
@@ -1286,7 +1286,7 @@ describe('[Chat]', function() {
 					});
 			});
 
-			it('should return an error when threads are not allowed in this server', (done) => {
+			it('should return an error for chat.syncThreadMessages when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.get(api('chat.syncThreadMessages'))
 						.set(credentials)
@@ -1428,7 +1428,7 @@ describe('[Chat]', function() {
 					});
 			});
 
-			it('should return an error when threads are not allowed in this server', (done) => {
+			it('should return an error for chat.followMessage when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.post(api('chat.followMessage'))
 						.set(credentials)
@@ -1526,7 +1526,7 @@ describe('[Chat]', function() {
 					});
 			});
 
-			it('should return an error when threads are not allowed in this server', (done) => {
+			it('should return an error for chat.unfollowMessage when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.post(api('chat.unfollowMessage'))
 						.set(credentials)
