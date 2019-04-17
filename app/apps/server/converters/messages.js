@@ -1,5 +1,6 @@
 import { Random } from 'meteor/random';
 import { Messages, Rooms, Users } from '../../../models';
+import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
 	constructor(orch) {
@@ -17,42 +18,55 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		const room = this.orch.getConverters().get('rooms').convertById(msgObj.rid);
+		const map = {
+			id: '_id',
+			reactions: 'reactions',
+			parseUrls: 'parseUrls',
+			text: 'msg',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			editedAt: 'editedAt',
+			emoji: 'emoji',
+			avatarUrl: 'avatar',
+			alias: 'alias',
+			customFields: 'customFields',
+			groupable: 'groupable',
+			room: (message) => {
+				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
+				delete message.rid;
+				return result;
+			},
+			editor: (message) => {
+				const { editedBy } = message;
+				delete message.editedBy;
 
-		let sender;
-		if (msgObj.u && msgObj.u._id) {
-			sender = this.orch.getConverters().get('users').convertById(msgObj.u._id);
+				if (!editedBy) {
+					return undefined;
+				}
 
-			if (!sender) {
-				sender = this.orch.getConverters().get('users').convertToApp(msgObj.u);
-			}
-		}
+				return this.orch.getConverters().get('users').convertById(editedBy._id);
+			},
+			attachments: (message) => {
+				const result = this._convertAttachmentsToApp(message.attachments);
+				delete message.attachments;
+				return result;
+			},
+			sender: (message) => {
+				let result;
 
-		let editor;
-		if (msgObj.editedBy) {
-			editor = this.orch.getConverters().get('users').convertById(msgObj.editedBy._id);
-		}
+				if (message.u && message.u._id) {
+					result = this.orch.getConverters().get('users').convertById(message.u._id);
+				} else {
+					result = this.orch.getConverters().get('users').convertToApp(message.u);
+				}
 
-		const attachments = this._convertAttachmentsToApp(msgObj.attachments);
+				delete message.u;
 
-		return {
-			id: msgObj._id,
-			room,
-			sender,
-			text: msgObj.msg,
-			createdAt: msgObj.ts,
-			updatedAt: msgObj._updatedAt,
-			editor,
-			editedAt: msgObj.editedAt,
-			emoji: msgObj.emoji,
-			avatarUrl: msgObj.avatar,
-			alias: msgObj.alias,
-			customFields: msgObj.customFields,
-			groupable: msgObj.groupable,
-			attachments,
-			reactions: msgObj.reactions,
-			parseUrls: msgObj.parseUrls,
+				return result;
+			},
 		};
+
+		return transformMappedData(msgObj, map);
 	}
 
 	convertAppMessage(message) {
@@ -96,7 +110,7 @@ export class AppMessagesConverter {
 
 		const attachments = this._convertAppAttachments(message.attachments);
 
-		return {
+		const newMessage = {
 			_id: message.id || Random.id(),
 			rid: room._id,
 			u,
@@ -114,6 +128,8 @@ export class AppMessagesConverter {
 			reactions: message.reactions,
 			parseUrls: message.parseUrls,
 		};
+
+		return Object.assign(newMessage, message._unmappedProperties_);
 	}
 
 	_convertAppAttachments(attachments) {
@@ -121,7 +137,7 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		return attachments.map((attachment) => ({
+		return attachments.map((attachment) => Object.assign({
 			collapsed: attachment.collapsed,
 			color: attachment.color,
 			text: attachment.text,
@@ -150,15 +166,7 @@ export class AppMessagesConverter {
 			actions: attachment.actions,
 			type: attachment.type,
 			description: attachment.description,
-		})).map((a) => {
-			Object.keys(a).forEach((k) => {
-				if (typeof a[k] === 'undefined') {
-					delete a[k];
-				}
-			});
-
-			return a;
-		});
+		}, attachment._unmappedProperties_));
 	}
 
 	_convertAttachmentsToApp(attachments) {
@@ -166,51 +174,61 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		return attachments.map((attachment) => {
-			let author;
-			if (attachment.author_name || attachment.author_link || attachment.author_icon) {
-				author = {
-					name: attachment.author_name,
-					link: attachment.author_link,
-					icon: attachment.author_icon,
-				};
-			}
+		const map = {
+			collapsed: 'collapsed',
+			color: 'color',
+			text: 'text',
+			timestampLink: 'message_link',
+			thumbnailUrl: 'thumb_url',
+			imageDimensions: 'image_dimensions',
+			imagePreview: 'image_preview',
+			imageUrl: 'image_url',
+			imageType: 'image_type',
+			imageSize: 'image_size',
+			audioUrl: 'audio_url',
+			audioType: 'audio_type',
+			audioSize: 'audio_size',
+			videoUrl: 'video_url',
+			videoType: 'video_type',
+			videoSize: 'video_size',
+			fields: 'fields',
+			actionButtonsAlignment: 'button_alignment',
+			actions: 'actions',
+			type: 'type',
+			description: 'description',
+			author: (attachment) => {
+				const {
+					author_name: name,
+					author_link: link,
+					author_icon: icon,
+				} = attachment;
 
-			let title;
-			if (attachment.title || attachment.title_link || attachment.title_link_download) {
-				title = {
-					value: attachment.title,
-					link: attachment.title_link,
-					displayDownloadLink: attachment.title_link_download,
-				};
-			}
+				delete attachment.author_name;
+				delete attachment.author_link;
+				delete attachment.author_icon;
 
-			return {
-				collapsed: attachment.collapsed,
-				color: attachment.color,
-				text: attachment.text,
-				timestamp: new Date(attachment.ts),
-				timestampLink: attachment.message_link,
-				thumbnailUrl: attachment.thumb_url,
-				author,
-				title,
-				imageDimensions: attachment.image_dimensions,
-				imagePreview: attachment.image_preview,
-				imageUrl: attachment.image_url,
-				imageType: attachment.image_type,
-				imageSize: attachment.image_size,
-				audioUrl: attachment.audio_url,
-				audioType: attachment.audio_type,
-				audioSize: attachment.audio_size,
-				videoUrl: attachment.video_url,
-				videoType: attachment.video_type,
-				videoSize: attachment.video_size,
-				fields: attachment.fields,
-				actionButtonsAlignment: attachment.button_alignment,
-				actions: attachment.actions,
-				type: attachment.type,
-				description: attachment.description,
-			};
-		});
+				return { name, link, icon };
+			},
+			title: (attachment) => {
+				const {
+					title: value,
+					title_link: link,
+					title_link_download: displayDownloadLink,
+				} = attachment;
+
+				delete attachment.title;
+				delete attachment.title_link;
+				delete attachment.title_link_download;
+
+				return { value, link, displayDownloadLink };
+			},
+			timestamp: (attachment) => {
+				const result = new Date(attachment.ts);
+				delete attachment.ts;
+				return result;
+			},
+		};
+
+		return attachments.map((attachment) => transformMappedData(attachment, map));
 	}
 }

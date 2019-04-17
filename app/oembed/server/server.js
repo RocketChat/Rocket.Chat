@@ -11,6 +11,7 @@ import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
+import { isURL } from '../../utils/lib/isURL';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
@@ -254,16 +255,7 @@ OEmbed.rocketUrlParser = function(message) {
 			if (item.ignoreParse === true) {
 				return;
 			}
-			if (item.url.startsWith('grain://')) {
-				changed = true;
-				item.meta = {
-					sandstorm: {
-						grain: item.sandstormViewInfo,
-					},
-				};
-				return;
-			}
-			if (!/^https?:\/\//i.test(item.url)) {
+			if (!isURL(item.url)) {
 				return;
 			}
 			const data = OEmbed.getUrlMetaWithCache(item.url);

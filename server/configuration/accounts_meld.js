@@ -13,11 +13,10 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		'meteor-developer',
 		'linkedin',
 		'twitter',
-		'sandstorm',
 	];
 
 	if (services.includes(serviceName) === false && serviceData._OAuthCustom !== true) {
-		return;
+		return orig_updateOrCreateUserFromExternalService.apply(this, [serviceName, serviceData, ...args]);
 	}
 
 	if (serviceName === 'meteor-developer') {

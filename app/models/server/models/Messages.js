@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Base } from './_Base';
 import Rooms from './Rooms';
-import Users from './Users';
+import { settings } from '../../../settings/server/functions/settings';
+import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
 import _ from 'underscore';
 
 export class Messages extends Base {
@@ -25,17 +25,12 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
+		// discussions
+		this.tryEnsureIndex({ drid: 1 }, { sparse: true });
 		// threads
-		this.tryEnsureIndex({ trid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
+		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
 
-		this.loadSettings();
-	}
-
-	loadSettings() {
-		Meteor.startup(async() => {
-			const { settings } = await import('../../../settings');
-			this.settings = settings;
-		});
 	}
 
 	setReactions(messageId, reactions) {
@@ -160,7 +155,7 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreThreads = true, ts, users = [], options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], options = {}) {
 		const query = {
 			rid,
 			ts,
@@ -171,8 +166,8 @@ export class Messages extends Base {
 			query.pinned = { $ne: true };
 		}
 
-		if (ignoreThreads) {
-			query.trid = { $exists: 0 };
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -182,11 +177,11 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findThreadByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
+	findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
 		const query = {
 			rid,
 			ts,
-			trid: { $exists: 1 },
+			drid: { $exists: 1 },
 		};
 
 		if (excludePinned) {
@@ -496,15 +491,14 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	cloneAndSaveAsHistoryById(_id) {
-		const me = Users.findOneById(Meteor.userId());
+	cloneAndSaveAsHistoryById(_id, user) {
 		const record = this.findOneById(_id);
 		record._hidden = true;
 		record.parent = record._id;
 		record.editedAt = new Date;
 		record.editedBy = {
-			_id: Meteor.userId(),
-			username: me.username,
+			_id: user._id,
+			username: user.username,
 		};
 		delete record._id;
 		return this.insert(record);
@@ -647,7 +641,7 @@ export class Messages extends Base {
 		} else {
 			update = {
 				$pull: {
-					starred: { _id: Meteor.userId() },
+					starred: { _id: userId },
 				},
 			};
 		}
@@ -727,7 +721,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (this.settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -756,7 +750,7 @@ export class Messages extends Base {
 			groupable: false,
 		};
 
-		if (this.settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.get('Message_Read_Receipt_Enabled')) {
 			record.unread = true;
 		}
 
@@ -771,7 +765,7 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
 	}
 
-	createUserJoinWithRoomIdAndUserThread(roomId, user, extraData) {
+	createUserJoinWithRoomIdAndUserDiscussion(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ut', roomId, message, user, extraData);
 	}
@@ -868,7 +862,7 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreThreads = true, ts, limit, users = []) {
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = []) {
 		const query = {
 			rid,
 			ts,
@@ -878,8 +872,8 @@ export class Messages extends Base {
 			query.pinned = { $ne: true };
 		}
 
-		if (ignoreThreads) {
-			query.trid = { $exists: 0 };
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
 		}
 
 		if (users.length) {
@@ -911,10 +905,6 @@ export class Messages extends Base {
 	}
 
 	async removeFilesByRoomId(roomId) {
-		if (!this.FileUpload) {
-			const { FileUpload } = await import('../../../file-upload');
-			this.FileUpload = FileUpload;
-		}
 		this.find({
 			rid: roomId,
 			'file._id': {
@@ -924,7 +914,7 @@ export class Messages extends Base {
 			fields: {
 				'file._id': 1,
 			},
-		}).fetch().forEach((document) => this.FileUpload.getStore('Uploads').deleteById(document.file._id));
+		}).fetch().forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
 	}
 
 	getMessageByFileId(fileID) {
@@ -973,17 +963,17 @@ export class Messages extends Base {
 	}
 
 	/**
-	 * Copy metadata from the thread to the system message in the parent channel
-	 * which links to the thread.
+	 * Copy metadata from the discussion to the system message in the parent channel
+	 * which links to the discussion.
 	 * Since we don't pass this metadata into the model's function, it is not a subject
 	 * to race conditions: If multiple updates occur, the current state will be updated
-	 * only if the new state of the thread room is really newer.
+	 * only if the new state of the discussion room is really newer.
 	 */
-	refreshThreadMetadata({ rid }) {
+	refreshDiscussionMetadata({ rid }) {
 		if (!rid) {
 			return false;
 		}
-		const { lm, msgs: count } = Rooms.findOneById(rid, {
+		const { lm: dlm, msgs: dcount } = Rooms.findOneById(rid, {
 			fields: {
 				msgs: 1,
 				lm: 1,
@@ -991,23 +981,128 @@ export class Messages extends Base {
 		});
 
 		const query = {
-			trid: rid,
+			drid: rid,
 		};
 
 		return this.update(query, {
 			$set: {
-				'attachments.0.fields': [
-					{
-						type: 'messageCounter',
-						count,
-					},
-					{
-						type: 'lastMessageAge',
-						lm,
-					},
-				],
+				dcount,
+				dlm,
 			},
 		}, { multi: 1 });
+	}
+
+	// //////////////////////////////////////////////////////////////////
+	// threads
+
+	countThreads() {
+		return this.find({ tcount: { $exists: true } }).count();
+	}
+
+	removeThreadRefByThreadId(tmid) {
+		const query = { tmid };
+		const update = {
+			$unset: {
+				tmid: 1,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
+	updateRepliesByThreadId(tmid, replies, ts) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$addToSet: {
+				replies: {
+					$each: replies,
+				},
+			},
+			$set: {
+				tlm: ts,
+			},
+			$inc: {
+				tcount: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	getThreadFollowsByThreadId(tmid) {
+		const msg = this.findOneById(tmid, { fields: { replies: 1 } });
+		return msg && msg.replies;
+	}
+
+	getFirstReplyTsByThreadId(tmid) {
+		return this.findOne({ tmid }, { fields: { ts: 1 }, sort: { ts: 1 } });
+	}
+
+	unsetThreadByThreadId(tmid) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$unset: {
+				tcount: 1,
+				tlm: 1,
+				replies: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	updateThreadLastMessageAndCountByThreadId(tmid, tlm, tcount) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$set: {
+				tlm,
+			},
+			$inc: {
+				tcount,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	addThreadFollowerByThreadId(tmid, userId) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$addToSet: {
+				replies: userId,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	removeThreadFollowerByThreadId(tmid, userId) {
+		const query = {
+			_id: tmid,
+		};
+
+		const update = {
+			$pull: {
+				replies: userId,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findThreadsByRoomId(rid, skip, limit) {
+		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
 	}
 }
 

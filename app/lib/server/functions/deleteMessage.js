@@ -4,7 +4,7 @@ import { settings } from '../../../settings';
 import { Messages, Uploads, Rooms } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { callbacks } from '../../../callbacks';
-import { Apps } from '../../../apps';
+import { Apps } from '../../../apps/server';
 
 export const deleteMessage = function(message, user) {
 	const keepHistory = settings.get('Message_KeepHistory');
@@ -20,7 +20,7 @@ export const deleteMessage = function(message, user) {
 
 	if (keepHistory) {
 		if (showDeletedStatus) {
-			Messages.cloneAndSaveAsHistoryById(message._id);
+			Messages.cloneAndSaveAsHistoryById(message._id, user);
 		} else {
 			Messages.setHiddenById(message._id, true);
 		}
@@ -39,9 +39,7 @@ export const deleteMessage = function(message, user) {
 	}
 
 	const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1, prid: 1, mid: 1 } });
-	Meteor.defer(function() {
-		callbacks.run('afterDeleteMessage', deletedMsg);
-	});
+	callbacks.run('afterDeleteMessage', deletedMsg, room, user);
 
 	// update last message
 	if (settings.get('Store_Last_Message')) {

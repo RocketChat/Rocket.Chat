@@ -1,9 +1,10 @@
 import os from 'os';
 import { HTTP } from 'meteor/http';
+import { check, Match } from 'meteor/check';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
-import { getWorkspaceAccessToken } from '../../../cloud';
+import { getWorkspaceAccessToken } from '../../../cloud/server';
 import { MongoInternals } from 'meteor/mongo';
 
 export default () => {
@@ -12,7 +13,7 @@ export default () => {
 		const { _oplogHandle } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 		const oplogEnabled = _oplogHandle && _oplogHandle.onOplogEntry && settings.get('Force_Disable_OpLog_For_Cache') !== true;
 
-		const data = {
+		const params = {
 			uniqueId: uniqueID.value,
 			installedAt: uniqueID.createdAt,
 			version: Info.version,
@@ -32,12 +33,24 @@ export default () => {
 			headers.Authorization = `Bearer ${ token }`;
 		}
 
-		const result = HTTP.get('https://releases.rocket.chat/updates/check', {
-			params: data,
+		const { data } = HTTP.get('https://releases.rocket.chat/updates/check', {
+			params,
 			headers,
 		});
 
-		return result.data;
+		check(data, Match.ObjectIncluding({
+			versions: [String],
+			alerts: Match.Optional([Match.ObjectIncluding({
+				id: Match.Optional(String),
+				title: Match.Optional(String),
+				text: Match.Optional(String),
+				textArguments: Match.Optional([Match.Any]),
+				modifiers: Match.Optional([String]),
+				infoUrl: Match.Optional(String),
+			})]),
+		}));
+
+		return data;
 	} catch (error) {
 		// There's no need to log this error
 		// as it's pointless and the user

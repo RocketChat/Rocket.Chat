@@ -6,7 +6,8 @@
 		{{else}}
 			{{pretext}}
 		{{/if}}
-		<div class="attachment-block">
+		<div class="color-primary-font-color {{# unless $eq color 'none'}}attachment-block{{/unless}}">
+
 			<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
 			{{#if author_name}}
 				{{#if author_link}}
@@ -56,7 +57,7 @@
 					{{#if title_link}}
 						<a href="{{title_link}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
 						{{#if title_link_download}}
-							<a class="attachment-download-icon" href="{{title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
+							<a class="attachment-download-icon rc-tooltip" aria-label="{{_ 'Download'}}" href="{{title_link}}" target="_blank" download="" rel="noopener noreferrer">{{> icon icon="download"}}</a>
 						{{/if}}
 					{{else}}
 						{{title}}
@@ -90,7 +91,7 @@
 					<div class="attachment-image inline-image">
 					{{#if loadImage}}
 						<figure>
-							{{> lazyloadImage src=image_url preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
+							{{> lazyloadImage src=(getURL image_url) preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
 							{{#if labels}}
 								<div class="image-labels">
 									{{#each labels}}
@@ -116,7 +117,7 @@
 				{{#unless mediaCollapsed}}
 					<div class="attachment-audio">
 						<audio controls>
-							<source src="{{audio_url}}" type="{{audio_type}}" data-description="{{description}}">
+							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
 							Your browser does not support the audio element.
 						</audio>
 					</div>
@@ -127,7 +128,7 @@
 				{{#unless mediaCollapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
-							<source src="{{video_url}}" type="{{video_type}}" data-description="{{description}}">
+							<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
 							Your browser does not support the video element.
 						</video>
 					</div>
