@@ -16,11 +16,7 @@ const packagePath = path.join(path.resolve('.'), 'packages', 'rocketchat-livecha
 const pluginPath = path.join(packagePath, 'plugin');
 
 const options = {
-	env: {
-		CIRCLE_PR_NUMBER: process.env.CIRCLE_PR_NUMBER,
-		METEOR_PROFILE: process.env.METEOR_PROFILE,
-		HOME: process.env.HOME,
-	},
+	env: process.env,
 };
 
 if (process.platform === 'win32') {
