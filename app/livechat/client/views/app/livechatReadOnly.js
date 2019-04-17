@@ -7,6 +7,7 @@ import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import { handleError } from '../../../../utils';
 import { call } from '../../../../ui-utils/client';
 import { settings } from '../../../../settings';
+import './livechatReadOnly.html';
 
 Template.livechatReadOnly.helpers({
 	inquiryOpen() {

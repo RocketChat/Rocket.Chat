@@ -10,6 +10,7 @@ import { hasRole } from '../../../../authorization';
 import { Users } from '../../../../models';
 import { t, handleError, getUserPreference } from '../../../../utils';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+import './livechat.html';
 
 Template.livechat.helpers({
 	isActive() {
