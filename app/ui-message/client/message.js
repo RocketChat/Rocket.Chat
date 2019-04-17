@@ -1,12 +1,11 @@
 import _ from 'underscore';
-import moment from 'moment';
 
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 
-import { timeAgo } from '../../lib/client/lib/formatDate';
+import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
@@ -84,9 +83,7 @@ Template.message.helpers({
 			? 'replies'
 			: 'reply';
 	},
-	formatDate(date) {
-		return moment(date).format('LLL');
-	},
+	formatDateAndTime,
 	encodeURI(text) {
 		return encodeURI(text);
 	},

@@ -4,18 +4,22 @@ import { getUserPreference, t } from '../../../utils';
 import { settings } from '../../../settings';
 import moment from 'moment';
 
+let lastDay = t('yesterday');
 let clockMode;
+let sameDay;
+const dayFormat = ['h:mm A', 'H:mm'];
 
 Tracker.autorun(() => {
 	clockMode = getUserPreference(Meteor.userId(), 'clockMode', false);
+	sameDay = dayFormat[clockMode - 1] || 'h:mm A';
+	lastDay = t('yesterday');
 });
 
 export const formatTime = (time) => {
 	switch (clockMode) {
 		case 1:
-			return moment(time).format('h:mm A');
 		case 2:
-			return moment(time).format('H:mm');
+			return moment(time).format(sameDay);
 		default:
 			return moment(time).format(settings.get('Message_TimeFormat'));
 	}
@@ -32,15 +36,11 @@ export const formatDateAndTime = (time) => {
 	}
 };
 
-export const timeAgo = (time) => {
-	const now = new Date();
-	const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-
-	return (
-		(now.getDate() === time.getDate() && moment(time).format('LT')) ||
-		(yesterday.getDate() === time.getDate() && t('yesterday')) ||
-		moment(time).format('L')
-	);
-};
+export const timeAgo = (date) => moment(date).calendar(null, {
+	lastDay: `[${ lastDay }]`,
+	sameDay,
+	lastWeek: 'dddd',
+	sameElse: 'MMM D', // TODO lastYear
+});
 
 export const formatDate = (time) => moment(time).format(settings.get('Message_DateFormat'));
