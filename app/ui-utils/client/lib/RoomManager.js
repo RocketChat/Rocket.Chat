@@ -15,6 +15,8 @@ import _ from 'underscore';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 
+
+
 const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
 
 const onDeleteMessageStream = (msg) => {
@@ -231,15 +233,24 @@ export const RoomManager = new function() {
 			}
 
 			const [ticksBar] = dom.getElementsByClassName('ticks-bar');
-			const messagesBox = $('.messages-box', dom);
-			const scrollTop = messagesBox.find('> .wrapper').scrollTop() - 50;
-			const totalHeight = messagesBox.find(' > .wrapper > ul').height() + 40;
+			const [messagesBox] = dom.getElementsByClassName('messages-box');
+			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
+			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
 
-			ticksBar.innerHTML = Array.from(messagesBox[0].getElementsByClassName('mention-link-me')).map((item) => {
-				const topOffset = item.getBoundingClientRect().top + scrollTop;
-				const percent = (100 / totalHeight) * topOffset;
-				return `<div class="tick ${ item.classList.contains('mention-link-all') ? 'background-attention-color' : 'background-primary-action-color' }" style="top: ${ percent }%;"></div>`;
-			}).join('');
+			// TODO: thread quotes should NOT have mention links at all
+			const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
+			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll(mentionsSelector))
+				.map((mentionLink) => {
+					const topOffset = $(mentionLink).offset().top + scrollTop;
+					const percent = (100 / totalHeight) * topOffset;
+					const className = [
+						'tick',
+						mentionLink.classList.contains('mention-link--me') && 'tick--me',
+						mentionLink.classList.contains('mention-link--group') && 'tick--group',
+					].filter(Boolean).join(' ');
+					return `<div class="${ className }" style="top: ${ percent }%;"></div>`;
+				})
+				.join('');
 		}
 	};
 	Cls.initClass();

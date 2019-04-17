@@ -166,6 +166,7 @@ Template.livechatWindow.onCreated(function() {
 			Livechat.emailFieldRegistrationForm = result.emailFieldRegistrationForm;
 			Livechat.agentsAlias = result.agentsAlias;
 			Livechat.registrationFormMessage = result.registrationFormMessage;
+			Livechat.connecting = !!(result.room && !result.agentData && result.showConnecting);
 
 			loadDepartments(result.departments);
 
