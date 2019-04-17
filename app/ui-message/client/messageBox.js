@@ -42,7 +42,43 @@ Template.messageBox.onCreated(function() {
 	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar();
 	this.isMicrophoneDenied = new ReactiveVar(true);
-	this.sendIconDisabled = new ReactiveVar(false);
+	this.isSendIconVisible = new ReactiveVar(false);
+
+	this.set = (value) => {
+		const { input } = this;
+		if (!input) {
+			return;
+		}
+
+		input.value = value;
+		$(input).trigger('change').trigger('input');
+	};
+
+	this.insertNewLine = () => {
+		const { input } = this;
+		if (!input) {
+			return;
+		}
+
+		if (document.selection) {
+			input.focus();
+			const sel = document.selection.createRange();
+			sel.text = '\n';
+		} else if (input.selectionStart || input.selectionStart === 0) {
+			const newPosition = input.selectionStart + 1;
+			const before = input.value.substring(0, input.selectionStart);
+			const after = input.value.substring(input.selectionEnd, input.value.length);
+			input.value = `${ before }\n${ after }`;
+			input.selectionStart = input.selectionEnd = newPosition;
+		} else {
+			input.value += '\n';
+		}
+		$(input).trigger('change').trigger('input');
+
+		input.blur();
+		input.focus();
+		input.updateAutogrow();
+	};
 
 	this.send = (event) => {
 		if (!this.input) {
@@ -51,7 +87,7 @@ Template.messageBox.onCreated(function() {
 
 		const { rid, tmid, onSend } = this.data;
 		const { value } = this.input;
-		this.input.value = '';
+		this.set('');
 		onSend && onSend.call(this.data, event, { rid, tmid, value }, () => {
 			this.input.updateAutogrow();
 			this.input.focus();
@@ -169,8 +205,8 @@ Template.messageBox.helpers({
 	maxMessageLength() {
 		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
 	},
-	isSendIconDisabled() {
-		return !Template.instance().sendIconDisabled.get();
+	isSendIconVisible() {
+		return Template.instance().isSendIconVisible.get();
 	},
 	canSend() {
 		const { rid } = Template.currentData();
@@ -216,28 +252,7 @@ const handleFormattingShortcut = (event, instance) => {
 	return true;
 };
 
-const insertNewLine = (input) => {
-	if (document.selection) {
-		input.focus();
-		const sel = document.selection.createRange();
-		sel.text = '\n';
-	} else if (input.selectionStart || input.selectionStart === 0) {
-		const newPosition = input.selectionStart + 1;
-		const before = input.value.substring(0, input.selectionStart);
-		const after = input.value.substring(input.selectionEnd, input.value.length);
-		input.value = `${ before }\n${ after }`;
-		input.selectionStart = input.selectionEnd = newPosition;
-	} else {
-		input.value += '\n';
-	}
-
-	input.blur();
-	input.focus();
-	input.updateAutogrow();
-};
-
 const handleSubmit = (event, instance) => {
-	const { input } = instance;
 	const { which: keyCode } = event;
 
 	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
@@ -257,7 +272,7 @@ const handleSubmit = (event, instance) => {
 		return true;
 	}
 
-	insertNewLine(input);
+	instance.insertNewLine();
 	return true;
 };
 
@@ -294,7 +309,7 @@ Template.messageBox.events({
 
 			input.focus();
 			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
-				input.value = textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos);
+				instance.set(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
 				input.focus();
 			}
 
@@ -352,7 +367,7 @@ Template.messageBox.events({
 			return;
 		}
 
-		instance.sendIconDisabled.set(!!input.value);
+		instance.isSendIconVisible.set(!!input.value);
 
 		if (input.value.length > 0) {
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';
