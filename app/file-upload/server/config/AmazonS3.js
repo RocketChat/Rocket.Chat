@@ -16,6 +16,7 @@ const get = function(file, req, res) {
 			request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 		} else {
 			res.removeHeader('Content-Length');
+			res.removeHeader('Cache-Control');
 			res.setHeader('Location', fileUrl);
 			res.writeHead(302);
 			res.end();
