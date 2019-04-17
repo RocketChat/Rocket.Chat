@@ -82,7 +82,7 @@ describe('[Rocket.Chat Settings based permissions]', function() {
 			admin.layoutLink.click();
 			admin.generalLayoutTitle.waitForVisible(5000);
 			admin.generalLayoutTitle.setValue(newTitle);
-			browser.pause(2000);
+			browser.pause(3000);
 			admin.buttonSave.click();
 			done();
 		});
