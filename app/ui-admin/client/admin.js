@@ -346,7 +346,7 @@ Template.admin.helpers({
 	},
 	showResetButton() {
 		const setting = TempSettings.findOne({ _id: this._id }, { fields: { value: 1, packageValue: 1 } });
-		return this.type !== 'asset' && setting.value !== setting.packageValue && !this.blocked;
+		return !this.disableReset && !this.readonly && this.type !== 'asset' && setting.value !== setting.packageValue && !this.blocked;
 	},
 });
 
@@ -384,7 +384,8 @@ Template.admin.events({
 			changed: true,
 		};
 		const rcSettings = TempSettings.find(query, {
-			fields: { _id: 1, value: 1, packageValue: 1 } }).fetch();
+			fields: { _id: 1, value: 1, packageValue: 1 },
+		}).fetch();
 		rcSettings.forEach(function(setting) {
 			const oldSetting = settings.collectionPrivate.findOne({ _id: setting._id }, { fields: { value: 1, type: 1, editor: 1 } });
 			setFieldValue(setting._id, oldSetting.value, oldSetting.type, oldSetting.editor);

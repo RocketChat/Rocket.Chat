@@ -8,19 +8,24 @@ import s from 'underscore.string';
 
 export const _setRealName = function(userId, name) {
 	name = s.trim(name);
-	if (!userId || !name) {
+
+	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
 		return false;
 	}
 
 	const user = Users.findOneById(userId);
 
 	// User already has desired name, return
-	if (user.name === name) {
+	if (s.trim(user.name) === name) {
 		return user;
 	}
 
 	// Set new name
-	Users.setName(user._id, name);
+	if (name) {
+		Users.setName(user._id, name);
+	} else {
+		Users.unsetName(user._id);
+	}
 	user.name = name;
 
 	// if user has no username, there is no need to updated any direct messages (there is none)

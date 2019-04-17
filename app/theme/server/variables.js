@@ -35,7 +35,7 @@ const majorColors = {
 	'secondary-background-color': '#F4F4F4',
 	'secondary-font-color': '#A0A0A0',
 	'secondary-action-color': '#DDDDDD',
-	'component-color': '#EAEAEA',
+	'component-color': '#f2f3f5',
 	'success-color': '#4dff4d',
 	'pending-color': '#FCB316',
 	'error-color': '#BC2031',
@@ -77,4 +77,3 @@ settings.add('theme-custom-css', '', {
 	section: 'Custom CSS',
 	public: true,
 });
-

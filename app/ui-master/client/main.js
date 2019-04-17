@@ -218,13 +218,7 @@ Template.main.events({
 
 Template.main.onRendered(function() {
 	$('#initial-page-loading').remove();
-	window.addEventListener('focus', function() {
-		return Meteor.setTimeout(function() {
-			if (!$(':focus').is('INPUT,TEXTAREA')) {
-				return $('.input-message').focus();
-			}
-		}, 100);
-	});
+
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();
 		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');

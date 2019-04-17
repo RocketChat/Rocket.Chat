@@ -2,9 +2,9 @@
 * Mentions is a named function that will process Mentions
 * @param {Object} message - The message object
 */
-import Mentions from '../lib/Mentions';
+import { MentionsParser } from '../lib/MentionsParser';
 
-export default class MentionsServer extends Mentions {
+export default class MentionsServer extends MentionsParser {
 	constructor(args) {
 		super(args);
 		this.messageMaxAll = args.messageMaxAll;
