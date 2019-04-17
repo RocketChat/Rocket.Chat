@@ -4,6 +4,10 @@ import { TOTP } from '../lib/totp';
 
 Meteor.methods({
 	'resetPasswordWithTOTP'(userToken, hashedPassword, totpCode) {
+		if (typeof userToken !== 'string' || userToken.trim() === '') {
+			throw new Meteor.Error('totp-invalid-token', 'User Token Missing or Invalid.');
+		}
+
 		const query = {
 			'services.password.reset.token' : userToken,
 		};
@@ -28,7 +32,6 @@ Meteor.methods({
 
 			try {
 				const result = Meteor.call('resetPassword', userToken, hashedPassword);
-				console.log(result);
 				return result;
 			} catch (e) {
 				// totp-required means the password was reset, but the auto login has failed because of the missing totp code
