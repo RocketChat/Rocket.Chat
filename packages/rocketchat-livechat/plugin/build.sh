@@ -8,11 +8,7 @@ export LATEST_LIVECHAT_VERSION="1.0.0"
 cd packages/rocketchat-livechat/.app
 meteor npm install --production
 
-if test -z "$CIRCLE_PR_NUMBER"; then
-  meteor build --headless --directory $BUILD_DIR
-else
-  meteor build --headless --directory --debug $BUILD_DIR
-fi
+meteor build --headless --directory $BUILD_DIR
 
 rm -rf $LIVECHAT_DIR
 mkdir -p $LIVECHAT_DIR
