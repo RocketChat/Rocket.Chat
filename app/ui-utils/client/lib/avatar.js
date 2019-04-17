@@ -35,7 +35,8 @@ export const updateAvatarOfUsername = function(username) {
 		.find(`.message[data-username='${ username }'] .avatar-image`).attr('src', url);
 
 	// force reload of avatar on sidenav
-	$(`.sidebar-item__link[aria-label='${ username }'] .avatar-image`).attr('src', url);
+	$(`.sidebar-item.js-sidebar-type-d .sidebar-item__link[aria-label='${ username }'] .avatar-image`)
+		.attr('src', url);
 
 	return true;
 };
