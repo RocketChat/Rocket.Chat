@@ -178,6 +178,7 @@
 		"jschardet": "^1.6.0",
 		"juice": "^5.0.1",
 		"katex": "^0.9.0",
+		"ldap-escape": "^2.0.1",
 		"ldapjs": "^1.0.2",
 		"less": "https://github.com/meteor/less.js/tarball/8130849eb3d7f0ecf0ca8d0af7c4207b0442e3f6",
 		"less-plugin-autoprefix": "^2.0.0",
