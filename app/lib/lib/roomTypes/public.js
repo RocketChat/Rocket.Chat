@@ -120,6 +120,8 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
+		// TODO: change to always get avatar from _id when rooms have avatars
+
 		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
 	}
 }

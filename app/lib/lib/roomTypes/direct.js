@@ -152,6 +152,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		return getUserAvatarURL(roomData.name);
+		return getUserAvatarURL(roomData.name || this.roomName(roomData));
 	}
 }

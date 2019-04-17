@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../../app/models/server';
+import { roomTypes } from '../../../app/utils';
 
 import {
 	renderSVGLetters,
@@ -9,18 +10,21 @@ import {
 	setCacheAndDispositionHeaders,
 } from './utils';
 
+const getRoom = (roomId) => {
+	const room = Rooms.findOneById(roomId, { fields: { t: 1, prid: 1, name: 1, fname: 1 } });
+
+	// if it is a discussion, returns the parent room
+	if (room.prid) {
+		return Rooms.findOneById(room.prid, { fields: { t: 1, name: 1, fname: 1 } });
+	}
+	return room;
+};
+
 export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 	const roomId = req.url.substr(1);
-	const requestRoom = Rooms.findOneById(roomId, { fields: { name: 1, prid: 1 } });
+	const room = getRoom(roomId);
 
-	let room;
-
-	// if it is a discussion, gets the parent room
-	if (requestRoom.prid) {
-		room = Rooms.findOneById(requestRoom.prid, { fields: { name: 1 } });
-	} else {
-		room = requestRoom;
-	}
+	const roomName = roomTypes.getConfig(room.t).roomName(room);
 
 	setCacheAndDispositionHeaders(req, res);
 
@@ -29,7 +33,7 @@ export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
 		return;
 	}
 
-	const svg = renderSVGLetters(room.name, req.query.size && parseInt(req.query.size));
+	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size));
 
 	return serveAvatar(svg, req, res);
 });
