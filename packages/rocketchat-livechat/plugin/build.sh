@@ -8,11 +8,11 @@ export LATEST_LIVECHAT_VERSION="1.0.0"
 cd packages/rocketchat-livechat/.app
 meteor npm install --production
 
-if [[ -z $CIRCLE_PR_NUMBER ]]; then
+if test -z "$CIRCLE_PR_NUMBER"; then
   meteor build --headless --directory $BUILD_DIR
 else
   meteor build --headless --directory --debug $BUILD_DIR
-fi;
+fi
 
 rm -rf $LIVECHAT_DIR
 mkdir -p $LIVECHAT_DIR
@@ -37,7 +37,7 @@ rm build.tar.gz
 
 # change to lowercase so all injected junk from rocket.chat is not sent: https://github.com/meteorhacks/meteor-inject-initial/blob/master/lib/inject-core.js#L10
 # this is not harmful since doctype is case-insesitive: https://www.w3.org/TR/html5/syntax.html#the-doctype
-ex -s -c '%s/<!DOCTYPE/<!doctype/g|x' index.html
+node -e 'fs.writeFileSync("index.html", fs.readFileSync("index.html").toString().replace("<!DOCTYPE", "<!doctype"));'
 
 cd $LIVECHAT_ASSETS_DIR
 cp ../../public/livechat/$LATEST_LIVECHAT_VERSION/index.html .
