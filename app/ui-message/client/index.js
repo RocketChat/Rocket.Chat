@@ -1,4 +1,3 @@
-import './messageDropdown.html';
 import './popup/messagePopup.html';
 import './popup/messagePopupChannel.html';
 import './popup/messagePopupConfig.html';

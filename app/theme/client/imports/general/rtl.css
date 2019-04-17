@@ -370,26 +370,6 @@
 		padding-right: 70px;
 		padding-left: 20px;
 
-		& .message-dropdown {
-			right: -2px;
-			left: auto;
-
-			& ul li {
-				&:first-child {
-					padding-right: 6px;
-					padding-left: 8px;
-
-					border-right: unset;
-					border-left: 1px solid #eeeeee;
-				}
-
-				&:last-child {
-					padding-right: 8px;
-					padding-left: 13px;
-				}
-			}
-		}
-
 		& .user {
 			margin-right: 0;
 			margin-left: 5px;
