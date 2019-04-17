@@ -24,6 +24,7 @@ import {
 	getUserPreference,
 } from '../../utils';
 import moment from 'moment';
+import { setupAutogrow } from './messageBoxAutogrow';
 import {
 	formattingButtons,
 	applyFormatting,
@@ -33,7 +34,6 @@ import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
-
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -111,15 +111,13 @@ Template.messageBox.onRendered(function() {
 				return;
 			}
 
-			const $input = $(input);
+			const shadow = this.find('.js-input-message-shadow');
+			setupAutogrow(input, shadow, onResize);
 
+			const $input = $(input);
 			$input.on('dataChange', () => {
 				const messages = $input.data('reply') || [];
 				this.replyMessageData.set(messages);
-			});
-
-			$input.autogrow().on('autogrow', () => {
-				onResize && onResize();
 			});
 		});
 	});
