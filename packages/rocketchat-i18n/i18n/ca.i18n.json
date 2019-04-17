@@ -86,6 +86,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Ruta del token",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token enviat via",
   "Accounts_OAuth_Custom_Username_Field": "Camp de nom d'usuari",
+  "Accounts_OAuth_Custom_Roles_Claim": "Nom du champ Rôles/Groupes",
   "Accounts_OAuth_Drupal": "Activa inici de sessió de Drupal",
   "Accounts_OAuth_Drupal_callback_url": "Redirect URI de Drupal oAuth2",
   "Accounts_OAuth_Drupal_id": "Client ID de Drupal oAuth2",

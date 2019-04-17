@@ -92,6 +92,7 @@
   "Accounts_OAuth_Custom_Token_Path": "トークンパス",
   "Accounts_OAuth_Custom_Token_Sent_Via": "トークン送信元",
   "Accounts_OAuth_Custom_Username_Field": "ユーザー名フィールド",
+  "Accounts_OAuth_Custom_Roles_Claim": "役割/グループフィールド名",
   "Accounts_OAuth_Drupal": "Drupalログインを有効にする",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2リダイレクトURI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2クライアントID",

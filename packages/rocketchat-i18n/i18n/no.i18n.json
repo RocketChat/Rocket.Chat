@@ -87,6 +87,7 @@
   "Accounts_OAuth_Custom_Token_Path": "Tokenbane",
   "Accounts_OAuth_Custom_Token_Sent_Via": "Token Sendt Via",
   "Accounts_OAuth_Custom_Username_Field": "Brukernavn felt",
+  "Accounts_OAuth_Custom_Roles_Claim": "Roller / Grupper feltnavn",
   "Accounts_OAuth_Drupal": "Drupal Logg inn aktivert",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client ID",
