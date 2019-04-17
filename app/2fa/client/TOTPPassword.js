@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { modal } from '../../ui-utils';
 import { t } from '../../utils';
 import toastr from 'toastr';
+import { check } from 'meteor/check';
 
 function reportError(error, callback) {
 	if (callback) {
@@ -86,7 +87,7 @@ const resetPasswordWithTOTP = function(token, newPassword, code, cb) {
 	Accounts.callLoginMethod({
 		methodName: 'resetPasswordWithTOTP',
 		methodArguments: [token, Accounts._hashPassword(newPassword), code],
-		userCallback: cb
+		userCallback: cb,
 	});
 };
 
@@ -104,7 +105,7 @@ Accounts.resetPassword = function(token, newPassword, cb) {
 			showCancelButton: true,
 			closeOnConfirm: true,
 			confirmButtonText: t('Verify'),
-			cancelButtonText: t('Cancel')
+			cancelButtonText: t('Cancel'),
 		}, (code) => {
 			if (code === false) {
 				return cb();
