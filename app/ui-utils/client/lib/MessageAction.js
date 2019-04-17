@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
@@ -336,9 +337,9 @@ Meteor.startup(async function() {
 			if (Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-			if (roomTypes.getRoomType(message.rid) == 'd') {
+			if (roomTypes.getRoomType(message.rid) === 'd') {
 				return false;
-			} 
+			}
 			return true;
 		},
 		order: 7,
