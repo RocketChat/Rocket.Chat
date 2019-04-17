@@ -52,17 +52,20 @@ export class AppMessagesConverter {
 				return result;
 			},
 			sender: (message) => {
-				let result;
+				if (!message.u || !message.u._id) {
+					return undefined;
+				}
 
-				if (message.u && message.u._id) {
-					result = this.orch.getConverters().get('users').convertById(message.u._id);
-				} else {
-					result = this.orch.getConverters().get('users').convertToApp(message.u);
+				let user = this.orch.getConverters().get('users').convertById(message.u._id);
+
+				// When the sender of the message is a Guest (livechat) and not a user
+				if (!user) {
+					user = this.orch.getConverters().get('users').convertToApp(message.u);
 				}
 
 				delete message.u;
 
-				return result;
+				return user;
 			},
 		};
 
