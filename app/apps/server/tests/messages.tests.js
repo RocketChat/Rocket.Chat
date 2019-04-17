@@ -4,7 +4,10 @@ import mock from 'mock-require';
 import chai from 'chai';
 
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
-import { appMessageMock, rocketchatMessageMock, appMessageInvalidRoomMock } from './mocks/data/messages.data';
+import { appMessageMock, appMessageInvalidRoomMock } from './mocks/data/messages.data';
+import { MessagesMock } from './mocks/models/Messages.mock';
+import { RoomsMock } from './mocks/models/Rooms.mock';
+import { UsersMock } from './mocks/models/Users.mock';
 
 chai.use(require('chai-datetime'));
 const { expect } = chai;
@@ -16,52 +19,33 @@ mock('meteor/random', {
 
 const { AppMessagesConverter } = require('../converters/messages');
 
-const userMock = {
-	username: 'rocket.cat',
-	emails: [{
-		address: 'rocketcat@rocket.chat',
-		verified: true,
-	}],
-	type: 'bot',
-	isEnabled: true,
-	name: 'Rocket.Cat',
-	roles: ['bot'],
-	status: 'online',
-	statusConnection: 'online',
-	utcOffset: 0,
-	createdAt: new Date(),
-	updatedAt: new Date(),
-	lastLoginAt: undefined,
-};
-
-const roomMock = {
-	displayName: 'Mocked Room',
-	slugifiedName: 'mocked-room',
-	type: 'c',
-	creator: userMock,
-};
-
 describe('The AppMessagesConverter instance', function() {
 	let messagesConverter;
+	let messagesMock;
 
 	before(function() {
 		const orchestrator = new AppServerOrchestratorMock();
 
-		orchestrator.getConverters().get('users').convertById = function convertUserByIdStub(id) {
+		const usersConverter = orchestrator.getConverters().get('users');
+
+		usersConverter.convertById = function convertUserByIdStub(id) {
+			return UsersMock.convertedData[id];
+		};
+
+		usersConverter.convertToApp = function convertUserToAppStub(user) {
 			return {
-				id,
-				...userMock,
+				id: user._id,
+				username: user.username,
+				name: user.name,
 			};
 		};
 
 		orchestrator.getConverters().get('rooms').convertById = function convertRoomByIdStub(id) {
-			return {
-				id,
-				...roomMock,
-			};
+			return RoomsMock.convertedData[id];
 		};
 
 		messagesConverter = new AppMessagesConverter(orchestrator);
+		messagesMock = new MessagesMock();
 	});
 
 	const createdAt = new Date('2019-03-30T01:22:08.389Z');
@@ -76,9 +60,9 @@ describe('The AppMessagesConverter instance', function() {
 		});
 
 		it('should return a proper schema', function() {
-			const appMessage = messagesConverter.convertMessage(rocketchatMessageMock);
+			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('SimpleMessageMock'));
 
-			expect(appMessage).to.have.property('id', 'bojapwB2udErwrvCZ');
+			expect(appMessage).to.have.property('id', 'SimpleMessageMock');
 			expect(appMessage).to.have.property('createdAt').which.equalTime(createdAt);
 			expect(appMessage).to.have.property('updatedAt').which.equalTime(updatedAt);
 			expect(appMessage).to.have.property('groupable', false);
@@ -95,30 +79,41 @@ describe('The AppMessagesConverter instance', function() {
 		});
 
 		it('should not mutate the original message object', function() {
+			const rocketchatMessageMock = messagesMock.findOneById('SimpleMessageMock');
+
 			messagesConverter.convertMessage(rocketchatMessageMock);
 
 			expect(rocketchatMessageMock).to.deep.equal({
-				_id : 'bojapwB2udErwrvCZ',
+				_id : 'SimpleMessageMock',
 				t : 'uj',
 				rid : 'GENERAL',
-				ts : createdAt,
+				ts : new Date('2019-03-30T01:22:08.389Z'),
 				msg : 'rocket.cat',
 				u : {
 					_id : 'rocket.cat',
 					username : 'rocket.cat',
 				},
 				groupable : false,
-				_updatedAt : updatedAt,
+				_updatedAt : new Date('2019-03-30T01:22:08.412Z'),
 			});
 		});
 
 		it('should add an `_unmappedProperties_` field to the converted message which contains the `t` property of the message', function() {
-			const appMessage = messagesConverter.convertMessage(rocketchatMessageMock);
+			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('SimpleMessageMock'));
 
 			expect(appMessage)
 				.to.have.property('_unmappedProperties_')
-				.which.has.property('t')
-				.which.equal('uj');
+				.which.has.property('t', 'uj');
+		});
+
+		it('should return basic sender info when it\'s not a Rocket.Chat user (e.g. Livechat Guest)', function() {
+			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('LivechatGuestMessageMock'));
+
+			expect(appMessage).to.have.property('sender').which.includes({
+				id : 'guest1234',
+				username: 'guest1234',
+				name : 'Livechat Guest',
+			});
 		});
 	});
 
@@ -133,7 +128,7 @@ describe('The AppMessagesConverter instance', function() {
 		it('should return a proper schema', function() {
 			const rocketchatMessage = messagesConverter.convertAppMessage(appMessageMock);
 
-			expect(rocketchatMessage).to.have.property('_id', 'bojapwB2udErwrvCZ');
+			expect(rocketchatMessage).to.have.property('_id', 'appMessageMock');
 			expect(rocketchatMessage).to.have.property('rid', 'GENERAL');
 			expect(rocketchatMessage).to.have.property('groupable', false);
 			expect(rocketchatMessage).to.have.property('ts').which.equalTime(createdAt);
@@ -153,7 +148,7 @@ describe('The AppMessagesConverter instance', function() {
 		});
 
 		it('should throw if message has an invalid room', function() {
-			expect(() => messagesConverter.convertAppMessage(appMessageInvalidRoomMock)).to.throw;
+			expect(() => messagesConverter.convertAppMessage(appMessageInvalidRoomMock)).to.throw(Error, 'Invalid room provided on the message.');
 		});
 	});
 });

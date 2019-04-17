@@ -19,4 +19,25 @@ export class UsersMock extends BaseModelMock {
 			],
 		},
 	}
+
+	static convertedData = {
+		'rocket.cat': {
+			id: 'rocket.cat',
+			username: 'rocket.cat',
+			emails: [{
+				address: 'rocketcat@rocket.chat',
+				verified: true,
+			}],
+			type: 'bot',
+			isEnabled: true,
+			name: 'Rocket.Cat',
+			roles: ['bot'],
+			status: 'online',
+			statusConnection: 'online',
+			utcOffset: 0,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			lastLoginAt: undefined,
+		},
+	}
 }
