@@ -155,6 +155,7 @@ jobs:
 
             export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
             if [[ -z $CIRCLE_PR_NUMBER ]]; then
+              export METEOR_PROFILE=1000
               meteor build --server-only --directory --debug /tmp/build-test
             else
               meteor build --server-only --directory /tmp/build-test
