@@ -20,6 +20,7 @@ const options = {
 	env: {
 		CIRCLE_PR_NUMBER: process.env.CIRCLE_PR_NUMBER,
 		METEOR_PROFILE: process.env.METEOR_PROFILE,
+		HOME: process.env.HOME,
 	},
 };
 
