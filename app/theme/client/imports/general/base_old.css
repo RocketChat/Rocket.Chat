@@ -3061,7 +3061,7 @@ rc-old select,
 
 		& .message-body-wrapper {
 			& .title {
-				display: inline;
+				display: inline-flex;
 
 				& .user {
 					font-size: 0.75rem;
