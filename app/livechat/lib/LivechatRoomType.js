@@ -5,6 +5,7 @@ import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
 import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
 import { LivechatInquiry } from './LivechatInquiry';
+import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -99,4 +100,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return (!room.servedBy || room.servedBy._id !== user._id) && !hasPermission('view-livechat-rooms');
 	}
 
+	getAvatarPath(roomData) {
+		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+	}
 }
