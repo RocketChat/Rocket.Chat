@@ -56,13 +56,16 @@ class Discussion extends Page {
 		this.discussionName.setValue(name);
 		this.discussionMessage.setValue(message);
 		this.parentChannelName.waitForVisible(1000);
+
+		browser.pause(1000);
+
 		this.parentChannelName.setValue(parentChannelName);
 
-		const list = browser.element('.rc-popup-list__list');
-		list.waitForVisible(2000);
+		const listItem = browser.element('.rc-popup-list__list .rc-popup-list__item');
 
-		list.element('.rc-popup-list__item').waitForVisible(10000);
-		list.element('.rc-popup-list__item').click();
+		listItem.waitForVisible(2000);
+
+		listItem.click();
 
 		browser.waitUntil(function() {
 			return browser.isEnabled('.js-save-discussion');

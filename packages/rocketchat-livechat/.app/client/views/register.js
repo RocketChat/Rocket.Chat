@@ -77,9 +77,7 @@ Template.register.events({
 				}
 			}
 
-			if (departmentId) {
-				Livechat.department = departmentId;
-			}
+			Livechat.department = departmentId;
 
 			const guest = {
 				token: visitor.getToken(),

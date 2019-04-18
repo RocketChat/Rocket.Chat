@@ -11,6 +11,7 @@ import { ChatIntegrations } from '../collections';
 import { integrations } from '../../lib/rocketchat';
 import hljs from 'highlight.js';
 import toastr from 'toastr';
+import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
 
 Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated() {
 	this.record = new ReactiveVar({
@@ -72,6 +73,9 @@ Template.integrationsOutgoing.onCreated(function _integrationsOutgoingOnCreated(
 });
 
 Template.integrationsOutgoing.helpers({
+	exampleMsg,
+	exampleUser,
+	exampleSettings,
 	join(arr, sep) {
 		if (!arr || !arr.join) {
 			return arr;
@@ -122,34 +126,6 @@ Template.integrationsOutgoing.helpers({
 		const record = Template.instance().record.get();
 
 		return typeof record.event === 'string' && integrations.outgoingEvents[record.event].use.targetRoom;
-	},
-
-	example() {
-		const record = Template.instance().record.get();
-
-		return {
-			_id: Random.id(),
-			alias: record.alias,
-			emoji: record.emoji,
-			avatar: record.avatar,
-			msg: 'Response text',
-			bot: {
-				i: Random.id(),
-			},
-			groupable: false,
-			attachments: [{
-				title: 'Rocket.Chat',
-				title_link: 'https://rocket.chat',
-				text: 'Rocket.Chat, the best open source chat',
-				image_url: '/images/integration-attachment-example.png',
-				color: '#764FA5',
-			}],
-			ts: new Date(),
-			u: {
-				_id: Random.id(),
-				username: record.username,
-			},
-		};
 	},
 
 	exampleJson() {
