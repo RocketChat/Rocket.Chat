@@ -2767,7 +2767,7 @@
   "The_server_will_restart_in_s_seconds": "Der Server wird in %s Sekunden neu gestartet",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Die Einstellung <strong>%s</strong> wurde zu <strong>%s</strong> konfiguriert. Sie greifen von <strong>%s</strong> zu!",
   "The_user_will_be_removed_from_s": "Der Benutzer wird aus %s entfernt",
-  "The_user_s_will_be_removed_from_role_s": "Der Benutzer %s wird aus der Rolle %s entfernt."
+  "The_user_s_will_be_removed_from_role_s": "Der Benutzer %s wird aus der Rolle %s entfernt.",
   "The_user_wont_be_able_to_type_in_s": "Der Benutzer kann nicht mehr in %s schreiben",
   "Theme": "Visuelles Theme",
   "theme-color-attention-color": "Farbe für besondere Aufmerksamkeit",
