@@ -3,7 +3,7 @@ import http from 'http';
 import https from 'https';
 import { RTMClient } from '@slack/client';
 import { Meteor } from 'meteor/meteor';
-import { getAvatarUrlFromUsername } from '../../utils';
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models';
 import { settings } from '../../settings';
 import {
@@ -622,7 +622,7 @@ export default class SlackAdapter {
 
 	postMessage(slackChannel, rocketMessage) {
 		if (slackChannel && slackChannel.id) {
-			let iconUrl = getAvatarUrlFromUsername(rocketMessage.u && rocketMessage.u.username);
+			let iconUrl = getUserAvatarURL(rocketMessage.u && rocketMessage.u.username);
 			if (iconUrl) {
 				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
 			}
@@ -901,7 +901,7 @@ export default class SlackAdapter {
 				attachments: [{
 					text : this.rocket.convertSlackMsgTxtToRocketTxtFormat(slackMessage.attachments[0].text),
 					author_name : slackMessage.attachments[0].author_subname,
-					author_icon : getAvatarUrlFromUsername(slackMessage.attachments[0].author_subname),
+					author_icon : getUserAvatarURL(slackMessage.attachments[0].author_subname),
 					ts : new Date(parseInt(slackMessage.attachments[0].ts.split('.')[0]) * 1000),
 				}],
 			};
@@ -1112,7 +1112,7 @@ export default class SlackAdapter {
 						attachments: [{
 							text : this.rocket.convertSlackMsgTxtToRocketTxtFormat(pin.message.text),
 							author_name : user.username,
-							author_icon : getAvatarUrlFromUsername(user.username),
+							author_icon : getUserAvatarURL(user.username),
 							ts : new Date(parseInt(pin.message.ts.split('.')[0]) * 1000),
 						}],
 					};

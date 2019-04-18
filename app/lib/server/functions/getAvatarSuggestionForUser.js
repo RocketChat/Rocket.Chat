@@ -1,6 +1,7 @@
 import { check } from 'meteor/check';
 import { HTTP } from 'meteor/http';
 import { Gravatar } from 'meteor/jparker:gravatar';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 import { settings } from '../../../settings';
 
 export function getAvatarSuggestionForUser(user) {
@@ -55,6 +56,21 @@ export function getAvatarSuggestionForUser(user) {
 			service: 'blockstack',
 			url: user.services.blockstack.image,
 		});
+	}
+
+	for (const service in user.services) {
+		if (user.services[service]._OAuthCustom) {
+			const services = ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetch();
+
+			if (services.length > 0) {
+				if (user.services[service].avatarUrl) {
+					avatars.push({
+						service,
+						url: user.services[service].avatarUrl,
+					});
+				}
+			}
+		}
 	}
 
 	if (user.emails && user.emails.length > 0) {

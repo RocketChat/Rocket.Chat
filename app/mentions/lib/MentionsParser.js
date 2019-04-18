@@ -41,18 +41,25 @@ export class MentionsParser {
 
 	replaceUsers = (msg, { mentions, temp }, me) => msg
 		.replace(this.userMentionRegex, (match, prefix, mention) => {
-			const isGroupMention = ['all', 'here'].includes(mention);
-			const className = [
-				'mention-link',
-				'mention-link--user',
-				mention === 'all' && 'mention-link--all',
-				mention === 'here' && 'mention-link--here',
-				mention === me && 'mention-link--me',
-				isGroupMention && 'mention-link--group',
-			].filter(Boolean).join(' ');
+			const classNames = ['mention-link'];
 
-			if (isGroupMention) {
-				return `${ prefix }<a class="${ className }">${ mention }</a>`;
+			if (mention === 'all') {
+				classNames.push('mention-link--all');
+				classNames.push('mention-link--group');
+			} else if (mention === 'here') {
+				classNames.push('mention-link--here');
+				classNames.push('mention-link--group');
+			} else if (mention === me) {
+				classNames.push('mention-link--me');
+				classNames.push('mention-link--user');
+			} else {
+				classNames.push('mention-link--user');
+			}
+
+			const className = classNames.join(' ');
+
+			if (mention === 'all' || mention === 'here') {
+				return `${ prefix }<a class="${ className }" data-group="${ mention }">${ mention }</a>`;
 			}
 
 			const label = temp ?
