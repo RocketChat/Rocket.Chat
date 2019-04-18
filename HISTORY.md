@@ -1,6 +1,90 @@
 
 # 1.0.0 (Under Release Candidate Process)
 
+## 1.0.0-rc.3
+`2019-04-18  ·  4 🎉  ·  5 🚀  ·  11 🐛  ·  23 🔍  ·  17 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Rest threads ([#14045](https://github.com/RocketChat/Rocket.Chat/pull/14045))
+- Add GET method to fetch Livechat message through REST API ([#14147](https://github.com/RocketChat/Rocket.Chat/pull/14147))
+- Add Voxtelesys to list of SMS providers ([#13697](https://github.com/RocketChat/Rocket.Chat/pull/13697) by [@jhnburke8](https://github.com/jhnburke8) & [@john08burke](https://github.com/john08burke))
+- Rest endpoints of discussions ([#13987](https://github.com/RocketChat/Rocket.Chat/pull/13987))
+
+### 🚀 Improvements
+
+- Remove setting to show a livechat is waiting ([#13992](https://github.com/RocketChat/Rocket.Chat/pull/13992))
+- Attachment download caching ([#14137](https://github.com/RocketChat/Rocket.Chat/pull/14137) by [@wreiske](https://github.com/wreiske))
+- Get avatar from oauth ([#14131](https://github.com/RocketChat/Rocket.Chat/pull/14131))
+- OAuth Role Sync ([#13761](https://github.com/RocketChat/Rocket.Chat/pull/13761) by [@hypery2k](https://github.com/hypery2k))
+- Update the Apps Engine version to v1.4.1 ([#14072](https://github.com/RocketChat/Rocket.Chat/pull/14072))
+
+### 🐛 Bug fixes
+
+- SAML certificate settings don't follow a pattern ([#14179](https://github.com/RocketChat/Rocket.Chat/pull/14179))
+- Custom Oauth store refresh and id tokens with expiresIn ([#14121](https://github.com/RocketChat/Rocket.Chat/pull/14121) by [@ralfbecker](https://github.com/ralfbecker))
+- Apps converters delete fields on message attachments ([#14028](https://github.com/RocketChat/Rocket.Chat/pull/14028))
+- Custom Oauth login not working with accessToken ([#14113](https://github.com/RocketChat/Rocket.Chat/pull/14113) by [@knrt10](https://github.com/knrt10))
+- renderField template to correct short property usage ([#14148](https://github.com/RocketChat/Rocket.Chat/pull/14148))
+- Updating a message from apps if keep history is on ([#14129](https://github.com/RocketChat/Rocket.Chat/pull/14129))
+- Missing connection headers on Livechat REST API ([#14130](https://github.com/RocketChat/Rocket.Chat/pull/14130))
+- Receiving agent for new livechats from REST API ([#14103](https://github.com/RocketChat/Rocket.Chat/pull/14103))
+- Livechat user registration in another department ([#10695](https://github.com/RocketChat/Rocket.Chat/pull/10695))
+- Support for handling SAML LogoutRequest SLO ([#14074](https://github.com/RocketChat/Rocket.Chat/pull/14074))
+- Livechat office hours ([#14031](https://github.com/RocketChat/Rocket.Chat/pull/14031))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Show discussion avatar ([#14053](https://github.com/RocketChat/Rocket.Chat/pull/14053))
+- Fix threads tests ([#14180](https://github.com/RocketChat/Rocket.Chat/pull/14180))
+- Prevent error for ldap login with invalid characters ([#14160](https://github.com/RocketChat/Rocket.Chat/pull/14160))
+- [REGRESSION] Messages sent by livechat's guests are losing sender info ([#14174](https://github.com/RocketChat/Rocket.Chat/pull/14174))
+- Faster CI build for PR ([#14171](https://github.com/RocketChat/Rocket.Chat/pull/14171))
+- Regression: Message box does not go back to initial state after sending a message ([#14161](https://github.com/RocketChat/Rocket.Chat/pull/14161))
+- Prevent error on normalize thread message for preview ([#14170](https://github.com/RocketChat/Rocket.Chat/pull/14170))
+- Update badges and mention links colors ([#14071](https://github.com/RocketChat/Rocket.Chat/pull/14071))
+- Smaller thread replies and system messages ([#14099](https://github.com/RocketChat/Rocket.Chat/pull/14099))
+- Regression: User autocomplete was not listing users from correct room ([#14125](https://github.com/RocketChat/Rocket.Chat/pull/14125))
+- Regression: Role creation and deletion error fixed ([#14097](https://github.com/RocketChat/Rocket.Chat/pull/14097) by [@knrt10](https://github.com/knrt10))
+- [Regression] Fix integrations message example ([#14111](https://github.com/RocketChat/Rocket.Chat/pull/14111))
+- Fix update apps capability of updating messages ([#14118](https://github.com/RocketChat/Rocket.Chat/pull/14118))
+- Fix: Skip thread notifications on message edit ([#14100](https://github.com/RocketChat/Rocket.Chat/pull/14100))
+- Fix: Remove message class `sequential` if `new-day` is present ([#14116](https://github.com/RocketChat/Rocket.Chat/pull/14116))
+- Fix top bar unread message counter ([#14102](https://github.com/RocketChat/Rocket.Chat/pull/14102))
+- LingoHub based on develop ([#14046](https://github.com/RocketChat/Rocket.Chat/pull/14046))
+- Fix sending message from action buttons in messages ([#14101](https://github.com/RocketChat/Rocket.Chat/pull/14101))
+- Fix: Error when version check endpoint was returning invalid data ([#14089](https://github.com/RocketChat/Rocket.Chat/pull/14089))
+- Wait port release to finish tests ([#14066](https://github.com/RocketChat/Rocket.Chat/pull/14066))
+- Fix threads rendering performance ([#14059](https://github.com/RocketChat/Rocket.Chat/pull/14059))
+- Unstuck observers every minute ([#14076](https://github.com/RocketChat/Rocket.Chat/pull/14076))
+- Fix messages losing thread titles on editing or reaction and improve message actions ([#14051](https://github.com/RocketChat/Rocket.Chat/pull/14051))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@hypery2k](https://github.com/hypery2k)
+- [@jhnburke8](https://github.com/jhnburke8)
+- [@john08burke](https://github.com/john08burke)
+- [@knrt10](https://github.com/knrt10)
+- [@ralfbecker](https://github.com/ralfbecker)
+- [@wreiske](https://github.com/wreiske)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@d-gubert](https://github.com/d-gubert)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 1.0.0-rc.2
 `2019-04-09  ·  2 🚀  ·  9 🔍  ·  6 👩‍💻👨‍💻`
 

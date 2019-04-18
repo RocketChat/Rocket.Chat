@@ -28740,6 +28740,455 @@
           ]
         }
       ]
+    },
+    "1.0.0-rc.3": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14053",
+          "title": "Show discussion avatar",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego",
+            "d-gubert",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14179",
+          "title": "[FIX] SAML certificate settings don't follow a pattern",
+          "userLogin": "Hudell",
+          "milestone": "1.0.0",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14180",
+          "title": "Fix threads tests",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14160",
+          "title": "Prevent error for ldap login with invalid characters",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13992",
+          "title": "[IMPROVE] Remove setting to show a livechat is waiting",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "engelgabriel",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14174",
+          "title": "[REGRESSION] Messages sent by livechat's guests are losing sender info",
+          "userLogin": "d-gubert",
+          "milestone": "1.0.0",
+          "contributors": [
+            "d-gubert",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14045",
+          "title": "[NEW] Rest threads",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14171",
+          "title": "Faster CI build for PR",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14161",
+          "title": "Regression: Message box does not go back to initial state after sending a message",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14170",
+          "title": "Prevent error on normalize thread message for preview",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14137",
+          "title": "[IMPROVE] Attachment download caching",
+          "userLogin": "wreiske",
+          "milestone": "1.0.0",
+          "contributors": [
+            "wreiske",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14147",
+          "title": "[NEW] Add GET method to fetch Livechat message through REST API",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14121",
+          "title": "[FIX] Custom Oauth store refresh and id tokens with expiresIn",
+          "userLogin": "ralfbecker",
+          "contributors": [
+            "ralfbecker",
+            "geekgonecrazy",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14071",
+          "title": "Update badges and mention links colors",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan",
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14028",
+          "title": "[FIX] Apps converters delete fields on message attachments",
+          "userLogin": "d-gubert",
+          "milestone": "1.0.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14131",
+          "title": "[IMPROVE] Get avatar from oauth",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13761",
+          "title": "[IMPROVE] OAuth Role Sync",
+          "userLogin": "hypery2k",
+          "contributors": [
+            "hypery2k",
+            "engelgabriel",
+            "web-flow",
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14113",
+          "title": "[FIX] Custom Oauth login not working with accessToken",
+          "userLogin": "knrt10",
+          "milestone": "1.0.0",
+          "contributors": [
+            "knrt10",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14099",
+          "title": "Smaller thread replies and system messages",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego",
+            "web-flow",
+            "rodrigok",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "14148",
+          "title": "[FIX] renderField template to correct short property usage",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "14129",
+          "title": "[FIX] Updating a message from apps if keep history is on",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13697",
+          "title": "[NEW] Add Voxtelesys to list of SMS providers",
+          "userLogin": "john08burke",
+          "milestone": "1.0.0",
+          "contributors": [
+            "jhnburke8",
+            "engelgabriel",
+            "web-flow",
+            "john08burke",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14130",
+          "title": "[FIX] Missing connection headers on Livechat REST API",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "14125",
+          "title": "Regression: User autocomplete was not listing users from correct room",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14097",
+          "title": "Regression: Role creation and deletion error fixed",
+          "userLogin": "knrt10",
+          "milestone": "1.0.0",
+          "contributors": [
+            "knrt10"
+          ]
+        },
+        {
+          "pr": "14111",
+          "title": "[Regression] Fix integrations message example",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14118",
+          "title": "Fix update apps capability of updating messages",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14100",
+          "title": "Fix: Skip thread notifications on message edit",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14116",
+          "title": "Fix: Remove message class `sequential` if `new-day` is present",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14103",
+          "title": "[FIX] Receiving agent for new livechats from REST API",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14102",
+          "title": "Fix top bar unread message counter",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13987",
+          "title": "[NEW] Rest endpoints of discussions",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "engelgabriel",
+            "web-flow",
+            "rodrigok",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "10695",
+          "title": "[FIX] Livechat user registration in another department",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "sampaiodiego",
+            "web-flow",
+            "ggazzo",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "14046",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14074",
+          "title": "[FIX] Support for handling SAML LogoutRequest SLO",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14101",
+          "title": "Fix sending message from action buttons in messages",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14089",
+          "title": "Fix: Error when version check endpoint was returning invalid data",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14066",
+          "title": "Wait port release to finish tests",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14059",
+          "title": "Fix threads rendering performance",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14076",
+          "title": "Unstuck observers every minute",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14031",
+          "title": "[FIX] Livechat office hours",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14051",
+          "title": "Fix messages losing thread titles on editing or reaction and improve message actions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14072",
+          "title": "[IMPROVE] Update the Apps Engine version to v1.4.1",
+          "userLogin": "graywolf336",
+          "contributors": [
+            "graywolf336"
+          ]
+        }
+      ]
     }
   }
 }
