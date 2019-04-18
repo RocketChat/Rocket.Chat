@@ -32,7 +32,7 @@
 			<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
 			{{#if showTranslated}}
 				<span class="translated">
-					<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+					<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
 				</span>
 			{{/if}}
 			{{#if sentByEmail}}
