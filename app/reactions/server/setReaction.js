@@ -46,8 +46,6 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 	}
 	if (userAlreadyReacted) {
 		removeUserReaction(message, reaction, user.username);
-		callbacks.run('unsetReaction', message._id, reaction);
-		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
@@ -60,6 +58,8 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 				Rooms.setReactionsInLastMessage(room._id, message);
 			}
 		}
+		callbacks.run('unsetReaction', message._id, reaction);
+		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact });
 	} else {
 		if (!message.reactions) {
 			message.reactions = {};
