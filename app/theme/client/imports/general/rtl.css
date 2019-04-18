@@ -57,7 +57,7 @@
 
 		&.compact {
 			& .message {
-				padding: 5px 45px 0 15px;
+				padding: 5px 45px 5px 15px;
 
 				&.collapsed .thumb {
 					margin: 0;
