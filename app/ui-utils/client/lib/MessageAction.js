@@ -289,7 +289,7 @@ Meteor.startup(async function() {
 		order: 5,
 		group: 'menu',
 	});
-		MessageAction.addButton({
+	MessageAction.addButton({
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
@@ -310,7 +310,7 @@ Meteor.startup(async function() {
 				.trigger('dataChange');
 		},
 		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null || Rooms.findOne({ _id: message.rid }).t == 'd') {
+			if (Subscriptions.findOne({ rid: message.rid }) === null || Rooms.findOne({ _id: message.rid }).t == 'd') {
 				return false;
 			}
 
@@ -319,10 +319,6 @@ Meteor.startup(async function() {
 		order: 6,
 		group: 'menu',
 	});
-
-	
-
-
 	MessageAction.addButton({
 		id: 'ignore-user',
 		icon: 'ban',
