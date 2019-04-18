@@ -3,13 +3,9 @@ import _ from 'underscore';
 const replaceWhitespaces = (whitespaces: string) => `${ '&nbsp;'.repeat(whitespaces.length - 1) } `;
 
 export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElement, callback: () => void) => {
-	if (textarea.updateAutogrow) {
-		return;
-	}
-
 	const width = textarea.clientWidth;
 	const height = textarea.clientHeight;
-	const { font, lineHeight } = window.getComputedStyle(textarea);
+	const { font, lineHeight, maxHeight: maxHeightPx } = window.getComputedStyle(textarea);
 
 	shadow.style.position = 'fixed';
 	shadow.style.top = '-10000px';
@@ -21,13 +17,13 @@ export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElem
 	shadow.style.wordWrap = 'break-word';
 
 	const minHeight = height;
-	const maxHeight = parseInt(window.getComputedStyle(textarea).maxHeight, 10);
+	const maxHeight = parseInt(maxHeightPx, 10);
 
 	let lastWidth = width;
 	let lastHeight = minHeight;
 	let textLenght = 0;
 
-	const updateAutogrow = () => {
+	const update = () => {
 		const { clientWidth: width, value: text } = textarea;
 
 		const isMaximumHeightReached = lastHeight >= maxHeight;
@@ -38,12 +34,14 @@ export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElem
 			return true;
 		}
 
-		const shadowText = text.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/&/g, '&amp;')
-			.replace(/\n$/, '<br/>&nbsp;')
-			.replace(/\n/g, '<br/>')
-			.replace(/ {2,}/g, replaceWhitespaces);
+		const shadowText = (
+			text.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/&/g, '&amp;')
+				.replace(/\n$/, '<br/>&nbsp;')
+				.replace(/\n/g, '<br/>')
+				.replace(/ {2,}/g, replaceWhitespaces)
+		);
 
 		if (wasWidthChanged) {
 			shadow.style.width = `${ width }px`;
@@ -73,13 +71,23 @@ export const setupAutogrow = (textarea: HTMLTextAreaElement, shadow: HTMLDivElem
 		callback && callback();
 	};
 
-	textarea.updateAutogrow = updateAutogrow;
-
-	const updateThrottled = _.throttle(updateAutogrow, 300);
+	const updateThrottled = _.throttle(update, 300);
 
 	const $textarea = $(textarea);
+	$textarea.on('focus', update);
 	$textarea.on('change input', updateThrottled);
-	$textarea.on('focus', updateAutogrow);
-	$(window).resize(updateThrottled);
-	updateAutogrow();
+	window.addEventListener('resize', updateThrottled, false);
+
+	const destroy = () => {
+		$textarea.off('focus', update);
+		$textarea.off('change input', updateThrottled);
+		window.removeEventListener('resize', updateThrottled);
+	};
+
+	update();
+
+	return {
+		update,
+		destroy,
+	};
 };
