@@ -42,11 +42,12 @@ Template.sidebarItem.helpers({
 
 		if (unread) {
 			badges.push('badge--unread');
+			if (t === 'd') {
+				badges.push('badge--dm');
+			}
 		}
 
-		if (unread && t === 'd') {
-			badges.push('badge--dm');
-		} else if (userMentions) {
+		if (userMentions) {
 			badges.push('badge--user-mentions');
 		} else if (groupMentions) {
 			badges.push('badge--group-mentions');

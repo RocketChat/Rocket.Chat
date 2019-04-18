@@ -275,4 +275,7 @@ export class RoomTypeConfig {
 		return {};
 	}
 
+	getAvatarPath(/* roomData */) {
+		return '';
+	}
 }
