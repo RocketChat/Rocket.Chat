@@ -1,6 +1,6 @@
 <template name="message">
 	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
-		{{#if avatar}}
+		{{#if msg.avatar}}
 			{{#if avatarFromUsername}}
 				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
 			{{else}}
@@ -11,10 +11,10 @@
 				</button>
 			{{/if}}
 		{{else}}
-			{{#if emoji}}
+			{{#if msg.emoji}}
 				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">
 					<div class="avatar">
-						{{> renderEmoji emoji}}
+						{{> renderEmoji msg.emoji}}
 					</div>
 				</button>
 			{{else}}
@@ -32,7 +32,7 @@
 			<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
 			{{#if showTranslated}}
 				<span class="translated">
-					<i class="icon-language {{#if autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+					<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
 				</span>
 			{{/if}}
 			{{#if sentByEmail}}
@@ -46,7 +46,7 @@
 				</span>
 			{{/if}}
 			{{#if msg.alert}}<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div> {{/if}}
-			{{#if private}}
+			{{#if msg.private}}
 				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
 			{{/if}}
 			{{#if isThreadReply}}
@@ -116,9 +116,9 @@
 		{{/if}}
 
 		{{#with readReceipt}}
-		<div class="read-receipt {{readByEveryone}}">
-			{{> icon icon="check" }}
-		</div>
+			<div class="read-receipt {{readByEveryone}}">
+				{{> icon icon="check" }}
+			</div>
 		{{/with}}
 		{{#unless system}}
 			<div class="message-actions">
@@ -153,14 +153,14 @@
 			{{/each}}
 		</ul>
 		{{/unless}}
-		{{# if broadcast}}
+		{{#if broadcast}}
 			{{#with msg.u}}
 				<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
 					{{> icon icon="reply"}} {{_'Reply'}}
 				</button>
 			{{/with}}
 		{{/if}}
-		{{# unless hideReactions}}
+		{{#unless hideReactions}}
 		<ul class="reactions">
 			{{#each reaction in reactions}}
 				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
