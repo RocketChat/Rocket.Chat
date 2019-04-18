@@ -516,10 +516,6 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 		classList.add('new-day');
 	}
 
-	if (previousDataset.tmid !== currentDataset.tmid) {
-		return classList.remove('sequential');
-	}
-
 	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
 		return classList.remove('sequential');
 	}
@@ -556,7 +552,7 @@ Template.message.onViewRendered = function() {
 				nextNode.classList.remove('new-day');
 			}
 			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.tmid !== currentDataset.tmid || nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 					nextNode.classList.remove('sequential');
 				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
 					nextNode.classList.add('sequential');

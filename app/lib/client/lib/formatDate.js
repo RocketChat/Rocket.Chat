@@ -1,19 +1,21 @@
+import moment from 'moment';
+
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { getUserPreference, t } from '../../../utils';
 import { settings } from '../../../settings';
-import moment from 'moment';
 
 let lastDay = t('yesterday');
 let clockMode;
 let sameDay;
 const dayFormat = ['h:mm A', 'H:mm'];
 
-Tracker.autorun(() => {
+Meteor.startup(() => Tracker.autorun(() => {
 	clockMode = getUserPreference(Meteor.userId(), 'clockMode', false);
 	sameDay = dayFormat[clockMode - 1] || 'h:mm A';
 	lastDay = t('yesterday');
-});
+}));
 
 export const formatTime = (time) => {
 	switch (clockMode) {
@@ -36,11 +38,16 @@ export const formatDateAndTime = (time) => {
 	}
 };
 
+const sameElse = function(now) {
+	const diff = Math.ceil(this.diff(now, 'years', true));
+	return diff < 0 ? 'MMM D YYYY' : 'MMM D';
+};
+
 export const timeAgo = (date) => moment(date).calendar(null, {
 	lastDay: `[${ lastDay }]`,
 	sameDay,
 	lastWeek: 'dddd',
-	sameElse: 'MMM D', // TODO lastYear
+	sameElse,
 });
 
 export const formatDate = (time) => moment(time).format(settings.get('Message_DateFormat'));

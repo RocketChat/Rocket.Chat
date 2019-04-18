@@ -1,10 +1,11 @@
+import s from 'underscore.string';
+
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
 import { getUserPreference } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../lib/rocketchat';
-
-import s from 'underscore.string';
 
 /*
  * emojiParser is a function that will replace emojis

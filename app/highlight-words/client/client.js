@@ -2,12 +2,14 @@
  * Highlights is a named function that will process Highlights
  * @param {Object} message - The message object
  */
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import { callbacks } from '../../callbacks';
-import { getUserPreference } from '../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
+import { callbacks } from '../../callbacks';
+import { getUserPreference } from '../../utils';
 import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from './helper';
 
 Tracker.autorun(() => {
