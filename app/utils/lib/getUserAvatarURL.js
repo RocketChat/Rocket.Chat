@@ -12,7 +12,7 @@ export const getUserAvatarURL = function(username) {
 		return;
 	}
 	const key = `avatar_random_${ username }`;
-	const cache = Tracker.nonreactive(() => Session.get(key));
+	const cache = Tracker.nonreactive(() => Session && Session.get(key)); // there is no Session on server
 
 	return getAvatarURL({ username, cache });
 };
