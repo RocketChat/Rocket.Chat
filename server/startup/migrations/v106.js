@@ -1,6 +1,8 @@
-import LivechatVisitors from 'meteor/rocketchat:livechat/server/models/LivechatVisitors';
+import { Meteor } from 'meteor/meteor';
+import { LivechatVisitors } from '../../../app/models';
+import { Migrations } from '../../../app/migrations';
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 106,
 	up() {
 		const visitors = Meteor.users.find({ type: 'visitor' });
@@ -10,7 +12,7 @@ RocketChat.Migrations.add({
 		console.log('Migrating livechat visitors, this may take a while ...');
 
 		Meteor.setTimeout(() => {
-			visitors.forEach(user => {
+			visitors.forEach((user) => {
 				console.log(`Migrating visitor ${ current++ }/${ total }`);
 
 				const {
@@ -22,7 +24,7 @@ RocketChat.Migrations.add({
 					ip,
 					host,
 					visitorEmails,
-					phone
+					phone,
 				} = user;
 				LivechatVisitors.insert({
 					_id,
@@ -34,7 +36,7 @@ RocketChat.Migrations.add({
 					host,
 					visitorEmails,
 					phone,
-					token: user.profile.token
+					token: user.profile.token,
 				});
 
 				Meteor.users.remove({ _id });
@@ -42,5 +44,5 @@ RocketChat.Migrations.add({
 
 			console.log('Livechat visitors migration finished.');
 		}, 1000);
-	}
+	},
 });

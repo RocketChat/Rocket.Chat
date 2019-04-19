@@ -1,8 +1,11 @@
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
+
 const majorColors = {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': '#04436A',
 	'primary-font-color': '#444444',
-	'primary-action-color': '#13679A', // was action-buttons-color
+	'primary-action-color': '#1d74f5', // was action-buttons-color
 	'secondary-background-color': '#F4F4F4',
 	'secondary-font-color': '#A0A0A0',
 	'secondary-action-color': '#DDDDDD',
@@ -11,7 +14,7 @@ const majorColors = {
 	'pending-color': '#FCB316',
 	'error-color': '#BC2031',
 	'selection-color': '#02ACEC',
-	'attention-color': '#9C27B0'
+	'attention-color': '#9C27B0',
 };
 
 // Minor colours implement major colours by default, but can be overruled
@@ -36,7 +39,7 @@ const newvariables = {
 	'status-online': 'rc-color-success',
 	'status-away': 'rc-color-alert',
 	'status-busy': 'rc-color-error',
-	'status-offline': 'rc-color-primary-darkest'
+	'status-offline': 'rc-color-primary-darkest',
 };
 
 function lightenDarkenColor(col, amt) {
@@ -62,27 +65,27 @@ function lightenDarkenColor(col, amt) {
 	return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16);
 }
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 103,
 	up() {
 		Object.keys(majorColors).forEach(function(_id) {
-			const color = RocketChat.models.Settings.findOne({_id: `theme-color-${ _id }`});
+			const color = Settings.findOne({ _id: `theme-color-${ _id }` });
 			const key = newvariables[_id];
 			if (color && color.value !== majorColors[_id] && key) {
 				if (/^@.+/.test(color.value)) {
 					color.value = newvariables[color.value.replace('@', '')];
 				}
 				const id = `theme-color-${ key }`;
-				RocketChat.models.Settings.update({_id: id}, {$set: { value : color.value, editor: /^#.+/.test(color.value) ? 'color' : 'expression' }});
+				Settings.update({ _id: id }, { $set: { value : color.value, editor: /^#.+/.test(color.value) ? 'color' : 'expression' } });
 				if (key === 'rc-color-primary') {
-					RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-darkest'}, {$set: {editor: 'color', value: lightenDarkenColor(color.value, -16)}});
-					RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-dark'}, {$set: {editor: 'color', value: lightenDarkenColor(color.value, 18)}});
-					RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-light'}, {$set: {editor: 'color', value: lightenDarkenColor(color.value, 110)}});
-					RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-light-medium'}, {$set: {editor: 'color', value: lightenDarkenColor(color.value, 156)}});
-					RocketChat.models.Settings.update({_id: 'theme-color-rc-color-primary-lightest'}, {$set: {editor: 'color', value: lightenDarkenColor(color.value, 200)}});
+					Settings.update({ _id: 'theme-color-rc-color-primary-darkest' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, -16) } });
+					Settings.update({ _id: 'theme-color-rc-color-primary-dark' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, 18) } });
+					Settings.update({ _id: 'theme-color-rc-color-primary-light' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, 110) } });
+					Settings.update({ _id: 'theme-color-rc-color-primary-light-medium' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, 156) } });
+					Settings.update({ _id: 'theme-color-rc-color-primary-lightest' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, 200) } });
 				}
 			}
 		});
-	}
+	},
 
 });

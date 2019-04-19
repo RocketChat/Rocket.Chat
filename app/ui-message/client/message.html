@@ -1,0 +1,180 @@
+<template name="message">
+	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message background-transparent-dark-hover {{ignoredClass}} {{sequentialClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}">
+		{{#if msg.avatar}}
+			{{#if avatarFromUsername}}
+				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">{{> avatar username=avatarFromUsername}}</button>
+			{{else}}
+				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">
+					<div class="avatar">
+						<div class="avatar-image" style="background-image:url({{encodeURI msg.avatar}})"></div>
+					</div>
+				</button>
+			{{/if}}
+		{{else}}
+			{{#if msg.emoji}}
+				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">
+					<div class="avatar">
+						{{> renderEmoji msg.emoji}}
+					</div>
+				</button>
+			{{else}}
+				<button class="thumb user-card-message" data-username="{{msg.u.username}}" tabindex="1">{{> avatar username=msg.u.username}}</button>
+			{{/if}}
+		{{/if}}
+		<div class="title border-component-color color-info-font-color">
+			<button type="button" class="user user-card-message color-primary-font-color" data-username="{{msg.u.username}}" tabindex="1">{{getName}}{{#if showUsername}} <span class="message-alias border-component-color color-info-font-color">@{{msg.u.username}}</span>{{/if}}</button>
+			{{#each role in roleTags}}
+				<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
+			{{/each}}
+			{{#if isBot}}
+				<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
+			{{/if}}
+			<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+			{{#if showTranslated}}
+				<span class="translated">
+					<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>
+				</span>
+			{{/if}}
+			{{#if sentByEmail}}
+				<span class="sent-by-email">
+					<i class="icon-mail" title='{{_ "Message_sent_by_email"}}' aria-label='{{_ "Message_sent_by_email"}}'></i>
+				</span>
+			{{/if}}
+			{{#if edited}}
+				<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
+					<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
+				</span>
+			{{/if}}
+			{{#if msg.alert}}<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div> {{/if}}
+			{{#if msg.private}}
+				<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
+			{{/if}}
+			{{#if isThreadReply}}
+				<span class="thread-replied">
+					{{> icon icon="thread" classes="js-open-thread"}}
+					<q role="button" aria-label="{{_ "Open_thread"}}" class="js-open-thread thread-quote">
+						<span class="message-body--unstyled">{{{parentMessage}}}</span>
+					</q>
+					<span class="js-toggle-thread-reply thread-reply-switch {{collapseSwitchClass}}"></span>
+					<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
+						<span class="message-body--unstyled">{{{normalizedBody}}}</span>
+					</span>
+				</span>
+			{{/if}}
+			{{#if fromSearch}}
+				<span class="user color-info-font-color">
+					{{>icon icon=roomIcon}}{{channelName}}
+				</span>
+			{{/if}}
+			{{#if isIgnored}}
+				<span class="toggle-hidden icon-right-dir" data-message="{{msg._id}}"> {{_ "Message_Ignored"}} </span>
+			{{/if}}
+		</div>
+		<div class="body {{bodyClass}}" dir="auto" data-unread-text="{{_ "Unread_Messages"}}">
+			{{#if isSnippet}}
+				<div class="snippet-name">{{_ "Snippet_name"}}: {{snippetName}}</div>
+			{{/if}}
+			{{#if isDecrypting}}
+				<span>******</span>
+			{{else}}
+				{{{body}}}
+			{{/if}}
+			{{#if hasOembed}}
+				{{#each msg.urls}}
+					{{injectIndex . @index}} {{> oembedBaseWidget}}
+				{{/each}}
+			{{/if}}
+			{{#each msg.attachments}}
+				{{injectIndex . @index}} {{> messageAttachment}}
+			{{/each}}
+		</div>
+
+		{{#if msg.drid}}
+			<div class="message-discussion">
+				{{#if $gt msg.dcount 0}}
+					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
+						<!-- {{> icon icon="discussion"}} -->
+						<span class='reply-counter'>{{msg.dcount}}</span>&nbsp;{{_ i18nKeyMessage}}
+					</button>
+				{{else}}
+					<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small no-replies" data-rid={{roomId}}>
+						{{_ "No_messages_yet" }}
+					</button>
+				{{/if}}
+				<span class="discussion-reply-lm">{{ formatDate msg.dlm }}</span>
+			</div>
+		{{/if}}
+
+		{{#if and settings.showReplyButton msg.tcount}}
+			<div class="message-discussion">
+				<button class="js-open-thread rc-button rc-button--primary rc-button--small rc-button--outline" data-rid={{roomId}}>
+					{{> icon icon="thread"}}
+					<span class='reply-counter'>{{msg.tcount}}</span>&nbsp;{{_ i18nKeyReply}}
+				</button>
+				<span class="discussion-reply-lm">{{ formatDate msg.tlm}}</span>
+			</div>
+		{{/if}}
+
+		{{#with readReceipt}}
+			<div class="read-receipt {{readByEveryone}}">
+				{{> icon icon="check" }}
+			</div>
+		{{/with}}
+		{{#unless system}}
+			<div class="message-actions">
+
+				<div class="message-actions__buttons">
+					{{#each action in messageActions 'message'}}
+						<button class="message-actions__button"  data-message-action="{{action.id}}">
+								{{> icon block="message-actions__button-icon" icon=action.icon}}
+						</button>
+					{{/each}}
+				</div>
+				<div class="message-actions__menu">
+					{{> icon block="message-actions__menu-icon" icon="menu"}}
+				</div>
+			</div>
+		{{/unless}}
+		{{#unless hideActionLinks}}
+		<ul class="actionLinks">
+			{{#each actionLink in actionLinks}}
+				<li class="color-primary-action-color">
+					<span class="action-link" data-actionlink="{{actionLink.id}}">
+						{{#if actionLink.icon}}
+							<i class="{{actionLink.icon}}"></i>
+						{{/if}}
+						{{#if actionLink.i18nLabel}}
+							{{_ actionLink.i18nLabel}}
+						{{else}}
+							{{actionLink.label}}
+						{{/if}}
+					</span>
+				</li>
+			{{/each}}
+		</ul>
+		{{/unless}}
+		{{#if broadcast}}
+			{{#with msg.u}}
+				<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
+					{{> icon icon="reply"}} {{_'Reply'}}
+				</button>
+			{{/with}}
+		{{/if}}
+		{{#unless hideReactions}}
+		<ul class="reactions">
+			{{#each reaction in reactions}}
+				<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
+					<span class="reaction-emoji">{{> renderEmoji reaction.emoji}}</span>
+					<span class="reaction-count">{{reaction.count}}</span>
+					<span class="people" style="font-weight: bold">
+						{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>
+					</span>
+				</li>
+			{{/each}}
+			<li class="add-reaction">
+				<span class="icon-people-plus"></span>
+			</li>
+		</ul>
+		{{/unless}}
+	</li>
+</template>

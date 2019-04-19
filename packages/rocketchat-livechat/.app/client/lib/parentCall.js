@@ -2,7 +2,7 @@ this.parentCall = (method, args = []) => {
 	const data = {
 		src: 'rocketchat',
 		fn: method,
-		args
+		args,
 	};
 
 	window.parent.postMessage(data, '*');

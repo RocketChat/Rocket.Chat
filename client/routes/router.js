@@ -1,4 +1,11 @@
-/* globals KonchatNotification */
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { Session } from 'meteor/session';
+import { KonchatNotification } from '../../app/ui';
 import s from 'underscore.string';
 
 Blaze.registerHelper('pathFor', function(path, kw) {
@@ -20,7 +27,7 @@ FlowRouter.subscriptions = function() {
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		BlazeLayout.render('main', { modal: RocketChat.Layout.isEmbedded(), center: 'loading' });
+		BlazeLayout.render('main', { center: 'loading' });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -38,7 +45,7 @@ FlowRouter.route('/', {
 				c.stop();
 			}
 		});
-	}
+	},
 });
 
 
@@ -47,7 +54,7 @@ FlowRouter.route('/login', {
 
 	action() {
 		FlowRouter.go('home');
-	}
+	},
 });
 
 FlowRouter.route('/home', {
@@ -59,25 +66,25 @@ FlowRouter.route('/home', {
 			Accounts.callLoginMethod({
 				methodArguments: [{
 					saml: true,
-					credentialToken: queryParams.saml_idp_credentialToken
+					credentialToken: queryParams.saml_idp_credentialToken,
 				}],
-				userCallback() { BlazeLayout.render('main', {center: 'home'}); }
+				userCallback() { BlazeLayout.render('main', { center: 'home' }); },
 			});
 		} else {
-			BlazeLayout.render('main', {center: 'home'});
+			BlazeLayout.render('main', { center: 'home' });
 		}
-	}
+	},
 });
 
 FlowRouter.route('/directory', {
 	name: 'directory',
 
 	action() {
-		BlazeLayout.render('main', {center: 'directory'});
+		BlazeLayout.render('main', { center: 'directory' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
-	}]
+	}],
 });
 
 FlowRouter.route('/account/:group?', {
@@ -92,7 +99,7 @@ FlowRouter.route('/account/:group?', {
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
-	}]
+	}],
 });
 
 FlowRouter.route('/terms-of-service', {
@@ -101,7 +108,7 @@ FlowRouter.route('/terms-of-service', {
 	action() {
 		Session.set('cmsPage', 'Layout_Terms_of_Service');
 		BlazeLayout.render('cmsPage');
-	}
+	},
 });
 
 FlowRouter.route('/privacy-policy', {
@@ -110,16 +117,25 @@ FlowRouter.route('/privacy-policy', {
 	action() {
 		Session.set('cmsPage', 'Layout_Privacy_Policy');
 		BlazeLayout.render('cmsPage');
-	}
+	},
+});
+
+FlowRouter.route('/legal-notice', {
+	name: 'legal-notice',
+
+	action() {
+		Session.set('cmsPage', 'Layout_Legal_Notice');
+		BlazeLayout.render('cmsPage');
+	},
 });
 
 FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 
 	action(params) {
-		Session.set('roomNotFound', {type: params.type, name: params.name});
-		BlazeLayout.render('main', {center: 'roomNotFound'});
-	}
+		Session.set('roomNotFound', { type: params.type, name: params.name });
+		BlazeLayout.render('main', { center: 'roomNotFound' });
+	},
 });
 
 FlowRouter.route('/fxos', {
@@ -127,13 +143,13 @@ FlowRouter.route('/fxos', {
 
 	action() {
 		BlazeLayout.render('fxOsInstallPrompt');
-	}
+	},
 });
 
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
 
-	action(/*params*/) {
+	action(/* params*/) {
 		BlazeLayout.render('secretURL');
 
 		// if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
@@ -146,12 +162,28 @@ FlowRouter.route('/register/:hash', {
 		// 			BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
 		// else
 		// 	BlazeLayout.render 'logoLayout', { render: 'invalidSecretURL' }
-	}
+	},
+});
+
+FlowRouter.route('/setup-wizard', {
+	name: 'setup-wizard',
+
+	action() {
+		BlazeLayout.render('setupWizard');
+	},
+});
+
+FlowRouter.route('/setup-wizard/final', {
+	name: 'setup-wizard-final',
+
+	action() {
+		BlazeLayout.render('setupWizardFinal');
+	},
 });
 
 FlowRouter.notFound = {
 	action() {
 		BlazeLayout.render('pageNotFound');
-	}
+	},
 };
 

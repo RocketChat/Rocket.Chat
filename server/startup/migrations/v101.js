@@ -1,6 +1,9 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Subscriptions } from '../../../app/models';
+
+Migrations.add({
 	version: 101,
 	up() {
-		RocketChat.models.Subscriptions.update({lastActivity:{$exists:1}}, { $unset: { 'lastActivity': '' } }, {multi: true});
-	}
+		Subscriptions.update({ lastActivity:{ $exists:1 } }, { $unset: { lastActivity: '' } }, { multi: true });
+	},
 });

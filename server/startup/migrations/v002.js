@@ -1,15 +1,19 @@
-/* globals getAvatarSuggestionForUser */
+import { RocketChatFile } from '../../../app/file';
+import { FileUpload } from '../../../app/file-upload';
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
+import { getAvatarSuggestionForUser } from '../../../app/lib';
 
-RocketChat.Migrations.add({
+Migrations.add({
 	version: 2,
 	up() {
-		return RocketChat.models.Users.find({
+		return Users.find({
 			avatarOrigin: {
-				$exists: false
+				$exists: false,
 			},
 			username: {
-				$exists: true
-			}
+				$exists: true,
+			},
 		}).forEach((user) => {
 			const avatars = getAvatarSuggestionForUser(user);
 			const services = Object.keys(avatars);
@@ -23,7 +27,7 @@ RocketChat.Migrations.add({
 			console.log(user.username, '->', service);
 
 			const dataURI = avatars[service].blob;
-			const {image, contentType} = RocketChatFile.dataURIParse(dataURI);
+			const { image, contentType } = RocketChatFile.dataURIParse(dataURI);
 
 			const rs = RocketChatFile.bufferToStream(new Buffer(image, 'base64'));
 			const fileStore = FileUpload.getStore('Avatars');
@@ -31,12 +35,10 @@ RocketChat.Migrations.add({
 
 			const file = {
 				userId: user._id,
-				type: contentType
+				type: contentType,
 			};
 
-			fileStore.insert(file, rs, () => {
-				return RocketChat.models.Users.setAvatarOrigin(user._id, service);
-			});
+			fileStore.insert(file, rs, () => Users.setAvatarOrigin(user._id, service));
 		});
-	}
+	},
 });

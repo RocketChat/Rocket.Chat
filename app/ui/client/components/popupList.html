@@ -1,0 +1,37 @@
+<template name="popupList">
+	<div class="rc-popup-list">
+		{{> Template.dynamic config }}
+	</div>
+</template>
+
+<template name="popupList_default">
+	<ul class="rc-popup-list__list">
+		{{#each item in items}}
+			{{> Template.dynamic config item data=data}}
+		{{else}}
+			{{> Template.dynamic template=noMatchTemplate}}
+		{{/each}}
+	</ul>
+</template>
+
+<template name="popupList_item_default">
+	 <li class="rc-popup-list__item">
+		 <span class="rc-popup-list__item-image">
+			 {{>avatar username=item.username}}
+		 </span>
+		 {{#if showRealNames}}
+		 	<span class="rc-popup-list__item-name">{{item.name}} ({{{modifier item.username}}})</span>
+		 {{else}}
+		 	<span class="rc-popup-list__item-name">{{{modifier item.username}}}</span>
+		 {{/if}}
+	</li>
+</template>
+
+<template name="popupList_item_channel">
+	 <li class="rc-popup-list__item">
+		 <span class="rc-popup-list__item-image">
+			 {{>avatar username=item.name roomIcon=true}}
+		 </span>
+		 <span class="rc-popup-list__item-name">{{{modifier item.name}}}</span>
+	</li>
+</template>

@@ -1,6 +1,10 @@
-/* globals Deps, getCaretCoordinates*/
+import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
+import { Blaze } from 'meteor/blaze';
+import { Deps } from 'meteor/deps';
 import _ from 'underscore';
 import AutoCompleteRecords from './collection';
+import { getCaretCoordinates } from 'meteor/dandv:caret-position';
 
 const isServerSearch = function(rule) {
 	return _.isString(rule.collection);
@@ -36,7 +40,7 @@ const getFindParams = function(rule, filter, limit) {
 	// We need to extend so that we don't copy over rule.filter
 	const selector = _.extend({}, rule.filter || {});
 	const options = {
-		limit
+		limit,
 	};
 	if (!filter) {
 		// Match anything, no sort, limit X
@@ -55,7 +59,7 @@ const getFindParams = function(rule, filter, limit) {
 		selector[rule.field] = {
 			$regex: rule.matchAll ? filter : `^${ filter }`,
 			// default is case insensitive search - empty string is not the same as undefined!
-			$options: typeof rule.options === 'undefined' ? 'i' : rule.options
+			$options: typeof rule.options === 'undefined' ? 'i' : rule.options,
 		};
 	}
 	return [selector, options];
@@ -63,13 +67,13 @@ const getFindParams = function(rule, filter, limit) {
 
 const getField = function(obj, str) {
 	const string = str.split('.');
-	string.forEach(key => {
+	string.forEach((key) => {
 		obj = obj[key];
 	});
 	return obj;
 };
 
-this.AutoComplete = class {
+export default class AutoComplete {
 	constructor(settings) {
 		this.KEYS = [40, 38, 13, 27, 9];
 		this.limit = settings.limit || 5;
@@ -78,21 +82,21 @@ this.AutoComplete = class {
 		this.selector = {
 			constainer: '.-autocomplete-container',
 			item: '.-autocomplete-item',
-			...settings.selector
+			...settings.selector,
 		};
-		const rules = this.rules;
+		const { rules } = this;
 
-		Object.keys(rules).forEach(key => {
+		Object.keys(rules).forEach((key) => {
 			const rule = rules[key];
 			validateRule(rule);
 		});
 
-		this.expressions = (() => {
-			return Object.keys(rules).map(key => {
-				const rule = rules[key];
-				return getRegExp(rule);
-			});
-		})();
+		this.onSelect = settings.onSelect;
+
+		this.expressions = (() => Object.keys(rules).map((key) => {
+			const rule = rules[key];
+			return getRegExp(rule);
+		}))();
 		this.matched = -1;
 		this.loaded = true;
 
@@ -120,9 +124,7 @@ this.AutoComplete = class {
 				this.setLoaded(true);
 				return;
 			}
-			const params = getFindParams(rule, filter, this.limit);
-			const selector = params[0];
-			const options = params[1];
+			const [selector, options] = getFindParams(rule, filter, this.limit);
 
 			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
 			this.setLoaded(false);
@@ -171,7 +173,7 @@ this.AutoComplete = class {
 
 	setLoaded(val) {
 		if (val === this.loaded) {
-			return; //Don't cause redraws unnecessarily
+			return; // Don't cause redraws unnecessarily
 		}
 		this.loaded = val;
 		this.loadingDep.changed();
@@ -179,7 +181,7 @@ this.AutoComplete = class {
 
 	onKeyUp() {
 		if (!this.$element) {
-			return; //Don't try to do this while loading
+			return; // Don't try to do this while loading
 		}
 		const startpos = this.element.selectionStart;
 		const val = this.getText().substring(0, startpos);
@@ -223,23 +225,23 @@ this.AutoComplete = class {
 			return;
 		}
 		switch (e.keyCode) {
-			case 9: //TAB
-			case 13: //ENTER
-				if (this.select()) { //Don't jump fields or submit if select successful
+			case 9: // TAB
+			case 13: // ENTER
+				if (this.select()) { // Don't jump fields or submit if select successful
 					e.preventDefault();
 					e.stopPropagation();
 				}
 				break;
 				// preventDefault needed below to avoid moving cursor when selecting
-			case 40: //DOWN
+			case 40: // DOWN
 				e.preventDefault();
 				this.next();
 				break;
-			case 38: //UP
+			case 38: // UP
 				e.preventDefault();
 				this.prev();
 				break;
-			case 27: //ESCAPE
+			case 27: // ESCAPE
 				this.$element.blur();
 				this.hideList();
 		}
@@ -270,7 +272,7 @@ this.AutoComplete = class {
 
 	filteredList() {
 		// @ruleDep.depend() # optional as long as we use depend on filter, because list will always get re-rendered
-		const filter = this.getFilter(); //Reactively depend on the filter
+		const filter = this.getFilter(); // Reactively depend on the filter
 		if (this.matched === -1) {
 			return null;
 		}
@@ -317,7 +319,7 @@ this.AutoComplete = class {
 		}
 		const doc = Blaze.getData(node);
 		if (!doc) {
-			return false; //Don't select if nothing matched
+			return false; // Don't select if nothing matched
 
 		}
 		this.processSelection(doc, this.rules[this.matched]);
@@ -340,6 +342,7 @@ this.AutoComplete = class {
 			// TODO this is a hack; see above
 			this.onBlur();
 		}
+		this.onSelect && this.onSelect(doc);
 		this.$element.trigger('autocompleteselect', doc);
 	}
 
@@ -369,10 +372,9 @@ this.AutoComplete = class {
 
 	setText(text) {
 		if (this.$element.is('input,textarea')) {
-			this.$element.val(text);
-		} else {
-			this.$element.html(text);
+			return this.$element.val(text);
 		}
+		this.$element.html(text);
 	}
 
 
@@ -383,7 +385,14 @@ this.AutoComplete = class {
 	positionContainer() {
 		// First render; Pick the first item and set css whenever list gets shown
 		let pos = {};
-		const position = this.$element.position();
+		const element = this.tmplInst.$(this.selector.anchor || this.$element);
+
+		if (this.position === 'fixed') {
+			const width = element.outerWidth();
+			return this.tmplInst.$(this.selector.container).css({ width, position: 'fixed' });
+		}
+
+		const position = element.position();
 		const rule = this.matchedRule();
 		const offset = getCaretCoordinates(this.element, this.element.selectionStart);
 
@@ -392,20 +401,21 @@ this.AutoComplete = class {
 		if (rule && isWholeField(rule)) {
 			pos.left = position.left;
 			if (rule.doNotChangeWidth !== false) {
-				pos.width = this.$element.outerWidth(); //position.offsetWidth
+				pos.width = element.outerWidth(); // position.offsetWidth
 
 			}
-		} else { //Normal positioning, at token word
+		} else { // Normal positioning, at token word
 			pos = { left: position.left + offset.left };
 		}
 
 		// Position menu from top (above) or from bottom of caret (below, default)
 		if (this.position === 'top') {
-			pos.bottom = this.$element.offsetParent().height() - position.top - offset.top;
+			pos.bottom = element.offsetParent().height() - position.top - offset.top;
 		} else {
-			pos.top = position.top + offset.top + parseInt(this.$element.css('font-size'));
+			pos.top = position.top + offset.top + parseInt(element.css('font-size'));
 		}
-		this.tmplInst.$(this.selector.container).css(pos);
+
+		this.tmplInst.$(this.selector.container).css({ ...pos, position: 'absolute' });
 	}
 
 	ensureSelection() {
@@ -427,22 +437,22 @@ this.AutoComplete = class {
 		const next = currentItem.next();
 		if (next.length) {
 			next.addClass('selected');
-		} else { //End of list or lost selection; Go back to first item
+		} else { // End of list or lost selection; Go back to first item
 			this.tmplInst.$(`${ this.selector.item }:first-child`).addClass('selected');
 		}
 	}
 
-	//Select previous item in list
+	// Select previous item in list
 	prev() {
 		const currentItem = this.tmplInst.$(`${ this.selector.item }.selected`);
 		if (!currentItem.length) {
-			return; //Don't try to iterate an empty list
+			return; // Don't try to iterate an empty list
 		}
 		currentItem.removeClass('selected');
 		const prev = currentItem.prev();
 		if (prev.length) {
 			prev.addClass('selected');
-		} else { //Beginning of list or lost selection; Go to end of list
+		} else { // Beginning of list or lost selection; Go to end of list
 			this.tmplInst.$(`${ this.selector.item }:last-child`).addClass('selected');
 		}
 	}
@@ -453,4 +463,4 @@ this.AutoComplete = class {
 		return this.rules[this.matched].template;
 	}
 
-};
+}

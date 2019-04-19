@@ -9,11 +9,11 @@ class MainContent extends Page {
 	get favoriteStar() { return browser.element('.rc-header__toggle-favorite.favorite-room'); }
 	get channelTitle() { return browser.element('.rc-header__name'); }
 
-	//Main Content Footer (Message Input Area)
+	// Main Content Footer (Message Input Area)
 	get messageInput() { return browser.element('.js-input-message'); }
 	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
-	get recordBtn() { return browser.element('.message-buttons .icon-mic'); }
+	get recordBtn() { return browser.element('.js-audio-message-record'); }
 	get videoCamBtn() { return browser.element('.message-buttons .icon-videocam'); }
 	get emojiBtn() { return browser.element('.rc-message-box__icon.emoji-picker-icon'); }
 	get messagePopUp() { return browser.element('.message-popup'); }
@@ -24,7 +24,7 @@ class MainContent extends Page {
 	get joinChannelBtn() { return browser.element('.button.join'); }
 
 	// Messages
-	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
+	get lastMessageUser() { return browser.element('.message:last-child .title .user-card-message'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
 	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description'); }
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
@@ -32,6 +32,7 @@ class MainContent extends Page {
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
+	get lastMessageQuote() { return browser.element('.message:last-child .thread-quote'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
 	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
 	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
@@ -91,7 +92,7 @@ class MainContent extends Page {
 		this.messageInput.addValue(text);
 	}
 
-	//uploads a file in the given filepath (url).
+	// uploads a file in the given filepath (url).
 	fileUpload(filePath) {
 		this.sendMessage('Prepare for the file');
 		this.fileAttachment.chooseFile(filePath);

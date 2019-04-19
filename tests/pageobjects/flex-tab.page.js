@@ -23,6 +23,7 @@ class FlexTab extends Page {
 	get editAnnouncementTextInput() { return browser.element('.channel-settings input[name="announcement"]'); }
 	get editDescriptionTextInput() { return browser.element('.channel-settings input[name="description"]'); }
 	get editNameSave() { return browser.element('.channel-settings .save'); }
+	get deleteBtn() { return browser.element('.channel-settings .js-delete'); }
 
 	// Members Tab
 	get membersTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--team'); }
@@ -53,7 +54,7 @@ class FlexTab extends Page {
 	get notificationsSettings() { return browser.element('.push-notifications'); }
 
 	// Files Tab
-	get filesTab() { return browser.element('.rc-popover__item[data-id=uploaded-files-list]'); }
+	get filesTab() { return browser.element('.rc-popover__item[data-id=uploaded-files-list], .tab-button[data-id=uploaded-files-list]'); }
 	get fileItem() { return browser.element('.uploaded-files-list ul:first-child'); }
 	get filesTabContent() { return browser.element('.uploaded-files-list'); }
 	get fileDelete() { return browser.element('.uploaded-files-list ul:first-child .file-delete'); }
@@ -61,15 +62,15 @@ class FlexTab extends Page {
 	get fileName() { return browser.element('.uploaded-files-list ul:first-child .room-file-item'); }
 
 	// Mentions Tab
-	get mentionsTab() { return browser.element('.rc-popover__item[data-id=mentions]'); }
+	get mentionsTab() { return browser.element('.rc-popover__item[data-id=mentions], .tab-button[data-id=mentions]'); }
 	get mentionsTabContent() { return browser.element('.mentioned-messages-list'); }
 
 	// Starred Tab
-	get starredTab() { return browser.element('.rc-popover__item[data-id=starred-messages]'); }
+	get starredTab() { return browser.element('.rc-popover__item[data-id=starred-messages], .tab-button[data-id=starred-messages]'); }
 	get starredTabContent() { return browser.element('.starred-messages-list'); }
 
 	// Pinned Tab
-	get pinnedTab() { return browser.element('.rc-popover__item[data-id=pinned-messages]'); }
+	get pinnedTab() { return browser.element('.rc-popover__item[data-id=pinned-messages], .tab-button[data-id=pinned-messages]'); }
 	get pinnedTabContent() { return browser.element('.pinned-messages-list'); }
 
 	get firstSetting() { return browser.element('.clearfix li:nth-child(1) .current-setting'); }
@@ -77,7 +78,7 @@ class FlexTab extends Page {
 	get thirdSetting() { return browser.element('.clearfix li:nth-child(3) .current-setting'); }
 	get fourthSetting() { return browser.element('.clearfix li:nth-child(4) .current-setting'); }
 
-	//admin view flextab items
+	// admin view flextab items
 	get usersSendInvitationTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--send'); }
 	get usersAddUserTab() { return browser.element('.tab-button:not(.hidden) .tab-button-icon--plus'); }
 	get usersSendInvitationTextArea() { return browser.element('#inviteEmails'); }
@@ -135,7 +136,7 @@ class FlexTab extends Page {
 	}
 
 	operateFlexTab(desiredTab, desiredState) {
-		//desiredState true=open false=closed
+		// desiredState true=open false=closed
 		switch (desiredTab) {
 			case 'info':
 				if ((!this.channelSettings.isVisible() && desiredState) || (this.channelSettings.isVisible() && !desiredState)) {

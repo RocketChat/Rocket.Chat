@@ -10,13 +10,13 @@ export const preferences = {
 		newRoomNotification: 'door',
 		newMessageNotification: 'chime',
 		muteFocusedConversations: true,
+		clockMode: 0,
 		useEmojis: true,
 		convertAsciiEmoji: true,
 		saveMobileBandwidth: true,
 		collapseMediaByDefault: false,
 		autoImageLoad: true,
-		emailNotificationMode: 'all',
-		roomsListExhibitionMode: 'category',
+		emailNotificationMode: 'mentions',
 		unreadAlert: true,
 		notificationsSoundVolume: 100,
 		desktopNotifications: 'default',
@@ -30,6 +30,6 @@ export const preferences = {
 		hideAvatars: false,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
-		roomCounterSidebar: false
-	}
+		roomCounterSidebar: false,
+	},
 };
