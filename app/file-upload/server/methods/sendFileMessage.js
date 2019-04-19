@@ -56,6 +56,9 @@ Meteor.methods({
 			}
 		} else if (/^audio\/.+/.test(file.type)) {
 			attachment.audio_url = fileUrl;
+			if (file.type === 'audio/wave') {
+				file.type = 'audio/wav';
+			}
 			attachment.audio_type = file.type;
 			attachment.audio_size = file.size;
 		} else if (/^video\/.+/.test(file.type)) {

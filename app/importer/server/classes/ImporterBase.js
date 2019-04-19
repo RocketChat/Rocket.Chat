@@ -402,6 +402,9 @@ export class Base {
 
 						if (/^audio\/.+/.test(file.type)) {
 							attachment.audio_url = url;
+							if (file.type === 'audio/wave') {
+								file.type = 'audio/wav';
+							}
 							attachment.audio_type = file.type;
 							attachment.audio_size = file.size;
 						}
