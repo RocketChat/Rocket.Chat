@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
-import { CredentialTokens } from '../../models';
+import { Rooms, Subscriptions, CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
 import { SAML } from './saml_utils';
 import bodyParser from 'body-parser';
@@ -137,6 +137,28 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Meteor.users.findOne(userId);
+
+			if (loginResult.profile.channels) {
+				_.each(loginResult.profile.channels.split(','), function(room_name) {
+					if (room_name) {
+						let room = Rooms.findOneByNameAndType(room_name, 'c');
+						if (!room) {
+							room = Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
+						}
+
+						if (!Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
+							Subscriptions.createWithRoomAndUser(room, user, {
+								ts: new Date(),
+								open: true,
+								alert: true,
+								unread: 1,
+								userMentions: 1,
+								groupMentions: 0,
+							});
+						}
+					}
+				});
+			}
 		}
 
 		// creating the token and adding to the user
