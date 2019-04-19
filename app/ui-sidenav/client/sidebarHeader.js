@@ -42,6 +42,40 @@ const extendedViewOption = (user) => {
 
 const showToolbar = new ReactiveVar(false);
 
+const createChannel = (e) => {
+			e.preventDefault();
+			modal.open({
+				title: t('Create_A_New_Channel'),
+				content: 'createChannel',
+				data: {
+					onCreate() {
+						modal.close();
+					},
+				},
+				modifier: 'modal',
+				showConfirmButton: false,
+				showCancelButton: false,
+				confirmOnEnter: false,
+			});
+		};
+
+const createDiscussion = (e) => {
+			e.preventDefault();
+			modal.open({
+				title: t('Discussion_title'),
+				content: 'CreateDiscussion',
+				data: {
+					onCreate() {
+						modal.close();
+					},
+				},
+				modifier: 'modal',
+				showConfirmButton: false,
+				showCancelButton: false,
+				confirmOnEnter: false,
+			});
+		};
+
 export const toolbarSearch = {
 	shortcut: false,
 	show(fromShortcut) {
@@ -158,39 +192,7 @@ const toolbarButtons = (user) => [{
 	action: (e) => {
 
 
-		const createChannel = (e) => {
-			e.preventDefault();
-			modal.open({
-				title: t('Create_A_New_Channel'),
-				content: 'createChannel',
-				data: {
-					onCreate() {
-						modal.close();
-					},
-				},
-				modifier: 'modal',
-				showConfirmButton: false,
-				showCancelButton: false,
-				confirmOnEnter: false,
-			});
-		};
-
-		const createDiscussion = (e) => {
-			e.preventDefault();
-			modal.open({
-				title: t('Discussion_title'),
-				content: 'CreateDiscussion',
-				data: {
-					onCreate() {
-						modal.close();
-					},
-				},
-				modifier: 'modal',
-				showConfirmButton: false,
-				showCancelButton: false,
-				confirmOnEnter: false,
-			});
-		};
+		
 
 		const discussionEnabled = settings.get('Discussion_enabled');
 		if (!discussionEnabled) {
