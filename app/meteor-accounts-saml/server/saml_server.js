@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
+import { TAPi18n } from 'meteor/tap:i18n';
 import { CredentialTokens } from '../../models';
 import { generateUsernameSuggestion } from '../../lib';
 import { SAML } from './saml_utils';
@@ -134,6 +135,11 @@ Accounts.registerLoginHandler(function(loginRequest) {
 				}
 			} else if (loginResult.profile.username) {
 				newUser.username = loginResult.profile.username;
+			}
+
+			const languages = TAPi18n.getLanguages();
+			if (languages[loginResult.profile.language]) {
+				newUser.language = loginResult.profile.language;
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
