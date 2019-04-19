@@ -24,7 +24,7 @@ class MainContent extends Page {
 	get joinChannelBtn() { return browser.element('.button.join'); }
 
 	// Messages
-	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
+	get lastMessageUser() { return browser.element('.message:last-child .title .user-card-message'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
 	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description'); }
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
