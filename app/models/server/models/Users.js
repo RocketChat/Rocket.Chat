@@ -503,24 +503,24 @@ export class Users extends Base {
 			],
 		};
 		if (options.filterByDiscoverability) {
-                        const defaultDiscoverability = settings.get('Accounts_Default_User_Preferences_discoverability');
-                        if (defaultDiscoverability === 'all') {
-                                query.$and.push({
-                                        $or: [
-                                                {
-                                                        'settings.preferences': { $exists: false },
-                                                },
-                                                {
-                                                        'settings.preferences.discoverability': 'all',
-                                                },
-                                        ],
-                                });
-                        } else {
-                                query.$and.push({
-                                        'settings.preferences.discoverability': 'all',
-                                });
-                        }
-                }
+			const defaultDiscoverability = settings.get('Accounts_Default_User_Preferences_discoverability');
+			if (defaultDiscoverability === 'all') {
+				query.$and.push({
+					$or: [
+						{
+							'settings.preferences': { $exists: false },
+						},
+						{
+							'settings.preferences.discoverability': 'all',
+						},
+					],
+				});
+			} else {
+				query.$and.push({
+					'settings.preferences.discoverability': 'all',
+				});
+			}
+		}
 
 		// do not use cache
 		return this._db.find(query, options);

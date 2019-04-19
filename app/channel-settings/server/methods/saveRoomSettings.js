@@ -98,11 +98,11 @@ Meteor.methods({
 				});
 			}
 			if (setting === 'readOnly' && value !== room.ro && !hasPermission(userId, 'create-ro', rid)) {
-                                throw new Meteor.Error('error-action-not-allowed', 'Changing a room\'s read only setting is not allowed', {
-                                        method: 'saveRoomSettings',
-                                        action: 'Change_Room_Read_Only',
-                                });
-                        }
+				throw new Meteor.Error('error-action-not-allowed', 'Changing a room\'s read only setting is not allowed', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Read_Only',
+				});
+			}
 			if (setting === 'encrypted' && value !== room.encrypted && (room.t !== 'd' && room.t !== 'p')) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',

@@ -1,4 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../settings';
+import { getAvatarUrlFromUsername } from '../../utils';
+
 import s from 'underscore.string';
 
 export const placeholders = {
@@ -9,19 +13,19 @@ export const placeholders = {
 
 		str = str.replace(/\[Site_Name\]/g, settings.get('Site_Name') || '');
 		str = str.replace(/\[Site_URL\]/g, settings.get('Site_Url') || '');
-		
+
 		if (str.includes('[Invite_Link]')) {
 			const invite_link = Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink'));
 			str = str.replace(/\[Invite_Link\]/g, invite_link);
 		}
 
 		if (str.includes('[Username]')) {
-			str = str.replace(/\[Username\]/g, Meteor.user().username)
+			str = str.replace(/\[Username\]/g, Meteor.user().username);
 		}
 
 		if (str.includes('[Avatar_Link]')) {
 			str = str.replace(/\[Avatar_Link\]/g, `${ settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`);
-	        }
+		}
 
 		if (data) {
 			str = str.replace(/\[name\]/g, data.name || '');

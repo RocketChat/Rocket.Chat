@@ -457,25 +457,25 @@ settings.addGroup('Accounts', function() {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 		this.add('Accounts_Default_User_Preferences_discoverability', 'all', {
-                        type: 'select',
-                        values: [
-                                {
-                                        key: 'all',
-                                        i18nLabel: 'Everyone',
-                                },
-                                {
-                                        key: 'contacts',
-                                        i18nLabel: 'My Contacts',
-                                },
-                                {
-                                        key: 'none',
-                                        i18nLabel: 'Nobody',
-                                },
-                        ],
+			type: 'select',
+			values: [
+				{
+					key: 'all',
+					i18nLabel: 'Everyone',
+				},
+				{
+					key: 'contacts',
+					i18nLabel: 'My Contacts',
+				},
+				{
+					key: 'none',
+					i18nLabel: 'Nobody',
+				},
+			],
 
-                        public: true,
-                        i18nLabel: 'Discoverability',
-                });
+			public: true,
+			i18nLabel: 'Discoverability',
+		});
 	});
 
 	this.section('Avatar', function() {
@@ -1290,57 +1290,57 @@ settings.addGroup('Layout', function() {
 			public: true,
 		});
 		this.add('UI_DisplayLocalization', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplayPrivacy', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplayUserPresence', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplayNotifications', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplayMessages', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplaySidebar', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplayHighlights', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplaySound', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplayMyData', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_DisplayDirectory', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_Display_Security', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_Display_Integrations', true, {
-                        type: 'boolean',
-                        public: true,
-                });
-                this.add('UI_Display_Personal_Access_Tokens', true, {
-                        type: 'boolean',
-                        public: true,
-                });
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayPrivacy', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayUserPresence', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayNotifications', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayMessages', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplaySidebar', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayHighlights', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplaySound', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayMyData', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayDirectory', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_Display_Security', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_Display_Integrations', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_Display_Personal_Access_Tokens', true, {
+			type: 'boolean',
+			public: true,
+		});
 		this.add('UI_Group_Channels_By_Type', true, {
 			type: 'boolean',
 			public: false,

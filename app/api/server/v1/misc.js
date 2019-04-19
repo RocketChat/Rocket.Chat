@@ -6,6 +6,7 @@ import { Info } from '../../../utils';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { API } from '../api';
+import * as Mailer from '../../../mailer';
 
 import s from 'underscore.string';
 import { PhoneNumberUtil } from 'google-libphonenumber';
@@ -205,52 +206,52 @@ API.v1.addRoute('directory', { authRequired: true }, {
 });
 
 API.v1.addRoute('invite.email', { authRequired: true }, {
-        post() {
-                if (!this.bodyParams.email) {
-                        throw new Meteor.Error('error-email-param-not-provided', 'The required "email" param is required.');
-                }
+	post() {
+		if (!this.bodyParams.email) {
+			throw new Meteor.Error('error-email-param-not-provided', 'The required "email" param is required.');
+		}
 
-                if (!Mailer.checkAddressFormat(this.bodyParams.email)) {
-                        return API.v1.failure('Invalid email address');
-                }
+		if (!Mailer.checkAddressFormat(this.bodyParams.email)) {
+			return API.v1.failure('Invalid email address');
+		}
 
-                const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email], this.bodyParams.language, this.bodyParams.realname));
-                if (result.indexOf(this.bodyParams.email) >= 0) {
-                        return API.v1.success();
-                } else {
-                        return API.v1.failure('Email Invite Failed');
-                }
-        },
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationEmail', [this.bodyParams.email], this.bodyParams.language, this.bodyParams.realname));
+		if (result.indexOf(this.bodyParams.email) >= 0) {
+			return API.v1.success();
+		} else {
+			return API.v1.failure('Email Invite Failed');
+		}
+	},
 });
 
 API.v1.addRoute('invite.sms', { authRequired: true }, {
-        post() {
-                if (!this.bodyParams.phone) {
-                        throw new Meteor.Error('error-phone-param-not-provided', 'The required "phone" param is required.');
-                }
-                const phone = this.bodyParams.phone.replace(/-|\s/g, '');
-                if (!phoneUtil.isValidNumber(phoneUtil.parse(phone))) {
-                        return API.v1.failure('Invalid number');
-                }
+	post() {
+		if (!this.bodyParams.phone) {
+			throw new Meteor.Error('error-phone-param-not-provided', 'The required "phone" param is required.');
+		}
+		const phone = this.bodyParams.phone.replace(/-|\s/g, '');
+		if (!phoneUtil.isValidNumber(phoneUtil.parse(phone))) {
+			return API.v1.failure('Invalid number');
+		}
 
-                const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', [phone], this.bodyParams.language, this.bodyParams.realname));
-                if (result.indexOf(phone) >= 0) {
-                        return API.v1.success();
-                } else {
-                        return API.v1.failure('SMS Invite Failed');
-                }
-        },
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('sendInvitationSMS', [phone], this.bodyParams.language, this.bodyParams.realname));
+		if (result.indexOf(phone) >= 0) {
+			return API.v1.success();
+		} else {
+			return API.v1.failure('SMS Invite Failed');
+		}
+	},
 });
 
 API.v1.addRoute('query.contacts', { authRequired: true }, {
-        post() {
-                const hashes = this.bodyParams.weakHashes;
-                if (!hashes) {
-                        return API.v1.failure('weakHashes param not present.');
-                }
-                const result = Meteor.runAsUser(this.userId, () => Meteor.call('queryContacts', hashes));
-                return API.v1.success({ strongHashes:result });
+	post() {
+		const hashes = this.bodyParams.weakHashes;
+		if (!hashes) {
+			return API.v1.failure('weakHashes param not present.');
+		}
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('queryContacts', hashes));
+		return API.v1.success({ strongHashes:result });
 
-        },
+	},
 });
 

@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { Users, Subscriptions } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { getURL } from '../../../utils';
+import { getURL, getUserPreference } from '../../../utils';
 import {
 	validateCustomFields,
 	saveUser,
@@ -571,47 +571,47 @@ API.v1.addRoute('users.removePersonalAccessToken', { authRequired: true }, {
 });
 
 API.v1.addRoute('users.getServiceAccessToken', { authRequired: true }, {
-        post() {
-                const { serviceName } = this.bodyParams;
-                if (!serviceName) {
-                        return API.v1.failure('The \'serviceName\' param is required');
-                }
-                const user = Users.findOneById(this.userId);
-                if (!('services' in user) || !(serviceName in user.services)) {
-                        return API.v1.failure('serviceName\' not found in user');
-                }
-                const token = user.services[serviceName].accessToken;
-                if (!token) {
-                        return API.v1.failure('Token corresponding to \'serviceName\' not found in user');
-                }
+	post() {
+		const { serviceName } = this.bodyParams;
+		if (!serviceName) {
+			return API.v1.failure('The \'serviceName\' param is required');
+		}
+		const user = Users.findOneById(this.userId);
+		if (!('services' in user) || !(serviceName in user.services)) {
+			return API.v1.failure('serviceName\' not found in user');
+		}
+		const token = user.services[serviceName].accessToken;
+		if (!token) {
+			return API.v1.failure('Token corresponding to \'serviceName\' not found in user');
+		}
 
-                return API.v1.success({
-                        accessToken : token,
-                });
-        },
+		return API.v1.success({
+			accessToken : token,
+		});
+	},
 });
 
 API.v1.addRoute('users.setDiscoverability', { authRequired: true }, {
-        post() {
-                const params = this.bodyParams;
-                if (!params.discoverability) {
-                        return API.v1.failure('The \'discoverability\' param is required');
-                }
+	post() {
+		const params = this.bodyParams;
+		if (!params.discoverability) {
+			return API.v1.failure('The \'discoverability\' param is required');
+		}
 
-                Meteor.runAsUser(this.userId, () => Meteor.call('saveUserPreferences', { discoverability: params.discoverability }, function(error, results) {
-                        if (results) {
-                                return API.v1.success();
-                        }
-                        if (error) {
-                                return API.v1.failure('Saving preference failed');
-                        }
-                }));
-        },
+		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserPreferences', { discoverability: params.discoverability }, function(error, results) {
+			if (results) {
+				return API.v1.success();
+			}
+			if (error) {
+				return API.v1.failure('Saving preference failed');
+			}
+		}));
+	},
 });
 
 API.v1.addRoute('users.getDiscoverability', { authRequired: true }, {
-        get() {
-                const discoverability = getUserPreference(this.userId, 'discoverability');
-                return API.v1.success({ discoverability });
-        },
+	get() {
+		const discoverability = getUserPreference(this.userId, 'discoverability');
+		return API.v1.success({ discoverability });
+	},
 });

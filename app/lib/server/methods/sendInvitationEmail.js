@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import * as Mailer from '../../../mailer';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
+import { getAvatarUrlFromUsername } from '../../../utils';
 
 let html = '';
 Meteor.startup(() => {
@@ -27,11 +28,11 @@ Meteor.methods({
 		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
 		let inviter;
-                if (!realname) {
-                        inviter = Meteor.user().username;
-                } else {
-                        inviter = realname;
-                }
+		if (!realname) {
+			inviter = Meteor.user().username;
+		} else {
+			inviter = realname;
+		}
 
 		const subject = settings.get('Invitation_Subject');
 		return validEmails.filter((email) => {
@@ -44,12 +45,12 @@ Meteor.methods({
 					data: {
 						email,
 						Invite_Link:Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
-                                                Username:inviter,
-                                                Avatar_Link:`${ settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
+						Username:inviter,
+						Avatar_Link:`${ settings.get('Site_Url').slice(0, -1) }${ getAvatarUrlFromUsername(Meteor.user().username) }`,
 					},
-                                        lng: language,
+					lng: language,
 				});
-i			} catch ({ message }) {
+			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ message }`, {
 					method: 'sendInvitationEmail',
 					message,

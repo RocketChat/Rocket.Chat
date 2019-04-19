@@ -114,32 +114,32 @@ Template.accountPreferences.helpers({
 		return getUserPreference(Meteor.userId(), 'dontAskAgainList');
 	},
 	showLocalization() {
-                return settings.get('UI_DisplayLocalization');
-        },
-        showPrivacy() {
-                return settings.get('UI_DisplayPrivacy');
-        },
-        showUserPresence() {
-                return settings.get('UI_DisplayUserPresence');
-        },
-        showNotifications() {
-                return settings.get('UI_DisplayNotifications');
-        },
-        showMessages() {
-                return settings.get('UI_DisplayMessages');
-        },
-        showSidebar() {
-                return settings.get('UI_DisplaySidebar');
-        },
-        showHighlights() {
-                return settings.get('UI_DisplayHighlights');
-        },
-        showSound() {
-                return settings.get('UI_DisplaySound');
-        },
-        showMyData() {
-                return (settings.get('UserData_EnableDownload') !== false) && settings.get('UI_DisplayMyData');
-        },
+		return settings.get('UI_DisplayLocalization');
+	},
+	showPrivacy() {
+		return settings.get('UI_DisplayPrivacy');
+	},
+	showUserPresence() {
+		return settings.get('UI_DisplayUserPresence');
+	},
+	showNotifications() {
+		return settings.get('UI_DisplayNotifications');
+	},
+	showMessages() {
+		return settings.get('UI_DisplayMessages');
+	},
+	showSidebar() {
+		return settings.get('UI_DisplaySidebar');
+	},
+	showHighlights() {
+		return settings.get('UI_DisplayHighlights');
+	},
+	showSound() {
+		return settings.get('UI_DisplaySound');
+	},
+	showMyData() {
+		return (settings.get('UserData_EnableDownload') !== false) && settings.get('UI_DisplayMyData');
+	},
 });
 
 Template.accountPreferences.onCreated(function() {
@@ -176,7 +176,7 @@ Template.accountPreferences.onCreated(function() {
 		const data = {};
 		let reload = false;
 
-		if (settings.get('UI_DisplayLocalization')) {	
+		if (settings.get('UI_DisplayLocalization')) {
 			const selectedLanguage = $('#language').val();
 			if (this.shouldUpdateLocalStorageSetting('userLanguage', selectedLanguage)) {
 				localStorage.setItem('userLanguage', selectedLanguage);
@@ -203,7 +203,7 @@ Template.accountPreferences.onCreated(function() {
 			if (this.shouldUpdateLocalStorageSetting('idleTimeLimit', idleTimeLimit)) {
 				localStorage.setItem('idleTimeLimit', idleTimeLimit);
 				reload = true;
-			}		
+			}
 		}
 
 		if (settings.get('UI_DisplayNotifications')) {
@@ -211,7 +211,7 @@ Template.accountPreferences.onCreated(function() {
 			data.desktopNotificationDuration = $('input[name=desktopNotificationDuration]').val() === '' ? settings.get('Accounts_Default_User_Preferences_desktopNotificationDuration') : parseInt($('input[name=desktopNotificationDuration]').val());
 			data.desktopNotifications = $('#desktopNotifications').find('select').val();
 			data.mobileNotifications = $('#mobileNotifications').find('select').val();
-		
+
 		}
 
 		if (settings.get('UI_DisplayMessages')) {
@@ -227,10 +227,10 @@ Template.accountPreferences.onCreated(function() {
 			data.sendOnEnter = $('#sendOnEnter').find('select').val();
 			data.autoImageLoad = JSON.parse($('input[name=autoImageLoad]:checked').val());
 			data.unreadAlert = JSON.parse($('#unreadAlert').find('input:checked').val());
-			
+
 			if (settings.get('UI_DisplayRoles')) {
 				data.hideRoles = JSON.parse($('#hideRoles').find('input:checked').val());
-			}	
+			}
 		}
 
 		if (settings.get('UI_DisplaySidebar')) {
@@ -242,14 +242,14 @@ Template.accountPreferences.onCreated(function() {
 			data.highlights = _.compact(_.map($('[name=highlights]').val().split(/,|\n/), function(e) {
 				return s.trim(e);
 			}));
-		
+
 			// if highlights changed we need page reload
 			const highlights = getUserPreference(Meteor.userId(), 'highlights');
 			if (highlights && highlights.join('\n') !== data.highlights.join('\n')) {
 				reload = true;
 			}
 		}
-		
+
 		if (settings.get('UI_DisplaySound')) {
 			data.newRoomNotification = $('select[name=newRoomNotification]').val();
 			data.newMessageNotification = $('select[name=newMessageNotification]').val();
@@ -280,8 +280,8 @@ Template.accountPreferences.onCreated(function() {
 
 	this.downloadMyData = function(fullExport = false) {
 		if (!settings.get('UI_DisplayMyData')) {
-                        return false;
-                }
+			return false;
+		}
 		Meteor.call('requestDataDownload', { fullExport }, function(error, results) {
 			if (results) {
 				if (results.requested) {
@@ -328,8 +328,8 @@ Template.accountPreferences.onCreated(function() {
 
 	this.exportMyData = function() {
 		if (!settings.get('UI_DisplayMyData')) {
-                        return false;
-                }
+			return false;
+		}
 		this.downloadMyData(true);
 	};
 });

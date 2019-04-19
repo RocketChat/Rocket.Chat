@@ -46,15 +46,15 @@ const selectorSearch = '.toolbar__search .rc-input__element';
 export const toolbarSearch = {
 	shortcut: false,
 	clear() {
-                const $inputMessage = $('.js-input-message');
+		const $inputMessage = $('.js-input-message');
 
-                if (0 === $inputMessage.length) {
-                        return;
-                }
+		if (0 === $inputMessage.length) {
+			return;
+		}
 
-                $inputMessage.focus();
-                $(selectorSearch).val('');
-        },
+		$inputMessage.focus();
+		$(selectorSearch).val('');
+	},
 	show(fromShortcut) {
 		menu.open();
 		showToolbar.set(true);
@@ -78,7 +78,7 @@ const toolbarButtons = (user) => [{
 {
 	name: t('Directory'),
 	icon: 'globe',
-        condition: () => settings.get('UI_DisplayDirectory'),
+	condition: () => settings.get('UI_DisplayDirectory'),
 	action: () => {
 		menu.close();
 		FlowRouter.go('directory');

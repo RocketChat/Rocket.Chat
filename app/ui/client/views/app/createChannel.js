@@ -96,10 +96,10 @@ Template.createChannel.helpers({
 		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel') : t('Everyone_can_access_this_channel'));
 	},
 	readOnlyDisabled() {
-                return Template.instance().broadcast.get() || !RocketChat.authz.hasAllPermission(['create-ro']);
-        },
-        broadcastDisabled() {
-                return !RocketChat.authz.hasAllPermission(['create-ro']);
+		return Template.instance().broadcast.get() || !hasAllPermission(['create-ro']);
+	},
+	broadcastDisabled() {
+		return !hasAllPermission(['create-ro']);
 	},
 	encrypted() {
 		return Template.instance().encrypted.get();

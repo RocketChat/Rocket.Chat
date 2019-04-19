@@ -3,11 +3,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
-import { getAvatarUrlFromUsername } from 'meteor/rocketchat:ui';
+import { getAvatarUrlFromUsername } from '../../utils';
 const service = require('./service.js');
 const provider = new service.Provider();
 import { settings } from '../../settings';
-import { getUserPreference } from '../../utils'
+import { getUserPreference } from '../../utils';
 
 function refreshContactsHashMap() {
 	let phoneFieldName = '';
@@ -126,7 +126,7 @@ Meteor.methods({
 				});
 			}
 
-			const server = RocketChat.settings.get('Site_Url');
+			const server = settings.get('Site_Url');
 
 			this.unblock();
 			try {
@@ -136,7 +136,7 @@ Meteor.methods({
 							domainUriPrefix: settings.get('Contacts_Dynamic_Link_DomainURIPrefix'),
 							link: `${ server }direct/${ user.username }`,
 							androidInfo:{
-								androidPackageName:RocketChat.settings.get('Contacts_Dynamic_Link_AndroidPackageName'),
+								androidPackageName:settings.get('Contacts_Dynamic_Link_AndroidPackageName'),
 							},
 							socialMetaTagInfo: {
 								socialTitle: user.username,
