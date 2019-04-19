@@ -124,6 +124,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
 					address: email,
 					verified: true,
 				})),
+				services: {},
 			};
 
 			if (Accounts.saml.settings.generateUsername === true) {
