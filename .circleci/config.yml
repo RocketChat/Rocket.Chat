@@ -33,6 +33,15 @@ test-configure-replicaset: &test-configure-replicaset
     mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
     mongo --eval 'rs.status()'
 
+test-restore-npm-cache: &test-restore-npm-cache
+  keys:
+    - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+
+test-save-npm-cache: &test-save-npm-cache
+  key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+  paths:
+    - ./node_modules
+
 test-docker-image: &test-docker-image
   circleci/node:8.11-stretch-browsers
 
@@ -54,8 +63,10 @@ test-with-oplog: &test-with-oplog
     - checkout
     - run: *test-install-dependencies
     - run: *test-configure-replicaset
+    - restore_cache: *test-restore-npm-cache
     - run: *test-npm-install
     - run: *test-run
+    - save_cache: *test-save-npm-cache
     - store_artifacts: *test-store_artifacts
 
 test-without-oplog: &test-without-oplog
@@ -64,8 +75,10 @@ test-without-oplog: &test-without-oplog
     - attach_workspace: *attach_workspace
     - checkout
     - run: *test-install-dependencies
+    - restore_cache: *test-restore-npm-cache
     - run: *test-npm-install
     - run: *test-run
+    - save_cache: *test-save-npm-cache
     - store_artifacts: *test-store_artifacts
 
 
@@ -79,13 +92,13 @@ jobs:
     steps:
       - checkout
 
-      # - restore_cache:
-      #     keys:
-      #       - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+      - restore_cache:
+          keys:
+            - node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
 
-      # - restore_cache:
-      #     keys:
-      #       - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+      - restore_cache:
+          keys:
+            - meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
 
       - run:
           name: Install Meteor
@@ -134,25 +147,34 @@ jobs:
           command: |
             meteor npm run testunit
 
-      # - restore_cache:
-      #     keys:
-      #       - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+      - restore_cache:
+          keys:
+            - meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
 
-      # - restore_cache:
-      #     keys:
-      #       - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
+      - restore_cache:
+          keys:
+            - livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
 
-      # - restore_cache:
-      #     keys:
-      #       - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
+      - restore_cache:
+          keys:
+            - livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
 
       - run:
           name: Build Rocket.Chat
           environment:
             TOOL_NODE_FLAGS: --max_old_space_size=3072
           command: |
-            if [[ $CIRCLE_TAG ]]; then meteor reset; fi
-            meteor build --server-only --directory /tmp/build-test
+            if [[ $CIRCLE_TAG ]] || [[ $CIRCLE_BRANCH == 'develop' ]]; then
+              meteor reset;
+            fi
+
+            export CIRCLE_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+            if [[ -z $CIRCLE_PR_NUMBER ]]; then
+              meteor build --server-only --directory /tmp/build-test
+            else
+              export METEOR_PROFILE=1000
+              meteor build --server-only --directory --debug /tmp/build-test
+            fi;
 
       - run:
           name: Prepare build
@@ -163,30 +185,30 @@ jobs:
             cd /tmp/build-test/bundle/programs/server
             npm install
 
-      # - save_cache:
-      #     key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
-      #     paths:
-      #       - ./node_modules
+      - save_cache:
+          key: node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
 
-      # - save_cache:
-      #     key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
-      #     paths:
-      #       - ./.meteor/local
+      - save_cache:
+          key: meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/versions" }}
+          paths:
+            - ./.meteor/local
 
-      # - save_cache:
-      #     key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/package.json" }}
-      #     paths:
-      #       - ./packages/rocketchat-livechat/app/node_modules
+      - save_cache:
+          key: livechat-node-modules-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/package.json" }}
+          paths:
+            - ./packages/rocketchat-livechat/app/node_modules
 
-      # - save_cache:
-      #     key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/app/.meteor/versions" }}
-      #     paths:
-      #       - ./packages/rocketchat-livechat/app/.meteor/local
+      - save_cache:
+          key: livechat-meteor-cache-{{ checksum ".circleci/config.yml" }}-{{ checksum "packages/rocketchat-livechat/.app/.meteor/versions" }}
+          paths:
+            - ./packages/rocketchat-livechat/app/.meteor/local
 
-      # - save_cache:
-      #     key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
-      #     paths:
-      #       - ~/.meteor
+      - save_cache:
+          key: meteor-{{ checksum ".circleci/config.yml" }}-{{ checksum ".meteor/release" }}
+          paths:
+            - ~/.meteor
 
       - persist_to_workspace:
           root: /tmp/

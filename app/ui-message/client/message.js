@@ -146,7 +146,10 @@ Template.message.helpers({
 		}
 	},
 	sequentialClass() {
-		const { msg, groupable } = this;
+		const { msg, groupable, settings: { showreply } } = this;
+		if (msg.tmid && showreply) {
+			return;
+		}
 		return groupable !== false && msg.groupable !== false && 'sequential';
 	},
 	avatarFromUsername() {
@@ -203,6 +206,10 @@ Template.message.helpers({
 	},
 	body() {
 		return Template.instance().body;
+	},
+	normalizedBody() {
+		const { msg } = this;
+		return normalizeThreadMessage(msg);
 	},
 	bodyClass() {
 		const { msg } = this;
@@ -368,6 +375,22 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.actionContext === 'snippeted';
 	},
+	isThreadReply() {
+		const { msg: { tmid }, settings: { showreply } } = this;
+		return !!(tmid && showreply);
+	},
+	collapsed() {
+		const { msg, msg: { tmid, collapsed }, settings: { showreply } } = this;
+		const isCollapsedThreadReply = tmid && showreply && collapsed !== false;
+		const isSystemMessage = MessageTypes.isSystemMessage(msg);
+		if (isCollapsedThreadReply || isSystemMessage) {
+			return 'collapsed';
+		}
+	},
+	collapseSwitchClass() {
+		const { msg: { collapsed = true } } = this;
+		return collapsed ? 'icon-right-dir' : 'icon-down-dir';
+	},
 	parentMessage() {
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
@@ -394,7 +417,16 @@ const findParentMessage = (() => {
 					repliesCount: msg.tcount,
 				},
 			}, { multi: true });
-			Messages.upsert({ _id }, msg);
+			if (!Messages.findOne({ _id })) {
+				/**
+				 * Delete rid from message to not render it and to not be considred in last message
+				 * find from load history method what was preveting the load of some messages in
+				 * between the reals last loaded message and this one if this one is older than
+				 * the real last loaded message.
+				 */
+				delete msg.rid;
+				Messages.upsert({ _id }, msg);
+			}
 		});
 	}, 500);
 
@@ -529,7 +561,7 @@ Template.message.onViewRendered = function() {
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.tmid !== currentDataset.tmid || nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 					nextNode.classList.remove('sequential');
-				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp')) {
+				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
 					nextNode.classList.add('sequential');
 				}
 			}

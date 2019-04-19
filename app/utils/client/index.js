@@ -9,7 +9,7 @@ export { fileUploadMediaWhiteList, fileUploadIsValidContentType } from '../lib/f
 export { roomTypes } from './lib/roomTypes';
 export { RoomTypeRouteConfig, RoomTypeConfig, RoomSettingsEnum, UiTextContext } from '../lib/RoomTypeConfig';
 export { RoomTypesCommon } from '../lib/RoomTypesCommon';
-export { getAvatarUrlFromUsername } from '../lib/getAvatarUrlFromUsername';
+export { getUserAvatarURL } from '../lib/getUserAvatarURL';
 export { slashCommands } from '../lib/slashCommand';
 export { getUserNotificationPreference } from '../lib/getUserNotificationPreference';
 export { applyCustomTranslations } from './lib/CustomTranslations';
