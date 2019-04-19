@@ -1,5 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { hasPermission } from '../../app/authorization';
+import { Users, Subscriptions, Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { Notifications } from '../../app/notifications';
 
 Meteor.methods({
 	removeRoomLeader(rid, userId) {
@@ -12,13 +16,13 @@ Meteor.methods({
 			});
 		}
 
-		if (!RocketChat.authz.hasPermission(Meteor.userId(), 'set-leader', rid)) {
+		if (!hasPermission(Meteor.userId(), 'set-leader', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomLeader',
 			});
 		}
 
-		const user = RocketChat.models.Users.findOneById(userId);
+		const user = Users.findOneById(userId);
 
 		if (!user || !user.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -26,7 +30,7 @@ Meteor.methods({
 			});
 		}
 
-		const subscription = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -40,11 +44,11 @@ Meteor.methods({
 			});
 		}
 
-		RocketChat.models.Subscriptions.removeRoleById(subscription._id, 'leader');
+		Subscriptions.removeRoleById(subscription._id, 'leader');
 
-		const fromUser = RocketChat.models.Users.findOneById(Meteor.userId());
+		const fromUser = Users.findOneById(Meteor.userId());
 
-		RocketChat.models.Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(rid, user, {
+		Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(rid, user, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
@@ -52,8 +56,8 @@ Meteor.methods({
 			role: 'leader',
 		});
 
-		if (RocketChat.settings.get('UI_DisplayRoles')) {
-			RocketChat.Notifications.notifyLogged('roles-change', {
+		if (settings.get('UI_DisplayRoles')) {
+			Notifications.notifyLogged('roles-change', {
 				type: 'removed',
 				_id: 'leader',
 				u: {
