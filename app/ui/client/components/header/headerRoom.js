@@ -1,5 +1,6 @@
 import toastr from 'toastr';
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -8,10 +9,9 @@ import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
 import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
 import { settings } from '../../../../settings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
 import { hasAllPermission } from '../../../../authorization';
-
+import { renderMessageBody, MessageTypes } from '../../../../ui-utils/client';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
@@ -22,6 +22,23 @@ const isDiscussion = ({ _id }) => {
 	return !!(room && room.prid);
 };
 
+const renderBody = (msg) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.message) {
+		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+	} else {
+		msg = renderMessageBody(msg);
+	}
+
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
+	}
+
+	return msg;
+};
 
 Template.headerRoom.helpers({
 	back() {
@@ -79,19 +96,13 @@ Template.headerRoom.helpers({
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData || !roomData.topic) { return ''; }
 
-		let roomTopic = Markdown.parse(roomData.topic);
+		const roomTopic = roomData.topic;
 
-		// &#39; to apostrophe (') for emojis such as :')
-		roomTopic = roomTopic.replace(/&#39;/g, '\'');
+		const msg = {
+			msg: roomTopic,
+		};
 
-		Object.keys(emoji.packages).forEach((emojiPackage) => {
-			roomTopic = emoji.packages[emojiPackage].render(roomTopic);
-		});
-
-		// apostrophe (') back to &#39;
-		roomTopic = roomTopic.replace(/\'/g, '&#39;');
-
-		return roomTopic;
+		return renderBody(msg);
 	},
 
 	roomIcon() {
