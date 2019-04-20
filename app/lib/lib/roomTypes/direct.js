@@ -5,6 +5,7 @@ import { openRoom } from '../../../ui-utils';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -160,5 +161,9 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		const text = notificationMessage;
 
 		return { title, text };
+	}
+
+	getAvatarPath(roomData) {
+		return getUserAvatarURL(roomData.name || this.roomName(roomData));
 	}
 }
