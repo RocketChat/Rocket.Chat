@@ -10,7 +10,7 @@ import s from 'underscore.string';
 import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models';
 import { getUserPreference } from '../../../utils';
-import { getAvatarUrlFromUsername } from '../../../utils';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { getAvatarAsPng } from '../../../ui-utils';
 import { promises } from '../../../promises/client';
 
@@ -34,7 +34,7 @@ export const KonchatNotification = {
 			const message = { rid: (notification.payload != null ? notification.payload.rid : undefined), msg: notification.text, notification: true };
 			return promises.run('onClientMessageReceived', message).then(function(message) {
 				const n = new Notification(notification.title, {
-					icon: notification.icon || getAvatarUrlFromUsername(notification.payload.sender.username),
+					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
 					body: s.stripTags(message.msg),
 					tag: notification.payload._id,
 					silent: true,
