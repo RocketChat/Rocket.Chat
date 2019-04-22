@@ -225,7 +225,7 @@ Template.apps.helpers({
 		return {
 			tabs: [
 				{
-					label: t('Marketplace'),
+					label: t('Available'),
 					value: 'marketplace',
 					condition() {
 						return true;

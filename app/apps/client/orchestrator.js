@@ -69,7 +69,7 @@ class AppClientOrchestrator {
 		AdminBox.addOption({
 			icon: 'cube',
 			href: 'apps',
-			i18nLabel: 'Apps',
+			i18nLabel: 'Marketplace',
 			permissionGranted() {
 				return hasAtLeastOnePermission(['manage-apps']);
 			},
