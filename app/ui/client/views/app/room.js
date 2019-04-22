@@ -28,12 +28,12 @@ import { promises } from '../../../../promises/client';
 import { hasAllPermission, hasRole } from '../../../../authorization';
 import _ from 'underscore';
 import moment from 'moment';
-import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
 import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
+import { mime } from '../../../../utils/lib/mimeTypes';
 
 export const chatMessages = {};
 
