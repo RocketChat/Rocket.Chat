@@ -101,7 +101,7 @@
 						{{_ "No_messages_yet" }}
 					</button>
 				{{/if}}
-				<span class="discussion-reply-lm">{{ formatDate msg.dlm }}</span>
+				<span class="discussion-reply-lm">{{ formatDateAndTime msg.dlm }}</span>
 			</div>
 		{{/if}}
 
@@ -111,7 +111,7 @@
 					{{> icon icon="thread"}}
 					<span class='reply-counter'>{{msg.tcount}}</span>&nbsp;{{_ i18nKeyReply}}
 				</button>
-				<span class="discussion-reply-lm">{{ formatDate msg.tlm}}</span>
+				<span class="discussion-reply-lm">{{ formatDateAndTime msg.tlm}}</span>
 			</div>
 		{{/if}}
 

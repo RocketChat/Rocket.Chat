@@ -75,8 +75,6 @@ Template.thread.onRendered(function() {
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 
-	this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight - this.chatMessages.wrapper.clientHeight;
-
 	this.sendToBottom = _.throttle(() => {
 		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
 	}, 300);
@@ -94,7 +92,13 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ tmid, _updatedAt: { $gt: new Date() } }).observe({
+		this.threadsObserve = Messages.find({ tmid, _updatedAt: { $gt: new Date() } }, {
+			fields: {
+				collapsed: 0,
+				threadMsg: 0,
+				repliesCount: 0,
+			},
+		}).observe({
 			added: ({ _id, ...message }) => {
 				const { atBottom } = this;
 				this.Threads.upsert({ _id }, message);
