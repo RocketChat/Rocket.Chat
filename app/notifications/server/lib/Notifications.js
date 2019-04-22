@@ -177,9 +177,10 @@ const notifications = new Notifications();
 notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
 	const [roomId, e] = eventName.split('/');
 
-	if (e === WEB_RTC_EVENTS.WEB_RTC) {
+	if (isNaN(e) ? e === WEB_RTC_EVENTS.WEB_RTC : parseFloat(e) === WEB_RTC_EVENTS.WEB_RTC) {
 		return true;
 	}
+
 	if (e === 'typing') {
 		const key = settings.get('UI_Use_Real_Name') ? 'name' : 'username';
 		// typing from livechat widget

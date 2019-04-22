@@ -1,6 +1,2 @@
 import './adapter';
-import { WebRTC } from './WebRTCClass';
-
-export {
-	WebRTC,
-};
+export * from './WebRTCClass';

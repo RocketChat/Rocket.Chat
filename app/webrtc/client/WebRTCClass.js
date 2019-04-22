@@ -12,15 +12,7 @@ import { Notifications } from '../../notifications';
 import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
 import { ChatSubscription } from '../../models';
-
-const WEB_RTC_EVENTS = {
-	WEB_RTC: 0,
-	STATUS: 1,
-	CALL: 2,
-	JOIN: 3,
-	CANDIDATE: 4,
-	DESCRIPTION: 5,
-};
+import { WEB_RTC_EVENTS } from '../';
 
 class WebRTCTransportClass extends EventEmitter {
 	constructor(webrtcInstance) {
@@ -965,4 +957,4 @@ Meteor.startup(function() {
 	});
 });
 
-export { WebRTC, WEB_RTC_EVENTS };
+export { WebRTC };
