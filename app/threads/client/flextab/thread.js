@@ -1,19 +1,24 @@
 import _ from 'underscore';
+
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
+
 import { ChatMessages } from '../../../ui';
 import { normalizeThreadMessage, call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models';
 import { lazyloadtick } from '../../../lazy-load';
+import { fileUpload } from '../../../ui/client/lib/fileUpload';
+import { dropzoneEvents } from '../../../ui/client/views/app/room';
 import { upsert } from '../upsert';
 import './thread.html';
 
 const sort = { ts: 1 };
 
 Template.thread.events({
+	...dropzoneEvents,
 	'click .js-close'(e) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -24,6 +29,10 @@ Template.thread.events({
 		lazyloadtick();
 		i.atBottom = e.scrollTop >= e.scrollHeight - e.clientHeight;
 	}, 500),
+	'load img'() {
+		const { atBottom } = this;
+		atBottom && this.sendToBottom();
+	},
 });
 
 Template.thread.helpers({
@@ -74,6 +83,10 @@ Template.thread.onRendered(function() {
 	this.chatMessages = new ChatMessages;
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
+
+	this.onFile = (filesToUpload) => {
+		fileUpload(filesToUpload, this.chatMessages.input, { rid: this.state.get('rid'), tmid: this.state.get('tmid') });
+	};
 
 	this.sendToBottom = _.throttle(() => {
 		this.chatMessages.wrapper.scrollTop = this.chatMessages.wrapper.scrollHeight;
