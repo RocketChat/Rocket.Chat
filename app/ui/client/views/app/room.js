@@ -521,7 +521,10 @@ let lastTouchY = null;
 let lastScrollTop;
 
 Template.room.events({
-	'click .js-open-thread'() {
+	'click .js-open-thread'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
 		const { tabBar } = Template.instance();
 
 		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
