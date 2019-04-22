@@ -6,7 +6,7 @@ export const updatePermission = (permission, roles) => new Promise((resolve) => 
 		.send({ permissions: [{ _id: permission, roles }] })
 		.expect('Content-Type', 'application/json')
 		.expect(200)
-		.end(resolve);
+		.end(() => setTimeout(resolve, 500));
 });
 
 export const updateSetting = (setting, value) => new Promise((resolve) => {
@@ -15,5 +15,5 @@ export const updateSetting = (setting, value) => new Promise((resolve) => {
 		.send({ value })
 		.expect('Content-Type', 'application/json')
 		.expect(200)
-		.end(resolve);
+		.end(() => setTimeout(resolve, 500));
 });

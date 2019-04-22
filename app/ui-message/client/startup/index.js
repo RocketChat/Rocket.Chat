@@ -1,2 +1,1 @@
 import './messageBoxActions';
-import './restoreText';
