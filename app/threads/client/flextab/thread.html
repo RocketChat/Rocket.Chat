@@ -11,7 +11,8 @@
 			{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
 		</button>
 	</header>
-	<section class="contextual-bar__content flex-tab threads">
+	<section class="contextual-bar__content flex-tab threads dropzone">
+		<div class="dropzone-overlay background-transparent-darkest color-content-background-color">{{_ "Drop_to_upload_file"}}</div>
 		<div class="thread-list js-scroll-thread">
 			<ul class="thread">
 				{{# with messageContext}}
