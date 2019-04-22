@@ -4706,7 +4706,7 @@ rc-old select,
 		border: 4px dashed var(--color-blue);
 		background: rgba(255, 255, 255, 0.8);
 
-		box-shadow: 0 0 0 var(--default-small-padding) rgba(255, 255, 255, 0.8);
+		box-shadow: 0 0 0 var(--default-small-padding) rgba(255, 255, 255, 0.9);
 
 		font-size: 42px;
 		align-items: center;

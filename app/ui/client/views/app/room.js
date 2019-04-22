@@ -546,7 +546,7 @@ export const dropzoneEvents = {
 		e.stopPropagation();
 	},
 
-	'dropped .dropzone-overlay'(event) {
+	'dropped .dropzone-overlay'(event, instance) {
 
 		event.currentTarget.parentNode.classList.remove('over');
 
@@ -563,8 +563,6 @@ export const dropzoneEvents = {
 				name: file.name,
 			};
 		});
-
-		const instance = Template.instance();
 
 		return instance.onFile && instance.onFile(filesToUpload);
 	},
