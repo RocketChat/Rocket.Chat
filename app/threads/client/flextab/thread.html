@@ -2,15 +2,17 @@
 	<header class="contextual-bar__header">
 		<div class="contextual-bar__header-data">
 			{{> icon block="contextual-bar__header-icon" icon='thread'}}
-			<h2 class="contextual-bar__header-title">{{_ 'Thread'}}
-				<sub class="contextual-bar__header-description">{{ room.fname }}</sub>
+			<h2 class="contextual-bar__header-title">
+				<span class="message-body--unstyled">{{threadTitle}}</span>
+				{{!-- <sub class="contextual-bar__header-description">{{room.fname}}</sub> --}}
 			</h2>
 		</div>
 		<button class="contextual-bar__header-close js-close">
 			{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
 		</button>
 	</header>
-	<section class="contextual-bar__content flex-tab threads">
+	<section class="contextual-bar__content flex-tab threads dropzone">
+		<div class="dropzone-overlay background-transparent-darkest color-content-background-color">{{_ "Drop_to_upload_file"}}</div>
 		<div class="thread-list js-scroll-thread">
 			<ul class="thread">
 				{{# with messageContext}}

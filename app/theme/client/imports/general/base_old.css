@@ -4683,34 +4683,68 @@ rc-old select,
 	height: 100%;
 
 	& .dropzone-overlay {
-		display: none;
-	}
 
-	&.over .dropzone-overlay {
-		position: fixed;
+		position: absolute;
 		z-index: 1000000;
 		top: 0;
 		right: 0;
 		bottom: 0;
 		left: 0;
 
-		display: flex;
+		display: none;
+
+		margin: var(--default-small-padding);
+		padding: var(--default-padding);
+
+		animation-name: zoomIn;
+		animation-duration: 0.1s;
+
+		text-align: center;
+
+		color: var(--color-blue);
+
+		border: 4px dashed var(--color-blue);
+		background: rgba(255, 255, 255, 0.8);
+
+		box-shadow: 0 0 0 var(--default-small-padding) rgba(255, 255, 255, 0.9);
 
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
 
-		& > div {
-			padding: 40px;
+		&::before {
+			position: absolute;
+			z-index: -1;
 
-			text-align: center;
-			pointer-events: none;
+			top: calc(-1 * var(--default-small-padding));
+			right: calc(-1 * var(--default-small-padding));
+			bottom: calc(-1 * var(--default-small-padding));
+			left: calc(-1 * var(--default-small-padding));
 
-			border-radius: 10px;
-
-			line-height: 1.3em;
+			content: '';
 		}
 	}
+
+	&.over .dropzone-overlay {
+		display: flex;
+	}
+}
+
+@keyframes zoomIn {
+	0% {
+		transform: scale3d(0.9, 0.9, 0.9);
+
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+}
+
+.zoomIn {
+	-webkit-animation-name: zoomIn;
+	animation-name: zoomIn;
 }
 
 .rc-old .is-cordova {
