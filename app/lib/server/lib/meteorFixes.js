@@ -48,7 +48,7 @@ Meteor.setInterval(() => {
 /**
  * If some promise is rejected and doesn't have a catch (unhandledRejection) it may cause this finally
  * here https://github.com/meteor/meteor/blob/be6e529a739f47446950e045f4547ee60e5de7ae/packages/mongo/oplog_tailing.js#L348
- * to not be executed never ending the oplog worked and frezing the entire process.
+ * to not be executed never ending the oplog worker and freezing the entire process.
  *
  * The only way to release the process is executing the following code via inspect:
  *   MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._workerActive = false
