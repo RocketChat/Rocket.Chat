@@ -64,32 +64,6 @@
 						</span>
 					</span>
 				{{/if}}
-				{{#if sentByEmail}}
-					<span class="sent-by-email">
-						<i class="icon-mail" title='{{_ "Message_sent_by_email"}}' aria-label='{{_ "Message_sent_by_email"}}'></i>
-					</span>
-				{{/if}}
-				{{#if edited}}
-					<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
-						<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" aria-label="{{_ "Edited"}}"></i>
-					</span>
-				{{/if}}
-				{{#if msg.alert}}<div aria-label="{{_ msg.alert }}" class="rc-tooltip message-unread"></div> {{/if}}
-				{{#if private}}
-					<span class="private">{{_ "Only_you_can_see_this_message"}}</span>
-				{{/if}}
-				{{#if isThreadReply}}
-					<span class="thread-replied">
-						{{> icon icon="thread" classes="js-open-thread"}}
-						<q role="button" aria-label="{{_ "Open_thread"}}" class="js-open-thread thread-quote">
-							<span class="message-body--unstyled">{{{parentMessage}}}</span>
-						</q>
-						<span class="js-toggle-thread-reply thread-reply-switch {{collapseSwitchClass}}"></span>
-						<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
-							<span class="message-body--unstyled">{{{normalizedBody}}}</span>
-						</span>
-					</span>
-				{{/if}}
 				{{#if fromSearch}}
 					<span class="user color-info-font-color">
 						{{>icon icon=roomIcon}}{{channelName}}
@@ -151,7 +125,7 @@
 				{{> icon icon="check" }}
 			</div>
 		{{/with}}
-		{{#unless system}}
+		{{#unless hideMessageActions}}
 			<div class="message-actions">
 
 				<div class="message-actions__buttons">

@@ -321,6 +321,11 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	hideMessageActions() {
+		const { msg } = this;
+
+		return msg.private || MessageTypes.isSystemMessage(msg);
+	},
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties
