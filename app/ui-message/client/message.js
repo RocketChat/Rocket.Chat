@@ -138,13 +138,16 @@ Template.message.helpers({
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false) {
+		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || MessageTypes.isSystemMessage(msg)) {
 			return 'false';
 		}
 	},
 	sequentialClass() {
 		const { msg, groupable, settings: { showreply } } = this;
 		if (msg.tmid && showreply) {
+			return;
+		}
+		if (MessageTypes.isSystemMessage(msg)) {
 			return;
 		}
 		return groupable !== false && msg.groupable !== false && 'sequential';
@@ -315,6 +318,11 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	hideMessageActions() {
+		const { msg } = this;
+
+		return msg.private || MessageTypes.isSystemMessage(msg);
+	},
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties
@@ -377,10 +385,9 @@ Template.message.helpers({
 		return !!(tmid && showreply);
 	},
 	collapsed() {
-		const { msg, msg: { tmid, collapsed }, settings: { showreply } } = this;
+		const { msg: { tmid, collapsed }, settings: { showreply } } = this;
 		const isCollapsedThreadReply = tmid && showreply && collapsed !== false;
-		const isSystemMessage = MessageTypes.isSystemMessage(msg);
-		if (isCollapsedThreadReply || isSystemMessage) {
+		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
 	},
@@ -551,12 +558,17 @@ Template.message.onViewRendered = function() {
 			} else {
 				nextNode.classList.remove('new-day');
 			}
+
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 					nextNode.classList.remove('sequential');
 				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
 					nextNode.classList.add('sequential');
 				}
+			}
+
+			if (currentNode.classList.contains('system')) {
+				nextNode.classList.remove('sequential');
 			}
 		} else {
 			const [el] = $(`#chat-window-${ msg.rid }`);
