@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
+import { Users } from '../../models/client';
 import { MentionsParser } from '../lib/MentionsParser';
 
 let me;
@@ -9,7 +10,8 @@ let useRealName;
 let pattern;
 
 Meteor.startup(() => Tracker.autorun(() => {
-	me = Meteor.userId() && Meteor.user().username;
+	const uid = Meteor.userId();
+	me = uid && (Users.findOne(uid, { fields: { username: 1 } }) || {}).username;
 	pattern = settings.get('UTF8_Names_Validation');
 	useRealName = settings.get('UI_Use_Real_Name');
 }));
