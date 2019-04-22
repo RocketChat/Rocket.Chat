@@ -31,6 +31,10 @@ export class RocketChatTabBar {
 		this.group.set(group);
 	}
 
+	extendsData(data) {
+		this.data.set({ ...this.data.get(), ...data });
+	}
+
 	setData(d) {
 		this.data.set(d);
 	}

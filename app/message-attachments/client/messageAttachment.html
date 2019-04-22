@@ -91,7 +91,7 @@
 					<div class="attachment-image inline-image">
 					{{#if loadImage}}
 						<figure>
-							{{> lazyloadImage src=image_url preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
+							{{> lazyloadImage src=(getURL image_url) preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
 							{{#if labels}}
 								<div class="image-labels">
 									{{#each labels}}
@@ -117,7 +117,7 @@
 				{{#unless mediaCollapsed}}
 					<div class="attachment-audio">
 						<audio controls>
-							<source src="{{audio_url}}" type="{{audio_type}}" data-description="{{description}}">
+							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
 							Your browser does not support the audio element.
 						</audio>
 					</div>
@@ -128,7 +128,7 @@
 				{{#unless mediaCollapsed}}
 					<div class="attachment-video">
 						<video controls class="inline-video">
-							<source src="{{video_url}}" type="{{video_type}}" data-description="{{description}}">
+							<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
 							Your browser does not support the video element.
 						</video>
 					</div>

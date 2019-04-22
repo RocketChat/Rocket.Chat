@@ -32,25 +32,27 @@ Meteor.methods({
 		}
 
 		const room = Rooms.findOneById(rid);
-		if (room) {
-			if (canAccessRoom.call(this, room, user, extraData)) {
-				if (user) {
-					room.username = user.username;
-				}
-				return room;
-			}
 
-			if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'canAccessRoom',
-				});
-			}
-
-			return false;
-		} else {
+		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'canAccessRoom',
 			});
+
 		}
+
+		if (canAccessRoom.call(this, room, user, extraData)) {
+			if (user) {
+				room.username = user.username;
+			}
+			return room;
+		}
+
+		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'canAccessRoom',
+			});
+		}
+
+		return false;
 	},
 });

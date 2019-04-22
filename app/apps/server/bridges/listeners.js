@@ -15,8 +15,8 @@ export class AppListenerBridge {
 		// try {
 
 		// } catch (e) {
-		// 	console.log(`${ e.name }: ${ e.message }`);
-		// 	console.log(e.stack);
+		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
+		// 	this.orch.debugLog(e.stack);
 		// }
 	}
 
@@ -32,8 +32,8 @@ export class AppListenerBridge {
 		// try {
 
 		// } catch (e) {
-		// 	console.log(`${ e.name }: ${ e.message }`);
-		// 	console.log(e.stack);
+		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
+		// 	this.orch.debugLog(e.stack);
 		// }
 	}
 }

@@ -9,7 +9,7 @@
 </template>
 
 <template name="sidebarItem">
-	<li class="sidebar-item{{#if or unread alert }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}}" data-id="{{_id}}">
+	<li class="sidebar-item{{#if showUnread }} sidebar-item--unread{{/if}}{{#if active}} sidebar-item--active{{/if}}{{#if toolbar}} popup-item{{/if}} js-sidebar-type-{{t}}" data-id="{{_id}}">
 		<a class="sidebar-item__link" href="{{#if route}}{{route}}{{else}}{{pathFor pathSection group=pathGroup}}{{/if}}" aria-label="{{name}}">
 			{{#unless isLivechatQueue}}
 
@@ -22,7 +22,7 @@
 						{{/if}}
 					{{else}}
 						<div class="sidebar-item__user-thumb">
-							{{> avatar username=username roomIcon=icon lazy=true}}
+							{{> avatar url=avatar roomIcon=icon lazy=true}}
 						</div>
 					{{/if}}
 				</div>
@@ -53,11 +53,13 @@
 					<div class="sidebar-item__message-bottom">
 						{{#if extended}}
 							{{#if lastMessage}}
-								<div class="sidebar-item__last-message">{{{lastMessage}}}</div>
+								<div class="sidebar-item__last-message">
+									<span class="message-body--unstyled">{{{lastMessage}}}</span>
+								</div>
 							{{/if}}
 						{{/if}}
 						{{#if unread}}
-							<span class="badge badge--unread">{{#if userMentions}}@ {{/if}}{{unread}}</span>
+							<span class="{{badgeClass}}">{{unread}}</span>
 						{{/if}}
 					</div>
 				</div>

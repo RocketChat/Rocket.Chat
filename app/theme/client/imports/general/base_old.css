@@ -1975,12 +1975,6 @@ rc-old select,
 		font-size: 14px;
 	}
 
-	& .edit-room-title {
-		margin-left: 4px;
-
-		font-size: 16px;
-	}
-
 	& .wrapper {
 		position: absolute;
 		top: 0;
@@ -2383,14 +2377,6 @@ rc-old select,
 	font-size: 1em;
 }
 
-.rc-old .reply-preview .mention-link.mention-link-all {
-	color: #ffffff;
-}
-
-.rc-old .reply-preview .mention-link.mention-link-me {
-	color: #ffffff;
-}
-
 .rc-old .message-popup.popup-with-reply-preview {
 	border-radius: 5px 5px 0 0;
 }
@@ -2622,6 +2608,14 @@ rc-old select,
 		height: 2px;
 
 		border-radius: 2px;
+
+		&--me {
+			background-color: var(--mention-link-me-background);
+		}
+
+		&--group {
+			background-color: var(--mention-link-group-background);
+		}
 	}
 }
 
@@ -2634,12 +2628,33 @@ rc-old select,
 
 	line-height: 20px;
 
+	&-unread {
+		display: inline-block;
+
+		width: 10px;
+		height: 10px;
+		margin: 0 0.25rem;
+
+		cursor: pointer;
+
+		border-radius: 50%;
+		background: var(--rc-color-button-primary);
+	}
+
+	&.highlighted {
+		background: #ffff99;
+	}
+
 	&.highlight {
 		animation: highlight 3s;
 	}
 
 	&:nth-child(1) {
 		margin-top: 0;
+	}
+
+	& .time {
+		white-space: nowrap;
 	}
 
 	&.new-day {
@@ -2656,9 +2671,13 @@ rc-old select,
 			padding: 0 10px;
 
 			content: attr(data-date);
+
+			transition: all 0.3s;
 			text-align: center;
 
 			pointer-events: none;
+
+			border-radius: 2px;
 
 			font-size: 12px;
 			font-weight: 600;
@@ -2668,11 +2687,12 @@ rc-old select,
 			position: absolute;
 			z-index: -1;
 			top: -20px;
+			right: 0;
 			left: 0;
 
 			display: block;
 
-			width: 100%;
+			margin: 0 var(--default-padding);
 
 			content: " ";
 
@@ -2746,9 +2766,10 @@ rc-old select,
 		margin-right: 5px;
 
 		font-family: inherit;
-		font-size: inherit;
+		font-size: 0.875rem;
 
 		font-weight: 600;
+		line-height: inherit;
 	}
 
 	& .thumb {
@@ -2782,24 +2803,30 @@ rc-old select,
 		}
 	}
 
-	& .info {
-		font-size: 12px;
+	& .title {
+		display: flex;
+		flex-direction: row;
+
+		font-size: 0.75rem;
+
+		line-height: 1.25rem;
+		align-items: center;
 
 		& .edited {
 			margin-left: 3px;
-			padding-left: 3px;
-
-			border-left: 1px dotted;
 		}
 
 		& .is-bot,
 		& .role-tag {
+			margin: 0 3px;
 			padding: 1px 4px;
 
 			border-width: 1px;
 
 			border-radius: var(--border-radius);
 			background: #ffffff;
+
+			line-height: initial;
 		}
 	}
 
@@ -2821,13 +2848,14 @@ rc-old select,
 			display: none;
 		}
 
-		& .info {
+		& .title {
 			position: absolute;
 			left: 5px;
 
 			width: 60px;
 
 			text-align: right;
+			justify-content: flex-end;
 
 			& .time,
 			& .role-tag,
@@ -2879,7 +2907,7 @@ rc-old select,
 	}
 
 	& .body {
-		transition: opacity 1s linear;
+		transition: opacity 0.3s linear;
 
 		opacity: 1;
 
@@ -2988,6 +3016,51 @@ rc-old select,
 			display: none;
 		}
 	}
+
+	&.collapsed {
+		min-height: 25px;
+		padding: 2px 50px 2px 70px;
+
+		font-size: 12px;
+
+		& > .thumb {
+			top: 3px;
+
+			width: 20px;
+			height: 20px;
+			margin-left: 16px;
+
+			& .avatar {
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		& .user {
+			font-size: 0.75rem;
+			font-weight: initial;
+		}
+
+		& .body,
+		& .message-oembed,
+		& .attachment,
+		& .reactions,
+		& .edited,
+		& .role-tag,
+		&:hover .message-actions {
+			display: none;
+		}
+
+		&.system {
+			& .title {
+				display: inline-flex;
+			}
+
+			& .body {
+				display: inline-flex;
+			}
+		}
+	}
 }
 
 .rc-old .image-labels {
@@ -3059,7 +3132,7 @@ rc-old select,
 			}
 		}
 
-		& .info {
+		& .title {
 			& .avatar-image {
 				border-radius: 2px;
 			}
@@ -3074,6 +3147,7 @@ rc-old select,
 
 			width: 20px;
 			height: 20px;
+			margin-left: 0;
 
 			& .avatar {
 				width: 20px;
@@ -3087,11 +3161,14 @@ rc-old select,
 				display: inline-block;
 			}
 
-			& .info {
+			& .title {
 				position: relative;
 				left: 0;
 
-				text-align: right;
+				width: auto;
+
+				text-align: left;
+				justify-content: initial;
 
 				& .time,
 				& .edited {
@@ -4446,19 +4523,10 @@ rc-old select,
 	height: 100%;
 }
 
-.rc-old .mention-link {
-
-	padding: 0 4px 2px;
-
-	border-radius: var(--border-radius);
-
-	font-weight: bold;
-}
-
 .rc-old .highlight-text {
 	padding: 2px;
 
-	border-radius: var(--border-radius);
+	border-radius: 15px;
 }
 
 .rc-old .avatar-suggestions {
@@ -5340,7 +5408,7 @@ rc-old select,
 	text-decoration: none;
 
 	color: #555555;
-	border: 1px solid #eaeaea;
+	border: 1px solid var(--color-gray-light);
 	border-radius: var(--border-radius);
 
 	font-family: arial;

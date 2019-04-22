@@ -6,7 +6,7 @@ Object.assign(Users, {
 			_id: userId,
 		};
 
-		const user = this.findOne(query);
+		const user = this.findOne(query, { fields: { roles: 1 } });
 		return user && Array.isArray(user.roles) && user.roles.includes(roleName);
 	},
 

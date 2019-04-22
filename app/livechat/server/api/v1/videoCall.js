@@ -25,7 +25,8 @@ API.v1.addRoute('livechat/video.call/:token', {
 			}
 
 			const rid = this.queryParams.rid || Random.id();
-			const { room } = getRoom(guest, rid, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
+			const roomInfo = { jitsiTimeout: new Date(Date.now() + 3600 * 1000) };
+			const { room } = getRoom({ guest, rid, roomInfo });
 			const config = settings();
 			if (!config.theme || !config.theme.actionLinks) {
 				throw new Meteor.Error('invalid-livechat-config');
