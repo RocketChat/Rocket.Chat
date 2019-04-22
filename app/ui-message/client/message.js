@@ -1,12 +1,11 @@
 import _ from 'underscore';
-import moment from 'moment';
 
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 
-import { timeAgo } from '../../lib/client/lib/formatDate';
+import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
@@ -84,9 +83,7 @@ Template.message.helpers({
 			? 'replies'
 			: 'reply';
 	},
-	formatDate(date) {
-		return moment(date).format('LLL');
-	},
+	formatDateAndTime,
 	encodeURI(text) {
 		return encodeURI(text);
 	},
@@ -519,10 +516,6 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 		classList.add('new-day');
 	}
 
-	if (previousDataset.tmid !== currentDataset.tmid) {
-		return classList.remove('sequential');
-	}
-
 	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
 		return classList.remove('sequential');
 	}
@@ -559,7 +552,7 @@ Template.message.onViewRendered = function() {
 				nextNode.classList.remove('new-day');
 			}
 			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.tmid !== currentDataset.tmid || nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 					nextNode.classList.remove('sequential');
 				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
 					nextNode.classList.add('sequential');
