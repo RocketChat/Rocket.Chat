@@ -43,3 +43,24 @@ Meteor.setInterval(() => {
 			_observeDriver._needToPollQuery();
 		});
 }, interval);
+
+
+/**
+ * If some promise is rejected and doesn't have a catch (unhandledRejection) it may cause this finally
+ * here https://github.com/meteor/meteor/blob/be6e529a739f47446950e045f4547ee60e5de7ae/packages/mongo/oplog_tailing.js#L348
+ * to not be executed never ending the oplog worked and frezing the entire process.
+ *
+ * The only way to release the process is executing the following code via inspect:
+ *   MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._workerActive = false
+ *
+ * Since unhandled rejections are deprecated in NodeJS:
+ * (node:83382) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections
+ * that are not handled will terminate the Node.js process with a non-zero exit code.
+ * we will start respecting this and exit the process to prevent these kind of problems.
+ */
+
+process.on('unhandledRejection', (error) => {
+	console.error(error);
+	console.error('Exiting due to an unhandled promise rejection');
+	process.exit(1);
+});
