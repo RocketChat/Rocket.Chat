@@ -386,16 +386,36 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 	get() {
 		const { rid } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
-
+		const { sort, fields, query } = this.parseJsonQuery();
 		if (!rid) {
 			throw new Meteor.Error('The required "rid" query param is missing.');
 		}
-		const threads = Meteor.runAsUser(this.userId, () => Meteor.call('getThreadsList', {
-			rid,
-			limit: count,
+		if (!settings.get('Threads_enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+		}
+		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+		const room = Rooms.findOneById(rid, { fields: { t: 1, _id: 1 } });
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+		const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+		const cursor = Messages.find(threadQuery, {
+			sort: sort ? sort : { ts: 1 },
 			skip: offset,
-		}));
-		return API.v1.success({ threads });
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+
+		const threads = cursor.fetch();
+
+		return API.v1.success({
+			threads,
+			count: threads.length,
+			offset,
+			total,
+		});
 	},
 });
 
@@ -437,17 +457,42 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 	get() {
 		const { tmid } = this.queryParams;
+		const { query, fields, sort } = this.parseJsonQuery();
 		const { offset, count } = this.getPaginationItems();
 
-		if (!tmid) {
-			throw new Meteor.Error('The required "tmid" query param is missing.');
+		if (!settings.get('Threads_enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
-		const messages = Meteor.runAsUser(this.userId, () => Meteor.call('getThreadMessages', {
-			tmid,
-			limit: count,
+		if (!tmid) {
+			throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
+		}
+		const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
+		if (!thread || !thread.rid) {
+			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+		}
+		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+		const room = Rooms.findOneById(thread.rid, { fields: { t: 1, _id: 1 } });
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+		const cursor = Messages.find({ ...query, tmid }, {
+			sort: sort ? sort : { ts: 1 },
 			skip: offset,
-		}));
-		return API.v1.success({ messages });
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 });
 
@@ -472,7 +517,7 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 			updatedSinceDate = new Date(updatedSince);
 		}
 		const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
-		if (!thread.rid) {
+		if (!thread || !thread.rid) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });

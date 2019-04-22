@@ -1,18 +1,14 @@
+import _ from 'underscore';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
-
-import _ from 'underscore';
-
 import { ChatMessages } from '../../../ui';
-import { call } from '../../../ui-utils';
+import { normalizeThreadMessage, call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models';
 import { lazyloadtick } from '../../../lazy-load';
-
 import { upsert } from '../upsert';
-
 import './thread.html';
 
 const sort = { ts: 1 };
@@ -31,6 +27,9 @@ Template.thread.events({
 });
 
 Template.thread.helpers({
+	threadTitle() {
+		return normalizeThreadMessage(Template.currentData().mainMessage);
+	},
 	mainMessage() {
 		return Template.parentData().mainMessage;
 	},
