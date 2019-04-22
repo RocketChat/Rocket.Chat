@@ -569,8 +569,10 @@ export const dropzoneEvents = {
 };
 
 Template.room.events({
-	...dropzoneEvents,
-	'click .js-open-thread'() {
+	'click .js-open-thread'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
 		const { tabBar } = Template.instance();
 
 		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
