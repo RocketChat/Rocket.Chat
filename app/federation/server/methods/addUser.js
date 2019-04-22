@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from '../../../models';
+import { Users, FederationPeers } from '../../../models';
 
 import { Federation } from '../';
 import { logger } from '../logger';
@@ -32,6 +32,9 @@ export function addUser(identifier) {
 	try {
 		// Create the local user
 		user = Users.create(localUser);
+
+		// Refresh the peers list
+		FederationPeers.refreshPeers();
 	} catch (err) {
 		// If the user already exists, return the existing user
 		if (err.code === 11000) {

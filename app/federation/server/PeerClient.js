@@ -224,7 +224,7 @@ export class PeerClient {
 	propagateEvent(e) {
 		this.log(`propagateEvent: ${ e.t }`);
 
-		const { peer: domain } = e;
+		const { peer: domain, options: eventOptions } = e;
 
 		const peer = Federation.peerDNS.searchPeer(domain);
 
@@ -249,7 +249,7 @@ export class PeerClient {
 					'POST',
 					'/api/v1/federation.events',
 					{ payload },
-					{ total: 5, stepSize: 500, stepMultiplier: 10 }
+					eventOptions.retry || { total: 5, stepSize: 500, stepMultiplier: 10 }
 				);
 
 				FederationEvents.setEventAsFullfilled(e);

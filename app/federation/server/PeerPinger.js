@@ -8,31 +8,31 @@ import { ping } from './methods/ping';
 import moment from 'moment';
 
 export class PeerPinger {
-  constructor() {
-    this.config = {
-      pingInterval: 5000
-    };
+	constructor() {
+		this.config = {
+			pingInterval: 5000,
+		};
 
-    this.peers = [];
-  }
+		this.peers = [];
+	}
 
-  log(message) {
-    logger.pinger.info(message);
-  }
+	log(message) {
+		logger.pinger.info(message);
+	}
 
-  start() {
-    this.pingAllPeers();
-  }
+	start() {
+		this.pingAllPeers();
+	}
 
-  pingAllPeers() {
-    const lastSeenAt = moment().subtract(10, 'm').toDate();
+	pingAllPeers() {
+		const lastSeenAt = moment().subtract(10, 'm').toDate();
 
-    const peers = FederationPeers.find({ $or: [{ last_seen_at: null }, { last_seen_at: { $lte: lastSeenAt } }] }).fetch();
+		const peers = FederationPeers.find({ $or: [{ last_seen_at: null }, { last_seen_at: { $lte: lastSeenAt } }] }).fetch();
 
-    const pingResults = ping(peers.map(p => p.peer));
+		const pingResults = ping(peers.map((p) => p.peer));
 
-    FederationPeers.updateStatuses(pingResults);
+		FederationPeers.updateStatuses(pingResults);
 
-    Meteor.setTimeout(this.pingAllPeers.bind(this), this.config.pingInterval);
-  }
+		Meteor.setTimeout(this.pingAllPeers.bind(this), this.config.pingInterval);
+	}
 }

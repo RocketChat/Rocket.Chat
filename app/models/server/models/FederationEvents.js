@@ -45,13 +45,14 @@ class FederationEventsModel extends Base {
 		);
 	}
 
-	createEvent(type, payload, peer) {
+	createEvent(type, payload, peer, options) {
 		const record = {
 			t: type,
 			ts: new Date(),
 			fulfilled: false,
 			payload,
 			peer,
+			options,
 		};
 
 		record._id = this.insert(record);
@@ -63,11 +64,11 @@ class FederationEventsModel extends Base {
 		return record;
 	}
 
-	createEventForPeers(type, payload, peers) {
+	createEventForPeers(type, payload, peers, options = {}) {
 		const records = [];
 
 		for (const peer of peers) {
-			const record = this.createEvent(type, payload, peer);
+			const record = this.createEvent(type, payload, peer, options);
 
 			records.push(record);
 		}
@@ -77,7 +78,7 @@ class FederationEventsModel extends Base {
 
 	// Create a `ping(png)` event
 	ping(peers) {
-		return this.createEventForPeers('png', {}, peers);
+		return this.createEventForPeers('png', {}, peers, { retry: { total: 1 } });
 	}
 
 	// Create a `directRoomCreated(drc)` event

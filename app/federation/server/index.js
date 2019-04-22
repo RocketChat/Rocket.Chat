@@ -14,6 +14,7 @@ import { PeerPinger } from './PeerPinger';
 import { PeerServer } from './PeerServer';
 import * as SettingsUpdater from './settingsUpdater';
 
+import './methods/dashboard';
 import { addUser } from './methods/addUser';
 import { searchUsers } from './methods/searchUsers';
 import { ping } from './methods/ping';
@@ -66,11 +67,11 @@ peerClient.start();
 // Start the server, setting up all the endpoints
 peerServer.start();
 
-// Start the pinger, to check the status of other peers
+// Start the pinger, to check the status of all peers
 peerPinger.start();
 
 const updateSettings = _.debounce(
-	Meteor.bindEnvironment(function () {
+	Meteor.bindEnvironment(function() {
 		const _enabled = settings.get('FEDERATION_Enabled');
 
 		if (!_enabled) {
