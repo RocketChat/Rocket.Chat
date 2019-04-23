@@ -533,7 +533,7 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 	}
 };
 
-Template.message.onRendered(function() {
+Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
 	const { settings, forceDate, noDate, groupable, msg } = messageArgs(Template.currentData());
 
 	if (noDate && !groupable) {
