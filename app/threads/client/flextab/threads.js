@@ -10,12 +10,14 @@ import { call } from '../../../ui-utils';
 import { Messages, Subscriptions } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { getConfig } from '../../../ui-utils/client/config';
 
 import { upsert } from '../upsert';
 
 import './threads.html';
 
-const LIST_SIZE = 50;
+const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 50;
+
 const sort = { tlm: -1 };
 
 Template.threads.events({

@@ -14,10 +14,10 @@ import { CachedCollectionManager } from '../../../ui-cached-collection';
 import _ from 'underscore';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
+import { getConfig } from '../config';
 
 
-
-const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
+const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5 ;
 
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });

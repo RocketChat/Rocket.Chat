@@ -6,6 +6,8 @@ Template.popupList.helpers({
 		return {
 			template: this.data.template_list || 'popupList_default',
 			data: {
+				ready: this.ready,
+				loading: !this.ready,
 				noMatchTemplate: this.data.noMatchTemplate,
 				template_item :this.data.template_item || 'popupList_item_default',
 				items: this.items,

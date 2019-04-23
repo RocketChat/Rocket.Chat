@@ -931,25 +931,6 @@ describe('[Chat]', function() {
 					});
 			});
 
-			it('should return an error when the limit is greater than the MAX LIMIT(100) allowed', (done) => {
-				updateSetting('API_Upper_Count_Limit', 105).then(() => {
-					request.get(api('chat.getThreadsList'))
-						.set(credentials)
-						.query({
-							rid: testChannel._id,
-							count: 101,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('errorType', 'error-not-allowed');
-							expect(res.body).to.have.property('error', 'max limit: 100 [error-not-allowed]');
-						})
-						.end(() => updateSetting('API_Upper_Count_Limit', 100).then(done));
-				});
-			});
-
 			it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.get(api('chat.getThreadsList'))
@@ -1004,6 +985,9 @@ describe('[Chat]', function() {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('threads').and.to.be.an('array');
+							expect(res.body).to.have.property('total');
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('count');
 							expect(res.body.threads).to.have.lengthOf(1);
 							expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
 						})
@@ -1179,25 +1163,6 @@ describe('[Chat]', function() {
 					});
 			});
 
-			it('should return an error when the limit is greater than the MAX LIMIT(100) allowed', (done) => {
-				updateSetting('API_Upper_Count_Limit', 105).then(() => {
-					request.get(api('chat.getThreadMessages'))
-						.set(credentials)
-						.query({
-							tmid: threadMessage.tmid,
-							count: 101,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('errorType', 'error-not-allowed');
-							expect(res.body).to.have.property('error', 'max limit: 100 [error-not-allowed]');
-						})
-						.end(done);
-				});
-			});
-
 			it('should return an error for chat.getThreadMessages when threads are not allowed in this server', (done) => {
 				updateSetting('Threads_enabled', false).then(() => {
 					request.get(api('chat.getThreadMessages'))
@@ -1231,7 +1196,7 @@ describe('[Chat]', function() {
 									.expect((res) => {
 										expect(res.body).to.have.property('success', false);
 										expect(res.body).to.have.property('errorType', 'error-not-allowed');
-										expect(res.body).to.have.property('error', 'Not allowed [error-not-allowed]');
+										expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
 									})
 									.end(done);
 							});
@@ -1252,9 +1217,11 @@ describe('[Chat]', function() {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(res.body.messages).to.have.lengthOf(2);
-							expect(res.body.messages[0]._id).to.be.equal(createdThreadMessage._id);
-							expect(res.body.messages[1].tmid).to.be.equal(createdThreadMessage._id);
+							expect(res.body).to.have.property('total').and.to.be.equal(1);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('count');
+							expect(res.body.messages).to.have.lengthOf(1);
+							expect(res.body.messages[0].tmid).to.be.equal(createdThreadMessage._id);
 						})
 						.end(done);
 				});

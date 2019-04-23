@@ -6,16 +6,20 @@
 
 <template name="popupList_default">
 	<ul class="rc-popup-list__list">
-		{{#each item in items}}
-			{{> Template.dynamic config item data=data}}
+		{{#if loading}}
+			{{> popupList_loading }}
 		{{else}}
-			{{> Template.dynamic template=noMatchTemplate}}
-		{{/each}}
+			{{#each item in items}}
+				{{> Template.dynamic config item data=data}}
+			{{else}}
+				{{> Template.dynamic template=noMatchTemplate}}
+			{{/each}}
+		{{/if}}
 	</ul>
 </template>
 
 <template name="popupList_item_default">
-	 <li class="rc-popup-list__item">
+	<li class="rc-popup-list__item">
 		 <span class="rc-popup-list__item-image">
 			 {{>avatar username=item.username}}
 		 </span>
@@ -25,6 +29,10 @@
 		 	<span class="rc-popup-list__item-name">{{{modifier item.username}}}</span>
 		 {{/if}}
 	</li>
+</template>
+
+<template name="popupList_loading">
+	<p>{{_ "Loading"}}.</p>
 </template>
 
 <template name="popupList_item_channel">

@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { getConfig } from '../config';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
@@ -66,7 +67,7 @@ function upsertMessageBulk({ msgs, subscription }) {
 	});
 }
 
-const defaultLimit = parseInt(localStorage && localStorage.getItem('rc-defaultLimit')) || 50 ;
+const defaultLimit = parseInt(getConfig('roomListLimit')) || 50 ;
 
 export const RoomHistoryManager = new class {
 	constructor() {
