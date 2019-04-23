@@ -1397,12 +1397,6 @@ rc-old select,
 /* MAIN CONTENT + MAIN PAGES */
 
 .rc-old.main-content {
-	&.main-modal {
-		left: 0;
-
-		margin-right: 0;
-	}
-
 	& .container-fluid {
 		padding-top: 0;
 	}
