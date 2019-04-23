@@ -113,6 +113,11 @@
 
 			font-size: 20px;
 		}
+
+		&--empty {
+			border-bottom: none;
+			background: none;
+		}
 	}
 
 	& .search-form .rc-input__icon-svg {
