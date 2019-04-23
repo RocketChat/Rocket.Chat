@@ -2,9 +2,9 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t } from '../../utils/client';
+import { t, roomTypes } from '../../utils/client';
 import { settings } from '../../settings/client';
-import { roomTypes } from '../../utils/client';
+
 import { Rooms } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 
