@@ -1,20 +1,23 @@
+import toastr from 'toastr';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { t, roomTypes, handleError } from '/app/utils';
-import { TabBar, fireGlobalEvent } from '/app/ui-utils';
-import { ChatSubscription, Rooms, ChatRoom } from '/app/models';
-import { settings } from '/app/settings';
+import { t, roomTypes, handleError } from '../../../../utils';
+import { TabBar, fireGlobalEvent } from '../../../../ui-utils';
+import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
+import { settings } from '../../../../settings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { emoji } from '/app/emoji';
-import { Markdown } from '/app/markdown';
+import { emoji } from '../../../../emoji';
+import { Markdown } from '../../../../markdown/client';
+import { hasAllPermission } from '../../../../authorization';
+import { call } from '../../../../ui-utils';
 
 const isSubscribed = (_id) => ChatSubscription.find({ rid: _id }).count() > 0;
 
 const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
-const isThread = ({ _id }) => {
+const isDiscussion = ({ _id }) => {
 	const room = ChatRoom.findOne({ _id });
 	return !!(room && room.prid);
 };
@@ -33,8 +36,8 @@ Template.headerRoom.helpers({
 		return TabBar.getButtons();
 	},
 
-	isThread() {
-		return isThread(Template.instance().data);
+	isDiscussion() {
+		return isDiscussion(Template.instance().data);
 	},
 
 	isTranslated() {
@@ -101,10 +104,9 @@ Template.headerRoom.helpers({
 	tokenAccessChannel() {
 		return Template.instance().hasTokenpass.get();
 	},
-
-	encryptedChannel() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		return roomData && roomData.encrypted;
+	encryptionState() {
+		const room = ChatRoom.findOne(this._id);
+		return (room && room.encrypted) && 'encrypted';
 	},
 
 	userStatus() {
@@ -113,7 +115,7 @@ Template.headerRoom.helpers({
 	},
 
 	showToggleFavorite() {
-		return !isThread(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
+		return !isDiscussion(Template.instance().data) && isSubscribed(this._id) && favoritesEnabled();
 	},
 
 	fixedHeight() {
@@ -151,21 +153,22 @@ Template.headerRoom.events({
 		);
 	},
 
-	'click .edit-room-title'(event) {
-		event.preventDefault();
-		Session.set('editRoomTitle', true);
-		$('.rc-header').addClass('visible');
-		return Meteor.setTimeout(() =>
-			$('#room-title-field')
-				.focus()
-				.select(),
-		10);
-	},
-
 	'click .js-open-parent-channel'(event, t) {
 		event.preventDefault();
 		const { prid } = t.currentChannel;
 		FlowRouter.goToRoomById(prid);
+	},
+	'click .js-toggle-encryption'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		const room = ChatRoom.findOne(this._id);
+		if (hasAllPermission('edit-room', this._id)) {
+			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
+				toastr.success(
+					t('Encrypted_setting_changed_successfully')
+				);
+			});
+		}
 	},
 });
 

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from '/app/models';
-import { Notifications } from '/app/notifications';
+import { Subscriptions } from '../../app/models';
+import { Notifications } from '../../app/notifications';
 
 const fields = {
 	t: 1,
@@ -37,6 +37,7 @@ const fields = {
 	muteGroupMentions: 1,
 	ignored: 1,
 	E2EKey: 1,
+	tunread: 1,
 };
 
 Meteor.methods({

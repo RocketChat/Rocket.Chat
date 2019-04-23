@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { Rooms, Settings } from '/app/models';
-import { cleanRoomHistory } from '/app/lib';
+import { settings } from '../../settings';
+import { Rooms, Settings } from '../../models';
+import { cleanRoomHistory } from '../../lib';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 let types = [];
@@ -21,7 +21,7 @@ function job() {
 	const now = new Date();
 	const filesOnly = settings.get('RetentionPolicy_FilesOnly');
 	const excludePinned = settings.get('RetentionPolicy_ExcludePinned');
-	const ignoreThreads = settings.get('RetentionPolicy_DoNotExcludeThreads');
+	const ignoreDiscussion = settings.get('RetentionPolicy_DoNotExcludeDiscussion');
 
 	// get all rooms with default values
 	types.forEach((type) => {
@@ -37,7 +37,7 @@ function job() {
 			],
 			'retention.overrideGlobal': { $ne: true },
 		}, { fields : { _id: 1 } }).forEach(({ _id: rid }) => {
-			cleanRoomHistory({ rid, latest, oldest, filesOnly, excludePinned, ignoreThreads });
+			cleanRoomHistory({ rid, latest, oldest, filesOnly, excludePinned, ignoreDiscussion });
 		});
 	});
 
@@ -49,7 +49,7 @@ function job() {
 	}).forEach((room) => {
 		const { maxAge = 30, filesOnly, excludePinned } = room.retention;
 		const latest = new Date(now.getTime() - maxAge * toDays);
-		cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned, ignoreThreads });
+		cleanRoomHistory({ rid: room._id, latest, oldest, filesOnly, excludePinned, ignoreDiscussion });
 	});
 	lastPrune = new Date(now.getTime() - gracePeriod);
 }

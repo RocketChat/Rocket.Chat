@@ -1,19 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { settings } from '/app/settings';
-import { Settings } from '/app/models';
-import { getURL } from '/app/utils';
-import { hasPermission } from '/app/authorization';
-import { RocketChatFile } from '/app/file';
+import { settings } from '../../settings';
+import { Settings } from '../../models';
+import { getURL } from '../../utils/lib/getURL';
+import { mime } from '../../utils/lib/mimeTypes';
+import { hasPermission } from '../../authorization';
+import { RocketChatFile } from '../../file';
 import { WebAppHashing } from 'meteor/webapp-hashing';
 import { WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 import sizeOf from 'image-size';
-import mime from 'mime-type/with-db';
 import crypto from 'crypto';
 import sharp from 'sharp';
-
-mime.extensions['image/vnd.microsoft.icon'] = ['ico'];
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
@@ -130,8 +128,8 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['png'],
-			width: 144,
-			height: 144,
+			width: 70,
+			height: 70,
 		},
 	},
 	tile_144: {

@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { MessageAction, modal } from '/app/ui-utils';
-import { t, handleError } from '/app/utils';
-import { settings } from '/app/settings';
-import { Subscriptions } from '/app/models';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { MessageAction, modal } from '../../ui-utils';
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { t, handleError } from '../../utils';
+import { settings } from '../../settings';
+import { Subscriptions } from '../../models';
+import { hasAtLeastOnePermission } from '../../authorization';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -18,7 +19,7 @@ Meteor.startup(function() {
 		order: 10,
 		group: 'menu',
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 
 			modal.open({
 				title: 'Create a Snippet',

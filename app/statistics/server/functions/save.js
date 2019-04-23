@@ -1,5 +1,5 @@
-import { Statistics } from '/app/models';
-import { statistics } from '../../lib/rocketchat';
+import { Statistics } from '../../../models';
+import { statistics } from '../statisticsNamespace';
 
 statistics.save = function() {
 	const rcStatistics = statistics.get();

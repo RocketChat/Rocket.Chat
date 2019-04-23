@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Settings } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Settings } from '../../../models';
 
 Meteor.publish('livechat:appearance', function() {
 	if (!this.userId) {

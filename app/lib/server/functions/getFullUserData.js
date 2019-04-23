@@ -1,8 +1,8 @@
 import s from 'underscore.string';
-import { Logger } from '/app/logger';
-import { settings } from '/app/settings';
-import { Users } from '/app/models';
-import { hasPermission } from '/app/authorization';
+import { Logger } from '../../../logger';
+import { settings } from '../../../settings';
+import { Users } from '../../../models';
+import { hasPermission } from '../../../authorization';
 
 const logger = new Logger('getFullUserData');
 

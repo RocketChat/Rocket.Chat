@@ -1,6 +1,6 @@
-import { metrics } from '/app/metrics';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
+import { metrics } from '../../../../metrics';
+import { settings } from '../../../../settings';
+import { Notifications } from '../../../../notifications';
 
 export function shouldNotifyAudio({
 	disableAllMessageNotifications,
@@ -11,9 +11,9 @@ export function shouldNotifyAudio({
 	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
-	roomType,
+	hasReplyToThread,
 }) {
-	if (disableAllMessageNotifications && audioNotifications == null) {
+	if (disableAllMessageNotifications && audioNotifications == null && !hasReplyToThread) {
 		return false;
 	}
 
@@ -25,7 +25,7 @@ export function shouldNotifyAudio({
 		return true;
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || audioNotifications === 'all' || hasMentionToUser;
+	return (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || audioNotifications === 'all' || hasMentionToUser || hasReplyToThread;
 }
 
 export function notifyAudioUser(userId, message, room) {

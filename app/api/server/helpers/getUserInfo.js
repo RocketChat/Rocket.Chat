@@ -1,5 +1,5 @@
-import { settings } from '/app/settings';
-import { getUserPreference } from '/app/utils';
+import { settings } from '../../../settings';
+import { getUserPreference, getURL } from '../../../utils';
 import { API } from '../api';
 
 const getInfoFromUserObject = (user) => {
@@ -54,6 +54,9 @@ API.helperMethods.set('getUserInfo', function _getUserInfo(user) {
 	};
 	const verifiedEmail = isVerifiedEmail();
 	me.email = verifiedEmail ? verifiedEmail.address : undefined;
+
+	me.avatarUrl = getURL(`/avatar/${ me.username }`, { cdn: false, full: true });
+
 	me.settings = {
 		preferences: getUserPreferences(),
 	};

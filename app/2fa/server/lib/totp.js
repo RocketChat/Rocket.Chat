@@ -1,7 +1,7 @@
 import { SHA256 } from 'meteor/sha';
 import { Random } from 'meteor/random';
-import { Users } from '/app/models';
-import { settings } from '/app/settings';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import speakeasy from 'speakeasy';
 
 export const TOTP = {

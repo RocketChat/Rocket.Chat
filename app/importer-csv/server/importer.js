@@ -6,10 +6,10 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '/app/importer';
-import { RocketChatFile } from '/app/file';
-import { Users, Rooms } from '/app/models';
-import { sendMessage } from '/app/lib';
+} from '../../importer/server';
+import { RocketChatFile } from '../../file';
+import { Users, Rooms } from '../../models';
+import { sendMessage } from '../../lib';
 
 export class CsvImporter extends Base {
 	constructor(info) {

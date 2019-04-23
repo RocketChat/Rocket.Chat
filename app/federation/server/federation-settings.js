@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
-import { FederationKeys } from '/app/models';
+import { settings } from '../../settings';
+import { FederationKeys } from '../../models';
 
 Meteor.startup(function() {
 	// const federationUniqueId = FederationKeys.getUniqueId();
@@ -33,6 +33,7 @@ Meteor.startup(function() {
 			i18nLabel: 'FEDERATION_Domain',
 			i18nDescription: 'FEDERATION_Domain_Description',
 			alert: 'FEDERATION_Domain_Alert',
+			disableReset: true,
 		});
 
 		this.add('FEDERATION_Public_Key', federationPublicKey, {

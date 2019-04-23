@@ -4,9 +4,9 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { t, handleError } from '/app/utils';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { t, handleError } from '../../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
@@ -183,9 +183,7 @@ Template.loginForm.onCreated(function() {
 			return this.customFields.set(null);
 		}
 	});
-	if (Meteor.settings.public.sandstorm) {
-		this.state = new ReactiveVar('sandstorm');
-	} else if (Session.get('loginDefaultState')) {
+	if (Session.get('loginDefaultState')) {
 		this.state = new ReactiveVar(Session.get('loginDefaultState'));
 	} else {
 		this.state = new ReactiveVar('login');

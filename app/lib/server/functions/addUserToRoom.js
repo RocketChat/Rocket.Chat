@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Subscriptions, Messages } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { callbacks } from '/app/callbacks';
+import { Rooms, Subscriptions, Messages } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { callbacks } from '../../../callbacks';
 
 export const addUserToRoom = function(rid, user, inviter, silenced) {
 	const now = new Date();
@@ -45,7 +45,7 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 				},
 			});
 		} else if (room.prid) {
-			Messages.createUserJoinWithRoomIdAndUserThread(rid, user, { ts: now });
+			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, user, { ts: now });
 		} else {
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
 		}

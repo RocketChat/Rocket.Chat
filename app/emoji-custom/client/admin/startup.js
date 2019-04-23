@@ -1,5 +1,5 @@
-import { AdminBox } from '/app/ui-utils';
-import { hasPermission } from '/app/authorization';
+import { AdminBox } from '../../../ui-utils';
+import { hasPermission } from '../../../authorization';
 
 AdminBox.addOption({
 	href: 'emoji-custom',

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { ChatRoom, Subscriptions } from '/app/models';
-import { openRoom } from '/app/ui-utils';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '/app/utils';
-import { hasPermission, hasAtLeastOnePermission } from '/app/authorization';
-import { settings } from '/app/settings';
+import { ChatRoom, Subscriptions } from '../../../models';
+import { openRoom } from '../../../ui-utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
+import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { settings } from '../../../settings';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -117,7 +118,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	userDetailShowAll(/* room */) {
-		return false;
+		return true;
 	}
 
 	getUiText(context) {
@@ -148,5 +149,9 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		const text = notificationMessage;
 
 		return { title, text };
+	}
+
+	getAvatarPath(roomData) {
+		return getUserAvatarURL(roomData.name || this.roomName(roomData));
 	}
 }

@@ -18,8 +18,8 @@
 
 	display: flex;
 
-	min-height: 40px;
-	max-height: 40px;
+	height: 40px;
+
 	padding: 0 1.5rem;
 
 	cursor: pointer;
@@ -36,6 +36,7 @@
 	background-color: transparent;
 
 	font-size: var(--button-text-size);
+	font-weight: 600;
 
 	align-items: center;
 	justify-content: center;
@@ -75,11 +76,6 @@
 		background-color: var(--button-disabled-background);
 	}
 
-	&--nude {
-		border: none;
-		background: inherit;
-	}
-
 	&--invisible {
 		visibility: hidden;
 	}
@@ -88,6 +84,17 @@
 		color: var(--button-primary-text-color);
 		border: 0;
 		background-color: var(--button-primary-background);
+	}
+
+	&--nude {
+		border: none;
+		background-color: inherit;
+
+		font-weight: 400;
+	}
+
+	&--primary.rc-button--nude {
+		color: var(--button-primary-background);
 	}
 
 	&--primary.rc-button--outline {
@@ -120,7 +127,10 @@
 	}
 
 	&--small {
+		height: var(--button-height-small);
 		padding: var(--button-padding-small);
+
+		font-size: var(--button-text-size-small);
 	}
 
 	&--square {
@@ -141,6 +151,11 @@
 
 	&--stack {
 		width: 100%;
+	}
+
+	&--no-padding {
+		padding-right: 0;
+		padding-left: 0;
 	}
 
 	&.loading {
@@ -169,15 +184,6 @@
 		}
 	}
 
-	&-broadcast {
-		margin: 10px 0;
-		padding: 0 1rem;
-
-		&__icon {
-			margin: 0 5px;
-		}
-	}
-
 	&__group {
 		display: flex;
 
@@ -187,6 +193,15 @@
 
 		& > .rc-button {
 			margin: 0 5px;
+		}
+
+		&--wrap {
+			margin: 5px -5px;
+			flex-wrap: wrap;
+
+			& > .rc-button {
+				margin: 5px;
+			}
 		}
 
 		&--stretch {

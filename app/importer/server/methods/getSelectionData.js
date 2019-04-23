@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import {
 	Importers,
 	ProgressStep,
-} from '/app/importer';
-import { hasPermission } from '/app/authorization';
+} from '..';
+import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	getSelectionData(key) {

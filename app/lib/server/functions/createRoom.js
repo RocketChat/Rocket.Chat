@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Users, Rooms, Subscriptions } from '/app/models';
-import { callbacks } from '/app/callbacks';
-import { hasPermission, addUserRoles } from '/app/authorization';
-import { getValidRoomName } from '/app/utils';
-import { Apps } from '/app/apps';
+import { Users, Rooms, Subscriptions } from '../../../models';
+import { callbacks } from '../../../callbacks';
+import { hasPermission, addUserRoles } from '../../../authorization';
+import { getValidRoomName } from '../../../utils';
+import { Apps } from '../../../apps/server';
 import _ from 'underscore';
 import s from 'underscore.string';
 

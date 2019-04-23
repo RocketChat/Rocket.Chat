@@ -1,13 +1,25 @@
-import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import os from 'os';
+
+import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { Sessions, Settings, Users, Rooms, Subscriptions, Uploads, Messages, LivechatVisitors } from '/app/models';
-import { settings } from '/app/settings';
-import { Info } from '/app/utils';
-import { Migrations } from '/app/migrations';
-import { statistics } from '../../lib/rocketchat';
+
+import {
+	Sessions,
+	Settings,
+	Users,
+	Rooms,
+	Subscriptions,
+	Uploads,
+	Messages,
+	LivechatVisitors,
+} from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/server';
+import { Migrations } from '../../../migrations/server';
+
+import { statistics } from '../statisticsNamespace';
 
 const wizardFields = [
 	'Organization_Type',
@@ -20,6 +32,7 @@ const wizardFields = [
 	'Language',
 	'Server_Type',
 	'Allow_Marketing_Emails',
+	'Register_Server',
 ];
 
 statistics.get = function _getStatistics() {
@@ -61,6 +74,7 @@ statistics.get = function _getStatistics() {
 	statistics.nonActiveUsers = statistics.totalUsers - statistics.activeUsers;
 	statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
 	statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
+	statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 	statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers;
 
 	// Room statistics
@@ -69,6 +83,8 @@ statistics.get = function _getStatistics() {
 	statistics.totalPrivateGroups = Rooms.findByType('p').count();
 	statistics.totalDirect = Rooms.findByType('d').count();
 	statistics.totalLivechat = Rooms.findByType('l').count();
+	statistics.totalDiscussions = Rooms.countDiscussions();
+	statistics.totalThreads = Messages.countThreads();
 
 	// livechat visitors
 	statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -127,10 +143,11 @@ statistics.get = function _getStatistics() {
 	}
 
 	try {
-		const { version } = Promise.await(mongo.db.command({ buildInfo: 1 }));
+		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
 		statistics.mongoVersion = version;
+		statistics.mongoStorageEngine = storageEngine.name;
 	} catch (e) {
-		console.error('Error getting MongoDB version');
+		console.error('Error getting MongoDB info');
 	}
 
 	statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();

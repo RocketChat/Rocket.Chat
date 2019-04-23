@@ -5,10 +5,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { Rooms, Subscriptions } from '/app/models';
-import { roomTypes } from '/app/utils';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { menu } from '/app/ui-utils';
+import { Rooms, Subscriptions } from '../../models';
+import { roomTypes } from '../../utils';
+import { hasAtLeastOnePermission } from '../../authorization';
+import { menu } from '../../ui-utils';
 import { toolbarSearch } from './sidebarHeader';
 import _ from 'underscore';
 
@@ -183,15 +183,6 @@ Template.toolbar.events({
 
 	'click [role="search"] input'() {
 		toolbarSearch.shortcut = false;
-	},
-
-	'keyup [role="search"] input'(e) {
-		if (e.which === 27) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			toolbarSearch.clear();
-		}
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {

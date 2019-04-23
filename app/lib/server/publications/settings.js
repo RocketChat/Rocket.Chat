@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Settings } from '/app/models';
-import { hasPermission } from '/app/authorization';
-import { Notifications } from '/app/notifications';
+import { Settings } from '../../../models';
+import { hasPermission } from '../../../authorization';
+import { Notifications } from '../../../notifications';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {
@@ -81,7 +81,7 @@ Settings.on('change', ({ clientAction, id, data, diff }) => {
 		case 'removed': {
 			const setting = data || Settings.findOneById(id, { fields: { public: 1 } });
 
-			if (setting.public === true) {
+			if (setting && setting.public === true) {
 				Notifications.notifyAllInThisInstance('public-settings-changed', clientAction, { _id: id });
 			}
 			Notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, { _id: id });

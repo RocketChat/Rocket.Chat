@@ -3,6 +3,7 @@ import { Base } from './_Base';
 import { Match } from 'meteor/check';
 import Rooms from './Rooms';
 import Users from './Users';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import _ from 'underscore';
 
 export class Subscriptions extends Base {
@@ -566,6 +567,16 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
+	findByRoomAndUsersWithUserHighlights(roomId, users, options) {
+		const query = {
+			rid: roomId,
+			'u._id': { $in: users },
+			'userHighlights.0': { $exists: true },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomWithUserHighlights(roomId, options) {
 		const query = {
 			rid: roomId,
@@ -795,6 +806,7 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				fname,
+				name: fname,
 			},
 		};
 
@@ -1186,21 +1198,26 @@ export class Subscriptions extends Base {
 			name,
 		};
 
-		const update = {
-			$set: {
-				fname,
-			},
-		};
+		let update;
+		if (fname) {
+			update = {
+				$set: {
+					fname,
+				},
+			};
+		} else {
+			update = {
+				$unset: {
+					fname: true,
+				},
+			};
+		}
 
 		return this.update(query, update, { multi: true });
 	}
 
 	// INSERT
-	async createWithRoomAndUser(room, user, extraData) {
-		if (!this.getDefaultSubscriptionPref) {
-			const Utils = await import('/app/utils');
-			this.getDefaultSubscriptionPref = Utils.getDefaultSubscriptionPref;
-		}
+	createWithRoomAndUser(room, user, extraData) {
 		const subscription = {
 			open: false,
 			alert: false,
@@ -1218,7 +1235,7 @@ export class Subscriptions extends Base {
 				username: user.username,
 				name: user.name,
 			},
-			...this.getDefaultSubscriptionPref(user),
+			...getDefaultSubscriptionPref(user),
 			...extraData,
 		};
 
@@ -1278,6 +1295,49 @@ export class Subscriptions extends Base {
 		}
 
 		return result;
+	}
+
+	// //////////////////////////////////////////////////////////////////
+	// threads
+
+	addUnreadThreadByRoomIdAndUserIds(rid, users, tmid) {
+		if (!users) {
+			return;
+		}
+		return this.update({
+			'u._id': { $in: users },
+			rid,
+		}, {
+			$addToSet: {
+				tunread: tmid,
+			},
+		}, { multi: true });
+	}
+
+	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid) {
+		return this.update({
+			'u._id': userId,
+			rid,
+		}, {
+			$pull: {
+				tunread: tmid,
+			},
+		});
+	}
+
+	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {
+		const query = {
+			rid,
+			'u._id': userId,
+		};
+
+		const update = {
+			$unset: {
+				tunread: 1,
+			},
+		};
+
+		return this.update(query, update);
 	}
 }
 

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { canAccessRoom, hasPermission } from '/app/authorization';
-import { settings } from '/app/settings';
+import { canAccessRoom, hasPermission } from '../../authorization';
+import { settings } from '../../settings';
 import _ from 'underscore';
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
@@ -34,7 +34,6 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
 	},
 });
-
 
 export class FileUploadBase {
 	constructor(store, meta, file) {

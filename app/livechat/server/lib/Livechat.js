@@ -3,18 +3,18 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { HTTP } from 'meteor/http';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '/app/models';
-import { Logger } from '/app/logger';
-import { sendMessage, deleteMessage, updateMessage } from '/app/lib';
-import { addUserRoles, removeUserFromRoles } from '/app/authorization';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { Users, Rooms, Messages, Subscriptions, Settings, LivechatDepartmentAgents, LivechatDepartment, LivechatCustomField, LivechatVisitors } from '../../../models';
+import { Logger } from '../../../logger';
+import { sendMessage, deleteMessage, updateMessage } from '../../../lib';
+import { addUserRoles, removeUserFromRoles } from '../../../authorization';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import dns from 'dns';
 import UAParser from 'ua-parser-js';
-import * as Mailer from '/app/mailer';
+import * as Mailer from '../../../mailer';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
 import { QueueMethods } from './QueueMethods';
 import { Analytics } from './Analytics';
@@ -86,7 +86,7 @@ export const Livechat = {
 				return true;
 			}
 			const onlineAgents = LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			return onlineAgents.count() > 0;
+			return onlineAgents && onlineAgents.count() > 0;
 		});
 	},
 	getRoom(guest, message, roomInfo, agent) {
@@ -176,7 +176,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username } = {}) {
+	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
 
 		let userId;
@@ -204,12 +204,14 @@ export const Livechat = {
 					username,
 				};
 
-				const storeHttpHeaderData = settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations');
+				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 
-				if (this.connection && storeHttpHeaderData) {
-					userData.userAgent = this.connection.httpHeaders['user-agent'];
-					userData.ip = this.connection.httpHeaders['x-real-ip'] || this.connection.httpHeaders['x-forwarded-for'] || this.connection.clientAddress;
-					userData.host = this.connection.httpHeaders.host;
+					const connection = this.connection || connectionData;
+					if (connection && connection.httpHeaders) {
+						userData.userAgent = connection.httpHeaders['user-agent'];
+						userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
+						userData.host = connection.httpHeaders.host;
+					}
 				}
 
 				userId = LivechatVisitors.insert(userData);
@@ -232,7 +234,9 @@ export const Livechat = {
 			updateUser.$set.name = name;
 		}
 
-		if (department) {
+		if (!department) {
+			Object.assign(updateUser, { $unset: { department: 1 } });
+		} else {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
@@ -313,6 +317,9 @@ export const Livechat = {
 			msg: comment,
 			groupable: false,
 		};
+
+		// Retreive the closed room
+		room = Rooms.findOneByIdOrName(room._id);
 
 		sendMessage(user, message, room);
 
@@ -397,7 +404,7 @@ export const Livechat = {
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			return Rooms.setNameById(roomData._id, guestData.name, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
 		}
 	},
 
@@ -533,13 +540,8 @@ export const Livechat = {
 		const agentIds = [];
 		// get the agents of the department
 		if (departmentId) {
-			let agents = Livechat.getOnlineAgents(departmentId);
-
-			if (agents.count() === 0 && settings.get('Livechat_guest_pool_with_no_agents')) {
-				agents = Livechat.getAgents(departmentId);
-			}
-
-			if (agents.count() === 0) {
+			const agents = Livechat.getAgents(departmentId);
+			if (!agents || agents.count() === 0) {
 				return false;
 			}
 
@@ -762,6 +764,8 @@ export const Livechat = {
 			name: String,
 			description: Match.Optional(String),
 			showOnRegistration: Boolean,
+			email: String,
+			showOnOfflineForm: Boolean,
 		});
 
 		check(departmentAgents, [
@@ -794,11 +798,7 @@ export const Livechat = {
 	},
 
 	showConnecting() {
-		if (settings.get('Livechat_Routing_Method') === 'Guest_Pool') {
-			return settings.get('Livechat_open_inquiery_show_connecting');
-		} else {
-			return false;
-		}
+		return settings.get('Livechat_Routing_Method') === 'Guest_Pool';
 	},
 
 	sendEmail(from, to, replyTo, subject, html) {
@@ -905,12 +905,17 @@ export const Livechat = {
 			}
 		}
 
-		const to = settings.get('Livechat_offline_email');
+		let emailTo = settings.get('Livechat_offline_email');
+		if (data.department) {
+			const dep = LivechatDepartment.findOneByIdOrName(data.department);
+			emailTo = dep.email || emailTo;
+		}
+
 		const from = `${ data.name } - ${ data.email } <${ fromEmail }>`;
 		const replyTo = `${ data.name } <${ data.email }>`;
 		const subject = `Livechat offline message from ${ data.name }: ${ (`${ data.message }`).substring(0, 20) }`;
 
-		this.sendEmail(from, to, replyTo, subject, html);
+		this.sendEmail(from, emailTo, replyTo, subject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.offlineMessage', data);

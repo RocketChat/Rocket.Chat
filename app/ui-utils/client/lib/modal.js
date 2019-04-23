@@ -2,7 +2,7 @@ import './modal.html';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { t, getUserPreference, handleError } from '/app/utils';
+import { t, getUserPreference, handleError } from '../../../utils';
 
 export const modal = {
 	renderedModal: null,
@@ -60,13 +60,16 @@ export const modal = {
 		}
 	},
 	confirm(value) {
-		if (this.fn) {
-			this.fn(value);
-		} else {
-			this.close();
-		}
+		const { fn } = this;
 
 		this.config.closeOnConfirm && this.close();
+
+		if (fn) {
+			fn.call(this, value);
+			return;
+		}
+
+		this.close();
 	},
 	showInputError(text) {
 		const errorEl = document.querySelector('.rc-modal__content-error');
@@ -93,6 +96,11 @@ export const modal = {
 };
 
 Template.rc_modal.helpers({
+
+	showFooter() {
+		const { showCancelButton, showConfirmButton } = this;
+		return showCancelButton || showConfirmButton;
+	},
 	hasAction() {
 		return !!this.action;
 	},

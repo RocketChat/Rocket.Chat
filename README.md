@@ -21,7 +21,6 @@
    * [Snaps](#instant-server-installation-with-snaps)
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
-   * [Sandstorm.io](#sandstormio)
    * [Yunohost.org](#yunohostorg)
    * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
@@ -123,11 +122,6 @@ Instantly deploy your Rocket.Chat server for free on next generation auto-scalin
 [![Layershift Hosting](https://github.com/Sing-Li/bbug/raw/master/images/layershift.png)](http://jps.layershift.com/rocketchat/deploy.html)
 
 Painless SSL. Automatically scale your server cluster based on usage demand.
-
-## Sandstorm.io
-Host your own Rocket.Chat server in four seconds flat.
-
-[![Rocket.Chat on Sandstorm.io](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/sandstorm.jpg)](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 
 ## Yunohost.org
 Host your own Rocket.Chat server in a few seconds.
@@ -320,7 +314,6 @@ It is a great solution for communities and companies wanting to privately host t
 - Native Cross-Platform Desktop Application [Windows, macOS, or Linux](https://rocket.chat/)
 - Mobile app for iPhone, iPad, and iPod touch [Download on App Store](https://geo.itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8)
 - Mobile app for Android phone, tablet, and TV stick [Available now on Google Play](https://play.google.com/store/apps/details?id=chat.rocket.android)
-- Sandstorm.io instant Rocket.Chat server [Now on Sandstorm App Store](https://apps.sandstorm.io/app/vfnwptfn02ty21w715snyyczw0nqxkv3jvawcah10c6z7hj1hnu0)
 - Available on [Cloudron Store](https://cloudron.io/appstore.html#chat.rocket.cloudronapp)
 
 ## Roadmap
@@ -471,9 +464,7 @@ Testing with [BrowserStack](https://www.browserstack.com)
 
 Rocket.Chat will be free forever, but you can help us speed up the development!
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZL94ZE6LGVUSN)
-
-[![Bitcoins](https://github.com/RocketChat/Rocket.Chat.Docs/blob/master/1.%20Contributing/Donating/coinbase.png?raw=true)](https://www.coinbase.com/checkouts/ac2fa967efca7f6fc1201d46bdccb875)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9MT88JJ9X4A6U&source=url)
 
 
 [BountySource](https://www.bountysource.com/teams/rocketchat)

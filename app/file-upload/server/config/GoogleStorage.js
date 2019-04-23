@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 import '../../ufs/GoogleStorage/server.js';
 import http from 'http';
 import https from 'https';
@@ -18,6 +18,7 @@ const get = function(file, req, res) {
 				request.get(fileUrl, (fileRes) => fileRes.pipe(res));
 			} else {
 				res.removeHeader('Content-Length');
+				res.removeHeader('Cache-Control');
 				res.setHeader('Location', fileUrl);
 				res.writeHead(302);
 				res.end();

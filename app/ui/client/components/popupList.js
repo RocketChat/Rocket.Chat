@@ -1,11 +1,13 @@
 import { Template } from 'meteor/templating';
-import { settings } from '/app/settings';
+import { settings } from '../../../settings';
 
 Template.popupList.helpers({
 	config() {
 		return {
 			template: this.data.template_list || 'popupList_default',
 			data: {
+				ready: this.ready,
+				loading: !this.ready,
 				noMatchTemplate: this.data.noMatchTemplate,
 				template_item :this.data.template_item || 'popupList_item_default',
 				items: this.items,

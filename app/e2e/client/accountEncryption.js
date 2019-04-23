@@ -2,9 +2,9 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import toastr from 'toastr';
 import s from 'underscore.string';
-import { settings } from '/app/settings';
-import { t } from '/app/utils';
-import { e2e } from '/app/e2e';
+import { settings } from '../../settings';
+import { t } from '../../utils';
+import { e2e } from './rocketchat.e2e';
 
 Template.accountEncryption.helpers({
 	isEnabled() {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { slashCommands, APIClient } from '/app/utils';
+import { slashCommands, APIClient } from '../../../../utils';
 
 // Track logins and when they login, get the commands
 (() => {

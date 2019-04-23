@@ -4,10 +4,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
-import { ChatRoom } from '/app/models';
-import { t, roomTypes } from '/app/utils';
-import { settings } from '/app/settings';
-import { modal, call } from '/app/ui-utils';
+import { ChatRoom } from '../../../models';
+import { t, roomTypes } from '../../../utils';
+import { settings } from '../../../settings';
+import { modal, call } from '../../../ui-utils';
 import moment from 'moment';
 
 const getRoomName = function() {
@@ -22,7 +22,7 @@ const getRoomName = function() {
 	return t('conversation_with_s', roomTypes.getRoomName(room.t, room));
 };
 
-const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, ignoreThreads, filesOnly, fromUsers) {
+const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePinned, ignoreDiscussion, filesOnly, fromUsers) {
 	return call('cleanRoomHistory', {
 		roomId,
 		latest,
@@ -30,7 +30,7 @@ const purgeWorker = function(roomId, oldest, latest, inclusive, limit, excludePi
 		inclusive,
 		limit,
 		excludePinned,
-		ignoreThreads,
+		ignoreDiscussion,
 		filesOnly,
 		fromUsers,
 	});
@@ -140,7 +140,7 @@ Template.cleanHistory.onCreated(function() {
 	this.cleanHistoryExcludePinned = new ReactiveVar(false);
 	this.cleanHistoryFilesOnly = new ReactiveVar(false);
 
-	this.ignoreThreads = new ReactiveVar(false);
+	this.ignoreDiscussion = new ReactiveVar(false);
 
 
 	this.cleanHistoryBusy = new ReactiveVar(false);
@@ -274,8 +274,8 @@ Template.cleanHistory.events({
 	'change [name=filesOnly]'(e, instance) {
 		instance.cleanHistoryFilesOnly.set(e.target.checked);
 	},
-	'change [name=ignoreThreads]'(e, instance) {
-		instance.ignoreThreads.set(e.target.checked);
+	'change [name=ignoreDiscussion]'(e, instance) {
+		instance.ignoreDiscussion.set(e.target.checked);
 	},
 	'click .js-prune'(e, instance) {
 
@@ -299,7 +299,7 @@ Template.cleanHistory.events({
 			const metaCleanHistoryInclusive = instance.cleanHistoryInclusive.get();
 			const metaCleanHistoryExcludePinned = instance.cleanHistoryExcludePinned.get();
 			const metaCleanHistoryFilesOnly = instance.cleanHistoryFilesOnly.get();
-			const ignoreThreads = instance.ignoreThreads.get();
+			const ignoreDiscussion = instance.ignoreDiscussion.get();
 
 			let fromDate = new Date('0001-01-01T00:00:00Z');
 			let toDate = new Date('9999-12-31T23:59:59Z');
@@ -318,7 +318,7 @@ Template.cleanHistory.events({
 			let count = 0;
 			let result;
 			do {
-				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreThreads, metaCleanHistoryFilesOnly, users);
+				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreDiscussion, metaCleanHistoryFilesOnly, users);
 				count += result;
 			} while (result === limit);
 

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Permissions, Roles } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Permissions, Roles } from '../../../models';
 import { API } from '../api';
 
 /**
@@ -30,7 +30,7 @@ API.v1.addRoute('permissions.list', { authRequired: true }, {
 
 		return API.v1.success(this.deprecationWarning({
 			endpoint: 'permissions.list',
-			versionWillBeRemove: '0.85',
+			versionWillBeRemoved: '0.85',
 			response: {
 				permissions: result,
 			},

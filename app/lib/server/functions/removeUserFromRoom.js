@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Messages, Subscriptions } from '/app/models';
-import { callbacks } from '/app/callbacks';
+import { Rooms, Messages, Subscriptions } from '../../../models';
+import { callbacks } from '../../../callbacks';
 
 export const removeUserFromRoom = function(rid, user, options = {}) {
 	const room = Rooms.findOneById(rid);
