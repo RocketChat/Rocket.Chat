@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Rooms, LivechatVisitors, LivechatCustomField } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
 import { API } from '../../../../api';
-import { findGuest } from '../lib/livechat';
+import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/visitor', {
@@ -34,6 +34,7 @@ API.v1.addRoute('livechat/visitor', {
 				guest.phone = { number: this.bodyParams.visitor.phone };
 			}
 
+			guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 			const visitorId = Livechat.registerGuest(guest);
 
 			let visitor = LivechatVisitors.getVisitorByToken(token);

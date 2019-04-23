@@ -112,8 +112,8 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 		},
 	};
 
-	const from = room.t === 'd' ? message.u.name : room.name;	// using user full-name/channel name in from address
-	email.from = `${ String(from).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ settings.get('From_Email') }>`;
+	email.from = `${ String(username).replace(/@/g, '%40').replace(/[<>,]/g, '') } <${ settings.get('From_Email') }>`;
+
 	// If direct reply enabled, email content with headers
 	if (settings.get('Direct_Reply_Enable')) {
 		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
@@ -134,6 +134,7 @@ export function shouldNotifyEmail({
 	isHighlighted,
 	hasMentionToUser,
 	hasMentionToAll,
+	hasReplyToThread,
 	roomType,
 }) {
 
@@ -149,7 +150,7 @@ export function shouldNotifyEmail({
 
 	// no user or room preference
 	if (emailNotifications == null) {
-		if (disableAllMessageNotifications && !isHighlighted && !hasMentionToUser) {
+		if (disableAllMessageNotifications && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 			return false;
 		}
 
@@ -159,5 +160,5 @@ export function shouldNotifyEmail({
 		}
 	}
 
-	return roomType === 'd' || isHighlighted || emailNotifications === 'all' || hasMentionToUser || (!disableAllMessageNotifications && hasMentionToAll);
+	return roomType === 'd' || isHighlighted || emailNotifications === 'all' || hasMentionToUser || hasReplyToThread || (!disableAllMessageNotifications && hasMentionToAll);
 }

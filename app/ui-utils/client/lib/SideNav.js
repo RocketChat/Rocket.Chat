@@ -23,8 +23,18 @@ export const SideNav = new class {
 			this.flexNav.addClass('animated-hidden');
 		} else {
 			this.flexNav.opened = true;
-			setTimeout(() => this.flexNav.removeClass('animated-hidden'), 50);
+			if (window.DISABLE_ANIMATION === true) {
+				this.flexNav.removeClass('animated-hidden');
+			} else {
+				setTimeout(() => this.flexNav.removeClass('animated-hidden'), 50);
+			}
 		}
+
+		if (window.DISABLE_ANIMATION === true) {
+			this.animating = false;
+			return typeof callback === 'function' && callback();
+		}
+
 		return setTimeout(() => {
 			this.animating = false;
 			return typeof callback === 'function' && callback();
