@@ -72,6 +72,7 @@ export class CustomOAuth {
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.usernameField = (options.usernameField || '').trim();
+		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
 		this.mergeRoles = options.mergeRoles || false;
 		this.rolesClaim = options.rolesClaim || 'roles';
@@ -140,11 +141,11 @@ export class CustomOAuth {
 		if (data.error) { // if the http response was a json object with an error attribute
 			throw new Error(`Failed to complete OAuth handshake with ${ this.name } at ${ this.tokenPath }. ${ data.error }`);
 		} else {
-			return data.access_token;
+			return data;
 		}
 	}
 
-	getIdentity(accessToken, accessTokenParam) {
+	getIdentity(accessToken) {
 		const params = {};
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
@@ -153,7 +154,7 @@ export class CustomOAuth {
 		if (this.identityTokenSentVia === 'header') {
 			headers.Authorization = `Bearer ${ accessToken }`;
 		} else {
-			params[accessTokenParam] = accessToken;
+			params[this.accessTokenParam] = accessToken;
 		}
 
 		try {
@@ -182,14 +183,23 @@ export class CustomOAuth {
 	registerService() {
 		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
-			const accessToken = self.getAccessToken(query);
 
-			const identity = self.getIdentity(accessToken, this.accessTokenParam);
+			const response = self.getAccessToken(query);
+			const identity = self.getIdentity(response.access_token);
 
 			const serviceData = {
 				_OAuthCustom: true,
-				accessToken,
+				accessToken: response.access_token,
+				idToken: response.id_token,
+				expiresAt: (+new Date) + (1000 * parseInt(response.expires_in, 10)),
 			};
+
+			// only set the token in serviceData if it's there. this ensures
+			// that we don't lose old ones (since we only get this on the first
+			// log in attempt)
+			if (response.refresh_token) {
+				serviceData.refreshToken = response.refresh_token;
+			}
 
 			_.extend(serviceData, identity);
 
@@ -241,6 +251,7 @@ export class CustomOAuth {
 				}
 				identity.email = identity.user.email;
 			}
+
 			// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
 			if (identity.user && identity.user.user_id && !identity.id) {
 				identity.id = identity.user.user_id;
@@ -284,6 +295,10 @@ export class CustomOAuth {
 			identity.username = this.getUsername(identity);
 		}
 
+		if (this.avatarField) {
+			identity.avatarUrl = this.getAvatarUrl(identity);
+		}
+
 		identity.name = this.getName(identity);
 
 		return identity;
@@ -299,10 +314,23 @@ export class CustomOAuth {
 		username = this.usernameField.split('.').reduce(function(prev, curr) {
 			return prev ? prev[curr] : undefined;
 		}, data);
+
 		if (!username) {
 			throw new Meteor.Error('field_not_found', `Username field "${ this.usernameField }" not found in data`, data);
 		}
 		return username;
+	}
+
+	getAvatarUrl(data) {
+		const avatarUrl = this.avatarField.split('.').reduce(function(prev, curr) {
+			return prev ? prev[curr] : undefined;
+		}, data);
+
+		if (!avatarUrl) {
+			logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
+		}
+
+		return avatarUrl;
 	}
 
 	getName(identity) {
@@ -365,7 +393,7 @@ export class CustomOAuth {
 
 	}
 
-	registerAccessTokenService(name, accessTokenParam) {
+	registerAccessTokenService(name) {
 		const self = this;
 		const whitelisted = [
 			'id',
@@ -382,7 +410,7 @@ export class CustomOAuth {
 				identity: Match.Maybe(Object),
 			}));
 
-			const identity = options.identity || self.getIdentity(options.accessToken, accessTokenParam);
+			const identity = options.identity || self.getIdentity(options.accessToken);
 
 			const serviceData = {
 				accessToken: options.accessToken,

@@ -14,8 +14,10 @@ import { CachedCollectionManager } from '../../../ui-cached-collection';
 import _ from 'underscore';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
+import { getConfig } from '../config';
 
-const maxRoomsOpen = parseInt(localStorage && localStorage.getItem('rc-maxRoomsOpen')) || 5 ;
+
+const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5 ;
 
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });
@@ -235,7 +237,9 @@ export const RoomManager = new function() {
 			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
 			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
 
-			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll('.message .body .mention-link--me, .message .body .mention-link--group'))
+			// TODO: thread quotes should NOT have mention links at all
+			const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
+			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll(mentionsSelector))
 				.map((mentionLink) => {
 					const topOffset = $(mentionLink).offset().top + scrollTop;
 					const percent = (100 / totalHeight) * topOffset;
@@ -322,8 +326,7 @@ Meteor.startup(() => {
 Tracker.autorun(function() {
 	if (Meteor.userId()) {
 		return Notifications.onUser('message', function(msg) {
-			msg.u =
-			{ username: 'rocket.cat' };
+			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
 			return ChatMessage.upsert({ _id: msg._id }, msg);
