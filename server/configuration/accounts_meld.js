@@ -31,7 +31,7 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 	}
 
 	if (serviceData.email) {
-		const user = Users.findOneByEmailAddress(serviceData.email);
+		let user = Users.findOneByEmailAddress(serviceData.email);
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
@@ -44,6 +44,14 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 
 			Users.setServiceId(user._id, serviceName, serviceData.id);
 			Users.setEmailVerified(user._id, serviceData.email);
+		} else {
+			// WIDECHAT
+			user = RocketChat.models.Users.findOneByUsername(serviceData.userid);
+			if (user != null) {
+				RocketChat.models.Users.setServiceId(user._id, serviceName, serviceData.id);
+				RocketChat.models.Users.setEmail(user._id, serviceData.email);
+				RocketChat.models.Users.setEmailVerified(user._id, serviceData.email);
+			}
 		}
 	}
 

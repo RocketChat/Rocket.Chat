@@ -125,11 +125,6 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
-		// WIDECHAT customOauth
-		// test with dev
-		if (settings.get('Accounts_OAuth_Custom-Ssotest') != null) {
-			return;
-		}
 		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
 			return ret;
 		}
@@ -269,16 +264,17 @@ Template.accountProfile.onCreated(function() {
 				data.username = s.trim(self.username.get());
 			}
 		}
-		if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
-			if (!settings.get('Accounts_AllowEmailChange')) {
-				toastr.remove();
-				toastr.error(t('Email_Change_Disabled'));
-				instance.clearForm();
-				return cb && cb();
-			} else {
-				data.email = s.trim(self.email.get());
-			}
-		}
+		// WIDECHAT - disable email check
+		// if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
+		// 	if (!settings.get('Accounts_AllowEmailChange')) {
+		// 		toastr.remove();
+		// 		toastr.error(t('Email_Change_Disabled'));
+		// 		instance.clearForm();
+		// 		return cb && cb();
+		// 	} else {
+		// 		data.email = s.trim(self.email.get());
+		// 	}
+		// }
 		const customFields = {};
 		$('[data-customfield=true]').each(function() {
 			customFields[this.name] = $(this).val() || '';
