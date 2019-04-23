@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { RoomManager, popover } from '../../../ui-utils';
@@ -171,8 +170,7 @@ Template.membersList.events({
 		instance.filter.set(e.target.value.trim());
 	},
 	'change .js-type'(e, instance) {
-		const seeAll = instance.showAllUsers.get();
-		instance.showAllUsers.set(!seeAll);
+		instance.showAllUsers.set(e.currentTarget.value === 'all');
 		instance.usersLimit.set(100);
 	},
 	'click .js-more'(e, instance) {
@@ -281,7 +279,7 @@ Template.membersList.onCreated(function() {
 	this.numOfUsers = new ReactiveVar(0);
 
 
-	Tracker.autorun(() => {
+	this.autorun(() => {
 		if (this.data.rid == null) { return; }
 		this.loading.set(true);
 		return Meteor.call('getUsersOfRoom', this.data.rid, this.showAllUsers.get(), { limit: 100, skip: 0 }, (error, users) => {
@@ -301,16 +299,29 @@ Template.membersList.onCreated(function() {
 		return setTimeout(() => this.clearRoomUserDetail(), 500);
 	};
 
-	this.showUserDetail = (username) => {
-		this.showDetail.set(username != null);
-		return this.userDetail.set(username);
+	this.showUserDetail = (username, group) => {
+		this.showDetail.set(!!username);
+		this.userDetail.set(username);
+		if (group) {
+			this.showAllUsers.set(group === 'all');
+		}
 	};
 
 	this.clearRoomUserDetail = this.data.clearUserDetail;
 
-	return this.autorun(() => {
-		const data = Template.currentData();
-		return this.showUserDetail(data.userDetail);
-	}
-	);
+	this.autorun(() => {
+		const { userDetail, groupDetail } = Template.currentData();
+
+		this.showUserDetail(userDetail, groupDetail);
+	});
+});
+
+Template.membersList.onRendered(function() {
+	this.autorun(() => {
+		const showAllUsers = this.showAllUsers.get();
+		const statusTypeSelect = this.find('.js-type');
+		if (statusTypeSelect) {
+			statusTypeSelect.value = showAllUsers ? 'all' : 'online';
+		}
+	});
 });

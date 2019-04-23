@@ -65,11 +65,15 @@
 
 		&-data {
 			display: flex;
+			overflow: hidden;
 			flex: 1 1;
 			align-items: center;
 		}
 
 		&-icon {
+
+			flex: 0 0 auto;
+
 			margin: 0 0.25rem;
 
 			font-size: 22px;
@@ -80,9 +84,14 @@
 		}
 
 		&-title {
+
+			overflow: hidden;
 			flex: 1;
 
 			margin: 0 0.25rem;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
 
 			font-size: 16px;
 			font-weight: 400;

@@ -1,5 +1,29 @@
 :root {
 	/*
+	 * Color palette
+	 */
+	--color-dark-100: #0c0d0f;
+	--color-dark-90: #1e232a;
+	--color-dark-80: #2e343e;
+	--color-dark-70: #53585f;
+	--color-dark-30: #9da2a9;
+	--color-dark-20: #caced1;
+	--color-dark-10: #e0e5e8;
+	--color-dark-05: #f1f2f4;
+	--color-dark-blue: #175cc4;
+	--color-blue: #1d74f5;
+	--color-light-blue: #4eb2f5;
+	--color-lighter-blue: #e8f2ff;
+	--color-purple: #861da8;
+	--color-red: #f5455c;
+	--color-dark-red: #e0364d;
+	--color-orange: #f59547;
+	--color-yellow: #ffd21f;
+	--color-dark-yellow: #f6c502;
+	--color-green: #2de0a5;
+	--color-dark-green: #26d198;
+
+	/*
 	* General Colors
 	*/
 	--color-darkest: #1f2329;
@@ -12,15 +36,15 @@
 	--color-gray-lightest: #f2f3f5;
 	--color-black: #000000;
 	--color-white: #ffffff;
-	--rc-color-error: #f5455c;
+	--rc-color-error: var(--color-red);
 	--rc-color-error-light: #e1364c;
-	--rc-color-alert: #ffd21f;
-	--rc-color-alert-light: #f6c502;
-	--rc-color-success: #2de0a5;
+	--rc-color-alert: var(--color-yellow);
+	--rc-color-alert-light: var(--color-dark-yellow);
+	--rc-color-success: var(--color-green);
 	--rc-color-success-light: #25d198;
-	--rc-color-button-primary: #1d74f5;
-	--rc-color-button-primary-light: #175cc4;
-	--rc-color-alert-message-primary: var(--rc-color-button-primary);
+	--rc-color-button-primary: var(--color-blue);
+	--rc-color-button-primary-light: var(--color-dark-blue);
+	--rc-color-alert-message-primary: var(--color-blue);
 	--rc-color-alert-message-primary-background: #f1f6ff;
 	--rc-color-alert-message-secondary: #7ca52b;
 	--rc-color-alert-message-secondary-background: #fafff1;
@@ -256,7 +280,20 @@
 	--badge-radius: 12px;
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
-	--badge-unread-background: var(--rc-color-button-primary);
+	--badge-unread-background: var(--rc-color-primary-dark);
+	--badge-user-mentions-background: var(--color-dark-blue);
+	--badge-group-mentions-background: var(--rc-color-primary-dark);
+
+	/*
+	* Mention link
+	*/
+	--mention-link-radius: 10px;
+	--mention-link-background: var(--color-lighter-blue);
+	--mention-link-text-color: var(--color-dark-blue);
+	--mention-link-me-background: var(--color-dark-blue);
+	--mention-link-me-text-color: var(--color-white);
+	--mention-link-group-background: var(--rc-color-primary-dark);
+	--mention-link-group-text-color: var(--color-white);
 
 	/*
 	* Message box

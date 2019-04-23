@@ -20,39 +20,85 @@
 
 .thread-list {
 	overflow: auto;
+
+	word-wrap: break-word;
 	flex-shrink: 1;
 }
 
-.thread-replied {
-	overflow: hidden;
+.message {
+	& .thread-replied {
 
-	white-space: nowrap;
-	text-overflow: ellipsis;
+		display: inline-flex;
+		overflow: hidden;
 
-	color: var(--color-gray);
+		margin-left: 3px;
 
-	font-size: 14px;
+		cursor: pointer;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		color: var(--rc-color-link-active);
+
+		align-items: baseline;
+		flex-flow: row nowrap;
+
+		& .rc-icon {
+			position: relative;
+			bottom: -0.15rem;
+
+			min-width: 18px;
+		}
+
+		& .thread-quote {
+			overflow: hidden;
+
+			max-width: 200px;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		& .thread-reply-preview {
+			display: none;
+			overflow: hidden;
+
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	}
+
+	&.collapsed .thread-reply-preview {
+		display: initial;
+	}
+}
+
+.compact .message.collapsed {
+	& .thread-replied {
+		& .thread-reply-switch,
+		& .thread-reply-preview {
+			display: none;
+		}
+	}
+}
+
+@media (width < 500px) {
+	.message {
+		& .title {
+			flex-wrap: wrap;
+		}
+
+		& .thread-replied {
+			flex-basis: 100%;
+		}
+	}
 }
 
 .message.sequential > .body > .thread-replied {
 	display: none;
 }
 
-.thread-quote {
-	cursor: pointer;
-
-	color: var(--rc-color-link-active);
-
-	font-style: normal;
-
-	line-height: initial;
-}
-
 .contextual-bar__content.thread,
 .contextual-bar__content.threads {
 	padding: 0;
-}
-
-.js-open-thread {
-	cursor: pointer;
 }
