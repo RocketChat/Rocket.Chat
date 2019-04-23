@@ -22,7 +22,6 @@ import './views/app/livechatReadOnly';
 import './views/app/livechatTriggers';
 import './views/app/livechatTriggersForm';
 import './views/app/livechatUsers';
-import './views/app/livechatIntegrations.html'; // TODO: check if it is unused
 import './views/app/livechatNotSubscribed.html';
 import './views/app/integrations/livechatIntegrationWebhook';
 import './views/app/integrations/livechatIntegrationFacebook';
