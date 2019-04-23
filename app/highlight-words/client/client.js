@@ -2,28 +2,39 @@
  * Highlights is a named function that will process Highlights
  * @param {Object} message - The message object
  */
-import { Meteor } from 'meteor/meteor';
-import { callbacks } from '/app/callbacks';
-import { getUserPreference } from '/app/utils';
 import _ from 'underscore';
 import s from 'underscore.string';
-import { highlightWords } from './helper';
 
-function HighlightWordsClient(message) {
-	let msg = message;
-	if (!_.isString(message)) {
-		if (s.trim(message.html)) {
-			msg = message.html;
-		} else {
-			return message;
-		}
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+
+import { callbacks } from '../../callbacks';
+import { getUserPreference } from '../../utils';
+import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from './helper';
+
+Tracker.autorun(() => {
+	const toHighlight = (getUserPreference(Meteor.userId(), 'highlights') || []).filter((highlight) => !s.isBlank(highlight)).map((highlight) => ({
+		highlight,
+		regex: getRegexHighlight(highlight),
+		urlRegex: getRegexHighlightUrl(highlight),
+	}));
+
+	if (!toHighlight.length) {
+		return callbacks.remove('renderMessage', 'highlight-words');
 	}
 
-	const to_highlight = getUserPreference(Meteor.user(), 'highlights');
-	msg = highlightWords(msg, to_highlight);
+	function HighlightWordsClient(message) {
+		let msg = message;
 
-	message.html = msg;
-	return message;
-}
+		if (!_.isString(message)) {
+			if (!s.trim(message.html)) {
+				return message;
+			}
+			msg = message.html;
+		}
 
-callbacks.add('renderMessage', HighlightWordsClient, callbacks.priority.MEDIUM + 1, 'highlight-words');
+		message.html = highlightWords(msg, toHighlight);
+		return message;
+	}
+	callbacks.add('renderMessage', HighlightWordsClient, callbacks.priority.MEDIUM + 1, 'highlight-words');
+});

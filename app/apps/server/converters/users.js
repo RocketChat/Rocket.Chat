@@ -1,4 +1,4 @@
-import { Users } from '/app/models';
+import { Users } from '../../../models';
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 
 export class AppUsersConverter {

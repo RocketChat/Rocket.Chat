@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTPInternals } from 'meteor/http';
 import { changeCase } from 'meteor/konecty:change-case';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { OEmbedCache, Messages } from '/app/models';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { OEmbedCache, Messages } from '../../models';
 import _ from 'underscore';
 import URL from 'url';
 import querystring from 'querystring';
@@ -11,6 +11,7 @@ import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
+import { isURL } from '../../utils/lib/isURL';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
@@ -254,16 +255,7 @@ OEmbed.rocketUrlParser = function(message) {
 			if (item.ignoreParse === true) {
 				return;
 			}
-			if (item.url.startsWith('grain://')) {
-				changed = true;
-				item.meta = {
-					sandstorm: {
-						grain: item.sandstormViewInfo,
-					},
-				};
-				return;
-			}
-			if (!/^https?:\/\//i.test(item.url)) {
+			if (!isURL(item.url)) {
 				return;
 			}
 			const data = OEmbed.getUrlMetaWithCache(item.url);

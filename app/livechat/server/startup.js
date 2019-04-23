@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { roomTypes } from '/app/utils';
-import { Rooms } from '/app/models';
-import { hasPermission, addRoomAccessValidator } from '/app/authorization';
-import { callbacks } from '/app/callbacks';
-import { settings } from '/app/settings';
+import { roomTypes } from '../../utils';
+import { Rooms } from '../../models';
+import { hasPermission, addRoomAccessValidator } from '../../authorization';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
 
 Meteor.startup(() => {
-	roomTypes.setRoomFind('l', (_id) => Rooms.findLivechatById(_id).fetch());
+	roomTypes.setRoomFind('l', (_id) => Rooms.findOneLivechatById(_id));
 
 	addRoomAccessValidator(function(room, user) {
 		return room && room.t === 'l' && user && hasPermission(user._id, 'view-livechat-rooms');

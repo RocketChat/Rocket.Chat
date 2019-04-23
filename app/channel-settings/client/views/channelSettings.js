@@ -5,12 +5,12 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
-import { modal, popover, call, erase, hide, leave } from '/app/ui-utils';
-import { ChatRoom } from '/app/models';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from '/app/authorization';
-import { t, roomTypes, RoomSettingsEnum } from '/app/utils';
+import { modal, popover, call, erase, hide, leave } from '../../../ui-utils';
+import { ChatRoom } from '../../../models';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { hasPermission, hasAllPermission, hasRole, hasAtLeastOnePermission } from '../../../authorization';
+import { t, roomTypes, RoomSettingsEnum } from '../../../utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
 
 const common = {
@@ -193,7 +193,7 @@ Template.channelSettingsEditing.events({
 	},
 	async 'click .js-save'(e, t) {
 		const { settings } = t;
-		Object.keys(settings).forEach(async(name) => {
+		Object.keys(settings).forEach(async (name) => {
 			const setting = settings[name];
 			const value = setting.value.get();
 			if (setting.default.get() !== value) {

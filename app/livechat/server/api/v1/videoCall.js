@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { Messages } from '/app/models';
-import { settings as rcSettings } from '/app/settings';
-import { API } from '/app/api';
+import { Messages } from '../../../../models';
+import { settings as rcSettings } from '../../../../settings';
+import { API } from '../../../../api';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 
 API.v1.addRoute('livechat/video.call/:token', {
@@ -25,7 +25,8 @@ API.v1.addRoute('livechat/video.call/:token', {
 			}
 
 			const rid = this.queryParams.rid || Random.id();
-			const { room } = getRoom(guest, rid, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
+			const roomInfo = { jitsiTimeout: new Date(Date.now() + 3600 * 1000) };
+			const { room } = getRoom({ guest, rid, roomInfo });
 			const config = settings();
 			if (!config.theme || !config.theme.actionLinks) {
 				throw new Meteor.Error('invalid-livechat-config');

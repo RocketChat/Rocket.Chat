@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { slashCommands } from '/app/utils';
+import { slashCommands } from '../../utils';
 /*
 * Unflip is a named function that will replace /unflip commands
 * @param {Object} message - The message object

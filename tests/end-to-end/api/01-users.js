@@ -1165,6 +1165,7 @@ describe('[Users]', function() {
 		});
 
 		it('should delete user own account', (done) => {
+			browser.pause(500);
 			request.post(api('users.deleteOwnAccount'))
 				.set(userCredentials)
 				.send({

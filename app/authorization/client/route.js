@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import { t } from '/app/utils';
+import { t } from '../../utils/client';
 
 FlowRouter.route('/admin/permissions', {
 	name: 'admin-permissions',

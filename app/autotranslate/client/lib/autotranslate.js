@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Subscriptions, Messages } from '/app/models';
-import { callbacks } from '/app/callbacks';
-import { settings } from '/app/settings';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { CachedCollectionManager } from '/app/ui-cached-collection';
+import { Subscriptions, Messages } from '../../../models';
+import { callbacks } from '../../../callbacks';
+import { settings } from '../../../settings';
+import { hasAtLeastOnePermission } from '../../../authorization';
+import { CachedCollectionManager } from '../../../ui-cached-collection';
 import _ from 'underscore';
 import mem from 'mem';
 
@@ -61,7 +61,7 @@ export const AutoTranslate = {
 						if (!message.translations) {
 							message.translations = {};
 						}
-						if (subscription && subscription.autoTranslate !== message.autoTranslateShowInverse) {
+						if (!!(subscription && subscription.autoTranslate) !== !!message.autoTranslateShowInverse) {
 							message.translations.original = message.html;
 							if (message.translations[autoTranslateLanguage]) {
 								message.html = message.translations[autoTranslateLanguage];

@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { hasAtLeastOnePermission } from '../../../authorization';
 
 Template.integrationsNew.helpers({
 	hasPermission() {

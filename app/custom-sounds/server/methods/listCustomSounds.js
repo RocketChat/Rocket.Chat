@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { CustomSounds } from '/app/models';
+import { CustomSounds } from '../../../models';
 
 Meteor.methods({
 	listCustomSounds() {

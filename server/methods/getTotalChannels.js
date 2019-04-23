@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms } from '/app/models';
+import { Rooms } from '../../app/models';
 
 Meteor.methods({
 	getTotalChannels() {

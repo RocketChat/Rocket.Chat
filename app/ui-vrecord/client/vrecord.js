@@ -1,7 +1,7 @@
 import { VRecDialog } from './VRecDialog';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { VideoRecorder, fileUpload } from '/app/ui';
+import { VideoRecorder, fileUpload } from '../../ui';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
@@ -41,8 +41,9 @@ Template.vrecDialog.events({
 	},
 
 	'click .vrec-dialog .ok'() {
+		const { rid, tmid, input } = this;
 		const cb = (blob) => {
-			fileUpload([{ file: blob, type: 'video', name: `${ TAPi18n.__('Video record') }.webm` }]);
+			fileUpload([{ file: blob, type: 'video', name: `${ TAPi18n.__('Video record') }.webm` }], input, { rid, tmid });
 			VRecDialog.close();
 		};
 		VideoRecorder.stop(cb);

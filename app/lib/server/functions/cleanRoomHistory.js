@@ -1,10 +1,10 @@
 import { TAPi18n } from 'meteor/tap:i18n';
-import { FileUpload } from '/app/file-upload';
-import { Messages, Rooms } from '/app/models';
-import { Notifications } from '/app/notifications';
+import { FileUpload } from '../../../file-upload';
+import { Messages, Rooms } from '../../../models';
+import { Notifications } from '../../../notifications';
 import { deleteRoom } from './deleteRoom';
 
-export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreThreads = true, filesOnly = false, fromUsers = [] }) {
+export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [] }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -16,7 +16,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	Messages.findFilesByRoomIdPinnedTimestampAndUsers(
 		rid,
 		excludePinned,
-		ignoreThreads,
+		ignoreDiscussion,
 		ts,
 		fromUsers,
 		{ fields: { 'file._id': 1, pinned: 1 }, limit }
@@ -31,18 +31,18 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 		return fileCount;
 	}
 
-	if (!ignoreThreads) {
-		Messages.findThreadByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { fields: { trid: 1 }, ...(limit && { limit }) }).fetch()
-			.forEach(({ trid }) => deleteRoom(trid));
+	if (!ignoreDiscussion) {
+		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { fields: { drid: 1 }, ...(limit && { limit }) }).fetch()
+			.forEach(({ drid }) => deleteRoom(drid));
 	}
 
-	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreThreads, ts, limit, fromUsers);
+	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers);
 	if (count) {
 		Rooms.resetLastMessageById(rid);
 		Notifications.notifyRoom(rid, 'deleteMessageBulk', {
 			rid,
 			excludePinned,
-			ignoreThreads,
+			ignoreDiscussion,
 			ts,
 			users: fromUsers,
 		});

@@ -2,13 +2,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { fileUploadHandler } from '/app/file-upload';
-import { AudioRecorder, chatMessages } from '/app/ui';
-import { call } from '/app/ui-utils';
-import { t } from '/app/utils';
+import { fileUploadHandler } from '../../file-upload';
+import { settings } from '../../settings';
+import { AudioRecorder } from '../../ui';
+import { call } from '../../ui-utils';
+import { t } from '../../utils';
 import './messageBoxAudioMessage.html';
 
-const startRecording = () => new Promise((resolve) => AudioRecorder.start(resolve));
+const startRecording = () => new Promise((resolve, reject) =>
+	AudioRecorder.start((result) => (result ? resolve() : reject())));
 
 const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
 
@@ -37,7 +39,7 @@ const unregisterUploadProgress = (upload) => setTimeout(() => {
 	Session.set('uploading', uploads.filter(({ id }) => id !== upload.id));
 }, 2000);
 
-const uploadRecord = async({ rid, blob }) => {
+const uploadRecord = async ({ rid, tmid, blob }) => {
 	const upload = fileUploadHandler('Uploads', {
 		name: `${ t('Audio record') }.mp3`,
 		size: blob.size,
@@ -57,7 +59,7 @@ const uploadRecord = async({ rid, blob }) => {
 			upload.start((error, ...args) => (error ? reject(error) : resolve(args)));
 		});
 
-		await call('sendFileMessage', rid, storage, file);
+		await call('sendFileMessage', rid, storage, file, { tmid });
 
 		unregisterUploadProgress(upload);
 	} catch (error) {
@@ -86,9 +88,31 @@ const recordingRoomId = new ReactiveVar(null);
 Template.messageBoxAudioMessage.onCreated(function() {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
+	this.isMicrophoneDenied = new ReactiveVar(true);
+
+	if (navigator.permissions) {
+		navigator.permissions.query({ name: 'microphone' })
+			.then((permissionStatus) => {
+				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+				permissionStatus.onchange = () => {
+					this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
+				};
+			});
+	} else {
+		this.isMicrophoneDenied.set(false);
+	}
 });
 
 Template.messageBoxAudioMessage.helpers({
+	isAllowed() {
+		return AudioRecorder.isSupported() &&
+			!Template.instance().isMicrophoneDenied.get() &&
+			settings.get('FileUpload_Enabled') &&
+			settings.get('Message_AudioRecorderEnabled') &&
+			(!settings.get('FileUpload_MediaTypeWhiteList') ||
+			settings.get('FileUpload_MediaTypeWhiteList').match(/audio\/mp3|audio\/\*/i));
+	},
+
 	stateClass() {
 		if (recordingRoomId.get() && (recordingRoomId.get() !== Template.currentData().rid)) {
 			return 'rc-message-box__audio-message--busy';
@@ -111,20 +135,24 @@ Template.messageBoxAudioMessage.events({
 			return;
 		}
 
-		chatMessages[this.rid].recording = true;
 		instance.state.set('recording');
 
-		await startRecording();
+		try {
+			await startRecording();
 
-		const startTime = new Date;
-		recordingInterval.set(setInterval(() => {
-			const now = new Date;
-			const distance = (now.getTime() - startTime.getTime()) / 1000;
-			const minutes = Math.floor(distance / 60);
-			const seconds = Math.floor(distance % 60);
-			instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
-		}, 1000));
-		recordingRoomId.set(this.rid);
+			const startTime = new Date;
+			recordingInterval.set(setInterval(() => {
+				const now = new Date;
+				const distance = (now.getTime() - startTime.getTime()) / 1000;
+				const minutes = Math.floor(distance / 60);
+				const seconds = Math.floor(distance % 60);
+				instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
+			}, 1000));
+			recordingRoomId.set(this.rid);
+		} catch (error) {
+			instance.state.set(null);
+			instance.isMicrophoneDenied.set(true);
+		}
 	},
 
 	async 'click .js-audio-message-cancel'(event, instance) {
@@ -141,7 +169,6 @@ Template.messageBoxAudioMessage.events({
 		await stopRecording();
 
 		instance.state.set(null);
-		chatMessages[this.rid].recording = false;
 	},
 
 	async 'click .js-audio-message-done'(event, instance) {
@@ -160,8 +187,8 @@ Template.messageBoxAudioMessage.events({
 		const blob = await stopRecording();
 
 		instance.state.set(null);
-		chatMessages[this.rid].recording = false;
 
-		await uploadRecord({ rid: this.rid, blob });
+		const { rid, tmid } = this;
+		await uploadRecord({ rid, tmid, blob });
 	},
 });

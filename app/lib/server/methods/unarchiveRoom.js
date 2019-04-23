@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { Rooms } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Rooms } from '../../../models';
 import { unarchiveRoom } from '../functions';
 
 Meteor.methods({

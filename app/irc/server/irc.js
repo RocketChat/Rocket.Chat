@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '/app/settings';
+import { settings } from '../../settings';
 import Bridge from './irc-bridge';
 
 if (!!settings.get('IRC_Enabled') === true) {

@@ -1,7 +1,7 @@
-import { metrics } from '/app/metrics';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { roomTypes } from '/app/utils';
+import { metrics } from '../../../../metrics';
+import { settings } from '../../../../settings';
+import { Notifications } from '../../../../notifications';
+import { roomTypes } from '../../../../utils';
 /**
  * Send notification to user
  *
@@ -50,9 +50,10 @@ export function shouldNotifyDesktop({
 	hasMentionToHere,
 	isHighlighted,
 	hasMentionToUser,
+	hasReplyToThread,
 	roomType,
 }) {
-	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser) {
+	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
 
@@ -69,5 +70,5 @@ export function shouldNotifyDesktop({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser;
+	return roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser || hasReplyToThread;
 }

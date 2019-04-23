@@ -1,6 +1,6 @@
 import { HTTP } from 'meteor/http';
-import { settings } from '/app/settings';
-import { Settings } from '/app/models';
+import { settings } from '../../../settings';
+import { Settings } from '../../../models';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 

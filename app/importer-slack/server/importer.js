@@ -6,11 +6,11 @@ import {
 	Selection,
 	SelectionChannel,
 	SelectionUser,
-} from '/app/importer';
-import { RocketChatFile } from '/app/file';
-import { getAvatarUrlFromUsername } from '/app/utils';
-import { Users, Rooms, Messages } from '/app/models';
-import { sendMessage } from '/app/lib';
+} from '../../importer/server';
+import { RocketChatFile } from '../../file';
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { Users, Rooms, Messages } from '../../models';
+import { sendMessage } from '../../lib';
 
 import _ from 'underscore';
 
@@ -378,7 +378,7 @@ export class SlackImporter extends Base {
 													attachments: [{
 														text: this.convertSlackMessageToRocketChat(message.attachments[0].text),
 														author_name : message.attachments[0].author_subname,
-														author_icon : getAvatarUrlFromUsername(message.attachments[0].author_subname),
+														author_icon : getUserAvatarURL(message.attachments[0].author_subname),
 													}],
 												};
 												Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', this.getRocketUser(message.user), msgObj);

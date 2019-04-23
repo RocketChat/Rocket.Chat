@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { openRoom } from '/app/ui-utils';
-import { ChatRoom, ChatSubscription } from '/app/models';
-import { settings } from '/app/settings';
-import { hasAtLeastOnePermission } from '/app/authorization';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '/app/utils';
+import { openRoom } from '../../../ui-utils';
+import { ChatRoom, ChatSubscription } from '../../../models';
+import { settings } from '../../../settings';
+import { hasAtLeastOnePermission } from '../../../authorization';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -31,7 +32,7 @@ export class PublicRoomType extends RoomTypeConfig {
 
 	getIcon(roomData) {
 		if (roomData.prid) {
-			return 'thread';
+			return 'discussion';
 		}
 		return this.icon;
 	}
@@ -99,6 +100,8 @@ export class PublicRoomType extends RoomTypeConfig {
 				return !room.broadcast;
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 				return !room.broadcast && room.ro;
+			case RoomSettingsEnum.E2E:
+				return false;
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			default:
 				return true;
@@ -114,5 +117,11 @@ export class PublicRoomType extends RoomTypeConfig {
 			default:
 				return '';
 		}
+	}
+
+	getAvatarPath(roomData) {
+		// TODO: change to always get avatar from _id when rooms have avatars
+
+		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
 	}
 }

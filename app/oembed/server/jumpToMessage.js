@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '/app/models';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { getAvatarUrlFromUsername } from '/app/utils';
+import { Messages } from '../../models';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';
@@ -39,7 +39,7 @@ callbacks.add('beforeSaveMessage', (msg) => {
 								text: jumpToMessage.msg,
 								translations: jumpToMessage.translations,
 								author_name: jumpToMessage.alias || jumpToMessage.u.username,
-								author_icon: getAvatarUrlFromUsername(jumpToMessage.u.username),
+								author_icon: getUserAvatarURL(jumpToMessage.u.username),
 								message_link: item.url,
 								attachments: jumpToMessage.attachments || [],
 								ts: jumpToMessage.ts,

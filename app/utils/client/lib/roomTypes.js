@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
-import { ChatRoom, ChatSubscription, RoomRoles } from '/app/models';
+import { ChatRoom, ChatSubscription, RoomRoles } from '../../../models';
 import _ from 'underscore';
 
 export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
@@ -38,7 +38,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			rid: roomId,
 		}).count() > 0;
 	}
-	readOnly(roomId, user) {
+	readOnly(rid, user) {
 		const fields = {
 			ro: 1,
 		};
@@ -46,7 +46,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			fields.muted = 1;
 		}
 		const room = ChatRoom.findOne({
-			_id: roomId,
+			_id: rid,
 		}, {
 			fields,
 		});
@@ -54,7 +54,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			return room && room.ro;
 		}
 		const userOwner = RoomRoles.findOne({
-			rid: roomId,
+			rid,
 			'u._id': user._id,
 			roles: 'owner',
 		}, {

@@ -1,4 +1,4 @@
-import { callbacks } from '/app/callbacks';
+import { callbacks } from '../../../callbacks';
 import Queue from 'queue-fifo';
 import * as servers from '../servers';
 import * as peerCommandHandlers from './peerHandlers';

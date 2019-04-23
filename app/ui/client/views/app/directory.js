@@ -1,12 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
+import { hasAllPermission } from '../../../../authorization/client';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import { timeAgo } from './helpers';
-import { t, roomTypes } from '/app/utils';
-import { settings } from '/app/settings';
-import { hasAtLeastOnePermission } from '/app/authorization';
+import { t, roomTypes } from '../../../../utils';
+import { settings } from '../../../../settings';
+import { hasAtLeastOnePermission } from '../../../../authorization';
+import './directory.html';
+import './directory.css';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
@@ -124,27 +126,14 @@ Template.directory.helpers({
 		let routeConfig;
 
 		return function(item) {
-			// This means we need to add this user locally first
-			if (item.remoteOnly) {
-				Meteor.call('federationAddUser', item.email, item.domain, (error, federatedUser) => {
-					if (!federatedUser) { return; }
-
-					// Reload
-					instance.end.set(false);
-					// directorySearch.call(instance);
-
-					roomTypes.openRouteLink('d', { name: item.username });
-				});
+			if (searchType.get() === 'channels') {
+				type = 'c';
+				routeConfig = { name: item.name };
 			} else {
-				if (searchType.get() === 'channels') {
-					type = 'c';
-					routeConfig = { name: item.name };
-				} else {
-					type = 'd';
-					routeConfig = { name: item.username };
-				}
-				roomTypes.openRouteLink(type, routeConfig);
+				type = 'd';
+				routeConfig = { name: item.username };
 			}
+			roomTypes.openRouteLink(type, routeConfig);
 		};
 	},
 	isLoading() {
@@ -187,9 +176,24 @@ Template.directory.helpers({
 			sortDirection.set('asc');
 		};
 	},
+	canViewOtherUserInfo() {
+		const { canViewOtherUserInfo } = Template.instance();
+
+		return canViewOtherUserInfo.get();
+	},
+	sumColumnCount(...args) {
+		return args
+			.slice(0, -1)
+			.map((value) => (typeof value === 'number' ? value : Number(!!value)))
+			.reduce((sum, value) => sum + value, 0);
+	},
 });
 
 Template.directory.events({
+	'submit .js-search-form'(e) {
+		e.preventDefault();
+		e.stopPropagation();
+	},
 	'input .js-search': _.debounce((e, t) => {
 		t.end.set(false);
 		t.sortDirection.set('asc');
@@ -217,8 +221,7 @@ Template.directory.onRendered(function() {
 		return this.results.set(result);
 	}
 
-	Tracker.autorun(() => {
-
+	this.autorun(() => {
 		const searchConfig = {
 			text: this.searchText.get(),
 			workspace: this.searchWorkspace.get(),
@@ -240,38 +243,6 @@ Template.directory.onRendered(function() {
 			this.loading = false;
 			this.isLoading.set(false);
 			this.end.set(!result);
-
-			// If there is no result, searching every workspace and
-			// the search text is an email address, try to find a federated user
-			if (this.searchWorkspace.get() === 'all' && this.searchText.get().indexOf('@') !== -1) {
-				const email = this.searchText.get();
-
-				Meteor.call('federationSearchUsers', email, (error, federatedUsers) => {
-					if (!federatedUsers) { return; }
-
-					result = result || [];
-
-					for (const federatedUser of federatedUsers) {
-						const { user } = federatedUser;
-
-						const exists = result.findIndex((e) => e.domain === user.federation.peer && e.username === user.username) !== -1;
-
-						if (exists) { continue; }
-
-						// Add the federated user to the results
-						result.unshift({
-							remoteOnly: true,
-							name: user.name,
-							username: user.username,
-							email: user.emails && user.emails[0] && user.emails[0].address,
-							createdAt: timeAgo(user.createdAt, t),
-							domain: user.federation.peer,
-						});
-					}
-
-					setResults.call(this, result);
-				});
-			}
 
 			setResults.call(this, result);
 		});
@@ -297,9 +268,10 @@ Template.directory.onCreated(function() {
 	this.results = new ReactiveVar([]);
 
 	this.isLoading = new ReactiveVar(false);
-});
 
-Template.directory.onRendered(function() {
-	$('.main-content').removeClass('rc-old');
-	$('.rc-table-content').css('height', `calc(100vh - ${ document.querySelector('.rc-directory .rc-header').offsetHeight }px)`);
+	this.canViewOtherUserInfo = new ReactiveVar(false);
+
+	this.autorun(() => {
+		this.canViewOtherUserInfo.set(hasAllPermission('view-full-other-user-info'));
+	});
 });

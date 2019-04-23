@@ -1,11 +1,13 @@
-import { settings } from '/app/settings';
-import { Users } from '/app/models';
+import { settings } from '../../../settings';
+import { Users } from '../../../models';
 
 export function retrieveRegistrationStatus() {
 	const info = {
-		registeredWithWizard: settings.get('Register_Server'),
-		workspaceConnected: (settings.get('Cloud_Workspace_Client_Id')) ? true : false,
+		connectToCloud: settings.get('Register_Server'),
+		workspaceRegistered: (settings.get('Cloud_Workspace_Client_Id')) ? true : false,
 		userAssociated: (settings.get('Cloud_Workspace_Account_Associated')) ? true : false,
+		workspaceId: settings.get('Cloud_Workspace_Id'),
+		uniqueId: settings.get('uniqueID'),
 		token: '',
 		email: '',
 	};

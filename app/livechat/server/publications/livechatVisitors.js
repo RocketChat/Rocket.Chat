@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission } from '/app/authorization';
-import { LivechatVisitors } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { LivechatVisitors } from '../../../models';
 
 Meteor.publish('livechat:visitors', function(date) {
 	if (!this.userId) {

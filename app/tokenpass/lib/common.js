@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { settings } from '/app/settings';
-import { CustomOAuth } from '/app/custom-oauth';
+import { settings } from '../../settings';
+import { CustomOAuth } from '../../custom-oauth';
 
 const config = {
 	serverURL: '',
@@ -16,6 +16,7 @@ const config = {
 		forLoggedInUser: ['services.tokenpass'],
 		forOtherUsers: ['services.tokenpass.name'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const Tokenpass = new CustomOAuth('tokenpass', config);

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '/app/models';
+import { Messages } from '../../../../models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/addReactionToMessage.graphqls';

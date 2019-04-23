@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '/app/authorization';
-import { Users } from '/app/models';
+import { hasPermission } from '../../../authorization';
+import { Users } from '../../../models';
 import _ from 'underscore';
 
 Meteor.methods({

@@ -10,16 +10,17 @@ export class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 
-		this.tryEnsureIndex({ name: 1 }, { unique: 1, sparse: 1 });
+		this.tryEnsureIndex({ name: 1 }, { unique: true, sparse: true });
 		this.tryEnsureIndex({ default: 1 });
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 });
-		this.tryEnsureIndex({ open: 1 }, { sparse: 1 });
-		this.tryEnsureIndex({ departmentId: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ open: 1 }, { sparse: true });
+		this.tryEnsureIndex({ departmentId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ ts: 1 });
 
-		// threads
-		this.tryEnsureIndex({ prid: 1 });
+		// discussions
+		this.tryEnsureIndex({ prid: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -91,6 +92,21 @@ export class Rooms extends Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneLivechatById(_id, fields) {
+		const options = {};
+
+		if (fields) {
+			options.fields = fields;
+		}
+
+		const query = {
+			t: 'l',
+			_id,
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findLivechatByIdAndVisitorToken(_id, visitorToken, fields) {
@@ -422,7 +438,7 @@ export class Rooms extends Base {
 	}
 
 	setReactionsInLastMessage(roomId, lastMessage) {
-		return this.update({ _id: roomId }, { $set: { lastMessage } });
+		return this.update({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
 	}
 
 	unsetReactionsInLastMessage(roomId) {
@@ -1368,8 +1384,8 @@ export class Rooms extends Base {
 	}
 
 	// ############################
-	// Threads
-	findThreadParentByNameStarting(name, options) {
+	// Discussion
+	findDiscussionParentByNameStarting(name, options) {
 		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
 
 		const query = {
@@ -1396,6 +1412,10 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	countDiscussions() {
+		return this.find({ prid: { $exists: true } }).count();
 	}
 }
 

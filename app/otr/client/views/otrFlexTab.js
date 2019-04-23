@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { OTR } from '../rocketchat.otr';
-import { modal } from '/app/ui-utils';
+import { modal } from '../../../ui-utils';
+import { t } from '../../../utils';
 
 Template.otrFlexTab.helpers({
 	otrAvailable() {
@@ -33,12 +34,12 @@ Template.otrFlexTab.helpers({
 });
 
 Template.otrFlexTab.events({
-	'click button.start'(e, t) {
+	'click button.start'(e, instance) {
 		e.preventDefault();
 		const otr = OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
 			otr.handshake();
-			t.timeout = Meteor.setTimeout(() => {
+			instance.timeout = Meteor.setTimeout(() => {
 				modal.open({
 					title: t('Timeout'),
 					type: 'error',
@@ -48,13 +49,13 @@ Template.otrFlexTab.events({
 			}, 10000);
 		}
 	},
-	'click button.refresh'(e, t) {
+	'click button.refresh'(e, instance) {
 		e.preventDefault();
 		const otr = OTR.getInstanceByRoomId(this.rid);
 		if (otr) {
 			otr.reset();
 			otr.handshake(true);
-			t.timeout = Meteor.setTimeout(() => {
+			instance.timeout = Meteor.setTimeout(() => {
 				modal.open({
 					title: t('Timeout'),
 					type: 'error',

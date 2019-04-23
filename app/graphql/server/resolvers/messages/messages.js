@@ -1,4 +1,4 @@
-import { Rooms, Messages } from '/app/models';
+import { Rooms, Messages } from '../../../../models';
 
 import { authenticated } from '../../helpers/authenticated';
 import schema from '../../schemas/messages/messages.graphqls';

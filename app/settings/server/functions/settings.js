@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from '../../lib/settings';
-import { Settings } from '/app/models';
+import Settings from '../../../models/server/models/Settings';
 import _ from 'underscore';
 
 const blockedSettings = {};

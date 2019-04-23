@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import * as Mailer from '/app/mailer';
-import { settings } from '/app/settings';
+import * as Mailer from '../../../mailer';
+import { settings } from '../../../settings';
 
 Meteor.methods({
 	sendSMTPTestEmail() {

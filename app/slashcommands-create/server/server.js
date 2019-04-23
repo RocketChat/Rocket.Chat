@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '/app/settings';
-import { Notifications } from '/app/notifications';
-import { Rooms } from '/app/models';
-import { slashCommands } from '/app/utils';
+import { settings } from '../../settings';
+import { Notifications } from '../../notifications';
+import { Rooms } from '../../models';
+import { slashCommands } from '../../utils';
 
 function Create(command, params, item) {
 	function getParams(str) {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Subscriptions } from '/app/models';
+import { Subscriptions } from '../../app/models';
 
 Meteor.methods({
 	ignoreUser({ rid, userId: ignoredUser, ignore = true }) {

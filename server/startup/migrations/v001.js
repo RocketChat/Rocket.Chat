@@ -1,6 +1,6 @@
-import { Migrations } from '/app/migrations';
-import { Users } from '/app/models';
-import { generateUsernameSuggestion } from '/app/lib';
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
+import { generateUsernameSuggestion } from '../../../app/lib';
 
 Migrations.add({
 	version: 1,

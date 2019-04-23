@@ -1,9 +1,9 @@
 import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { settings } from '/app/settings';
-import { callbacks } from '/app/callbacks';
-import { Logger } from '/app/logger';
+import { settings } from '../../settings';
+import { callbacks } from '../../callbacks';
+import { Logger } from '../../logger';
 import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
 import LDAP from './ldap';
 
@@ -56,7 +56,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest) {
 		}
 
 		if (ldap.authSync(users[0].dn, loginRequest.ldapPass) === true) {
-			if (ldap.isUserInGroup (loginRequest.username, users[0].dn)) {
+			if (ldap.isUserInGroup(loginRequest.username, users[0].dn)) {
 				ldapUser = users[0];
 			} else {
 				throw new Error('User not in a valid group');
