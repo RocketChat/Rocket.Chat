@@ -24,11 +24,23 @@ Tracker.autorun(() => {
 			// '<br>' to ' <br> ' for emojis such at line breaks
 			message.html = message.html.replace(/<br>/g, ' <br> ');
 
-			message.html = Object.entries(emoji.packages).reduce((value, [, emojiPackage]) => emojiPackage.render(value), message.html);
+			// URL RegEx
+			const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm;
+
+			Object.keys(emoji.packages).forEach((emojiPackage) => {
+				// Divide into array
+				const splitMessage = message.html.split(' ');
+				for (const urlIndex in splitMessage) {
+					// Only change emoji for non URLs
+					if (!splitMessage[urlIndex].match(urlRegex)) {
+						splitMessage[urlIndex] = emoji.packages[emojiPackage].render(splitMessage[urlIndex]);
+					}
+				}
+				message.html = splitMessage.join(' ');
+			});
 
 			const checkEmojiOnly = $(`<div>${ message.html }</div>`);
 			let emojiOnly = true;
-
 
 			for (let i = 0, len = checkEmojiOnly[0].childNodes.length; i < len; i++) {
 				const childNode = checkEmojiOnly[0].childNodes[i];
