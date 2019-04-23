@@ -5,7 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { isRtl, handleError } from '../../../utils';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from './messageArgs';
 import { ChatSubscription } from '../../../models';
 import _ from 'underscore';
 import { hide, leave } from './ChannelActions';
