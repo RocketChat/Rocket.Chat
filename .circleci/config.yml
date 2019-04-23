@@ -136,6 +136,9 @@ jobs:
             # rm -rf node_modules
             # rm -f package-lock.json
             meteor npm install
+            cd packages/rocketchat-livechat/.app
+            meteor npm install
+            cd -
 
       - run:
           name: Lint
