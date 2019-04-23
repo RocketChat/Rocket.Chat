@@ -30,6 +30,14 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		serviceData.email = serviceData.emailAddress;
 	}
 
+	// WIDECHAT backwards compatibility
+	const user = Users.findOneByUsername(serviceData.userid);
+	if (user != null) {
+		if (!user.name) {
+			Users.setName(user._id, serviceData.userid);
+		}
+	}
+
 	if (serviceData.email) {
 		let user = Users.findOneByEmailAddress(serviceData.email);
 		if (user != null) {
