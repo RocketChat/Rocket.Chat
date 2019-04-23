@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { settings } from '../../settings';
 import { Settings } from '../../models';
-import { getURL } from '../../utils/lib/isURL';
+import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
 import { RocketChatFile } from '../../file';
