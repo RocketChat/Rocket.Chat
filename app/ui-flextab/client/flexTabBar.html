@@ -3,7 +3,7 @@
 		<div class="flex-tab-container border-component-color {{opened}}">
 			<section class="flex-tab border-component-color content-background-color">
 				<div class="content flex-tab__content">
-					<header class="contextual-bar__header">
+					<header class="contextual-bar__header {{#unless headerData}}contextual-bar__header--empty{{/unless}}">
 						{{#with headerData}}
 							<div class="contextual-bar__header-data">
 								{{> icon block="contextual-bar__header-icon" icon=icon}}
