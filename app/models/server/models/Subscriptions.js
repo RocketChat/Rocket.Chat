@@ -32,6 +32,51 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ prid: 1 });
 	}
 
+	async findByUserIdWithUnreadMessagesCount(userId, options = {}) {
+		return this.model.rawCollection().aggregate([
+			...(options.sort ? [{ $sort: options.sort }] : []),
+			{ $match: { 'u._id': userId } },
+			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'rid',
+					foreignField: '_id',
+					as: 'room',
+				},
+			},
+			{ $unwind: '$room' },
+			{
+				$lookup: {
+					from: 'rocketchat_message',
+					let: { roomId: '$rid', lastSeen: '$ls', lm: '$room.lm', updatedAt: '$room._updatedAt' },
+					pipeline: [
+						{
+							$match:
+								{
+									$expr: {
+										$and: [
+											{ $eq: ['$rid', '$$roomId'] },
+											{ $gte: ['$ts', '$$lastSeen'] },
+											{ $or: [{ $lte: ['$ts', '$$lm'] }, { $lte: ['$ts', '$$updatedAt'] }] },
+											{ $ne: ['$_hidden', true] },
+										],
+									},
+								},
+						},
+						{ $project: { _hidden: 1, ts: 1 } },
+					],
+					as: 'unreads',
+				},
+			},
+			{
+				$project: {
+					...options.fields,
+					unreads: { $size: '$unreads' },
+				},
+			},
+		]).toArray();
+	}
+
 	findByRoomIds(roomIds) {
 		const query = {
 			rid: {

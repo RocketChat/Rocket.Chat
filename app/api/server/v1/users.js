@@ -161,7 +161,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 
 		user = result[0];
 		if (fields.userRooms === 1 && hasPermission(this.userId, 'view-other-user-channels')) {
-			user.rooms = Subscriptions.findByUserId(user._id, {
+			user.rooms = Promise.await(Subscriptions.findByUserIdWithUnreadMessagesCount(user._id, {
 				fields: {
 					rid: 1,
 					name: 1,
@@ -173,14 +173,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 					t: 1,
 					name: 1,
 				},
-			})
-				.fetch()
-				.map((subscription) => {
-					const room = Rooms.findOneById(subscription.rid);
-					const lm = room.lm ? room.lm : room._updatedAt;
-					subscription.unreads = Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
-					return subscription;
-				});
+			}));
 		}
 
 		return API.v1.success({
