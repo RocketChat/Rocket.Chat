@@ -1,3 +1,7 @@
+import _ from 'underscore';
+import moment from 'moment';
+import Clipboard from 'clipboard';
+
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
@@ -6,6 +10,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
@@ -27,14 +32,11 @@ import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { promises } from '../../../../promises/client';
 import { hasAllPermission, hasRole } from '../../../../authorization';
-import _ from 'underscore';
-import moment from 'moment';
-import mime from 'mime-type/with-db';
-import Clipboard from 'clipboard';
 import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
+import { mime } from '../../../../utils/lib/mimeTypes';
 
 export const chatMessages = {};
 
@@ -521,8 +523,57 @@ let lastTouchX = null;
 let lastTouchY = null;
 let lastScrollTop;
 
+export const dropzoneEvents = {
+	'dragenter .dropzone'(e) {
+		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
+		if (types != null && types.length > 0 && _.every(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1) && userCanDrop(this._id)) {
+			e.currentTarget.classList.add('over');
+		}
+		e.stopPropagation();
+	},
+
+	'dragleave .dropzone-overlay'(e) {
+		e.currentTarget.parentNode.classList.remove('over');
+		e.stopPropagation();
+	},
+
+	'dragover .dropzone-overlay'(e) {
+		e = e.originalEvent || e;
+		if (['move', 'linkMove'].includes(e.dataTransfer.effectAllowed)) {
+			e.dataTransfer.dropEffect = 'move';
+		} else {
+			e.dataTransfer.dropEffect = 'copy';
+		}
+		e.stopPropagation();
+	},
+
+	'dropped .dropzone-overlay'(event, instance) {
+
+		event.currentTarget.parentNode.classList.remove('over');
+
+		const e = event.originalEvent || event;
+
+		e.stopPropagation();
+
+		const files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
+
+		const filesToUpload = Array.from(files).map((file) => {
+			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
+			return {
+				file,
+				name: file.name,
+			};
+		});
+
+		return instance.onFile && instance.onFile(filesToUpload);
+	},
+};
+
 Template.room.events({
-	'click .js-open-thread'() {
+	'click .js-open-thread'(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
 		const { tabBar } = Template.instance();
 
 		const { msg, msg: { rid, _id, tmid } } = messageArgs(this);
@@ -807,45 +858,6 @@ Template.room.events({
 		ChatMessage.update({ _id }, { $set: { collapsed: !collapsed } });
 	},
 
-	'dragenter .dropzone'(e) {
-		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
-		if (types != null && types.length > 0 && _.every(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1) && userCanDrop(this._id)) {
-			e.currentTarget.classList.add('over');
-		}
-	},
-
-	'dragleave .dropzone-overlay'(e) {
-		e.currentTarget.parentNode.classList.remove('over');
-	},
-
-	'dragover .dropzone-overlay'(e) {
-		e = e.originalEvent || e;
-		if (['move', 'linkMove'].includes(e.dataTransfer.effectAllowed)) {
-			e.dataTransfer.dropEffect = 'move';
-		} else {
-			e.dataTransfer.dropEffect = 'copy';
-		}
-	},
-
-	'dropped .dropzone-overlay'(event) {
-		event.currentTarget.parentNode.classList.remove('over');
-
-		const e = event.originalEvent || event;
-		const files = (e.dataTransfer != null ? e.dataTransfer.files : undefined) || [];
-
-		const filesToUpload = [];
-		for (const file of Array.from(files)) {
-			// `file.type = mime.lookup(file.name)` does not work.
-			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
-			filesToUpload.push({
-				file,
-				name: file.name,
-			});
-		}
-
-		fileUpload(filesToUpload, chatMessages[RoomManager.openedRoom].input, { rid: RoomManager.openedRoom });
-	},
-
 	'load img'(e, template) {
 		return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
 	},
@@ -942,6 +954,11 @@ Template.room.onCreated(function() {
 	// this.typing = new msgTyping this.data._id
 	lazyloadtick();
 	const rid = this.data._id;
+
+	this.onFile = (filesToUpload) => {
+		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
+	};
+
 	this.rid = rid;
 
 	this.subscription = new ReactiveVar();

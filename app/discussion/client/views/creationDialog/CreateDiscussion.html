@@ -96,13 +96,11 @@
 					<input type="text" id="{{name}}" class="rc-tags__input" placeholder="{{_ placeholder}}" name="{{name}}" autocomplete="off" {{disabled}} />
 				</div>
 			</div>
-			{{#with config}} {{#if autocomplete 'isShowing'}}
-			<div class="dropdown-in">
-				{{#if autocomplete 'isLoaded'}}
-					{{> popupList data=config items=items}}
+			{{#with config}}
+				{{#if autocomplete 'isShowing'}}
+					{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
 				{{/if}}
-			</div>
-			{{/if}} {{/with}}
+			{{/with}}
 		</label>
 		<div class="rc-input__description">{{ description }}</div>
 	</div>
