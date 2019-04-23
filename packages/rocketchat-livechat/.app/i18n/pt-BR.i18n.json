@@ -15,15 +15,16 @@
   "How_friendly_was_the_chat_agent": "Quão amigável foi o agente de chat?",
   "How_knowledgeable_was_the_chat_agent": "Quão bem informado foi o agente de chat?",
   "How_responsive_was_the_chat_agent": "Quão responsivo foi o agente de bate-papo?",
-  "How_satisfied_were_you_with_this_chat": "Você ficou satisfeito com este bate-papo?",
+  "How_satisfied_were_you_with_this_chat": "Você ficou satisfeito com este chat?",
   "Installation": "Instalação",
   "New_messages": "Novas mensagens",
-  "New_livechat_in_queue": "Novo chat na roleta",
+  "New_livechat_in_queue": "Novo chat na fila",
   "No": "Não",
   "Options": "Opções",
   "Please_answer_survey": "Por favor, tire um momento para responder uma rápida pesquisa sobre este chat",
   "Please_choose_a_department": "Por favor escolha um departamento",
   "Please_fill_name_and_email": "Por favor, preencha nome e email",
+  "Please_wait_for_the_next_available_agent": "Por favor, aguarde o próximo agente disponível.",
   "Powered_by": "Distribuído por",
   "Request_video_chat": "Solicitar vídeoconferência",
   "Select_a_department": "Selecione um departamento",
@@ -49,3 +50,4 @@
   "You": "Você",
   "You_must_complete_all_fields": "Você deve preencher todos os campos"
 }
+

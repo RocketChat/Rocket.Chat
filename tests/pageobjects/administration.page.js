@@ -33,7 +33,7 @@ class Administration extends Page {
 	get usersRocketCat() { return browser.element('td=Rocket.Cat'); }
 	get usersInternalAdmin() { return browser.element('td=rocketchat.internal.admin.test'); }
 	get usersFilter() { return browser.element('#users-filter'); }
-	get rolesNewRolesButton() { return browser.element('.button.new-role'); }
+	get rolesNewRolesButton() { return browser.element('.rc-button.new-role'); }
 	get rolesPermissionGrid() { return browser.element('.permission-grid'); }
 	get rolesAdmin() { return browser.element('[title="Admin"]'); }
 	get rolesModerator() { return browser.element('[title="Moderator"]'); }

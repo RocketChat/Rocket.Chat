@@ -20,13 +20,12 @@ try {
 
 const files = [
 	'./package.json',
-	'./.sandstorm/sandstorm-pkgdef.capnp',
 	'./.travis/snap.sh',
 	'./.circleci/snap.sh',
 	'./.circleci/update-releases.sh',
 	'./.docker/Dockerfile',
 	'./.docker/Dockerfile.rhel',
-	'./packages/rocketchat-lib/rocketchat.info',
+	'./packages/rocketchat-utils/rocketchat.info',
 ];
 const readFile = (file) => new Promise((resolve, reject) => {
 	fs.readFile(file, 'utf8', (error, result) => {

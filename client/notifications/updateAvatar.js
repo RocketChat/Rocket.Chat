@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { updateAvatarOfUsername } from 'meteor/rocketchat:ui';
+import { updateAvatarOfUsername } from '../../app/ui-utils';
+import { Notifications } from '../../app/notifications';
 
 Meteor.startup(function() {
-	RocketChat.Notifications.onLogged('updateAvatar', function(data) {
+	Notifications.onLogged('updateAvatar', function(data) {
 		updateAvatarOfUsername(data.username);
 	});
 });
