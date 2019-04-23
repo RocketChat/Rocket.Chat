@@ -125,6 +125,11 @@ Template.accountProfile.helpers({
 				return;
 			}
 		}
+		// WIDECHAT customOauth
+		// test with dev
+		if (settings.get('Accounts_Oauth_Custom-Ssotest') != null) {
+			return;
+		}
 		if (!avatar && user.name === realname && user.username === username && getUserEmailAddress(user) === email === email && (!password || password !== confirmationPassword)) {
 			return ret;
 		}
