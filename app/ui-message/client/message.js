@@ -15,7 +15,6 @@ import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 
-
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
 		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
