@@ -1,6 +1,7 @@
 import _ from 'underscore';
 
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
@@ -487,7 +488,7 @@ Template.message.onCreated(function() {
 	if (msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = renderBody(msg, settings);
+	return this.body = Tracker.nonreactive(() => renderBody(msg, settings));
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -531,6 +532,60 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDat
 		return classList.remove('sequential');
 	}
 };
+
+Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
+	const { settings, forceDate, noDate, groupable, msg } = messageArgs(Template.currentData());
+
+	if (noDate && !groupable) {
+		return;
+	}
+
+
+	if (msg.file && msg.file.type === 'application/pdf') {
+		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
+	}
+	const currentNode = this.firstNode;
+	const currentDataset = currentNode.dataset;
+	const previousNode = getPreviousSentMessage(currentNode);
+	const nextNode = currentNode.nextElementSibling;
+	setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, noDate);
+	if (nextNode && nextNode.dataset) {
+		const nextDataset = nextNode.dataset;
+		if (forceDate || nextDataset.date !== currentDataset.date) {
+			if (!noDate) {
+				currentNode.classList.add('new-day');
+			}
+			currentNode.classList.remove('sequential');
+		} else {
+			nextNode.classList.remove('new-day');
+		}
+
+		if (nextDataset.groupable !== 'false') {
+			if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+				nextNode.classList.remove('sequential');
+			} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
+				nextNode.classList.add('sequential');
+			}
+		}
+
+		if (currentNode.classList.contains('system')) {
+			nextNode.classList.remove('sequential');
+		}
+	} else {
+		const [el] = $(`#chat-window-${ msg.rid }`);
+		const view = el && Blaze.getView(el);
+		const templateInstance = view && view.templateInstance();
+		if (!templateInstance) {
+			return;
+		}
+
+		if (currentNode.classList.contains('own') === true) {
+			templateInstance.atBottom = true;
+		}
+		templateInstance.sendToBottomIfNecessary();
+	}
+
+});
 
 Template.message.onViewRendered = function() {
 	const { settings, forceDate, showDateSeparator = true, groupable, msg } = messageArgs(Template.currentData());
