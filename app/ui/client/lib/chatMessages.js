@@ -226,8 +226,10 @@ export class ChatMessages {
 		}
 
 		const cursorPosition = editingNext ? 0 : -1;
-		this.$input.setCursorPosition(cursorPosition);
-		this.input.focus();
+		setTimeout(() => {
+			this.input.focus();
+			this.$input.setCursorPosition(cursorPosition);
+		}, 0);
 	}
 
 	clearEditing() {
