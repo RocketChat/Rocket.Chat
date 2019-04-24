@@ -1,3 +1,5 @@
+/* eslint import/no-unresolved: 0 */
+
 import lineReader from 'line-reader';
 import program from 'commander';
 import wait from 'wait.for';

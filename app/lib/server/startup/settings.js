@@ -811,10 +811,6 @@ settings.addGroup('General', function() {
 		type: 'string',
 		public: false,
 	});
-	this.add('Force_Disable_OpLog_For_Cache', false, {
-		type: 'boolean',
-		public: false,
-	});
 	this.add('Restart', 'restart_server', {
 		type: 'action',
 		actionText: 'Restart_the_server',
