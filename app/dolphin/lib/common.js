@@ -16,6 +16,7 @@ const config = {
 		forLoggedInUser: ['services.dolphin'],
 		forOtherUsers: ['services.dolphin.name'],
 	},
+	accessTokenParam: 'access_token',
 };
 
 const Dolphin = new CustomOAuth('dolphin', config);

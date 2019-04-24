@@ -10,7 +10,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { t, handleError, roomTypes, canDeleteMessage } from '../../../utils/client';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from './messageArgs';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
@@ -70,7 +70,7 @@ export const MessageAction = new class {
 		}
 
 		if (config.condition) {
-			config.condition = mem(config.condition);
+			config.condition = mem(config.condition, { maxAge: 1000 });
 		}
 
 		return Tracker.nonreactive(() => {
@@ -103,23 +103,26 @@ export const MessageAction = new class {
 		return allButtons[id];
 	}
 
+	_getButtons = mem(function() {
+		return _.sortBy(_.toArray(this.buttons.get()), 'order');
+	}, { maxAge: 100 })
+
 	getButtons(message, context, group) {
-		let allButtons = _.toArray(this.buttons.get());
+		let allButtons = this._getButtons();
 
 		if (group) {
 			allButtons = allButtons.filter((button) => button.group === group);
 		}
 
 		if (message) {
-			allButtons = _.compact(_.map(allButtons, function(button) {
+			return allButtons.filter(function(button) {
 				if (button.context == null || button.context.includes(context)) {
-					if (button.condition == null || button.condition(message, context)) {
-						return button;
-					}
+					return button.condition == null || button.condition(message, context);
 				}
-			}));
+				return false;
+			});
 		}
-		return _.sortBy(allButtons, 'order');
+		return allButtons;
 	}
 
 	resetButtons() {
@@ -351,7 +354,7 @@ Meteor.startup(async function() {
 
 		},
 		condition(message) {
-			const subscription = Subscriptions.findOne({ rid: message.rid });
+			const subscription = Subscriptions.findOne({ rid: message.rid }, { fields: { ignored: 1 } });
 			return Meteor.userId() !== message.u._id && subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
 		},
 		order: 20,

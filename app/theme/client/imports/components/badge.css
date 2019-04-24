@@ -1,18 +1,17 @@
 .badge {
-
 	display: flex;
 
-	min-width: 20px;
-
-	padding: 2px 6px;
+	min-width: 18px;
+	min-height: 18px;
+	padding: 2px 5px;
 
 	color: var(--badge-text-color);
-
 	border-radius: var(--badge-radius);
-
 	background-color: var(--badge-background);
 
 	font-size: var(--badge-text-size);
+	line-height: 1;
+	align-items: center;
 	justify-content: center;
 
 	&--unread {
@@ -21,5 +20,13 @@
 		white-space: nowrap;
 
 		background-color: var(--badge-unread-background);
+	}
+
+	&--user-mentions {
+		background-color: var(--badge-user-mentions-background);
+	}
+
+	&--group-mentions {
+		background-color: var(--badge-group-mentions-background);
 	}
 }
