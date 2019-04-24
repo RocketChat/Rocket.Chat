@@ -11,9 +11,11 @@ Meteor.methods({
 
 		const { token } = data;
 
-		this.connection.livechatToken = token;
-		this.connection.onClose(() => {
-			Livechat.notifyGuestStatusChanged(token, 'offline');
-		});
+		if (!this.connection.livechatToken) {
+			this.connection.livechatToken = token;
+			this.connection.onClose(() => {
+				Livechat.notifyGuestStatusChanged(token, 'offline');
+			});
+		}
 	},
 });
