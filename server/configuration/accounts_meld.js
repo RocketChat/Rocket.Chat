@@ -30,8 +30,16 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 		serviceData.email = serviceData.emailAddress;
 	}
 
+	// WIDECHAT backwards compatibility
+	const user = Users.findOneByUsername(serviceData.userid);
+	if (user != null) {
+		if (!user.name) {
+			Users.setName(user._id, serviceData.userid);
+		}
+	}
+
 	if (serviceData.email) {
-		const user = Users.findOneByEmailAddress(serviceData.email);
+		let user = Users.findOneByEmailAddress(serviceData.email);
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
@@ -44,6 +52,14 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 
 			Users.setServiceId(user._id, serviceName, serviceData.id);
 			Users.setEmailVerified(user._id, serviceData.email);
+		} else {
+			// WIDECHAT
+			user = Users.findOneByUsername(serviceData.userid);
+			if (user != null) {
+				Users.setServiceId(user._id, serviceName, serviceData.id);
+				Users.setEmail(user._id, serviceData.email);
+				Users.setEmailVerified(user._id, serviceData.email);
+			}
 		}
 	}
 
