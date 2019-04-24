@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Users } from '../../../models';
 
-import { Federation } from '../';
+import { Federation } from '..';
 import { logger } from '../logger';
 
 export function addUser(identifier) {
