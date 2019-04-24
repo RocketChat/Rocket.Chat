@@ -1391,8 +1391,6 @@
   "For_your_security_you_must_enter_your_current_password_to_continue": "For your security, you must enter your current password to continue",
   "force-delete-message": "Force Delete Message",
   "force-delete-message_description": "Permission to delete a message bypassing all restrictions",
-  "Force_Disable_OpLog_For_Cache": "Force Disable OpLog for Cache",
-  "Force_Disable_OpLog_For_Cache_Description": "Will not use OpLog to sync cache even when it's available",
   "Force_SSL": "Force SSL",
   "Force_SSL_Description": "*Caution!* _Force SSL_ should never be used with reverse proxy. If you have a reverse proxy, you should do the redirect THERE. This option exists for deployments like Heroku, that does not allow the redirect configuration at the reverse proxy.",
   "Force_visitor_to_accept_data_processing_consent": "Force visitor to accept data processing consent",

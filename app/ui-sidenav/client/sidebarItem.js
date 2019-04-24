@@ -3,11 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { t, getUserPreference, roomTypes } from '../../utils';
-import { popover, renderMessageBody } from '../../ui-utils';
+import { popover, renderMessageBody, menu } from '../../ui-utils';
 import { Users, ChatSubscription } from '../../models';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
-import { menu } from '../../ui-utils';
+
 import { timeAgo } from '../../lib/client/lib/formatDate';
 
 Template.sidebarItem.helpers({
