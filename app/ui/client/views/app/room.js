@@ -27,6 +27,7 @@ import {
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { getConfig } from '../../../../ui-utils/client/config';
 import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
@@ -227,6 +228,10 @@ function roomMaxAge(room) {
 callbacks.add('enter-room', wipeFailedUploads);
 
 Template.room.helpers({
+	useNrr() {
+		const useNrr = getConfig('useNrr');
+		return useNrr === 'true' || useNrr !== 'false';
+	},
 	isTranslated() {
 		const sub = Tracker.nonreactive(() => Template.instance().subscription.get());
 		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
