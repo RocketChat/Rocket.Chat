@@ -574,6 +574,7 @@ export const dropzoneEvents = {
 };
 
 Template.room.events({
+	...dropzoneEvents,
 	'click .js-open-thread'(event) {
 		event.preventDefault();
 		event.stopPropagation();

@@ -139,7 +139,7 @@ Template.message.helpers({
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || MessageTypes.isSystemMessage(msg)) {
+		if ((msg.tmid && settings.showreply) || groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || MessageTypes.isSystemMessage(msg)) {
 			return 'false';
 		}
 	},
@@ -386,8 +386,8 @@ Template.message.helpers({
 		return !!(tmid && showreply);
 	},
 	collapsed() {
-		const { msg: { tmid, collapsed }, settings: { showreply } } = this;
-		const isCollapsedThreadReply = tmid && showreply && collapsed !== false;
+		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
+		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
 		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
@@ -506,12 +506,12 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 };
 
-const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate) => {
+const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDateSeparator) => {
 	const { classList, dataset: currentDataset } = currentNode;
 
 	if (!previousNode) {
 		classList.remove('sequential');
-		!noDate && classList.add('new-day');
+		showDateSeparator && classList.add('new-day');
 		return;
 	}
 
@@ -519,7 +519,7 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
-	if (!noDate && (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString())) {
+	if (showDateSeparator && previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
 		classList.remove('sequential');
 		classList.add('new-day');
 	}
@@ -588,9 +588,9 @@ Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the
 });
 
 Template.message.onViewRendered = function() {
-	const { settings, forceDate, noDate, groupable, msg } = messageArgs(Template.currentData());
+	const { settings, forceDate, showDateSeparator = true, groupable, msg } = messageArgs(Template.currentData());
 
-	if (noDate && !groupable) {
+	if (!showDateSeparator && !groupable) {
 		return;
 	}
 
@@ -602,11 +602,11 @@ Template.message.onViewRendered = function() {
 		const currentDataset = currentNode.dataset;
 		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
-		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, noDate);
+		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator);
 		if (nextNode && nextNode.dataset) {
 			const nextDataset = nextNode.dataset;
 			if (forceDate || nextDataset.date !== currentDataset.date) {
-				if (!noDate) {
+				if (showDateSeparator) {
 					currentNode.classList.add('new-day');
 				}
 				currentNode.classList.remove('sequential');
@@ -617,7 +617,7 @@ Template.message.onViewRendered = function() {
 			if (nextDataset.groupable !== 'false') {
 				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 					nextNode.classList.remove('sequential');
-				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
+				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp')) {
 					nextNode.classList.add('sequential');
 				}
 			}
