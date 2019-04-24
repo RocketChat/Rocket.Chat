@@ -127,7 +127,7 @@
 								{{/if}}
 
 								{{# with messageContext}}
-									{{#each msg in messagesHistory}}{{#nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings u=u}}{{/nrr}}{{/each}}
+									{{#each msg in messagesHistory}}{{#nrr nrrargs 'message' shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/nrr}}{{/each}}
 								{{/with}}
 
 								{{#if hasMoreNext}}
