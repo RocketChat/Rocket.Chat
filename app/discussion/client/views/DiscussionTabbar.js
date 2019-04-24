@@ -7,11 +7,8 @@ import { DiscussionOfRoom } from '../lib/discussionsOfRoom';
 import './DiscussionTabbar.html';
 
 Template.discussionsTabbar.helpers({
-	initialLoadCompleted() {
-		return Template.instance().cursor.count() === 0;
-	},
 	hasMessages() {
-		return Template.instance().cursor > 0;
+		return Template.instance().cursor.count() > 0;
 	},
 	messages() {
 		return Template.instance().cursor;
@@ -36,24 +33,22 @@ Template.discussionsTabbar.onCreated(function() {
 	});
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
-	return this.autorun(() => {
-		const data = Template.currentData();
-		const handle = this.subscribe('discussionsOfRoom', data.rid, this.limit.get());
-		const isReady = handle.ready();
-		// Wait for collection to be ready
-		if (isReady) {
-			if (this.cursor.count() < this.limit.get()) {
-				return this.hasMore.set(false);
+
+	this.autorun(() => {
+		const { rid } = Template.currentData();
+		this.subscribe('discussionsOfRoom', rid, this.limit.get(), () => {
+			const discussionCount = this.cursor.count();
+			if (discussionCount < this.limit.get()) {
+				this.hasMore.set(false);
 			}
-		}
-		return handle;
+		});
 	});
 });
 
 Template.discussionsTabbar.events({
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight - 10 && instance.hasMore.get()) {
-			return instance.limit.set(instance.limit.get() + 50);
+			instance.limit.set(instance.limit.get() + 50);
 		}
 	}, 200),
 });
