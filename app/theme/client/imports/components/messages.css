@@ -125,6 +125,8 @@
 
 			color: inherit !important;
 
+			border: unset !important;
+
 			background-color: unset !important;
 
 			font-family: inherit !important;
