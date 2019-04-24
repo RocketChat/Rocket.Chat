@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import mem from 'mem';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -16,7 +15,6 @@ import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 
-Blaze._globalHelpers._ = mem(Blaze._globalHelpers._);
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
