@@ -160,7 +160,8 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 		}
 
 		user = result[0];
-		if (fields.userRooms === 1 && hasPermission(this.userId, 'view-other-user-channels')) {
+		const myself = user._id === this.userId;
+		if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {
 					rid: 1,

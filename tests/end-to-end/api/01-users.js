@@ -192,6 +192,8 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.info]', () => {
+		after((done) => updatePermission('view-other-user-channels', ['admin']).then(done));
+
 		it('should query information about a user by userId', (done) => {
 			request.get(api('users.info'))
 				.set(credentials)
@@ -239,8 +241,41 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
+		it('should return the rooms when the user request your own rooms but he does NOT have the necessary permission', (done) => {
+			updatePermission('view-other-user-channels', []).then(() => {
+				request.get(api('users.info'))
+					.set(credentials)
+					.query({
+						userId: credentials['X-User-Id'],
+						fields: JSON.stringify({ userRooms: 1 }),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.rooms');
+					})
+					.end(done);
+			});
+		});
+		it('should NOT return the rooms when the user request another user\'s rooms and he does NOT have the necessary permission', (done) => {
+			updatePermission('view-other-user-channels', []).then(() => {
+				request.get(api('users.info'))
+					.set(credentials)
+					.query({
+						userId: targetUser._id,
+						fields: JSON.stringify({ userRooms: 1 }),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.rooms');
+					})
+					.end(done);
+			});
+		});
 	});
-
 	describe('[/users.getPresence]', () => {
 		it('should query a user\'s presence by userId', (done) => {
 			request.get(api('users.getPresence'))
