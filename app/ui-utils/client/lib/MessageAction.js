@@ -10,7 +10,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { t, handleError, roomTypes, canDeleteMessage } from '../../../utils/client';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { messageArgs } from './messageArgs';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
