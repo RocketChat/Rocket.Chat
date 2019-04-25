@@ -52,17 +52,17 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	}
 
-	canSendMessage(roomId) {
-		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1 } });
+	canSendMessage(rid) {
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1 } });
 		return room && room.open === true;
 	}
 
-	getUserStatus(roomId) {
-		const room = Session.get(`roomData${ roomId }`);
+	getUserStatus(rid) {
+		const room = Session.get(`roomData${ rid }`);
 		if (room) {
 			return room.v && room.v.status;
 		}
-		const inquiry = LivechatInquiry.findOne({ rid: roomId });
+		const inquiry = LivechatInquiry.findOne({ rid });
 		return inquiry && inquiry.v && inquiry.v.status;
 	}
 
@@ -86,13 +86,13 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	readOnly(roomId, user) {
-		const room = ChatRoom.findOne({ _id: roomId }, { fields: { open: 1, servedBy: 1 } });
+	readOnly(rid, user) {
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 		if (!room || !room.open) {
 			return true;
 		}
 
-		const inquiry = LivechatInquiry.findOne({ rid: roomId }, { fields: { status: 1 } });
+		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
 		if (inquiry && inquiry.status === 'open') {
 			return true;
 		}
