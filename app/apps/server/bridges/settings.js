@@ -18,11 +18,12 @@ export class AppSettingBridge {
 			'Accounts_OAuth_Wordpress_secret', 'Push_apn_passphrase', 'Push_apn_key', 'Push_apn_cert', 'Push_apn_dev_passphrase',
 			'Push_apn_dev_key', 'Push_apn_dev_cert', 'Push_gcm_api_key', 'Push_gcm_project_number', 'SAML_Custom_Default_cert',
 			'SAML_Custom_Default_private_key', 'SlackBridge_APIToken', 'Smarsh_Email', 'SMS_Twilio_Account_SID', 'SMS_Twilio_authToken',
+			'SMS_Voxtelesys_authToken', 'SMS_Voxtelesys_URL',
 		];
 	}
 
 	async getAll(appId) {
-		console.log(`The App ${ appId } is getting all the settings.`);
+		this.orch.debugLog(`The App ${ appId } is getting all the settings.`);
 
 		return Settings.find({ _id: { $nin: this.disallowedSettings } })
 			.fetch()
@@ -30,7 +31,7 @@ export class AppSettingBridge {
 	}
 
 	async getOneById(id, appId) {
-		console.log(`The App ${ appId } is getting the setting by id ${ id }.`);
+		this.orch.debugLog(`The App ${ appId } is getting the setting by id ${ id }.`);
 
 		if (!this.isReadableById(id, appId)) {
 			throw new Error(`The setting "${ id }" is not readable.`);
@@ -40,13 +41,13 @@ export class AppSettingBridge {
 	}
 
 	async hideGroup(name, appId) {
-		console.log(`The App ${ appId } is hidding the group ${ name }.`);
+		this.orch.debugLog(`The App ${ appId } is hidding the group ${ name }.`);
 
 		throw new Error('Method not implemented.');
 	}
 
 	async hideSetting(id, appId) {
-		console.log(`The App ${ appId } is hidding the setting ${ id }.`);
+		this.orch.debugLog(`The App ${ appId } is hidding the setting ${ id }.`);
 
 		if (!this.isReadableById(id, appId)) {
 			throw new Error(`The setting "${ id }" is not readable.`);
@@ -56,13 +57,13 @@ export class AppSettingBridge {
 	}
 
 	async isReadableById(id, appId) {
-		console.log(`The App ${ appId } is checking if they can read the setting ${ id }.`);
+		this.orch.debugLog(`The App ${ appId } is checking if they can read the setting ${ id }.`);
 
 		return !this.disallowedSettings.includes(id);
 	}
 
 	async updateOne(setting, appId) {
-		console.log(`The App ${ appId } is updating the setting ${ setting.id } .`);
+		this.orch.debugLog(`The App ${ appId } is updating the setting ${ setting.id } .`);
 
 		if (!this.isReadableById(setting.id, appId)) {
 			throw new Error(`The setting "${ setting.id }" is not readable.`);

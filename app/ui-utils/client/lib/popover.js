@@ -5,6 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { isRtl, handleError } from '../../../utils';
+import { messageArgs } from './messageArgs';
 import { ChatSubscription } from '../../../models';
 import _ from 'underscore';
 import { hide, leave } from './ChannelActions';
@@ -12,7 +13,6 @@ import { modal } from './modal';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
 import { RoomManager } from './RoomManager';
-
 export const popover = {
 	renderedPopover: null,
 	open({ currentTarget, ...config }) {
@@ -160,13 +160,16 @@ Template.popover.events({
 	},
 	'click [data-type="messagebox-action"]'(event, t) {
 		const { id } = event.currentTarget.dataset;
-		const action = messageBox.actions.getById(id);
-		if ((action[0] != null ? action[0].action : undefined) != null) {
-			action[0].action({ rid: t.data.data.rid, ...t.data.data, messageBox: document.querySelector('.rc-message-box'), element: event.currentTarget, event });
-			if (id !== 'audio-message') {
-				popover.close();
-			}
-		}
+		const actions = messageBox.actions.getById(id);
+		actions
+			.filter(({ action }) => !!action)
+			.forEach(({ action }) => {
+				action.call(null, {
+					...t.data.data,
+					event,
+				});
+			});
+		popover.close();
 	},
 	'click [data-type="message-action"]'(e, t) {
 		const button = MessageAction.getButtonById(e.currentTarget.dataset.id);
@@ -177,7 +180,7 @@ Template.popover.events({
 		}
 
 		if (e.currentTarget.dataset.id === 'report-abuse') {
-			const message = t.data.data._arguments[1];
+			const { msg: message } = messageArgs(t.data.data);
 			modal.open({
 				title: TAPi18n.__('Report_this_message_question_mark'),
 				text: message.msg,

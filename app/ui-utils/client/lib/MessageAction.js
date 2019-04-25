@@ -1,16 +1,19 @@
+import _ from 'underscore';
+import moment from 'moment';
+import toastr from 'toastr';
+import mem from 'mem';
+
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { t, handleError, roomTypes } from '../../../utils';
-import { Messages, Rooms, Subscriptions } from '../../../models';
-import { hasAtLeastOnePermission } from '../../../authorization';
-import { settings } from '../../../settings';
-import _ from 'underscore';
-import moment from 'moment';
-import toastr from 'toastr';
-import mem from 'mem';
+
+import { t, handleError, roomTypes, canDeleteMessage } from '../../../utils/client';
+import { messageArgs } from './messageArgs';
+import { Messages, Rooms, Subscriptions } from '../../../models/client';
+import { hasAtLeastOnePermission } from '../../../authorization/client';
+import { settings } from '../../../settings/client';
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err, data) {
@@ -67,7 +70,7 @@ export const MessageAction = new class {
 		}
 
 		if (config.condition) {
-			config.condition = mem(config.condition);
+			config.condition = mem(config.condition, { maxAge: 1000 });
 		}
 
 		return Tracker.nonreactive(() => {
@@ -100,23 +103,26 @@ export const MessageAction = new class {
 		return allButtons[id];
 	}
 
+	_getButtons = mem(function() {
+		return _.sortBy(_.toArray(this.buttons.get()), 'order');
+	}, { maxAge: 100 })
+
 	getButtons(message, context, group) {
-		let allButtons = _.toArray(this.buttons.get());
+		let allButtons = this._getButtons();
 
 		if (group) {
 			allButtons = allButtons.filter((button) => button.group === group);
 		}
 
 		if (message) {
-			allButtons = _.compact(_.map(allButtons, function(button) {
+			return allButtons.filter(function(button) {
 				if (button.context == null || button.context.includes(context)) {
-					if (button.condition == null || button.condition(message, context)) {
-						return button;
-					}
+					return button.condition == null || button.condition(message, context);
 				}
-			}));
+				return false;
+			});
 		}
-		return _.sortBy(allButtons, 'order');
+		return allButtons;
 	}
 
 	resetButtons() {
@@ -154,7 +160,7 @@ Meteor.startup(async function() {
 		label: 'Reply',
 		context: ['message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			const { input } = chatMessages[message.rid];
 			const $input = $(input);
 
@@ -183,8 +189,8 @@ Meteor.startup(async function() {
 		label: 'Edit',
 		context: ['message', 'message-mobile'],
 		action() {
-			const messageId = this._arguments[1]._id;
-			chatMessages[Session.get('openedRoom')].edit(document.getElementById(messageId));
+			const { msg } = messageArgs(this);
+			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
 		},
 		condition(message) {
 			if (Subscriptions.findOne({
@@ -224,37 +230,19 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile'],
 		color: 'alert',
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
 		condition(message) {
 			if (Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-			const forceDelete = hasAtLeastOnePermission('force-delete-message', message.rid);
-			const hasPermission = hasAtLeastOnePermission('delete-message', message.rid);
-			const isDeleteAllowed = settings.get('Message_AllowDeleting');
-			const deleteOwn = message.u && message.u._id === Meteor.userId();
-			if (!(hasPermission || (isDeleteAllowed && deleteOwn) || forceDelete)) {
-				return;
-			}
-			const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes');
-			if (forceDelete) {
-				return true;
-			}
-			if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) {
-				let msgTs;
-				if (message.ts != null) {
-					msgTs = moment(message.ts);
-				}
-				let currentTsDiff;
-				if (msgTs != null) {
-					currentTsDiff = moment().diff(msgTs, 'minutes');
-				}
-				return currentTsDiff < blockDeleteInMinutes;
-			} else {
-				return true;
-			}
+
+			return canDeleteMessage({
+				rid: message.rid,
+				ts: message.ts,
+				uid: message.u._id,
+			});
 		},
 		order: 3,
 		group: 'menu',
@@ -267,7 +255,7 @@ Meteor.startup(async function() {
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
 		async action(event) {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			$(event.currentTarget).attr('data-clipboard-text', permalink);
 			toastr.success(TAPi18n.__('Copied'));
@@ -290,7 +278,7 @@ Meteor.startup(async function() {
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
 		action(event) {
-			const message = this._arguments[1].msg;
+			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', message);
 			toastr.success(TAPi18n.__('Copied'));
 		},
@@ -311,7 +299,7 @@ Meteor.startup(async function() {
 		label: 'Quote',
 		context: ['message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			const { input } = chatMessages[message.rid];
 			const $input = $(input);
 
@@ -343,7 +331,7 @@ Meteor.startup(async function() {
 		label: t('Ignore'),
 		context: ['message', 'message-mobile'],
 		action() {
-			const [, { rid, u: { _id } }] = this._arguments;
+			const { msg: { rid, u: { _id } } } = messageArgs(this);
 			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true }, success(() => toastr.success(t('User_has_been_ignored'))));
 		},
 		condition(message) {
@@ -361,12 +349,12 @@ Meteor.startup(async function() {
 		label: t('Unignore'),
 		context: ['message', 'message-mobile'],
 		action() {
-			const [, { rid, u: { _id } }] = this._arguments;
+			const { msg: { rid, u: { _id } } } = messageArgs(this);
 			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false }, success(() => toastr.success(t('User_has_been_unignored'))));
 
 		},
 		condition(message) {
-			const subscription = Subscriptions.findOne({ rid: message.rid });
+			const subscription = Subscriptions.findOne({ rid: message.rid }, { fields: { ignored: 1 } });
 			return Meteor.userId() !== message.u._id && subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
 		},
 		order: 20,

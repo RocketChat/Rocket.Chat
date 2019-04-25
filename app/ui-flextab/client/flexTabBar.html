@@ -3,7 +3,7 @@
 		<div class="flex-tab-container border-component-color {{opened}}">
 			<section class="flex-tab border-component-color content-background-color">
 				<div class="content flex-tab__content">
-					<header class="contextual-bar__header">
+					<header class="contextual-bar__header {{#unless headerData}}contextual-bar__header--empty{{/unless}}">
 						{{#with headerData}}
 							<div class="contextual-bar__header-data">
 								{{> icon block="contextual-bar__header-icon" icon=icon}}
@@ -45,6 +45,9 @@
 	<div class="rc-room-actions">
 		{{#each buttons}}
 		<div class="rc-room-actions__action tab-button {{active}} {{visible}} {{class}} js-action" data-id="{{id}}">
+			{{#if badge}}
+				<span class="rc-badge">{{badge.body}}</span>
+			{{/if}}
 			<button class="rc-tooltip rc-tooltip--down rc-tooltip--end rc-room-actions__button" aria-label="{{title}}">
 				{{> icon block="tab-button-icon" icon=icon }}
 			</button>

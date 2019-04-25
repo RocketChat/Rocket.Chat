@@ -2,7 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { Apps } from '../orchestrator';
+import { SideNav } from '../../../ui-utils/client';
 
 Template.appWhatIsIt.onCreated(function() {
 	this.isLoading = new ReactiveVar(false);
@@ -42,4 +44,11 @@ Template.appWhatIsIt.events({
 			FlowRouter.go('/admin/apps');
 		});
 	},
+});
+
+Template.appWhatIsIt.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

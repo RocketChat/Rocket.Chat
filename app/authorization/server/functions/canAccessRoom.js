@@ -1,5 +1,5 @@
 import { settings } from '../../../settings';
-import { Subscriptions } from '../../../models';
+import Subscriptions from '../../../models/server/models/Subscriptions';
 import { hasPermission } from './hasPermission';
 
 export const roomAccessValidators = [

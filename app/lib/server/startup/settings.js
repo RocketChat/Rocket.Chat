@@ -811,10 +811,6 @@ settings.addGroup('General', function() {
 		type: 'string',
 		public: false,
 	});
-	this.add('Force_Disable_OpLog_For_Cache', false, {
-		type: 'boolean',
-		public: false,
-	});
 	this.add('Restart', 'restart_server', {
 		type: 'action',
 		actionText: 'Restart_the_server',
@@ -978,6 +974,10 @@ settings.addGroup('Message', function() {
 	});
 	this.add('Message_MaxAllowedSize', 5000, {
 		type: 'int',
+		public: true,
+	});
+	this.add('Message_AllowConvertLongMessagesToAttachment', true, {
+		type: 'boolean',
 		public: true,
 	});
 	this.add('Message_ShowFormattingTips', true, {

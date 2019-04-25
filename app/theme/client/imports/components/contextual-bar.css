@@ -40,6 +40,11 @@
 		padding: var(--default-padding);
 		justify-content: space-between;
 
+		&--no-padding {
+			padding-right: 0;
+			padding-left: 0;
+		}
+
 		& .section:not(:last-child) {
 			margin-bottom: 2rem;
 		}
@@ -51,16 +56,24 @@
 
 		padding: var(--default-padding);
 
-		align-items: flex-end;
+		border-bottom: solid 1px var(--color-gray-light);
+
+		background: var(--color-gray-lightest);
+
+		align-items: center;
 		justify-content: flex-end;
 
 		&-data {
 			display: flex;
+			overflow: hidden;
 			flex: 1 1;
 			align-items: center;
 		}
 
 		&-icon {
+
+			flex: 0 0 auto;
+
 			margin: 0 0.25rem;
 
 			font-size: 22px;
@@ -71,11 +84,27 @@
 		}
 
 		&-title {
+
+			overflow: hidden;
 			flex: 1;
 
 			margin: 0 0.25rem;
 
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
 			font-size: 16px;
+			font-weight: 400;
+		}
+
+		&-description {
+
+			display: block;
+			flex: 1;
+
+			color: var(--color-gray);
+
+			font-size: 0.85rem;
 			font-weight: 400;
 		}
 
@@ -83,6 +112,11 @@
 			transform: rotate(45deg);
 
 			font-size: 20px;
+		}
+
+		&--empty {
+			border-bottom: none;
+			background: none;
 		}
 	}
 
@@ -111,7 +145,6 @@
 		top: 0;
 
 		width: 100%;
-		max-width: var(--flex-tab-width);
 
 		animation: dropup-show 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 	}
