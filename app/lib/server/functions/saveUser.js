@@ -50,7 +50,7 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (!userData._id && !s.trim(userData.name)) {
+	if (settings.get('Accounts_RequireNameForSignUp') && !userData._id && !s.trim(userData.name)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Name',
@@ -173,11 +173,14 @@ export const saveUser = function(userId, userData) {
 
 		const updateUser = {
 			$set: {
-				name: userData.name,
 				roles: userData.roles || ['user'],
 				settings: userData.settings || {},
 			},
 		};
+
+		if (typeof userData.name !== 'undefined') {
+			updateUser.$set.name = userData.name;
+		}
 
 		if (typeof userData.requirePasswordChange !== 'undefined') {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
@@ -198,11 +201,14 @@ export const saveUser = function(userId, userData) {
 				subject,
 				html,
 				data: {
-					name: s.escapeHTML(userData.name),
 					email: s.escapeHTML(userData.email),
 					password: s.escapeHTML(userData.password),
 				},
 			};
+
+			if (typeof userData.name !== 'undefined') {
+				email.data.name = s.escapeHTML(userData.name);
+			}
 
 			try {
 				Mailer.send(email);
@@ -236,9 +242,7 @@ export const saveUser = function(userId, userData) {
 		setUsername(userData._id, userData.username);
 	}
 
-	if (userData.name) {
-		setRealName(userData._id, userData.name);
-	}
+	setRealName(userData._id, userData.name);
 
 	if (userData.email) {
 		const shouldSendVerificationEmailToUser = userData.verified !== true;

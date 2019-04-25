@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { getAvatarUrlFromUsername } from '../../utils';
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models';
 import { settings } from '../../settings';
 import {
@@ -31,6 +31,8 @@ export default class SlackAdapter {
 		// On Slack, a rocket integration bot will be added to slack channels, this is the list of those channels, key is Rocket Ch ID
 		this.slackChannelRocketBotMembershipMap = new Map(); // Key=RocketChannelID, Value=SlackChannel
 		this.rocket = {};
+		this.messagesBeingSent = [];
+		this.slackBotId = false;
 	}
 
 	/**
@@ -626,9 +628,38 @@ export default class SlackAdapter {
 		}
 	}
 
+	storeMessageBeingSent(data) {
+		this.messagesBeingSent.push(data);
+	}
+
+	removeMessageBeingSent(data) {
+		const idx = this.messagesBeingSent.indexOf(data);
+		if (idx >= 0) {
+			this.messagesBeingSent.splice(idx, 1);
+		}
+	}
+
+	isMessageBeingSent(username, channel) {
+		if (!this.messagesBeingSent.length) {
+			return false;
+		}
+
+		return this.messagesBeingSent.some((messageData) => {
+			if (messageData.username !== username) {
+				return false;
+			}
+
+			if (messageData.channel !== channel) {
+				return false;
+			}
+
+			return true;
+		});
+	}
+
 	postMessage(slackChannel, rocketMessage) {
 		if (slackChannel && slackChannel.id) {
-			let iconUrl = getAvatarUrlFromUsername(rocketMessage.u && rocketMessage.u.username);
+			let iconUrl = getUserAvatarURL(rocketMessage.u && rocketMessage.u.username);
 			if (iconUrl) {
 				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
 			}
@@ -641,8 +672,20 @@ export default class SlackAdapter {
 				link_names: 1,
 			};
 			logger.slack.debug('Post Message To Slack', data);
+
+			// If we don't have the bot id yet and we have multiple slack bridges, we need to keep track of the messages that are being sent
+			if (!this.slackBotId && this.rocket.slackAdapters && this.rocket.slackAdapters.length >= 2) {
+				this.storeMessageBeingSent(data);
+			}
+
 			const postResult = HTTP.post('https://slack.com/api/chat.postMessage', { params: data });
+
+			if (!this.slackBotId && this.rocket.slackAdapters && this.rocket.slackAdapters.length >= 2) {
+				this.removeMessageBeingSent(data);
+			}
+
 			if (postResult.statusCode === 200 && postResult.data && postResult.data.message && postResult.data.message.bot_id && postResult.data.message.ts) {
+				this.slackBotId = postResult.data.message.bot_id;
 				Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts);
 				logger.slack.debug(`RocketMsgID=${ rocketMessage._id } SlackMsgID=${ postResult.data.message.ts } SlackBotID=${ postResult.data.message.bot_id }`);
 			}
@@ -780,7 +823,7 @@ export default class SlackAdapter {
 				msgDataDefaults.imported = 'slackbridge';
 			}
 			try {
-				this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting);
+				this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting, this);
 			} catch (e) {
 				// http://www.mongodb.org/about/contributors/error-codes/
 				// 11000 == duplicate key error
@@ -797,6 +840,17 @@ export default class SlackAdapter {
 		const excludeBotNames = settings.get('SlackBridge_ExcludeBotnames');
 		if (slackMessage.username !== undefined && excludeBotNames && slackMessage.username.match(excludeBotNames)) {
 			return;
+		}
+
+		if (this.slackBotId) {
+			if (slackMessage.bot_id === this.slackBotId) {
+				return;
+			}
+		} else {
+			const slackChannel = this.getSlackChannel(rocketChannel._id);
+			if (this.isMessageBeingSent(slackMessage.username || slackMessage.bot_id, slackChannel.id)) {
+				return;
+			}
 		}
 
 		const rocketMsgObj = {
@@ -906,7 +960,7 @@ export default class SlackAdapter {
 				attachments: [{
 					text : this.rocket.convertSlackMsgTxtToRocketTxtFormat(slackMessage.attachments[0].text),
 					author_name : slackMessage.attachments[0].author_subname,
-					author_icon : getAvatarUrlFromUsername(slackMessage.attachments[0].author_subname),
+					author_icon : getUserAvatarURL(slackMessage.attachments[0].author_subname),
 					ts : new Date(parseInt(slackMessage.attachments[0].ts.split('.')[0]) * 1000),
 				}],
 			};
@@ -1117,7 +1171,7 @@ export default class SlackAdapter {
 						attachments: [{
 							text : this.rocket.convertSlackMsgTxtToRocketTxtFormat(pin.message.text),
 							author_name : user.username,
-							author_icon : getAvatarUrlFromUsername(user.username),
+							author_icon : getUserAvatarURL(user.username),
 							ts : new Date(parseInt(pin.message.ts.split('.')[0]) * 1000),
 						}],
 					};

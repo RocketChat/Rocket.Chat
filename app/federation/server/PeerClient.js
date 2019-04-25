@@ -7,7 +7,7 @@ import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
 import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
-import { Federation } from './';
+import { Federation } from '.';
 
 export class PeerClient {
 	constructor() {
