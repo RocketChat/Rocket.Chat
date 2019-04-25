@@ -25,7 +25,8 @@ class MessageBoxActions {
 		if (!group || !this.actions[group]) {
 			return false;
 		}
-		return (this.actions[group] = this.actions[group].filter((action) => expression.test(action.id)));
+
+		return (this.actions[group] = this.actions[group].filter((action) => !expression.test(action.id)));
 	}
 
 	get(group) {

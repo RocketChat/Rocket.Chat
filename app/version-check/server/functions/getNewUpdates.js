@@ -2,7 +2,6 @@ import os from 'os';
 import { HTTP } from 'meteor/http';
 import { check, Match } from 'meteor/check';
 import { Settings } from '../../../models';
-import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 import { MongoInternals } from 'meteor/mongo';
@@ -11,7 +10,7 @@ export default () => {
 	try {
 		const uniqueID = Settings.findOne('uniqueID');
 		const { _oplogHandle } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-		const oplogEnabled = _oplogHandle && _oplogHandle.onOplogEntry && settings.get('Force_Disable_OpLog_For_Cache') !== true;
+		const oplogEnabled = _oplogHandle && _oplogHandle.onOplogEntry;
 
 		const params = {
 			uniqueId: uniqueID.value,

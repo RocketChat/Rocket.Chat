@@ -3,7 +3,6 @@ import { settings } from '../../settings';
 import { Logger } from '../../logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
-import ldapEscape from 'ldap-escape';
 
 const logger = new Logger('LDAP', {
 	sections: {
@@ -183,7 +182,6 @@ export default class LDAP {
 	}
 
 	getUserFilter(username) {
-		username = ldapEscape.filter`${ username }`;
 		const filter = [];
 
 		if (this.options.User_Search_Filter !== '') {
@@ -320,9 +318,6 @@ export default class LDAP {
 	}
 
 	isUserInGroup(username, userdn) {
-		username = ldapEscape.filter`${ username }`;
-		userdn = ldapEscape.dn`${ userdn }`;
-
 		if (!this.options.group_filter_enabled) {
 			return true;
 		}
@@ -484,7 +479,6 @@ export default class LDAP {
 	}
 
 	authSync(dn, password) {
-		dn = ldapEscape.dn`${ dn }`;
 		logger.auth.info('Authenticating', dn);
 
 		try {

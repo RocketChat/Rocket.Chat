@@ -2842,18 +2842,6 @@ rc-old select,
 		}
 	}
 
-	&.system .body {
-		font-style: italic;
-
-		& em {
-			font-weight: 600;
-		}
-
-		& .attachment {
-			font-style: normal;
-		}
-	}
-
 	& .avatar-initials {
 		line-height: 40px;
 	}
@@ -2862,26 +2850,6 @@ rc-old select,
 		transition: opacity 0.3s linear;
 
 		opacity: 1;
-
-		& .inline-image {
-			display: inline-block;
-
-			border-radius: 3px;
-			background-repeat: no-repeat;
-			background-position: center left;
-			background-size: contain;
-			box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-
-			line-height: 0;
-
-			& img {
-				max-width: 100%;
-				max-height: 200px;
-
-				cursor: pointer;
-				object-fit: contain;
-			}
-		}
 
 		& > h1 {
 			font-size: 3em;
@@ -2961,6 +2929,26 @@ rc-old select,
 		font-weight: 400;
 	}
 
+	& .inline-image {
+		display: inline-block;
+
+		border-radius: 3px;
+		background-repeat: no-repeat;
+		background-position: center left;
+		background-size: contain;
+		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+
+		line-height: 0;
+
+		& img {
+			max-width: 100%;
+			max-height: 200px;
+
+			cursor: pointer;
+			object-fit: contain;
+		}
+	}
+
 	&.livechat_navigation_history {
 		& .thumb,
 		& .user,
@@ -3002,15 +2990,60 @@ rc-old select,
 		&:hover .message-actions {
 			display: none;
 		}
+	}
 
-		&.system {
+	&.system {
+		min-height: 25px;
+		padding: 2px 50px 2px 70px;
+
+		font-size: 12px;
+
+		& > .thumb {
+			top: 3px;
+
+			width: 20px;
+			height: 20px;
+			margin-left: 16px;
+
+			& > .avatar {
+				width: 100% !important;
+				height: 100% !important;
+			}
+		}
+
+		& .message-body-wrapper {
 			& .title {
 				display: inline-flex;
+
+				& .user {
+					font-size: 0.75rem;
+					font-weight: initial;
+				}
+
+				& .reactions,
+				& .edited,
+				& .role-tag {
+					display: none;
+				}
 			}
 
 			& .body {
-				display: inline-flex;
+				display: inline;
+
+				font-style: italic;
+
+				& em {
+					font-weight: 600;
+				}
+
+				& .attachment {
+					font-style: normal;
+				}
 			}
+		}
+
+		&:hover .message-actions {
+			display: none;
 		}
 	}
 }
@@ -3055,7 +3088,22 @@ rc-old select,
 .rc-old .compact {
 	& .message {
 		min-height: 26px;
-		padding: 5px 15px 0 37px;
+		padding: 5px 15px 5px 37px;
+
+		& .attachment {
+			& .attachment-title > a {
+				font-size: 0.9em;
+			}
+
+			& .attachment-author img {
+				border-radius: 2px;
+			}
+		}
+
+		& blockquote iframe {
+			width: 266px;
+			height: 150px;
+		}
 
 		& .body {
 			display: inline;
@@ -3066,21 +3114,6 @@ rc-old select,
 
 			& .inline-video {
 				max-height: 150px;
-			}
-
-			& .attachment {
-				& .attachment-title > a {
-					font-size: 0.9em;
-				}
-
-				& .attachment-author img {
-					border-radius: 2px;
-				}
-			}
-
-			& blockquote iframe {
-				width: 266px;
-				height: 150px;
 			}
 		}
 
@@ -4635,34 +4668,68 @@ rc-old select,
 	height: 100%;
 
 	& .dropzone-overlay {
-		display: none;
-	}
 
-	&.over .dropzone-overlay {
-		position: fixed;
+		position: absolute;
 		z-index: 1000000;
 		top: 0;
 		right: 0;
 		bottom: 0;
 		left: 0;
 
-		display: flex;
+		display: none;
+
+		margin: var(--default-small-padding);
+		padding: var(--default-padding);
+
+		animation-name: zoomIn;
+		animation-duration: 0.1s;
+
+		text-align: center;
+
+		color: var(--color-blue);
+
+		border: 4px dashed var(--color-blue);
+		background: rgba(255, 255, 255, 0.8);
+
+		box-shadow: 0 0 0 var(--default-small-padding) rgba(255, 255, 255, 0.9);
 
 		font-size: 42px;
 		align-items: center;
 		justify-content: center;
 
-		& > div {
-			padding: 40px;
+		&::before {
+			position: absolute;
+			z-index: -1;
 
-			text-align: center;
-			pointer-events: none;
+			top: calc(-1 * var(--default-small-padding));
+			right: calc(-1 * var(--default-small-padding));
+			bottom: calc(-1 * var(--default-small-padding));
+			left: calc(-1 * var(--default-small-padding));
 
-			border-radius: 10px;
-
-			line-height: 1.3em;
+			content: '';
 		}
 	}
+
+	&.over .dropzone-overlay {
+		display: flex;
+	}
+}
+
+@keyframes zoomIn {
+	0% {
+		transform: scale3d(0.9, 0.9, 0.9);
+
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+}
+
+.zoomIn {
+	-webkit-animation-name: zoomIn;
+	animation-name: zoomIn;
 }
 
 .rc-old .is-cordova {
@@ -4896,7 +4963,6 @@ rc-old select,
 		flex-direction: column;
 
 		height: 100%;
-		padding: 20px;
 	}
 
 	&__header {

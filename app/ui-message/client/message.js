@@ -1,12 +1,12 @@
 import _ from 'underscore';
-import moment from 'moment';
 
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 
-import { timeAgo } from '../../lib/client/lib/formatDate';
+import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
@@ -85,9 +85,7 @@ Template.message.helpers({
 			? 'replies'
 			: 'reply';
 	},
-	formatDate(date) {
-		return moment(date).format('LLL');
-	},
+	formatDateAndTime,
 	encodeURI(text) {
 		return encodeURI(text);
 	},
@@ -142,13 +140,16 @@ Template.message.helpers({
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false) {
+		if ((msg.tmid && settings.showreply) || groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || MessageTypes.isSystemMessage(msg)) {
 			return 'false';
 		}
 	},
 	sequentialClass() {
 		const { msg, groupable, settings: { showreply } } = this;
 		if (msg.tmid && showreply) {
+			return;
+		}
+		if (MessageTypes.isSystemMessage(msg)) {
 			return;
 		}
 		return groupable !== false && msg.groupable !== false && 'sequential';
@@ -319,6 +320,11 @@ Template.message.helpers({
 			return 'hidden';
 		}
 	},
+	hideMessageActions() {
+		const { msg } = this;
+
+		return msg.private || MessageTypes.isSystemMessage(msg);
+	},
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties
@@ -381,10 +387,9 @@ Template.message.helpers({
 		return !!(tmid && showreply);
 	},
 	collapsed() {
-		const { msg, msg: { tmid, collapsed }, settings: { showreply } } = this;
-		const isCollapsedThreadReply = tmid && showreply && collapsed !== false;
-		const isSystemMessage = MessageTypes.isSystemMessage(msg);
-		if (isCollapsedThreadReply || isSystemMessage) {
+		const { msg: { tmid, collapsed }, settings: { showreply }, shouldCollapseReplies } = this;
+		const isCollapsedThreadReply = shouldCollapseReplies && tmid && showreply && collapsed !== false;
+		if (isCollapsedThreadReply) {
 			return 'collapsed';
 		}
 	},
@@ -484,7 +489,7 @@ Template.message.onCreated(function() {
 	if (msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = renderBody(msg, settings);
+	return this.body = Tracker.nonreactive(() => renderBody(msg, settings));
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -502,12 +507,12 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 };
 
-const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate) => {
+const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDateSeparator) => {
 	const { classList, dataset: currentDataset } = currentNode;
 
 	if (!previousNode) {
 		classList.remove('sequential');
-		!noDate && classList.add('new-day');
+		showDateSeparator && classList.add('new-day');
 		return;
 	}
 
@@ -515,13 +520,9 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
-	if (!noDate && (forceDate || previousMessageDate.toDateString() !== currentMessageDate.toDateString())) {
+	if (showDateSeparator && previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
 		classList.remove('sequential');
 		classList.add('new-day');
-	}
-
-	if (previousDataset.tmid !== currentDataset.tmid) {
-		return classList.remove('sequential');
 	}
 
 	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
@@ -533,10 +534,64 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, noDate)
 	}
 };
 
-Template.message.onViewRendered = function() {
+Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
 	const { settings, forceDate, noDate, groupable, msg } = messageArgs(Template.currentData());
 
 	if (noDate && !groupable) {
+		return;
+	}
+
+
+	if (msg.file && msg.file.type === 'application/pdf') {
+		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
+	}
+	const currentNode = this.firstNode;
+	const currentDataset = currentNode.dataset;
+	const previousNode = getPreviousSentMessage(currentNode);
+	const nextNode = currentNode.nextElementSibling;
+	setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, noDate);
+	if (nextNode && nextNode.dataset) {
+		const nextDataset = nextNode.dataset;
+		if (forceDate || nextDataset.date !== currentDataset.date) {
+			if (!noDate) {
+				currentNode.classList.add('new-day');
+			}
+			currentNode.classList.remove('sequential');
+		} else {
+			nextNode.classList.remove('new-day');
+		}
+
+		if (nextDataset.groupable !== 'false') {
+			if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+				nextNode.classList.remove('sequential');
+			} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
+				nextNode.classList.add('sequential');
+			}
+		}
+
+		if (currentNode.classList.contains('system')) {
+			nextNode.classList.remove('sequential');
+		}
+	} else {
+		const [el] = $(`#chat-window-${ msg.rid }`);
+		const view = el && Blaze.getView(el);
+		const templateInstance = view && view.templateInstance();
+		if (!templateInstance) {
+			return;
+		}
+
+		if (currentNode.classList.contains('own') === true) {
+			templateInstance.atBottom = true;
+		}
+		templateInstance.sendToBottomIfNecessary();
+	}
+
+});
+
+Template.message.onViewRendered = function() {
+	const { settings, forceDate, showDateSeparator = true, groupable, msg } = messageArgs(Template.currentData());
+
+	if (!showDateSeparator && !groupable) {
 		return;
 	}
 
@@ -548,23 +603,28 @@ Template.message.onViewRendered = function() {
 		const currentDataset = currentNode.dataset;
 		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
-		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, noDate);
+		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator);
 		if (nextNode && nextNode.dataset) {
 			const nextDataset = nextNode.dataset;
 			if (forceDate || nextDataset.date !== currentDataset.date) {
-				if (!noDate) {
+				if (showDateSeparator) {
 					currentNode.classList.add('new-day');
 				}
 				currentNode.classList.remove('sequential');
 			} else {
 				nextNode.classList.remove('new-day');
 			}
+
 			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.tmid !== currentDataset.tmid || nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 					nextNode.classList.remove('sequential');
-				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
+				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp')) {
 					nextNode.classList.add('sequential');
 				}
+			}
+
+			if (currentNode.classList.contains('system')) {
+				nextNode.classList.remove('sequential');
 			}
 		} else {
 			const [el] = $(`#chat-window-${ msg.rid }`);

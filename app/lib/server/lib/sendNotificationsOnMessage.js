@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Subscriptions } from '../../../models';
 import { roomTypes } from '../../../utils';
-import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications/';
+import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { sendEmail, shouldNotifyEmail } from '../functions/notifications/email';
 import { sendSinglePush, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
