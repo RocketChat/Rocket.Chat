@@ -70,14 +70,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return room && (room.ro === true && Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !userOwner);
 	}
 	archived(rid) {
-		const fields = {
-			archived: 1,
-		};
-		const room = ChatRoom.findOne({
-			_id: rid,
-		}, {
-			fields,
-		});
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { archived: 1 } });
 		return room && room.archived === true;
 	}
 	verifyCanSendMessage(rid) {
@@ -94,13 +87,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return this.canSendMessage(rid);
 	}
 	verifyShowJoinLink(rid) {
-		const room = ChatRoom.findOne({
-			_id: rid,
-		}, {
-			fields: {
-				t: 1,
-			},
-		});
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
@@ -111,7 +98,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return this.roomTypes[roomType].showJoinLink(rid);
 	}
 	getNotSubscribedTpl(rid) {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
@@ -123,7 +110,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 
 	getReadOnlyTpl(rid) {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
