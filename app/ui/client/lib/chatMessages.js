@@ -226,8 +226,8 @@ export class ChatMessages {
 		}
 
 		const cursorPosition = editingNext ? 0 : -1;
-		this.$input.setCursorPosition(cursorPosition);
 		this.input.focus();
+		this.$input.setCursorPosition(cursorPosition);
 	}
 
 	clearEditing() {
@@ -521,12 +521,12 @@ export class ChatMessages {
 
 			event.preventDefault();
 			event.stopPropagation();
-			return true;
+			return;
 		}
 
 		if (keyCode === keyCodes.ARROW_UP || keyCode === keyCodes.ARROW_DOWN) {
 			if (event.shiftKey) {
-				return true;
+				return;
 			}
 
 			const cursorPosition = input.selectionEnd;
@@ -535,7 +535,7 @@ export class ChatMessages {
 				if (cursorPosition === 0) {
 					this.toPrevMessage();
 				} else if (!event.altKey) {
-					return true;
+					return;
 				}
 
 				if (event.altKey) {
@@ -545,7 +545,7 @@ export class ChatMessages {
 				if (cursorPosition === input.value.length) {
 					this.toNextMessage();
 				} else if (!event.altKey) {
-					return true;
+					return;
 				}
 
 				if (event.altKey) {
@@ -553,7 +553,9 @@ export class ChatMessages {
 				}
 			}
 
-			return false;
+			event.preventDefault();
+			event.stopPropagation();
+			return;
 		}
 	}
 
