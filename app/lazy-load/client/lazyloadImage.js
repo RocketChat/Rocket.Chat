@@ -7,6 +7,7 @@ const emptyImageEncoded =
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==';
 
 const imgsrcs = new Set();
+
 Template.lazyloadImage.helpers({
 	class() {
 		const loaded = Template.instance().loaded.get();
