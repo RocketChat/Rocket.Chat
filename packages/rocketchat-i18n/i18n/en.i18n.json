@@ -2630,6 +2630,8 @@
   "Size": "Size",
   "Skip": "Skip",
   "Slack_Users": "Slack's Users CSV",
+  "SlackBridge_APIToken": "API Tokens",
+  "SlackBridge_APIToken_Description": "You can configure multiple slack servers by adding one API Token per line.",
   "SlackBridge_error": "SlackBridge got an error while importing your messages at %s: %s",
   "SlackBridge_finish": "SlackBridge has finished importing the messages at %s. Please reload to view all messages.",
   "SlackBridge_Out_All": "SlackBridge Out All",
