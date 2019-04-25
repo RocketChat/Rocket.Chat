@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { TAPi18next } from 'meteor/tap:i18n';
+import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
+
 import { isEmail, APIClient } from '../../../utils';
 import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
