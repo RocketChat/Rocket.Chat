@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { roomTypes } from '../../../utils';
+import { roomTypes } from '../../../utils/client/lib/roomTypes';
 import { Subscriptions } from '../../../models';
 import { AccountBox } from './AccountBox';
 
@@ -97,7 +97,7 @@ export const SideNav = new class {
 			}
 		});
 		setTimeout(() => {
-			const ref = highestZidxElem.querySelector('input');
+			const ref = highestZidxElem && highestZidxElem.querySelector('input');
 			return ref && ref.focus();
 		}, 200);
 	}
