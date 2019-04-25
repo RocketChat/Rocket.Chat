@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { Rooms, Subscriptions } from '../../models';
+import { Rooms } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 
@@ -61,15 +61,13 @@ Meteor.startup(function() {
 			const { msg } = messageArgs(this);
 			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
 		},
-		condition(message) {
-			const room = Rooms.findOne({ _id: message.rid });
-			const user = Meteor.user();
+		condition({ msg: message, u: user, room, subscription }) {
 
 			if (!room) {
 				return false;
 			} else if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 				return false;
-			} else if (!Subscriptions.findOne({ rid: message.rid })) {
+			} else if (!subscription) {
 				return false;
 			} else if (message.private) {
 				return false;

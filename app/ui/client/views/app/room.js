@@ -772,7 +772,7 @@ Template.room.events({
 
 		const context = ctx || message.actionContext || 'message';
 
-		const allItems = MessageAction.getButtons(message, context, 'menu').map((item) => ({
+		const allItems = MessageAction.getButtons(messageArgs(this), context, 'menu').map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
 			type: 'message-action',

@@ -3,7 +3,6 @@ import { MessageAction, modal } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
-import { Subscriptions } from '../../models';
 import { hasAtLeastOnePermission } from '../../authorization';
 
 Meteor.startup(function() {
@@ -51,18 +50,18 @@ Meteor.startup(function() {
 			});
 
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid, 'u._id': Meteor.userId() }) === undefined) {
+		condition({ msg, subscription }) {
+			if (!subscription) {
 				return false;
 			}
 
-			if (message.snippeted || ((settings.get('Message_AllowSnippeting') === undefined) ||
+			if (msg.snippeted || ((settings.get('Message_AllowSnippeting') === undefined) ||
 				(settings.get('Message_AllowSnippeting') === null) ||
 				(settings.get('Message_AllowSnippeting')) === false)) {
 				return false;
 			}
 
-			return hasAtLeastOnePermission('snippet-message', message.rid);
+			return hasAtLeastOnePermission('snippet-message', msg.rid);
 		},
 	});
 });

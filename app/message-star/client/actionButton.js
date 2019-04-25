@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { handleError } from '../../utils';
-import { Subscriptions } from '../../models';
 import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
@@ -22,12 +21,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
+		condition({ msg: message, subscription, u }) {
+			if (subscription == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
+			return !message.starred || !message.starred.find((star) => star._id === u._id);
 		},
 		order: 10,
 		group: 'menu',
@@ -47,12 +46,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null && settings.get('Message_AllowStarring')) {
+		condition({ msg: message, subscription, u }) {
+			if (subscription == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return message.starred && message.starred.find((star) => star._id === Meteor.userId());
+			return message.starred && message.starred.find((star) => star._id === u._id);
 		},
 		order: 10,
 		group: 'menu',
@@ -70,8 +69,8 @@ Meteor.startup(function() {
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 			return true;
@@ -91,8 +90,8 @@ Meteor.startup(function() {
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 			return true;

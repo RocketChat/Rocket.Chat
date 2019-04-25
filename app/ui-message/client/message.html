@@ -30,7 +30,9 @@
 				{{#if isBot}}
 					<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
 				{{/if}}
-				<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
+				{{#with time}}
+					<time class="time" title='{{../date}} {{.}}' datetime='{{../date}} {{.}}'>{{.}}</time>
+				{{/with}}
 				{{#if showTranslated}}
 					<span class="translated">
 						<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" aria-label="{{_ "Translated"}}"></i>

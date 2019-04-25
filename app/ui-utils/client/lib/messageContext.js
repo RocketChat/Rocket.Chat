@@ -5,6 +5,7 @@ import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
+import { AutoTranslate } from '../../../autotranslate/client';
 
 export function messageContext() {
 	const { rid } = Template.instance();
@@ -25,6 +26,7 @@ export function messageContext() {
 			},
 		}),
 		settings: {
+			translateLanguage: AutoTranslate.getLanguage(rid),
 			showreply: true,
 			showReplyButton: true,
 			hasPermissionDeleteMessage: hasPermission('delete-message', rid),

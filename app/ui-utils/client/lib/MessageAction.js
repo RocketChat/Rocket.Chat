@@ -172,8 +172,8 @@ Meteor.startup(async function() {
 				.data('reply', messages)
 				.trigger('dataChange');
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 
@@ -192,15 +192,13 @@ Meteor.startup(async function() {
 			const { msg } = messageArgs(this);
 			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
 		},
-		condition(message) {
-			if (Subscriptions.findOne({
-				rid: message.rid,
-			}) == null) {
+		condition({ msg: message, subscription, u }) {
+			if (subscription == null) {
 				return false;
 			}
 			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 			const isEditAllowed = settings.get('Message_AllowEditing');
-			const editOwn = message.u && message.u._id === Meteor.userId();
+			const editOwn = message.u && message.u._id === u._id;
 			if (!(hasPermission || (isEditAllowed && editOwn))) {
 				return;
 			}
@@ -233,8 +231,8 @@ Meteor.startup(async function() {
 			const { msg: message } = messageArgs(this);
 			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ msg: message, subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 
@@ -260,8 +258,8 @@ Meteor.startup(async function() {
 			$(event.currentTarget).attr('data-clipboard-text', permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 
@@ -282,8 +280,8 @@ Meteor.startup(async function() {
 			$(event.currentTarget).attr('data-clipboard-text', message);
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription }) {
+			if (subscription) {
 				return false;
 			}
 
@@ -313,8 +311,8 @@ Meteor.startup(async function() {
 				.data('reply', messages)
 				.trigger('dataChange');
 		},
-		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+		condition({ subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 
@@ -334,10 +332,8 @@ Meteor.startup(async function() {
 			const { msg: { rid, u: { _id } } } = messageArgs(this);
 			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true }, success(() => toastr.success(t('User_has_been_ignored'))));
 		},
-		condition(message) {
-			const subscription = Subscriptions.findOne({ rid: message.rid });
-
-			return Meteor.userId() !== message.u._id && !(subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1);
+		condition({ msg: message, subscription, u }) {
+			return u._id !== message.u._id && !(subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1);
 		},
 		order: 20,
 		group: 'menu',
@@ -353,9 +349,8 @@ Meteor.startup(async function() {
 			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false }, success(() => toastr.success(t('User_has_been_unignored'))));
 
 		},
-		condition(message) {
-			const subscription = Subscriptions.findOne({ rid: message.rid }, { fields: { ignored: 1 } });
-			return Meteor.userId() !== message.u._id && subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
+		condition({ msg: message, subscription, u }) {
+			return u._id !== message.u._id && subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
 		},
 		order: 20,
 		group: 'menu',
