@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
+import { Tracker } from 'meteor/tracker';
 
 import { isEmail, APIClient } from '../../../utils';
 import { settings } from '../../../settings';
@@ -16,6 +17,7 @@ import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
 import semver from 'semver';
+import { SideNav } from '../../../ui-utils/client';
 
 function getApps(instance) {
 	const id = instance.id.get();
@@ -501,4 +503,11 @@ Template.appManage.events({
 			}
 		}
 	}, 500),
+});
+
+Template.appManage.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });
