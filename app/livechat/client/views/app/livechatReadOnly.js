@@ -4,7 +4,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ChatRoom } from '../../../../models';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
-import { handleError } from '../../../../utils';
 import { call } from '../../../../ui-utils/client';
 import { settings } from '../../../../settings';
 import './livechatReadOnly.html';
@@ -32,11 +31,7 @@ Template.livechatReadOnly.events({
 
 		const inquiry = instance.inquiry.get();
 		const { _id } = inquiry;
-		try {
-			await call('livechat:takeInquiry', _id);
-		} catch (error) {
-			handleError(error);
-		}
+		await call('livechat:takeInquiry', _id);
 	},
 });
 
