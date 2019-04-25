@@ -11,18 +11,13 @@ Meteor.publish('livechat:inquiry', function(_id) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:inquiry' }));
 	}
 
-	const query = {
-		agents: this.userId,
-		status: 'open',
-	};
-
-	if (_id) {
-		Object.assign(query, { _id });
-	}
-
 	const publication = this;
 
-	const cursorHandle = LivechatInquiry.find(query).observeChanges({
+	const cursorHandle = LivechatInquiry.find({
+		agents: this.userId,
+		status: 'open',
+		...(_id && { _id }),
+	}).observeChanges({
 		added(_id, record) {
 			return publication.added('rocketchat_livechat_inquiry', _id, record);
 		},
