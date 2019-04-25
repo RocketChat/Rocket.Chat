@@ -1,47 +1,29 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
 	"parser": "babel-eslint",
+	"rules": {
+		"import/no-unresolved": [2, {
+			"commonjs": true,
+			"amd": true,
+			"ignore": [
+				"^meteor\/.+$"
+			]
+		}],
+		"import/named": 0,
+		"import/namespace": 0,
+		"import/default": 0,
+		"import/export": 2,
+		"import/no-cycle": 0,
+		"import/no-useless-path-segments": 2,
+		"import/no-duplicates": 2,
+		"import/no-named-as-default": 0,
+		"import/no-named-as-default-member": 0
+	},
 	"globals": {
+		"__meteor_bootstrap__"        : false,
 		"__meteor_runtime_config__"   : false,
-		"AccountBox"                  : false,
-		"AgentUsers"                  : false,
-		"Apps"                        : false,
 		"Assets"                      : false,
-		"browser"                     : false,
-		"ChatMessage"                 : false,
-		"ChatMessages"                : false,
-		"ChatRoom"                    : false,
-		"ChatSubscription"            : false,
-		"Department"                  : false,
-		"FileUpload"                  : false,
-		"getNextAgent"                : false,
-		"handleError"                 : false,
-		"getAvatarUrlFromUsername"    : false,
-		"LivechatCustomField"         : false,
-		"LivechatDepartment"          : false,
-		"LivechatDepartmentAgents"    : false,
-		"livechatManagerRoutes"       : true,
-		"LivechatMonitoring"          : false,
-		"LivechatPageVisited"         : false,
-		"LivechatTrigger"             : false,
-		"Logger"                      : false,
-		"modal"                       : false,
-		"Npm"                         : false,
-		"Package"                     : false,
-		"parentCall"                  : false,
-		"RocketChat"                  : true,
-		"RoomHistoryManager"          : false,
-		"RoomManager"                 : false,
-		"ServiceConfiguration"        : false,
-		"Settings"                    : false,
-		"SideNav"                     : false,
-		"t"                           : false,
-		"TimeSync"                    : false,
-		"toastr"                      : false,
-		"Trigger"                     : false,
-		"Triggers"                    : false,
-		"visitor"                     : false,
-		"VideoRecorder"               : false,
-		"VRecDialog"                  : false
+		"chrome"                      : false,
+		"jscolor"                     : false
 	}
 }

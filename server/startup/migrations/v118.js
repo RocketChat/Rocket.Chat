@@ -1,7 +1,10 @@
-RocketChat.Migrations.add({
+import { Migrations } from '../../../app/migrations';
+import { Subscriptions, Settings, Users } from '../../../app/models';
+
+Migrations.add({
 	version: 118,
 	up() {
-		RocketChat.models.Subscriptions.update({
+		Subscriptions.update({
 			emailNotifications: 'all',
 			emailPrefOrigin: 'user',
 		}, {
@@ -12,7 +15,7 @@ RocketChat.Migrations.add({
 			multi:true,
 		});
 
-		RocketChat.models.Users.update({
+		Users.update({
 			'settings.preferences.emailNotificationMode': 'disabled',
 		}, {
 			$set: {
@@ -22,7 +25,7 @@ RocketChat.Migrations.add({
 			multi:true,
 		});
 
-		RocketChat.models.Users.update({
+		Users.update({
 			'settings.preferences.emailNotificationMode': 'all',
 		}, {
 			$set: {
@@ -32,7 +35,7 @@ RocketChat.Migrations.add({
 			multi:true,
 		});
 
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'Accounts_Default_User_Preferences_emailNotificationMode',
 			value: 'disabled',
 		}, {
@@ -41,7 +44,7 @@ RocketChat.Migrations.add({
 			},
 		});
 
-		RocketChat.models.Settings.update({
+		Settings.update({
 			_id: 'Accounts_Default_User_Preferences_emailNotificationMode',
 			value: 'all',
 		}, {
@@ -51,14 +54,14 @@ RocketChat.Migrations.add({
 		});
 
 		// set user highlights on subscriptions
-		RocketChat.models.Users.find({
+		Users.find({
 			'settings.preferences.highlights.0': { $exists: true },
 		}, {
 			fields: {
 				'settings.preferences.highlights': 1,
 			},
 		}).forEach((user) => {
-			RocketChat.models.Subscriptions.update({
+			Subscriptions.update({
 				'u._id': user._id,
 			}, {
 				$set: {

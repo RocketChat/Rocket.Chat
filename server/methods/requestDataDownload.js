@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { ExportOperations } from '../../app/models';
+import { settings } from '../../app/settings';
 import fs from 'fs';
 import path from 'path';
 
 let tempFolder = '/tmp/userData';
-if (RocketChat.settings.get('UserData_FileSystemPath') != null) {
-	if (RocketChat.settings.get('UserData_FileSystemPath').trim() !== '') {
-		tempFolder = RocketChat.settings.get('UserData_FileSystemPath');
+if (settings.get('UserData_FileSystemPath') != null) {
+	if (settings.get('UserData_FileSystemPath').trim() !== '') {
+		tempFolder = settings.get('UserData_FileSystemPath');
 	}
 }
 
@@ -14,7 +16,7 @@ Meteor.methods({
 		const currentUserData = Meteor.user();
 		const userId = currentUserData._id;
 
-		const lastOperation = RocketChat.models.ExportOperations.findLastOperationByUser(userId, fullExport);
+		const lastOperation = ExportOperations.findLastOperationByUser(userId, fullExport);
 
 		if (lastOperation) {
 			const yesterday = new Date();
@@ -58,7 +60,7 @@ Meteor.methods({
 			fullExport,
 		};
 
-		RocketChat.models.ExportOperations.create(exportOperation);
+		ExportOperations.create(exportOperation);
 
 		return {
 			requested: true,

@@ -1,1 +1,0 @@
-export { renderMessageBody } from './renderMessageBody';

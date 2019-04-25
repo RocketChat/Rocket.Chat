@@ -1,0 +1,76 @@
+<template name="adminEmoji">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			{{> header sectionName="Custom_emoji"}}
+			<div class="content">
+				{{#unless hasPermission 'manage-emoji'}}
+					<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+				{{else}}
+					<form class="search-form" role="form">
+						<div class="rc-input__wrapper">
+							<div class="rc-input__icon">
+								{{#if isReady}}
+									{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+								{{else}}
+									{{> loading }}
+								{{/if}}
+							</div>
+							<input id="emoji-filter" type="text" class="rc-input__element"
+								   placeholder="{{_ "Search"}}" autofocus dir="auto">
+					 	</div>
+					</form>
+					<div class="results">
+						{{{_ "Showing_results" customemoji.length}}}
+					</div>
+					{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+						<thead>
+							<tr>
+								<th width="50%">
+									<div class="table-fake-th">{{_ "Name"}}</div>
+								</th>
+								<th width="50%">
+									<div class="table-fake-th">{{_ "Aliases"}}</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each customemoji}}
+							<tr>
+								<td width="50%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{name}}
+											</span>
+										</div>
+									</div>
+								</td>
+								<td width="50%">
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{aliases}}
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							{{else}} {{# with searchText}}
+							<tr class="table-no-click">
+								<td>{{_ "No_results_found_for"}} {{.}}</td>
+							</tr>
+							{{/with}} {{/each}} {{#unless isReady}}
+							<tr class="table-no-click">
+								<td class="table-loading-td">{{> loading}}</td>
+							</tr>
+							{{/unless}}
+						</tbody>
+					{{/table}}
+				{{/unless}}
+			</div>
+		</section>
+		{{#with flexData}}
+			{{> flexTabBar}}
+		{{/with}}
+	</div>
+</template>
