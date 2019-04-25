@@ -3,10 +3,10 @@ import moment from 'moment';
 import Clipboard from 'clipboard';
 
 import { Meteor } from 'meteor/meteor';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Blaze } from 'meteor/blaze';
-import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -40,8 +40,6 @@ import { isURL } from '../../../../utils/lib/isURL';
 import { mime } from '../../../../utils/lib/mimeTypes';
 
 export const chatMessages = {};
-
-const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
@@ -233,8 +231,10 @@ Template.room.helpers({
 		return useNrr === 'true' || useNrr !== 'false';
 	},
 	isTranslated() {
-		const sub = Tracker.nonreactive(() => Template.instance().subscription.get());
-		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
+		const { state } = Template.instance();
+		return settings.get('AutoTranslate_Enabled') &&
+			(state.get('autoTranslate') === true) &&
+			!!state.get('autoTranslateLanguage');
 	},
 
 	embeddedVersion() {
@@ -242,7 +242,8 @@ Template.room.helpers({
 	},
 
 	subscribed() {
-		return Tracker.nonreactive(() => Template.instance().subscription.get());
+		const { state } = Template.instance();
+		return state.get('subscribed');
 	},
 
 	messagesHistory() {
@@ -436,8 +437,8 @@ Template.room.helpers({
 	},
 
 	showToggleFavorite() {
-		const subscription = Tracker.nonreactive(() => Template.instace().subscription.get());
-		return subscription && favoritesEnabled();
+		const { state } = Template.instace();
+		return state.get('subscribed') && settings.get('Favorite_Rooms');
 	},
 
 	messageViewMode() {
@@ -472,7 +473,7 @@ Template.room.helpers({
 	},
 
 	canPreview() {
-		const { room, subscription } = Template.instance();
+		const { room, state } = Template.instance();
 
 		if (room && room.t !== 'c') {
 			return true;
@@ -486,7 +487,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return !Tracker.nonreactive(() => subscription.get());
+		return !state.get('subscribed');
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -968,8 +969,13 @@ Template.room.onCreated(function() {
 	this.rid = rid;
 
 	this.subscription = new ReactiveVar();
+	this.state = new ReactiveDict();
 	this.autorun(() => {
-		this.subscription.set(Subscriptions.findOne({ rid }));
+		const subscription = Subscriptions.findOne({ rid });
+		this.subscription.set(subscription);
+		this.state.set('subscribed', !!subscription);
+		this.state.set('autoTranslate', subscription && subscription.autoTranslate);
+		this.state.set('autoTranslateLanguage', subscription && subscription.autoTranslateLanguage);
 	});
 
 	this.room = Rooms.findOne({ _id: rid });
