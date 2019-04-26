@@ -4,36 +4,37 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { EmojiPicker } from '../../emoji';
-import { Users } from '../../models';
-import { settings } from '../../settings';
+import { EmojiPicker } from '../../../emoji';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import {
 	fileUpload,
 	KonchatNotification,
-} from '../../ui';
+} from '../../../ui';
 import {
 	messageBox,
 	popover,
 	call,
 	keyCodes,
 	isRTL,
-} from '../../ui-utils';
+} from '../../../ui-utils';
 import {
 	t,
 	roomTypes,
 	getUserPreference,
-} from '../../utils';
+} from '../../../utils';
 import moment from 'moment';
+import { setupAutogrow } from './messageBoxAutogrow';
 import {
 	formattingButtons,
 	applyFormatting,
 } from './messageBoxFormatting';
+import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
-
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -54,7 +55,7 @@ Template.messageBox.onCreated(function() {
 	};
 
 	this.insertNewLine = () => {
-		const { input } = this;
+		const { input, autogrow } = this;
 		if (!input) {
 			return;
 		}
@@ -76,26 +77,27 @@ Template.messageBox.onCreated(function() {
 
 		input.blur();
 		input.focus();
-		input.updateAutogrow();
+		autogrow.update();
 	};
 
 	this.send = (event) => {
-		if (!this.input) {
+		const { input } = this;
+
+		if (!input) {
 			return;
 		}
 
-		const { rid, tmid, onSend } = this.data;
-		const { value } = this.input;
+		const { autogrow, data: { rid, tmid, onSend } } = this;
+		const { value } = input;
 		this.set('');
 		onSend && onSend.call(this.data, event, { rid, tmid, value }, () => {
-			this.input.updateAutogrow();
-			this.input.focus();
+			autogrow.update();
+			input.focus();
 		});
 	};
 });
 
 Template.messageBox.onRendered(function() {
-
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);
@@ -143,22 +145,33 @@ Template.messageBox.onRendered(function() {
 				this.popupConfig.set(null);
 			}
 
+			if (this.autogrow) {
+				this.autogrow.destroy();
+				this.autogrow = null;
+			}
+
 			if (!input) {
 				return;
 			}
 
-			const $input = $(input);
+			const shadow = this.find('.js-input-message-shadow');
+			this.autogrow = setupAutogrow(input, shadow, onResize);
 
+			const $input = $(input);
 			$input.on('dataChange', () => {
 				const messages = $input.data('reply') || [];
 				this.replyMessageData.set(messages);
 			});
-
-			$input.autogrow().on('autogrow', () => {
-				onResize && onResize();
-			});
 		});
 	});
+});
+
+Template.messageBox.onDestroyed(function() {
+	if (!this.autogrow) {
+		return;
+	}
+
+	this.autogrow.destroy();
 });
 
 Template.messageBox.helpers({
@@ -337,10 +350,9 @@ Template.messageBox.events({
 	},
 	'paste .js-input-message'(event, instance) {
 		const { rid, tmid } = this;
-		const { input } = instance;
-		setTimeout(() => {
-			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
-		}, 50);
+		const { input, autogrow } = instance;
+
+		setTimeout(() => autogrow && autogrow.update(), 50);
 
 		if (!event.originalEvent.clipboardData) {
 			return;
