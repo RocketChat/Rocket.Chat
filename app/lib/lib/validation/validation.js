@@ -1,5 +1,12 @@
 import { Match, check } from 'meteor/check';
 
+const normalizeErrorMessage = (message) => {
+	const start = Math.max(0, message.lastIndexOf('Match error:'));
+	const end = message.indexOf(' in field');
+
+	return message.substring(start + 13, end === -1 ? undefined : end);
+};
+
 export const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
 		if (value[field] == null) {
@@ -9,7 +16,15 @@ export const objectMaybeIncluding = (types) => Match.Where((value) => {
 		try {
 			check(value[field], types[field]);
 		} catch (error) {
-			error.path = field;
+			let currentPath = '';
+
+			if (error.path) {
+				currentPath = error.path[0] === '[' ? error.path : `.${ error.path }`;
+			}
+
+			error.path = field + currentPath;
+			error.message = normalizeErrorMessage(error.message);
+
 			throw error;
 		}
 	});
