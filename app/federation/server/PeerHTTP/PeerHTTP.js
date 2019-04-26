@@ -35,11 +35,7 @@ export class PeerHTTP {
 
 		this.log(`Sending request: ${ method } - ${ url }`);
 
-		return HTTP.call(method, url, {
-			data,
-			timeout: 2000,
-			headers: { ...headers, 'x-federation-domain': this.config.peer.domain },
-		});
+		return HTTP.call(method, url, { data, timeout: 2000, headers: { ...headers, 'x-federation-domain': this.config.peer.domain } });
 	}
 
 	//
@@ -50,10 +46,7 @@ export class PeerHTTP {
 			total: retryInfo.total || 1,
 			stepSize: retryInfo.stepSize || 100,
 			stepMultiplier: retryInfo.stepMultiplier || 1,
-			tryToUpdateDNS:
-				retryInfo.tryToUpdateDNS === undefined
-					? true
-					: retryInfo.tryToUpdateDNS,
+			tryToUpdateDNS: retryInfo.tryToUpdateDNS === undefined ? true : retryInfo.tryToUpdateDNS,
 			DNSUpdated: false,
 		};
 
@@ -67,9 +60,7 @@ export class PeerHTTP {
 
 						retryInfo.DNSUpdated = true;
 
-						this.log(
-							`Trying to update local DNS cache for peer:${ peer.domain }`
-						);
+						this.log(`Trying to update local DNS cache for peer:${ peer.domain }`);
 
 						peer = Federation.peerDNS.updatePeerDNS(peer.domain);
 
@@ -77,18 +68,12 @@ export class PeerHTTP {
 					}
 				} catch (err) {
 					if (err.response && err.response.statusCode === 404) {
-						throw new Meteor.Error(
-							'federation-peer-does-not-exist',
-							'Peer does not exist'
-						);
+						throw new Meteor.Error('federation-peer-does-not-exist', 'Peer does not exist');
 					}
 				}
 
 				// Check if we need to skip due to specific error
-				const {
-					skip: skipOnSpecificError,
-					error: specificError,
-				} = skipRetryOnSpecificError(err);
+				const { skip: skipOnSpecificError, error: specificError } = skipRetryOnSpecificError(err);
 				if (skipOnSpecificError) {
 					this.log(`Retry: skipping due to specific error: ${ specificError }`);
 
@@ -102,8 +87,7 @@ export class PeerHTTP {
 					throw err;
 				}
 
-				const timeToRetry =
-					retryInfo.stepSize * (i + 1) * retryInfo.stepMultiplier;
+				const timeToRetry = retryInfo.stepSize * (i + 1) * retryInfo.stepMultiplier;
 
 				this.log(`Trying again in ${ timeToRetry / 1000 }s: ${ method } - ${ uri }`);
 

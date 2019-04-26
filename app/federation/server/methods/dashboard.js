@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { FederationEvents, FederationPeers, Users } from '../../../models';
-import { Federation } from '../';
+import { Federation } from '..';
 
 export function federationGetOverviewData() {
 	if (!Meteor.userId()) {

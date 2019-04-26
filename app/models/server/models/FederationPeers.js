@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Base } from './_Base';
-import { Users } from '../';
+import { Users } from '..';
 
 class FederationPeersModel extends Base {
 	constructor() {
@@ -17,19 +17,14 @@ class FederationPeersModel extends Base {
 		const peers = [...new Set(users.map((u) => u.federation.peer))];
 
 		for (const peer of peers) {
-			findAndModify(
-				{ peer },
-				[],
-				{
-					$setOnInsert: {
-						active: false,
-						peer,
-						last_seen_at: null,
-						last_failure_at: null,
-					},
+			findAndModify({ peer }, [], {
+				$setOnInsert: {
+					active: false,
+					peer,
+					last_seen_at: null,
+					last_failure_at: null,
 				},
-				{ upsert: true }
-			);
+			}, { upsert: true });
 		}
 
 		this.remove({ peer: { $nin: peers } });

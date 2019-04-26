@@ -19,9 +19,7 @@ export class PeerDNS {
 		this.config = config;
 
 		// Setup HubPeer
-		const {
-			hub: { url },
-		} = config;
+		const { hub: { url } } = config;
 		this.HubPeer = { url };
 	}
 
@@ -46,14 +44,7 @@ export class PeerDNS {
 
 		// Attempt to register peer
 		try {
-			Federation.peerHTTP.request(
-				this.HubPeer,
-				'POST',
-				'/api/v1/peers',
-				{ uniqueId, domain, url, public_key },
-				{ total: 5, stepSize: 1000, tryToUpdateDNS: false },
-				headers
-			);
+			Federation.peerHTTP.request(this.HubPeer, 'POST', '/api/v1/peers', { uniqueId, domain, url, public_key }, { total: 5, stepSize: 1000, tryToUpdateDNS: false }, headers);
 
 			this.log('Peer registered!');
 
@@ -109,10 +100,7 @@ export class PeerDNS {
 
 		// If there is no record, skip
 		if (!txtRecord) {
-			throw new Meteor.Error(
-				'ENOTFOUND',
-				'Could not find public key entry on TXT records'
-			);
+			throw new Meteor.Error('ENOTFOUND', 'Could not find public key entry on TXT records');
 		}
 
 		const publicKey = txtRecord.join('');
@@ -130,13 +118,7 @@ export class PeerDNS {
 		this.log(`getPeerUsingHub: ${ domain }`);
 
 		// If there is no DNS entry for that, get from the Hub
-		const {
-			data: { peer },
-		} = Federation.peerHTTP.simpleRequest(
-			this.HubPeer,
-			'GET',
-			`/api/v1/peers?search=${ domain }`
-		);
+		const { data: { peer } } = Federation.peerHTTP.simpleRequest(this.HubPeer, 'GET', `/api/v1/peers?search=${ domain }`);
 
 		return peer;
 	}

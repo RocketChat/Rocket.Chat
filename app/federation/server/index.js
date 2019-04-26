@@ -70,90 +70,81 @@ peerServer.start();
 // Start the pinger, to check the status of all peers
 peerPinger.start();
 
-const updateSettings = _.debounce(
-	Meteor.bindEnvironment(function() {
-		const _enabled = settings.get('FEDERATION_Enabled');
+const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
+	const _enabled = settings.get('FEDERATION_Enabled');
 
-		if (!_enabled) {
-			return;
-		}
+	if (!_enabled) {
+		return;
+	}
 
-		// If it is enabled, check if the settings are there
-		const _uniqueId = settings.get('FEDERATION_Unique_Id');
-		const _domain = settings.get('FEDERATION_Domain');
-		const _discoveryMethod = settings.get('FEDERATION_Discovery_Method');
-		const _hubUrl = settings.get('FEDERATION_Hub_URL');
-		const _peerUrl = settings.get('Site_Url');
+	// If it is enabled, check if the settings are there
+	const _uniqueId = settings.get('FEDERATION_Unique_Id');
+	const _domain = settings.get('FEDERATION_Domain');
+	const _discoveryMethod = settings.get('FEDERATION_Discovery_Method');
+	const _hubUrl = settings.get('FEDERATION_Hub_URL');
+	const _peerUrl = settings.get('Site_Url');
 
-		if (!_domain || !_discoveryMethod || !_hubUrl || !_peerUrl) {
-			SettingsUpdater.updateStatus(
-				'Could not enable, settings are not fully set'
-			);
+	if (!_domain || !_discoveryMethod || !_hubUrl || !_peerUrl) {
+		SettingsUpdater.updateStatus('Could not enable, settings are not fully set');
 
-			logger.setup.error(
-				'Could not enable Federation, settings are not fully set'
-			);
+		logger.setup.error('Could not enable Federation, settings are not fully set');
 
-			return;
-		}
+		return;
+	}
 
-		logger.setup.info('Updating settings...');
+	logger.setup.info('Updating settings...');
 
-		// Normalize the config values
-		const config = {
-			hub: {
-				active: _discoveryMethod === 'hub',
-				url: _hubUrl.replace(/\/+$/, ''),
-			},
-			peer: {
-				uniqueId: _uniqueId,
-				domain: _domain.replace('@', '').trim(),
-				url: _peerUrl.replace(/\/+$/, ''),
-				public_key: FederationKeys.getPublicKeyString(),
-			},
-			cloud: {
-				token: getWorkspaceAccessToken(),
-			},
-		};
+	// Normalize the config values
+	const config = {
+		hub: {
+			active: _discoveryMethod === 'hub',
+			url: _hubUrl.replace(/\/+$/, ''),
+		},
+		peer: {
+			uniqueId: _uniqueId,
+			domain: _domain.replace('@', '').trim(),
+			url: _peerUrl.replace(/\/+$/, ''),
+			public_key: FederationKeys.getPublicKeyString(),
+		},
+		cloud: {
+			token: getWorkspaceAccessToken(),
+		},
+	};
 
-		// If the settings are correctly set, let's update the configuration
+	// If the settings are correctly set, let's update the configuration
 
-		// Get the key pair
-		Federation.privateKey = FederationKeys.getPrivateKey();
-		Federation.publicKey = FederationKeys.getPublicKey();
+	// Get the key pair
+	Federation.privateKey = FederationKeys.getPrivateKey();
+	Federation.publicKey = FederationKeys.getPublicKey();
 
-		// Set important information
-		Federation.enabled = true;
-		Federation.usingHub = config.hub.active;
-		Federation.uniqueId = config.peer.uniqueId;
-		Federation.localIdentifier = config.peer.domain;
+	// Set important information
+	Federation.enabled = true;
+	Federation.usingHub = config.hub.active;
+	Federation.uniqueId = config.peer.uniqueId;
+	Federation.localIdentifier = config.peer.domain;
 
-		// Set DNS
-		peerDNS.setConfig(config);
+	// Set DNS
+	peerDNS.setConfig(config);
 
-		// Set HTTP
-		peerHTTP.setConfig(config);
+	// Set HTTP
+	peerHTTP.setConfig(config);
 
-		// Set Client
-		peerClient.setConfig(config);
-		peerClient.enable();
+	// Set Client
+	peerClient.setConfig(config);
+	peerClient.enable();
 
-		// Set server
-		peerServer.setConfig(config);
-		peerServer.enable();
+	// Set server
+	peerServer.setConfig(config);
+	peerServer.enable();
 
-		// Register the client
-		if (peerClient.register()) {
-			SettingsUpdater.updateStatus('Running');
-		} else {
-			SettingsUpdater.updateNextStatusTo(
-				'Disabled, could not register with Hub'
-			);
-			SettingsUpdater.updateEnabled(false);
-		}
-	}),
-	150
-);
+	// Register the client
+	if (peerClient.register()) {
+		SettingsUpdater.updateStatus('Running');
+	} else {
+		SettingsUpdater.updateNextStatusTo('Disabled, could not register with Hub');
+		SettingsUpdater.updateEnabled(false);
+	}
+}), 150);
 
 function enableOrDisable() {
 	const _enabled = settings.get('FEDERATION_Enabled');

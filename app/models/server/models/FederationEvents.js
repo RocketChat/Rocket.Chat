@@ -23,26 +23,20 @@ class FederationEventsModel extends Base {
 
 	// Sometimes events errored but the error is final
 	setEventAsErrored(e, error, fulfilled = false) {
-		this.update(
-			{ _id: e._id },
-			{
-				$set: {
-					fulfilled,
-					lastAttemptAt: new Date(),
-					error,
-				},
-			}
-		);
+		this.update({ _id: e._id }, {
+			$set: {
+				fulfilled,
+				lastAttemptAt: new Date(),
+				error,
+			},
+		});
 	}
 
 	setEventAsFullfilled(e) {
-		this.update(
-			{ _id: e._id },
-			{
-				$set: { fulfilled: true },
-				$unset: { error: 1 },
-			}
-		);
+		this.update({ _id: e._id }, {
+			$set: { fulfilled: true },
+			$unset: { error: 1 },
+		});
 	}
 
 	createEvent(type, payload, peer, options) {
@@ -145,12 +139,7 @@ class FederationEventsModel extends Base {
 	}
 
 	// Create a `userRemoved(usr)` event
-	userRemoved(
-		federatedRoom,
-		federatedUser,
-		federatedRemovedByUser,
-		options = {}
-	) {
+	userRemoved(federatedRoom, federatedUser, federatedRemovedByUser, options = {}) {
 		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -176,12 +165,7 @@ class FederationEventsModel extends Base {
 	}
 
 	// Create a `userUnmuted(usu)` event
-	userUnmuted(
-		federatedRoom,
-		federatedUser,
-		federatedUnmutedByUser,
-		options = {}
-	) {
+	userUnmuted(federatedRoom, federatedUser, federatedUnmutedByUser, options = {}) {
 		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -240,14 +224,7 @@ class FederationEventsModel extends Base {
 	}
 
 	// Create a `messagesSetReaction(mrs)` event
-	messagesSetReaction(
-		federatedRoom,
-		federatedMessage,
-		federatedUser,
-		reaction,
-		shouldReact,
-		options = {}
-	) {
+	messagesSetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
 		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
@@ -262,14 +239,7 @@ class FederationEventsModel extends Base {
 	}
 
 	// Create a `messagesUnsetReaction(mru)` event
-	messagesUnsetReaction(
-		federatedRoom,
-		federatedMessage,
-		federatedUser,
-		reaction,
-		shouldReact,
-		options = {}
-	) {
+	messagesUnsetReaction(federatedRoom, federatedMessage, federatedUser, reaction, shouldReact, options = {}) {
 		const peers = normalizePeers(federatedRoom.getPeers(), options);
 
 		const payload = {
