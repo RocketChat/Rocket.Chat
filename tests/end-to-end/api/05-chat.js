@@ -73,9 +73,7 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
-		describe('should throw an error when the sensitive properties contain malicious XSS values', (done) => {
-
-			after(() => done());
+		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
 
 			it('attachment.message_link', (done) =>
 				request.post(api('chat.postMessage'))
