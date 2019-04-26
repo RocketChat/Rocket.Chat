@@ -178,6 +178,15 @@ export function syncUserData(user, ldapUser) {
 	logger.debug('user', { email: user.email, _id: user._id });
 	logger.debug('ldapUser', ldapUser.object);
 
+	//Disable users when userAccountControl has flag 0x002. Only working with Microsoft ActiveDirectory
+	if (user.active && (ldapUser["userAccountControl"] & 0x0002)) {
+		logger.debug('Disabling user', user._id);
+		Meteor.users.update(user._id, { $set: { active: false } });
+	} else if (!user.active && (!(ldapUser["userAccountControl"] & 0x0002))) {
+		logger.debug('Enabling user', user._id);
+		Meteor.users.update(user._id, { $set: { active: true } });
+	}
+
 	const userData = getDataToSyncUserData(ldapUser, user);
 	if (user && user._id && userData) {
 		logger.debug('setting', JSON.stringify(userData, null, 2));
