@@ -72,9 +72,13 @@ export class PeerDNS {
 
 		// Try to lookup at the DNS Cache
 		if (!peer) {
-			this.updatePeerDNS(domain);
+			try {
+				this.updatePeerDNS(domain);
 
-			peer = FederationDNSCache.findOneByDomain(domain);
+				peer = FederationDNSCache.findOneByDomain(domain);
+			} catch (err) {
+				this.log(`Could not find peer for domain ${ domain }`);
+			}
 		}
 
 		return peer;
@@ -127,7 +131,7 @@ export class PeerDNS {
 	updatePeerDNS(domain) {
 		this.log(`updatePeerDNS: ${ domain }`);
 
-		let peer;
+		let peer = null;
 
 		try {
 			peer = this.getPeerUsingDNS(domain);
@@ -138,7 +142,11 @@ export class PeerDNS {
 				throw new Error(`Error trying to fetch SRV DNS entries for ${ domain }`);
 			}
 
-			peer = this.getPeerUsingHub(domain);
+			try {
+				peer = this.getPeerUsingHub(domain);
+			} catch (err) {
+				throw new Error(`Could not find a peer with domain ${ domain } using the hub`);
+			}
 		}
 
 		this.updateDNSCache.call(this, peer);
