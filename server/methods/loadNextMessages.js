@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
+import { Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { composeMessageObjectWithUser } from '../../app/utils';
 
 Meteor.methods({
 	loadNextMessages(rid, end, limit = 20) {

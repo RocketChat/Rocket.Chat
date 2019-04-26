@@ -1,6 +1,7 @@
-import { t } from 'meteor/rocketchat:utils';
-import { modal, MessageAction } from 'meteor/rocketchat:ui-utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { t } from '../../../app/utils';
+import { modal, MessageAction } from '../../../app/ui-utils';
+import { messageArgs } from '../../../app/ui-utils/client/lib/messageArgs';
+import { settings } from '../../../app/settings';
 
 MessageAction.addButton({
 	id: 'receipt-detail',
@@ -8,7 +9,7 @@ MessageAction.addButton({
 	label: 'Message_info',
 	context: ['starred', 'message', 'message-mobile'],
 	action() {
-		const message = this._arguments[1];
+		const { msg: message } = messageArgs(this);
 		modal.open({
 			title: t('Message_info'),
 			content: 'readReceipts',

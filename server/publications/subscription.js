@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { Notifications } from 'meteor/rocketchat:notifications';
+import { Subscriptions } from '../../app/models';
+import { Notifications } from '../../app/notifications';
 
 const fields = {
 	t: 1,
@@ -16,6 +16,7 @@ const fields = {
 	alert: 1,
 	roles: 1,
 	unread: 1,
+	prid: 1,
 	userMentions: 1,
 	groupMentions: 1,
 	archived: 1,
@@ -36,6 +37,7 @@ const fields = {
 	muteGroupMentions: 1,
 	ignored: 1,
 	E2EKey: 1,
+	tunread: 1,
 };
 
 Meteor.methods({
@@ -43,8 +45,6 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			return [];
 		}
-
-		this.unblock();
 
 		const options = { fields };
 

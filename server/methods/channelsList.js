@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Rooms, Subscriptions, Users } from 'meteor/rocketchat:models';
-import { getUserPreference } from 'meteor/rocketchat:utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { hasPermission } from '../../app/authorization';
+import { Rooms, Subscriptions, Users } from '../../app/models';
+import { getUserPreference } from '../../app/utils';
+import { settings } from '../../app/settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 
@@ -57,16 +57,16 @@ Meteor.methods({
 		if (channelType !== 'private') {
 			if (hasPermission(userId, 'view-c-room')) {
 				if (filter) {
-					channels = channels.concat(Rooms.findByType('c', options).fetch());
-				} else {
 					channels = channels.concat(Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
+				} else {
+					channels = channels.concat(Rooms.findByType('c', options).fetch());
 				}
 			} else if (hasPermission(userId, 'view-joined-room')) {
 				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeInIds('c', roomIds, options).fetch());
-				} else {
 					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).fetch());
+				} else {
+					channels = channels.concat(Rooms.findByTypeInIds('c', roomIds, options).fetch());
 				}
 			}
 		}
@@ -85,9 +85,9 @@ Meteor.methods({
 			if (!groupByType) {
 				const roomIds = Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeInIds('p', roomIds, options).fetch());
-				} else {
 					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).fetch());
+				} else {
+					channels = channels.concat(Rooms.findByTypeInIds('p', roomIds, options).fetch());
 				}
 			}
 		}

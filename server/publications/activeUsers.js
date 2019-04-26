@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from 'meteor/rocketchat:models';
+import { Users } from '../../app/models';
 
 Meteor.publish('activeUsers', function() {
 	if (!this.userId) {

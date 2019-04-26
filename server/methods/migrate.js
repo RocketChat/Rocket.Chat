@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+import { Migrations } from '../../app/migrations';
+import { hasPermission } from '../../app/authorization';
 
 Meteor.methods({
 	migrateTo(version) {
