@@ -119,16 +119,53 @@ export class Base {
 		}
 	}
 
-	insert(...args/* record*/) {
-		return this._db.insert(...args);
+	/**
+	 * If there is a `schema` property available, this function
+	 * validates the data passed using the `meteor/check` function.
+	 *
+	 * The `schema` property should be defined in the child model class.
+	 *
+	 * In the case you want to implement a custom validation logic,
+	 * you can override this method in your model and add it there.
+	 *
+	 * @param {Object} data The data to validate
+	 *
+	 * @throws Meteor.Error
+	 *
+	 */
+	validate(data) {
+		if (!this.schema) {
+			return;
+		}
+
+		check(data, this.schema);
 	}
 
-	update(...args/* query, update, options*/) {
-		return this._db.update(...args);
+	insert(record, ...args) {
+		this.validate(record);
+		return this._db.insert(record, ...args);
 	}
 
-	upsert(...args/* query, update*/) {
-		return this._db.upsert(...args);
+	validateUpdate(updateParam) {
+		if (!updateParam) { return; }
+
+		let validateData = updateParam;
+
+		if (updateParam.hasOwnProperty('$set')) {
+			validateData = updateParam.$set;
+		}
+
+		this.validate(validateData);
+	}
+
+	update(query, update, options) {
+		this.validateUpdate(update);
+		return this._db.update(query, update, options);
+	}
+
+	upsert(query, update) {
+		this.validateUpdate(update);
+		return this._db.upsert(query, update);
 	}
 
 	remove(...args/* query*/) {

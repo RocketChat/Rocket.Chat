@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DateFormat } from '../../lib';
 import { Template } from 'meteor/templating';
-import { getUserPreference, getURL } from '../../utils';
+import { getUserPreference, getURL } from '../../utils/client';
 import { Users } from '../../models';
 import { renderMessageBody } from '../../ui-utils';
 
