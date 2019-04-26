@@ -73,9 +73,7 @@ peerPinger.start();
 const updateSettings = _.debounce(Meteor.bindEnvironment(function() {
 	const _enabled = settings.get('FEDERATION_Enabled');
 
-	if (!_enabled) {
-		return;
-	}
+	if (!_enabled) { return; }
 
 	// If it is enabled, check if the settings are there
 	const _uniqueId = settings.get('FEDERATION_Unique_Id');

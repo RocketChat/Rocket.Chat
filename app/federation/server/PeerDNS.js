@@ -145,9 +145,7 @@ export class PeerDNS {
 			try {
 				peer = this.getPeerUsingHub(domain);
 			} catch (err) {
-				throw new Error(
-					`Could not find a peer with domain ${ domain } using the hub`
-				);
+				throw new Error(`Could not find a peer with domain ${ domain } using the hub`);
 			}
 		}
 

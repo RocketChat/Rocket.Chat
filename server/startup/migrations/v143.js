@@ -14,6 +14,8 @@ Migrations.add({
 			last_seen_at: null,
 		}));
 
-		FederationPeers.model.rawCollection().insertMany(peers);
+		if (peers.length) {
+			FederationPeers.model.rawCollection().insertMany(peers);
+		}
 	},
 });

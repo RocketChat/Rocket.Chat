@@ -12,7 +12,7 @@ class FederationPeersModel extends Base {
 		const collectionObj = this.model.rawCollection();
 		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 
-		const users = Users.find({ federation: { $exists: true } }).fetch();
+		const users = Users.find({ federation: { $exists: true } }, { fields: { federation: 1 } }).fetch();
 
 		const peers = [...new Set(users.map((u) => u.federation.peer))];
 
