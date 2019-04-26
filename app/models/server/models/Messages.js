@@ -4,8 +4,20 @@ import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
 import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
 import _ from 'underscore';
+import { Attachment } from '../../../lib/lib/validation/messages';
+import { objectMaybeIncluding } from '../../../lib/lib/validation/validation';
 
 export class Messages extends Base {
+	schema = objectMaybeIncluding({
+		_id: String,
+		msg: String,
+		text: String,
+		alias: String,
+		emoji: String,
+		avatar: String,
+		attachments: [Attachment],
+	});
+
 	constructor() {
 		super('message');
 
