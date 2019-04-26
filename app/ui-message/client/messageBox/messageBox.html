@@ -24,6 +24,7 @@
 						{{> icon block="rc-input__icon-svg" icon="emoji"}}
 					</span>
 					<textarea name="msg" maxlength="{{maxMessageLength}}" placeholder="{{_ 'Message'}}" rows="1" class="rc-message-box__textarea js-input-message"></textarea>
+					<div class="js-input-message-shadow"></div>
 					{{#if isSendIconVisible}}
 						<span class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
 							{{> icon block="rc-input__icon-svg" icon="send"}}

@@ -5,7 +5,7 @@ import { Rooms, Subscriptions, FederationPeers } from '../../../models';
 
 import { FederatedMessage, FederatedRoom, FederatedUser } from '../federatedResources';
 import { logger } from '../logger.js';
-import { Federation } from '../';
+import { Federation } from '..';
 
 export class PeerServer {
 	constructor() {

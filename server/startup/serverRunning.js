@@ -8,16 +8,9 @@ import path from 'path';
 import semver from 'semver';
 
 Meteor.startup(function() {
-	let oplogState = 'Disabled';
-
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry) {
-		oplogState = 'Enabled';
-		if (settings.get('Force_Disable_OpLog_For_Cache') === true) {
-			oplogState += ' (Disabled for Cache Sync)';
-		}
-	}
+	const isOplogEnabled = Boolean(mongo._oplogHandle && mongo._oplogHandle.onOplogEntry);
 
 	let mongoDbVersion;
 	let mongoDbEngine;
@@ -42,7 +35,7 @@ Meteor.startup(function() {
 			`           Platform: ${ process.platform }`,
 			`       Process Port: ${ process.env.PORT }`,
 			`           Site URL: ${ settings.get('Site_Url') }`,
-			`   ReplicaSet OpLog: ${ oplogState }`,
+			`   ReplicaSet OpLog: ${ isOplogEnabled ? 'Enabled' : 'Disabled' }`,
 		];
 
 		if (Info.commit && Info.commit.hash) {
@@ -55,18 +48,25 @@ Meteor.startup(function() {
 
 		msg = msg.join('\n');
 
+		if (!isOplogEnabled) {
+			msg += ['', '', 'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:', 'https://rocket.chat/docs/installation/docker-containers/high-availability-install'].join('\n');
+			SystemLogger.error_box(msg, 'SERVER ERROR');
+
+			return process.exit(1);
+		}
+
 		if (!semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
 			msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${ desiredNodeVersionMajor }.X.X`].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-			return process.exit();
+			return process.exit(1);
 		}
 
 		if (!semver.satisfies(mongoDbVersion, '>=3.2.0')) {
 			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.2 OR LATER'].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-			return process.exit();
+			return process.exit(1);
 		}
 
 		return SystemLogger.startup_box(msg, 'SERVER RUNNING');

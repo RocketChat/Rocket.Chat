@@ -13,12 +13,8 @@ import {
 
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
-import {
-	FederatedMessage,
-	FederatedRoom,
-	FederatedUser,
-} from './federatedResources';
-import { Federation } from './';
+import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
+import { Federation } from '.';
 
 export class PeerClient {
 	constructor() {

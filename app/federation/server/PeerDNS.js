@@ -4,7 +4,7 @@ import { FederationDNSCache } from '../../models';
 
 import { logger } from './logger';
 import { updateStatus } from './settingsUpdater';
-import { Federation } from './';
+import { Federation } from '.';
 
 const dnsResolveSRV = Meteor.wrapAsync(dns.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dns.resolveTxt);

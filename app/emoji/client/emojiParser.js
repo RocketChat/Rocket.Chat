@@ -38,7 +38,7 @@ Tracker.autorun(() => {
 					continue;
 				}
 
-				if (s.trim(childNode.innerText) === '') {
+				if (s.trim(childNode.nodeValue) === '') {
 					continue;
 				}
 

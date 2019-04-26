@@ -1,7 +1,7 @@
-import { Rooms } from '../../models';
+import { Rooms, LivechatVisitors } from '../../models';
 import { roomTypes } from '../../utils';
 import LivechatRoomType from '../lib/LivechatRoomType';
-import { LivechatVisitors } from '../../models';
+
 
 class LivechatRoomTypeServer extends LivechatRoomType {
 	getMsgSender(senderId) {

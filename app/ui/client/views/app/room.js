@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import moment from 'moment';
-import mime from 'mime-type/with-db';
 import Clipboard from 'clipboard';
 
 import { Meteor } from 'meteor/meteor';
@@ -27,6 +26,7 @@ import {
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
+import { getConfig } from '../../../../ui-utils/client/config';
 import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
@@ -36,6 +36,7 @@ import { lazyloadtick } from '../../../../lazy-load';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
+import { mime } from '../../../../utils/lib/mimeTypes';
 
 export const chatMessages = {};
 
@@ -226,6 +227,10 @@ function roomMaxAge(room) {
 callbacks.add('enter-room', wipeFailedUploads);
 
 Template.room.helpers({
+	useNrr() {
+		const useNrr = getConfig('useNrr');
+		return useNrr === 'true' || useNrr !== 'false';
+	},
 	isTranslated() {
 		const sub = Template.instance().subscription;
 		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
@@ -569,6 +574,7 @@ export const dropzoneEvents = {
 };
 
 Template.room.events({
+	...dropzoneEvents,
 	'click .js-open-thread'(event) {
 		event.preventDefault();
 		event.stopPropagation();
