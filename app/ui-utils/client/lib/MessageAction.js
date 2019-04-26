@@ -353,15 +353,7 @@ Meteor.startup(async function() {
 			});
 		},
 		condition(message) {
-			if (Subscriptions.findOne({ rid: message.rid }) == null) {
-				return false;
-			}
-
-			return canDeleteMessage({
-				rid: message.rid,
-				ts: message.ts,
-				uid: message.u._id,
-			});
+			return Boolean(Subscriptions.findOne({ rid: message.rid }));
 		},
 		order: 17,
 		group: 'menu',
