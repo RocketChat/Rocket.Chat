@@ -16,6 +16,7 @@ import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import './message.html';
+import './messageThread.html';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
 	const isSafari = /constructor/i.test(window.HTMLElement) ||
@@ -140,15 +141,15 @@ Template.message.helpers({
 	},
 	isGroupable() {
 		const { msg, room = {}, settings, groupable } = this;
-		if ((msg.tmid && settings.showreply) || groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || MessageTypes.isSystemMessage(msg)) {
+		if (groupable === false || settings.allowGroup === false || room.broadcast || msg.groupable === false || MessageTypes.isSystemMessage(msg)) {
 			return 'false';
 		}
 	},
 	sequentialClass() {
-		const { msg, groupable, settings: { showreply } } = this;
-		if (msg.tmid && showreply) {
-			return;
-		}
+		const { msg, groupable } = this;
+		// if (msg.tmid && showreply) {
+		// 	return;
+		// }
 		if (MessageTypes.isSystemMessage(msg)) {
 			return;
 		}
@@ -409,6 +410,7 @@ const findParentMessage = (() => {
 	const waiting = [];
 
 	const getMessages = _.debounce(async function() {
+		const uid = Tracker.nonreactive(() => Meteor.userId());
 		const _tmp = [...waiting];
 		waiting.length = 0;
 		const messages = await call('getMessages', _tmp);
@@ -419,6 +421,7 @@ const findParentMessage = (() => {
 			const { _id, ...msg } = message;
 			Messages.update({ tmid: _id, repliesCount: { $exists: 0 } }, {
 				$set: {
+					following: message.replies && message.replies.indexOf(uid) > -1,
 					threadMsg: normalizeThreadMessage(msg),
 					repliesCount: msg.tcount,
 				},
@@ -442,10 +445,11 @@ const findParentMessage = (() => {
 		}
 
 		const message = Messages.findOne({ _id: tmid });
-
 		if (message) {
+			const uid = Tracker.nonreactive(() => Meteor.userId());
 			return Messages.update({ tmid, repliesCount: { $exists: 0 } }, {
 				$set: {
+					following: message.replies && message.replies.indexOf(uid) > -1,
 					threadMsg: normalizeThreadMessage(message),
 					repliesCount: message.tcount,
 				},
@@ -525,11 +529,24 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDat
 		classList.add('new-day');
 	}
 
-	if (previousDataset.username !== currentDataset.username || parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
+	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
 		return classList.remove('sequential');
 	}
 
-	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
+	if (previousDataset.id === currentDataset.tmid || (currentDataset.tmid && previousDataset.tmid === currentDataset.tmid)) {
+		return;
+	}
+
+	if (previousDataset.username !== currentDataset.username) {
+		return classList.remove('sequential');
+	}
+	if (parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
+		return classList.remove('sequential');
+	}
+	if (currentDataset.tmid && previousDataset.id !== currentDataset.tmid) {
+		return classList.remove('sequential');
+	}
+	if (previousDataset.tmid && previousDataset.tmid !== currentDataset.id) {
 		return classList.remove('sequential');
 	}
 };
@@ -537,7 +554,7 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDat
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
 
 	this.autorun(() => {
-		const { settings, forceDate, noDate, groupable, msg } = messageArgs(Template.currentData());
+		const { settings, forceDate, noDate, groupable, msg, shouldCollapseReplies } = messageArgs(Template.currentData());
 
 		if (noDate && !groupable) {
 			return;
@@ -564,7 +581,11 @@ Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the
 			}
 
 			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+
+				if (currentDataset.id === nextDataset.tmid || (nextDataset.tmid && currentDataset.tmid === nextDataset.tmid)) {
+					return;
+				}
+				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod || (shouldCollapseReplies && nextDataset.tmid && currentDataset.tmid !== nextDataset.tmid)) {
 					nextNode.classList.remove('sequential');
 				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
 					nextNode.classList.add('sequential');
@@ -592,7 +613,7 @@ Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the
 });
 
 Template.message.onViewRendered = function() {
-	const { settings, forceDate, showDateSeparator = true, groupable, msg } = messageArgs(Template.currentData());
+	const { settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies } = messageArgs(Template.currentData());
 
 	if (!showDateSeparator && !groupable) {
 		return;
@@ -619,7 +640,7 @@ Template.message.onViewRendered = function() {
 			}
 
 			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
+				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod || (shouldCollapseReplies && nextDataset.tmid && currentDataset.id !== nextDataset.tmid)) {
 					nextNode.classList.remove('sequential');
 				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp')) {
 					nextNode.classList.add('sequential');
