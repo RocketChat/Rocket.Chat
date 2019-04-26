@@ -14,6 +14,7 @@ Template.cloud.onCreated(function() {
 	const instance = this;
 	instance.info = new ReactiveVar();
 	instance.loading = new ReactiveVar(true);
+	instance.isLoggedIn = new ReactiveVar(false);
 
 	instance.loadRegStatus = function _loadRegStatus() {
 		Meteor.call('cloud:checkRegisterStatus', (error, info) => {
@@ -24,6 +25,39 @@ Template.cloud.onCreated(function() {
 
 			instance.info.set(info);
 			instance.loading.set(false);
+		});
+	};
+
+	instance.getLoggedIn = function _getLoggedIn() {
+		Meteor.call('cloud:checkUserLoggedIn', (error, result) => {
+			if (error) {
+				console.warn(error);
+				return;
+			}
+
+			instance.isLoggedIn.set(result);
+		});
+	};
+
+	instance.oauthAuthorize = function _oauthAuthorize() {
+		Meteor.call('cloud:getOAuthAuthorizationUrl', (error, url) => {
+			if (error) {
+				console.warn(error);
+				return;
+			}
+
+			window.location.href = url;
+		});
+	};
+
+	instance.logout = function _logout() {
+		Meteor.call('cloud:logout', (error) => {
+			if (error) {
+				console.warn(error);
+				return;
+			}
+
+			instance.getLoggedIn();
 		});
 	};
 
@@ -114,11 +148,16 @@ Template.cloud.onCreated(function() {
 	} else {
 		instance.loadRegStatus();
 	}
+
+	instance.getLoggedIn();
 });
 
 Template.cloud.helpers({
 	info() {
 		return Template.instance().info.get();
+	},
+	isLoggedIn() {
+		return Template.instance().isLoggedIn.get();
 	},
 });
 
@@ -134,6 +173,14 @@ Template.cloud.events({
 
 			toastr.success(t('Saved'));
 		});
+	},
+
+	'click .login-btn'(e, i) {
+		i.oauthAuthorize();
+	},
+
+	'click .logout-btn'(e, i) {
+		i.logout();
 	},
 
 	'click .connect-btn'(e, i) {
@@ -152,6 +199,10 @@ Template.cloud.events({
 
 	'click .sync-btn'(e, i) {
 		i.syncWorkspace();
+	},
+
+	'click .cloud-console-btn'() {
+		window.location.href = 'https://cloud.rocket.chat';
 	},
 });
 
