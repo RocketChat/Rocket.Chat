@@ -563,6 +563,10 @@ const isSequential = (currentNode, previousNode, forceDate, period, showDateSepa
 		return false;
 	}
 
+	if (previousDataset.alias !== currentDataset.alias) {
+		return false;
+	}
+
 	if (parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) <= period) {
 		return true;
 	}
