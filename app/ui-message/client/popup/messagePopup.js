@@ -1,12 +1,13 @@
 // This is not supposed to be a complete list
 // it is just to improve readability in this file
 
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { toolbarSearch } from '../../../ui-sidenav';
-import _ from 'underscore';
 import { lazyloadtick } from '../../../lazy-load';
+import './messagePopup.html';
 
 const keys = {
 	TAB: 9,
