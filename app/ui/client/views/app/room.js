@@ -779,13 +779,16 @@ Template.room.events({
 			id: item.id,
 			modifier: item.color,
 		}));
-		const [items, deleteItem] = allItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+		const itemsBelowDivider = [
+			'delete-message',
+			'report-message',
+		];
+		const [items, alertsItem] = allItems.reduce((result, value) => (result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value), result), [[], []]);
 		const groups = [{ items }];
 
-		if (deleteItem.length) {
-			groups.push({ items: deleteItem });
+		if (alertsItem .length) {
+			groups.push({ items: alertsItem });
 		}
-
 		const config = {
 			columns: [
 				{
