@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { roomTypes } from '../../../utils';
+import { roomTypes } from '../../../utils/client/lib/roomTypes';
 import { Subscriptions } from '../../../models';
 import { AccountBox } from './AccountBox';
 
@@ -23,8 +23,18 @@ export const SideNav = new class {
 			this.flexNav.addClass('animated-hidden');
 		} else {
 			this.flexNav.opened = true;
-			setTimeout(() => this.flexNav.removeClass('animated-hidden'), 50);
+			if (window.DISABLE_ANIMATION === true) {
+				this.flexNav.removeClass('animated-hidden');
+			} else {
+				setTimeout(() => this.flexNav.removeClass('animated-hidden'), 50);
+			}
 		}
+
+		if (window.DISABLE_ANIMATION === true) {
+			this.animating = false;
+			return typeof callback === 'function' && callback();
+		}
+
 		return setTimeout(() => {
 			this.animating = false;
 			return typeof callback === 'function' && callback();
@@ -87,7 +97,7 @@ export const SideNav = new class {
 			}
 		});
 		setTimeout(() => {
-			const ref = highestZidxElem.querySelector('input');
+			const ref = highestZidxElem && highestZidxElem.querySelector('input');
 			return ref && ref.focus();
 		}, 200);
 	}
