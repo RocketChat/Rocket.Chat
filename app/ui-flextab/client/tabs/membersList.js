@@ -140,7 +140,8 @@ Template.membersList.helpers({
 			clear: Template.instance().clearUserDetail,
 			showAll: roomTypes.roomTypes[room.t].userDetailShowAll(room) || false,
 			hideAdminControls: roomTypes.roomTypes[room.t].userDetailShowAdmin(room) || false,
-			video: ['d'].includes(room != null ? room.t : undefined),
+			video: ['d'].includes(room && room.t),
+			showBackButton: roomTypes.roomTypes[room.t].isGroupChat(),
 		};
 	},
 	displayName() {

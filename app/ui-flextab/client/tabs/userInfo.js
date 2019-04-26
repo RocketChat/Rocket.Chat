@@ -12,6 +12,7 @@ import { templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
 import { getActions } from './userActions';
+import './userInfo.html';
 
 const more = function() {
 	return Template.instance().actions.get()
@@ -127,11 +128,6 @@ Template.userInfo.helpers({
 
 	user() {
 		return Template.instance().user.get();
-	},
-
-	notDirectRoom() {
-		const roomType = Template.instance().directRoom.get();
-		return roomType === 'direct' ? false : true;
 	},
 
 	hasEmails() {
@@ -254,9 +250,7 @@ Template.userInfo.onCreated(function() {
 	this.loadingUserInfo = new ReactiveVar(true);
 	this.loadedUsername = new ReactiveVar;
 	this.tabBar = Template.currentData().tabBar;
-	this.directRoom = new ReactiveVar;
-	this.directRoom.set(this.tabBar.group.get());
-	Meteor.setInterval(() => this.now.set(moment()), 30000);
+	this.nowInterval = setInterval(() => this.now.set(moment()), 30000);
 
 	this.autorun(() => {
 		const username = this.loadedUsername.get();
@@ -296,4 +290,8 @@ Template.userInfo.onCreated(function() {
 
 		return this.user.set(user);
 	});
+});
+
+Template.userInfo.onDestroyed(function() {
+	clearInterval(this.nowInterval);
 });
