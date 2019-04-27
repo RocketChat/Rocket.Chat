@@ -567,13 +567,9 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 
 		if (nextDataset.groupable !== 'false') {
 
-			if (shouldCollapseReplies && nextDataset.tmid && (currentDataset.id === nextDataset.tmid || currentDataset.tmid === nextDataset.tmid)) {
-				return;
-			}
-
 			if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 				nextNode.classList.remove('sequential');
-			} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
+			} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid && (shouldCollapseReplies && nextDataset.tmid && (currentDataset.id === nextDataset.tmid || currentDataset.tmid === nextDataset.tmid))) {
 				nextNode.classList.add('sequential');
 			}
 		}
