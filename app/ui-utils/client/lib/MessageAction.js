@@ -327,7 +327,7 @@ Meteor.startup(async function() {
 	MessageAction.addButton({
 		id: 'reply-privately',
 		icon: 'chat',
-		label: 'Reply_Private',
+		label: 'Reply_in_direct_message',
 		context: ['message', 'message-mobile'],
 		action() {
 			const { msg } = messageArgs(this);
