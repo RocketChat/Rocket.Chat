@@ -42,8 +42,8 @@ Template.thread.helpers({
 	mainMessage() {
 		return Template.parentData().mainMessage;
 	},
-	loading() {
-		return Template.instance().state.get('loading');
+	isLoading() {
+		return Template.instance().state.get('loading') !== false;
 	},
 	messages() {
 		const { Threads, state } = Template.instance();
@@ -96,7 +96,6 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.state.set({
 			tmid,
-			loading: false,
 		});
 		this.loadMore();
 	});
@@ -146,10 +145,11 @@ Template.thread.onRendered(function() {
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
 
-	this.state = new ReactiveDict();
+	this.state = new ReactiveDict({
+	});
 
 	this.loadMore = _.debounce(async () => {
-		if (this.state.get('loading')) {
+		if (this.state.get('loading') === true) {
 			return;
 		}
 
@@ -161,7 +161,10 @@ Template.thread.onCreated(async function() {
 
 		upsert(this.Threads, messages);
 
-		this.state.set('loading', false);
+		Tracker.afterFlush(() => {
+			this.state.set('loading', false);
+		});
+
 
 	}, 500);
 });

@@ -30,6 +30,17 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	getUserStatus(roomType, rid) {
 		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatus === 'function' && this.roomTypes[roomType].getUserStatus(rid);
 	}
+	getRoomType(roomId) {
+		const fields = {
+			t: 1,
+		};
+		const room = ChatRoom.findOne({
+			_id: roomId,
+		}, {
+			fields,
+		});
+		return room && room.t;
+	}
 	findRoom(roomType, identifier, user) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier, user);
 	}
