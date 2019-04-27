@@ -5,6 +5,7 @@ import { Settings } from '../../../models';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 import { statistics } from '../../../statistics';
+import { syncWorkspace } from './syncWorkspace';
 
 export function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
@@ -15,7 +16,7 @@ export function startRegisterWorkspace(resend = false) {
 	settings.updateById('Register_Server', true);
 
 	if (workspaceRegistered) {
-		return true;
+		return syncWorkspace();
 	}
 
 	const stats = statistics.get();
@@ -59,8 +60,6 @@ export function startRegisterWorkspace(resend = false) {
 	}
 
 	Settings.updateValueById('Cloud_Workspace_Id', data.id);
-
-	console.log(data);
 
 	return true;
 }

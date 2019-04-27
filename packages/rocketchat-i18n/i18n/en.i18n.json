@@ -620,6 +620,7 @@
   "Cloud_logout": "Logout of Rocket.Chat Cloud",
   "Cloud_address_to_send_registration_to": "The address to send your Cloud registration email to.",
   "Cloud_update_email": "Update Email",
+  "Cloud_resend_email": "Resend Email",
   "Cloud_manually_input_token": "Manually enter the token received from the Cloud Registration Email.",
   "Cloud_registration_required": "Registration Required",
   "Cloud_registration_required_description": "Looks like during setup you didn't chose to register your workspace.",
