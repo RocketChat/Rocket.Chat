@@ -226,6 +226,8 @@ function roomMaxAge(room) {
 
 callbacks.add('enter-room', wipeFailedUploads);
 
+const ignoreReplies = getConfig('ignoreReplies') === 'true';
+
 Template.room.helpers({
 	useNrr() {
 		const useNrr = getConfig('useNrr');
@@ -272,7 +274,7 @@ Template.room.helpers({
 		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
 		const query = {
 			rid,
-			...(modes[viewMode] === 'compact' && { tmid: { $exists: 0 } }),
+			...((ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } }),
 		};
 
 		if (hideMessagesOfType.length > 0) {
