@@ -36,7 +36,7 @@ class MainContent extends Page {
 	get lastMessageQuote() { return browser.element('.message:last-child'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
 	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
-	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
+	get messageReply() { return browser.element('[data-id="reply-in-thread"][data-type="message-action"]'); }
 	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
 	get messageDelete() { return browser.element('[data-id="delete-message"][data-type="message-action"]'); }
 	get messagePermalink() { return browser.element('[data-id="permalink"][data-type="message-action"]'); }
