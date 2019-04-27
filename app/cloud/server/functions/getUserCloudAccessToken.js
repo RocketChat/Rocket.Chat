@@ -72,6 +72,8 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 			if (e.response.data.error === 'unauthorized') {
 				userLoggedOut(userId);
 			}
+		} else {
+			console.error(e);
 		}
 
 		return '';

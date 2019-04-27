@@ -135,9 +135,7 @@ Template.cloud.onCreated(function() {
 				return;
 			}
 
-			toastr.success(t('Connected'));
-
-			instance.loadRegStatus();
+			return instance.syncWorkspace();
 		});
 	};
 

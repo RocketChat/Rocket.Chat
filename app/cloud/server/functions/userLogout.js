@@ -41,6 +41,8 @@ export function userLogout(userId) {
 		} catch (e) {
 			if (e.response && e.response.data && e.response.data.error) {
 				console.error(`Failed to get Revoke refresh token to logout of Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			} else {
+				console.error(e);
 			}
 		}
 	}

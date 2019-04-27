@@ -15,8 +15,11 @@ export function startRegisterWorkspace(resend = false) {
 
 	settings.updateById('Register_Server', true);
 
+	// If we still have client id lets see if they are still good before trying to register
 	if (workspaceRegistered) {
-		return syncWorkspace();
+		if (syncWorkspace(true)) {
+			return true;
+		}
 	}
 
 	const stats = statistics.get();
@@ -47,9 +50,12 @@ export function startRegisterWorkspace(resend = false) {
 			data: regInfo,
 		});
 	} catch (e) {
-		if (e.response && e.response.data && e.response.data.errorCode) {
-			console.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.errorCode }`);
+		if (e.response && e.response.data && e.response.data.error) {
+			console.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
 		}
+
 		return false;
 	}
 

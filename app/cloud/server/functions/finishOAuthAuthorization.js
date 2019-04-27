@@ -33,6 +33,8 @@ export function finishOAuthAuthorization(code, state) {
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
 			console.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
 		}
 
 		return false;

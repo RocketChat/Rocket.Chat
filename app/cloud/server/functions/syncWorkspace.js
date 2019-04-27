@@ -7,9 +7,9 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { statistics } from '../../../statistics';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 
-export function syncWorkspace() {
+export function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
-	if (!workspaceRegistered || !connectToCloud) {
+	if (!workspaceRegistered || (!connectToCloud && !reconnectCheck)) {
 		return false;
 	}
 
@@ -46,13 +46,17 @@ export function syncWorkspace() {
 			headers,
 		});
 
+		getWorkspaceLicense();
+
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
 			console.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
 		}
 
 		return false;
 	}
 
-	return getWorkspaceLicense();
+	return true;
 }
