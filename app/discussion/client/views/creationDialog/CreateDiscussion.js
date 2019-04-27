@@ -82,7 +82,7 @@ Template.CreateDiscussion.helpers({
 			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
 		};
 	},
-	channelName() {
+	nameSuggestion() {
 		return Template.instance().discussionName.get();
 	},
 });
@@ -126,7 +126,7 @@ Template.CreateDiscussion.onRendered(function() {
 	this.find(this.data.rid ? '#discussion_name' : '#parentChannel').focus();
 });
 
-const suggestName = (name, msg) => [name, msg].filter((e) => e).join(' - ').substr(0, 140);
+const suggestName = (msg = '') => msg.substr(0, 140);
 
 Template.CreateDiscussion.onCreated(function() {
 	const { rid, message: msg } = this.data;
@@ -141,7 +141,7 @@ Template.CreateDiscussion.onCreated(function() {
 	}
 
 	const roomName = room && roomTypes.getRoomName(room.t, room);
-	this.discussionName = new ReactiveVar(suggestName(roomName, msg && msg.msg));
+	this.discussionName = new ReactiveVar(suggestName(msg && msg.msg));
 
 	this.pmid = msg && msg._id;
 

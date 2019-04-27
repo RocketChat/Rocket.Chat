@@ -4,36 +4,37 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { EmojiPicker } from '../../emoji';
-import { Users } from '../../models';
-import { settings } from '../../settings';
+import { EmojiPicker } from '../../../emoji';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import {
 	fileUpload,
 	KonchatNotification,
-} from '../../ui';
+} from '../../../ui';
 import {
 	messageBox,
 	popover,
 	call,
 	keyCodes,
 	isRTL,
-} from '../../ui-utils';
+} from '../../../ui-utils';
 import {
 	t,
 	roomTypes,
 	getUserPreference,
-} from '../../utils';
+} from '../../../utils';
 import moment from 'moment';
+import { setupAutogrow } from './messageBoxAutogrow';
 import {
 	formattingButtons,
 	applyFormatting,
 } from './messageBoxFormatting';
+import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
-
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -41,25 +42,62 @@ Template.messageBox.onCreated(function() {
 	this.popupConfig = new ReactiveVar(null);
 	this.replyMessageData = new ReactiveVar();
 	this.isMicrophoneDenied = new ReactiveVar(true);
-	this.sendIconDisabled = new ReactiveVar(false);
+	this.isSendIconVisible = new ReactiveVar(false);
 
-	this.send = (event) => {
-		if (!this.input) {
+	this.set = (value) => {
+		const { input } = this;
+		if (!input) {
 			return;
 		}
 
-		const { rid, tmid, onSend } = this.data;
-		const { value } = this.input;
-		this.input.value = '';
+		input.value = value;
+		$(input).trigger('change').trigger('input');
+	};
+
+	this.insertNewLine = () => {
+		const { input, autogrow } = this;
+		if (!input) {
+			return;
+		}
+
+		if (document.selection) {
+			input.focus();
+			const sel = document.selection.createRange();
+			sel.text = '\n';
+		} else if (input.selectionStart || input.selectionStart === 0) {
+			const newPosition = input.selectionStart + 1;
+			const before = input.value.substring(0, input.selectionStart);
+			const after = input.value.substring(input.selectionEnd, input.value.length);
+			input.value = `${ before }\n${ after }`;
+			input.selectionStart = input.selectionEnd = newPosition;
+		} else {
+			input.value += '\n';
+		}
+		$(input).trigger('change').trigger('input');
+
+		input.blur();
+		input.focus();
+		autogrow.update();
+	};
+
+	this.send = (event) => {
+		const { input } = this;
+
+		if (!input) {
+			return;
+		}
+
+		const { autogrow, data: { rid, tmid, onSend } } = this;
+		const { value } = input;
+		this.set('');
 		onSend && onSend.call(this.data, event, { rid, tmid, value }, () => {
-			this.input.updateAutogrow();
-			this.input.focus();
+			autogrow.update();
+			input.focus();
 		});
 	};
 });
 
 Template.messageBox.onRendered(function() {
-
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);
@@ -107,22 +145,33 @@ Template.messageBox.onRendered(function() {
 				this.popupConfig.set(null);
 			}
 
+			if (this.autogrow) {
+				this.autogrow.destroy();
+				this.autogrow = null;
+			}
+
 			if (!input) {
 				return;
 			}
 
-			const $input = $(input);
+			const shadow = this.find('.js-input-message-shadow');
+			this.autogrow = setupAutogrow(input, shadow, onResize);
 
+			const $input = $(input);
 			$input.on('dataChange', () => {
 				const messages = $input.data('reply') || [];
 				this.replyMessageData.set(messages);
 			});
-
-			$input.autogrow().on('autogrow', () => {
-				onResize && onResize();
-			});
 		});
 	});
+});
+
+Template.messageBox.onDestroyed(function() {
+	if (!this.autogrow) {
+		return;
+	}
+
+	this.autogrow.destroy();
 });
 
 Template.messageBox.helpers({
@@ -168,8 +217,8 @@ Template.messageBox.helpers({
 	maxMessageLength() {
 		return settings.get('Message_AllowConvertLongMessagesToAttachment') ? null : settings.get('Message_MaxAllowedSize');
 	},
-	isSendIconDisabled() {
-		return !Template.instance().sendIconDisabled.get();
+	isSendIconVisible() {
+		return Template.instance().isSendIconVisible.get();
 	},
 	canSend() {
 		const { rid } = Template.currentData();
@@ -215,28 +264,7 @@ const handleFormattingShortcut = (event, instance) => {
 	return true;
 };
 
-const insertNewLine = (input) => {
-	if (document.selection) {
-		input.focus();
-		const sel = document.selection.createRange();
-		sel.text = '\n';
-	} else if (input.selectionStart || input.selectionStart === 0) {
-		const newPosition = input.selectionStart + 1;
-		const before = input.value.substring(0, input.selectionStart);
-		const after = input.value.substring(input.selectionEnd, input.value.length);
-		input.value = `${ before }\n${ after }`;
-		input.selectionStart = input.selectionEnd = newPosition;
-	} else {
-		input.value += '\n';
-	}
-
-	input.blur();
-	input.focus();
-	input.updateAutogrow();
-};
-
 const handleSubmit = (event, instance) => {
-	const { input } = instance;
 	const { which: keyCode } = event;
 
 	const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
@@ -256,7 +284,7 @@ const handleSubmit = (event, instance) => {
 		return true;
 	}
 
-	insertNewLine(input);
+	instance.insertNewLine();
 	return true;
 };
 
@@ -293,7 +321,7 @@ Template.messageBox.events({
 
 			input.focus();
 			if (!document.execCommand || !document.execCommand('insertText', false, emojiValue)) {
-				input.value = textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos);
+				instance.set(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos));
 				input.focus();
 			}
 
@@ -322,10 +350,9 @@ Template.messageBox.events({
 	},
 	'paste .js-input-message'(event, instance) {
 		const { rid, tmid } = this;
-		const { input } = instance;
-		setTimeout(() => {
-			typeof input.updateAutogrow === 'function' && input.updateAutogrow();
-		}, 50);
+		const { input, autogrow } = instance;
+
+		setTimeout(() => autogrow && autogrow.update(), 50);
 
 		if (!event.originalEvent.clipboardData) {
 			return;
@@ -351,7 +378,7 @@ Template.messageBox.events({
 			return;
 		}
 
-		instance.sendIconDisabled.set(!!input.value);
+		instance.isSendIconVisible.set(!!input.value);
 
 		if (input.value.length > 0) {
 			input.dir = isRTL(input.value) ? 'rtl' : 'ltr';

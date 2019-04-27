@@ -37,7 +37,7 @@ const showUploadPreview = (file, callback) => {
 const getAudioUploadPreview = (file, preview) => `\
 <div class='upload-preview'>
 	<audio style="width: 100%;" controls="controls">
-		<source src="${ preview }" type="audio/wav">
+		<source src="${ preview }" type="${ file.file.type }">
 		Your browser does not support the audio element.
 	</audio>
 </div>
