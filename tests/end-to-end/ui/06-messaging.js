@@ -168,7 +168,7 @@ function messageActionsTest() {
 
 				it('it should check if the message was replied', () => {
 					mainContent.lastMessageQuote.waitForVisible(5000);
-					mainContent.lastMessageQuote.getAttribute('data-tmid').should.equal(mainContent.beforeLastMessage.getAttribute('data-id'));
+					mainContent.lastMessageQuote.getAttribute('data-tmid').should.equal(mainContent.beforeLastMessageQuote.getAttribute('data-id'));
 				});
 			});
 

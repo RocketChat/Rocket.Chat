@@ -139,7 +139,7 @@ Template.inviteUsers.onCreated(function() {
 			item: '.rc-popup-list__item',
 			container: '.rc-popup-list__list',
 		},
-
+		position: 'fixed',
 		limit: 10,
 		inputDelay: 300,
 		rules: [{
