@@ -146,7 +146,7 @@ export default class RocketAdapter {
 				}
 
 				if (rocketMessage.file) {
-					return this.processFileShare(rocketMessage);
+					return this.processFileShare(rocketMessage, slack);
 				}
 
 				// A new message from Rocket.Chat
@@ -187,7 +187,7 @@ export default class RocketAdapter {
 		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0);
 	}
 
-	processFileShare(rocketMessage) {
+	processFileShare(rocketMessage, slack) {
 		if (!settings.get('SlackBridge_FileUpload_Enabled')) {
 			return;
 		}
@@ -207,7 +207,7 @@ export default class RocketAdapter {
 			const message = `${ text } ${ fileName }`;
 
 			rocketMessage.msg = message;
-			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
+			slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 		}
 	}
 
