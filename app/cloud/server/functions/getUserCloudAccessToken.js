@@ -1,29 +1,42 @@
 import { HTTP } from 'meteor/http';
 import { settings } from '../../../settings';
-import { Settings } from '../../../models';
+import { Users } from '../../../models';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
-import { workspaceScopes } from '../oauthScopes';
+import { userLoggedOut } from './userLoggedOut';
+import { userScopes } from '../oauthScopes';
 
-export function getWorkspaceAccessToken(forceNew = false, scope = '', save = true) {
+export function getUserCloudAccessToken(userId, forceNew = false, scope = '', save = true) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
 		return '';
 	}
 
+	if (!userId) {
+		return '';
+	}
+
+	const user = Users.findOneById(userId);
+
+	if (!user || !user.services || !user.services.cloud || !user.services.cloud.accessToken || !user.services.cloud.refreshToken) {
+		return '';
+	}
+
+	const { accessToken, refreshToken } = user.services.cloud;
+
 	const client_id = settings.get('Cloud_Workspace_Client_Id');
 	if (!client_id) {
 		return '';
 	}
 
-	const expires = Settings.findOneById('Cloud_Workspace_Access_Token_Expires_At');
+	const expires = user.services.cloud.expiresAt;
 	const now = new Date();
 
 	if (now < expires.value && !forceNew) {
-		return settings.get('Cloud_Workspace_Access_Token');
+		return accessToken;
 	}
 
 	const cloudUrl = settings.get('Cloud_Url');
@@ -31,7 +44,7 @@ export function getWorkspaceAccessToken(forceNew = false, scope = '', save = tru
 	const redirectUri = getRedirectUri();
 
 	if (scope === '') {
-		scope = workspaceScopes.join(' ');
+		scope = userScopes.join(' ');
 	}
 
 	let authTokenResult;
@@ -41,18 +54,23 @@ export function getWorkspaceAccessToken(forceNew = false, scope = '', save = tru
 			params: {
 				client_id,
 				client_secret,
+				refresh_token: refreshToken,
 				scope,
-				grant_type: 'client_credentials',
+				grant_type: 'refresh_token',
 				redirect_uri: redirectUri,
 			},
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			console.error(`Failed to get AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			console.error(`Failed to get User AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
 
 			if (e.response.data.error === 'oauth_invalid_client_credentials') {
 				console.error('Server has been unregistered from cloud');
 				unregisterWorkspace();
+			}
+
+			if (e.response.data.error === 'unauthorized') {
+				userLoggedOut(userId);
 			}
 		} else {
 			console.error(e);
@@ -65,8 +83,16 @@ export function getWorkspaceAccessToken(forceNew = false, scope = '', save = tru
 		const expiresAt = new Date();
 		expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
 
-		Settings.updateValueById('Cloud_Workspace_Access_Token', authTokenResult.data.access_token);
-		Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', expiresAt);
+		Users.update(user._id, {
+			$set: {
+				services: {
+					cloud: {
+						accessToken: authTokenResult.data.access_token,
+						expiresAt,
+					},
+				},
+			},
+		});
 	}
 
 	return authTokenResult.data.access_token;

@@ -6,6 +6,12 @@
 					{{> icon icon="upload" block="rc-icon--default-size"}} {{_ "Upload app"}}
 				</button>
 			{{/if}}
+
+			{{#unless cloudLoggedIn}}
+			<button class="rc-button rc-button--small rc-button--primary rc-button--outline" data-button="login">
+				{{> icon icon="cloud-plus" block="rc-icon--default-size"}} {{_ "Login"}}
+			</button>
+			{{/unless}}
 		{{/header}}
 		<div class="rc-table-content">
 			{{>tabs tabs=tabsData}}
