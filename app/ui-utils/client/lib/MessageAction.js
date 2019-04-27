@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
@@ -147,25 +148,23 @@ Meteor.startup(async function() {
 	MessageAction.addButton({
 		id: 'reply-message',
 		icon: 'reply-directly',
-		label: 'Reply_directly',
+		label: 'Reply_in_direct_message',
 		context: ['message', 'message-mobile'],
 		action() {
-			const { msg: message } = messageArgs(this);
-			const { input } = chatMessages[message.rid];
-			const $input = $(input);
-
-			let messages = $input.data('reply') || [];
-
-			messages = addMessageToList(messages, message, input);
-
-			$input
-				.focus()
-				.data('mention-user', false)
-				.data('reply', messages)
-				.trigger('dataChange');
+			const { msg } = messageArgs(this);
+			roomTypes.openRouteLink('d', { name: msg.u.username }, {
+				...FlowRouter.current().queryParams,
+				reply: msg._id,
+			});
 		},
 		condition(message) {
-			return Boolean(Subscriptions.findOne({ rid: message.rid }));
+			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+				return false;
+			}
+			if (roomTypes.getRoomType(message.rid) === 'd') {
+				return false;
+			}
+			return true;
 		},
 		order: 2,
 		group: 'menu',
