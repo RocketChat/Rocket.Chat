@@ -1,4 +1,5 @@
 import toastr from 'toastr';
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -63,6 +64,17 @@ const getInstalledApps = async (instance) => {
 	}
 };
 
+const getCloudLoggedIn = async (instance) => {
+	Meteor.call('cloud:checkUserLoggedIn', (error, result) => {
+		if (error) {
+			console.warn(error);
+			return;
+		}
+
+		instance.cloudLoggedIn.set(result);
+	});
+};
+
 Template.apps.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
@@ -77,6 +89,7 @@ Template.apps.onCreated(function() {
 	this.end = new ReactiveVar(false);
 	this.isLoading = new ReactiveVar(true);
 	this.searchType = new ReactiveVar('marketplace');
+	this.cloudLoggedIn = new ReactiveVar(false);
 
 	const queryTab = FlowRouter.getQueryParam('tab');
 	if (queryTab) {
@@ -102,6 +115,8 @@ Template.apps.onCreated(function() {
 		// 	instance.installedApps.set(installedApps);
 		// });
 	};
+
+	getCloudLoggedIn(instance);
 
 	instance.onAppRemoved = function _appOnAppRemoved(appId) {
 		const apps = instance.apps.get();
@@ -150,6 +165,9 @@ Template.apps.helpers({
 	},
 	appsDevelopmentMode() {
 		return settings.get('Apps_Framework_Development_Mode') === true;
+	},
+	cloudLoggedIn() {
+		return Template.instance().cloudLoggedIn.get();
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
@@ -270,6 +288,9 @@ Template.apps.events({
 	'click [data-button="install"]'() {
 		FlowRouter.go('/admin/app/install');
 	},
+	'click [data-button="login"]'() {
+		FlowRouter.go('/admin/cloud');
+	},
 	'click .js-install'(e, template) {
 		e.stopPropagation();
 		const elm = e.currentTarget.parentElement;
@@ -297,6 +318,26 @@ Template.apps.events({
 		e.stopPropagation();
 
 		const rl = this;
+
+		if (!template.cloudLoggedIn.get()) {
+			modal.open({
+				title: t('Apps_Marketplace_Login_Required_Title'),
+				text: t('Apps_Marketplace_Login_Required_Description'),
+				type: 'info',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Login'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: true,
+				html: false,
+			}, function(confirmed) {
+				if (confirmed) {
+					FlowRouter.go('/admin/cloud');
+				}
+				return;
+			});
+			return;
+		}
 
 		// play animation
 		const elm = e.currentTarget.parentElement;
@@ -328,7 +369,12 @@ Template.apps.events({
 				});
 			})
 			.catch((e) => {
-				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+				const errMsg = (e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message;
+				toastr.error(errMsg);
+
+				if (errMsg === 'Unauthorized') {
+					getCloudLoggedIn(template);
+				}
 			});
 	},
 	'keyup .js-search'(e, t) {
