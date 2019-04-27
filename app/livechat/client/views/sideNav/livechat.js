@@ -3,12 +3,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { ChatSubscription } from '../../../../models';
+import { ChatSubscription, Users } from '../../../../models';
 import { KonchatNotification } from '../../../../ui';
 import { settings } from '../../../../settings';
 import { hasRole } from '../../../../authorization';
 import { modal } from '../../../../ui-utils';
-import { Users } from '../../../../models';
+
 import { t, handleError, getUserPreference, roomTypes } from '../../../../utils';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 

@@ -1,7 +1,9 @@
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { hasAllPermission } from '../../../../authorization';
 import { ChatOAuthApps } from '../collection';
 import moment from 'moment';
+import { SideNav } from '../../../../ui-utils/client';
 
 Template.oauthApps.onCreated(function() {
 	this.subscribe('oauthApps');
@@ -18,3 +20,11 @@ Template.oauthApps.helpers({
 		return moment(date).format('L LT');
 	},
 });
+
+Template.oauthApps.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
+});
+

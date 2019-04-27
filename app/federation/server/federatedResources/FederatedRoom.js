@@ -27,11 +27,9 @@ export class FederatedRoom extends FederatedResource {
 		const { owner } = extras;
 
 		if (owner) {
-			if (!owner && room.federation) {
-				this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
-			} else {
-				this.federatedOwner = FederatedUser.loadOrCreate(localPeerIdentifier, owner);
-			}
+			this.federatedOwner = FederatedUser.loadOrCreate(localPeerIdentifier, owner);
+		} else if (!owner && room.federation && room.federation.ownerId) {
+			this.federatedOwner = FederatedUser.loadByFederationId(localPeerIdentifier, room.federation.ownerId);
 		}
 
 		// Set base federation
@@ -40,6 +38,9 @@ export class FederatedRoom extends FederatedResource {
 			peer: localPeerIdentifier,
 			ownerId: this.federatedOwner ? this.federatedOwner.getFederationId() : null,
 		};
+
+		// Keep room's owner id
+		this.federationOwnerId = room.federation && room.federation.ownerId;
 
 		// Set room property
 		this.room = room;
@@ -82,6 +83,12 @@ export class FederatedRoom extends FederatedResource {
 
 		for (const user of users) {
 			const federatedUser = FederatedUser.loadOrCreate(localPeerIdentifier, user);
+
+			// Set owner if it does not exist
+			if (!this.federatedOwner && user._id === this.federationOwnerId) {
+				this.federatedOwner = federatedUser;
+				this.room.federation.ownerId = this.federatedOwner.getFederationId();
+			}
 
 			// Keep the federated user
 			this.federatedUsers.push(federatedUser);

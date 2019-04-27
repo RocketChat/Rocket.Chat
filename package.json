@@ -193,7 +193,7 @@
 		"mem": "4.1.0",
 		"merge-graphql-schemas": "^1.5.2",
 		"meteor-node-stubs": "^0.4.1",
-		"mime-db": "^1.37.0",
+		"mime-db": "^1.40.0",
 		"mime-type": "^3.0.7",
 		"mkdirp": "^0.5.1",
 		"moment": "^2.22.2",

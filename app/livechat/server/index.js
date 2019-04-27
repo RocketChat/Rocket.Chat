@@ -54,6 +54,7 @@ import './methods/startVideoCall';
 import './methods/startFileUploadRoom';
 import './methods/transfer';
 import './methods/webhookTest';
+import './methods/setUpConnection';
 import './methods/takeInquiry';
 import './methods/returnAsInquiry';
 import './methods/saveOfficeHours';
