@@ -74,7 +74,8 @@
 									<div class="input-line double-col">
 										<label class="setting-label" title=""></label>
 										<div class="setting-field">
-											<button type="button" class="rc-button rc-button--primary action update-email-btn">{{_ "Cloud_update_email"}}</button>
+											<button type="button" class="rc-button rc-button--primary action update-email-btn" style="float:left">{{_ "Cloud_update_email"}}</button>
+											<button type="button" class="rc-button rc-button--primary action resend-email-btn" style="float:left;margin-left:5px;">Resend Email</button>
 										</div>
 									</div>
 
@@ -107,6 +108,7 @@
 							</div>
 						{{/if}}
 					</div>
+					{{#if info.connectToCloud}}
 					<div class="section">
 						<div class="section-title">
 							<div class="section-title-text">
@@ -127,8 +129,8 @@
 						<div class="section-content">
 							{{_ "Cloud_status_page_description"}}: <a href="https://status.rocket.chat" target="_blank">status.rocket.chat</a>
 						</div>
-
 					</div>
+					{{/if}}
 				{{/requiresPermission}}
 			</div>
 		</section>

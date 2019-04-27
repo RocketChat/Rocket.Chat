@@ -6,7 +6,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 import { statistics } from '../../../statistics';
 
-export function startRegisterWorkspace() {
+export function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
 	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
 		return true;
@@ -42,7 +42,7 @@ export function startRegisterWorkspace() {
 
 	let result;
 	try {
-		result = HTTP.post(`${ cloudUrl }/api/v2/register/workspace`, {
+		result = HTTP.post(`${ cloudUrl }/api/v2/register/workspace?resend=${ resend }`, {
 			data: regInfo,
 		});
 	} catch (e) {

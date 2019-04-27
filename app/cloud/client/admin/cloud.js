@@ -165,13 +165,26 @@ Template.cloud.events({
 	'click .update-email-btn'() {
 		const val = $('input[name=cloudEmail]').val();
 
-		Meteor.call('cloud:updateEmail', val, (error) => {
+		Meteor.call('cloud:updateEmail', val, false, (error) => {
 			if (error) {
 				console.warn(error);
 				return;
 			}
 
 			toastr.success(t('Saved'));
+		});
+	},
+
+	'click .resend-email-btn'() {
+		const val = $('input[name=cloudEmail]').val();
+
+		Meteor.call('cloud:updateEmail', val, true, (error) => {
+			if (error) {
+				console.warn(error);
+				return;
+			}
+
+			toastr.success(t('Requested'));
 		});
 	},
 

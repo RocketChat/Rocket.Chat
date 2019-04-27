@@ -36,7 +36,7 @@ Meteor.methods({
 
 		return startRegisterWorkspace();
 	},
-	'cloud:updateEmail'(email) {
+	'cloud:updateEmail'(email, resend = false) {
 		check(email, String);
 
 		if (!Meteor.userId()) {
@@ -49,7 +49,7 @@ Meteor.methods({
 
 		Settings.updateValueById('Organization_Email', email);
 
-		return startRegisterWorkspace();
+		return startRegisterWorkspace(resend);
 	},
 	'cloud:syncWorkspace'() {
 		if (!Meteor.userId()) {
