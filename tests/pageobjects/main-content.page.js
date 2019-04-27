@@ -32,7 +32,8 @@ class MainContent extends Page {
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
-	get lastMessageQuote() { return browser.element('.message:last-child .thread-quote'); }
+	get beforeLastMessageQuote() { return browser.element('.message:nth-last-child(2)'); }
+	get lastMessageQuote() { return browser.element('.message:last-child'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
 	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
 	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }

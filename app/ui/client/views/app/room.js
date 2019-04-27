@@ -226,6 +226,8 @@ function roomMaxAge(room) {
 
 callbacks.add('enter-room', wipeFailedUploads);
 
+const ignoreReplies = getConfig('ignoreReplies') === 'true';
+
 Template.room.helpers({
 	useNrr() {
 		const useNrr = getConfig('useNrr');
@@ -268,7 +270,12 @@ Template.room.helpers({
 			});
 		});
 
-		const query = { rid };
+		const modes = ['', 'cozy', 'compact'];
+		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
+		const query = {
+			rid,
+			...((ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } }),
+		};
 
 		if (hideMessagesOfType.length > 0) {
 			query.t =
@@ -575,6 +582,14 @@ export const dropzoneEvents = {
 
 Template.room.events({
 	...dropzoneEvents,
+	'click .js-follow-thread'() {
+		const { msg } = messageArgs(this);
+		call('followMessage', { mid: msg._id });
+	},
+	'click .js-unfollow-thread'() {
+		const { msg } = messageArgs(this);
+		call('unfollowMessage', { mid: msg._id });
+	},
 	'click .js-open-thread'(event) {
 		event.preventDefault();
 		event.stopPropagation();
@@ -855,14 +870,6 @@ Template.room.events({
 			ChatMessage.update({ _id: id }, { $set: { [`urls.${ index }.collapsed`]: !collapsed } });
 		}
 	},
-
-	'click .js-toggle-thread-reply'(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		const { msg: { _id, collapsed = true } } = messageArgs(this);
-		ChatMessage.update({ _id }, { $set: { collapsed: !collapsed } });
-	},
-
 	'load img'(e, template) {
 		return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
 	},
@@ -964,8 +971,9 @@ Template.room.onCreated(function() {
 		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
 	};
 
-	this.rid = rid;
 	this.subscription = Subscriptions.findOne({ rid });
+
+	this.rid = rid;
 	this.room = Rooms.findOne({ _id: rid });
 
 	this.showUsersOffline = new ReactiveVar(false);
