@@ -133,9 +133,7 @@ Template.main.onCreated(function() {
 
 Template.main.helpers({
 	removeSidenav() {
-		const { center } = this;
-		const centerTemplate = (center || typeof center === 'function' ? center() : center);
-		return Layout.isEmbedded() && !/^admin/.test(centerTemplate);
+		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
 	},
 	siteName() {
 		return settings.get('Site_Name');

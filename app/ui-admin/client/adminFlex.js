@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import s from 'underscore.string';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
@@ -5,10 +7,10 @@ import { settings } from '../../settings';
 import { CachedCollection } from '../../ui-cached-collection';
 import { SideNav, AdminBox, Layout } from '../../ui-utils';
 import { t } from '../../utils';
-import _ from 'underscore';
-import s from 'underscore.string';
+import { menu } from '../../ui-utils/client';
 
 Template.adminFlex.onCreated(function() {
+	this.isEmbedded = Layout.isEmbedded();
 	this.settingsFilter = new ReactiveVar('');
 	if (settings.cachedCollectionPrivate == null) {
 		settings.cachedCollectionPrivate = new CachedCollection({
@@ -24,10 +26,6 @@ Template.adminFlex.onCreated(function() {
 const label = function() {
 	return TAPi18n.__(this.i18nLabel || this._id);
 };
-
-// Template.adminFlex.onRendered(function() {
-// 	$(this.find('.rooms-list')).perfectScrollbar();
-// });
 
 Template.adminFlex.helpers({
 	groups() {
@@ -77,12 +75,17 @@ Template.adminFlex.helpers({
 		};
 	},
 	embeddedVersion() {
-		return Layout.isEmbedded();
+		return this.isEmbedded;
 	},
 });
 
 Template.adminFlex.events({
-	'click [data-action="close"]'() {
+	'click [data-action="close"]'(e, instance) {
+		if (instance.isEmbedded) {
+			menu.close();
+			return;
+		}
+
 		SideNav.closeFlex();
 	},
 	'keyup [name=settings-search]'(e, t) {
