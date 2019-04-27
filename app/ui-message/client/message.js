@@ -530,7 +530,7 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDat
 		return classList.remove('sequential');
 	}
 
-	if (shouldCollapseReplies && (previousDataset.id === currentDataset.tmid || (currentDataset.tmid && previousDataset.tmid === currentDataset.tmid))) {
+	if (shouldCollapseReplies && currentDataset.tmid && (previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.id)) {
 		return;
 	}
 
@@ -538,12 +538,6 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDat
 		return classList.remove('sequential');
 	}
 	if (parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
-		return classList.remove('sequential');
-	}
-	if (shouldCollapseReplies && currentDataset.tmid && previousDataset.id !== currentDataset.tmid) {
-		return classList.remove('sequential');
-	}
-	if (shouldCollapseReplies && previousDataset.tmid && previousDataset.tmid !== currentDataset.id) {
 		return classList.remove('sequential');
 	}
 };
@@ -573,10 +567,11 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 
 		if (nextDataset.groupable !== 'false') {
 
-			if (currentDataset.id === nextDataset.tmid || (nextDataset.tmid && currentDataset.tmid === nextDataset.tmid)) {
+			if (shouldCollapseReplies && nextDataset.tmid && (currentDataset.id === nextDataset.tmid || currentDataset.tmid === nextDataset.tmid)) {
 				return;
 			}
-			if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod || (shouldCollapseReplies && nextDataset.tmid && currentDataset.tmid !== nextDataset.tmid)) {
+
+			if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
 				nextNode.classList.remove('sequential');
 			} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
 				nextNode.classList.add('sequential');
