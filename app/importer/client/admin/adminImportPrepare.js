@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import { Importers } from '..';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -8,6 +9,7 @@ import { hasRole } from '../../../authorization';
 import { settings } from '../../../settings';
 import { t, handleError, APIClient } from '../../../utils';
 import toastr from 'toastr';
+import { SideNav } from '../../../ui-utils/client';
 
 Template.adminImportPrepare.helpers({
 	isAdmin() {
@@ -311,4 +313,11 @@ Template.adminImportPrepare.onCreated(function() {
 	} else {
 		return FlowRouter.go('/admin/import');
 	}
+});
+
+Template.adminImportPrepare.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

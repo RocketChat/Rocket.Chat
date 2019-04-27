@@ -281,7 +281,6 @@
 	--badge-text-size: 0.75rem;
 	--badge-background: var(--rc-color-primary-dark);
 	--badge-unread-background: var(--rc-color-primary-dark);
-	--badge-dm-background: var(--rc-color-primary-dark);
 	--badge-user-mentions-background: var(--color-dark-blue);
 	--badge-group-mentions-background: var(--rc-color-primary-dark);
 
