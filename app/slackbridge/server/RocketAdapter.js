@@ -324,12 +324,11 @@ export default class RocketAdapter {
 
 				addedRoom = Rooms.findOneById(slackChannel.rocketId);
 			}
-		}
+		});
 
 		if (!addedRoom) {
 			logger.rocket.debug('Channel not added');
 		}
-
 		return addedRoom;
 	}
 
