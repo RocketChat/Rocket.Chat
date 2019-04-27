@@ -268,7 +268,12 @@ Template.room.helpers({
 			});
 		});
 
-		const query = { rid };
+		const modes = ['', 'cozy', 'compact'];
+		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
+		const query = {
+			rid,
+			...(modes[viewMode] === 'compact' && { tmid: { $exists: 0 } }),
+		};
 
 		if (hideMessagesOfType.length > 0) {
 			query.t =

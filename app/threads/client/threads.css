@@ -5,13 +5,13 @@
 	border-bottom: 1px solid var(--color-gray-light);
 }
 
-.message.sequential[data-tmid] > .thread-replied > .thumb {
+.message.sequential[data-tmid] > .thread-replied > .thumb,
+.message.sequential.system[data-tmid] > .thumb {
 	display: block;
 }
 
-.message.sequential[data-tmid] .title {
-	position: relative;
-	justify-content: flex-start;
+.message.sequential[data-tmid] > .message-body-wrapper > .title {
+	display: none;
 }
 
 .message.thread-message {
@@ -58,6 +58,16 @@
 
 		width: 20px;
 
+		&--thread {
+			position: absolute;
+			left: 40px;
+
+			width: 20px;
+			height: 20px;
+
+			color: var(--rc-color-alert-message-primary);
+		}
+
 		&--bell,
 		&--bell-off {
 			cursor: pointer;
@@ -70,7 +80,7 @@
 
 		display: flex;
 
-		margin: var(--default-padding) -5px 0 -5px;
+		margin: calc(var(--default-padding) /2) 0;
 		align-items: center;
 	}
 
@@ -86,6 +96,8 @@
 		text-overflow: ellipsis;
 
 		color: var(--rc-color-alert-message-primary);
+
+		align-items: center;
 
 		> .message-body--unstyled {
 			overflow: hidden;
@@ -105,6 +117,10 @@
 	&.collapsed .thread-reply-preview {
 		display: initial;
 	}
+}
+
+.message.collapsed + .message.system:not(.collapsed) {
+	margin-top: var(--default-padding);
 }
 
 .message.collapsed > .thread-replied > .thumb {
