@@ -508,38 +508,66 @@ const getPreviousSentMessage = (currentNode) => {
 	}
 };
 
-const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDateSeparator, shouldCollapseReplies) => {
-	const { classList, dataset: currentDataset } = currentNode;
-
-	if (!previousNode) {
-		classList.remove('sequential');
-		showDateSeparator && classList.add('new-day');
-		return;
+const isNewDay = (currentNode, previousNode, forceDate, showDateSeparator) => {
+	if (!showDateSeparator) {
+		return false;
 	}
 
+	if (forceDate || !previousNode) {
+		return true;
+	}
+
+	const { dataset: currentDataset } = currentNode;
+	const { dataset: previousDataset } = previousNode;
+	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
+	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
+
+	if (previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
+		return true;
+	}
+
+	return false;
+};
+
+const isSequential = (currentNode, previousNode, forceDate, period, showDateSeparator, shouldCollapseReplies) => {
+	if (!previousNode) {
+		return false;
+	}
+
+	if (showDateSeparator && forceDate) {
+		return false;
+	}
+
+	const { dataset: currentDataset } = currentNode;
 	const { dataset: previousDataset } = previousNode;
 	const previousMessageDate = new Date(parseInt(previousDataset.timestamp));
 	const currentMessageDate = new Date(parseInt(currentDataset.timestamp));
 
 	if (showDateSeparator && previousMessageDate.toDateString() !== currentMessageDate.toDateString()) {
-		classList.remove('sequential');
-		classList.add('new-day');
+		return false;
 	}
 
 	if ([previousDataset.groupable, currentDataset.groupable].includes('false')) {
-		return classList.remove('sequential');
+		return false;
 	}
 
-	if (shouldCollapseReplies && currentDataset.tmid && (previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.id)) {
-		return;
+	if (shouldCollapseReplies && currentDataset.tmid) {
+		return previousDataset.id === currentDataset.tmid || previousDataset.tmid === currentDataset.tmid;
+	}
+
+	if (previousDataset.tmid && !currentDataset.tmid) {
+		return false;
 	}
 
 	if (previousDataset.username !== currentDataset.username) {
-		return classList.remove('sequential');
+		return false;
 	}
-	if (parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) > period) {
-		return classList.remove('sequential');
+
+	if (parseInt(currentDataset.timestamp) - parseInt(previousDataset.timestamp) <= period) {
+		return true;
 	}
+
+	return false;
 };
 
 const processSequentials = ({ currentNode, settings, forceDate, showDateSeparator = true, groupable, msg, shouldCollapseReplies }) => {
@@ -549,33 +577,33 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 	if (msg.file && msg.file.type === 'application/pdf') {
 		Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
 	}
-	const currentDataset = currentNode.dataset;
+	// const currentDataset = currentNode.dataset;
 	const previousNode = getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
-	setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies);
+	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
+		currentNode.classList.add('sequential');
+	} else {
+		currentNode.classList.remove('sequential');
+	}
+
+	if (isNewDay(currentNode, previousNode, forceDate, showDateSeparator)) {
+		currentNode.classList.add('new-day');
+	} else {
+		currentNode.classList.remove('new-day');
+	}
+
 	if (nextNode && nextNode.dataset) {
-		const nextDataset = nextNode.dataset;
-		if (forceDate || nextDataset.date !== currentDataset.date) {
-			if (!showDateSeparator) {
-				currentNode.classList.add('new-day');
-			}
-			currentNode.classList.remove('sequential');
+		if (isSequential(nextNode, currentNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
+			nextNode.classList.add('sequential');
+		} else {
+			nextNode.classList.remove('sequential');
+		}
+
+		if (isNewDay(nextNode, currentNode, forceDate, showDateSeparator)) {
+			nextNode.classList.add('new-day');
 		} else {
 			nextNode.classList.remove('new-day');
-		}
-
-		if (nextDataset.groupable !== 'false') {
-
-			if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod) {
-				nextNode.classList.remove('sequential');
-			} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid && (shouldCollapseReplies && nextDataset.tmid && (currentDataset.id === nextDataset.tmid || currentDataset.tmid === nextDataset.tmid))) {
-				nextNode.classList.add('sequential');
-			}
-		}
-
-		if (!currentDataset.tmid && currentNode.classList.contains('system')) {
-			nextNode.classList.remove('sequential');
 		}
 	} else {
 		const [el] = $(`#chat-window-${ msg.rid }`);
