@@ -69,6 +69,15 @@ class AppClientOrchestrator {
 		AdminBox.addOption({
 			icon: 'cube',
 			href: 'apps',
+			i18nLabel: 'Apps',
+			permissionGranted() {
+				return hasAtLeastOnePermission(['manage-apps']);
+			},
+		});
+
+		AdminBox.addOption({
+			icon: 'cube',
+			href: 'marketplace',
 			i18nLabel: 'Marketplace',
 			permissionGranted() {
 				return hasAtLeastOnePermission(['manage-apps']);
@@ -124,6 +133,20 @@ const appsRouteAction = function _theRealAction(whichCenter) {
 };
 
 // Bah, this has to be done *before* `Meteor.startup`
+FlowRouter.route('/admin/marketplace', {
+	name: 'marketplace',
+	action() {
+		appsRouteAction('marketplace');
+	},
+});
+
+FlowRouter.route('/admin/marketplace/:itemId', {
+	name: 'app-manage',
+	action() {
+		appsRouteAction('appManage');
+	},
+});
+
 FlowRouter.route('/admin/apps', {
 	name: 'apps',
 	action() {

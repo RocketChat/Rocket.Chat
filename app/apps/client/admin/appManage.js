@@ -26,6 +26,7 @@ function getApps(instance) {
 	return APIClient.get(`apps/${ id }?marketplace=true&version=${ FlowRouter.getQueryParam('version') }`)
 		.catch((e) => {
 			console.log(e);
+			toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 			return Promise.resolve({ app: undefined });
 		})
 		.then((remote) => {
@@ -79,7 +80,11 @@ function getApps(instance) {
 			instance.ready.set(true);
 
 			if (appInfo.remote && appInfo.local) {
-				return APIClient.get(`apps/${ id }?marketplace=true&update=true&appVersion=${ FlowRouter.getQueryParam('version') }`);
+				try {
+					return APIClient.get(`apps/${ id }?marketplace=true&update=true&appVersion=${ FlowRouter.getQueryParam('version') }`);
+				} catch (e) {
+					toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+				}
 			}
 
 			return Promise.resolve(false);
