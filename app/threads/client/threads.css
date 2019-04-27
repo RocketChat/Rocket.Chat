@@ -80,7 +80,7 @@
 
 		display: flex;
 
-		margin: calc(var(--default-padding) /2) 0;
+		margin: calc((var(--default-padding) /2) - 6px) 0 7px 0;
 		align-items: center;
 	}
 
@@ -120,7 +120,12 @@
 }
 
 .message.collapsed + .message.system:not(.collapsed) {
-	margin-top: var(--default-padding);
+	margin-top: calc(var(--default-padding) / 2);
+	margin-bottom: calc(var(--default-padding) / 2);
+}
+
+.message.collapsed + .message:not(.collapsed) {
+	margin-top: calc(var(--default-padding) / 2);
 }
 
 .message.collapsed > .thread-replied > .thumb {
