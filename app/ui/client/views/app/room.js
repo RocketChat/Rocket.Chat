@@ -1255,3 +1255,10 @@ Template.room.onRendered(function() {
 	});
 
 });
+
+callbacks.add('enter-room', async (sub) => {
+	const isAReplyInDMFromChannel = FlowRouter.getQueryParam('reply') && sub.t === 'd';
+	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
+		await chatMessages[sub.rid].restoreReplies();
+	}
+});

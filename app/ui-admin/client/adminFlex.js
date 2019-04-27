@@ -5,9 +5,8 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { settings } from '../../settings';
 import { CachedCollection } from '../../ui-cached-collection';
-import { SideNav, AdminBox, Layout } from '../../ui-utils';
+import { menu, SideNav, AdminBox, Layout } from '../../ui-utils/client';
 import { t } from '../../utils';
-import { menu } from '../../ui-utils/client';
 
 Template.adminFlex.onCreated(function() {
 	this.isEmbedded = Layout.isEmbedded();
