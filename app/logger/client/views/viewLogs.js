@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { ansispan } from '../ansispan';
 import { stdout } from '../viewLogs';
 import { readMessage } from '../../../ui-utils';
 import { hasAllPermission } from '../../../authorization';
 import _ from 'underscore';
 import moment from 'moment';
+import { SideNav } from '../../../ui-utils/client';
 
 Template.viewLogs.onCreated(function() {
 	this.subscribe('stdout');
@@ -41,7 +43,10 @@ Template.viewLogs.events({
 });
 
 Template.viewLogs.onRendered(function() {
-
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 	const wrapper = this.find('.terminal');
 	const wrapperUl = this.find('.terminal');
 	const newLogs = this.find('.new-logs');

@@ -4,9 +4,10 @@ import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { Tracker } from 'meteor/tracker';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
-import { modal } from '../../../ui-utils';
-import { t, handleError } from '../../../utils';
+import { modal, SideNav } from '../../../ui-utils';
+import { t, handleError } from '../../../utils/client';
 import { ChatIntegrations } from '../collections';
 import { integrations } from '../../lib/rocketchat';
 import hljs from 'highlight.js';
@@ -352,3 +353,11 @@ Template.integrationsOutgoing.events({
 		}
 	},
 });
+
+Template.integrationsOutgoing.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
+});
+
