@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
@@ -317,13 +318,33 @@ Meteor.startup(async function() {
 			if (Subscriptions.findOne({ rid: message.rid }) == null) {
 				return false;
 			}
-
 			return true;
 		},
 		order: 6,
 		group: 'menu',
 	});
 
+	MessageAction.addButton({
+		id: 'reply-privately',
+		icon: 'chat',
+		label: 'Reply_in_direct_message',
+		context: ['message', 'message-mobile'],
+		action() {
+			const { msg } = messageArgs(this);
+			roomTypes.openRouteLink('d', { name: msg.u.username }, { ...FlowRouter.current().queryParams, reply: msg._id });
+		},
+		condition(message) {
+			if (Subscriptions.findOne({ rid: message.rid }) == null) {
+				return false;
+			}
+			if (roomTypes.getRoomType(message.rid) === 'd') {
+				return false;
+			}
+			return true;
+		},
+		order: 7,
+		group: 'menu',
+	});
 
 	MessageAction.addButton({
 		id: 'ignore-user',
