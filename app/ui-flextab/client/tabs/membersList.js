@@ -298,7 +298,7 @@ Template.membersList.onCreated(function() {
 			label: 'Members_List',
 			icon: 'team',
 		});
-		setTimeout(() => this.clearRoomUserDetail(), 500);
+		setTimeout(() => this.clearRoomUserDetail(), 100);
 	};
 
 	this.showUserDetail = (username, group) => {
