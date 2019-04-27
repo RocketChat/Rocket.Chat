@@ -146,7 +146,7 @@ export const MessageAction = new class {
 Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
 	MessageAction.addButton({
-		id: 'reply-message',
+		id: 'reply-directly',
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
 		context: ['message', 'message-mobile'],
