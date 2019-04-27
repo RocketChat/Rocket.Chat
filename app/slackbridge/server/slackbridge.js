@@ -9,16 +9,15 @@ import { logger } from './logger';
 class SlackBridgeClass {
 
 	constructor() {
-		this.slack = new SlackAdapter(this);
+		this.slackAdapters = [];
 		this.rocket = new RocketAdapter(this);
 		this.reactionsMap = new Map();	// Sync object between rocket and slack
 
 		this.connected = false;
-		this.rocket.setSlack(this.slack);
-		this.slack.setRocket(this.rocket);
+		this.rocket.clearSlackAdapters();
 
 		// Settings that we cache versus looking up at runtime
-		this.apiToken = false;
+		this.apiTokens = false;
 		this.aliasFormat = '';
 		this.excludeBotnames = '';
 		this.isReactionsEnabled = true;
@@ -28,8 +27,19 @@ class SlackBridgeClass {
 
 	connect() {
 		if (this.connected === false) {
+			this.slackAdapters = [];
+			this.rocket.clearSlackAdapters();
 
-			this.slack.connect(this.apiToken);
+			const tokenList = this.apiTokens.split('\n');
+			tokenList.forEach((apiToken) => {
+				const slack = new SlackAdapter(this);
+				slack.setRocket(this.rocket);
+				this.rocket.addSlack(slack);
+				this.slackAdapters.push(slack);
+
+				slack.connect(apiToken);
+			});
+
 			if (settings.get('SlackBridge_Out_Enabled')) {
 				this.rocket.connect();
 			}
@@ -42,7 +52,10 @@ class SlackBridgeClass {
 	disconnect() {
 		if (this.connected === true) {
 			this.rocket.disconnect();
-			this.slack.disconnect();
+			this.slackAdapters.forEach((slack) => {
+				slack.disconnect();
+			});
+			this.slackAdapters = [];
 			this.connected = false;
 			logger.connection.info('Disabled');
 		}
@@ -51,8 +64,8 @@ class SlackBridgeClass {
 	processSettings() {
 		// Slack installation API token
 		settings.get('SlackBridge_APIToken', (key, value) => {
-			if (value !== this.apiToken) {
-				this.apiToken = value;
+			if (value !== this.apiTokens) {
+				this.apiTokens = value;
 				if (this.connected) {
 					this.disconnect();
 					this.connect();
@@ -82,7 +95,7 @@ class SlackBridgeClass {
 
 		// Is this entire SlackBridge enabled
 		settings.get('SlackBridge_Enabled', (key, value) => {
-			if (value && this.apiToken) {
+			if (value && this.apiTokens) {
 				this.connect();
 			} else {
 				this.disconnect();
