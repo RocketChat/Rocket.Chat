@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms } from '../../app/models';
 
 Meteor.methods({
 	getTotalChannels() {
@@ -11,6 +12,6 @@ Meteor.methods({
 		const query = {
 			t: 'c',
 		};
-		return RocketChat.models.Rooms.find(query).count();
+		return Rooms.find(query).count();
 	},
 });
