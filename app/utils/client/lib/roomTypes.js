@@ -126,10 +126,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			return;
 		}
 		const roomType = room.t;
-		if (this.roomTypes[roomType] && !this.roomTypes[roomType].readOnlyTpl) {
-			return false;
-		}
-		return this.roomTypes[roomType].readOnlyTpl;
+		return this.roomTypes[roomType] && this.roomTypes[roomType].readOnlyTpl;
 	}
 
 	openRouteLink(roomType, subData, queryParams) {
