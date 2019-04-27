@@ -41,7 +41,7 @@ export function syncWorkspace() {
 			return false;
 		}
 
-		HTTP.post(`${ workspaceUrl }/registration`, {
+		HTTP.post(`${ workspaceUrl }/client`, {
 			data: info,
 			headers,
 		});
