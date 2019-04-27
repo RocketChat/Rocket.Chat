@@ -611,8 +611,10 @@ Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the
 });
 
 Template.message.onViewRendered = function() {
+	const args = messageArgs(Template.currentData());
+	// processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 	return this._domrange.onAttached((domRange) => {
 		const currentNode = domRange.lastNode();
-		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
+		processSequentials({ currentNode, ...args });
 	});
 };

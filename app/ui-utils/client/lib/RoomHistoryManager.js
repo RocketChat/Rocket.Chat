@@ -143,6 +143,10 @@ export const RoomHistoryManager = new class {
 				subscription,
 			});
 
+			if (!room.loaded) {
+				room.loaded = 0;
+			}
+
 			room.loaded += messages.length;
 
 			if (messages.length < limit) {
@@ -150,7 +154,7 @@ export const RoomHistoryManager = new class {
 			}
 
 			if (wrapper) {
-				if (wrapper.scrollTop === 0) {
+				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
 					return this.getMore(rid);
 				}
 				const heightDiff = wrapper.scrollHeight - previousHeight;
@@ -158,9 +162,6 @@ export const RoomHistoryManager = new class {
 			}
 
 			room.isLoading.set(false);
-			if (!room.loaded) {
-				room.loaded = 0;
-			}
 			Meteor.defer(() => {
 				readMessage.refreshUnreadMark(rid, true);
 				return RoomManager.updateMentionsMarksOfRoom(typeName);
