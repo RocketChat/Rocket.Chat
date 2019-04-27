@@ -29189,6 +29189,374 @@
           ]
         }
       ]
+    },
+    "1.0.0-rc.4": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14262",
+          "title": "[FIX] Auto-translate toggle not updating rendered messages",
+          "userLogin": "marceloschmidt",
+          "contributors": [
+            "marceloschmidt",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14265",
+          "title": "[FIX] Align burger menu in header with content matching room header",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14266",
+          "title": "Improve message validation",
+          "userLogin": "d-gubert",
+          "milestone": "1.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "14007",
+          "title": "Added federation ping, loopback and dashboard",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14012",
+          "title": "[FIX] Normalize TAPi18n language string on Livechat widget",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14163",
+          "title": "[FIX] Autogrow not working properly for many message boxes",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14207",
+          "title": "[FIX] Image attachment re-renders on message update",
+          "userLogin": "Kailash0311",
+          "milestone": "1.0.0",
+          "contributors": [
+            "Kailash0311",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14251",
+          "title": "Regression: Exception on notification when adding someone in room via mention",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14246",
+          "title": "Regression: fix grouping for reactive message",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "11346",
+          "title": "[NEW] Multiple slackbridges",
+          "userLogin": "Hudell",
+          "milestone": "1.0.0",
+          "contributors": [
+            "kable-wilmoth",
+            "Hudell",
+            "web-flow",
+            "engelgabriel"
+          ]
+        },
+        {
+          "pr": "14010",
+          "title": "[FIX] Sidenav does not open on some admin pages",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14245",
+          "title": "Regression: Cursor position set to beginning when editing a message",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14244",
+          "title": "[FIX] Empty result when getting badge count notification",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14224",
+          "title": "[NEW] option to not use nrr (experimental)",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14238",
+          "title": "Regression: grouping messages on threads",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14236",
+          "title": "[NEW]Set up livechat connections created from new client",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14235",
+          "title": "Regression: Remove border from unstyled message body",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14234",
+          "title": "Move LDAP Escape to login handler",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14227",
+          "title": "[BREAK] Require OPLOG/REPLICASET to run Rocket.Chat",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14216",
+          "title": "[Regression] Personal Access Token list fixed",
+          "userLogin": "knrt10",
+          "milestone": "1.0.0",
+          "contributors": [
+            "knrt10"
+          ]
+        },
+        {
+          "pr": "14226",
+          "title": "ESLint: Add more import rules",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14225",
+          "title": "Regression: fix drop file",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14222",
+          "title": "Broken styles in Administration's contextual bar",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14223",
+          "title": "Regression: Broken UI for messages",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14220",
+          "title": "Exit process on unhandled rejection",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok",
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14217",
+          "title": "Unify mime-type package configuration",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14219",
+          "title": "Regression: Prevent startup errors for mentions parsing",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14189",
+          "title": "Regression: System messages styling",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14214",
+          "title": "[NEW] allow drop files on thread",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14188",
+          "title": "[FIX] Obey audio notification preferences",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14215",
+          "title": "Prevent click on reply thread to trigger flex tab closing",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14177",
+          "title": "created function to allow change default values, fix loading search users",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14213",
+          "title": "Use main message as thread tab title",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14210",
+          "title": "Use own logic to get thread infos via REST",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14192",
+          "title": "Regression: wrong expression at messageBox.actions.remove()",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14185",
+          "title": "Increment user counter on DMs",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14184",
+          "title": "[REGRESSION] Fix variable name references in message template",
+          "userLogin": "d-gubert",
+          "milestone": "1.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }
