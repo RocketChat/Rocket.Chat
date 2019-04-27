@@ -32,6 +32,8 @@ export function connectWorkspace(token) {
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
 			console.error(`Failed to register with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+		} else {
+			console.error(e);
 		}
 
 		return false;
