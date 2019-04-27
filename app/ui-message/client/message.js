@@ -551,9 +551,9 @@ const setNewDayAndGroup = (currentNode, previousNode, forceDate, period, showDat
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
 
 	this.autorun(() => {
-		const { settings, forceDate, noDate, groupable, msg, shouldCollapseReplies } = messageArgs(Template.currentData());
+		const { settings, forceDate, showDateSeparator, groupable, msg, shouldCollapseReplies } = messageArgs(Template.currentData());
 
-		if (noDate && !groupable) {
+		if (showDateSeparator && !groupable) {
 			return;
 		}
 
@@ -566,11 +566,11 @@ Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the
 		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
 
-		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, noDate, shouldCollapseReplies);
+		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies);
 		if (nextNode && nextNode.dataset) {
 			const nextDataset = nextNode.dataset;
 			if (forceDate || nextDataset.date !== currentDataset.date) {
-				if (!noDate) {
+				if (!showDateSeparator) {
 					currentNode.classList.add('new-day');
 				}
 				currentNode.classList.remove('sequential');
@@ -626,11 +626,11 @@ Template.message.onViewRendered = function() {
 		const previousNode = getPreviousSentMessage(currentNode);
 		const nextNode = currentNode.nextElementSibling;
 
-		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator);
+		setNewDayAndGroup(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies);
 		if (nextNode && nextNode.dataset) {
 			const nextDataset = nextNode.dataset;
 			if (forceDate || nextDataset.date !== currentDataset.date) {
-				if (showDateSeparator) {
+				if (!showDateSeparator) {
 					currentNode.classList.add('new-day');
 				}
 				currentNode.classList.remove('sequential');
@@ -639,9 +639,13 @@ Template.message.onViewRendered = function() {
 			}
 
 			if (nextDataset.groupable !== 'false') {
-				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod || (shouldCollapseReplies && nextDataset.tmid && currentDataset.id !== nextDataset.tmid)) {
+
+				if (currentDataset.id === nextDataset.tmid || (nextDataset.tmid && currentDataset.tmid === nextDataset.tmid)) {
+					return;
+				}
+				if (nextDataset.username !== currentDataset.username || parseInt(nextDataset.timestamp) - parseInt(currentDataset.timestamp) > settings.Message_GroupingPeriod || (shouldCollapseReplies && nextDataset.tmid && currentDataset.tmid !== nextDataset.tmid)) {
 					nextNode.classList.remove('sequential');
-				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp')) {
+				} else if (!nextNode.classList.contains('new-day') && !currentNode.classList.contains('temp') && !currentNode.dataset.tmid) {
 					nextNode.classList.add('sequential');
 				}
 			}
