@@ -1,6 +1,82 @@
 
 # 1.0.0 (Under Release Candidate Process)
 
+## 1.0.0-rc.4
+`2019-04-27  ·  1 ️️️⚠️  ·  4 🎉  ·  8 🐛  ·  24 🔍  ·  15 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+- Require OPLOG/REPLICASET to run Rocket.Chat ([#14227](https://github.com/RocketChat/Rocket.Chat/pull/14227))
+
+### 🎉 New features
+
+- Multiple slackbridges ([#11346](https://github.com/RocketChat/Rocket.Chat/pull/11346) by [@kable-wilmoth](https://github.com/kable-wilmoth))
+- option to not use nrr (experimental) ([#14224](https://github.com/RocketChat/Rocket.Chat/pull/14224))
+- Set up livechat connections created from new client ([#14236](https://github.com/RocketChat/Rocket.Chat/pull/14236))
+- allow drop files on thread ([#14214](https://github.com/RocketChat/Rocket.Chat/pull/14214))
+
+### 🐛 Bug fixes
+
+- Auto-translate toggle not updating rendered messages ([#14262](https://github.com/RocketChat/Rocket.Chat/pull/14262))
+- Align burger menu in header with content matching room header ([#14265](https://github.com/RocketChat/Rocket.Chat/pull/14265))
+- Normalize TAPi18n language string on Livechat widget ([#14012](https://github.com/RocketChat/Rocket.Chat/pull/14012))
+- Autogrow not working properly for many message boxes ([#14163](https://github.com/RocketChat/Rocket.Chat/pull/14163))
+- Image attachment re-renders on message update ([#14207](https://github.com/RocketChat/Rocket.Chat/pull/14207) by [@Kailash0311](https://github.com/Kailash0311))
+- Sidenav does not open on some admin pages ([#14010](https://github.com/RocketChat/Rocket.Chat/pull/14010))
+- Empty result when getting badge count notification ([#14244](https://github.com/RocketChat/Rocket.Chat/pull/14244))
+- Obey audio notification preferences ([#14188](https://github.com/RocketChat/Rocket.Chat/pull/14188))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Improve message validation ([#14266](https://github.com/RocketChat/Rocket.Chat/pull/14266))
+- Added federation ping, loopback and dashboard ([#14007](https://github.com/RocketChat/Rocket.Chat/pull/14007))
+- Regression: Exception on notification when adding someone in room via mention ([#14251](https://github.com/RocketChat/Rocket.Chat/pull/14251))
+- Regression: fix grouping for reactive message ([#14246](https://github.com/RocketChat/Rocket.Chat/pull/14246))
+- Regression: Cursor position set to beginning when editing a message ([#14245](https://github.com/RocketChat/Rocket.Chat/pull/14245))
+- Regression: grouping messages on threads ([#14238](https://github.com/RocketChat/Rocket.Chat/pull/14238))
+- Regression: Remove border from unstyled message body ([#14235](https://github.com/RocketChat/Rocket.Chat/pull/14235))
+- Move LDAP Escape to login handler ([#14234](https://github.com/RocketChat/Rocket.Chat/pull/14234))
+- [Regression] Personal Access Token list fixed ([#14216](https://github.com/RocketChat/Rocket.Chat/pull/14216) by [@knrt10](https://github.com/knrt10))
+- ESLint: Add more import rules ([#14226](https://github.com/RocketChat/Rocket.Chat/pull/14226))
+- Regression: fix drop file ([#14225](https://github.com/RocketChat/Rocket.Chat/pull/14225))
+- Broken styles in Administration's contextual bar ([#14222](https://github.com/RocketChat/Rocket.Chat/pull/14222))
+- Regression: Broken UI for messages ([#14223](https://github.com/RocketChat/Rocket.Chat/pull/14223))
+- Exit process on unhandled rejection ([#14220](https://github.com/RocketChat/Rocket.Chat/pull/14220))
+- Unify mime-type package configuration ([#14217](https://github.com/RocketChat/Rocket.Chat/pull/14217))
+- Regression: Prevent startup errors for mentions parsing ([#14219](https://github.com/RocketChat/Rocket.Chat/pull/14219))
+- Regression: System messages styling ([#14189](https://github.com/RocketChat/Rocket.Chat/pull/14189))
+- Prevent click on reply thread to trigger flex tab closing ([#14215](https://github.com/RocketChat/Rocket.Chat/pull/14215))
+- created function to allow change default values, fix loading search users ([#14177](https://github.com/RocketChat/Rocket.Chat/pull/14177))
+- Use main message as thread tab title ([#14213](https://github.com/RocketChat/Rocket.Chat/pull/14213))
+- Use own logic to get thread infos via REST ([#14210](https://github.com/RocketChat/Rocket.Chat/pull/14210))
+- Regression: wrong expression at messageBox.actions.remove() ([#14192](https://github.com/RocketChat/Rocket.Chat/pull/14192))
+- Increment user counter on DMs ([#14185](https://github.com/RocketChat/Rocket.Chat/pull/14185))
+- [REGRESSION] Fix variable name references in message template ([#14184](https://github.com/RocketChat/Rocket.Chat/pull/14184))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Kailash0311](https://github.com/Kailash0311)
+- [@kable-wilmoth](https://github.com/kable-wilmoth)
+- [@knrt10](https://github.com/knrt10)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@alansikora](https://github.com/alansikora)
+- [@d-gubert](https://github.com/d-gubert)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@marceloschmidt](https://github.com/marceloschmidt)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 1.0.0-rc.3
 `2019-04-18  ·  4 🎉  ·  5 🚀  ·  11 🐛  ·  23 🔍  ·  17 👩‍💻👨‍💻`
 
