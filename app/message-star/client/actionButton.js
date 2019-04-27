@@ -11,7 +11,7 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'star-message',
 		icon: 'star',
-		label: 'Star_Message',
+		label: 'Star',
 		context: ['starred', 'message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
@@ -29,7 +29,7 @@ Meteor.startup(function() {
 
 			return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
 		},
-		order: 10,
+		order: 9,
 		group: 'menu',
 	});
 
@@ -54,7 +54,7 @@ Meteor.startup(function() {
 
 			return message.starred && message.starred.find((star) => star._id === Meteor.userId());
 		},
-		order: 10,
+		order: 9,
 		group: 'menu',
 	});
 
@@ -83,7 +83,7 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'permalink-star',
 		icon: 'permalink',
-		label: 'Permalink',
+		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['starred'],
 		async action(event) {
