@@ -42,7 +42,7 @@ function isUserAuthenticated({ headers, query }) {
 		rc_token = cookie.get('rc_token', headers.cookie);
 	}
 
-	if (typeof(rc_uid) === 'undefined') {
+	if (rc_uid == null || rc_token == null) {
 		return false;
 	}
 
