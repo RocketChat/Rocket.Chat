@@ -14,6 +14,10 @@ settings.addGroup('LDAP', function() {
 		enableQuery,
 		{ _id: 'LDAP_Sync_User_Data', value: true },
 	];
+	const syncGroupsQuery = [
+		enableQuery,
+		{ _id: 'LDAP_Sync_User_Data_Groups', value: true },
+	];
 	const groupFilterQuery = [
 		enableQuery,
 		{ _id: 'LDAP_Group_Filter_Enable', value: true },
@@ -84,6 +88,14 @@ settings.addGroup('LDAP', function() {
 
 		this.add('LDAP_Sync_User_Data', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: syncDataQuery });
+
+		this.add('LDAP_Sync_User_Data_Groups', false, { type: 'boolean', enableQuery });
+		this.add('LDAP_Sync_User_Data_Groups_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', { type: 'string', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_AutoRemove', false, { type: 'boolean', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', { type: 'string', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_BaseDN', '', { type: 'string', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_GroupsMap', '{"rocket-admin":"admin", "tech-support":"support"}', { type: 'string', enableQuery: syncGroupsQuery });
+
 		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery });
 
 		this.add('LDAP_Background_Sync', false, { type: 'boolean', enableQuery });
