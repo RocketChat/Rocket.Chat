@@ -1,14 +1,13 @@
+import _ from 'underscore';
+import util from 'util';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
-import { HTTP } from 'meteor/http';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { Messages, Rooms, Users } from '../../models';
 import { createRoom, sendMessage, setUserAvatar } from '../../lib';
 import { logger } from './logger';
-import _ from 'underscore';
-import util from 'util';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {
@@ -130,7 +129,7 @@ export default class RocketAdapter {
 	onMessage(rocketMessage) {
 		this.slackAdapters.forEach((slack) => {
 			try {
-				if (! slack.getSlackChannel(rocketMessage.rid)) {
+				if (!slack.getSlackChannel(rocketMessage.rid)) {
 					// This is on a channel that the rocket bot is not subscribed
 					return;
 				}
@@ -147,7 +146,7 @@ export default class RocketAdapter {
 				}
 
 				if (rocketMessage.file) {
-					return this.processFileShare(rocketMessage);
+					return this.processFileShare(rocketMessage, slack);
 				}
 
 				// A new message from Rocket.Chat
@@ -163,7 +162,6 @@ export default class RocketAdapter {
 
 	processSendMessage(rocketMessage, slack) {
 		// Since we got this message, SlackBridge_Out_Enabled is true
-
 		if (settings.get('SlackBridge_Out_All') === true) {
 			slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 		} else {
@@ -189,35 +187,27 @@ export default class RocketAdapter {
 		return rocketMessage.attachments.find((attachment) => attachment.title_link && attachment.title_link.indexOf(`/${ fileId }/`) >= 0);
 	}
 
-	getFileDownloadUrl(rocketMessage) {
-		const attachment = this.getMessageAttachment(rocketMessage);
-
-		if (attachment) {
-			return attachment.title_link;
-		}
-	}
-
-	processFileShare(rocketMessage) {
-		if (! settings.get('SlackBridge_FileUpload_Enabled')) {
+	processFileShare(rocketMessage, slack) {
+		if (!settings.get('SlackBridge_FileUpload_Enabled')) {
 			return;
 		}
 
 		if (rocketMessage.file.name) {
-			let file_name = rocketMessage.file.name;
+			let fileName = rocketMessage.file.name;
 			let text = rocketMessage.msg;
 
 			const attachment = this.getMessageAttachment(rocketMessage);
 			if (attachment) {
-				file_name = Meteor.absoluteUrl(attachment.title_link);
+				fileName = Meteor.absoluteUrl(attachment.title_link);
 				if (!text) {
 					text = attachment.description;
 				}
 			}
 
-			const message = `${ text } ${ file_name }`;
+			const message = `${ text } ${ fileName }`;
 
 			rocketMessage.msg = message;
-			this.slack.postMessage(this.slack.getSlackChannel(rocketMessage.rid), rocketMessage);
+			slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 		}
 	}
 
@@ -251,6 +241,23 @@ export default class RocketAdapter {
 		return Rooms.findOneByImportId(slackChannelId);
 	}
 
+	getRocketUsers(members, slackChannel) {
+		const rocketUsers = [];
+		for (const member of members) {
+			if (member !== slackChannel.creator) {
+				const rocketUser = this.findUser(member) || this.addUser(member);
+				if (rocketUser && rocketUser.username) {
+					rocketUsers.push(rocketUser.username);
+				}
+			}
+		}
+		return rocketUsers;
+	}
+
+	getRocketUserCreator(slackChannel) {
+		return slackChannel.creator ? this.findUser(slackChannel.creator) || this.addUser(slackChannel.creator) : null;
+	}
+
 	addChannel(slackChannelID, hasRetried = false) {
 		logger.rocket.debug('Adding Rocket.Chat channel from Slack', slackChannelID);
 		let addedRoom;
@@ -260,41 +267,32 @@ export default class RocketAdapter {
 				return;
 			}
 
-			let slackResults = null;
-			let isGroup = false;
-			if (slackChannelID.charAt(0) === 'C') {
-				slackResults = HTTP.get('https://slack.com/api/channels.info', { params: { token: slack.apiToken, channel: slackChannelID } });
-			} else if (slackChannelID.charAt(0) === 'G') {
-				slackResults = HTTP.get('https://slack.com/api/groups.info', { params: { token: slack.apiToken, channel: slackChannelID } });
-				isGroup = true;
-			}
-			if (slackResults && slackResults.data && slackResults.data.ok === true) {
-				const rocketChannelData = isGroup ? slackResults.data.group : slackResults.data.channel;
-				const existingRocketRoom = Rooms.findOneByName(rocketChannelData.name);
+			const slackChannel = slack.slackAPI.getRoomInfo(slackChannelID);
+			if (slackChannel) {
+				const members = slack.slackAPI.getMembers(slackChannelID);
+				if (!members) {
+					logger.rocket.error('Could not fetch room members');
+					return;
+				}
 
-				// If the room exists, make sure we have its id in importIds
-				if (existingRocketRoom || rocketChannelData.is_general) {
-					rocketChannelData.rocketId = rocketChannelData.is_general ? 'GENERAL' : existingRocketRoom._id;
-					Rooms.addImportIds(rocketChannelData.rocketId, rocketChannelData.id);
+				const rocketRoom = Rooms.findOneByName(slackChannel.name);
+
+				if (rocketRoom || slackChannel.is_general) {
+					slackChannel.rocketId = slackChannel.is_general ? 'GENERAL' : rocketRoom._id;
+					Rooms.addImportIds(slackChannel.rocketId, slackChannel.id);
 				} else {
-					const rocketUsers = [];
-					for (const member of rocketChannelData.members) {
-						if (member !== rocketChannelData.creator) {
-							const rocketUser = this.findUser(member) || this.addUser(member);
-							if (rocketUser && rocketUser.username) {
-								rocketUsers.push(rocketUser.username);
-							}
-						}
-					}
-					const rocketUserCreator = rocketChannelData.creator ? this.findUser(rocketChannelData.creator) || this.addUser(rocketChannelData.creator) : null;
+					const rocketUsers = this.getRocketUsers(members, slackChannel);
+					const rocketUserCreator = this.getRocketUserCreator(slackChannel);
+
 					if (!rocketUserCreator) {
-						logger.rocket.error('Could not fetch room creator information', rocketChannelData.creator);
+						logger.rocket.error('Could not fetch room creator information', slackChannel.creator);
 						return;
 					}
 
 					try {
-						const rocketChannel = createRoom(isGroup ? 'p' : 'c', rocketChannelData.name, rocketUserCreator.username, rocketUsers);
-						rocketChannelData.rocketId = rocketChannel.rid;
+						const isPrivate = slackChannel.is_private;
+						const rocketChannel = createRoom(isPrivate ? 'p' : 'c', slackChannel.name, slackChannel.username, rocketUsers);
+						rocketChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {
 							logger.rocket.debug('Error adding channel from Slack. Will retry in 1s.', e.message);
@@ -307,27 +305,30 @@ export default class RocketAdapter {
 					}
 
 					const roomUpdate = {
-						ts: new Date(rocketChannelData.created * 1000),
+						ts: new Date(slackChannel.created * 1000),
 					};
+
 					let lastSetTopic = 0;
-					if (!_.isEmpty(rocketChannelData.topic && rocketChannelData.topic.value)) {
-						roomUpdate.topic = rocketChannelData.topic.value;
-						lastSetTopic = rocketChannelData.topic.last_set;
+					if (slackChannel.topic && slackChannel.topic.value) {
+						roomUpdate.topic = slackChannel.topic.value;
+						lastSetTopic = slackChannel.topic.last_set;
 					}
-					if (!_.isEmpty(rocketChannelData.purpose && rocketChannelData.purpose.value) && rocketChannelData.purpose.last_set > lastSetTopic) {
-						roomUpdate.topic = rocketChannelData.purpose.value;
+
+					if (slackChannel.purpose && slackChannel.purpose.value && slackChannel.purpose.last_set > lastSetTopic) {
+						roomUpdate.topic = slackChannel.purpose.value;
 					}
-					Rooms.addImportIds(rocketChannelData.rocketId, rocketChannelData.id);
-					slack.addSlackChannel(rocketChannelData.rocketId, slackChannelID);
+
+					Rooms.addImportIds(slackChannel.rocketId, slackChannel.id);
+					slack.addSlackChannel(slackChannel.rocketId, slackChannelID);
 				}
-				addedRoom = Rooms.findOneById(rocketChannelData.rocketId);
+
+				addedRoom = Rooms.findOneById(slackChannel.rocketId);
 			}
 		});
 
 		if (!addedRoom) {
 			logger.rocket.debug('Channel not added');
 		}
-
 		return addedRoom;
 	}
 
@@ -347,9 +348,9 @@ export default class RocketAdapter {
 				return;
 			}
 
-			const slackResults = HTTP.get('https://slack.com/api/users.info', { params: { token: slack.apiToken, user: slackUserID } });
-			if (slackResults && slackResults.data && slackResults.data.ok === true && slackResults.data.user) {
-				const rocketUserData = slackResults.data.user;
+			const user = slack.slackAPI.getUser(slackUserID);
+			if (user) {
+				const rocketUserData = user;
 				const isBot = rocketUserData.is_bot === true;
 				const email = (rocketUserData.profile && rocketUserData.profile.email) || '';
 				let existingRocketUser;
@@ -427,6 +428,7 @@ export default class RocketAdapter {
 		if (!addedUser) {
 			logger.rocket.debug('User not added');
 		}
+
 		return addedUser;
 	}
 

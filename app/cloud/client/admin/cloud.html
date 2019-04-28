@@ -1,10 +1,13 @@
 <template name="cloud">
 	<div class="main-content-flex">
 		<section class="page-container page-home page-static page-settings">
-			{{> header sectionName="Cloud_connect"}}
+			{{#header sectionName="Connectivity_Services" hideHelp=true fixedHeight=true fullpage=true}}
+				<button type="button" class="rc-button rc-button--primary action cloud-console-btn">{{_ "Cloud_console"}}</button>
+			{{/header}}
 			<div class="content">
 				{{#requiresPermission 'manage-cloud'}}
 					<div class="section">
+
 						<div class="section-title">
 							<div class="section-title-text">
 								{{_ "Cloud_what_is_it"}}
@@ -14,6 +17,21 @@
 						<div class="section-content">
 							<p>{{_ "Cloud_what_is_it_description"}}</p>
 						</div>
+
+						<details>
+							<div class="section-content">
+								<p>{{_ "Cloud_what_is_it_services_like"}}</p>
+								<ul style="list-style-type:disc;margin-left:15px;">
+									<li>{{_ "Register_Server_Registered_Push_Notifications"}}</li>
+									<li>{{_ "Register_Server_Registered_Livechat"}}</li>
+									<li>{{_ "Register_Server_Registered_OAuth"}}</li>
+									<li>{{_ "Register_Server_Registered_Marketplace"}}</li>
+								</ul>
+							</div>
+							<div class="section-content">
+								{{_ "Cloud_what_is_it_additional"}}
+							</div>
+						</details>
 					</div>
 					<div class="section">
 						{{#if info.connectToCloud}}
@@ -21,22 +39,19 @@
 								<div class="section-content border-component-color">
 									<p>{{_ "Cloud_workspace_connected"}}</p>
 									<div class="input-line double-col">
-										<label class="setting-label" title=""></label>
-										<div class="setting-field">
-											<a href="https://cloud.rocket.chat" class="rc-button rc-button--primary" target="_blank">{{_ "Cloud_login_to_cloud"}}</a>
-										</div>
-									</div>
-								</div>
-
-								<div class="section-content border-component-color">
-										<p>{{_ "Cloud_workspace_support"}}</p>
-										<div class="input-line double-col">
+										{{#if isLoggedIn}}
 											<label class="setting-label" title=""></label>
 											<div class="setting-field">
-												<button type="button" class="rc-button rc-button--danger action sync-btn">{{_ "Sync"}}</button>
+												<button type="button" class="rc-button rc-button--primary action logout-btn" target="_blank">{{_ "Cloud_logout"}}</button>
 											</div>
-										</div>
+										{{else}}
+											<label class="setting-label" title=""></label>
+											<div class="setting-field">
+												<button type="button" class="rc-button rc-button--primary action login-btn" target="_blank">{{_ "Cloud_login_to_cloud"}}</button>
+											</div>
+										{{/if}}
 									</div>
+								</div>
 
 								<div class="section-content border-component-color">
 									<p>{{_ "Cloud_workspace_disconnect"}}</p>
@@ -59,7 +74,8 @@
 									<div class="input-line double-col">
 										<label class="setting-label" title=""></label>
 										<div class="setting-field">
-											<button type="button" class="rc-button rc-button--primary action update-email-btn">{{_ "Cloud_update_email"}}</button>
+											<button type="button" class="rc-button rc-button--primary action update-email-btn" style="float:left">{{_ "Cloud_update_email"}}</button>
+											<button type="button" class="rc-button rc-button--primary action resend-email-btn" style="float:left;margin-left:5px;">{{_ "Cloud_resend_email"}}</button>
 										</div>
 									</div>
 
@@ -77,7 +93,7 @@
 										</div>
 									</div>
 
-									<p>If you still haven't received a registration email please make sure your email is updated above.  If you still have issues you can contact support at: <a href="mailto:support@rocket.chat?subject=[Self Hosted Registration]&body=WorkspaceId: {{ info.workspaceId }}%0D%0ADeployment Id: {{ info.uniqueId }}%0D%0AIssue: <please describe your issue here>">support@rocket.chat</a></p>
+									<p>{{_ "Cloud_connect_support"}}: <a href="mailto:support@rocket.chat?subject=[Self Hosted Registration]&body=WorkspaceId: {{ info.workspaceId }}%0D%0ADeployment Id: {{ info.uniqueId }}%0D%0AIssue: <please describe your issue here>">support@rocket.chat</a></p>
 								</div>
 							{{/if}}
 						{{else}}
@@ -92,6 +108,29 @@
 							</div>
 						{{/if}}
 					</div>
+					{{#if info.connectToCloud}}
+					<div class="section">
+						<div class="section-title">
+							<div class="section-title-text">
+								{{_ "Cloud_troubleshooting"}}
+							</div>
+						</div>
+
+						<div class="section-content border-component-color">
+							<p>{{_ "Cloud_workspace_support"}}</p>
+							<div class="input-line double-col">
+								<label class="setting-label" title=""></label>
+								<div class="setting-field">
+									<button type="button" class="rc-button rc-button--danger action sync-btn">{{_ "Sync"}}</button>
+								</div>
+							</div>
+						</div>
+
+						<div class="section-content">
+							{{_ "Cloud_status_page_description"}}: <a href="https://status.rocket.chat" target="_blank">status.rocket.chat</a>
+						</div>
+					</div>
+					{{/if}}
 				{{/requiresPermission}}
 			</div>
 		</section>

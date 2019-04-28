@@ -471,7 +471,7 @@ export const Livechat = {
 
 		const { servedBy } = room;
 
-		if (agent && agent.agentId !== servedBy._id) {
+		if (agent && servedBy && agent.agentId !== servedBy._id) {
 			Rooms.changeAgentByRoomId(room._id, agent);
 
 			if (transferData.departmentId) {
