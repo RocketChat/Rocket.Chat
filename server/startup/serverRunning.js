@@ -49,7 +49,7 @@ Meteor.startup(function() {
 		msg = msg.join('\n');
 
 		if (!isOplogEnabled) {
-			msg += ['', '', 'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:', 'https://rocket.chat/docs/installation/docker-containers/high-availability-install'].join('\n');
+			msg += ['', '', 'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:', 'https://go.rocket.chat/i/100'].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
 			return process.exit(1);
