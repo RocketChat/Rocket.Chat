@@ -7,6 +7,7 @@ import { settings } from '../../../../settings';
 import { LivechatOfficeHour } from '../../collections/livechatOfficeHour';
 import toastr from 'toastr';
 import moment from 'moment';
+import './livechatOfficeHours.html';
 
 Template.livechatOfficeHours.helpers({
 	days() {

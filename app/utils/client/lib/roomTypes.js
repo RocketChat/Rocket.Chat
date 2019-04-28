@@ -27,8 +27,8 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		const list = _.reject(this.roomTypesOrder, (t) => except.indexOf(t.identifier) !== -1);
 		return _.map(list, (t) => t.identifier);
 	}
-	getUserStatus(roomType, roomId) {
-		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatus === 'function' && this.roomTypes[roomType].getUserStatus(roomId);
+	getUserStatus(roomType, rid) {
+		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].getUserStatus === 'function' && this.roomTypes[roomType].getUserStatus(rid);
 	}
 	getRoomType(roomId) {
 		const fields = {
@@ -44,14 +44,13 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	findRoom(roomType, identifier, user) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].findRoom(identifier, user);
 	}
-	canSendMessage(roomId) {
-		return ChatSubscription.find({
-			rid: roomId,
-		}).count() > 0;
+	canSendMessage(rid) {
+		return ChatSubscription.find({ rid }).count() > 0;
 	}
 	readOnly(rid, user) {
 		const fields = {
 			ro: 1,
+			t: 1,
 		};
 		if (user) {
 			fields.muted = 1;
@@ -61,6 +60,12 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}, {
 			fields,
 		});
+
+		const roomType = room && room.t;
+		if (roomType && this.roomTypes[roomType] && this.roomTypes[roomType].readOnly) {
+			return this.roomTypes[roomType].readOnly(rid, user);
+		}
+
 		if (!user) {
 			return room && room.ro;
 		}
@@ -75,19 +80,12 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		});
 		return room && (room.ro === true && Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !userOwner);
 	}
-	archived(roomId) {
-		const fields = {
-			archived: 1,
-		};
-		const room = ChatRoom.findOne({
-			_id: roomId,
-		}, {
-			fields,
-		});
+	archived(rid) {
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { archived: 1 } });
 		return room && room.archived === true;
 	}
-	verifyCanSendMessage(roomId) {
-		const room = ChatRoom.findOne({	_id: roomId }, { fields: { t: 1 } });
+	verifyCanSendMessage(rid) {
+		const room = ChatRoom.findOne({	_id: rid }, { fields: { t: 1 } });
 
 		if (!room || !room.t) {
 			return;
@@ -95,18 +93,12 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 
 		const roomType = room.t;
 		if (this.roomTypes[roomType] && this.roomTypes[roomType].canSendMessage) {
-			return this.roomTypes[roomType].canSendMessage(roomId);
+			return this.roomTypes[roomType].canSendMessage(rid);
 		}
-		return this.canSendMessage(roomId);
+		return this.canSendMessage(rid);
 	}
-	verifyShowJoinLink(roomId) {
-		const room = ChatRoom.findOne({
-			_id: roomId,
-		}, {
-			fields: {
-				t: 1,
-			},
-		});
+	verifyShowJoinLink(rid) {
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
@@ -114,10 +106,10 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		if (this.roomTypes[roomType] && !this.roomTypes[roomType].showJoinLink) {
 			return false;
 		}
-		return this.roomTypes[roomType].showJoinLink(roomId);
+		return this.roomTypes[roomType].showJoinLink(rid);
 	}
-	getNotSubscribedTpl(roomId) {
-		const room = ChatRoom.findOne({ _id: roomId }, { fields: { t: 1 } });
+	getNotSubscribedTpl(rid) {
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
 		if (!room || !room.t) {
 			return;
 		}
@@ -126,6 +118,15 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			return false;
 		}
 		return this.roomTypes[roomType].notSubscribedTpl;
+	}
+
+	getReadOnlyTpl(rid) {
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
+		if (!room || !room.t) {
+			return;
+		}
+		const roomType = room.t;
+		return this.roomTypes[roomType] && this.roomTypes[roomType].readOnlyTpl;
 	}
 
 	openRouteLink(roomType, subData, queryParams) {

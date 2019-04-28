@@ -3,6 +3,7 @@ import moment from 'moment';
 import Clipboard from 'clipboard';
 
 import { Meteor } from 'meteor/meteor';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Blaze } from 'meteor/blaze';
@@ -39,8 +40,6 @@ import { isURL } from '../../../../utils/lib/isURL';
 import { mime } from '../../../../utils/lib/mimeTypes';
 
 export const chatMessages = {};
-
-const favoritesEnabled = () => settings.get('Favorite_Rooms');
 
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
@@ -234,8 +233,10 @@ Template.room.helpers({
 		return useNrr === 'true' || useNrr !== 'false';
 	},
 	isTranslated() {
-		const sub = Template.instance().subscription;
-		return settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
+		const { state } = Template.instance();
+		return settings.get('AutoTranslate_Enabled') &&
+			(state.get('autoTranslate') === true) &&
+			!!state.get('autoTranslateLanguage');
 	},
 
 	embeddedVersion() {
@@ -243,7 +244,8 @@ Template.room.helpers({
 	},
 
 	subscribed() {
-		return Template.instance().subscription;
+		const { state } = Template.instance();
+		return state.get('subscribed');
 	},
 
 	messagesHistory() {
@@ -342,7 +344,7 @@ Template.room.helpers({
 
 		return {
 			rid,
-			subscription,
+			subscription: subscription.get(),
 			isEmbedded,
 			showFormattingTips: showFormattingTips && !isEmbedded,
 			onInputChanged: (input) => {
@@ -442,8 +444,8 @@ Template.room.helpers({
 	},
 
 	showToggleFavorite() {
-		const { subscription } = Template.instace();
-		return subscription && favoritesEnabled();
+		const { state } = Template.instace();
+		return state.get('subscribed') && settings.get('Favorite_Rooms');
 	},
 
 	messageViewMode() {
@@ -478,7 +480,7 @@ Template.room.helpers({
 	},
 
 	canPreview() {
-		const { room, subscription } = Template.instance();
+		const { room, state } = Template.instance();
 
 		if (room && room.t !== 'c') {
 			return true;
@@ -492,7 +494,7 @@ Template.room.helpers({
 			return true;
 		}
 
-		return !subscription;
+		return !state.get('subscribed');
 	},
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
@@ -974,9 +976,18 @@ Template.room.onCreated(function() {
 		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
 	};
 
-	this.subscription = Subscriptions.findOne({ rid });
-
 	this.rid = rid;
+
+	this.subscription = new ReactiveVar();
+	this.state = new ReactiveDict();
+	this.autorun(() => {
+		const subscription = Subscriptions.findOne({ rid });
+		this.subscription.set(subscription);
+		this.state.set('subscribed', !!subscription);
+		this.state.set('autoTranslate', subscription && subscription.autoTranslate);
+		this.state.set('autoTranslateLanguage', subscription && subscription.autoTranslateLanguage);
+	});
+
 	this.room = Rooms.findOne({ _id: rid });
 
 	this.showUsersOffline = new ReactiveVar(false);
