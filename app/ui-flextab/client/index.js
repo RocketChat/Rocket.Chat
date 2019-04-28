@@ -3,7 +3,6 @@ import './tabs/inviteUsers.html';
 import './tabs/membersList.html';
 import './tabs/uploadedFilesList.html';
 import './tabs/userEdit.html';
-import './tabs/userInfo.html';
 import './flexTabBar';
 import './tabs/inviteUsers';
 import './tabs/membersList';

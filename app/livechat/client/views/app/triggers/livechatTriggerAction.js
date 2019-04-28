@@ -1,6 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { settings } from '../../../../../settings';
+import './livechatTriggerAction.html';
 
 Template.livechatTriggerAction.helpers({
 	hiddenValue(current) {
