@@ -1,6 +1,56 @@
 
 # 1.0.0 (Under Release Candidate Process)
 
+## 1.0.0-rc.5
+`2019-04-28  ·  1 🎉  ·  1 🚀  ·  2 🐛  ·  9 🔍  ·  13 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+- Update message actions ([#14268](https://github.com/RocketChat/Rocket.Chat/pull/14268))
+
+### 🚀 Improvements
+
+- Replace livechat inquiry dialog with preview room ([#13986](https://github.com/RocketChat/Rocket.Chat/pull/13986))
+
+### 🐛 Bug fixes
+
+- Slackbridge private channels ([#14273](https://github.com/RocketChat/Rocket.Chat/pull/14273) by [@nylen](https://github.com/nylen))
+- View All members button now not in direct room ([#14081](https://github.com/RocketChat/Rocket.Chat/pull/14081) by [@knrt10](https://github.com/knrt10))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Regression: Active room was not being marked ([#14276](https://github.com/RocketChat/Rocket.Chat/pull/14276))
+- Rename Cloud to Connectivity Services & split Apps in Apps and Marketplace ([#14211](https://github.com/RocketChat/Rocket.Chat/pull/14211))
+- LingoHub based on develop ([#14178](https://github.com/RocketChat/Rocket.Chat/pull/14178))
+- Regression: Discussions were not showing on Tab Bar ([#14050](https://github.com/RocketChat/Rocket.Chat/pull/14050) by [@knrt10](https://github.com/knrt10))
+- Force unstyling of blockquote under .message-body--unstyled ([#14274](https://github.com/RocketChat/Rocket.Chat/pull/14274))
+- Regression: Admin embedded layout ([#14229](https://github.com/RocketChat/Rocket.Chat/pull/14229))
+- New threads layout ([#14269](https://github.com/RocketChat/Rocket.Chat/pull/14269))
+- Improve: Marketplace auth inside Rocket.Chat instead of inside the iframe.   ([#14258](https://github.com/RocketChat/Rocket.Chat/pull/14258))
+- [New] Reply privately to group messages ([#14150](https://github.com/RocketChat/Rocket.Chat/pull/14150) by [@bhardwajaditya](https://github.com/bhardwajaditya))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@bhardwajaditya](https://github.com/bhardwajaditya)
+- [@knrt10](https://github.com/knrt10)
+- [@nylen](https://github.com/nylen)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Hudell](https://github.com/Hudell)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@d-gubert](https://github.com/d-gubert)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 1.0.0-rc.4
 `2019-04-27  ·  1 ️️️⚠️  ·  4 🎉  ·  8 🐛  ·  24 🔍  ·  15 👩‍💻👨‍💻`
 
