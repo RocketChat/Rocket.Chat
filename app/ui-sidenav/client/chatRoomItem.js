@@ -1,5 +1,3 @@
-import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { t, roomTypes } from '../../utils/client';
@@ -10,15 +8,12 @@ import { callbacks } from '../../callbacks/client';
 
 Template.chatRoomItem.helpers({
 	roomData() {
-		const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
 		const unread = this.unread > 0 ? this.unread : false;
 		// if (this.unread > 0 && (!hasFocus || openedRoom !== this.rid)) {
 		// 	unread = this.unread;
 		// }
 
 		const roomType = roomTypes.getConfig(this.t);
-
-		const active = [this.rid, this._id].includes((id) => id === openedRoom);
 
 		const archivedClass = this.archived ? 'archived' : false;
 
@@ -32,7 +27,7 @@ Template.chatRoomItem.helpers({
 			route: roomTypes.getRouteLink(this.t, this),
 			name: roomType.roomName(this),
 			unread,
-			active,
+			active: false,
 			archivedClass,
 			status: this.t === 'd' || this.t === 'l',
 		};
