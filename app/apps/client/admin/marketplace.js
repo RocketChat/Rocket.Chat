@@ -1,10 +1,12 @@
 import toastr from 'toastr';
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { settings } from '../../../settings';
 import { t, APIClient } from '../../../utils';
+import { modal } from '../../../ui-utils';
 import { AppEvents } from '../communication';
 import { Apps } from '../orchestrator';
 import { SideNav } from '../../../ui-utils/client';
@@ -20,12 +22,31 @@ const sortByColumn = (array, column, inverted) =>
 		return 1;
 	});
 
-const getInstalledApps = async (instance) => {
-	try {
-		const data = await APIClient.get('apps');
-		const apps = data.apps.map((app) => ({ latest: app }));
+const tagAlreadyInstalledApps = (installedApps, apps) => {
+	const installedIds = installedApps.map((app) => app.latest.id);
 
-		instance.apps.set(apps);
+	const tagged = apps.map((app) =>
+		({
+			price: app.price,
+			isPurchased: app.isPurchased,
+			latest: {
+				...app.latest,
+				_installed: installedIds.includes(app.latest.id),
+			},
+		})
+	);
+
+	return tagged;
+};
+
+const getApps = async (instance) => {
+	instance.isLoading.set(true);
+
+	try {
+		const data = await APIClient.get('apps?marketplace=true');
+		const tagged = tagAlreadyInstalledApps(instance.installedApps.get(), data);
+
+		instance.apps.set(tagged);
 	} catch (e) {
 		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
 	}
@@ -34,10 +55,32 @@ const getInstalledApps = async (instance) => {
 	instance.ready.set(true);
 };
 
-Template.apps.onCreated(function() {
+const getInstalledApps = async (instance) => {
+	try {
+		const data = await APIClient.get('apps');
+		const apps = data.apps.map((app) => ({ latest: app }));
+		instance.installedApps.set(apps);
+	} catch (e) {
+		toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+	}
+};
+
+const getCloudLoggedIn = async (instance) => {
+	Meteor.call('cloud:checkUserLoggedIn', (error, result) => {
+		if (error) {
+			console.warn(error);
+			return;
+		}
+
+		instance.cloudLoggedIn.set(result);
+	});
+};
+
+Template.marketplace.onCreated(function() {
 	const instance = this;
 	this.ready = new ReactiveVar(false);
 	this.apps = new ReactiveVar([]);
+	this.installedApps = new ReactiveVar([]);
 	this.categories = new ReactiveVar([]);
 	this.searchText = new ReactiveVar('');
 	this.searchSortBy = new ReactiveVar('name');
@@ -46,8 +89,10 @@ Template.apps.onCreated(function() {
 	this.page = new ReactiveVar(0);
 	this.end = new ReactiveVar(false);
 	this.isLoading = new ReactiveVar(true);
+	this.cloudLoggedIn = new ReactiveVar(false);
 
 	getInstalledApps(instance);
+	getApps(instance);
 
 	try {
 		APIClient.get('apps?categories=true').then((data) => instance.categories.set(data));
@@ -67,6 +112,8 @@ Template.apps.onCreated(function() {
 		// 	instance.installedApps.set(installedApps);
 		// });
 	};
+
+	getCloudLoggedIn(instance);
 
 	instance.onAppRemoved = function _appOnAppRemoved(appId) {
 		const apps = instance.apps.get();
@@ -88,14 +135,14 @@ Template.apps.onCreated(function() {
 	Apps.getWsListener().registerListener(AppEvents.APP_REMOVED, instance.onAppAdded);
 });
 
-Template.apps.onDestroyed(function() {
+Template.marketplace.onDestroyed(function() {
 	const instance = this;
 
 	Apps.getWsListener().unregisterListener(AppEvents.APP_ADDED, instance.onAppAdded);
 	Apps.getWsListener().unregisterListener(AppEvents.APP_REMOVED, instance.onAppAdded);
 });
 
-Template.apps.helpers({
+Template.marketplace.helpers({
 	isReady() {
 		if (Template.instance().ready != null) {
 			return Template.instance().ready.get();
@@ -115,6 +162,9 @@ Template.apps.helpers({
 	},
 	appsDevelopmentMode() {
 		return settings.get('Apps_Framework_Development_Mode') === true;
+	},
+	cloudLoggedIn() {
+		return Template.instance().cloudLoggedIn.get();
 	},
 	parseStatus(status) {
 		return t(`App_status_${ status }`);
@@ -169,12 +219,18 @@ Template.apps.helpers({
 			sortDirection.set('asc');
 		};
 	},
+	renderDownloadButton(latest) {
+		return latest._installed === false;
+	},
+	formatPrice(price) {
+		return `$${ Number.parseFloat(price).toFixed(2) }`;
+	},
 	formatCategories(categories = []) {
 		return categories.join(', ');
 	},
 });
 
-Template.apps.events({
+Template.marketplace.events({
 	'click .manage'() {
 		const rl = this;
 
@@ -182,11 +238,97 @@ Template.apps.events({
 			FlowRouter.go(`/admin/apps/${ rl.latest.id }?version=${ rl.latest.version }`);
 		}
 	},
-	'click [data-button="install_app"]'() {
-		FlowRouter.go('marketplace');
+	'click [data-button="install"]'() {
+		FlowRouter.go('/admin/app/install');
 	},
-	'click [data-button="upload_app"]'() {
-		FlowRouter.go('app-install');
+	'click [data-button="login"]'() {
+		FlowRouter.go('/admin/cloud');
+	},
+	'click .js-install'(e, template) {
+		e.stopPropagation();
+		const elm = e.currentTarget.parentElement;
+
+		elm.classList.add('loading');
+
+		APIClient.post('apps/', {
+			appId: this.latest.id,
+			marketplace: true,
+			version: this.latest.version,
+		})
+			.then(async () => {
+				await Promise.all([
+					getInstalledApps(template),
+					getApps(template),
+				]);
+				elm.classList.remove('loading');
+			})
+			.catch((e) => {
+				toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+				elm.classList.remove('loading');
+			});
+	},
+	'click .js-purchase'(e, template) {
+		e.stopPropagation();
+
+		const rl = this;
+
+		if (!template.cloudLoggedIn.get()) {
+			modal.open({
+				title: t('Apps_Marketplace_Login_Required_Title'),
+				text: t('Apps_Marketplace_Login_Required_Description'),
+				type: 'info',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: t('Login'),
+				cancelButtonText: t('Cancel'),
+				closeOnConfirm: true,
+				html: false,
+			}, function(confirmed) {
+				if (confirmed) {
+					FlowRouter.go('/admin/cloud');
+				}
+				return;
+			});
+			return;
+		}
+
+		// play animation
+		const elm = e.currentTarget.parentElement;
+
+		APIClient.get(`apps?buildBuyUrl=true&appId=${ rl.latest.id }`)
+			.then((data) => {
+				modal.open({
+					allowOutsideClick: false,
+					data,
+					template: 'iframeModal',
+				}, () => {
+					elm.classList.add('loading');
+					APIClient.post('apps/', {
+						appId: this.latest.id,
+						marketplace: true,
+						version: this.latest.version,
+					})
+						.then(async () => {
+							await Promise.all([
+								getInstalledApps(template),
+								getApps(template),
+							]);
+							elm.classList.remove('loading');
+						})
+						.catch((e) => {
+							toastr.error((e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message);
+							elm.classList.remove('loading');
+						});
+				});
+			})
+			.catch((e) => {
+				const errMsg = (e.xhr.responseJSON && e.xhr.responseJSON.error) || e.message;
+				toastr.error(errMsg);
+
+				if (errMsg === 'Unauthorized') {
+					getCloudLoggedIn(template);
+				}
+			});
 	},
 	'keyup .js-search'(e, t) {
 		t.searchText.set(e.currentTarget.value);
@@ -197,7 +339,7 @@ Template.apps.events({
 	},
 });
 
-Template.apps.onRendered(() => {
+Template.marketplace.onRendered(() => {
 	Tracker.afterFlush(() => {
 		SideNav.setFlex('adminFlex');
 		SideNav.openFlex();

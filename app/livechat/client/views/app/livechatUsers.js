@@ -6,6 +6,8 @@ import { t, handleError } from '../../../../utils';
 import { AgentUsers } from '../../collections/AgentUsers';
 import _ from 'underscore';
 import toastr from 'toastr';
+import './livechatUsers.html';
+
 let ManagerUsers;
 
 Meteor.startup(function() {

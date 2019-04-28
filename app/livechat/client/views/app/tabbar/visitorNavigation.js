@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import moment from 'moment';
+import './visitorNavigation.html';
 
 const visitorNavigationHistory = new Mongo.Collection('visitor_navigation_history');
 

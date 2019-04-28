@@ -7,6 +7,7 @@ import { popover } from '../../../../../ui-utils';
 import moment from 'moment';
 import { drawLineChart } from '../../../lib/chartHandler';
 import { setDateRange, updateDateRange } from '../../../lib/dateHandler';
+import './livechatAnalytics.html';
 
 let templateInstance;		// current template instance/context
 let chartContext;			// stores context of current chart, used to clean when redrawing
