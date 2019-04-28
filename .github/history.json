@@ -29706,6 +29706,186 @@
           ]
         }
       ]
+    },
+    "1.0.0": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "13474",
+          "title": "Release 0.74.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego",
+            "graywolf336",
+            "Hudell",
+            "d-gubert",
+            "rodrigok",
+            "BehindLoader",
+            "leonboot",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13471",
+          "title": "Room loading improvements",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13360",
+          "title": "[FIX] Invalid condition on getting next livechat agent over REST API endpoint",
+          "userLogin": "renatobecker",
+          "milestone": "0.74.3",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "13417",
+          "title": "[IMPROVE] Open rooms quicker",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13457",
+          "title": "[FIX] \"Test Desktop Notifications\" not triggering a notification",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13463",
+          "title": "[FIX] Translated and incorrect i18n variables",
+          "userLogin": "leonboot",
+          "milestone": "0.74.3",
+          "contributors": [
+            "leonboot",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13456",
+          "title": "Regression: Remove console.log on email translations",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13408",
+          "title": "[FIX] Properly escape custom emoji names for pattern matching",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13452",
+          "title": "[FIX] Not translated emails",
+          "userLogin": "sampaiodiego",
+          "milestone": "0.74.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "13437",
+          "title": "[FIX] XML-decryption module not found",
+          "userLogin": "Hudell",
+          "milestone": "0.74.3",
+          "contributors": [
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "13244",
+          "title": "[FIX] Update Russian localization",
+          "userLogin": "BehindLoader",
+          "milestone": "0.74.3",
+          "contributors": [
+            "BehindLoader",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13436",
+          "title": "[IMPROVE] Allow configure Prometheus port per process via Environment Variable",
+          "userLogin": "rodrigok",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13430",
+          "title": "[IMPROVE] Add API option \"permissionsRequired\"",
+          "userLogin": "d-gubert",
+          "milestone": "0.74.3",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13336",
+          "title": "[FIX] Several Problems on HipChat Importer",
+          "userLogin": "Hudell",
+          "milestone": "0.74.3",
+          "contributors": [
+            "rodrigok",
+            "Hudell",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "13423",
+          "title": "[FIX] Invalid push gateway configuration, requires the uniqueId",
+          "userLogin": "graywolf336",
+          "milestone": "0.74.3",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "13369",
+          "title": "[FIX] Notify private settings changes even on public settings changed",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "13407",
+          "title": "[FIX] Misaligned upload progress bar \"cancel\" button",
+          "userLogin": "tassoevan",
+          "milestone": "0.74.3",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
