@@ -12,7 +12,7 @@ export function retrieveRegistrationStatus() {
 	};
 
 	const firstUser = Users.getOldest({ emails: 1 });
-	info.email = firstUser && firstUser.emails[0].address;
+	info.email = firstUser && firstUser.emails && firstUser.emails[0].address;
 
 	if (settings.get('Organization_Email')) {
 		info.email = settings.get('Organization_Email');
