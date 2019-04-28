@@ -169,7 +169,7 @@ describe('[Groups]', function() {
 		});
 	});
 
-	it('/groups.invite', async(done) => {
+	it('/groups.invite', async (done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.invite'))
@@ -250,6 +250,36 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
+	it('/groups.addLeader', (done) => {
+		request.post(api('groups.addLeader'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/groups.removeLeader', (done) => {
+		request.post(api('groups.removeLeader'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
 	it('/groups.kick', (done) => {
 		request.post(api('groups.kick'))
 			.set(credentials)
@@ -265,7 +295,7 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.invite', async(done) => {
+	it('/groups.invite', async (done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.invite'))
@@ -472,7 +502,7 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.rename', async(done) => {
+	it('/groups.rename', async (done) => {
 		const roomInfo = await getRoomInfo(group._id);
 
 		request.post(api('groups.rename'))
@@ -598,7 +628,7 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-		it('change customFields', async(done) => {
+		it('change customFields', async (done) => {
 			const customFields = { field9:'value9' };
 			request.post(api('groups.setCustomFields'))
 				.set(credentials)
@@ -656,7 +686,7 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('set customFields with one nested field', async(done) => {
+		it('set customFields with one nested field', async (done) => {
 			const customFields = { field1:'value1' };
 			request.post(api('groups.setCustomFields'))
 				.set(credentials)
@@ -675,7 +705,7 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-		it('set customFields with multiple nested fields', async(done) => {
+		it('set customFields with multiple nested fields', async (done) => {
 			const customFields = { field2:'value2', field3:'value3', field4:'value4' };
 
 			request.post(api('groups.setCustomFields'))
@@ -698,7 +728,7 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-		it('set customFields to empty object', async(done) => {
+		it('set customFields to empty object', async (done) => {
 			const customFields = {};
 
 			request.post(api('groups.setCustomFields'))
@@ -720,7 +750,7 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-		it('set customFields as a string -> should return 400', async(done) => {
+		it('set customFields as a string -> should return 400', async (done) => {
 			const customFields = '';
 
 			request.post(api('groups.setCustomFields'))
@@ -806,7 +836,7 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('/groups.invite', async(done) => {
+		it('/groups.invite', async (done) => {
 			request.post(api('groups.invite'))
 				.set(credentials)
 				.send({
@@ -876,7 +906,7 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('/groups.invite', async(done) => {
+		it('/groups.invite', async (done) => {
 			request.post(api('groups.invite'))
 				.set(credentials)
 				.send({

@@ -1,0 +1,74 @@
+.permissions-manager {
+	.permission-grid {
+		overflow-x: scroll;
+
+		table-layout: fixed;
+
+		border-collapse: collapse;
+
+		.id-styler {
+			color: #7f7f7f;
+
+			font-size: smaller;
+		}
+
+		.role-name {
+			width: 70px;
+			height: 80px;
+
+			text-align: left;
+
+			vertical-align: middle;
+
+			border-right: 1px solid	black;
+			border-left: 1px solid black;
+		}
+
+		.role-name-edit-icon {
+			width: 70px;
+			height: 70px;
+
+			text-align: center;
+
+			vertical-align: middle;
+
+			border-right: 1px solid	black;
+			border-left: 1px solid black;
+		}
+
+		.rotator {
+			transform: rotate(-90deg);
+		}
+
+		.admin-table-row {
+			height: 50px;
+		}
+
+		td {
+			overflow: hidden;
+		}
+
+		.permission-name {
+			width: 25%;
+			padding-left: 14px;
+
+			vertical-align: middle;
+		}
+
+		.admin-table-row .permission-name {
+			border-top: 1px solid black;
+			border-bottom: 1px solid black;
+		}
+
+		.permission-checkbox {
+			text-align: center;
+			vertical-align: middle;
+
+			border: 1px solid black;
+		}
+
+		.icon-edit {
+			font-size: 1.5em;
+		}
+	}
+}

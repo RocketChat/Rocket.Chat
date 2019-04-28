@@ -1,0 +1,100 @@
+<template name="apps">
+	<section class="rc-apps-marketplace">
+		{{#header sectionName="Marketplace" hideHelp=true fixedHeight=true fullpage=true}}
+			<div class="rc-header__section-button">
+				<button class="rc-button rc-button--small rc-button--primary" data-button="install_app">
+					{{> icon icon="cloud-plus" block="rc-icon--default-size"}} {{_ "Marketplace_view_marketplace"}}
+				</button>
+				{{#if appsDevelopmentMode}}
+					<button class="rc-button rc-button--small rc-button--primary rc-button--outline" data-button="upload_app">
+						{{> icon icon="upload" block="rc-icon--default-size"}} {{_ "Upload_app"}}
+					</button>
+				{{/if}}
+			</div>
+		{{/header}}
+		<div class="rc-table-content">
+			<form class="js-search-form" role="form">
+				<div class="rc-input">
+					<div class="rc-input__icon">
+						{{#if isLoading}}
+							{{> loading }}
+						{{else}}
+							{{> icon block="rc-input__icon-svg" icon="magnifier" }}
+						{{/if}}
+					</div>
+					<input
+						type="text"
+						class="rc-input__element js-search"
+						name="message-search"
+						id="message-search"
+						placeholder="{{_ "Search_Apps"}}"
+						autocomplete="off">
+				</div>
+			</form>
+
+			{{#requiresPermission 'manage-apps'}}
+				{{#table fixed='true' onScroll=onTableScroll onResize=onTableResize onSort=onTableSort}}
+					<thead>
+						<tr>
+							<th class="js-sort rc-table-td--medium {{#if searchSortBy 'name'}}is-sorting{{/if}}" data-sort="name">
+								<div class="table-fake-th">{{_ "Name"}} {{> icon icon=(sortIcon 'name')}}</div>
+							</th>
+							<th class="rc-table-td">
+								<div class="table-fake-th">{{_ "Details"}} </div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each apps}}
+							<tr class="rc-table-tr manage" data-name="{{latest.name}}">
+								<td>
+									<div class="rc-table-wrapper">
+										{{#if latest.iconFileData}}
+											<div class="rc-table-avatar" style="background-image:url(data:image/png;base64,{{latest.iconFileData}})"></div>
+										{{else}}
+											<div class="rc-table-avatar" style="background-image:url({{latest.iconFileContent}})"></div>
+										{{/if}}
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{latest.name}}
+											</span>
+											{{#if latest.author.name}}
+												<span class="rc-table-subtitle">by {{latest.author.name}}</span>
+											{{/if}}
+										</div>
+									</div>
+								</td>
+								<td>
+									<div class="rc-table-wrapper">
+										<div class="rc-table-info">
+											<span class="rc-table-title">
+												{{#if latest.summary}}
+													{{latest.summary}}
+												{{else}}
+													{{latest.description}}
+												{{/if}}
+											</span>
+											{{#if latest.summary}}
+												<span class="rc-table-subtitle">
+													{{latest.description}}
+												</span>
+											{{/if}}
+											<span class="rc-table-subtitle">
+												{{formatCategories latest.categories}}
+											</span>
+										</div>
+									</div>
+								</td>
+							</tr>
+						{{/each}}
+						{{#if isLoading}}
+							<tr>
+								<td colspan="3" style="position: relative;">{{> loading}}</td>
+							</tr>
+						{{/if}}
+					</tbody>
+				{{/table}}
+			{{/requiresPermission}}
+		</div>
+	</section>
+</template>
