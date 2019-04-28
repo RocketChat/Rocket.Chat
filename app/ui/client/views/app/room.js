@@ -1278,9 +1278,9 @@ Template.room.onRendered(function() {
 
 });
 
-callbacks.add('enter-room', async (sub) => {
+callbacks.add('enter-room', (sub) => {
 	const isAReplyInDMFromChannel = FlowRouter.getQueryParam('reply') && sub.t === 'd';
 	if (isAReplyInDMFromChannel && chatMessages[sub.rid]) {
-		await chatMessages[sub.rid].restoreReplies();
+		chatMessages[sub.rid].restoreReplies();
 	}
 });
