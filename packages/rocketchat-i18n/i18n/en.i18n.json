@@ -1813,7 +1813,7 @@
   "LDAP_Sync_User_Data_Groups": "Sync LDAP Groups",
   "LDAP_Sync_User_Data_Groups_AutoRemove": "Auto Remove User Roles",
   "LDAP_Sync_User_Data_Groups_AutoRemove_Description": "WARNING: Enabling this will automatically remove users from a role if they are not assigned in LDAP! This will only remove roles automatically that are set under the user data group map below.",
-  "LDAP_Sync_User_Data_Groups_BaseDN": "User Role Auto Remove",
+  "LDAP_Sync_User_Data_Groups_BaseDN": "LDAP Group BaseDN",
   "LDAP_Sync_User_Data_Groups_BaseDN_Description": "The LDAP BaseDN used to lookup users.",
   "LDAP_Sync_User_Data_Groups_Filter": "User Group Filter",
   "LDAP_Sync_User_Data_Groups_Filter_Description": "The LDAP search filter used to check if a user is in a group.",
