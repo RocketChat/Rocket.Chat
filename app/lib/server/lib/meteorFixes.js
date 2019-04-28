@@ -68,7 +68,7 @@ process.on('unhandledRejection', (error) => {
 	console.error('Future node.js versions will automatically exit the process');
 	console.error('=================================');
 
-	if (process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
+	if (process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
 		process.exit(1);
 	}
 });
