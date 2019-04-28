@@ -29557,6 +29557,155 @@
           ]
         }
       ]
+    },
+    "1.0.0-rc.5": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14276",
+          "title": "Regression: Active room was not being marked",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14211",
+          "title": "Rename Cloud to Connectivity Services & split Apps in Apps and Marketplace",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.0",
+          "contributors": [
+            "geekgonecrazy",
+            "engelgabriel",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14178",
+          "title": "LingoHub based on develop",
+          "userLogin": "engelgabriel",
+          "milestone": "1.0.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "13986",
+          "title": "[IMPROVE] Replace livechat inquiry dialog with preview room",
+          "userLogin": "renatobecker",
+          "milestone": "1.0.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow",
+            "engelgabriel",
+            "sampaiodiego",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14050",
+          "title": "Regression: Discussions were not showing on Tab Bar",
+          "userLogin": "knrt10",
+          "milestone": "1.0.0",
+          "contributors": [
+            "knrt10",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14274",
+          "title": "Force unstyling of blockquote under .message-body--unstyled",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14273",
+          "title": "[FIX] Slackbridge private channels",
+          "userLogin": "Hudell",
+          "milestone": "1.0.0",
+          "contributors": [
+            "nylen",
+            "web-flow",
+            "MarcosSpessatto",
+            "sampaiodiego",
+            "Hudell"
+          ]
+        },
+        {
+          "pr": "14081",
+          "title": "[FIX] View All members button now not in direct room",
+          "userLogin": "knrt10",
+          "milestone": "1.0.0",
+          "contributors": [
+            "knrt10",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14229",
+          "title": "Regression: Admin embedded layout",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14268",
+          "title": "[NEW] Update message actions",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "1.0.0",
+          "contributors": [
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "14269",
+          "title": "New threads layout",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.0",
+          "contributors": [
+            "ggazzo",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14258",
+          "title": "Improve: Marketplace auth inside Rocket.Chat instead of inside the iframe.  ",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14150",
+          "title": "[New] Reply privately to group messages",
+          "userLogin": "bhardwajaditya",
+          "milestone": "1.0.0",
+          "contributors": [
+            "bhardwajaditya",
+            "engelgabriel",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        }
+      ]
     }
   }
 }
