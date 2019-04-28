@@ -90,7 +90,6 @@ settings.addGroup('LDAP', function() {
 		this.add('LDAP_Sync_User_Data_FieldMap', '{"cn":"name", "mail":"email"}', { type: 'string', enableQuery: syncDataQuery });
 
 		this.add('LDAP_Sync_User_Data_Groups', false, { type: 'boolean', enableQuery });
-		this.add('LDAP_Sync_User_Data_Groups_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', { type: 'string', enableQuery: syncGroupsQuery });
 		this.add('LDAP_Sync_User_Data_Groups_AutoRemove', false, { type: 'boolean', enableQuery: syncGroupsQuery });
 		this.add('LDAP_Sync_User_Data_Groups_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', { type: 'string', enableQuery: syncGroupsQuery });
 		this.add('LDAP_Sync_User_Data_Groups_BaseDN', '', { type: 'string', enableQuery: syncGroupsQuery });
