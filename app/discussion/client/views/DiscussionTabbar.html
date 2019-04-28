@@ -9,7 +9,9 @@
 	<div class="flex-tab__result discussions-list js-list">
 		<ul class="list clearfix">
 			{{# with messageContext}}
-				{{#each msg in messages}}{{#nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings u=u}}{{/nrr}}{{/each}}
+				{{#each msg in messages}}
+					{{> nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings u=u}}
+				{{/each}}
 			{{/with}}
 		</ul>
 

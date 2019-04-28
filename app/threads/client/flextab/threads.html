@@ -1,8 +1,8 @@
 <template name="threads">
-	{{#if hasNoThreads}}
-		<h2 class="thread-empty">{{_ "No_Threads"}}</h2>
-	{{/if}}
 	{{# with messageContext}}
+		{{#if hasNoThreads}}
+			<h2 class="thread-empty">{{_ "No_Threads"}}</h2>
+		{{/if}}
 		{{#unless doDotLoadThreads}}
 			<div class="thread-list js-scroll-threads">
 				<ul class="thread">
@@ -24,6 +24,11 @@
 					{{/each}}
 				</ul>
 			</div>
+			{{#if isLoading}}
+				<div class="load-more">
+					{{> loading}}
+				</div>
+			{{/if}}
 		{{/unless}}
 		{{#if message}}
 		<div class="rc-user-info-container flex-nav">
@@ -31,9 +36,4 @@
 		</div>
 		{{/if}}
 	{{/with}}
-	{{#if isLoading}}
-		<div class="load-more">
-			{{> loading}}
-		</div>
-	{{/if}}
 </template>

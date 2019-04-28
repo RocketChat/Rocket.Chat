@@ -1,6 +1,6 @@
 <template name="messageBoxNotSubscribed" args="rid">
 	{{#if customTemplate}}
-		{{> Template.dynamic customTemplate }}
+		{{> Template.dynamic template=customTemplate }}
 	{{else}}
 		{{#if canJoinRoom}}
 			<div class="rc-message-box__join">

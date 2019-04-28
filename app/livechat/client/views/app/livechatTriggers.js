@@ -4,6 +4,7 @@ import { Template } from 'meteor/templating';
 import { modal } from '../../../../ui-utils';
 import { t, handleError } from '../../../../utils';
 import { LivechatTrigger } from '../../collections/LivechatTrigger';
+import './livechatTriggers.html';
 
 Template.livechatTriggers.helpers({
 	triggers() {

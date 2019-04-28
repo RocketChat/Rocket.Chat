@@ -35,6 +35,7 @@ import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
+import './messageBoxReadOnly';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -98,6 +99,11 @@ Template.messageBox.onCreated(function() {
 });
 
 Template.messageBox.onRendered(function() {
+	const $input = $(this.find('.js-input-message'));
+	$input.on('dataChange', () => {
+		const messages = $input.data('reply') || [];
+		this.replyMessageData.set(messages);
+	});
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);
@@ -156,12 +162,6 @@ Template.messageBox.onRendered(function() {
 
 			const shadow = this.find('.js-input-message-shadow');
 			this.autogrow = setupAutogrow(input, shadow, onResize);
-
-			const $input = $(input);
-			$input.on('dataChange', () => {
-				const messages = $input.data('reply') || [];
-				this.replyMessageData.set(messages);
-			});
 		});
 	});
 });
