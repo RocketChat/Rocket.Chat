@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import './livechatTriggerCondition.html';
 
 Template.livechatTriggerCondition.helpers({
 	hiddenValue(current) {

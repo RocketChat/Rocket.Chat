@@ -35,6 +35,7 @@ import './messageBoxTyping';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
+import './messageBoxReadOnly';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
