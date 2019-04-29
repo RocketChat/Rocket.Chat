@@ -111,8 +111,8 @@ Template.message.helpers({
 		return msg.bot && 'bot';
 	},
 	roleTags() {
-		const { msg, hideRoles } = this;
-		if (hideRoles) {
+		const { msg, hideRoles, settings } = this;
+		if (settings.hideRoles || hideRoles) {
 			return [];
 		}
 
