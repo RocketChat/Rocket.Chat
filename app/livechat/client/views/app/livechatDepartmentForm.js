@@ -8,6 +8,7 @@ import { LivechatDepartment } from '../../collections/LivechatDepartment';
 import { LivechatDepartmentAgents } from '../../collections/LivechatDepartmentAgents';
 import _ from 'underscore';
 import toastr from 'toastr';
+import './livechatDepartmentForm.html';
 
 Template.livechatDepartmentForm.helpers({
 	department() {

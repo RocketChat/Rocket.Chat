@@ -5,6 +5,7 @@ import { Random } from 'meteor/random';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { OAuth } from 'meteor/oauth';
 import s from 'underscore.string';
+import { isURL } from '../../utils/lib/isURL';
 
 // Request custom OAuth credentials for the user
 // @param options {optional}
@@ -47,7 +48,7 @@ export class CustomOAuth {
 		this.authorizePath = options.authorizePath;
 		this.scope = options.scope;
 
-		if (!/^https?:\/\/.+/.test(this.authorizePath)) {
+		if (!isURL(this.authorizePath)) {
 			this.authorizePath = this.serverURL + this.authorizePath;
 		}
 	}

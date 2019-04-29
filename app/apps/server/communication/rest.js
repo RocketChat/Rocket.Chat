@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { API } from '../../../api/server';
 import Busboy from 'busboy';
 
-import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 
@@ -53,7 +53,7 @@ export class AppsRestApi {
 
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
-				const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+				const baseUrl = orchestrator.getMarketplaceUrl();
 
 				// Gets the Apps from the marketplace
 				if (this.queryParams.marketplace) {
@@ -94,7 +94,13 @@ export class AppsRestApi {
 
 				if (this.queryParams.buildBuyUrl && this.queryParams.appId) {
 					const workspaceId = settings.get('Cloud_Workspace_Id');
-					return API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }` });
+
+					const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+					if (!token) {
+						return API.v1.failure({ error: 'Unauthorized' });
+					}
+
+					return API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }&token=${ token }` });
 				}
 
 				const apps = manager.get().map((prl) => {
@@ -123,7 +129,7 @@ export class AppsRestApi {
 
 					buff = Buffer.from(result.content, 'binary');
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
 					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
@@ -186,7 +192,7 @@ export class AppsRestApi {
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				if (this.queryParams.marketplace && this.queryParams.version) {
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
 					const token = getWorkspaceAccessToken();
@@ -206,7 +212,7 @@ export class AppsRestApi {
 				}
 
 				if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
 					const token = getWorkspaceAccessToken();
@@ -254,7 +260,7 @@ export class AppsRestApi {
 
 					buff = Buffer.from(result.content, 'binary');
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
-					const baseUrl = settings.get('Apps_Framework_Marketplace_Url');
+					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {};
 					const token = getWorkspaceAccessToken();

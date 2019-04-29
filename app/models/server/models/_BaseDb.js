@@ -2,7 +2,6 @@ import { Match } from 'meteor/check';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 import { EventEmitter } from 'events';
-import { settings } from '../../../settings/server/functions/settings';
 
 const baseName = 'rocketchat_';
 
@@ -14,8 +13,7 @@ try {
 	console.log(e);
 }
 
-const isOplogAvailable = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
-let isOplogEnabled = isOplogAvailable;
+const isOplogEnabled = MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle && !!MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry;
 
 export class BaseDb extends EventEmitter {
 	constructor(model, baseModel) {
@@ -36,7 +34,6 @@ export class BaseDb extends EventEmitter {
 		this.wrapModel();
 
 		let alreadyListeningToOplog = false;
-		this.listenSettings();
 		// When someone start listening for changes we start oplog if available
 		this.on('newListener', (event/* , listener*/) => {
 			if (event === 'change' && alreadyListeningToOplog === false) {
@@ -47,18 +44,15 @@ export class BaseDb extends EventEmitter {
 					};
 
 					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle.onOplogEntry(query, this.processOplogRecord.bind(this));
-					MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
+					// Meteor will handle if we have a value https://github.com/meteor/meteor/blob/5dcd0b2eb9c8bf881ffbee98bc4cb7631772c4da/packages/mongo/oplog_tailing.js#L5
+					if (process.env.METEOR_OPLOG_TOO_FAR_BEHIND == null) {
+						MongoInternals.defaultRemoteCollectionDriver().mongo._oplogHandle._defineTooFarBehind(Number.MAX_SAFE_INTEGER);
+					}
 				}
 			}
 		});
 
 		this.tryEnsureIndex({ _updatedAt: 1 });
-	}
-
-	listenSettings() {
-		settings.get('Force_Disable_OpLog_For_Cache', (key, value) => {
-			isOplogEnabled = isOplogAvailable && value === false;
-		});
 	}
 
 	get baseName() {
@@ -139,10 +133,6 @@ export class BaseDb extends EventEmitter {
 	}
 
 	processOplogRecord(action) {
-		if (isOplogEnabled === false) {
-			return;
-		}
-
 		if (action.op.op === 'i') {
 			this.emit('change', {
 				action: 'insert',
@@ -211,66 +201,13 @@ export class BaseDb extends EventEmitter {
 
 		record._id = result;
 
-		if (!isOplogEnabled && this.listenerCount('change') > 0) {
-			this.emit('change', {
-				action: 'insert',
-				clientAction: 'inserted',
-				id: result,
-				data: _.extend({}, record),
-				oplog: false,
-			});
-		}
-
 		return result;
 	}
 
 	update(query, update, options = {}) {
 		this.setUpdatedAt(update, true, query);
 
-		let ids = [];
-		if (!isOplogEnabled && this.listenerCount('change') > 0) {
-			const findOptions = { fields: { _id: 1 } };
-			let records = options.multi ? this.find(query, findOptions).fetch() : this.findOne(query, findOptions) || [];
-			if (!Array.isArray(records)) {
-				records = [records];
-			}
-
-			ids = records.map((item) => item._id);
-			if (options.upsert !== true && this.updateHasPositionalOperator(update) === false) {
-				query = {
-					_id: {
-						$in: ids,
-					},
-				};
-			}
-		}
-
-		// TODO: CACHE: Can we use findAndModify here when oplog is disabled?
-		const result = this.originals.update(query, update, options);
-
-		if (!isOplogEnabled && this.listenerCount('change') > 0) {
-			if (options.upsert === true && result.insertedId) {
-				this.emit('change', {
-					action: 'insert',
-					clientAction: 'inserted',
-					id: result.insertedId,
-					oplog: false,
-				});
-
-				return result;
-			}
-
-			for (const id of ids) {
-				this.emit('change', {
-					action: 'update',
-					clientAction: 'updated',
-					id,
-					oplog: false,
-				});
-			}
-		}
-
-		return result;
+		return this.originals.update(query, update, options);
 	}
 
 	upsert(query, update, options = {}) {
@@ -294,21 +231,7 @@ export class BaseDb extends EventEmitter {
 
 		query = { _id: { $in: ids } };
 
-		const result = this.originals.remove(query);
-
-		if (!isOplogEnabled && this.listenerCount('change') > 0) {
-			for (const record of records) {
-				this.emit('change', {
-					action: 'remove',
-					clientAction: 'removed',
-					id: record._id,
-					data: _.extend({}, record),
-					oplog: false,
-				});
-			}
-		}
-
-		return result;
+		return this.originals.remove(query);
 	}
 
 	insertOrUpsert(...args) {
