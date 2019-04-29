@@ -359,7 +359,7 @@ Template.membersList.onCreated(function() {
 
 Template.membersList.onRendered(function() {
 	this.autorun(() => {
-		const showAllUsers = this.showAllUsers.get();
+		// const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');
 		if (statusTypeSelect) {
 			statusTypeSelect.value = this.sortingMode.get();
