@@ -118,8 +118,6 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		const fullName = loginResult.profile.cn || loginResult.profile.username || loginResult.profile.displayName;
 
 		let eppnMatch = false;
-		// not used
-		// let emailMatch = false;
 
 		// Check eppn
 		let user = Meteor.users.findOne({
@@ -127,7 +125,6 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		});
 
 		if (user) {
-			console.log('eppn match');
 			eppnMatch = true;
 		}
 
@@ -136,9 +133,6 @@ Accounts.registerLoginHandler(function(loginRequest) {
 			user = Meteor.users.findOne({
 				'emails.address': emailRegex,
 			});
-
-			console.log('email match');
-			// emailMatch = true;
 		}
 
 		if (!user) {
