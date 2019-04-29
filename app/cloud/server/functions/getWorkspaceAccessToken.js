@@ -54,6 +54,8 @@ export function getWorkspaceAccessToken(forceNew = false, scope = '', save = tru
 				console.error('Server has been unregistered from cloud');
 				unregisterWorkspace();
 			}
+		} else {
+			console.error(e);
 		}
 
 		return '';

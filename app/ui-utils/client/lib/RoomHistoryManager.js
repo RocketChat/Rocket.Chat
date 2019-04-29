@@ -1,9 +1,11 @@
 import mem from 'mem';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { getConfig } from '../config';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
@@ -44,8 +46,10 @@ export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	}
 
 	if (msg.tcount) {
+		const uid = Tracker.nonreactive(() => Meteor.userId());
 		ChatMessage.update({ tmid: _id }, {
 			$set: {
+				following: msg.replies && msg.replies.indexOf(uid) > -1,
 				threadMsg: normalizeThreadMessage(msg),
 				repliesCount: msg.tcount,
 			},
@@ -66,7 +70,7 @@ function upsertMessageBulk({ msgs, subscription }) {
 	});
 }
 
-const defaultLimit = parseInt(localStorage && localStorage.getItem('rc-defaultLimit')) || 50 ;
+const defaultLimit = parseInt(getConfig('roomListLimit')) || 50 ;
 
 export const RoomHistoryManager = new class {
 	constructor() {
@@ -119,7 +123,7 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		Meteor.call('loadHistory', rid, ts, limit, ls, function(err, result) {
+		Meteor.call('loadHistory', rid, ts, limit, ls, (err, result) => {
 			if (err) {
 				return;
 			}
@@ -139,24 +143,29 @@ export const RoomHistoryManager = new class {
 				subscription,
 			});
 
+			if (!room.loaded) {
+				room.loaded = 0;
+			}
+
+			room.loaded += messages.length;
+
+			if (messages.length < limit) {
+				return room.hasMore.set(false);
+			}
+
 			if (wrapper) {
+				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
+					return this.getMore(rid);
+				}
 				const heightDiff = wrapper.scrollHeight - previousHeight;
 				wrapper.scrollTop += heightDiff;
 			}
 
+			room.isLoading.set(false);
 			Meteor.defer(() => {
 				readMessage.refreshUnreadMark(rid, true);
 				return RoomManager.updateMentionsMarksOfRoom(typeName);
 			});
-
-			room.isLoading.set(false);
-			if (!room.loaded) {
-				room.loaded = 0;
-			}
-			room.loaded += messages.length;
-			if (messages.length < limit) {
-				return room.hasMore.set(false);
-			}
 		});
 	}
 

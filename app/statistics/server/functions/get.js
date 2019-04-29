@@ -139,7 +139,7 @@ statistics.get = function _getStatistics() {
 
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry && settings.get('Force_Disable_OpLog_For_Cache') !== true) {
+	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry) {
 		statistics.oplogEnabled = true;
 	}
 

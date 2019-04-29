@@ -13,6 +13,7 @@ const whereNotSetting = {
 		return this.level !== 'setting';
 	}.toString(),
 };
+import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 
 Template.permissions.helpers({
 	roles() {
@@ -155,3 +156,9 @@ Template.permissionsTable.onCreated(function() {
 	});
 });
 
+Template.permissions.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
+});

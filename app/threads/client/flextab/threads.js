@@ -10,12 +10,14 @@ import { call } from '../../../ui-utils';
 import { Messages, Subscriptions } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
+import { getConfig } from '../../../ui-utils/client/config';
 
 import { upsert } from '../upsert';
 
 import './threads.html';
 
-const LIST_SIZE = 50;
+const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 50;
+
 const sort = { tlm: -1 };
 
 Template.threads.events({
@@ -155,7 +157,7 @@ Template.threads.onCreated(async function() {
 
 	this.autorun(async () => {
 		const mid = this.state.get('mid');
-		return this.state.set('thread', mid && this.Threads.findOne({ _id: mid }, { fields: { tcount: 0, tlm: 0, replies: 0, _updatedAt: 0 } }));
+		return this.state.set('thread', mid && (Messages.findOne({ _id: mid }, { fields: { tcount: 0, tlm: 0, replies: 0, _updatedAt: 0 } }) || this.Threads.findOne({ _id: mid }, { fields: { tcount: 0, tlm: 0, replies: 0, _updatedAt: 0 } })));
 	});
 });
 

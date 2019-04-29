@@ -5,6 +5,7 @@ import { Template } from 'meteor/templating';
 import { t, handleError } from '../../../../utils';
 import { LivechatCustomField } from '../../collections/LivechatCustomField';
 import toastr from 'toastr';
+import './livechatCustomFieldForm.html';
 
 Template.livechatCustomFieldForm.helpers({
 	customField() {

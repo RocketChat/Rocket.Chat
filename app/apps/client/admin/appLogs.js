@@ -2,9 +2,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import { Tracker } from 'meteor/tracker';
 import { APIClient } from '../../../utils';
 import moment from 'moment';
 import hljs from 'highlight.js';
+import { SideNav } from '../../../ui-utils/client';
 
 const loadData = (instance) => {
 	Promise.all([
@@ -103,4 +105,11 @@ Template.appLogs.events({
 		t.logs.set([]);
 		loadData(t);
 	},
+});
+
+Template.appLogs.onRendered(() => {
+	Tracker.afterFlush(() => {
+		SideNav.setFlex('adminFlex');
+		SideNav.openFlex();
+	});
 });

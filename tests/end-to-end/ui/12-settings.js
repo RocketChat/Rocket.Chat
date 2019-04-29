@@ -457,6 +457,7 @@ describe('[Api Settings Change]', () => {
 
 		it('login as admin and go to users', () => {
 			checkIfUserIsAdmin(adminUsername, adminEmail, adminPassword);
+			sideNav.sidebarMenu.waitForVisible(5000);
 			sideNav.sidebarMenu.click();
 			sideNav.admin.waitForVisible(5000);
 			sideNav.admin.click();

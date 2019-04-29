@@ -57,7 +57,7 @@
 
 		&.compact {
 			& .message {
-				padding: 5px 45px 0 15px;
+				padding: 5px 45px 5px 15px;
 
 				&.collapsed .thumb {
 					margin: 0;
@@ -369,26 +369,6 @@
 	& .message {
 		padding-right: 70px;
 		padding-left: 20px;
-
-		& .message-dropdown {
-			right: -2px;
-			left: auto;
-
-			& ul li {
-				&:first-child {
-					padding-right: 6px;
-					padding-left: 8px;
-
-					border-right: unset;
-					border-left: 1px solid #eeeeee;
-				}
-
-				&:last-child {
-					padding-right: 8px;
-					padding-left: 13px;
-				}
-			}
-		}
 
 		& .user {
 			margin-right: 0;

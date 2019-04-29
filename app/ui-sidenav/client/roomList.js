@@ -25,6 +25,7 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarShowUnread': 1,
 				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
+				messageViewMode: 1,
 			},
 		});
 

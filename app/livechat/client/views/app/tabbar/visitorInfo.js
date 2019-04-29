@@ -15,6 +15,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 import UAParser from 'ua-parser-js';
+import './visitorInfo.html';
 
 Template.visitorInfo.helpers({
 	user() {

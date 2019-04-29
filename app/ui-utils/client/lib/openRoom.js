@@ -5,7 +5,7 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { Layout, RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
+import { RoomManager, fireGlobalEvent, readMessage, RoomHistoryManager } from '..';
 import { ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -40,9 +40,6 @@ function replaceCenterDomBy(dom) {
 
 	return mainNode;
 }
-
-const { render } = BlazeLayout;
-BlazeLayout.render = (layout, regions = {}) => render(layout, Object.assign(regions, { modal: Layout.isEmbedded() }));
 
 export const openRoom = function(type, name) {
 	Session.set('openedRoom', null);

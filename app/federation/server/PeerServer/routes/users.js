@@ -2,7 +2,7 @@ import { API } from '../../../../api';
 import { Users } from '../../../../models';
 
 import { FederatedUser } from '../../federatedResources';
-import { Federation } from '../../';
+import { Federation } from '../..';
 
 API.v1.addRoute('federation.users', { authRequired: false }, {
 	get() {

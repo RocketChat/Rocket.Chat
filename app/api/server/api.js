@@ -6,9 +6,8 @@ import { Restivus } from 'meteor/nimble:restivus';
 import { Logger } from '../../logger';
 import { settings } from '../../settings';
 import { metrics } from '../../metrics';
-import { hasPermission } from '../../authorization';
+import { hasPermission, hasAllPermission } from '../../authorization';
 import { RateLimiter } from 'meteor/rate-limit';
-import { hasAllPermission } from '../../authorization';
 import _ from 'underscore';
 
 const logger = new Logger('API', {});
