@@ -18,6 +18,11 @@ settings.addGroup('LDAP', function() {
 		enableQuery,
 		{ _id: 'LDAP_Sync_User_Data_Groups', value: true },
 	];
+	const syncGroupsChannelsQuery = [
+		enableQuery,
+		{ _id: 'LDAP_Sync_User_Data_Groups', value: true },
+		{ _id: 'LDAP_Sync_User_Data_Groups_AutoChannels', value: true },
+	];
 	const groupFilterQuery = [
 		enableQuery,
 		{ _id: 'LDAP_Group_Filter_Enable', value: true },
@@ -93,7 +98,22 @@ settings.addGroup('LDAP', function() {
 		this.add('LDAP_Sync_User_Data_Groups_AutoRemove', false, { type: 'boolean', enableQuery: syncGroupsQuery });
 		this.add('LDAP_Sync_User_Data_Groups_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', { type: 'string', enableQuery: syncGroupsQuery });
 		this.add('LDAP_Sync_User_Data_Groups_BaseDN', '', { type: 'string', enableQuery: syncGroupsQuery });
-		this.add('LDAP_Sync_User_Data_GroupsMap', '{"rocket-admin":"admin", "tech-support":"support"}', { type: 'string', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_GroupsMap', '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}', {
+			type: 'code',
+			multiline: true,
+			public: false,
+			code: 'application/json',
+			enableQuery: syncGroupsQuery,
+		});
+		this.add('LDAP_Sync_User_Data_Groups_AutoChannels', false, { type: 'boolean', enableQuery: syncGroupsQuery });
+		this.add('LDAP_Sync_User_Data_Groups_AutoChannelsMap', '{\n\t"employee": "general",\n\t"techsupport": [\n\t\t"helpdesk",\n\t\t"support"\n\t]\n}', {
+			type: 'code',
+			multiline: true,
+			public: false,
+			code: 'application/json',
+			enableQuery: syncGroupsChannelsQuery,
+		});
+		this.add('LDAP_Sync_User_Data_Groups_Enforce_AutoChannels', false, { type: 'boolean', enableQuery: syncGroupsChannelsQuery });
 
 		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery });
 

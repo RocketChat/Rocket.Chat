@@ -4,17 +4,42 @@ import { Accounts } from 'meteor/accounts-base';
 import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
-import { Users, Roles } from '../../models';
+import { Users, Roles, Rooms } from '../../models';
 import { Logger } from '../../logger';
 import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { FileUpload } from '../../file-upload';
+import { addUserToRoom, removeUserFromRoom } from '../../lib/server/functions';
 import _ from 'underscore';
 import LDAP from './ldap';
 
 const logger = new Logger('LDAPSync', {});
 let ldap = new LDAP();
+
+
+export function isUserInLDAPGroup(ldapUser, user, ldapGroup) {
+	const syncUserRolesFilter = settings.get('LDAP_Sync_User_Data_Groups_Filter').trim();
+	const syncUserRolesBaseDN = settings.get('LDAP_Sync_User_Data_Groups_BaseDN').trim();
+
+	if (!syncUserRolesFilter || !syncUserRolesBaseDN) {
+		logger.error('Please setup LDAP Group Filter and LDAP Group BaseDN in LDAP Settings.');
+		return false;
+	}
+	const searchOptions = {
+		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup),
+		scope: 'sub',
+	};
+
+	const result = ldap.searchAllSync(syncUserRolesBaseDN, searchOptions);
+	if (!Array.isArray(result) || result.length === 0) {
+		logger.debug(`${ user.username } is not in ${ ldapGroup } group!!!`);
+		return false;
+	} else {
+		logger.debug(`${ user.username } is in ${ ldapGroup } group.`);
+		return true;
+	}
+}
 
 export function slug(text) {
 	if (settings.get('UTF8_Names_Slugify') !== true) {
@@ -172,12 +197,10 @@ export function getDataToSyncUserData(ldapUser, user) {
 		return userData;
 	}
 }
-export function getRolesToSyncUserRoles(ldapUser, user) {
+export function mapLdapGroupsToUserRoles(ldapUser, user) {
 	const syncUserRoles = settings.get('LDAP_Sync_User_Data_Groups');
 	const syncUserRolesAutoRemove = settings.get('LDAP_Sync_User_Data_Groups_AutoRemove');
 	const syncUserRolesFieldMap = settings.get('LDAP_Sync_User_Data_GroupsMap').trim();
-	const syncUserRolesFilter = settings.get('LDAP_Sync_User_Data_Groups_Filter').trim();
-	const syncUserRolesBaseDN = settings.get('LDAP_Sync_User_Data_Groups_BaseDN').trim();
 
 	const roles = Roles.find({}, {
 		fields: {
@@ -195,14 +218,7 @@ export function getRolesToSyncUserRoles(ldapUser, user) {
 			} else {
 				logger.debug(`User role exists for mapping ${ roleName } -> ${ ldapField }`);
 
-				const searchOptions = {
-					filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapField),
-					scope: 'sub',
-				};
-
-				const result = ldap.searchAllSync(syncUserRolesBaseDN, searchOptions);
-				if (!Array.isArray(result) || result.length === 0) {
-					logger.debug(`${ user.username } is not in ${ roleName } group!!!`);
+				if (!isUserInLDAPGroup(ldapUser, user, ldapField)) {
 					if (syncUserRolesAutoRemove) {
 						const del = Roles.removeUserRoles(user._id, roleName);
 						if (settings.get('UI_DisplayRoles') && del) {
@@ -217,7 +233,6 @@ export function getRolesToSyncUserRoles(ldapUser, user) {
 						}
 					}
 				} else {
-					logger.debug(`${ user.username } is in ${ roleName } group.`);
 					userRoles.push(roleName);
 				}
 			}
@@ -226,17 +241,62 @@ export function getRolesToSyncUserRoles(ldapUser, user) {
 	if (_.size(userRoles)) {
 		return userRoles;
 	}
-	logger.debug('done with ldap group sync');
 }
+export function mapLDAPGroupsToChannels(ldapUser, user) {
+	const syncUserRoles = settings.get('LDAP_Sync_User_Data_Groups');
+	const syncUserRolesAutoChannels = settings.get('LDAP_Sync_User_Data_Groups_AutoChannels');
+	const syncUserRolesEnforceAutoChannels = settings.get('LDAP_Sync_User_Data_Groups_Enforce_AutoChannels');
+	const syncUserRolesChannelFieldMap = settings.get('LDAP_Sync_User_Data_Groups_AutoChannelsMap').trim();
 
+	const userChannels = [];
+	if (syncUserRoles && syncUserRolesAutoChannels && syncUserRolesChannelFieldMap) {
+		const fieldMap = JSON.parse(syncUserRolesChannelFieldMap);
 
+		_.map(fieldMap, function(channels, ldapField) {
+			if (typeof (channels) === 'object') {
+				_.each(channels, function(channel) {
+					const room = Rooms.findOneByName(channel);
+					if (!room) {
+						logger.error(`Channel '${ channel }' doesn't exist but is in Auto Channels map.`);
+						return;
+					} else if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
+						userChannels.push(room._id);
+					}	else if (syncUserRolesEnforceAutoChannels) {
+						removeUserFromRoom(room._id, user);
+					}
+				});
+			} else {
+				const room = Rooms.findOneByName(channels);
+				if (!room) {
+					logger.error(`Channel '${ channels }' doesn't exist but is in Auto Channels map.`);
+					return;
+				}
+				if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
+					userChannels.push(room._id);
+				}	else if (syncUserRolesEnforceAutoChannels) {
+					removeUserFromRoom(room._id, user);
+				}
+			}
+		});
+	}
+	if (_.size(userChannels)) {
+		return userChannels;
+	}
+}
 export function syncUserData(user, ldapUser) {
 	logger.info('Syncing user data');
 	logger.debug('user', { email: user.email, _id: user._id });
 	logger.debug('ldapUser', ldapUser.object);
 
 	const userData = getDataToSyncUserData(ldapUser, user);
-	const userRoles = getRolesToSyncUserRoles(ldapUser, user);
+
+	// Returns a list of Rocket.Chat Groups a user should belong
+	// to if their LDAP group matches the LDAP_Sync_User_Data_GroupsMap
+	const userRoles = mapLdapGroupsToUserRoles(ldapUser, user);
+
+	// Returns a list of Rocket.Chat Channels a user should belong
+	// to if their LDAP group matches the LDAP_Sync_User_Data_Groups_AutoChannelsMap
+	const userChannels = mapLDAPGroupsToChannels(ldapUser, user);
 
 	if (user && user._id && userData) {
 		logger.debug('setting', JSON.stringify(userData, null, 2));
@@ -270,6 +330,13 @@ export function syncUserData(user, ldapUser) {
 				});
 			}
 			logger.info('Synced user group', roleName, 'from LDAP for', user.username);
+		});
+	}
+
+	if (settings.get('LDAP_Sync_User_Data_Groups_AutoChannels') === true) {
+		_.each(userChannels, function(userChannel) {
+			addUserToRoom(userChannel, user);
+			logger.info('Synced user channel', userChannel, 'from LDAP for', user.username);
 		});
 	}
 
