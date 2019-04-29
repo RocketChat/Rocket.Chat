@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { RoomManager, popover } from '../../../ui-utils';
-import { ChatRoom, Subscriptions } from '../../../models';
+import { ChatRoom, Subscriptions, RoomRoles, UserRoles } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
@@ -34,8 +34,14 @@ Template.membersList.helpers({
 		const room = ChatRoom.findOne(this.rid);
 		const roomMuted = (room != null ? room.muted : undefined) || [];
 		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
+		const hierarchy = ['admin', 'owner', 'leader'];
 		let totalOnline = 0;
 		let users = roomUsers;
+		
+
+		let userRoles = [];
+		let roomRoles = [];
+		let roles = [];
 
 		const filter = Template.instance().filter.get();
 		let reg = null;
@@ -50,6 +56,7 @@ Template.membersList.helpers({
 
 		users = users.map(function(user) {
 			let utcOffset;
+			let rank;
 			if (onlineUsers[user.username] != null) {
 				totalOnline++;
 				({ utcOffset } = onlineUsers[user.username]);
@@ -65,12 +72,38 @@ Template.membersList.helpers({
 				}
 			}
 
+			userRoles = UserRoles.findOne(user._id) || {};
+			roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
+			roles = _.union(userRoles.roles || [], roomRoles.roles || []);
+			roles = _.sortBy(roles, function(role) {				
+				return (hierarchy.indexOf(role) === -1) ? 50 : hierarchy.indexOf(role);
+			});
+
+			if (roles.length !== 0) {
+				rank = hierarchy.indexOf(roles[0]);
+				if (rank === -1) {
+					// user has some role assigned which is not a part of hierarchy
+					rank = 100;
+				}
+			} else {
+				// sending the ones without an assigned role at the end of list
+				rank = 1000;
+			}
+			
+
+			console.log(user.username, roles, rank);
 			return {
 				user,
 				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
 				muted: Array.from(roomMuted).includes(user.username),
 				utcOffset,
+				roles,
+				rank,
 			};
+		});
+
+		users = _.sortBy(users, function(user) {
+			return user.rank;
 		});
 
 		const usersTotal = users.length;

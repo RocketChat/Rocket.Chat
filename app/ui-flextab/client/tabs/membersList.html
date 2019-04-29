@@ -13,9 +13,10 @@
 
 				</div>
 				<label class="rc-select">
-					<select class="rc-select__element js-type" name="status-type">
+					<select class="rc-select__element js-type" name="status-type" id="status-type">
 						<option value="online">{{_ 'online'}}</option>
 						<option value="all">{{_ 'All_users'}}</option>
+						<option value="showUserRoles">{{_ 'Users_in_role'}}</option>
 					</select>
 					{{> icon block="rc-select__arrow" icon="arrow-down" }}
 				</label>
@@ -37,7 +38,7 @@
 							{{> avatar username=user.username}}
 							<div class="rc-member-list__username">
 								<div class="rc-member-list__status rc-member-list__status--{{status}}"></div>
-								{{ignored}} {{displayName}} {{utcOffset}}
+								{{ignored}} {{displayName}} {{utcOffset}} ({{roles}})
 								</div>
 							{{> icon user=. block="rc-member-list__menu js-more" icon="menu" }}
 						</li>
