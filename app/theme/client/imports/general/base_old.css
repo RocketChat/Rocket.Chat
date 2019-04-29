@@ -4976,35 +4976,6 @@ rc-old select,
 	}
 }
 
-.rc-old .terminal {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-
-	overflow-y: scroll;
-
-	margin: 0;
-	margin-bottom: 0 !important;
-	padding: 8px 10px !important;
-
-	color: var(--color-white);
-	border: none !important;
-	background-color: #444444 !important;
-
-	font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-	font-weight: 500;
-}
-
-.rc-old .terminal-line {
-	word-break: break-all;
-}
-
-.rc-old .terminal-time {
-	color: #7f7f7f;
-}
-
 .rc-old .code-colors {
 	color: #333333;
 	border-color: #cccccc;
