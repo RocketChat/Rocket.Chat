@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Permissions } from '../../../models/server/';
-import { Roles } from '../../../models/server/';
+import { Permissions, Roles } from '../../../models/server';
 const CONFIGURATION_ROLE_NAME = 'config-expert';
 const MANAGER_ROLE_NAME = 'manager';
 const USER_ROLE_NAME = 'user';

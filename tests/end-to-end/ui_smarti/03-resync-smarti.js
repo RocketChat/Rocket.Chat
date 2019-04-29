@@ -1,10 +1,9 @@
 /* eslint-env mocha */
 
 import supertest from 'supertest';
-import { adminUsername, adminPassword } from '../../data/user.js';
-import { credentials } from '../ui_smarti/00-preparation.js';
+import { adminEmail, adminUsername, adminPassword } from '../../data/user.js';
+import { credentials } from './00-preparation.js';
 import { checkIfUserIsAdmin } from '../../data/checks';
-import { adminEmail } from '../../data/user';
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
 import mainContent from '../../pageobjects/main-content.page';

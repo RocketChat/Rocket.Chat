@@ -4,8 +4,7 @@ import { SmartiProxy, verbs } from '../SmartiProxy';
 import { SmartiAdapter } from '../lib/SmartiAdapter';
 import { RateLimiter } from '../../../../lib/server/lib';
 import { hasPermission } from '../../../../authorization/server';
-import { Subscriptions } from '../../../../models/server/';
-import { Rooms } from '../../../../models/server/';
+import { Rooms, Subscriptions } from '../../../../models/server';
 
 
 /** @namespace RateLimiter.limitFunction */

@@ -1,6 +1,5 @@
 import hasha from 'hasha';
-import { Users, Statistics, Subscriptions } from '../../../models/server/';
-import { Messages } from '../../../models/server';
+import { Messages, Users, Statistics, Subscriptions } from '../../../models/server';
 
 /**
  * This function adds anonymized statistics about how users interact (read and write) with the system

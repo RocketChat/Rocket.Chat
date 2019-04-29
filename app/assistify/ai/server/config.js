@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings/server';
-import { Settings } from '../../../models/server/';
+import { Settings } from '../../../models/server';
 
 Meteor.startup(() => {
 	const addAISettings = function() {

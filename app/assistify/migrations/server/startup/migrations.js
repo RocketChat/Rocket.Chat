@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Users } from '../../../../models/server/s';
+import { Users } from '../../../../models/server';
 /*
 Up to now, there's no "DB version" stored for assistify.
 Until we've got expensive of contradicting migrations, we'll just use this file to write functions running

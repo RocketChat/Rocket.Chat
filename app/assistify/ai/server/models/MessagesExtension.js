@@ -1,4 +1,4 @@
-import { Messages } from '../../../../models/server/';
+import { Messages } from '../../../../models/server';
 
 Object.assign(Messages, {
 	setRecognizedTokensById(id, recognizedTokens) {

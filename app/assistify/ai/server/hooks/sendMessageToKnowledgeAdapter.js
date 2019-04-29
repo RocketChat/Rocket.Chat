@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { SystemLogger } from '../../../../logger/server';
 import { getKnowledgeAdapter } from '../lib/KnowledgeAdapterProvider';
 import { callbacks } from '../../../../callbacks/server';
-import { Users } from '../../../../models/server';
+import { Rooms, Users } from '../../../../models/server';
 import { settings } from '../../../../settings/server';
-import { Rooms } from '../../../../models/server';
 
 // unregister callbacks for livechat and the hard-coded api.ai
 callbacks.remove('afterSaveMessage', 'externalWebHook');

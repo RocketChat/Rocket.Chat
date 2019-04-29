@@ -3,8 +3,7 @@ import { SmartiProxy, verbs } from '../SmartiProxy';
 import { assistifySmarti } from '../../models/AssistifySmarti';
 import { Notifications } from '../../../../notifications/server';
 import { settings } from '../../../../settings/server';
-import { Rooms } from '../../../../models/server/';
-import { Messages } from '../../../../models/server/';
+import { Messages, Rooms } from '../../../../models/server';
 import { SystemLogger } from '../../../../logger/server';
 
 let syncTimer = 0;

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Settings } from '../../../models/';
+import { Settings } from '../../../models';
 
 /**
  * There are cases in which the environment does not feature a locale.
