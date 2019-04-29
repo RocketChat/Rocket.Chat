@@ -62,7 +62,7 @@ Meteor.startup(function() {
 			return process.exit(1);
 		}
 
-		if (!semver.satisfies(mongoDbVersion, '>=3.2.0')) {
+		if (!semver.satisfies(semver.coerce(mongoDbVersion), '>=3.2.0')) {
 			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.2 OR LATER'].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
