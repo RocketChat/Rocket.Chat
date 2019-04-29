@@ -2851,7 +2851,7 @@
   "Today": "Heute",
   "To_additional_emails": "Zu zusätzlichen E-Mails",
   "To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um den Rocket.Chat-LiveChat auf Ihrer Webseite zu installieren, kopieren und fügen Sie den Code oberhalb des letzten <strong>&lt;/body&gt;</strong>-Tags Ihrer Seite ein.",
-  "To_install_the_new_version_of_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um die <strong>neue Version</strong> von Rocket.Chat Livechat auf Ihrer Website zu installieren, kopieren & fügen Sie diesen Code oberhalb des letzten </body>-Tags auf Ihrer Website ein.",
+  "To_install_the_new_version_of_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site": "Um die <strong>neue Version</strong> von Rocket.Chat Livechat auf Ihrer Website zu installieren, kopieren & fügen Sie diesen Code oberhalb des letzten <strong>&lt;/body&gt;</strong>-Tags auf Ihrer Website ein.",
   "to_see_more_details_on_how_to_integrate": "um weitere Informationen zur Integration zu sehen",
   "To_users": "An Benutzer",
   "Toggle_original_translated": "Zwischen \"Original\" und \"Übersetzt\" wechseln",
