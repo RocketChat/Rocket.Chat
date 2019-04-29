@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
@@ -10,7 +11,9 @@ import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorizatio
 import { EmojiPicker, emoji } from '../../../emoji';
 import { call } from '../../../ui-utils';
 import { t, getUserPreference, slashCommands } from '../../../utils';
-import _ from 'underscore';
+import './messagePopupConfig.html';
+import './messagePopupSlashCommand.html';
+import './messagePopupUser.html';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });

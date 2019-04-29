@@ -60,7 +60,15 @@ Meteor.setInterval(() => {
  */
 
 process.on('unhandledRejection', (error) => {
+	console.error('=== UnHandledPromiseRejection ===');
 	console.error(error);
-	console.error('Exiting due to an unhandled promise rejection');
-	process.exit(1);
+	console.error('---------------------------------');
+	console.error('Errors like this can cause oplog processing errors.');
+	console.error('Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process');
+	console.error('Future node.js versions will automatically exit the process');
+	console.error('=================================');
+
+	if (process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
+		process.exit(1);
+	}
 });

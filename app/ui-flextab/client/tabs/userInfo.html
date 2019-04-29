@@ -2,6 +2,11 @@
 	{{#unless hideHeader}}
 		<header class="contextual-bar__header">
 			<div class="contextual-bar__header-data">
+				{{#if showBackButton}}
+					<button class="rc-button rc-button--nude contextual-bar__header-back-btn js-back" title="{{_ 'View_All'}}">
+						<i class="icon-angle-left"></i>
+					</button>
+				{{/if}}
 				{{> icon icon="user" block="contextual-bar__header-icon"}}
 				<h1 class="contextual-bar__header-title">{{_ "User_Info"}}</h1>
 			</div>
@@ -111,9 +116,6 @@
 							</div>
 						</div>
 					</div>
-					{{#if ../showAll}}
-						<button class="rc-button rc-button--outline js-back" title="{{_ 'View_All'}}">{{_ "View_All"}}</button>
-					{{/if}}
 				</section>
 			{{/with}}
 		{{/if}}
