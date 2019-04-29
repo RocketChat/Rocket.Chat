@@ -4,13 +4,13 @@ export class AppUserBridge {
 	}
 
 	async getById(userId, appId) {
-		console.log(`The App ${ appId } is getting the userId: "${ userId }"`);
+		this.orch.debugLog(`The App ${ appId } is getting the userId: "${ userId }"`);
 
 		return this.orch.getConverters().get('users').convertById(userId);
 	}
 
 	async getByUsername(username, appId) {
-		console.log(`The App ${ appId } is getting the username: "${ username }"`);
+		this.orch.debugLog(`The App ${ appId } is getting the username: "${ username }"`);
 
 		return this.orch.getConverters().get('users').convertByUsername(username);
 	}

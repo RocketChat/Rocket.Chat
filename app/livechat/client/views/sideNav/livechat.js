@@ -3,14 +3,13 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { ChatSubscription } from '../../../../models';
+import { ChatSubscription, Users } from '../../../../models';
 import { KonchatNotification } from '../../../../ui';
 import { settings } from '../../../../settings';
 import { hasRole } from '../../../../authorization';
-import { modal } from '../../../../ui-utils';
-import { Users } from '../../../../models';
-import { t, handleError, getUserPreference, roomTypes } from '../../../../utils';
+import { t, handleError, getUserPreference } from '../../../../utils';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
+import './livechat.html';
 
 Template.livechat.helpers({
 	isActive() {
@@ -42,10 +41,12 @@ Template.livechat.helpers({
 			query.alert = { $ne: true };
 		}
 
-		return ChatSubscription.find(query, { sort: {
-			t: 1,
-			fname: 1,
-		} });
+		return ChatSubscription.find(query, {
+			sort: {
+				t: 1,
+				fname: 1,
+			},
+		});
 	},
 
 	inquiries() {
@@ -55,7 +56,7 @@ Template.livechat.helpers({
 			status: 'open',
 		}, {
 			sort: {
-				ts : 1,
+				ts: 1,
 			},
 		});
 
@@ -105,28 +106,6 @@ Template.livechat.events({
 		Meteor.call('livechat:changeLivechatStatus', (err /* , results*/) => {
 			if (err) {
 				return handleError(err);
-			}
-		});
-	},
-
-	'click .inquiries .sidebar-item'(event) {
-		event.preventDefault();
-		event.stopPropagation();
-
-		modal.open({
-			title: t('Livechat_Take_Confirm'),
-			text: `${ t('Message') }: ${ this.message }`,
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: t('Take_it'),
-		}, (isConfirm) => {
-			if (isConfirm) {
-				Meteor.call('livechat:takeInquiry', this._id, (error, result) => {
-					if (!error) {
-						roomTypes.openRouteLink(result.t, result);
-					}
-				});
 			}
 		});
 	},

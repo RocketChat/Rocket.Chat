@@ -811,10 +811,6 @@ settings.addGroup('General', function() {
 		type: 'string',
 		public: false,
 	});
-	this.add('Force_Disable_OpLog_For_Cache', false, {
-		type: 'boolean',
-		public: false,
-	});
 	this.add('Restart', 'restart_server', {
 		type: 'action',
 		actionText: 'Restart_the_server',
@@ -978,6 +974,10 @@ settings.addGroup('Message', function() {
 	});
 	this.add('Message_MaxAllowedSize', 5000, {
 		type: 'int',
+		public: true,
+	});
+	this.add('Message_AllowConvertLongMessagesToAttachment', true, {
+		type: 'boolean',
 		public: true,
 	});
 	this.add('Message_ShowFormattingTips', true, {
@@ -2658,16 +2658,6 @@ settings.addGroup('Setup_Wizard', function() {
 
 		this.add('Cloud_Workspace_Registration_State', '', {
 			type: 'string',
-			hidden: true,
-			readonly: true,
-			enableQuery: {
-				_id: 'Register_Server',
-				value: true,
-			},
-		});
-
-		this.add('Cloud_Workspace_Account_Associated', false, {
-			type: 'boolean',
 			hidden: true,
 			readonly: true,
 			enableQuery: {

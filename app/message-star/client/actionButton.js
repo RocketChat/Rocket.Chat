@@ -5,16 +5,16 @@ import { handleError } from '../../utils';
 import { Subscriptions } from '../../models';
 import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
+import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import toastr from 'toastr';
-
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'star-message',
 		icon: 'star',
-		label: 'Star_Message',
+		label: 'Star',
 		context: ['starred', 'message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			message.starred = Meteor.userId();
 			Meteor.call('starMessage', message, function(error) {
 				if (error) {
@@ -29,7 +29,7 @@ Meteor.startup(function() {
 
 			return !message.starred || !message.starred.find((star) => star._id === Meteor.userId());
 		},
-		order: 10,
+		order: 9,
 		group: 'menu',
 	});
 
@@ -39,7 +39,7 @@ Meteor.startup(function() {
 		label: 'Unstar_Message',
 		context: ['starred', 'message', 'message-mobile'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			message.starred = false;
 			Meteor.call('starMessage', message, function(error) {
 				if (error) {
@@ -54,7 +54,7 @@ Meteor.startup(function() {
 
 			return message.starred && message.starred.find((star) => star._id === Meteor.userId());
 		},
-		order: 10,
+		order: 9,
 		group: 'menu',
 	});
 
@@ -64,7 +64,7 @@ Meteor.startup(function() {
 		label: 'Jump_to_message',
 		context: ['starred'],
 		action() {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}
@@ -83,11 +83,11 @@ Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'permalink-star',
 		icon: 'permalink',
-		label: 'Permalink',
+		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['starred'],
 		async action(event) {
-			const message = this._arguments[1];
+			const { msg: message } = messageArgs(this);
 			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
 			toastr.success(TAPi18n.__('Copied'));
 		},

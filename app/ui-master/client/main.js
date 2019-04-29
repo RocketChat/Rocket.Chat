@@ -1,3 +1,5 @@
+import Clipboard from 'clipboard';
+import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
@@ -5,15 +7,14 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { t, getUserPreference } from '../../utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent } from '../../ui-utils';
+import { chatMessages } from '../../ui';
+import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../tooltip';
-import Clipboard from 'clipboard';
-import s from 'underscore.string';
 
 settings.collection.find({ _id:/theme-color-rc/i }, { fields:{ value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
 
@@ -78,8 +79,8 @@ Template.body.onRendered(function() {
 		if (target.id === 'pswp') {
 			return;
 		}
-		const inputMessage = $('.rc-message-box__textarea');
-		if (inputMessage.length === 0) {
+		const inputMessage = chatMessages[RoomManager.openedRoom] && chatMessages[RoomManager.openedRoom].input;
+		if (!inputMessage) {
 			return;
 		}
 		inputMessage.focus();
@@ -132,8 +133,7 @@ Template.main.onCreated(function() {
 
 Template.main.helpers({
 	removeSidenav() {
-		const { modal } = this;
-		return (modal || typeof modal === 'function' ? modal() : modal); // || RocketChat.Layout.isEmbedded();
+		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
 	},
 	siteName() {
 		return settings.get('Site_Name');
@@ -217,13 +217,7 @@ Template.main.events({
 
 Template.main.onRendered(function() {
 	$('#initial-page-loading').remove();
-	window.addEventListener('focus', function() {
-		return Meteor.setTimeout(function() {
-			if (!$(':focus').is('INPUT,TEXTAREA')) {
-				return $('.input-message').focus();
-			}
-		}, 100);
-	});
+
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();
 		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');

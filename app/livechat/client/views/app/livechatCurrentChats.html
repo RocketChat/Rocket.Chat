@@ -9,12 +9,7 @@
 
 				<div class="form-group">
 					<label for="agent">{{_ "Served_By"}}</label>
-					<select name="agent">
-						<option value=""></option>
-						{{#each agents}}
-							<option value="{{_id}}">{{username}}</option>
-						{{/each}}
-					</select>
+					{{> inputAutocomplete settings=agentAutocompleteSettings id="agent" class="rc-input__element" autocomplete="off"}}
 				</div>
 				<div class="form-group">
 					<label for="status">{{_ "Status"}}</label>
@@ -57,11 +52,11 @@
 								{{#if isClosed}}
 									<td><a href="#remove" class="remove-livechat-room"><i class="icon-trash"></i></a></td>
 								{{else}}
-									<td>&nbsp;</td>	
-								{{/if}}	
-							{{else}}						
+									<td>&nbsp;</td>
+								{{/if}}
+							{{else}}
 								<td>&nbsp;</td>
-							{{/requiresPermission}}									
+							{{/requiresPermission}}
 						</tr>
 					{{/each}}
 				</tbody>

@@ -7,10 +7,10 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { SideNav } from '../../../ui-utils';
 import { t } from '../../../utils';
+import { mime } from '../../../utils/lib/mimeTypes';
 import { fileUploadHandler } from '../../../file-upload';
 import s from 'underscore.string';
 import toastr from 'toastr';
-import mime from 'mime-type/with-db';
 
 Template.avatarPrompt.onCreated(function() {
 	const self = this;
