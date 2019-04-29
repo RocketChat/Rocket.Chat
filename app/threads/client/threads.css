@@ -5,6 +5,15 @@
 	border-bottom: 1px solid var(--color-gray-light);
 }
 
+.message.sequential[data-tmid] > .thread-replied > .thumb,
+.message.sequential.system[data-tmid] > .thumb {
+	display: block;
+}
+
+.message.sequential[data-tmid] > .message-body-wrapper > .title {
+	display: none;
+}
+
 .message.thread-message {
 	padding-top: 16px;
 	padding-bottom: 8px;
@@ -20,39 +29,135 @@
 
 .thread-list {
 	overflow: auto;
+
+	word-wrap: break-word;
 	flex-shrink: 1;
 }
 
-.thread-replied {
-	overflow: hidden;
+.message {
+	& .thread-replied {
 
-	white-space: nowrap;
-	text-overflow: ellipsis;
+		display: inline-flex;
 
-	color: var(--color-gray);
+		display: flex;
 
-	font-size: 14px;
+		cursor: pointer;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		color: var(--rc-color-link-active);
+
+		align-items: baseline;
+		flex-flow: row nowrap;
+	}
+
+	.thread-icons {
+		display: block;
+		flex: 0 0 20px;
+
+		width: 20px;
+
+		&--thread {
+			position: absolute;
+			left: 40px;
+
+			width: 20px;
+			height: 20px;
+
+			color: var(--rc-color-alert-message-primary);
+		}
+
+		&--bell,
+		&--bell-off {
+			cursor: pointer;
+
+			color: #a0a0a0;
+		}
+	}
+
+	& > .thread-quote {
+
+		display: flex;
+
+		margin: calc((var(--default-padding) /2) - 6px) 0 7px 0;
+		align-items: center;
+	}
+
+	.thread-quote__message {
+
+		display: flex;
+
+		overflow: hidden;
+
+		cursor: pointer;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		color: var(--rc-color-alert-message-primary);
+
+		align-items: center;
+
+		> .message-body--unstyled {
+			overflow: hidden;
+
+			text-overflow: ellipsis;
+		}
+	}
+
+	& .thread-reply-preview {
+		display: none;
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	&.collapsed .thread-reply-preview {
+		display: initial;
+	}
 }
 
-.message.sequential > .body > .thread-replied {
+.message.collapsed + .message.system:not(.collapsed) {
+	margin-top: calc(var(--default-padding) / 2);
+	margin-bottom: calc(var(--default-padding) / 2);
+}
+
+.message.collapsed + .message:not(.collapsed) {
+	margin-top: calc(var(--default-padding) / 2);
+}
+
+.message.collapsed > .thread-replied > .thumb {
+	left: 40px;
+
+	width: 20px;
+	height: 20px;
+	margin-left: 0;
+
+	& .avatar {
+		width: 20px;
+		height: 20px;
+	}
+}
+
+.message.sequential .thread-quote {
 	display: none;
 }
 
-.thread-quote {
-	cursor: pointer;
+@media (width < 500px) {
+	.message {
+		& .title {
+			flex-wrap: wrap;
+		}
 
-	color: var(--rc-color-link-active);
-
-	font-style: normal;
-
-	line-height: initial;
+		& .thread-replied {
+			flex-basis: 100%;
+		}
+	}
 }
 
 .contextual-bar__content.thread,
 .contextual-bar__content.threads {
 	padding: 0;
-}
-
-.js-open-thread {
-	cursor: pointer;
 }

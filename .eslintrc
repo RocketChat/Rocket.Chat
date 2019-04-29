@@ -1,6 +1,24 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
 	"parser": "babel-eslint",
+	"rules": {
+		"import/no-unresolved": [2, {
+			"commonjs": true,
+			"amd": true,
+			"ignore": [
+				"^meteor\/.+$"
+			]
+		}],
+		"import/named": 0,
+		"import/namespace": 0,
+		"import/default": 0,
+		"import/export": 2,
+		"import/no-cycle": 0,
+		"import/no-useless-path-segments": 2,
+		"import/no-duplicates": 2,
+		"import/no-named-as-default": 0,
+		"import/no-named-as-default-member": 0
+	},
 	"globals": {
 		"__meteor_bootstrap__"        : false,
 		"__meteor_runtime_config__"   : false,

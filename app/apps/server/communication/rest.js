@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { API } from '../../../api/server';
 import Busboy from 'busboy';
 
-import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 
@@ -94,7 +94,13 @@ export class AppsRestApi {
 
 				if (this.queryParams.buildBuyUrl && this.queryParams.appId) {
 					const workspaceId = settings.get('Cloud_Workspace_Id');
-					return API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }` });
+
+					const token = getUserCloudAccessToken(this.getLoggedInUser()._id, true, 'marketplace:purchase', false);
+					if (!token) {
+						return API.v1.failure({ error: 'Unauthorized' });
+					}
+
+					return API.v1.success({ url: `${ baseUrl }/apps/${ this.queryParams.appId }/buy?workspaceId=${ workspaceId }&token=${ token }` });
 				}
 
 				const apps = manager.get().map((prl) => {

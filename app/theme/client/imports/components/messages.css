@@ -101,6 +101,58 @@
 	}
 }
 
+.message-body {
+	&--unstyled {
+		font: inherit;
+		line-height: initial;
+
+		& .emojione,
+		& .emoji {
+			display: inline-block !important;
+
+			width: 1em !important;
+			min-width: 1em;
+			height: 1em !important;
+			min-height: 1em;
+		}
+
+		& * {
+			display: inline !important;
+
+			padding: unset !important;
+
+			vertical-align: unset !important;
+
+			white-space: unset !important;
+
+			color: inherit !important;
+
+			border: unset !important;
+
+			background-color: unset !important;
+
+			font-family: inherit !important;
+
+			font-weight: unset !important;
+
+			line-height: unset !important;
+
+			&::before,
+			&::after {
+				content: unset !important;
+			}
+		}
+
+		& a {
+			pointer-events: none;
+		}
+	}
+}
+
+.message-oembed {
+	overflow: hidden;
+}
+
 .messages-box .rc-popover__list {
 	padding: 0;
 }

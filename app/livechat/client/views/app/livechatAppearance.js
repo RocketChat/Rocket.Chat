@@ -8,6 +8,7 @@ import { t, handleError } from '../../../../utils';
 import s from 'underscore.string';
 import moment from 'moment';
 import toastr from 'toastr';
+import './livechatAppearance.html';
 
 const LivechatAppearance = new Mongo.Collection('livechatAppearance');
 

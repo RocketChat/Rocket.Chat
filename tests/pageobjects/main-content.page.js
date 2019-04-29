@@ -24,7 +24,7 @@ class MainContent extends Page {
 	get joinChannelBtn() { return browser.element('.button.join'); }
 
 	// Messages
-	get lastMessageUser() { return browser.element('.message:last-child .user-card-message:nth-of-type(2)'); }
+	get lastMessageUser() { return browser.element('.message:last-child .title .user-card-message'); }
 	get lastMessage() { return browser.element('.message:last-child .body'); }
 	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description'); }
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
@@ -32,10 +32,11 @@ class MainContent extends Page {
 	get lastMessageUserTag() { return browser.element('.message:last-child .role-tag'); }
 	get lastMessageImg() { return browser.element('.message:last-child .attachment-image img'); }
 	get lastMessageTextAttachment() { return browser.element('.message:last-child .attachment-text'); }
-	get lastMessageQuote() { return browser.element('.message:last-child .thread-quote'); }
+	get beforeLastMessageQuote() { return browser.element('.message:nth-last-child(2)'); }
+	get lastMessageQuote() { return browser.element('.message:last-child'); }
 	get messageOptionsBtn() { return browser.element('.message:last-child .message-actions__menu'); }
 	get messageActionMenu() { return browser.element('.rc-popover .rc-popover__content'); }
-	get messageReply() { return browser.element('[data-id="reply-message"][data-type="message-action"]'); }
+	get messageReply() { return browser.element('[data-id="reply-in-thread"][data-type="message-action"]'); }
 	get messageEdit() { return browser.element('[data-id="edit-message"][data-type="message-action"]'); }
 	get messageDelete() { return browser.element('[data-id="delete-message"][data-type="message-action"]'); }
 	get messagePermalink() { return browser.element('[data-id="permalink"][data-type="message-action"]'); }

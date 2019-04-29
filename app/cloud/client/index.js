@@ -23,7 +23,7 @@ FlowRouter.route('/admin/cloud/oauth-callback', {
 AdminBox.addOption({
 	icon: 'cloud-plus',
 	href: 'admin/cloud',
-	i18nLabel: 'Cloud',
+	i18nLabel: 'Connectivity_Services',
 	permissionGranted() {
 		return hasAtLeastOnePermission(['manage-cloud']);
 	},

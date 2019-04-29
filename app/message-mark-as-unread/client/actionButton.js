@@ -9,7 +9,7 @@ Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'mark-message-as-unread',
 		icon: 'flag',
-		label: 'Mark_as_unread',
+		label: 'Mark_unread',
 		context: ['message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
@@ -30,7 +30,7 @@ Meteor.startup(() => {
 		condition(message) {
 			return Meteor.userId() && message.u._id !== Meteor.userId();
 		},
-		order: 22,
+		order: 10,
 		group: 'menu',
 	});
 });
