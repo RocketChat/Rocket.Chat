@@ -1,0 +1,29 @@
+.view-logs {
+	&__terminal {
+		overflow-y: scroll;
+		flex: 1;
+
+		margin: 0;
+		margin-bottom: 0 !important;
+		padding: 8px 10px !important;
+
+		color: var(--color-white);
+		border: none !important;
+		background-color: #444444 !important;
+
+		font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+		font-weight: 500;
+
+		&-line {
+			word-break: break-all;
+		}
+
+		&-time {
+			color: #7f7f7f;
+		}
+
+		.rtl & {
+			direction: ltr;
+		}
+	}
+}
