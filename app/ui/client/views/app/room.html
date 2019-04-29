@@ -126,9 +126,15 @@
 									{{/if}}
 								{{/if}}
 
-								{{# with messageContext}}
-									{{#each msg in messagesHistory}}{{#nrr nrrargs 'message' msg=msg room=room subscription=subscription settings=settings u=u}}{{/nrr}}{{/each}}
-								{{/with}}
+								{{# if useNrr}}
+									{{# with messageContext}}
+										{{#each msg in messagesHistory}}{{> nrr nrrargs 'message' shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+									{{/with}}
+								{{else}}
+									{{# with messageContext}}
+										{{#each msg in messagesHistory}}{{> message shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+									{{/with}}
+								{{/if}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">
@@ -138,6 +144,13 @@
 									</li>
 								{{/if}}
 							</ul>
+							{{#if hasMoreNext}}
+							<li class="load-more">
+								{{#if isLoading}}
+								{{> loading}}
+								{{/if}}
+							</li>
+							{{/if}}
 						</div>
 					</div>
 					<footer class="footer border-component-color">

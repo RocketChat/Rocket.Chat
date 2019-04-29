@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
+import { WebApp, WebAppInternals } from 'meteor/webapp';
 import { settings } from '../../settings';
 import { Settings } from '../../models';
 import { getURL } from '../../utils/lib/getURL';
@@ -7,7 +7,7 @@ import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
 import { RocketChatFile } from '../../file';
 import { WebAppHashing } from 'meteor/webapp-hashing';
-import { WebAppInternals } from 'meteor/webapp';
+
 import _ from 'underscore';
 import sizeOf from 'image-size';
 import crypto from 'crypto';

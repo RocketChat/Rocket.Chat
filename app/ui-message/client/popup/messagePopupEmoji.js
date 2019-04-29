@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import './messagePopupEmoji.html';
 
 Template.messagePopupEmoji.helpers({
 	value() {

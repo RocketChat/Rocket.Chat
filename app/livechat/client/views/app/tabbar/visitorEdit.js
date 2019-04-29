@@ -5,6 +5,7 @@ import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import toastr from 'toastr';
+import './visitorEdit.html';
 
 Template.visitorEdit.helpers({
 	visitor() {

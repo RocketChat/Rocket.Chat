@@ -83,6 +83,18 @@
 			}
 		}
 
+		&-back-btn {
+			position: absolute;
+			left: 0;
+
+			width: auto;
+			height: auto;
+			margin: 0;
+			padding: 0;
+
+			font-size: 22px;
+		}
+
 		&-title {
 
 			overflow: hidden;
@@ -112,6 +124,11 @@
 			transform: rotate(45deg);
 
 			font-size: 20px;
+		}
+
+		&--empty {
+			border-bottom: none;
+			background: none;
 		}
 	}
 

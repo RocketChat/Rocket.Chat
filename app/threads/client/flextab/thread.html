@@ -3,7 +3,7 @@
 		<div class="contextual-bar__header-data">
 			{{> icon block="contextual-bar__header-icon" icon='thread'}}
 			<h2 class="contextual-bar__header-title">
-				<span class="message-body--unstyled">{{threadTitle}}</span>
+				<span class="message-body--unstyled">{{{threadTitle}}}</span>
 				{{!-- <sub class="contextual-bar__header-description">{{room.fname}}</sub> --}}
 			</h2>
 		</div>
@@ -16,10 +16,16 @@
 		<div class="thread-list js-scroll-thread">
 			<ul class="thread">
 				{{# with messageContext}}
-					{{> nrr nrrargs 'message' hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u}}
-					{{#each msg in messages}}
-						{{> nrr nrrargs 'message' hideRoles=true msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u}}
-					{{/each}}
+				{{#if isLoading}}
+				<li class="load-more">
+					{{> loading}}
+				</li>
+				{{else}}
+						{{> nrr nrrargs 'message' groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u}}
+						{{#each msg in messages}}
+							{{> nrr nrrargs 'message' hideRoles=true msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u}}
+						{{/each}}
+					{{/if}}
 				{{/with}}
 			</ul>
 		</div>
