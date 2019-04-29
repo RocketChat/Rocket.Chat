@@ -4,7 +4,7 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
 import { emoji } from '../../lib/rocketchat';
-import { updateRecentEmoji } from '../../client/emojiPicker';
+import { updateRecentEmoji } from '../emojiPicker';
 
 export const EmojiPicker = {
 	width: 365,
