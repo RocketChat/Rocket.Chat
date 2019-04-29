@@ -135,9 +135,9 @@ Template.threads.onCreated(async function() {
 			removed: ({ _id }) => {
 				this.Threads.remove(_id);
 
-				const { _id: mid } = this.mid.get() || {};
+				const mid = this.state.get('mid');
 				if (_id === mid) {
-					this.mid.set(null);
+					this.state.set('mid', null);
 				}
 			},
 		});
