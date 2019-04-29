@@ -38,7 +38,7 @@
 							{{> avatar username=user.username}}
 							<div class="rc-member-list__username">
 								<div class="rc-member-list__status rc-member-list__status--{{status}}"></div>
-								{{ignored}} {{displayName}} {{utcOffset}} {{#if showUserRoles}} ({{roles}}) {{/if}}
+								{{ignored}} {{displayName}} {{utcOffset}} {{#if showUserRoles}} {{#if roles}} ({{roles}}) {{/if}}{{/if}}
 								</div>
 							{{> icon user=. block="rc-member-list__menu js-more" icon="menu" }}
 						</li>

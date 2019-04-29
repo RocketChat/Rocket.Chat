@@ -90,7 +90,6 @@ Template.membersList.helpers({
 				rank = 1000;
 			}
 
-			console.log(user.username, roles, rank);
 			return {
 				user,
 				status: (onlineUsers[user.username] != null ? onlineUsers[user.username].status : 'offline'),
@@ -209,9 +208,9 @@ Template.membersList.events({
 		instance.filter.set(e.target.value.trim());
 	},
 	'change .js-type'(e, instance) {
-		instance.showAllUsers.set(e.currentTarget.value === 'all');
-		instance.usersLimit.set(100);
+		instance.showAllUsers.set(e.currentTarget.value !== 'online');
 		instance.sortingMode.set(e.currentTarget.value);
+		instance.usersLimit.set(100);
 	},
 	'click .js-more'(e, instance) {
 		e.currentTarget.parentElement.classList.add('active');
@@ -363,7 +362,7 @@ Template.membersList.onRendered(function() {
 		const showAllUsers = this.showAllUsers.get();
 		const statusTypeSelect = this.find('.js-type');
 		if (statusTypeSelect) {
-			statusTypeSelect.value = showAllUsers ? 'all' : 'online';
+			statusTypeSelect.value = this.sortingMode.get();
 		}
 	});
 });
