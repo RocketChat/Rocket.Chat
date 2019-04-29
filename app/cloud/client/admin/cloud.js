@@ -211,10 +211,6 @@ Template.cloud.events({
 	'click .sync-btn'(e, i) {
 		i.syncWorkspace();
 	},
-
-	'click .cloud-console-btn'() {
-		window.location.href = 'https://cloud.rocket.chat';
-	},
 });
 
 Template.cloud.onRendered(() => {
