@@ -8,6 +8,7 @@ import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
 import { getActions } from './userActions';
+import _ from 'underscore';
 
 Template.membersList.helpers({
 	ignored() {
@@ -34,10 +35,9 @@ Template.membersList.helpers({
 		const room = ChatRoom.findOne(this.rid);
 		const roomMuted = (room != null ? room.muted : undefined) || [];
 		const userUtcOffset = Meteor.user() && Meteor.user().utcOffset;
-		const hierarchy = ['admin', 'owner', 'leader'];
+		const hierarchy = ['admin', 'owner', 'leader', 'moderator', 'Rocket.Chat team'];
 		let totalOnline = 0;
 		let users = roomUsers;
-		
 
 		let userRoles = [];
 		let roomRoles = [];
@@ -75,7 +75,7 @@ Template.membersList.helpers({
 			userRoles = UserRoles.findOne(user._id) || {};
 			roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 			roles = _.union(userRoles.roles || [], roomRoles.roles || []);
-			roles = _.sortBy(roles, function(role) {				
+			roles = _.sortBy(roles, function(role) {
 				return (hierarchy.indexOf(role) === -1) ? 50 : hierarchy.indexOf(role);
 			});
 
@@ -89,7 +89,6 @@ Template.membersList.helpers({
 				// sending the ones without an assigned role at the end of list
 				rank = 1000;
 			}
-			
 
 			console.log(user.username, roles, rank);
 			return {
@@ -102,11 +101,11 @@ Template.membersList.helpers({
 			};
 		});
 
-		//if(document.getElementById('status-type').selectedIndex === 2) {
+		if (Template.instance().sortingMode.get() === 'showUserRoles') {
 			users = _.sortBy(users, function(user) {
 				return user.rank;
 			});
-		//}
+		}
 
 		const usersTotal = users.length;
 		const { total, loading, usersLimit, loadingMore } = Template.instance();
