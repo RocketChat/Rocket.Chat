@@ -144,14 +144,14 @@ Template.sidebarItem.events({
 		if (this.alert) {
 			items.push({
 				icon: 'flag',
-				name: t('Mark_as_read'),
+				name: t('Mark_read'),
 				type: 'sidebar-item',
 				id: 'read',
 			});
 		} else {
 			items.push({
 				icon: 'flag',
-				name: t('Mark_as_unread'),
+				name: t('Mark_unread'),
 				type: 'sidebar-item',
 				id: 'unread',
 			});

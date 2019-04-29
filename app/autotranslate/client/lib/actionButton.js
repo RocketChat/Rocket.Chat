@@ -11,9 +11,9 @@ Meteor.startup(function() {
 	Tracker.autorun(function() {
 		if (settings.get('AutoTranslate_Enabled') && hasAtLeastOnePermission(['auto-translate'])) {
 			MessageAction.addButton({
-				id: 'toggle-language',
+				id: 'translate',
 				icon: 'language',
-				label: 'Toggle_original_translated',
+				label: 'Translate',
 				context: [
 					'message',
 					'message-mobile',
@@ -30,7 +30,32 @@ Meteor.startup(function() {
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
 				condition(message) {
-					return message && message.u && message.u._id !== Meteor.userId();
+					return message && message.u && message.u._id !== Meteor.userId() && message.translations && !message.translations.original;
+				},
+				order: 90,
+			});
+			MessageAction.addButton({
+				id: 'view-original',
+				icon: 'language',
+				label: 'View_original',
+				context: [
+					'message',
+					'message-mobile',
+				],
+				action() {
+					const { msg: message } = messageArgs(this);
+					const language = AutoTranslate.getLanguage(message.rid);
+					if ((!message.translations || !message.translations[language])) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+						AutoTranslate.messageIdsToWait[message._id] = true;
+						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+						Meteor.call('autoTranslate.translateMessage', message, language);
+					}
+					const action = message.autoTranslateShowInverse ? '$unset' : '$set';
+					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
+				},
+				condition(message) {
+					return message && message.u && message.u._id !== Meteor.userId() && message.translations && message.translations.original;
+
 				},
 				order: 90,
 			});

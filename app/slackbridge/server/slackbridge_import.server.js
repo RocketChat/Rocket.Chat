@@ -28,7 +28,7 @@ function SlackBridgeImport(command, params, item) {
 	});
 
 	try {
-		SlackBridge.importMessages(item.rid, (error) => {
+		SlackBridge.slack.importMessages(item.rid, (error) => {
 			if (error) {
 				msgStream.emit(item.rid, {
 					_id: Random.id(),

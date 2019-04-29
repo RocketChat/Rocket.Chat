@@ -7,6 +7,7 @@ import { LivechatIntegration } from '../../../collections/LivechatIntegration';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+import './livechatIntegrationWebhook.html';
 
 Template.livechatIntegrationWebhook.helpers({
 	webhookUrl() {

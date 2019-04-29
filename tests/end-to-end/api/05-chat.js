@@ -73,6 +73,120 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
+		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
+
+			it('attachment.message_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.author_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							author_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.title_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.action.url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							actions: [
+								{
+									type: 'button',
+									text: 'Text',
+									url: 'javascript:alert("xss")',
+								},
+							],
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+		});
+
 		it('should throw an error when the properties (attachments.fields.title, attachments.fields.value) are with the wrong type', (done) => {
 			request.post(api('chat.postMessage'))
 				.set(credentials)
@@ -199,6 +313,120 @@ describe('[Chat]', function() {
 					expect(res.body).to.have.property('error', 'The \'rid\' property on the message object is missing.');
 				})
 				.end(done);
+		});
+
+		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
+
+			it('attachment.message_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.author_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							author_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.title_link', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'javascript:alert("xss")',
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
+
+			it('attachment.action.url', (done) =>
+				request.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: 'general',
+						text: 'Sample message',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							actions: [
+								{
+									type: 'button',
+									text: 'Text',
+									url: 'javascript:alert("xss")',
+								},
+							],
+						}],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done)
+			);
 		});
 
 		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
