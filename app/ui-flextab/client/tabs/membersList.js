@@ -102,9 +102,11 @@ Template.membersList.helpers({
 			};
 		});
 
-		users = _.sortBy(users, function(user) {
-			return user.rank;
-		});
+		//if(document.getElementById('status-type').selectedIndex === 2) {
+			users = _.sortBy(users, function(user) {
+				return user.rank;
+			});
+		//}
 
 		const usersTotal = users.length;
 		const { total, loading, usersLimit, loadingMore } = Template.instance();
@@ -121,6 +123,10 @@ Template.membersList.helpers({
 			hasMore,
 			rid: this.rid,
 		};
+	},
+
+	showUserRoles() {
+		return (Template.instance().sortingMode.get() === 'showUserRoles');
 	},
 
 	canAddUser() {
@@ -206,6 +212,7 @@ Template.membersList.events({
 	'change .js-type'(e, instance) {
 		instance.showAllUsers.set(e.currentTarget.value === 'all');
 		instance.usersLimit.set(100);
+		instance.sortingMode.set(e.currentTarget.value);
 	},
 	'click .js-more'(e, instance) {
 		e.currentTarget.parentElement.classList.add('active');
@@ -307,6 +314,7 @@ Template.membersList.onCreated(function() {
 	this.total = new ReactiveVar;
 	this.loading = new ReactiveVar(true);
 	this.loadingMore = new ReactiveVar(false);
+	this.sortingMode = new ReactiveVar('online');
 
 	this.tabBar = this.data.tabBar;
 
