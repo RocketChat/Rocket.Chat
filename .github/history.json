@@ -29886,6 +29886,89 @@
           ]
         }
       ]
+    },
+    "1.0.1": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14296",
+          "title": "[FIX] Popup cloud console in new window",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "14288",
+          "title": "[FIX] Switch oplog required doc link to more accurate link",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14291",
+          "title": "[FIX] Optional exit on Unhandled Promise Rejection",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14293",
+          "title": "[FIX] Error when accessing avatar with no token",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14286",
+          "title": "[FIX] Startup error in registration check",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14290",
+          "title": "[FIX] Wrong header at Apps admin section",
+          "userLogin": "geekgonecrazy",
+          "milestone": "1.0.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14282",
+          "title": "[FIX] Error when accessing an invalid file upload url",
+          "userLogin": "wreiske",
+          "milestone": "1.0.1",
+          "contributors": [
+            "wreiske",
+            "d-gubert",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
