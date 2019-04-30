@@ -205,13 +205,25 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomId(roomId, options) {
+	findVisibleByRoomId(rid, options) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 
-			rid: roomId,
+			rid,
+		};
+
+		return this.find(query, options);
+	}
+
+	findVisibleThreadByRoomId(tmid, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			tmid,
 		};
 
 		return this.find(query, options);
