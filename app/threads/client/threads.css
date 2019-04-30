@@ -124,7 +124,7 @@
 	margin-bottom: calc(var(--default-padding) / 2);
 }
 
-.message.collapsed + .message:not(.collapsed) {
+.message.collapsed + .message:not(.collapsed):not(.new-day) {
 	margin-top: calc(var(--default-padding) / 2);
 }
 
