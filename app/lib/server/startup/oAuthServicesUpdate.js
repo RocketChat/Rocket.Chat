@@ -38,6 +38,7 @@ function _OAuthServicesUpdate() {
 				data.identityPath = settings.get(`${ service.key }-identity_path`);
 				data.authorizePath = settings.get(`${ service.key }-authorize_path`);
 				data.scope = settings.get(`${ service.key }-scope`);
+				data.accessTokenParam = settings.get(`${ service.key }-access_token_param`);
 				data.buttonLabelText = settings.get(`${ service.key }-button_label_text`);
 				data.buttonLabelColor = settings.get(`${ service.key }-button_label_color`);
 				data.loginStyle = settings.get(`${ service.key }-login_style`);
@@ -45,7 +46,10 @@ function _OAuthServicesUpdate() {
 				data.tokenSentVia = settings.get(`${ service.key }-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${ service.key }-identity_token_sent_via`);
 				data.usernameField = settings.get(`${ service.key }-username_field`);
+				data.avatarField = settings.get(`${ service.key }-avatar_field`);
+				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
+				data.mergeRoles = settings.get(`${ service.key }-merge_roles`);
 				new CustomOAuth(serviceName.toLowerCase(), {
 					serverURL: data.serverURL,
 					tokenPath: data.tokenPath,
@@ -56,7 +60,11 @@ function _OAuthServicesUpdate() {
 					tokenSentVia: data.tokenSentVia,
 					identityTokenSentVia: data.identityTokenSentVia,
 					usernameField: data.usernameField,
+					avatarField: data.avatarField,
+					rolesClaim: data.rolesClaim,
 					mergeUsers: data.mergeUsers,
+					mergeRoles: data.mergeRoles,
+					accessTokenParam: data.accessTokenParam,
 				});
 			}
 			if (serviceName === 'Facebook') {

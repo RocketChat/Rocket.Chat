@@ -6,6 +6,25 @@ import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
 
+/**
+ * IMPORTANT
+ *
+ * This validator prevents malicious href values
+ * intending to run arbitrary js code in anchor tags.
+ * You should use it whenever the value you're checking
+ * is going to be rendered in the href attribute of a
+ * link.
+ */
+const ValidHref = Match.Where((value) => {
+	check(value, String);
+
+	if (/^javascript:/i.test(value)) {
+		throw new Error('Invalid href value provided');
+	}
+
+	return true;
+});
+
 const objectMaybeIncluding = (types) => Match.Where((value) => {
 	Object.keys(types).forEach((field) => {
 		if (value[field] != null) {
@@ -38,7 +57,7 @@ const validateAttachmentsActions = (attachmentActions) => {
 	check(attachmentActions, objectMaybeIncluding({
 		type: String,
 		text: String,
-		url: String,
+		url: ValidHref,
 		image_url: String,
 		is_webview: Boolean,
 		webview_height_ratio: String,
@@ -55,13 +74,13 @@ const validateAttachment = (attachment) => {
 		thumb_url: String,
 		button_alignment: String,
 		actions: [Match.Any],
-		message_link: String,
+		message_link: ValidHref,
 		collapsed: Boolean,
 		author_name: String,
-		author_link: String,
+		author_link: ValidHref,
 		author_icon: String,
 		title: String,
-		title_link: String,
+		title_link: ValidHref,
 		title_link_download: Boolean,
 		image_dimensions: Object,
 		image_url: String,
@@ -88,11 +107,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const sendMessage = function(user, message, room, upsert = false) {
-	if (!user || !message || !room._id) {
-		return false;
-	}
-
+const validateMessage = (message) => {
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
@@ -106,6 +121,14 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (Array.isArray(message.attachments) && message.attachments.length) {
 		validateBodyAttachments(message.attachments);
 	}
+};
+
+export const sendMessage = function(user, message, room, upsert = false) {
+	if (!user || !message || !room._id) {
+		return false;
+	}
+
+	validateMessage(message);
 
 	if (!message.ts) {
 		message.ts = new Date();
@@ -143,6 +166,9 @@ export const sendMessage = function(user, message, room, upsert = false) {
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
+
+			// Some app may have inserted malicious/invalid values in the message, let's check it again
+			validateMessage(message);
 		}
 	}
 

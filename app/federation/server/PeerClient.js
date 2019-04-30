@@ -7,7 +7,7 @@ import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
 import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
-import { Federation } from './';
+import { Federation } from '.';
 
 export class PeerClient {
 	constructor() {
@@ -139,7 +139,7 @@ export class PeerClient {
 	propagateEvent(e) {
 		this.log(`propagateEvent: ${ e.t }`);
 
-		const { peer: domain } = e;
+		const { peer: domain, options: eventOptions } = e;
 
 		const peer = Federation.peerDNS.searchPeer(domain);
 
@@ -157,7 +157,7 @@ export class PeerClient {
 				// Encrypt with the local private key
 				payload = Federation.privateKey.encryptPrivate(payload);
 
-				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, { total: 5, stepSize: 500, stepMultiplier: 10 });
+				Federation.peerHTTP.request(peer, 'POST', '/api/v1/federation.events', { payload }, eventOptions.retry || { total: 5, stepSize: 500, stepMultiplier: 10 });
 
 				FederationEvents.setEventAsFullfilled(e);
 			} catch (err) {

@@ -14,7 +14,7 @@ export const QueueMethods = {
 	 * of open chats is paired with the incoming livechat
 	 */
 	'Least_Amount'(guest, message, roomInfo, agent) {
-		if (!agent) {
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
 			agent = Livechat.getNextAgent(guest.department);
 			if (!agent) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
