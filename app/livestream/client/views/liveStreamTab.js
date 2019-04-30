@@ -80,14 +80,13 @@ Template.liveStreamTab.helpers({
 			if (popout.context) {
 				popoutSource = Blaze.getData(popout.context).data && Blaze.getData(popout.context).data.streamingSource;
 			}
-		} catch (e) {
-			return false;
-		} finally {
 			if (popoutSource != null && livestreamTabSource === popoutSource) {
 				return true;
 			}
+		} catch (e) {
 			return false;
 		}
+		return false;
 	},
 	isPopoutOpen() {
 		return Template.instance().popoutOpen.get();

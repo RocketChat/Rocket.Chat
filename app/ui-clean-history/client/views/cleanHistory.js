@@ -317,7 +317,7 @@ Template.cleanHistory.events({
 			let count = 0;
 			let result;
 			do {
-				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreDiscussion, metaCleanHistoryFilesOnly, users);
+				result = await purgeWorker(roomId, fromDate, toDate, metaCleanHistoryInclusive, limit, metaCleanHistoryExcludePinned, ignoreDiscussion, metaCleanHistoryFilesOnly, users); // eslint-disable-line no-await-in-loop
 				count += result;
 			} while (result === limit);
 

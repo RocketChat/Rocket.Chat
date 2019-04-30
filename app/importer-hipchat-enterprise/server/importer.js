@@ -105,7 +105,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 			tempUsers.push(userData);
 			if (tempUsers.length >= 100) {
-				await this.storeTempUsers(tempUsers);
+				await this.storeTempUsers(tempUsers); // eslint-disable-line no-await-in-loop
 				tempUsers = [];
 			}
 		}
@@ -158,7 +158,7 @@ export class HipChatEnterpriseImporter extends Base {
 			count++;
 
 			if (tempRooms.length >= 100) {
-				await this.storeTempRooms(tempRooms);
+				await this.storeTempRooms(tempRooms); // eslint-disable-line no-await-in-loop
 				tempRooms = [];
 			}
 		}
@@ -235,7 +235,7 @@ export class HipChatEnterpriseImporter extends Base {
 			}
 
 			if (msgs.length >= 500) {
-				await this.storeUserTempMessages(msgs, roomIdentifier, index);
+				await this.storeUserTempMessages(msgs, roomIdentifier, index); // eslint-disable-line no-await-in-loop
 				msgs = [];
 			}
 		}
@@ -335,7 +335,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 			if (roomMsgs.length >= 500) {
 				subIndex++;
-				await this.storeTempMessages(roomMsgs, roomIdentifier, index, subIndex, id);
+				await this.storeTempMessages(roomMsgs, roomIdentifier, index, subIndex, id); // eslint-disable-line no-await-in-loop
 				roomMsgs = [];
 			}
 		}
@@ -407,7 +407,7 @@ export class HipChatEnterpriseImporter extends Base {
 				this.logger.info(`new entry from import folder: ${ fileName }`);
 
 				if (fs.statSync(fullFilePath).isDirectory()) {
-					await this._prepareFolderEntry(fullFilePath, fullRelativePath);
+					await this._prepareFolderEntry(fullFilePath, fullRelativePath); // eslint-disable-line no-await-in-loop
 					continue;
 				}
 
@@ -429,7 +429,7 @@ export class HipChatEnterpriseImporter extends Base {
 					});
 				});
 
-				await promise.catch((error) => {
+				await promise.catch((error) => { // eslint-disable-line no-await-in-loop
 					this.logger.error(error);
 					fileData = null;
 				});
@@ -441,7 +441,7 @@ export class HipChatEnterpriseImporter extends Base {
 
 				this.logger.info(`Processing the file: ${ fileName }`);
 				const info = this.path.parse(fullRelativePath);
-				await this.prepareFile(info, fileData, fileName);
+				await this.prepareFile(info, fileData, fileName); // eslint-disable-line no-await-in-loop
 
 				this.logger.debug('moving to next import folder entry');
 			} catch (e) {
@@ -1110,7 +1110,7 @@ export class HipChatEnterpriseImporter extends Base {
 			let msgCount = 0;
 			try {
 				for (const msg of list.messages) {
-					await this._importSingleMessage(msg, roomIdentifier, room);
+					await this._importSingleMessage(msg, roomIdentifier, room); // eslint-disable-line no-await-in-loop
 					msgCount++;
 					if (msgCount >= 50) {
 						super.addCountCompleted(msgCount);
@@ -1135,7 +1135,7 @@ export class HipChatEnterpriseImporter extends Base {
 		}, { fields: { _id: true } }).fetch();
 
 		for (const item of messageListIds) {
-			await this._importMessageList(startedByUserId, item._id);
+			await this._importMessageList(startedByUserId, item._id); // eslint-disable-line no-await-in-loop
 		}
 	}
 

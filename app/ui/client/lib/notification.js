@@ -23,7 +23,7 @@ export const KonchatNotification = {
 			return Notification.requestPermission(function(status) {
 				KonchatNotification.notificationStatus.set(status);
 				if (Notification.permission !== status) {
-					return Notification.permission = status;
+					Notification.permission = status;
 				}
 			});
 		}
@@ -174,7 +174,7 @@ Meteor.startup(() => {
 			}
 			if (room.pause) {
 				room.pause();
-				return room.currentTime = 0;
+				room.currentTime = 0;
 			}
 		}
 	});

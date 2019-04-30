@@ -23,9 +23,8 @@ function isSetNotNull(fn) {
 		value = fn();
 	} catch (e) {
 		value = null;
-	} finally {
-		return value !== null && value !== undefined;
 	}
+	return value !== null && value !== undefined;
 }
 
 // RocketChat.emoji.list is the collection of emojis from all emoji packages

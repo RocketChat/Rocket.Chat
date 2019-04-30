@@ -35,11 +35,11 @@ const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 const waitForStreamStatus = async (id, status) => {
 	const streamActive = new Promise(async (resolve) => {
 		while (true) { // eslint-disable-line no-constant-condition
-			const currentStatus = await call('livestreamStreamStatus', { streamId: id });
+			const currentStatus = await call('livestreamStreamStatus', { streamId: id }); // eslint-disable-line no-await-in-loop
 			if (currentStatus === status) {
 				return resolve(status);
 			}
-			await delay(1500);
+			await delay(1500); // eslint-disable-line no-await-in-loop
 		}
 	});
 	await streamActive;
@@ -47,11 +47,11 @@ const waitForStreamStatus = async (id, status) => {
 const waitForBroadcastStatus = async (id, status) => {
 	const broadcastActive = new Promise(async (resolve) => {
 		while (true) { // eslint-disable-line no-constant-condition
-			const currentStatus = await call('getBroadcastStatus', { broadcastId: id });
+			const currentStatus = await call('getBroadcastStatus', { broadcastId: id }); // eslint-disable-line no-await-in-loop
 			if (currentStatus === status) {
 				return resolve(status);
 			}
-			await delay(1500);
+			await delay(1500); // eslint-disable-line no-await-in-loop
 		}
 	});
 	await broadcastActive;

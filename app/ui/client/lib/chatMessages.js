@@ -293,9 +293,8 @@ export class ChatMessages {
 			} catch (error) {
 				console.error(error);
 				handleError(error);
-			} finally {
-				return done();
 			}
+			return done();
 		}
 
 		if (this.editing.id) {
@@ -382,9 +381,10 @@ export class ChatMessages {
 			const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
 			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
-		} finally {
+		} catch (e) {
 			return true;
 		}
+		return true;
 	}
 
 	async processMessageEditing(message) {

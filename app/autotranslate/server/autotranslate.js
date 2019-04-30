@@ -238,6 +238,10 @@ class AutoTranslate {
 				params.target = target;
 			}
 
+			if (this.supportedLanguages[target]) {
+				return this.supportedLanguages[target];
+			}
+
 			try {
 				result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
 			} catch (e) {
@@ -248,13 +252,9 @@ class AutoTranslate {
 						result = HTTP.get('https://translation.googleapis.com/language/translate/v2/languages', { params });
 					}
 				}
-			} finally {
-				if (this.supportedLanguages[target]) {
-					return this.supportedLanguages[target];
-				}
-				this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-				return this.supportedLanguages[target || 'en'];
 			}
+			this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
+			return this.supportedLanguages[target || 'en'];
 		}
 	}
 }
