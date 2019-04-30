@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib';
 import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
 import { hasPermission } from '../../../authorization';

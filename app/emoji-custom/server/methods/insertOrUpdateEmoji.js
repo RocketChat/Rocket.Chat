@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
 import { EmojiCustom } from '../../../models';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {

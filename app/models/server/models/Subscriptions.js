@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { Base } from './_Base';
 import { Match } from 'meteor/check';
+import _ from 'underscore';
+
+import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import _ from 'underscore';
 
 export class Subscriptions extends Base {
 	constructor(...args) {

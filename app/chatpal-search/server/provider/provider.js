@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+
 import { searchProviderService, SearchProvider } from '../../../search/server';
-import Index from './index';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions } from '../../../models';
+
+import Index from './index';
 
 /**
  * The chatpal search provider enables chatpal search. An appropriate backedn has to be specified by settings.

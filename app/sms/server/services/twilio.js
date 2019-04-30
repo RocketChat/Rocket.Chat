@@ -1,6 +1,7 @@
+import twilio from 'twilio';
+
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
-import twilio from 'twilio';
 
 class Twilio {
 	constructor() {

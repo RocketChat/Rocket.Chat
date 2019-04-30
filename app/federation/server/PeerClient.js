@@ -1,12 +1,14 @@
 import qs from 'querystring';
+
 import { Meteor } from 'meteor/meteor';
-import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
-import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
 
 import { updateStatus } from './settingsUpdater';
 import { logger } from './logger';
 import { FederatedMessage, FederatedRoom, FederatedUser } from './federatedResources';
+import { callbacks } from '../../callbacks';
+import { settings } from '../../settings';
+import { FederationEvents, FederationKeys, Messages, Rooms, Subscriptions, Users } from '../../models';
+
 import { Federation } from '.';
 
 export class PeerClient {

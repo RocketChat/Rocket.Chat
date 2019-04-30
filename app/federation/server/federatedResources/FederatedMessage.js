@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+
 import { sendMessage, updateMessage } from '../../../lib';
 import { Messages, Rooms, Users } from '../../../models';
 import { FileUpload } from '../../../file-upload';
-
 import { FederatedResource } from './FederatedResource';
 import { FederatedRoom } from './FederatedRoom';
 import { FederatedUser } from './FederatedUser';
+
 import { Federation } from '..';
 
 export class FederatedMessage extends FederatedResource {

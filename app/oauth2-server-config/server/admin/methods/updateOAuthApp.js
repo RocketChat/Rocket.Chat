@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { hasPermission } from '../../../../authorization';
 import { OAuthApps, Users } from '../../../../models';
-import _ from 'underscore';
 
 Meteor.methods({
 	updateOAuthApp(applicationId, application) {

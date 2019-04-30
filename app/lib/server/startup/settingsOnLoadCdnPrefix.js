@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { WebAppInternals } from 'meteor/webapp';
-import { settings } from '../../../settings';
 import _ from 'underscore';
+
+import { settings } from '../../../settings';
 
 function testWebAppInternals(fn) {
 	typeof WebAppInternals !== 'undefined' && fn(WebAppInternals);

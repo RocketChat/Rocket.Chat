@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
+import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils';
 import { ChatRoom, Subscriptions } from '../../../models';
 import { settings } from '../../../settings';
 import { t, isRtl, handleError, roomTypes } from '../../../utils';
 import { WebRTC } from '../../../webrtc/client';
-import { getActions } from './userActions';
 
 Template.membersList.helpers({
 	ignored() {

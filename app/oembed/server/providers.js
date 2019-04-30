@@ -1,8 +1,10 @@
-import { changeCase } from 'meteor/konecty:change-case';
-import { callbacks } from '../../callbacks';
-import _ from 'underscore';
 import URL from 'url';
 import QueryString from 'querystring';
+
+import { changeCase } from 'meteor/konecty:change-case';
+import _ from 'underscore';
+
+import { callbacks } from '../../callbacks';
 
 class Providers {
 	constructor() {

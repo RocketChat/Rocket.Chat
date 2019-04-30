@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { hasPermission } from '../../../authorization';
+import { Rooms } from '../../../models';
 
 Meteor.publish('adminRooms', function(filter, types, limit) {
 	if (!this.userId) {

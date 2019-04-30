@@ -1,10 +1,12 @@
+import crypto from 'crypto';
+
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
+
 import { registerAccessTokenService } from './oauth';
 
-import crypto from 'crypto';
 
 const whitelisted = [
 	'id',

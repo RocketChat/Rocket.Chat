@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+import moment from 'moment';
+
 import { t, handleError } from '../../../../utils';
 import { settings } from '../../../../settings';
 import { LivechatOfficeHour } from '../../collections/livechatOfficeHour';
-import toastr from 'toastr';
-import moment from 'moment';
 import './livechatOfficeHours.html';
 
 Template.livechatOfficeHours.helpers({

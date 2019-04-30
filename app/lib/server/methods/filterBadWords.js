@@ -1,4 +1,5 @@
 import Filter from 'bad-words';
+
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 

@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+
+import { AutoTranslate } from './autotranslate';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { MessageAction } from '../../../ui-utils';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { Messages } from '../../../models';
-import { AutoTranslate } from './autotranslate';
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

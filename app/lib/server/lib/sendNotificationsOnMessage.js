@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';

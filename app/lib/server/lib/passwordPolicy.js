@@ -1,5 +1,5 @@
-import { settings } from '../../../settings';
 import PasswordPolicy from './PasswordPolicyClass';
+import { settings } from '../../../settings';
 
 export const passwordPolicy = new PasswordPolicy();
 

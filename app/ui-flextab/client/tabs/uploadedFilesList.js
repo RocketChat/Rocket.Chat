@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';

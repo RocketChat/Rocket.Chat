@@ -1,6 +1,7 @@
+import memoize from 'mem';
+
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
-import memoize from 'mem';
 
 const maxAgeInMS = 1000;
 

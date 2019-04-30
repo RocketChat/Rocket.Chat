@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import UAParser from 'ua-parser-js';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
+
 import { UAParserMobile } from './UAParserMobile';
 import { Sessions } from '../../../models';
 import { Logger } from '../../../logger';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 const getDateObj = (dateTime = new Date()) => ({
 	day: dateTime.getDate(),

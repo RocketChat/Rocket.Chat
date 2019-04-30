@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { hasPermission } from '../../../authorization';
 import { IntegrationHistory, Integrations } from '../../../models';
 import { API } from '../api';

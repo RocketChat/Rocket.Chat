@@ -6,6 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { Messages, Subscriptions, Users } from '../../../models';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { EmojiPicker, emoji } from '../../../emoji';

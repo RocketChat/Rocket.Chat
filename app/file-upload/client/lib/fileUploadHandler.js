@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { UploadFS } from 'meteor/jalik:ufs';
+
 import { FileUploadBase } from '../../lib/FileUploadBase';
 import { Uploads, Avatars } from '../../../models';
 

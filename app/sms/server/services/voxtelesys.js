@@ -1,7 +1,6 @@
 import { HTTP } from 'meteor/http';
 
 import { settings } from '../../../settings';
-
 import { SMS } from '../SMS';
 
 class Voxtelesys {

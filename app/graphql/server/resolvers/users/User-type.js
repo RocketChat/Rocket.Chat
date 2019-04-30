@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Avatars, Rooms } from '../../../../models';
 import property from 'lodash.property';
 
+import { Avatars, Rooms } from '../../../../models';
 import schema from '../../schemas/users/User-type.graphqls';
 
 const resolver = {

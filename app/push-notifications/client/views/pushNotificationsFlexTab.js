@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../settings';
 import { getUserPreference, handleError, t } from '../../../utils';
 import { popover } from '../../../ui-utils';

@@ -1,17 +1,19 @@
+import crypto from 'crypto';
+
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
+import { WebAppHashing } from 'meteor/webapp-hashing';
+import _ from 'underscore';
+import sizeOf from 'image-size';
+import sharp from 'sharp';
+
 import { settings } from '../../settings';
 import { Settings } from '../../models';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
 import { RocketChatFile } from '../../file';
-import { WebAppHashing } from 'meteor/webapp-hashing';
 
-import _ from 'underscore';
-import sizeOf from 'image-size';
-import crypto from 'crypto';
-import sharp from 'sharp';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',

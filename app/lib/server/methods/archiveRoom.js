@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { Rooms } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { archiveRoom } from '../functions';

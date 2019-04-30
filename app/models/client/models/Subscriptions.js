@@ -1,4 +1,5 @@
 import { Users } from '..';
+
 import _ from 'underscore';
 import mem from 'mem';
 

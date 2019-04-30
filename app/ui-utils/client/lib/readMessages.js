@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { ChatSubscription, ChatMessage } from '../../../models';
-import { RoomHistoryManager } from './RoomHistoryManager';
-import { RoomManager } from './RoomManager';
 import _ from 'underscore';
 import EventEmitter from 'wolfy87-eventemitter';
+
+import { RoomHistoryManager } from './RoomHistoryManager';
+import { RoomManager } from './RoomManager';
+import { ChatSubscription, ChatMessage } from '../../../models';
 /* DEFINITIONS
 - If window loses focus user needs to scroll or click/touch some place
 - On hit ESC enable read, force read of current room and remove unread mark

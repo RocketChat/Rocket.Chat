@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
+
 import { FileUpload } from '../../../file-upload';
 import { settings } from '../../../settings';
 import { Users, Messages, Subscriptions, Rooms, LivechatDepartmentAgents } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
+
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
 export const _setUsername = function(userId, u) {

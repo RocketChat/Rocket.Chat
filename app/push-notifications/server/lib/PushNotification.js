@@ -1,4 +1,5 @@
 import { Push } from 'meteor/rocketchat:push';
+
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
 import { RocketChatAssets } from '../../../assets';

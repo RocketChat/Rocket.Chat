@@ -1,7 +1,8 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import _ from 'underscore';
+
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
 import { ChatRoom, ChatSubscription, RoomRoles } from '../../../models';
-import _ from 'underscore';
 
 export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	checkCondition(roomType) {

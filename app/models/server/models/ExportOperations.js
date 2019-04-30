@@ -1,5 +1,6 @@
-import { Base } from './_Base';
 import _ from 'underscore';
+
+import { Base } from './_Base';
 
 export class ExportOperations extends Base {
 	constructor() {

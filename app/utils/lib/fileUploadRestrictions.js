@@ -1,5 +1,6 @@
-import { settings } from '../../settings';
 import _ from 'underscore';
+
+import { settings } from '../../settings';
 
 export const fileUploadMediaWhiteList = function() {
 	const mediaTypeWhiteList = settings.get('FileUpload_MediaTypeWhiteList');

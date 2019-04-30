@@ -4,19 +4,18 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n, TAPi18next } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+import semver from 'semver';
 
 import { isEmail, APIClient } from '../../../utils';
 import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
 import { modal } from '../../../ui-utils';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
-
 import { AppEvents } from '../communication';
 import { Utilities } from '../../lib/misc/Utilities';
 import { Apps } from '../orchestrator';
-import semver from 'semver';
 import { SideNav } from '../../../ui-utils/client';
 
 function getApps(instance) {

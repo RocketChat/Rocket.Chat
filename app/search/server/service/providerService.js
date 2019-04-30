@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../settings';
 import _ from 'underscore';
+
 import { validationService } from './validationService';
+import { settings } from '../../../settings';
 import SearchLogger from '../logger/logger';
 
 class SearchProviderService {

@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+
 import { Base } from './_Base';
 
 export class Uploads extends Base {

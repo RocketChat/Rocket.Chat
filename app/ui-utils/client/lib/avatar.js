@@ -1,7 +1,8 @@
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+
 import { RoomManager } from './RoomManager';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 Blaze.registerHelper('avatarUrlFromUsername', getUserAvatarURL);
 

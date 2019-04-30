@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import _ from 'underscore';
+
+import { Rooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({

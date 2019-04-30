@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from '../../../models';
-import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
-import { sendMessage } from './sendMessage';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
+import { sendMessage } from './sendMessage';
+import { Subscriptions } from '../../../models';
 
 export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
 	const sentData = [];

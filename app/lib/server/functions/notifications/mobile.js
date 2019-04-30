@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models';
 import { roomTypes } from '../../../../utils';

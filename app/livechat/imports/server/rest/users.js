@@ -1,9 +1,10 @@
 import { check } from 'meteor/check';
+import _ from 'underscore';
+
 import { hasPermission, getUsersInRole } from '../../../../authorization';
 import { API } from '../../../../api';
 import { Users } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
-import _ from 'underscore';
 
 API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 	get() {

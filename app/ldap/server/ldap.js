@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../settings';
-import { Logger } from '../../logger';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
+
+import { settings } from '../../settings';
+import { Logger } from '../../logger';
 
 const logger = new Logger('LDAP', {
 	sections: {

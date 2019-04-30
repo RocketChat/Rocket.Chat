@@ -1,16 +1,18 @@
+import url from 'url';
+
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
-import { settings } from '../../settings';
 import { RoutePolicy } from 'meteor/routepolicy';
-import { Rooms, Subscriptions, CredentialTokens } from '../../models';
-import { _setRealName } from '../../lib';
-import { logger } from './cas_rocketchat';
 import _ from 'underscore';
 import fiber from 'fibers';
-import url from 'url';
 import CAS from 'cas';
+
+import { logger } from './cas_rocketchat';
+import { settings } from '../../settings';
+import { Rooms, Subscriptions, CredentialTokens } from '../../models';
+import { _setRealName } from '../../lib';
 
 RoutePolicy.declare('/_cas/', 'network');
 

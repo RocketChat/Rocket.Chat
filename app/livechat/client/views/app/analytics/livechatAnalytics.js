@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+import moment from 'moment';
+
 import { handleError } from '../../../../../utils';
 import { popover } from '../../../../../ui-utils';
-import moment from 'moment';
 import { drawLineChart } from '../../../lib/chartHandler';
 import { setDateRange, updateDateRange } from '../../../lib/dateHandler';
 import './livechatAnalytics.html';

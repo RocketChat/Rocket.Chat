@@ -1,11 +1,9 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
 import { hasPermission, canAccessRoom } from '../../../authorization/server';
 import { composeMessageObjectWithUser } from '../../../utils/server';
-
 import { API } from '../api';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property

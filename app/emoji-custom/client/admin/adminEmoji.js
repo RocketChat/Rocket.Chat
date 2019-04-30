@@ -1,10 +1,11 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 import { Tracker } from 'meteor/tracker';
-import { EmojiCustom } from '../../../models';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import s from 'underscore.string';
+
+import { EmojiCustom } from '../../../models';
+import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 
 Template.adminEmoji.helpers({
 	searchText() {

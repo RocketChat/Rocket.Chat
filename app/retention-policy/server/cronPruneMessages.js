@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { SyncedCron } from 'meteor/littledata:synced-cron';
+
 import { settings } from '../../settings';
 import { Rooms, Settings } from '../../models';
 import { cleanRoomHistory } from '../../lib';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 let types = [];
 

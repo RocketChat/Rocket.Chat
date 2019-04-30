@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 import 'babel-polyfill';
 import assert from 'assert';
+
 import { MentionsParser } from '../lib/MentionsParser';
 
 let mentionsParser;

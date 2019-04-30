@@ -1,10 +1,12 @@
+import url from 'url';
+
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
+import _ from 'underscore';
+
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
 
-import _ from 'underscore';
-import url from 'url';
 
 const logger = new Logger('CORS', {});
 

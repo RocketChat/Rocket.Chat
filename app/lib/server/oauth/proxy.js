@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { OAuth } from 'meteor/oauth';
+
 import { settings } from '../../../settings';
 
 OAuth._redirectUri = _.wrap(OAuth._redirectUri, function(func, serviceName, ...args) {

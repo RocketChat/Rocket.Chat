@@ -1,8 +1,9 @@
+import stream from 'stream';
+
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 import { createClient } from 'webdav';
-import stream from 'stream';
 /**
  * WebDAV store
  * @param options

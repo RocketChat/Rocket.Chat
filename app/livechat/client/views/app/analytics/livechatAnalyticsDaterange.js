@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
-import { popover } from '../../../../../ui-utils';
 import moment from 'moment';
+
+import { popover } from '../../../../../ui-utils';
 import { setDateRange } from '../../../lib/dateHandler';
 import './livechatAnalyticsDaterange.html';
 

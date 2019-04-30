@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
+
 import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';

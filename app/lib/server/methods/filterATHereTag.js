@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import moment from 'moment';
+
 import { hasPermission } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { Users } from '../../../models';
-import _ from 'underscore';
-import moment from 'moment';
 
 callbacks.add('beforeSaveMessage', function(message) {
 	// If the message was edited, or is older than 60 seconds (imported)

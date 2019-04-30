@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Rooms, LivechatVisitors, LivechatCustomField } from '../../../models';
 
 Meteor.methods({

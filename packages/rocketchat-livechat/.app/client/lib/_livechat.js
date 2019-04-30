@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import visitor from '../../imports/client/visitor';
 
 this.Livechat = new class Livechat {

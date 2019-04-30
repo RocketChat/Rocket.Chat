@@ -1,7 +1,13 @@
+import { Readable } from 'stream';
+import path from 'path';
+import fs from 'fs';
+
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+import TurndownService from 'turndown';
+
 import {
 	Base,
 	ProgressStep,
@@ -12,10 +18,6 @@ import {
 } from '../../importer/server';
 import { Messages, Users, Subscriptions, Rooms } from '../../models';
 import { insertMessage } from '../../lib';
-import { Readable } from 'stream';
-import path from 'path';
-import fs from 'fs';
-import TurndownService from 'turndown';
 
 const turndownService = new TurndownService({
 	strongDelimiter: '*',

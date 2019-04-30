@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { Subscriptions, Users, Roles } from '../../../models';
-import _ from 'underscore';
 
 Meteor.methods({
 	getRoomRoles(rid) {

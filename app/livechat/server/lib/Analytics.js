@@ -1,5 +1,6 @@
-import { Rooms } from '../../../models';
 import moment from 'moment';
+
+import { Rooms } from '../../../models';
 
 /**
  * return readable time format from seconds

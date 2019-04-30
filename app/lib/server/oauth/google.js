@@ -2,6 +2,7 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import { HTTP } from 'meteor/http';
 import { Google } from 'meteor/google-oauth';
+
 import { registerAccessTokenService } from './oauth';
 
 function getIdentity(accessToken) {

@@ -4,6 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+
 import { settings } from '../../../settings';
 import { t, APIClient } from '../../../utils';
 import { modal } from '../../../ui-utils';

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import moment from 'moment';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { Messages } from '../../../models';
 import { deleteMessage } from '../functions';
-import moment from 'moment';
 
 Meteor.methods({
 	deleteMessage(message) {

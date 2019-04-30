@@ -1,8 +1,12 @@
 import url from 'url';
 import http from 'http';
 import https from 'https';
+
 import { RTMClient } from '@slack/client';
 import { Meteor } from 'meteor/meteor';
+
+import { logger } from './logger';
+import { SlackAPI } from './SlackAPI';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models';
 import { settings } from '../../settings';
@@ -17,8 +21,6 @@ import {
 } from '../../lib';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings';
 import { FileUpload } from '../../file-upload';
-import { logger } from './logger';
-import { SlackAPI } from './SlackAPI';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {

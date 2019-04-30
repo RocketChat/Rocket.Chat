@@ -3,9 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 import mime from 'mime-type/with-db';
+
+import visitor from '../../imports/client/visitor';
 
 Template.messages.helpers({
 	messages() {

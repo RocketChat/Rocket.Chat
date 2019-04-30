@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { Livechat } from '../lib/Livechat';

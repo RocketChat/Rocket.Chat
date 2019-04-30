@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
 import { Users } from '../../../models';

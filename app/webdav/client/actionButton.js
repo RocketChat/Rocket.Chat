@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { t, getURL } from '../../utils';
 import { Subscriptions, WebdavAccounts } from '../../models';
 import { settings } from '../../settings';

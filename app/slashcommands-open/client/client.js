@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { slashCommands, roomTypes } from '../../utils';
 import { ChatSubscription, Subscriptions } from '../../models';
 

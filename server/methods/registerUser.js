@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import s from 'underscore.string';
+
 import * as Mailer from '../../app/mailer';
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings';

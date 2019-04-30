@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import _ from 'underscore';
+
 import {
 	Base,
 	ProgressStep,
@@ -12,7 +14,6 @@ import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Users, Rooms, Messages } from '../../models';
 import { sendMessage } from '../../lib';
 
-import _ from 'underscore';
 
 export class SlackImporter extends Base {
 	constructor(info) {

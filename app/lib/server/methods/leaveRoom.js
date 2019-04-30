@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { hasPermission, hasRole, getUsersInRole } from '../../../authorization';
 import { Subscriptions, Rooms } from '../../../models';
 import { removeUserFromRoom } from '../functions';

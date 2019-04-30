@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Push } from 'meteor/rocketchat:push';
+
 import { API } from '../api';
 
 API.v1.addRoute('push.token', { authRequired: true }, {

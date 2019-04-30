@@ -1,5 +1,6 @@
-import { settings } from '../../settings';
 import s from 'underscore.string';
+
+import { settings } from '../../settings';
 
 export const placeholders = {
 	replace: (str, data) => {

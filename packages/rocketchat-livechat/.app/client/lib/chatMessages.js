@@ -4,6 +4,7 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
 import visitor from '../../imports/client/visitor';
 
 this.ChatMessages = class ChatMessages {

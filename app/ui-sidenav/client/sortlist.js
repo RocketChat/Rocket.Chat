@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+
 import { popover } from '../../ui-utils';
 import { getUserPreference } from '../../utils';
 import { settings } from '../../settings';

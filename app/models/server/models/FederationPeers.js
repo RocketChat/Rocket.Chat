@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Base } from './_Base';
+
 import { Users } from '..';
 
 class FederationPeersModel extends Base {

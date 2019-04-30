@@ -1,6 +1,5 @@
 import sharp from 'sharp';
 import { throttle } from 'underscore';
-
 import { Cookies } from 'meteor/ostrio:cookies';
 
 import { Users } from '../../../app/models/server';

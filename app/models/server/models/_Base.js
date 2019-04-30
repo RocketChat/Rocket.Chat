@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { BaseDb } from './_BaseDb';
 import objectPath from 'object-path';
 import _ from 'underscore';
+
+import { BaseDb } from './_BaseDb';
 
 export class Base {
 	constructor(nameOrModel) {

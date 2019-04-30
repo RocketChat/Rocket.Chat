@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 class AutoTranslate {
 	constructor() {

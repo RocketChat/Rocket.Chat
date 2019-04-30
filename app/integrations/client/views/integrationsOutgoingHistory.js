@@ -4,14 +4,15 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
-import { handleError } from '../../../utils';
-import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
-import { ChatIntegrations, ChatIntegrationHistory } from '../collections';
-import { integrations } from '../../lib/rocketchat';
 import _ from 'underscore';
 import hljs from 'highlight.js';
 import moment from 'moment';
 import toastr from 'toastr';
+
+import { handleError } from '../../../utils';
+import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
+import { ChatIntegrations, ChatIntegrationHistory } from '../collections';
+import { integrations } from '../../lib/rocketchat';
 import { SideNav } from '../../../ui-utils/client';
 
 Template.integrationsOutgoingHistory.onCreated(function _integrationsOutgoingHistoryOnCreated() {

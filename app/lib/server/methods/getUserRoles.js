@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Roles, Users } from '../../../models';
 import _ from 'underscore';
+
+import { Roles, Users } from '../../../models';
 
 Meteor.methods({
 	getUserRoles() {

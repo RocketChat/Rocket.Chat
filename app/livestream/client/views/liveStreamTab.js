@@ -5,6 +5,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
+
 import { auth } from '../oauth.js';
 import { RocketChatAnnouncement } from '../../../lib';
 import { popout } from '../../../ui-utils';

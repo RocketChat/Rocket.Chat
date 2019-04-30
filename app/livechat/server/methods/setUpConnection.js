@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({

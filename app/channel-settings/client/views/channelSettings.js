@@ -5,6 +5,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import toastr from 'toastr';
 import moment from 'moment';
 import s from 'underscore.string';
+
 import { modal, popover, call, erase, hide, leave } from '../../../ui-utils';
 import { ChatRoom } from '../../../models';
 import { settings } from '../../../settings';

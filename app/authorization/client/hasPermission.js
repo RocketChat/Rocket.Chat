@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import * as Models from '../../models';
+
 import { ChatPermissions } from './lib/ChatPermissions';
+import * as Models from '../../models';
 
 function atLeastOne(permissions = [], scope) {
 	return permissions.some((permissionId) => {

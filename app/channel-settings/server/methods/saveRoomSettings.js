@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { hasPermission } from '../../../authorization';
 import { Rooms } from '../../../models';
 import { callbacks } from '../../../callbacks';
-
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';

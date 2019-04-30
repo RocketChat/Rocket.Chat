@@ -4,14 +4,15 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+
 import { modal, SideNav } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 const validateEmail = (email) => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
 const validateUsername = (username) => {

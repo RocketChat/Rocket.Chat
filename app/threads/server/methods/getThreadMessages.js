@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { Messages, Rooms } from '../../../models/server';
 import { canAccessRoom } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
-
 import { readThread } from '../functions';
 
 const MAX_LIMIT = 100;

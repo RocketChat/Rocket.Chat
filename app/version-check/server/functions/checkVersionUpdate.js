@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import semver from 'semver';
+
+import getNewUpdates from './getNewUpdates';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 import { Roles, Users } from '../../../models';
-import semver from 'semver';
 import logger from '../logger';
-import getNewUpdates from './getNewUpdates';
 // import getNewUpdates from '../sampleUpdateData';
 
 export default () => {

@@ -2,7 +2,6 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
-
 import _ from 'underscore';
 
 import { lazyloadtick } from '../../../lazy-load';
@@ -11,7 +10,6 @@ import { Messages, Subscriptions } from '../../../models';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { getConfig } from '../../../ui-utils/client/config';
-
 import { upsert } from '../upsert';
 
 import './threads.html';

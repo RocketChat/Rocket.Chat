@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { LoggerManager } from '../../../logger';
 import { settings } from '../../../settings';
 

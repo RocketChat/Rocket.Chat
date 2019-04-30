@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { composeMessageObjectWithUser } from '../../app/utils';
 import { Messages } from '../../app/models';
 

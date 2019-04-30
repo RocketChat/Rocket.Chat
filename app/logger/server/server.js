@@ -1,12 +1,14 @@
+import { EventEmitter } from 'events';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
-import { EventEmitter } from 'events';
-import { settings } from '../../settings';
-import { hasPermission } from '../../authorization';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { settings } from '../../settings';
+import { hasPermission } from '../../authorization';
 
 let Logger;
 

@@ -3,9 +3,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
-import { APIClient } from '../../../utils';
 import moment from 'moment';
 import hljs from 'highlight.js';
+
+import { APIClient } from '../../../utils';
 import { SideNav } from '../../../ui-utils/client';
 
 const loadData = (instance) => {

@@ -1,5 +1,6 @@
-import { Rooms, Users } from '../../../models';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+
+import { Rooms, Users } from '../../../models';
 
 export class AppRoomsConverter {
 	constructor(orch) {

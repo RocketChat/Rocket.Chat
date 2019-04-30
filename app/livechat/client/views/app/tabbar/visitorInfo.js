@@ -4,6 +4,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+import moment from 'moment';
+import UAParser from 'ua-parser-js';
+
 import { modal } from '../../../../../ui-utils';
 import { ChatRoom, Rooms, Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
@@ -11,10 +16,6 @@ import { t, handleError, roomTypes } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import { LivechatVisitor } from '../../../collections/LivechatVisitor';
 import { LivechatDepartment } from '../../../collections/LivechatDepartment';
-import _ from 'underscore';
-import s from 'underscore.string';
-import moment from 'moment';
-import UAParser from 'ua-parser-js';
 import './visitorInfo.html';
 
 Template.visitorInfo.helpers({

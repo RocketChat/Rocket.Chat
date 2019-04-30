@@ -2,7 +2,6 @@ import { Template } from 'meteor/templating';
 
 import { t, roomTypes } from '../../utils/client';
 import { settings } from '../../settings/client';
-
 import { Rooms } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 

@@ -1,6 +1,7 @@
 import _ from 'underscore';
-import { menu } from '../../../ui-utils';
 import EventEmitter from 'wolfy87-eventemitter';
+
+import { menu } from '../../../ui-utils';
 
 const emitter = new EventEmitter();
 

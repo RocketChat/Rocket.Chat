@@ -4,16 +4,17 @@ import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { roomTypes } from '../../../utils';
+import _ from 'underscore';
+
 import { fireGlobalEvent } from './fireGlobalEvent';
+import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { mainReady } from './mainReady';
+import { roomTypes } from '../../../utils';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import _ from 'underscore';
-import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
-import { mainReady } from './mainReady';
 import { getConfig } from '../config';
 
 

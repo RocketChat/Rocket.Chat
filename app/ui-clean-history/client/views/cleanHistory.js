@@ -4,11 +4,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import moment from 'moment';
+
 import { ChatRoom } from '../../../models';
 import { t, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import { modal, call } from '../../../ui-utils';
-import moment from 'moment';
 
 const getRoomName = function() {
 	const room = ChatRoom.findOne(Session.get('openedRoom'));

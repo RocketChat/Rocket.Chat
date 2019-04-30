@@ -1,13 +1,15 @@
-import _ from 'underscore';
 import util from 'util';
+
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
+
+import { logger } from './logger';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { Messages, Rooms, Users } from '../../models';
 import { createRoom, sendMessage, setUserAvatar } from '../../lib';
-import { logger } from './logger';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {

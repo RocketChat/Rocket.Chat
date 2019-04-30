@@ -5,12 +5,13 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { AutoComplete } from 'meteor/mizzao:autocomplete';
+import toastr from 'toastr';
+import _ from 'underscore';
+
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { t, roomTypes } from '../../../../utils';
 import { hasAllPermission } from '../../../../authorization';
-import toastr from 'toastr';
-import _ from 'underscore';
 
 const acEvents = {
 	'click .rc-popup-list__item'(e, t) {

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings';
 import { t } from '../../../utils';
 import Bridge from '../irc-bridge';

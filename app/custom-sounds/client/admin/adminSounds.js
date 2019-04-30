@@ -1,10 +1,11 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { CustomSounds } from '../../../models';
 import s from 'underscore.string';
+
+import { CustomSounds } from '../../../models';
+import { RocketChatTabBar, SideNav, TabBar } from '../../../ui-utils';
 
 Template.adminSounds.helpers({
 	searchText() {

@@ -1,7 +1,7 @@
-import { settings } from '../../settings';
 import SlackAdapter from './SlackAdapter.js';
 import RocketAdapter from './RocketAdapter.js';
 import { logger } from './logger';
+import { settings } from '../../settings';
 
 /**
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.

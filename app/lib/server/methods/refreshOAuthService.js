@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+
 import { hasPermission } from '../../../authorization';
 import { Settings } from '../../../models';
 

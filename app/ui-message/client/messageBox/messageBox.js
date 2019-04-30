@@ -4,6 +4,13 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import moment from 'moment';
+
+import { setupAutogrow } from './messageBoxAutogrow';
+import {
+	formattingButtons,
+	applyFormatting,
+} from './messageBoxFormatting';
 import { EmojiPicker } from '../../../emoji';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
@@ -23,12 +30,6 @@ import {
 	roomTypes,
 	getUserPreference,
 } from '../../../utils';
-import moment from 'moment';
-import { setupAutogrow } from './messageBoxAutogrow';
-import {
-	formattingButtons,
-	applyFormatting,
-} from './messageBoxFormatting';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';

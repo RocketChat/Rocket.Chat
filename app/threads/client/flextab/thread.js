@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';

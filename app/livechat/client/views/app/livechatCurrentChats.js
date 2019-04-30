@@ -5,6 +5,7 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+
 import { modal } from '../../../../ui-utils/client';
 import { t, handleError } from '../../../../utils/client';
 import './livechatCurrentChats.html';

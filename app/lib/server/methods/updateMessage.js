@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import moment from 'moment';
+
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { hasPermission } from '../../../authorization';
-import moment from 'moment';
 import { updateMessage } from '../functions';
 
 Meteor.methods({

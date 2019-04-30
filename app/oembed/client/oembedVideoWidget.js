@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+
 import { getUserPreference } from '../../utils';
 
 const getTitle = function(self) {

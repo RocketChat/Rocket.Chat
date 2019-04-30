@@ -3,11 +3,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import s from 'underscore.string';
+import moment from 'moment';
+
 import { handleError, Info } from '../../utils';
 import { hasAllPermission } from '../../authorization';
 import { SideNav } from '../../ui-utils';
-import s from 'underscore.string';
-import moment from 'moment';
 
 Template.adminInfo.helpers({
 	isReady() {

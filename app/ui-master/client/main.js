@@ -4,9 +4,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { t, getUserPreference } from '../../utils';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
+import { t, getUserPreference } from '../../utils';
 import { chatMessages } from '../../ui';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { toolbarSearch } from '../../ui-sidenav';

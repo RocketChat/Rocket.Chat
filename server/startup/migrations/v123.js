@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { Migrations } from '../../../app/migrations';
 import { Messages, Rooms, LivechatPageVisited } from '../../../app/models';
 

@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+
+import { Livechat } from './Livechat';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { settings } from '../../../settings';
-import _ from 'underscore';
 import { sendNotification } from '../../../lib';
 import { LivechatInquiry } from '../../lib/LivechatInquiry';
-import { Livechat } from './Livechat';
 
 export const QueueMethods = {
 	/* Least Amount Queuing method:

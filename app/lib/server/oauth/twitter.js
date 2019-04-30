@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { registerAccessTokenService } from './oauth';
 import Twit from 'twit';
 import _ from 'underscore';
+
+import { registerAccessTokenService } from './oauth';
 
 const whitelistedFields = [
 	'id',

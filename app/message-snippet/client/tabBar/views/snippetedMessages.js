@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { SnippetedMessages } from '../../lib/collections';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 

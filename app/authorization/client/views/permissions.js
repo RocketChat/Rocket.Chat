@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
+
 import { Roles } from '../../../models';
 import { ChatPermissions } from '../lib/ChatPermissions';
 import { hasAllPermission } from '../hasPermission';

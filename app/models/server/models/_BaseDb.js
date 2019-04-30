@@ -1,7 +1,8 @@
+import { EventEmitter } from 'events';
+
 import { Match } from 'meteor/check';
 import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
-import { EventEmitter } from 'events';
 
 const baseName = 'rocketchat_';
 

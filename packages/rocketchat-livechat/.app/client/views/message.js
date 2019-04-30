@@ -2,8 +2,9 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
-import visitor from '../../imports/client/visitor';
 import s from 'underscore.string';
+
+import visitor from '../../imports/client/visitor';
 
 Template.message.helpers({
 	own() {

@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { Subscriptions } from '../../models';
 import { hasAtLeastOnePermission } from '../../authorization';
-import toastr from 'toastr';
 
 Meteor.startup(function() {
 	MessageAction.addButton({

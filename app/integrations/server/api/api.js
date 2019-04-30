@@ -1,18 +1,20 @@
+import vm from 'vm';
+
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
-import * as Models from '../../../models';
 import { Restivus } from 'meteor/nimble:restivus';
-import { API } from '../../../api';
 import { Livechat } from 'meteor/rocketchat:livechat';
-import { processWebhookMessage } from '../../../lib';
-import { logger } from '../logger';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';
 import s from 'underscore.string';
-import vm from 'vm';
 import moment from 'moment';
+
+import { logger } from '../logger';
+import { processWebhookMessage } from '../../../lib';
+import { API } from '../../../api';
+import * as Models from '../../../models';
 
 const Api = new Restivus({
 	enableCors: true,

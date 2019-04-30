@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Babel } from 'meteor/babel-compiler';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { Rooms, Users, Subscriptions } from '../../../models';
 import { hasPermission, hasAllPermission } from '../../../authorization';
 import { integrations } from '../../lib/rocketchat';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];

@@ -4,12 +4,13 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
-import { t, handleError } from '../../../utils';
 import _ from 'underscore';
 import s from 'underscore.string';
 import toastr from 'toastr';
+
+import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks';
+import { t, handleError } from '../../../utils';
 
 Template.loginForm.helpers({
 	userName() {

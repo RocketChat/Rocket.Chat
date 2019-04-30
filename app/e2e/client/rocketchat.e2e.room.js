@@ -1,13 +1,10 @@
 import _ from 'underscore';
-
 import { Base64 } from 'meteor/base64';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { Notifications } from '../../notifications';
-import { Rooms, Subscriptions } from '../../models';
-import { call } from '../../ui-utils';
+
 import { e2e } from './rocketchat.e2e';
 import {
 	Deferred,
@@ -25,6 +22,9 @@ import {
 	importRSAKey,
 	readFileAsArrayBuffer,
 } from './helper';
+import { Notifications } from '../../notifications';
+import { Rooms, Subscriptions } from '../../models';
+import { call } from '../../ui-utils';
 
 export class E2ERoom {
 	constructor(userId, roomId, t) {

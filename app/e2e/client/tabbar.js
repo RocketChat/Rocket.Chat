@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+
 import { hasAllPermission } from '../../authorization';
 import { call, TabBar } from '../../ui-utils';
 import { ChatRoom } from '../../models';

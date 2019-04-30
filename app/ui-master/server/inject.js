@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
-import { Settings } from '../../models';
-import { settings } from '../../settings';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import { Settings } from '../../models';
+import { settings } from '../../settings';
 
 const renderDynamicCssList = _.debounce(Meteor.bindEnvironment(() => {
 	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});

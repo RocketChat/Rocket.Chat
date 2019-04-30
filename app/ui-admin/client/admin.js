@@ -6,13 +6,14 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+import toastr from 'toastr';
+
 import { settings } from '../../settings';
 import { SideNav, modal } from '../../ui-utils';
 import { t, handleError } from '../../utils';
 import { CachedCollection } from '../../ui-cached-collection';
-import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 const TempSettings = new Mongo.Collection(null);
 

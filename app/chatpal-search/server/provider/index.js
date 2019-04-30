@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import ChatpalLogger from '../utils/logger';
 import { Random } from 'meteor/random';
+
+import ChatpalLogger from '../utils/logger';
 import { Rooms, Messages } from '../../../models';
 
 /**

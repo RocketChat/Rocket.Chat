@@ -1,8 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { ExportOperations } from '../../app/models';
-import { settings } from '../../app/settings';
 import fs from 'fs';
 import path from 'path';
+
+import { Meteor } from 'meteor/meteor';
+
+import { ExportOperations } from '../../app/models';
+import { settings } from '../../app/settings';
 
 let tempFolder = '/tmp/userData';
 if (settings.get('UserData_FileSystemPath') != null) {

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+
 import { settings } from '../../../settings';
 import { call, roomTypes, RoomManager, RoomHistoryManager } from '../../../ui-utils';
 import { hasAllPermission } from '../../../authorization';

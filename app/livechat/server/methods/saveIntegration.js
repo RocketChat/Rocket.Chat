@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import s from 'underscore.string';
+
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import s from 'underscore.string';
 
 Meteor.methods({
 	'livechat:saveIntegration'(values) {

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import _ from 'underscore';
+
 import { Settings } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
-import _ from 'underscore';
 
 // settings endpoints
 API.v1.addRoute('settings.public', { authRequired: false }, {

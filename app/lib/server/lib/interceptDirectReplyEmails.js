@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { settings } from '../../../settings';
 import IMAP from 'imap';
 import POP3Lib from 'poplib';
 import { simpleParser } from 'mailparser';
+
+import { settings } from '../../../settings';
+
 import { processDirectEmail } from '.';
 
 export class IMAPIntercepter {

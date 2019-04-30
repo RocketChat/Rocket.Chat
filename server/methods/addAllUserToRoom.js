@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+
 import { hasRole } from '../../app/authorization';
 import { Users, Rooms, Subscriptions, Messages } from '../../app/models';
 import { settings } from '../../app/settings';

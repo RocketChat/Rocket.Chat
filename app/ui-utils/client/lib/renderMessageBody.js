@@ -1,5 +1,6 @@
-import { callbacks } from '../../../callbacks';
 import s from 'underscore.string';
+
+import { callbacks } from '../../../callbacks';
 
 export const renderMessageBody = (message) => {
 	message.html = s.trim(message.msg) ? s.escapeHTML(message.msg) : '';

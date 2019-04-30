@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import _ from 'underscore';
+
 import { settings } from '../../../settings';
 import { RocketChatFile } from '../../../file';
-import _ from 'underscore';
 
 export let RocketChatFileEmojiCustomInstance;
 

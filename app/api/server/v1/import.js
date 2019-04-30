@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { API } from '../api';
 
 API.v1.addRoute('uploadImportFile', { authRequired: true }, {

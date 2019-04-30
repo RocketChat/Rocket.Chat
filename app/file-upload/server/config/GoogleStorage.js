@@ -1,9 +1,11 @@
+import http from 'http';
+import https from 'https';
+
 import _ from 'underscore';
+
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings';
 import '../../ufs/GoogleStorage/server.js';
-import http from 'http';
-import https from 'https';
 
 const get = function(file, req, res) {
 	this.store.getRedirectURL(file, (err, fileUrl) => {

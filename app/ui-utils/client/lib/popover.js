@@ -3,13 +3,14 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { isRtl, handleError } from '../../../utils/client';
-import { ChatSubscription } from '../../../models/client';
 import _ from 'underscore';
+
 import { hide, leave } from './ChannelActions';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
 import { RoomManager } from './RoomManager';
+import { ChatSubscription } from '../../../models/client';
+import { isRtl, handleError } from '../../../utils/client';
 
 export const popover = {
 	renderedPopover: null,

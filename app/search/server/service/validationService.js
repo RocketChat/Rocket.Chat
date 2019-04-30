@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import SearchLogger from '../logger/logger';
 import { Users } from '../../../models';
 

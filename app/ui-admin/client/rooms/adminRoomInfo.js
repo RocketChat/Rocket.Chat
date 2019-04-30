@@ -3,14 +3,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
+import { AdminChatRoom } from './adminRooms';
 import { t, handleError } from '../../../utils';
 import { call, modal } from '../../../ui-utils';
 import { hasAllPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { ChannelSettings } from '../../../channel-settings';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { AdminChatRoom } from './adminRooms';
-import toastr from 'toastr';
 
 Template.adminRoomInfo.helpers({
 	selectedRoom() {

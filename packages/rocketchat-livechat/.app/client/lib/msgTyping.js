@@ -2,8 +2,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
+
+import visitor from '../../imports/client/visitor';
 
 export const MsgTyping = (function() {
 	const timeout = 15000;

@@ -5,12 +5,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+
+import { toolbarSearch } from './sidebarHeader';
 import { Rooms, Subscriptions } from '../../models';
 import { roomTypes } from '../../utils';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { menu } from '../../ui-utils';
-import { toolbarSearch } from './sidebarHeader';
-import _ from 'underscore';
 
 let filterText = '';
 let usernamesFromClient;

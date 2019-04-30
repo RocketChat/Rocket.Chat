@@ -1,5 +1,6 @@
-import { handleError } from '../../../utils';
 import moment from 'moment';
+
+import { handleError } from '../../../utils';
 
 
 /**

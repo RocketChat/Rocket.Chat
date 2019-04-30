@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+
 import { Migrations } from '../../../app/migrations';
 import { Rooms, Subscriptions, Messages } from '../../../app/models';
 

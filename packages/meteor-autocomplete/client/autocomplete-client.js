@@ -3,8 +3,9 @@ import { Match } from 'meteor/check';
 import { Blaze } from 'meteor/blaze';
 import { Deps } from 'meteor/deps';
 import _ from 'underscore';
-import AutoCompleteRecords from './collection';
 import { getCaretCoordinates } from 'meteor/dandv:caret-position';
+
+import AutoCompleteRecords from './collection';
 
 const isServerSearch = function(rule) {
 	return _.isString(rule.collection);

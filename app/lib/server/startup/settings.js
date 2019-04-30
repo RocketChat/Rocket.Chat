@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+
 import { settings } from '../../../settings';
 import './email';
 

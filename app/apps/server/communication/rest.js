@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { API } from '../../../api/server';
 import Busboy from 'busboy';
 
+import { API } from '../../../api/server';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';

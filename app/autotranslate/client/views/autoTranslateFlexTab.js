@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
-import { ChatSubscription, Subscriptions, Messages } from '../../../models';
-import { t, handleError } from '../../../utils';
 import _ from 'underscore';
 import toastr from 'toastr';
+
+import { ChatSubscription, Subscriptions, Messages } from '../../../models';
+import { t, handleError } from '../../../utils';
 
 Template.autoTranslateFlexTab.helpers({
 	autoTranslate() {

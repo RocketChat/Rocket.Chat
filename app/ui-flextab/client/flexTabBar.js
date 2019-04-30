@@ -3,10 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+
 import { hasAllPermission } from '../../authorization';
 import { popover, TabBar, Layout } from '../../ui-utils';
 import { t } from '../../utils';
-import _ from 'underscore';
 
 const commonHelpers = {
 	title() {

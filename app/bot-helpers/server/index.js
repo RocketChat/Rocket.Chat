@@ -1,9 +1,10 @@
 import './settings';
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Users, Rooms } from '../../models';
 import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
-import _ from 'underscore';
 
 /**
  * BotHelpers helps bots

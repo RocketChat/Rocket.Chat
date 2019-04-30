@@ -2,14 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/tap:i18n';
+import _ from 'underscore';
+import toastr from 'toastr';
+
 import { WebRTC } from '../../../webrtc/client';
 import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
 import { modal } from '../../../ui-utils';
 import { t, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import { hasAllPermission, hasRole } from '../../../authorization';
-import _ from 'underscore';
-import toastr from 'toastr';
 
 export const getActions = function({ user, directActions, hideAdminControls }) {
 	const hasPermission = hasAllPermission;

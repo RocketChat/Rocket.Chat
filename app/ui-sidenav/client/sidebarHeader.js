@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
 import { t, getUserPreference, handleError } from '../../utils';
-
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';

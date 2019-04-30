@@ -1,15 +1,17 @@
 /* eslint import/no-unresolved: 0 */
 
-const async = require('async');
 const fs = require('fs');
+
+const async = require('async');
 const _ = require('underscore');
+const translate = require('google-translate');
 
 if (!process.argv[2]) {
 	console.error('\You must inform your Google API key: node auto-translate.js [google-api-key]\n');
 	process.exit();
 }
 
-const googleTranslate = require('google-translate')(process.argv[2]);
+const googleTranslate = translate(process.argv[2]);
 
 googleTranslate.getSupportedLanguages(function(err, langs) {
 	if (err) {

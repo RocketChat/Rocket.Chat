@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+import s from 'underscore.string';
+
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import Settings from './Settings';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 export class Rooms extends Base {
 	constructor(...args) {

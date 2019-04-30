@@ -3,12 +3,13 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
-import { CredentialTokens } from '../../models';
-import { generateUsernameSuggestion } from '../../lib';
-import { SAML } from './saml_utils';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 import _ from 'underscore';
+
+import { SAML } from './saml_utils';
+import { CredentialTokens } from '../../models';
+import { generateUsernameSuggestion } from '../../lib';
 
 if (!Accounts.saml) {
 	Accounts.saml = {

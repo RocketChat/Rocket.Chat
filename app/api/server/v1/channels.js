@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
+
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { composeMessageObjectWithUser } from '../../../utils';
 import { API } from '../api';
-import _ from 'underscore';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {

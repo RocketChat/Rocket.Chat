@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';

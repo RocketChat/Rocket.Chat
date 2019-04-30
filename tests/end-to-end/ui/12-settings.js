@@ -1,14 +1,11 @@
-import loginPage from '../../pageobjects/login.page';
 import supertest from 'supertest';
 
+import loginPage from '../../pageobjects/login.page';
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
 import sideNav from '../../pageobjects/side-nav.page';
 import admin from '../../pageobjects/administration.page';
-
-// test data imports
 import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
-
 import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../data/user.js';
 
 const request = supertest('http://localhost:3000');

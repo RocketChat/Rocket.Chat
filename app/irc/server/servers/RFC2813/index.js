@@ -3,7 +3,6 @@ import util from 'util';
 import { EventEmitter } from 'events';
 
 import parseMessage from './parseMessage';
-
 import peerCommandHandlers from './peerCommandHandlers';
 import localCommandHandlers from './localCommandHandlers';
 

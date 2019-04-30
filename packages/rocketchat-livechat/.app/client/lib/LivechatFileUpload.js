@@ -1,8 +1,9 @@
 /* globals fileUpload, Livechat, Handlebars, showError, sendFileUpload */
 /* exported LivechatFileUpload, fileUpload, sendFileUpload */
 import { Meteor } from 'meteor/meteor';
-import visitor from '../../imports/client/visitor';
 import swal from 'sweetalert2';
+
+import visitor from '../../imports/client/visitor';
 
 const handleRequestError = (response) => {
 	if (!response.success) {

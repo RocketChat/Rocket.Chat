@@ -2,13 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
+import toastr from 'toastr';
+
 import { handleError } from '../../../utils/client/lib/handleError';
 import { t } from '../../../utils/lib/tapi18n';
-import { Tracker } from 'meteor/tracker';
 import { Roles } from '../../../models';
 import { hasAllPermission } from '../hasPermission';
 import { modal } from '../../../ui-utils/client/lib/modal';
-import toastr from 'toastr';
 import { SideNav } from '../../../ui-utils/client/lib/SideNav';
 
 Template.permissionsRole.helpers({

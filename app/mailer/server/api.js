@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Email } from 'meteor/email';
 import { TAPi18n } from 'meteor/tap:i18n';
-import { settings } from '../../settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
+
+import { settings } from '../../settings';
 
 let contentHeader;
 let contentFooter;

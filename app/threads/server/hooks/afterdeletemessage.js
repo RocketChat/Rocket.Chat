@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { Messages } from '../../../models/server';
-
 import { undoReply } from '../functions';
 
 Meteor.startup(function() {

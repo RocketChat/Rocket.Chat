@@ -1,9 +1,10 @@
 import { Match } from 'meteor/check';
+import _ from 'underscore';
+
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server/functions/settings';
 import { FileUpload } from '../../../file-upload/server/lib/FileUpload';
-import _ from 'underscore';
 
 export class Messages extends Base {
 	constructor() {

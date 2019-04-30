@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+
 import { ChatRoom } from '../../../../models';
 import { LivechatInquiry } from '../../../lib/LivechatInquiry';
 import { call } from '../../../../ui-utils/client';

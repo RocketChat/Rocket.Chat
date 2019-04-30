@@ -4,11 +4,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import queryString from 'query-string';
+import toastr from 'toastr';
+
 import { t } from '../../../utils';
 import { SideNav } from '../../../ui-utils/client';
 
-import queryString from 'query-string';
-import toastr from 'toastr';
 
 Template.cloud.onCreated(function() {
 	const instance = this;

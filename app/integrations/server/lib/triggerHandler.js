@@ -1,17 +1,19 @@
+import vm from 'vm';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
+import _ from 'underscore';
+import s from 'underscore.string';
+import moment from 'moment';
+import Fiber from 'fibers';
+import Future from 'fibers/future';
+
 import * as Models from '../../../models';
 import { settings } from '../../../settings';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib';
 import { logger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
-import _ from 'underscore';
-import s from 'underscore.string';
-import moment from 'moment';
-import vm from 'vm';
-import Fiber from 'fibers';
-import Future from 'fibers/future';
 
 integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	constructor() {

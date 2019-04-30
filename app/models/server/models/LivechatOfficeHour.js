@@ -1,5 +1,6 @@
-import { Base } from './_Base';
 import moment from 'moment';
+
+import { Base } from './_Base';
 
 export class LivechatOfficeHour extends Base {
 	constructor() {

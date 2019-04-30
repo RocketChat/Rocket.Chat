@@ -2,9 +2,10 @@
 /* eslint comma-spacing: 0 */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import s from 'underscore.string';
+
 import { settings } from '../../../settings';
 import { hasPermission } from '../../../authorization';
-import s from 'underscore.string';
 
 Meteor.methods({
 	addOAuthService(name) {

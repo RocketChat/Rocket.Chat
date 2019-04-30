@@ -4,12 +4,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Rooms, Subscriptions, Messages } from '../../models';
-import { promises } from '../../promises/client';
-import { settings } from '../../settings';
-import { Notifications } from '../../notifications';
-import { Layout, call, modal, alerts } from '../../ui-utils';
 import { TAPi18n } from 'meteor/tap:i18n';
+
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
 	Deferred,
@@ -25,6 +21,11 @@ import {
 	importRawKey,
 	deriveKey,
 } from './helper';
+import { Rooms, Subscriptions, Messages } from '../../models';
+import { promises } from '../../promises/client';
+import { settings } from '../../settings';
+import { Notifications } from '../../notifications';
+import { Layout, call, modal, alerts } from '../../ui-utils';
 
 import './events.js';
 import './accountEncryption.html';

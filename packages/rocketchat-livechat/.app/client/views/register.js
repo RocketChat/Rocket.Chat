@@ -3,9 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
-import visitor from '../../imports/client/visitor';
 import _ from 'underscore';
 import s from 'underscore.string';
+
+import visitor from '../../imports/client/visitor';
 
 Template.register.helpers({
 	error() {

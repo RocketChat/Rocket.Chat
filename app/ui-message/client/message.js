@@ -1,5 +1,4 @@
 import _ from 'underscore';
-
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';

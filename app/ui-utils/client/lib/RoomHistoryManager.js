@@ -4,11 +4,12 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Blaze } from 'meteor/blaze';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
-import { getConfig } from '../config';
+
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
+import { getConfig } from '../config';
+import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 
 export const normalizeThreadMessage = mem((message) => {
 	if (message.msg) {

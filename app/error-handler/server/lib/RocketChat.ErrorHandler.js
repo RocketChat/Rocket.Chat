@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { settings } from '../../../settings';
 import { Users, Rooms } from '../../../models';
 import { sendMessage } from '../../../lib';

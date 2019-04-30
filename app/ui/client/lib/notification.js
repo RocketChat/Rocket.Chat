@@ -7,6 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 import s from 'underscore.string';
+
 import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models';
 import { getUserPreference } from '../../../utils';

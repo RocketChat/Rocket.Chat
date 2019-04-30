@@ -1,9 +1,10 @@
-import { AccountsServer } from '../../accounts';
-import { Users } from '../../models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
+
 import { GrantError } from './error';
 import Providers from './providers';
+import { AccountsServer } from '../../accounts';
+import { Users } from '../../models';
 import { t } from '../../utils';
 
 const setAvatarFromUrl = (userId, url) => new Promise((resolve, reject) => {

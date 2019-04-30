@@ -1,14 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+
 import { Importers } from '..';
+
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+
 import { hasRole } from '../../../authorization';
 import { settings } from '../../../settings';
 import { t, handleError, APIClient } from '../../../utils';
-import toastr from 'toastr';
 import { SideNav } from '../../../ui-utils/client';
 
 Template.adminImportPrepare.helpers({

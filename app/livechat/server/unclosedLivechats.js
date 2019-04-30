@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
+
+import { Livechat } from './lib/Livechat';
 import { settings } from '../../settings';
 import { Users } from '../../models';
-import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
-import { Livechat } from './lib/Livechat';
 
 let agentsHandler;
 let monitorAgents = false;

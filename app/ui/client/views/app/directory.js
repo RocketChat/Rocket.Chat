@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { hasAllPermission } from '../../../../authorization/client';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
+
 import { timeAgo } from './helpers';
+import { hasAllPermission } from '../../../../authorization/client';
 import { t, roomTypes } from '../../../../utils';
 import { settings } from '../../../../settings';
 import { hasAtLeastOnePermission } from '../../../../authorization';

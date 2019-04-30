@@ -1,7 +1,8 @@
+import supertest from 'supertest';
+
 import { publicChannelName, privateChannelName } from './channel.js';
 import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role.js';
 import { username, email, adminUsername, adminPassword } from './user.js';
-import supertest from 'supertest';
 
 export const request = supertest('http://localhost:3000');
 const prefix = '/api/v1/';

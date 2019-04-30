@@ -4,13 +4,14 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 import { Tracker } from 'meteor/tracker';
+import hljs from 'highlight.js';
+import toastr from 'toastr';
+
+import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
 import { hasAtLeastOnePermission, hasAllPermission } from '../../../authorization';
 import { modal, SideNav } from '../../../ui-utils/client';
 import { t, handleError } from '../../../utils';
 import { ChatIntegrations } from '../collections';
-import { exampleMsg, exampleSettings, exampleUser } from './messageExample';
-import hljs from 'highlight.js';
-import toastr from 'toastr';
 
 Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated() {
 	this.record = new ReactiveVar({

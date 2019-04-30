@@ -2,6 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
 import { slashCommands } from '../../../utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { toolbarSearch } from '../../../ui-sidenav';

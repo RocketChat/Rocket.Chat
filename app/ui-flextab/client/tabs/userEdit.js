@@ -3,14 +3,15 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
+import toastr from 'toastr';
+import s from 'underscore.string';
+
 import { t, handleError } from '../../../utils';
 import { Roles } from '../../../models';
 import { Notifications } from '../../../notifications';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import toastr from 'toastr';
 import { callbacks } from '../../../callbacks';
-import s from 'underscore.string';
 
 Template.userEdit.helpers({
 

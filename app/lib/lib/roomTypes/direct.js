@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';

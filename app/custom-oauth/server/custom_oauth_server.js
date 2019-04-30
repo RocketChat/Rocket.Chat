@@ -4,10 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
+import _ from 'underscore';
+
+import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
-import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
-import _ from 'underscore';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 

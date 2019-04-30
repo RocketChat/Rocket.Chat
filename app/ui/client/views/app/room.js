@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import moment from 'moment';
 import Clipboard from 'clipboard';
-
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';

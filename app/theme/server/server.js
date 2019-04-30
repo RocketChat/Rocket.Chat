@@ -1,8 +1,8 @@
+import crypto from 'crypto';
+
 import _ from 'underscore';
 import less from 'less';
 import Autoprefixer from 'less-plugin-autoprefix';
-import crypto from 'crypto';
-
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';

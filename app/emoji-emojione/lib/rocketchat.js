@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { emojione } from 'meteor/emojione:emojione';
+
+import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 import { emoji } from '../../emoji';
 import { getUserPreference } from '../../utils';
-import { emojione } from 'meteor/emojione:emojione';
-import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 
 emoji.packages.emojione = emojione;
 emoji.packages.emojione.imageType = 'png';

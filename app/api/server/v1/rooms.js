@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import Busboy from 'busboy';
+
 import { FileUpload } from '../../../file-upload';
 import { Rooms } from '../../../models';
-import Busboy from 'busboy';
 import { API } from '../api';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {

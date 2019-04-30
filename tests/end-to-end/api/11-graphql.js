@@ -1,6 +1,6 @@
-import { adminUsername, adminPassword, adminEmail } from '../../data/user.js';
+import supertest from 'supertest';
 
-const supertest = require('supertest');
+import { adminUsername, adminPassword, adminEmail } from '../../data/user.js';
 
 const request = supertest('http://localhost:3000');
 

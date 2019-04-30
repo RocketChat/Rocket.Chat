@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+
 import { Rooms, Subscriptions } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-
 import { EmojiPicker } from '../../emoji';
 import { tooltip } from '../../tooltip';
 

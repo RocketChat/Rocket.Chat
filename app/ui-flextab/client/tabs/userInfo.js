@@ -6,12 +6,13 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
+
+import { getActions } from './userActions';
 import { DateFormat } from '../../../lib';
 import { popover } from '../../../ui-utils';
 import { templateVarHandler } from '../../../utils';
 import { RoomRoles, UserRoles, Roles } from '../../../models';
 import { settings } from '../../../settings';
-import { getActions } from './userActions';
 import './userInfo.html';
 
 const more = function() {

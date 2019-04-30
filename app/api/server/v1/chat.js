@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+
 import { Messages } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { composeMessageObjectWithUser } from '../../../utils';

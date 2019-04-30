@@ -1,8 +1,10 @@
+import fs from 'fs';
+
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { settings } from '../../../settings';
 import _ from 'underscore';
-import fs from 'fs';
+
+import { settings } from '../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 
 const FileSystemUploads = new FileUploadClass({

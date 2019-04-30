@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { lazyloadtick } from '../../lazy-load';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+
+import { lazyloadtick } from '../../lazy-load';
 import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';

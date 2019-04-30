@@ -1,6 +1,6 @@
-import _ from 'underscore';
 import os from 'os';
 
+import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
@@ -18,7 +18,6 @@ import {
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
-
 import { statistics } from '../statisticsNamespace';
 
 const wizardFields = [

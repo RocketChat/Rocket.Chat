@@ -1,6 +1,9 @@
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import _ from 'underscore';
+import moment from 'moment';
+
 import {
 	Base,
 	ProgressStep,
@@ -11,8 +14,6 @@ import {
 import { RocketChatFile } from '../../file';
 import { Users, Rooms } from '../../models';
 import { sendMessage } from '../../lib';
-import _ from 'underscore';
-import moment from 'moment';
 
 import 'moment-timezone';
 

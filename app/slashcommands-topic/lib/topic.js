@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import { handleError, slashCommands } from '../../utils';
 import { ChatRoom } from '../../models';
 import { callbacks } from '../../callbacks';
