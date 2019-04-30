@@ -51,6 +51,10 @@ export const AutoTranslate = {
 			this.supportedLanguages = languages || [];
 		});
 
+		Meteor.call('autoTranslate.getProviderUiMetadata', (err, metadata) => {
+			this.providersMetadata = metadata;
+		});
+
 		Tracker.autorun(() => {
 			Subscriptions.find().observeChanges({
 				changed: (id, fields) => {
