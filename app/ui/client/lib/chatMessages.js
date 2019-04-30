@@ -362,7 +362,7 @@ export class ChatMessages {
 		}
 
 		if (!settings.get('FileUpload_Enabled') || !settings.get('Message_AllowConvertLongMessagesToAttachment') || this.editing.id) {
-			throw { error: 'Message_too_long' };
+			throw new Error({ error: 'Message_too_long' });
 		}
 
 		try {
@@ -555,7 +555,6 @@ export class ChatMessages {
 
 			event.preventDefault();
 			event.stopPropagation();
-			return;
 		}
 	}
 

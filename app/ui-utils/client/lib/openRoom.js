@@ -71,7 +71,6 @@ export const openRoom = function(type, name) {
 						}
 						Session.set('roomNotFound', { type, name, error });
 						BlazeLayout.render('main', { center: 'roomNotFound' });
-						return;
 					});
 				} else {
 					Meteor.call('getRoomByTypeAndName', type, name, function(error, record) {

@@ -131,8 +131,6 @@ Template.accountProfile.helpers({
 		if (!validateEmail(email) || (!validateUsername(username) || usernameAvaliable !== true) || !validateName(realname)) {
 			return ret;
 		}
-
-		return;
 	},
 	allowDeleteOwnAccount() {
 		return settings.get('Accounts_AllowDeleteOwnAccount');
@@ -213,7 +211,6 @@ Template.accountProfile.onCreated(function() {
 			toastr.remove();
 			toastr.error(t('Password_Change_Disabled'));
 			instance.clearForm();
-			return;
 		}
 	};
 	this.save = function(typedPassword, cb) {

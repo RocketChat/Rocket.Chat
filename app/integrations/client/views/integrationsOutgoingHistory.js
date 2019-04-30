@@ -138,7 +138,6 @@ Template.integrationsOutgoingHistory.events({
 		Meteor.call('replayOutgoingIntegration', { integrationId: t.data.params().id, historyId }, (e) => {
 			if (e) {
 				handleError(e);
-				return;
 			}
 		});
 	},

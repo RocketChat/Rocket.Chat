@@ -131,7 +131,6 @@ Template.soundEdit.onCreated(function() {
 								if (uploadError != null) {
 									handleError(uploadError);
 									console.log(uploadError);
-									return;
 								}
 							}
 							);

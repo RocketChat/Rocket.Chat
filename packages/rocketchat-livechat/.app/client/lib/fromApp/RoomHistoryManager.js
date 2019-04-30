@@ -11,6 +11,7 @@ export const RoomHistoryManager = new class {
 		this.defaultLimit = 50;
 		this.histories = {};
 	}
+
 	getRoom(rid) {
 		if (this.histories[rid] == null) {
 			this.histories[rid] = {

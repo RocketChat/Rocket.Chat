@@ -22,7 +22,7 @@ export class Base {
 	}
 
 	roleBaseQuery() {
-		return;
+
 	}
 
 	findRolesByUserId(userId) {

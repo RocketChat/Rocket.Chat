@@ -70,78 +70,101 @@ this.Livechat = new class Livechat {
 	get online() {
 		return this._online.get();
 	}
+
 	get color() {
 		if (!this._online.get()) {
 			return this._offlineColor.get();
 		}
 		return this._customColor.get() || this._onlineColor.get();
 	}
+
 	get fontColor() {
 		if (!this._online.get()) {
 			return this._offlineFontColor.get();
 		}
 		return this._customFontColor.get() || this._onlineFontColor.get();
 	}
+
 	get title() {
 		return this._title.get();
 	}
+
 	get registrationForm() {
 		return this._registrationForm.get();
 	}
+
 	get showSwitchDepartmentForm() {
 		return this._showSwitchDepartmentForm.get();
 	}
+
 	get allowSwitchingDepartments() {
 		return this._allowSwitchingDepartments.get();
 	}
+
 	get offlineMessage() {
 		return this._offlineMessage.get();
 	}
+
 	get offlineUnavailableMessage() {
 		return this._offlineUnavailableMessage.get();
 	}
+
 	get displayOfflineForm() {
 		return this._displayOfflineForm.get();
 	}
+
 	get offlineSuccessMessage() {
 		return this._offlineSuccessMessage.get();
 	}
+
 	get videoCall() {
 		return this._videoCall.get();
 	}
+
 	get fileUpload() {
 		return this._fileUpload.get();
 	}
+
 	get transcriptMessage() {
 		return this._transcriptMessage.get();
 	}
+
 	get conversationFinishedMessage() {
 		return this._conversationFinishedMessage.get();
 	}
+
 	get nameFieldRegistrationForm() {
 		return this._nameFieldRegistrationForm.get();
 	}
+
 	get emailFieldRegistrationForm() {
 		return this._emailFieldRegistrationForm.get();
 	}
+
 	get department() {
 		return this._department.get();
 	}
+
 	get connecting() {
 		return this._connecting.get();
 	}
+
 	get agent() {
 		return this._agent.get();
 	}
+
 	get guestName() {
 		return this._guestName.get();
 	}
+
 	get guestEmail() {
 		return this._guestEmail.get();
 	}
+
 	get room() {
 		return this._room.get();
 	}
+
 	get registrationFormMessage() {
 		return this._registrationFormMessage.get();
 	}
@@ -149,85 +172,112 @@ this.Livechat = new class Livechat {
 	set online(value) {
 		this._online.set(value);
 	}
+
 	set title(value) {
 		this._title.set(value);
 	}
+
 	set registrationForm(value) {
 		this._registrationForm.set(value);
 	}
+
 	set showSwitchDepartmentForm(value) {
 		this._showSwitchDepartmentForm.set(value);
 	}
+
 	set allowSwitchingDepartments(value) {
 		this._allowSwitchingDepartments.set(value);
 	}
+
 	set offlineMessage(value) {
 		this._offlineMessage.set(value);
 	}
+
 	set offlineUnavailableMessage(value) {
 		this._offlineUnavailableMessage.set(value);
 	}
+
 	set displayOfflineForm(value) {
 		this._displayOfflineForm.set(value);
 	}
+
 	set offlineSuccessMessage(value) {
 		this._offlineSuccessMessage.set(value);
 	}
+
 	set customColor(value) {
 		this._customColor.set(value);
 	}
+
 	set onlineColor(value) {
 		this._onlineColor.set(value);
 	}
+
 	set offlineColor(value) {
 		this._offlineColor.set(value);
 	}
+
 	set customFontColor(value) {
 		this._customFontColor.set(value);
 	}
+
 	set onlineFontColor(value) {
 		this._onlineFontColor.set(value);
 	}
+
 	set offlineFontColor(value) {
 		this._offlineFontColor.set(value);
 	}
+
 	set videoCall(value) {
 		this._videoCall.set(value);
 	}
+
 	set fileUpload(value) {
 		this._fileUpload.set(value);
 	}
+
 	set transcriptMessage(value) {
 		this._transcriptMessage.set(value);
 	}
+
 	set conversationFinishedMessage(value) {
 		this._conversationFinishedMessage.set(value);
 	}
+
 	set nameFieldRegistrationForm(value) {
 		this._nameFieldRegistrationForm.set(value);
 	}
+
 	set emailFieldRegistrationForm(value) {
 		this._emailFieldRegistrationForm.set(value);
 	}
+
 	set connecting(value) {
 		this._connecting.set(value);
 	}
+
 	set room(roomId) {
 		this._room.set(roomId);
 	}
+
 	set department(departmentId) {
 		const dept = Department.findOne({ _id: departmentId }) || Department.findOne({ name: departmentId });
 		this._department.set(dept && dept._id);
 	}
+
 	set agent(agentData) {
 		this._agent.set(agentData);
 	}
+
 	set guestName(name) {
 		return this._guestName.set(name);
 	}
+
 	set guestEmail(email) {
 		return this._guestEmail.set(email);
 	}
+
 	set registrationFormMessage(value) {
 		this._registrationFormMessage.set(value);
 	}

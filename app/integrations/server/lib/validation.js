@@ -6,6 +6,7 @@ import { hasPermission, hasAllPermission } from '../../../authorization';
 import { integrations } from '../../lib/rocketchat';
 import _ from 'underscore';
 import s from 'underscore.string';
+
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];
 

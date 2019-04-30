@@ -36,6 +36,7 @@ describe('[Main Elements Render]', function() {
 			});
 			it('it should show spotlight search bar', () => {
 				sideNav.spotlightSearchIcon.click();
+				sideNav.spotlightSearch.waitForVisible(500);
 				sideNav.spotlightSearch.isVisible().should.be.true;
 			});
 

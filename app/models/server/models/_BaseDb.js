@@ -189,7 +189,6 @@ export class BaseDb extends EventEmitter {
 				id: action.id,
 				oplog: true,
 			});
-			return;
 		}
 	}
 

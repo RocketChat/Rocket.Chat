@@ -1014,7 +1014,6 @@ export default class SlackAdapter {
 				return this.processPinnedItemMessage(rocketChannel, rocketUser, slackMessage, isImporting);
 			case 'unpinned_item':
 				logger.slack.error('Unpinned item not implemented');
-				return;
 		}
 	}
 

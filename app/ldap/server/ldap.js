@@ -397,7 +397,6 @@ export default class LDAP {
 			res.on('error', (error) => {
 				logger.search.error(error);
 				page(error);
-				return;
 			});
 
 			let entries = [];
@@ -463,7 +462,6 @@ export default class LDAP {
 			res.on('error', (error) => {
 				logger.search.error(error);
 				callback(error);
-				return;
 			});
 
 			const entries = [];

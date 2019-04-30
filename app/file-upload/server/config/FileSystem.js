@@ -27,7 +27,6 @@ const FileSystemUploads = new FileUploadClass({
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
-			return;
 		}
 	},
 
@@ -43,7 +42,6 @@ const FileSystemUploads = new FileUploadClass({
 			}
 		} catch (e) {
 			out.end();
-			return;
 		}
 	},
 });
@@ -66,7 +64,6 @@ const FileSystemAvatars = new FileUploadClass({
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
-			return;
 		}
 	},
 });
@@ -92,7 +89,6 @@ const FileSystemUserDataFiles = new FileUploadClass({
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
-			return;
 		}
 	},
 });

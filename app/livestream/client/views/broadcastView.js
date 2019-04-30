@@ -71,10 +71,6 @@ Template.broadcastView.onCreated(async function() {
 	this.mediaStream = new ReactiveVar(null);
 	this.mediaRecorder = new ReactiveVar(null);
 	this.connection = new ReactiveVar(connection);
-
-	if (!connection) {
-		return;
-	}
 });
 Template.broadcastView.onDestroyed(function() {
 	if (this.connection.get()) {

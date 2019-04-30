@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
-const logger = new Logger('CORS', {});
 
 import _ from 'underscore';
 import url from 'url';
+
+const logger = new Logger('CORS', {});
 
 WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	if (req._body) {

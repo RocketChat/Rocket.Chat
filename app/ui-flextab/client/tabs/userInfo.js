@@ -110,7 +110,7 @@ Template.userInfo.helpers({
 	linkedinUsername() {
 		const user = Template.instance().user.get();
 		if (user && user.services && user.services.linkedin && user.services.linkedin.publicProfileUrl) {
-			return s.strRight(user.services.linkedin.publicProfileUrl), '/in/';
+			return s.strRight(user.services.linkedin.publicProfileUrl, '/in/');
 		}
 	},
 

@@ -35,7 +35,5 @@ Meteor.methods({
 		settings.forEach((setting) => {
 			rcSettings.updateById(setting._id, setting.value);
 		});
-
-		return;
 	},
 });

@@ -106,7 +106,6 @@ Template.RocketSearch.events = {
 
 		if (evt.keyCode === 38 && suggestions) {
 			t.suggestionActive.set(suggestionActive !== undefined && suggestionActive === 0 ? suggestions.length - 1 : suggestionActive - 1);
-			return;
 		}
 	},
 	'keyup #message-search': _.debounce(function(evt, t) {
@@ -125,7 +124,6 @@ Template.RocketSearch.events = {
 		} else {
 			t.suggest(value);
 		}
-		return;
 	}, 300),
 	'click .rocket-search-suggestion-item'(e, t) {
 		if (this.action) {

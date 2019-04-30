@@ -88,6 +88,7 @@ class BotHelpers {
 		}
 		return this._allUsers.fetch();
 	}
+
 	get onlineUsers() {
 		if (!Object.keys(this.userFields).length) {
 			this.requestError();
@@ -95,6 +96,7 @@ class BotHelpers {
 		}
 		return this._onlineUsers.fetch();
 	}
+
 	get allUsernames() {
 		if (!this.userFields.hasOwnProperty('username')) {
 			this.requestError();
@@ -102,6 +104,7 @@ class BotHelpers {
 		}
 		return this._allUsers.fetch().map((user) => user.username);
 	}
+
 	get onlineUsernames() {
 		if (!this.userFields.hasOwnProperty('username')) {
 			this.requestError();
@@ -109,6 +112,7 @@ class BotHelpers {
 		}
 		return this._onlineUsers.fetch().map((user) => user.username);
 	}
+
 	get allNames() {
 		if (!this.userFields.hasOwnProperty('name')) {
 			this.requestError();
@@ -116,6 +120,7 @@ class BotHelpers {
 		}
 		return this._allUsers.fetch().map((user) => user.name);
 	}
+
 	get onlineNames() {
 		if (!this.userFields.hasOwnProperty('name')) {
 			this.requestError();
@@ -123,6 +128,7 @@ class BotHelpers {
 		}
 		return this._onlineUsers.fetch().map((user) => user.name);
 	}
+
 	get allIDs() {
 		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
 			this.requestError();
@@ -130,6 +136,7 @@ class BotHelpers {
 		}
 		return this._allUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
 	}
+
 	get onlineIDs() {
 		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
 			this.requestError();

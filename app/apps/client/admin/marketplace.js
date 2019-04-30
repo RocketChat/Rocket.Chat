@@ -287,7 +287,6 @@ Template.marketplace.events({
 				if (confirmed) {
 					FlowRouter.go('/admin/cloud');
 				}
-				return;
 			});
 			return;
 		}

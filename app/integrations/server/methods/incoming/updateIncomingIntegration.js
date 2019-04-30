@@ -4,6 +4,7 @@ import { Integrations, Rooms, Users, Roles, Subscriptions } from '../../../../mo
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
+
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({

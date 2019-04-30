@@ -70,7 +70,7 @@ function upsertMessageBulk({ msgs, subscription }) {
 	});
 }
 
-const defaultLimit = parseInt(getConfig('roomListLimit')) || 50 ;
+const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
 
 export const RoomHistoryManager = new class {
 	constructor() {

@@ -74,5 +74,4 @@ export const userAvatar = Meteor.bindEnvironment(function(req, res) {
 	}
 
 	serveAvatar(svg, req.query.format, res);
-	return;
 });

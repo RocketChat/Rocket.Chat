@@ -50,7 +50,7 @@ const SummaryNameEmoticons = {
 
 const historyData = (() => {
 	try {
-		return require(historyDataFile);
+		return require(historyDataFile); // eslint-disable-line import/no-dynamic-require
 	} catch (error) {
 		return {};
 	}
@@ -58,7 +58,7 @@ const historyData = (() => {
 
 const historyManualData = (() => {
 	try {
-		return require(historyManualDataFile);
+		return require(historyManualDataFile); // eslint-disable-line import/no-dynamic-require
 	} catch (error) {
 		return {};
 	}

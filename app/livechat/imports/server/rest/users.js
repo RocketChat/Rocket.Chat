@@ -22,7 +22,7 @@ API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 			} else if (this.urlParams.type === 'manager') {
 				role = 'livechat-manager';
 			} else {
-				throw 'Invalid type';
+				throw new Error('Invalid type');
 			}
 
 			const users = getUsersInRole(role);
@@ -58,7 +58,7 @@ API.v1.addRoute('livechat/users/:type', { authRequired: true }, {
 					return API.v1.success({ user });
 				}
 			} else {
-				throw 'Invalid type';
+				throw new Error('Invalid type');
 			}
 
 			return API.v1.failure();
@@ -93,7 +93,7 @@ API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
 			} else if (this.urlParams.type === 'manager') {
 				role = 'livechat-manager';
 			} else {
-				throw 'Invalid type';
+				throw new Error('Invalid type');
 			}
 
 			if (user.roles.indexOf(role) !== -1) {
@@ -135,7 +135,7 @@ API.v1.addRoute('livechat/users/:type/:_id', { authRequired: true }, {
 					return API.v1.success();
 				}
 			} else {
-				throw 'Invalid type';
+				throw new Error('Invalid type');
 			}
 
 			return API.v1.failure();

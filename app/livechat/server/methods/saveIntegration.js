@@ -32,7 +32,5 @@ Meteor.methods({
 		if (typeof values.Livechat_webhook_on_agent_message !== 'undefined') {
 			settings.updateById('Livechat_webhook_on_agent_message', !!values.Livechat_webhook_on_agent_message);
 		}
-
-		return;
 	},
 });

@@ -60,8 +60,6 @@ const casTicket = function(req, token, callback) {
 
 		callback();
 	}));
-
-	return;
 };
 
 const middleware = function(req, res, next) {

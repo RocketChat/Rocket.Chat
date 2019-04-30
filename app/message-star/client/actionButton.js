@@ -7,6 +7,7 @@ import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import toastr from 'toastr';
+
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'star-message',

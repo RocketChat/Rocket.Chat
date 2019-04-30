@@ -6,6 +6,7 @@ import { FileUpload } from '../../../../file-upload';
 import { API } from '../../../../api';
 import Busboy from 'busboy';
 import filesize from 'filesize';
+
 let maxFileSize;
 
 settings.get('FileUpload_MaxFileSize', function(key, value) {

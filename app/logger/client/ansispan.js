@@ -10,7 +10,7 @@ const foregroundColors = {
 };
 
 export const ansispan = (str: string) => {
-	str = (
+	str =
 		str
 			.replace(/\s/g, '&nbsp;')
 			.replace(/(\\n|\n)/g, '<br>')
@@ -23,9 +23,7 @@ export const ansispan = (str: string) => {
 			.replace(/\033\[23m/g, '</em>')
 			.replace(/\033\[m/g, '</span>')
 			.replace(/\033\[0m/g, '</span>')
-			.replace(/\033\[39m/g, '</span>')
-	);
-
+			.replace(/\033\[39m/g, '</span>');
 	return Object.entries(foregroundColors).reduce((str, [ansiCode, color]) => {
 		const span = `<span style="color: ${ color }">`;
 		return (

@@ -102,7 +102,5 @@ Meteor.methods({
 		}
 
 		setReaction(room, user, message, reaction, shouldReact);
-
-		return;
 	},
 });

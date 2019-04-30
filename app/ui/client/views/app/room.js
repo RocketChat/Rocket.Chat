@@ -117,7 +117,7 @@ const mountPopover = (e, i, outerContext) => {
 		menuItems = menuItems.concat(messageItems);
 	}
 
-	const [items, deleteItem] = menuItems.reduce((result, value) => (result[value.id === 'delete-message' ? 1 : 0].push(value), result), [[], []]);
+	const [items, deleteItem] = menuItems.reduce((result, value) => result[value.id === 'delete-message' ? 1 : 0].push(value), [[], []]);
 	const groups = [{ items }];
 
 	if (deleteItem.length) {
@@ -798,7 +798,7 @@ Template.room.events({
 			'delete-message',
 			'report-message',
 		];
-		const [items, alertsItem] = allItems.reduce((result, value) => (result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value), result), [[], []]);
+		const [items, alertsItem] = allItems.reduce((result, value) => result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value), [[], []]);
 		const groups = [{ items }];
 
 		if (alertsItem.length) {
@@ -849,7 +849,6 @@ Template.room.events({
 
 		if (username) {
 			openProfileTabOrOpenDM(e, instance, username);
-			return;
 		}
 	},
 

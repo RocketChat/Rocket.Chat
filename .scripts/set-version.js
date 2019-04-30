@@ -10,7 +10,7 @@ const git = require('simple-git/promise')(process.cwd());
 let pkgJson = {};
 
 try {
-	pkgJson = require(path.resolve(
+	pkgJson = require(path.resolve( // eslint-disable-line import/no-dynamic-require
 		process.cwd(),
 		'./package.json'
 	));

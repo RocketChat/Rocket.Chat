@@ -5,6 +5,7 @@ import { hasPermission, hasAllPermission } from '../../../../authorization';
 import { Users, Rooms, Integrations, Roles, Subscriptions } from '../../../../models';
 import _ from 'underscore';
 import s from 'underscore.string';
+
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({

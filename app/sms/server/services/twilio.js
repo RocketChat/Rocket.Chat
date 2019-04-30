@@ -7,6 +7,7 @@ class Twilio {
 		this.accountSid = settings.get('SMS_Twilio_Account_SID');
 		this.authToken = settings.get('SMS_Twilio_authToken');
 	}
+
 	parse(data) {
 		let numMedia = 0;
 
@@ -55,6 +56,7 @@ class Twilio {
 
 		return returnData;
 	}
+
 	send(fromNumber, toNumber, message) {
 		const client = twilio(this.accountSid, this.authToken);
 
@@ -64,6 +66,7 @@ class Twilio {
 			body: message,
 		});
 	}
+
 	response(/* message */) {
 		return {
 			headers: {
@@ -72,6 +75,7 @@ class Twilio {
 			body: '<Response></Response>',
 		};
 	}
+
 	error(error) {
 		let message = '';
 		if (error.reason) {

@@ -5,6 +5,7 @@ import { settings } from '../../settings';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
+
 let contentHeader;
 let contentFooter;
 

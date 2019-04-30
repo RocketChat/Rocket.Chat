@@ -10,6 +10,7 @@ import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 
 chai.use(require('chai-datetime'));
+
 const { expect } = chai;
 
 mock('../../../models', './mocks/models');

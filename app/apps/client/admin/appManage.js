@@ -434,7 +434,7 @@ Template.appManage.events({
 			});
 
 			if (toSave.length === 0) {
-				throw 'Nothing to save..';
+				throw new Error('Nothing to save..');
 			}
 			const result = await APIClient.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
 			console.log('Updating results:', result);

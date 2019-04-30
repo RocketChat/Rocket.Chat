@@ -5,6 +5,7 @@ export class Reports extends Base {
 	constructor() {
 		super('reports');
 	}
+
 	createWithMessageDescriptionAndUserId(message, description, userId, extraData) {
 		const record = {
 			message,

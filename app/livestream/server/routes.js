@@ -3,6 +3,7 @@ import { settings } from '../../settings';
 import { Users } from '../../models';
 import { API } from '../../api';
 import google from 'googleapis';
+
 const { OAuth2 } = google.auth;
 
 API.v1.addRoute('livestream/oauth', {

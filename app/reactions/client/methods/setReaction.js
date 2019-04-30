@@ -54,7 +54,5 @@ Meteor.methods({
 			Messages.setReactions(messageId, message.reactions);
 			callbacks.run('setReaction', messageId, reaction);
 		}
-
-		return;
 	},
 });

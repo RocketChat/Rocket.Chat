@@ -10,6 +10,7 @@ import { hide, leave } from './ChannelActions';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
 import { RoomManager } from './RoomManager';
+
 export const popover = {
 	renderedPopover: null,
 	open({ currentTarget, ...config }) {

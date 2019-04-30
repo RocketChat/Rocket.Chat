@@ -39,9 +39,11 @@ export const menu = new class extends EventEmitter {
 		}, 200);
 		this.sideNavW = sideNavW;
 	}
+
 	get isRtl() {
 		return isRtl(localStorage.getItem('userLanguage'));
 	}
+
 	touchstart(e) {
 		this.movestarted = false;
 		this.blockmove = false;
@@ -55,6 +57,7 @@ export const menu = new class extends EventEmitter {
 			this.mainContent = $('.main-content');
 		}
 	}
+
 	touchmove(e) {
 		if (this.touchstartX == null) {
 			return;
@@ -108,6 +111,7 @@ export const menu = new class extends EventEmitter {
 			// }
 		}
 	}
+
 	translate(diff, width = sideNavW) {
 		if (diff === undefined) {
 			diff = this.isRtl ? -1 * sideNavW : sideNavW;
@@ -118,6 +122,7 @@ export const menu = new class extends EventEmitter {
 		this.sidebarWrap.css('opacity', map(Math.abs(diff) / width, 0, 1, -0.1, 0.8).toFixed(2));
 		this.isRtl ? this.sidebar.css('transform', `translate3d(${ (sideNavW + diff).toFixed(3) }px, 0 , 0)`) : this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0)`);
 	}
+
 	touchend() {
 		const [max, min] = [sideNavW * 0.76, sideNavW * 0.24];
 		if (this.movestarted !== true) {
@@ -143,6 +148,7 @@ export const menu = new class extends EventEmitter {
 		}
 		return this.close();
 	}
+
 	init() {
 		this.sidebar = $('.sidebar');
 		this.sidebar = this.menu;
@@ -177,12 +183,15 @@ export const menu = new class extends EventEmitter {
 		this._open = false;
 		Session.set('isMenuOpen', this._open);
 	}
+
 	closePopover() {
 		return this.menu.find('[data-popover="anchor"]:checked').prop('checked', false).length > 0;
 	}
+
 	isOpen() {
 		return Session.get('isMenuOpen');
 	}
+
 	open() {
 		this._open = true;
 		Session.set('isMenuOpen', this._open);

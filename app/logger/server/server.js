@@ -20,6 +20,7 @@ const LoggerManager = new class extends EventEmitter {
 		this.showFileAndLine = false;
 		this.logLevel = 0;
 	}
+
 	register(logger) {
 		if (!(logger instanceof Logger)) {
 			return;
@@ -27,15 +28,18 @@ const LoggerManager = new class extends EventEmitter {
 		this.loggers[logger.name] = logger;
 		this.emit('register', logger);
 	}
+
 	addToQueue(logger, args) {
 		this.queue.push({
 			logger, args,
 		});
 	}
+
 	dispatchQueue() {
 		_.each(this.queue, (item) => item.logger._log.apply(item.logger, item.args));
 		this.clearQueue();
 	}
+
 	clearQueue() {
 		this.queue = [];
 	}
@@ -160,6 +164,7 @@ class _Logger {
 
 		LoggerManager.register(this);
 	}
+
 	getPrefix(options) {
 		let prefix = `${ this.name } ➔ ${ options.method }`;
 		if (options.section) {
@@ -191,6 +196,7 @@ class _Logger {
 		}
 		return prefix;
 	}
+
 	_getCallerDetails() {
 		const getStack = () => {
 			// We do NOT use Error.prepareStackTrace here (a V8 extension that gets us a
@@ -207,7 +213,7 @@ class _Logger {
 		// looking for the first line outside the logging package (or an
 		// eval if we find that first)
 		let line = lines[0];
-		for (let index = 0, len = lines.length; index < len, index++; line = lines[index]) {
+		for (let index = 0, len = lines.length; index < len; index++, line = lines[index]) {
 			if (line.match(/^\s*at eval \(eval/)) {
 				return { file: 'eval' };
 			}
@@ -236,6 +242,7 @@ class _Logger {
 		}
 		return details;
 	}
+
 	makeABox(message, title) {
 		if (!_.isArray(message)) {
 			message = message.split('\n');

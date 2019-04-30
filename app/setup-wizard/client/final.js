@@ -32,7 +32,6 @@ Template.setupWizardFinal.onCreated(function() {
 		const userIsLoggedButIsNotAdmin = userId && !hasRole(userId, 'admin');
 		if (isComplete || noUserLoggedInAndIsNotPending || userIsLoggedButIsNotAdmin) {
 			FlowRouter.go('home');
-			return;
 		}
 	});
 });

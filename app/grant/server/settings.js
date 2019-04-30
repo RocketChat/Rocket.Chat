@@ -20,6 +20,7 @@ class Settings extends Storage {
 
 		this.apps = new Apps;
 	}
+
 	add(settings) {
 		check(settings, {
 			enabled: Match.Optional(Boolean),

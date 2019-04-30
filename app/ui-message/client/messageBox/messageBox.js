@@ -370,7 +370,6 @@ Template.messageBox.events({
 		if (files.length) {
 			event.preventDefault();
 			fileUpload(files, input, { rid, tmid });
-			return;
 		}
 	},
 	'input .js-input-message'(event, instance) {

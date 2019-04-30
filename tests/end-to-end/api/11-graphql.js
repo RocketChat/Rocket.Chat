@@ -1,7 +1,8 @@
-const supertest = require('supertest');
-const request = supertest('http://localhost:3000');
-
 import { adminUsername, adminPassword, adminEmail } from '../../data/user.js';
+
+const supertest = require('supertest');
+
+const request = supertest('http://localhost:3000');
 
 const user = { username: adminUsername, password: adminPassword, email: adminEmail, accessToken: null };
 const channel = {};

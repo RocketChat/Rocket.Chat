@@ -17,7 +17,7 @@ import { mainReady } from './mainReady';
 import { getConfig } from '../config';
 
 
-const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5 ;
+const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });

@@ -36,8 +36,6 @@ const extendedViewOption = (user) => {
 			},
 		};
 	}
-
-	return;
 };
 
 const showToolbar = new ReactiveVar(false);

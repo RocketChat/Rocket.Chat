@@ -6,6 +6,7 @@ export const AdminBox = new class {
 	constructor() {
 		this.options = new ReactiveVar([]);
 	}
+
 	addOption(option) {
 		return Tracker.nonreactive(() => {
 			const actual = this.options.get();
@@ -13,6 +14,7 @@ export const AdminBox = new class {
 			return this.options.set(actual);
 		});
 	}
+
 	getOptions() {
 		return _.filter(this.options.get(), function(option) {
 			if ((option.permissionGranted == null) || option.permissionGranted()) {

@@ -1,7 +1,5 @@
 import loginPage from '../../pageobjects/login.page';
 import supertest from 'supertest';
-const request = supertest('http://localhost:3000');
-const prefix = '/api/v1/';
 
 import flexTab from '../../pageobjects/flex-tab.page';
 import mainContent from '../../pageobjects/main-content.page';
@@ -12,6 +10,9 @@ import admin from '../../pageobjects/administration.page';
 import { checkIfUserIsValid, checkIfUserIsAdmin } from '../../data/checks';
 
 import { adminUsername, adminEmail, adminPassword, username, email, password, reason } from '../../data/user.js';
+
+const request = supertest('http://localhost:3000');
+const prefix = '/api/v1/';
 
 function api(path) {
 	return prefix + path;

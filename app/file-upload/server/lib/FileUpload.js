@@ -253,8 +253,6 @@ export const FileUpload = {
 						console.error(err);
 						fut.return();
 					});
-
-				return;
 			};
 
 			reorientation(() => {

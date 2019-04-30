@@ -64,7 +64,7 @@ export const MsgTyping = (function() {
 	const start = function(room) {
 		if (!renew) { return; }
 
-		setTimeout(() => { renew = true, renewTimeout; });
+		setTimeout(() => { renew = true; }, renewTimeout);
 
 		renew = false;
 		selfTyping.set(true);

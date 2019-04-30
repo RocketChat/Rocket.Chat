@@ -344,7 +344,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			logger.outgoing.debug(integration.scriptCompiled.replace(/^/gm, '  ')); // Only output the compiled script if debugging is enabled, so the logs don't get spammed.
 			logger.outgoing.error('Stack:');
 			logger.outgoing.error(e.stack.replace(/^/gm, '  '));
-			return;
 		}
 	}
 

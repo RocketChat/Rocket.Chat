@@ -8,6 +8,7 @@ import { sendEscape } from '../../pageobjects/keyboard';
 import { discussion } from '../../pageobjects/discussion.page';
 import { username, email, password } from '../../data/user.js';
 import { checkIfUserIsValid } from '../../data/checks';
+
 const parentChannelName = 'unit-testing';
 const discussionName = 'Lorem ipsum dolor sit amet';
 const message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';

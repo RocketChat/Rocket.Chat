@@ -419,7 +419,7 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 				value = values[0].textContent;
 			} else {
 				value = [];
-				for (let j = 0;j < values.length;j++) {
+				for (let j = 0; j < values.length; j++) {
 					value.push(values[j].textContent);
 				}
 			}

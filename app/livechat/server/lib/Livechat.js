@@ -445,8 +445,6 @@ export const Livechat = {
 
 			return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
 		}
-
-		return;
 	},
 
 	transfer(room, guest, transferData) {
@@ -876,7 +874,7 @@ export const Livechat = {
 			return false;
 		}
 
-		const message = `${ data.message }`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br>' + '$2');
+		const message = `${ data.message }`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 
 		const html = `
 			<h1>New livechat message</h1>

@@ -271,7 +271,6 @@ OEmbed.rocketUrlParser = function(message) {
 				}
 				item.parsedUrl = data.parsedUrl;
 				changed = true;
-				return;
 			}
 		});
 		if (attachments.length) {
