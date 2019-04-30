@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { WebRTC } from '../../../webrtc/client';
 import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
 import { modal } from '../../../ui-utils';
-import { t, handleError } from '../../../utils';
+import { t, handleError, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
 import { hasAllPermission, hasRole } from '../../../authorization';
 import _ from 'underscore';
@@ -383,7 +383,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				}
 				modal.open({
 					title: t('Are_you_sure'),
-					text: t('The_user_will_be_removed_from_s', room.name),
+					text: t('The_user_will_be_removed_from_s', roomTypes.getRoomName(room.t, room)),
 					type: 'warning',
 					showCancelButton: true,
 					confirmButtonColor: '#DD6B55',
@@ -394,7 +394,7 @@ export const getActions = function({ user, directActions, hideAdminControls }) {
 				}, () => Meteor.call('removeUserFromRoom', { rid, username: user.username }, success(() => {
 					modal.open({
 						title: t('Removed'),
-						text: t('User_has_been_removed_from_s', room.name),
+						text: t('User_has_been_removed_from_s', roomTypes.getRoomName(room.t, room)),
 						type: 'success',
 						timer: 2000,
 						showConfirmButton: false,
