@@ -29969,6 +29969,161 @@
           ]
         }
       ]
+    },
+    "1.0.2": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "mongo_versions": [
+        "3.2",
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "14338",
+          "title": "[FIX] Unread line and new day separator were not aligned ",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14336",
+          "title": "[FIX] Audio notification for messages on DM",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14334",
+          "title": "[IMPROVE] i18n of threads and discussion buttons",
+          "userLogin": "sampaiodiego",
+          "milestone": "1.0.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "14330",
+          "title": "[FIX] Duplicate thread message after editing",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14328",
+          "title": "[FIX] New day separator rendered over thread reply",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.2",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "14320",
+          "title": "[IMPROVE] Better error message when not able to get MongoDB Version",
+          "userLogin": "rodrigok",
+          "milestone": "1.0.2",
+          "contributors": [
+            "rodrigok",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14318",
+          "title": "Add cross-browser select arrow positioning",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "14182",
+          "title": "i18n: Update German strings",
+          "userLogin": "AnBo83",
+          "milestone": "1.0.2",
+          "contributors": [
+            "AnBo83",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14011",
+          "title": "[FIX] Missing i18n for some new Permissions",
+          "userLogin": "lolimay",
+          "milestone": "1.0.2",
+          "contributors": [
+            "lolimay",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14316",
+          "title": "[FIX] View Logs admin page was broken and not rendering color logs",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "14301",
+          "title": "[Regression] Anonymous user fix",
+          "userLogin": "knrt10",
+          "milestone": "1.0.2",
+          "contributors": [
+            "knrt10"
+          ]
+        },
+        {
+          "pr": "14299",
+          "title": "Coerces the MongoDB version string",
+          "userLogin": "thaiphv",
+          "milestone": "1.0.2",
+          "contributors": [
+            "thaiphv"
+          ]
+        },
+        {
+          "pr": "14313",
+          "title": "[FIX] show roles on message",
+          "userLogin": "ggazzo",
+          "milestone": "1.0.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "14075",
+          "title": "[Fix] group name appears instead of the room id",
+          "userLogin": "mohamedar97",
+          "milestone": "1.0.2",
+          "contributors": [
+            "mohamedar97"
+          ]
+        },
+        {
+          "pr": "14311",
+          "title": "[FIX] Remove reference to inexistent field when deleting message in thread",
+          "userLogin": "tassoevan",
+          "milestone": "1.0.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
