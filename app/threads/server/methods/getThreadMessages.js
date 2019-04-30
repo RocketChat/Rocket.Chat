@@ -32,7 +32,7 @@ Meteor.methods({
 
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
-		const result = Messages.find({ tmid }, { ...(skip && { skip }), ...(limit && { limit }), sort: { ts : -1 } }).fetch();
+		const result = Messages.findVisibleThreadByThreadId(tmid, { ...(skip && { skip }), ...(limit && { limit }), sort: { ts : -1 } }).fetch();
 
 		return [thread, ...result];
 	},
