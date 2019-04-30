@@ -11,7 +11,7 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 
 	if (service === 'initials') {
 		return Users.setAvatarOrigin(user._id, service);
-	} else if (service === 'url') {
+	} if (service === 'url') {
 		let result = null;
 
 		try {

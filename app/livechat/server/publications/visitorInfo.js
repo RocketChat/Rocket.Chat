@@ -15,7 +15,6 @@ Meteor.publish('livechat:visitorInfo', function({ rid: roomId }) {
 
 	if (room && room.v && room.v._id) {
 		return LivechatVisitors.findById(room.v._id);
-	} else {
-		return this.ready();
 	}
+	return this.ready();
 });

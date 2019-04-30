@@ -133,8 +133,6 @@ RocketChatFile.GridFS = class {
 		}
 		return this.remove(fileName);
 	}
-
-
 };
 
 RocketChatFile.FileSystem = class {

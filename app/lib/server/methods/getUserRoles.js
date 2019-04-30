@@ -4,7 +4,6 @@ import _ from 'underscore';
 
 Meteor.methods({
 	getUserRoles() {
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUserRoles' });
 		}

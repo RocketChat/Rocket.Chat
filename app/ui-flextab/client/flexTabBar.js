@@ -176,7 +176,7 @@ Template.RoomsActionTab.events({
 		$(e.currentTarget).blur();
 		e.preventDefault();
 		const buttons = TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
-		const groups = [{ items:(t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => ({
+		const groups = [{ items: (t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => ({
 			...item,
 			name: TAPi18n.__(item.i18nTitle),
 			actionDefault: item.action !== action && item.action,

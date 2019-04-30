@@ -20,9 +20,8 @@ export const fileUploadHandler = (directive, meta, file) => {
 
 	if (store) {
 		return new FileUploadBase(store, meta, file);
-	} else {
-		console.error('Invalid file store', directive);
 	}
+	console.error('Invalid file store', directive);
 };
 
 Tracker.autorun(function() {

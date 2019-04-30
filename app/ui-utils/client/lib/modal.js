@@ -106,7 +106,6 @@ Template.rc_modal.helpers({
 	},
 	type() {
 		return this.type && `rc-modal__content-icon rc-modal__content-icon--modal-${ this.type }`;
-
 	},
 	modalIcon() {
 		switch (this.type) {

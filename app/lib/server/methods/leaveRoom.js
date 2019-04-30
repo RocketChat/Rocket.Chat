@@ -6,7 +6,6 @@ import { removeUserFromRoom } from '../functions';
 
 Meteor.methods({
 	leaveRoom(rid) {
-
 		check(rid, String);
 
 		if (!Meteor.userId()) {

@@ -22,7 +22,6 @@ const getBBBAPI = () => {
 
 Meteor.methods({
 	bbbJoin({ rid }) {
-
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
 		}

@@ -7,9 +7,8 @@ import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
 	addAllUserToRoom(rid, activeUsersOnly = false) {
-
-		check (rid, String);
-		check (activeUsersOnly, Boolean);
+		check(rid, String);
+		check(activeUsersOnly, Boolean);
 
 		if (hasRole(this.userId, 'admin') === true) {
 			const userCount = Users.find().count();
@@ -54,10 +53,9 @@ Meteor.methods({
 				return callbacks.run('afterJoinRoom', user, room);
 			});
 			return true;
-		} else {
-			throw (new Meteor.Error(403, 'Access to Method Forbidden', {
-				method: 'addAllToRoom',
-			}));
 		}
+		throw new Meteor.Error(403, 'Access to Method Forbidden', {
+			method: 'addAllToRoom',
+		});
 	},
 });

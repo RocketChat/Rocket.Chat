@@ -11,7 +11,7 @@ import { SideNav } from '../../../ui-utils/client';
 
 Template.viewLogs.onCreated(function() {
 	this.subscribe('stdout');
-	return this.atBottom = true;
+	this.atBottom = true;
 });
 
 Template.viewLogs.helpers({
@@ -63,7 +63,7 @@ Template.viewLogs.onRendered(function() {
 	};
 	template.sendToBottom = function() {
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
-		return newLogs.className = 'new-logs not';
+		newLogs.className = 'new-logs not';
 	};
 	template.checkIfScrollIsAtBottom = function() {
 		template.atBottom = template.isAtBottom(100);
@@ -72,9 +72,9 @@ Template.viewLogs.onRendered(function() {
 	};
 	template.sendToBottomIfNecessary = function() {
 		if (template.atBottom === true && template.isAtBottom() !== true) {
-			return template.sendToBottom();
-		} else if (template.atBottom === false) {
-			return newLogs.className = 'new-logs';
+			template.sendToBottom();
+		} if (template.atBottom === false) {
+			newLogs.className = 'new-logs';
 		}
 	};
 	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 10);
@@ -112,7 +112,7 @@ Template.viewLogs.onRendered(function() {
 		});
 	});
 	wrapper.addEventListener('touchstart', function() {
-		return template.atBottom = false;
+		template.atBottom = false;
 	});
 	wrapper.addEventListener('touchend', function() {
 		Meteor.defer(function() {

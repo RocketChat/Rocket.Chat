@@ -167,7 +167,7 @@ export const QueueMethods = {
 				// fake a subscription in order to make use of the function defined above
 				subscription: {
 					rid: room._id,
-					t : room.t,
+					t: room.t,
 					u: {
 						_id,
 					},

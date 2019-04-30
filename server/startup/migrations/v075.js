@@ -14,4 +14,3 @@ Migrations.add({
 		ServiceConfiguration.configurations.remove({});
 	},
 });
-

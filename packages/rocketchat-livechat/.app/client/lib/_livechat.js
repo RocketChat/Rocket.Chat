@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/tap:i18n';
 import visitor from '../../imports/client/visitor';
 
-this.Livechat = new (class Livechat {
+this.Livechat = new class Livechat {
 	constructor() {
 		this._online = new ReactiveVar(null);
 
@@ -251,4 +251,4 @@ this.Livechat = new (class Livechat {
 	isWidgetOpened() {
 		return this._widgetOpened.get();
 	}
-})();
+}();

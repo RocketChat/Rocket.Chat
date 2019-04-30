@@ -8,7 +8,6 @@ import s from 'underscore.string';
 
 Meteor.methods({
 	deleteUserOwnAccount(password) {
-
 		check(password, String);
 
 		if (!Meteor.userId()) {

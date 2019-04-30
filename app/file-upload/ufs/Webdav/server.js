@@ -9,16 +9,14 @@ import stream from 'stream';
  * @constructor
  */
 export class WebdavStore extends UploadFS.Store {
-
 	constructor(options) {
-
 		super(options);
 
 		const client = createClient(
 			options.connection.credentials.server,
 			{
-				username:options.connection.credentials.username,
-				password:options.connection.credentials.password,
+				username: options.connection.credentials.username,
+				password: options.connection.credentials.password,
 			}
 		);
 

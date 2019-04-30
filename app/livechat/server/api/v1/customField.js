@@ -63,4 +63,3 @@ API.v1.addRoute('livechat/custom.fields', {
 		return API.v1.success({ fields });
 	},
 });
-

@@ -24,9 +24,9 @@ export const getBroadcastStatus = async ({
 		access_token,
 		refresh_token,
 	});
-	const youtube = google.youtube({ version:'v3', auth });
+	const youtube = google.youtube({ version: 'v3', auth });
 	const result = await p((resolve) => youtube.liveBroadcasts.list({
-		part:'id,status',
+		part: 'id,status',
 		id,
 	}, resolve));
 	return result.items && result.items[0] && result.items[0].status.lifeCycleStatus;
@@ -46,9 +46,9 @@ export const statusStreamLiveStream = async ({
 		refresh_token,
 	});
 
-	const youtube = google.youtube({ version:'v3', auth });
+	const youtube = google.youtube({ version: 'v3', auth });
 	const result = await p((resolve) => youtube.liveStreams.list({
-		part:'id,status',
+		part: 'id,status',
 		id,
 	}, resolve));
 	return result.items && result.items[0].status.streamStatus;
@@ -69,10 +69,10 @@ export const statusLiveStream = ({
 		refresh_token,
 	});
 
-	const youtube = google.youtube({ version:'v3', auth });
+	const youtube = google.youtube({ version: 'v3', auth });
 
 	return p((resolve) => youtube.liveBroadcasts.transition({
-		part:'id,status',
+		part: 'id,status',
 		id,
 		broadcastStatus: status,
 	}, resolve));
@@ -93,10 +93,10 @@ export const setBroadcastStatus = ({
 		refresh_token,
 	});
 
-	const youtube = google.youtube({ version:'v3', auth });
+	const youtube = google.youtube({ version: 'v3', auth });
 
 	return p((resolve) => youtube.liveBroadcasts.transition({
-		part:'id,status',
+		part: 'id,status',
 		id,
 		broadcastStatus: status,
 	}, resolve));
@@ -114,7 +114,7 @@ export const createLiveStream = async ({
 		access_token,
 		refresh_token,
 	});
-	const youtube = google.youtube({ version:'v3', auth });
+	const youtube = google.youtube({ version: 'v3', auth });
 
 	const [stream, broadcast] = await Promise.all([p((resolve) => youtube.liveStreams.insert({
 		part: 'id,snippet,cdn,contentDetails,status',
@@ -132,7 +132,7 @@ export const createLiveStream = async ({
 		resource: {
 			snippet: {
 				title: room.name || 'RocketChat Broadcast',
-				scheduledStartTime : new Date().toISOString(),
+				scheduledStartTime: new Date().toISOString(),
 			},
 			status: {
 				privacyStatus: 'unlisted',

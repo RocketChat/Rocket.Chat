@@ -57,7 +57,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
-			groupable: (messageObj.groupable !== undefined) ? messageObj.groupable : false,
+			groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {

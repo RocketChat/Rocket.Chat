@@ -4,7 +4,6 @@ import { Subscriptions } from '../../../models';
 
 Meteor.methods({
 	unblockUser({ rid, blocked }) {
-
 		check(rid, String);
 		check(blocked, String);
 

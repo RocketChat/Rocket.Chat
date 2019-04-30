@@ -44,7 +44,7 @@ registerAccessTokenService('twitter', function(options) {
 
 	const serviceData = {
 		accessToken: options.accessToken,
-		expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
+		expiresAt: +new Date + (1000 * parseInt(options.expiresIn, 10)),
 	};
 
 	const fields = _.pick(identity, whitelistedFields);

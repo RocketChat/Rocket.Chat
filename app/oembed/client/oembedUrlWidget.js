@@ -65,8 +65,7 @@ Template.oembedUrlWidget.helpers({
 	collapsed() {
 		if (this.collapsed != null) {
 			return this.collapsed;
-		} else {
-			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
+		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 	},
 });

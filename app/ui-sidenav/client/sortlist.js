@@ -44,7 +44,7 @@ Template.sortlist.events({
 			value = !value;
 		}
 		Meteor.call('saveUserPreferences', {
-			[name] : value,
+			[name]: value,
 		});
 		popover.close();
 	},

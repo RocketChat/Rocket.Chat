@@ -104,7 +104,7 @@ callbacks.add('oembed:afterParseContent', function(data) {
 						const metas = JSON.parse(data.content.body);
 						_.each(metas, function(value, key) {
 							if (_.isString(value)) {
-								return data.meta[changeCase.camelCase(`oembed_${ key }`)] = value;
+								data.meta[changeCase.camelCase(`oembed_${ key }`)] = value;
 							}
 						});
 						data.meta.oembedUrl = url;

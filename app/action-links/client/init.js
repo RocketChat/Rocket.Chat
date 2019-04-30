@@ -6,7 +6,6 @@ import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { actionLinks } from '../both/lib/actionLinks';
 
 
-
 Template.room.events({
 	'click .action-link'(event, instance) {
 		event.preventDefault();

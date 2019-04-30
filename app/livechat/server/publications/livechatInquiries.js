@@ -16,7 +16,7 @@ Meteor.publish('livechat:inquiry', function(_id) {
 	const cursorHandle = LivechatInquiry.find({
 		agents: this.userId,
 		status: 'open',
-		...(_id && { _id }),
+		..._id && { _id },
 	}).observeChanges({
 		added(_id, record) {
 			return publication.added('rocketchat_livechat_inquiry', _id, record);
@@ -33,5 +33,4 @@ Meteor.publish('livechat:inquiry', function(_id) {
 	return this.onStop(function() {
 		return cursorHandle.stop();
 	});
-
 });

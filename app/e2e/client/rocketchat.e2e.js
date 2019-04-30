@@ -438,7 +438,7 @@ class E2E {
 			return;
 		}
 
-		return await Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async (item) => {
+		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async (item) => {
 			await this.decryptMessage(item);
 		});
 	}

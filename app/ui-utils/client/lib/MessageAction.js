@@ -278,9 +278,8 @@ Meteor.startup(async function() {
 					currentTsDiff = moment().diff(msgTs, 'minutes');
 				}
 				return currentTsDiff < blockEditInMinutes;
-			} else {
-				return true;
 			}
+			return true;
 		},
 		order: 6,
 		group: 'menu',

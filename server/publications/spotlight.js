@@ -83,7 +83,8 @@ Meteor.methods({
 			}
 		} else if (type.users === true && rid) {
 			const subscriptions = Subscriptions.find({
-				rid, 'u.username': {
+				rid,
+				'u.username': {
 					$regex: regex,
 					$nin: [...usernames, Meteor.user().username],
 				},

@@ -8,7 +8,6 @@ import s from 'underscore.string';
 
 Meteor.methods({
 	addOAuthService(name) {
-
 		check(name, String);
 
 		if (!Meteor.userId()) {

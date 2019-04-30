@@ -207,7 +207,6 @@ describe('[Main Elements Render]', function() {
 					flexTab.channelSettingName.waitForVisible();
 					flexTab.channelSettingName.getAttribute('title').should.equal('general');
 				});
-
 			});
 
 			describe('Search Tab:', () => {
@@ -298,7 +297,6 @@ describe('[Main Elements Render]', function() {
 			});
 
 			describe('Mentions Tab:', () => {
-
 				before(() => {
 					if (flexTab.mentionsTab.isVisible()) {
 						this.shouldClose = undefined;

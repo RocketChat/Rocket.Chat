@@ -256,7 +256,7 @@ Template.message.helpers({
 
 		if (msg.i18nLabel) {
 			return t(msg.i18nLabel);
-		} else if (msg.label) {
+		} if (msg.label) {
 			return msg.label;
 		}
 	},
@@ -279,7 +279,7 @@ Template.message.helpers({
 		return Object.entries(reactions)
 			.map(([emoji, reaction]) => {
 				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
-				const displayNames = (reaction.names || reaction.usernames.map((username) => `@${ username }`));
+				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
 				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
 
 				if (displayNames.some((displayName) => displayName === myDisplayName)) {
@@ -403,7 +403,6 @@ Template.message.helpers({
 
 
 const findParentMessage = (() => {
-
 	const waiting = [];
 
 	const getMessages = _.debounce(async function() {
@@ -490,7 +489,7 @@ Template.message.onCreated(function() {
 	if (msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = Tracker.nonreactive(() => renderBody(msg, settings));
+	this.body = Tracker.nonreactive(() => renderBody(msg, settings));
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -621,12 +620,10 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 };
 
 Template.message.onRendered(function() { // duplicate of onViewRendered(NRR) the onRendered works only for non nrr templates
-
 	this.autorun(() => {
 		const currentNode = this.firstNode;
 		processSequentials({ currentNode, ...messageArgs(Template.currentData()) });
 	});
-
 });
 
 Template.message.onViewRendered = function() {

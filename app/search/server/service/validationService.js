@@ -3,10 +3,7 @@ import SearchLogger from '../logger/logger';
 import { Users } from '../../../models';
 
 class ValidationService {
-	constructor() {}
-
 	validateSearchResult(result) {
-
 		const subscriptionCache = {};
 
 		const getSubscription = (rid, uid) => {
@@ -34,7 +31,6 @@ class ValidationService {
 		// get subscription for message
 		if (result.message) {
 			result.message.docs.forEach((msg) => {
-
 				const subscription = getSubscription(msg.rid, uid);
 
 				if (subscription) {

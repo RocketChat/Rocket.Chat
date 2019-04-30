@@ -27,4 +27,3 @@ Template.oauthApps.onRendered(() => {
 		SideNav.openFlex();
 	});
 });
-

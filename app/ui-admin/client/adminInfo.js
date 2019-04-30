@@ -68,9 +68,8 @@ Template.adminInfo.events({
 			instance.ready.set(true);
 			if (error) {
 				return handleError(error);
-			} else {
-				return instance.statistics.set(statistics);
 			}
+			return instance.statistics.set(statistics);
 		});
 	},
 });

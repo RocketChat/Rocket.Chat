@@ -6,12 +6,12 @@ import _ from 'underscore';
 const blockedSettings = {};
 
 if (process.env.SETTINGS_BLOCKED) {
-	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings[settingId] = 1);
+	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => { blockedSettings[settingId] = 1; });
 }
 
 const hiddenSettings = {};
 if (process.env.SETTINGS_HIDDEN) {
-	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => hiddenSettings[settingId] = 1);
+	process.env.SETTINGS_HIDDEN.split(',').forEach((settingId) => { hiddenSettings[settingId] = 1; });
 }
 
 settings._sorter = {};

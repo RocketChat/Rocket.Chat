@@ -13,7 +13,6 @@ import { Subscriptions } from '../../models';
 
 
 function Invite(command, params, item) {
-
 	if (command !== 'invite' || !Match.test(params, String)) {
 		return;
 	}
@@ -59,7 +58,6 @@ function Invite(command, params, item) {
 	});
 
 	users.forEach(function(user) {
-
 		try {
 			return Meteor.call('addUserToRoom', {
 				rid: item.rid,

@@ -3,7 +3,6 @@ import { hasPermission } from '../../../authorization';
 import { Rooms, Messages } from '../../../models';
 
 Meteor.publish('livechat:visitorPageVisited', function({ rid: roomId }) {
-
 	if (!this.userId) {
 		return this.error(new Meteor.Error('error-not-authorized', 'Not authorized', { publish: 'livechat:visitorPageVisited' }));
 	}

@@ -44,7 +44,6 @@ function Open(command, params /* , item*/) {
 		const subscription = Subscriptions.findOne(query);
 		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 	});
-
 }
 
 slashCommands.add('open', Open, {

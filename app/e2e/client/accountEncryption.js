@@ -26,7 +26,7 @@ Template.accountEncryption.helpers({
 		const encryptionKey = instance.encryptionKey.get();
 		const confirmationEncryptionKey = instance.confirmationEncryptionKey.get();
 
-		if ((!encryptionKey || encryptionKey !== confirmationEncryptionKey)) {
+		if (!encryptionKey || encryptionKey !== confirmationEncryptionKey) {
 			return ret;
 		}
 	},
@@ -82,5 +82,4 @@ Template.accountEncryption.onCreated(function() {
 		this.find('[name=encryptionKey]').value = '';
 		this.find('[name=confirmation-encryptionKey]').value = '';
 	};
-
 });

@@ -24,7 +24,7 @@ WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
 	let buf = '';
 	req.setEncoding('utf8');
 	req.on('data', function(chunk) {
-		return buf += chunk;
+		buf += chunk;
 	});
 
 	req.on('end', function() {

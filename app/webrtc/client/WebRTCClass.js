@@ -151,8 +151,6 @@ class WebRTCTransportClass {
 		}
 		callbacks.onRemoteStatus.push(fn);
 	}
-
-
 }
 
 class WebRTCClass {
@@ -954,7 +952,6 @@ class WebRTCClass {
 			peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
 		}
 	}
-
 }
 
 const WebRTC = new class {

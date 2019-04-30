@@ -39,7 +39,7 @@ registerAccessTokenService('google', function(options) {
 	const serviceData = {
 		accessToken: options.accessToken,
 		idToken: options.idToken,
-		expiresAt: (+new Date) + (1000 * parseInt(options.expiresIn, 10)),
+		expiresAt: +new Date + (1000 * parseInt(options.expiresIn, 10)),
 		scope: options.scopes || getScopes(options.accessToken),
 	};
 

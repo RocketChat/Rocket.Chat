@@ -17,11 +17,11 @@ Meteor.methods({
 
 		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 			return false;
-		} else if (!Subscriptions.findOne({ rid: message.rid })) {
+		} if (!Subscriptions.findOne({ rid: message.rid })) {
 			return false;
-		} else if (message.private) {
+		} if (message.private) {
 			return false;
-		} else if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
+		} if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
 			return false;
 		}
 

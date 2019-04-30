@@ -32,12 +32,11 @@ Meteor.methods({
 
 		if (!UI_Use_Real_Name) {
 			return subscriptions;
-		} else {
-			return subscriptions.map((subscription) => {
-				const user = Users.findOneById(subscription.u._id);
-				subscription.u.name = user && user.name;
-				return subscription;
-			});
 		}
+		return subscriptions.map((subscription) => {
+			const user = Users.findOneById(subscription.u._id);
+			subscription.u.name = user && user.name;
+			return subscription;
+		});
 	},
 });

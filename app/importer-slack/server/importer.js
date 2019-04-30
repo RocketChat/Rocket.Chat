@@ -221,7 +221,7 @@ export class SlackImporter extends Base {
 						return;
 					}
 
-					Meteor.runAsUser (startedByUserId, () => {
+					Meteor.runAsUser(startedByUserId, () => {
 						const existantRoom = Rooms.findOneByName(channel.name);
 						if (existantRoom || channel.is_general) {
 							if (channel.is_general && existantRoom && channel.name !== existantRoom.name) {
@@ -377,8 +377,8 @@ export class SlackImporter extends Base {
 													...msgDataDefaults,
 													attachments: [{
 														text: this.convertSlackMessageToRocketChat(message.attachments[0].text),
-														author_name : message.attachments[0].author_subname,
-														author_icon : getUserAvatarURL(message.attachments[0].author_subname),
+														author_name: message.attachments[0].author_subname,
+														author_icon: getUserAvatarURL(message.attachments[0].author_subname),
 													}],
 												};
 												Messages.createWithTypeRoomIdMessageAndUser('message_pinned', room._id, '', this.getRocketUser(message.user), msgObj);

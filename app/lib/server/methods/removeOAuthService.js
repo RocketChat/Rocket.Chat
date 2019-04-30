@@ -6,7 +6,6 @@ import s from 'underscore.string';
 
 Meteor.methods({
 	removeOAuthService(name) {
-
 		check(name, String);
 
 		if (!Meteor.userId()) {

@@ -109,7 +109,7 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 		}
 
 		let pinnedMessage;
-		Meteor.runAsUser(this.userId, () => pinnedMessage = Meteor.call('pinMessage', msg));
+		Meteor.runAsUser(this.userId, () => { pinnedMessage = Meteor.call('pinMessage', msg); });
 
 		return API.v1.success({
 			message: composeMessageObjectWithUser(pinnedMessage, this.userId),
@@ -147,7 +147,7 @@ API.v1.addRoute('chat.search', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, count).message.docs);
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('messageSearch', searchText, roomId, count).message.docs; });
 
 		return API.v1.success({
 			messages: result.map((message) => composeMessageObjectWithUser(message, this.userId)),
@@ -165,7 +165,7 @@ API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 		}
 
 		let message;
-		Meteor.runAsUser(this.userId, () => message = Meteor.call('sendMessage', this.bodyParams.message));
+		Meteor.runAsUser(this.userId, () => { message = Meteor.call('sendMessage', this.bodyParams.message); });
 
 		return API.v1.success({
 			message: composeMessageObjectWithUser(message, this.userId),
@@ -400,7 +400,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		}
 		const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
 		const cursor = Messages.find(threadQuery, {
-			sort: sort ? sort : { ts: 1 },
+			sort: sort || { ts: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -477,7 +477,7 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 		const cursor = Messages.find({ ...query, tmid }, {
-			sort: sort ? sort : { ts: 1 },
+			sort: sort || { ts: 1 },
 			skip: offset,
 			limit: count,
 			fields,

@@ -350,7 +350,6 @@ export class Subscriptions extends Base {
 	}
 
 	findNotificationPreferencesByRoom(query/* { roomId: rid, desktopFilter: desktopNotifications, mobileFilter: mobilePushNotifications, emailFilter: emailNotifications }*/) {
-
 		return this._db.find(query, {
 			fields: {
 
@@ -445,7 +444,7 @@ export class Subscriptions extends Base {
 		const subscriptions = this.find(query).fetch();
 
 		const users = _.compact(_.map(subscriptions, function(subscription) {
-			if ('undefined' !== typeof subscription.u && 'undefined' !== typeof subscription.u._id) {
+			if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
 				return subscription.u._id;
 			}
 		}));
@@ -909,7 +908,7 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	ignoreUser({ _id, ignoredUser : ignored, ignore = true }) {
+	ignoreUser({ _id, ignoredUser: ignored, ignore = true }) {
 		const query = {
 			_id,
 		};

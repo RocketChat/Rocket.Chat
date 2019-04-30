@@ -117,13 +117,11 @@ describe('[Channel]', () => {
 					Global.toastAlert.waitForVisible(5000, true);
 				}
 				flexTab.operateFlexTab('members', false);
-
 			});
 
 			it('it should add people to the room', () => {
 				flexTab.addPeopleToChannel(targetUser);
 			});
-
 		});
 
 		describe('Channel settings:', () => {
@@ -134,7 +132,6 @@ describe('[Channel]', () => {
 						Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('info', true);
-
 				});
 
 				after(() => {
@@ -327,7 +324,6 @@ describe('[Channel]', () => {
 						Global.toastAlert.waitForVisible(5000, true);
 					}
 					flexTab.operateFlexTab('members', true);
-
 				});
 
 				after(() => {
@@ -388,7 +384,6 @@ describe('[Channel]', () => {
 					sideNav.searchChannel(`NAME-EDITED-${ publicChannelName }`);
 					mainContent.joinChannelBtn.waitForVisible(5000);
 					mainContent.joinChannelBtn.click();
-
 				});
 
 				it('it should show the channel on the list', () => {

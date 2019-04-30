@@ -6,7 +6,6 @@ import { archiveRoom } from '../functions';
 
 Meteor.methods({
 	archiveRoom(rid) {
-
 		check(rid, String);
 
 		if (!Meteor.userId()) {

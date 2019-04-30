@@ -78,7 +78,7 @@ export const readMessage = new class extends EventEmitter {
 			const position = unreadMark.position();
 			const visible = (position != null ? position.top : undefined) >= 0;
 			if (!visible && (room.unreadSince.get() != null)) {
-				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', (room.unreadSince.get() != null)); }
+				if (this.debug) { console.log('readMessage -> readNow canceled, unread mark visible:', visible, 'unread since exists', room.unreadSince.get() != null); }
 				return;
 			}
 		// if unread mark is not visible and there is more more not loaded unread messages
@@ -95,11 +95,11 @@ export const readMessage = new class extends EventEmitter {
 	}
 
 	disable() {
-		return this.canReadMessage = false;
+		this.canReadMessage = false;
 	}
 
 	enable() {
-		return this.canReadMessage = document.hasFocus();
+		this.canReadMessage = document.hasFocus();
 	}
 
 	isEnable() {

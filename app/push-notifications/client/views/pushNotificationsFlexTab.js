@@ -181,7 +181,6 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 					await call('saveNotificationSettings', rid, field, value);
 			}
 			this.original[field].set(this.form[field].get());
-
 		});
 	};
 });
@@ -323,7 +322,7 @@ Template.pushNotificationsFlexTab.events({
 			popoverClass: 'notifications-preferences',
 			template: 'pushNotificationsPopover',
 			data: {
-				change : (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
+				change: (value) => instance.form[key].set(key === 'desktopNotificationDuration' ? parseInt(value) : value),
 				value: instance.form[key].get(),
 				options,
 			},

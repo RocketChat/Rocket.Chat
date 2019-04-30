@@ -7,17 +7,15 @@ Template.vrecDialog.helpers({
 	recordIcon() {
 		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recording.get()) {
 			return 'icon-stop';
-		} else {
-			return 'icon-circle';
 		}
+		return 'icon-circle';
 	},
 
 	okDisabled() {
 		if (VideoRecorder.cameraStarted.get() && VideoRecorder.recordingAvailable.get()) {
 			return '';
-		} else {
-			return 'disabled';
 		}
+		return 'disabled';
 	},
 
 	recordDisabled() {

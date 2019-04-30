@@ -27,8 +27,7 @@ Meteor.methods({
 
 		if (results instanceof Promise) {
 			return results.catch((e) => { throw new Meteor.Error(e); });
-		} else {
-			return results;
 		}
+		return results;
 	},
 });

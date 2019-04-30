@@ -27,7 +27,7 @@ Template.messageAttachment.helpers({
 	},
 	loadImage() {
 		if (this.downloadImages !== true) {
-			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad' : 1 } });
+			const user = Users.findOne({ _id: Meteor.userId() }, { fields: { 'settings.autoImageLoad': 1 } });
 			if (getUserPreference(user, 'autoImageLoad') === false) {
 				return false;
 			}
@@ -52,9 +52,8 @@ Template.messageAttachment.helpers({
 	mediaCollapsed() {
 		if (this.collapsed != null) {
 			return this.collapsed;
-		} else {
-			return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 		}
+		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 	},
 	time() {
 		const messageDate = new Date(this.ts);

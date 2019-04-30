@@ -4,7 +4,6 @@ import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
 	'livechat:setUpConnection'(data) {
-
 		check(data, {
 			token: String,
 		});

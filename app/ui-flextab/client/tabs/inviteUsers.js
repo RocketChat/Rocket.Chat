@@ -128,14 +128,14 @@ Template.inviteUsers.onRendered(function() {
 
 Template.inviteUsers.onCreated(function() {
 	this.selectedUsers = new ReactiveVar([]);
-	const filter = { exceptions :[Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
+	const filter = { exceptions: [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username)) };
 	Deps.autorun(() => {
 		filter.exceptions = [Meteor.user().username].concat(this.selectedUsers.get().map((u) => u.username));
 	});
 	this.userFilter = new ReactiveVar('');
 
 	this.ac = new AutoComplete({
-		selector:{
+		selector: {
 			item: '.rc-popup-list__item',
 			container: '.rc-popup-list__list',
 		},

@@ -75,7 +75,7 @@ export default () => {
 					}
 
 					const msg = {
-						msg: `*${ TAPi18n.__('Rocket_Chat_Alert', adminUser.language) }:*\n\n*${ TAPi18n.__(alert.title, adminUser.language) }*\n${ TAPi18n.__(alert.text, ...(alert.textArguments || []), adminUser.language) }\n${ alert.infoUrl }`,
+						msg: `*${ TAPi18n.__('Rocket_Chat_Alert', adminUser.language) }:*\n\n*${ TAPi18n.__(alert.title, adminUser.language) }*\n${ TAPi18n.__(alert.text, ...alert.textArguments || [], adminUser.language) }\n${ alert.infoUrl }`,
 						rid: [adminUser._id, 'rocket.cat'].sort().join(''),
 					};
 

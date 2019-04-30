@@ -13,7 +13,6 @@ const discussionName = 'Lorem ipsum dolor sit amet';
 const message = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
 describe('[Discussion]', function () {
-
 	before(function () {
 		checkIfUserIsValid(username, email, password);
 		sideNav.spotlightSearchIcon.waitForVisible(3000);
@@ -60,5 +59,4 @@ describe('[Discussion]', function () {
 			discussion.deleteRoom(parentChannelName);
 		});
 	});
-
 });

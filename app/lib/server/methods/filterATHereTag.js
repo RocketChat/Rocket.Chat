@@ -17,10 +17,8 @@ callbacks.add('beforeSaveMessage', function(message) {
 
 	// Test if the message mentions include @here.
 	if (message.mentions != null && _.pluck(message.mentions, '_id').some((item) => item === 'here')) {
-
 		// Check if the user has permissions to use @here in both global and room scopes.
 		if (!hasPermission(message.u._id, 'mention-here') && !hasPermission(message.u._id, 'mention-here', message.rid)) {
-
 			// Get the language of the user for the error notification.
 			const { language } = Users.findOneById(message.u._id);
 			const action = TAPi18n.__('Notify_active_in_this_room', {}, language);
@@ -43,5 +41,4 @@ callbacks.add('beforeSaveMessage', function(message) {
 	}
 
 	return message;
-
 }, 1, 'filterATHereTag');

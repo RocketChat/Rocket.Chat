@@ -52,5 +52,4 @@ Template.livechatReadOnly.onCreated(function() {
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().rid }, { fields: { open: 1 } }));
 	});
-
 });

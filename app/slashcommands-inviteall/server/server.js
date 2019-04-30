@@ -13,7 +13,6 @@ import { Notifications } from '../../notifications';
 
 function inviteAll(type) {
 	return function inviteAll(command, params, item) {
-
 		if (!/invite\-all-(to|from)/.test(command) || !Match.test(params, String)) {
 			return;
 		}

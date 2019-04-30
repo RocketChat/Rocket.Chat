@@ -15,7 +15,7 @@ export function publishMessage(message) {
 function shouldPublish(message, { id, directTo }, username) {
 	if (id) {
 		return message.rid === id;
-	} else if (directTo) {
+	} if (directTo) {
 		const room = Rooms.findOne({
 			usernames: { $all: [directTo, username] },
 			t: 'd',

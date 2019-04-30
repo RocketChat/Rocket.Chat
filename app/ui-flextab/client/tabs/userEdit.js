@@ -44,7 +44,7 @@ Template.userEdit.helpers({
 
 	role() {
 		const roles = Template.instance().roles.get();
-		return Roles.find({ _id: { $nin:roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
+		return Roles.find({ _id: { $nin: roles }, scope: 'Users' }, { sort: { description: 1, _id: 1 } });
 	},
 
 	userRoles() {
@@ -173,13 +173,12 @@ Template.userEdit.onCreated(function() {
 		this.$('input[type=checkbox]').prop('checked', true);
 		if (this.user) {
 			return this.data.back(username);
-		} else {
-			return tabBar.close();
 		}
+		return tabBar.close();
 	};
 
 	this.getUserData = () => {
-		const userData = { _id: (this.user != null ? this.user._id : undefined) };
+		const userData = { _id: this.user != null ? this.user._id : undefined };
 		userData.name = s.trim(this.$('#name').val());
 		userData.username = s.trim(this.$('#username').val());
 		userData.email = s.trim(this.$('#email').val());

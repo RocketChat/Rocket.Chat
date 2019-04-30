@@ -28,12 +28,14 @@ API.v1.addRoute('push.token', { authRequired: true }, {
 
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('raix:push-update', {
-			id,
-			token: { [type]: value },
-			appName,
-			userId: this.userId,
-		}));
+		Meteor.runAsUser(this.userId, () => {
+			result = Meteor.call('raix:push-update', {
+				id,
+				token: { [type]: value },
+				appName,
+				userId: this.userId,
+			});
+		});
 
 		return API.v1.success({ result });
 	},

@@ -36,7 +36,7 @@ function job() {
 				{ 'retention.enabled': { $exists: false } },
 			],
 			'retention.overrideGlobal': { $ne: true },
-		}, { fields : { _id: 1 } }).forEach(({ _id: rid }) => {
+		}, { fields: { _id: 1 } }).forEach(({ _id: rid }) => {
 			cleanRoomHistory({ rid, latest, oldest, filesOnly, excludePinned, ignoreDiscussion });
 		});
 	});

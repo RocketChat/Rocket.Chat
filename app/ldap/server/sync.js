@@ -139,11 +139,14 @@ export function getDataToSyncUserData(ldapUser, user) {
 						// TODO: Find a better solution.
 						const dKeys = userField.split('.');
 						const lastKey = _.last(dKeys);
-						_.reduce(dKeys, (obj, currKey) => (
-							(currKey === lastKey)
-								? obj[currKey] = tmpLdapField
-								: obj[currKey] = obj[currKey] || {}
-						), userData);
+						_.reduce(dKeys, (obj, currKey) => {
+							if (currKey === lastKey) {
+								obj[currKey] = tmpLdapField;
+							} else {
+								obj[currKey] = obj[currKey];
+							}
+							return obj[currKey];
+						}, userData);
 						logger.debug(`user.${ userField } changed to: ${ tmpLdapField }`);
 					}
 			}

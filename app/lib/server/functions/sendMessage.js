@@ -50,7 +50,6 @@ const validateAttachmentsFields = (attachmentField) => {
 	if (typeof attachmentField.value !== 'undefined') {
 		attachmentField.value = String(attachmentField.value);
 	}
-
 };
 
 const validateAttachmentsActions = (attachmentActions) => {

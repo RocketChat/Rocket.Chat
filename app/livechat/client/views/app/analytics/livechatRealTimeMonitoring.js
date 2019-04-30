@@ -197,7 +197,7 @@ const updateTimingsOverview = () => {
 
 const displayDepartmentChart = (val) => {
 	const elem = document.getElementsByClassName('lc-chats-per-dept-chart-section')[0];
-	elem.style.display = (val) ? 'block' : 'none';
+	elem.style.display = val ? 'block' : 'none';
 };
 
 const updateVisitorsCount = () => {

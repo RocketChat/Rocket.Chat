@@ -32,7 +32,7 @@ function getSamlProviderConfig(provider) {
 			{ method: 'getSamlProviderConfig' });
 	}
 	const samlProvider = function(element) {
-		return (element.provider === provider);
+		return element.provider === provider;
 	};
 	return Accounts.saml.settings.providers.filter(samlProvider)[0];
 }
@@ -170,10 +170,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
 		};
 
 		return result;
-
-	} else {
-		throw new Error('SAML Profile did not contain an email address');
 	}
+	throw new Error('SAML Profile did not contain an email address');
 });
 
 Accounts.saml.hasCredential = function(credentialToken) {
@@ -308,7 +306,6 @@ const middleware = function(req, res, next) {
 							if (loggedOutUser.length === 1) {
 								logoutRemoveTokens(loggedOutUser[0]._id);
 							}
-
 						};
 
 						fiber(function() {
@@ -330,9 +327,7 @@ const middleware = function(req, res, next) {
 								Location: url,
 							});
 							res.end();
-
 						});
-
 					});
 				} else {
 					_saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
@@ -418,7 +413,6 @@ const middleware = function(req, res, next) {
 				break;
 			default:
 				throw new Error(`Unexpected SAML action ${ samlObject.actionName }`);
-
 		}
 	} catch (err) {
 		closePopup(res, err);

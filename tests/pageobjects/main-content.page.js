@@ -1,7 +1,6 @@
 import Page from './Page';
 
 class MainContent extends Page {
-
 	get mainContent() { return browser.element('.main-content'); }
 
 	// Main Content Header (Channel Title Area)

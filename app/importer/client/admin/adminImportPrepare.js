@@ -250,7 +250,7 @@ Template.adminImportPrepare.onCreated(function() {
 	this.message_count = new ReactiveVar(0);
 
 	function loadSelection(progress) {
-		if ((progress != null ? progress.step : undefined)) {
+		if (progress != null ? progress.step : undefined) {
 			switch (progress.step) {
 				// When the import is running, take the user to the progress page
 				case 'importer_importing_started':
@@ -304,15 +304,13 @@ Template.adminImportPrepare.onCreated(function() {
 					instance.preparing.set(false);
 					return loadSelection(data);
 				});
-			} else {
-				// Otherwise, we might need to do something based upon the current step
-				// of the import
-				return loadSelection(progress);
 			}
+			// Otherwise, we might need to do something based upon the current step
+			// of the import
+			return loadSelection(progress);
 		});
-	} else {
-		return FlowRouter.go('/admin/import');
 	}
+	return FlowRouter.go('/admin/import');
 });
 
 Template.adminImportPrepare.onRendered(() => {

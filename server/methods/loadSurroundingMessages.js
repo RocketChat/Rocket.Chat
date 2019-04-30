@@ -31,7 +31,7 @@ Meteor.methods({
 			return false;
 		}
 
-		limit = limit - 1;
+		limit -= 1;
 
 		const options = {
 			sort: {

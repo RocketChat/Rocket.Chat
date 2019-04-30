@@ -43,7 +43,7 @@ Template.autoTranslateFlexTab.helpers({
 		let language = _.findWhere(supportedLanguages, { language: autoTranslateLanguage });
 		if (language) {
 			return language.language;
-		} else if (autoTranslateLanguage.indexOf('-') !== -1) {
+		} if (autoTranslateLanguage.indexOf('-') !== -1) {
 			language = _.findWhere(supportedLanguages, { language: autoTranslateLanguage.substr(0, 2) });
 			return language && language.language;
 		}
@@ -63,7 +63,7 @@ Template.autoTranslateFlexTab.helpers({
 			let language = _.findWhere(supportedLanguages, { language: targetLanguage });
 			if (language) {
 				return language.name;
-			} else if (targetLanguage.indexOf('-') !== -1) {
+			} if (targetLanguage.indexOf('-') !== -1) {
 				language = _.findWhere(supportedLanguages, { language: targetLanguage.substr(0, 2) });
 				return language && language.name;
 			}

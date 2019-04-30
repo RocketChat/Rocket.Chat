@@ -22,7 +22,7 @@ Template.snippetedMessages.helpers({
 
 Template.snippetedMessages.onCreated(function() {
 	this.rid = this.data.rid;
-	this.cursor = SnippetedMessages.find({ snippeted:true, rid: this.data.rid }, { sort: { ts: -1 } });
+	this.cursor = SnippetedMessages.find({ snippeted: true, rid: this.data.rid }, { sort: { ts: -1 } });
 	this.hasMore = new ReactiveVar(true);
 	this.limit = new ReactiveVar(50);
 	this.autorun(() => {

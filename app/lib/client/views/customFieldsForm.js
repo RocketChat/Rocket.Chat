@@ -34,7 +34,7 @@ Template.customFieldsForm.helpers({
 
 		if (typeof formData[field.fieldName] !== 'undefined') {
 			return formData[field.fieldName] === current;
-		} else if (typeof field.defaultValue !== 'undefined') {
+		} if (typeof field.defaultValue !== 'undefined') {
 			return field.defaultValue === current;
 		}
 	},

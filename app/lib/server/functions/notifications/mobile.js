@@ -33,7 +33,7 @@ async function getBadgeCount(userId) {
 }
 
 function canSendMessageToRoom(room, username) {
-	return !((room.muted || []).includes(username));
+	return !(room.muted || []).includes(username);
 }
 
 export async function sendSinglePush({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {

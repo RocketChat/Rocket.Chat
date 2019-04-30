@@ -21,7 +21,6 @@ import { logger } from './logger';
 import { SlackAPI } from './SlackAPI';
 
 export default class SlackAdapter {
-
 	constructor(slackBridge) {
 		logger.slack.debug('constructor');
 		this.slackBridge = slackBridge;
@@ -200,8 +199,6 @@ export default class SlackAdapter {
 					logger.slack.error('Unhandled error onChannelLeft', err);
 				}
 			}
-
-
 		}));
 
 		/**
@@ -506,7 +503,7 @@ export default class SlackAdapter {
 	 */
 	addSlackChannel(rocketChID, slackChID) {
 		const ch = this.getSlackChannel(rocketChID);
-		if (null == ch) {
+		if (ch == null) {
 			this.slackChannelRocketBotMembershipMap.set(rocketChID, { id: slackChID, family: slackChID.charAt(0) === 'C' ? 'channels' : 'groups' });
 		}
 	}
@@ -711,7 +708,7 @@ export default class SlackAdapter {
 	processChannelJoin(slackMessage) {
 		logger.slack.debug('Channel join', slackMessage.channel.id);
 		const rocketCh = this.rocket.addChannel(slackMessage.channel);
-		if (null != rocketCh) {
+		if (rocketCh != null) {
 			this.addSlackChannel(rocketCh._id, slackMessage.channel);
 		}
 	}
@@ -955,10 +952,10 @@ export default class SlackAdapter {
 					username: rocketUser.username,
 				},
 				attachments: [{
-					text : this.rocket.convertSlackMsgTxtToRocketTxtFormat(slackMessage.attachments[0].text),
-					author_name : slackMessage.attachments[0].author_subname,
-					author_icon : getUserAvatarURL(slackMessage.attachments[0].author_subname),
-					ts : new Date(parseInt(slackMessage.attachments[0].ts.split('.')[0]) * 1000),
+					text: this.rocket.convertSlackMsgTxtToRocketTxtFormat(slackMessage.attachments[0].text),
+					author_name: slackMessage.attachments[0].author_subname,
+					author_icon: getUserAvatarURL(slackMessage.attachments[0].author_subname),
+					ts: new Date(parseInt(slackMessage.attachments[0].ts.split('.')[0]) * 1000),
 				}],
 			};
 
@@ -967,9 +964,8 @@ export default class SlackAdapter {
 			}
 
 			return rocketMsgObj;
-		} else {
-			logger.slack.error('Pinned item with no attachment');
 		}
+		logger.slack.error('Pinned item with no attachment');
 	}
 
 	processSubtypedMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
@@ -1166,10 +1162,10 @@ export default class SlackAdapter {
 							username: user.username,
 						},
 						attachments: [{
-							text : this.rocket.convertSlackMsgTxtToRocketTxtFormat(pin.message.text),
-							author_name : user.username,
-							author_icon : getUserAvatarURL(user.username),
-							ts : new Date(parseInt(pin.message.ts.split('.')[0]) * 1000),
+							text: this.rocket.convertSlackMsgTxtToRocketTxtFormat(pin.message.text),
+							author_name: user.username,
+							author_icon: getUserAvatarURL(user.username),
+							ts: new Date(parseInt(pin.message.ts.split('.')[0]) * 1000),
 						}],
 					};
 
@@ -1196,21 +1192,16 @@ export default class SlackAdapter {
 				this.copyPins(rid, this.getSlackChannel(rid));
 
 				return callback();
-			} else {
-				const slack_room = this.postFindChannel(rocketchat_room.name);
-				if (slack_room) {
-					this.addSlackChannel(rid, slack_room.id);
-					return this.importMessages(rid, callback);
-				} else {
-					logger.slack.error('Could not find Slack room with specified name', rocketchat_room.name);
-					return callback(new Meteor.Error('error-slack-room-not-found', 'Could not find Slack room with specified name'));
-				}
 			}
-		} else {
-			logger.slack.error('Could not find Rocket.Chat room with specified id', rid);
-			return callback(new Meteor.Error('error-invalid-room', 'Invalid room'));
+			const slack_room = this.postFindChannel(rocketchat_room.name);
+			if (slack_room) {
+				this.addSlackChannel(rid, slack_room.id);
+				return this.importMessages(rid, callback);
+			}
+			logger.slack.error('Could not find Slack room with specified name', rocketchat_room.name);
+			return callback(new Meteor.Error('error-slack-room-not-found', 'Could not find Slack room with specified name'));
 		}
+		logger.slack.error('Could not find Rocket.Chat room with specified id', rid);
+		return callback(new Meteor.Error('error-invalid-room', 'Invalid room'));
 	}
-
 }
-

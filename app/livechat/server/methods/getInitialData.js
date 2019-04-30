@@ -42,7 +42,7 @@ Meteor.methods({
 				departmentId: 1,
 			},
 		};
-		const room = (departmentId) ? Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
+		const room = departmentId ? Rooms.findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options).fetch() : Rooms.findOpenByVisitorToken(visitorToken, options).fetch();
 		if (room && room.length > 0) {
 			info.room = room[0];
 		}

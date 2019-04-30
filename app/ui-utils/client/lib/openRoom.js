@@ -44,7 +44,7 @@ function replaceCenterDomBy(dom) {
 export const openRoom = function(type, name) {
 	Session.set('openedRoom', null);
 
-	return Meteor.defer(() =>
+	return Meteor.defer(() => {
 		window.currentTracker = Tracker.autorun(function(c) {
 			const user = Meteor.user();
 			if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
@@ -68,22 +68,20 @@ export const openRoom = function(type, name) {
 						if (!error) {
 							RoomManager.close(type + name);
 							return openRoom('d', name);
-						} else {
-							Session.set('roomNotFound', { type, name, error });
-							BlazeLayout.render('main', { center: 'roomNotFound' });
-							return;
 						}
+						Session.set('roomNotFound', { type, name, error });
+						BlazeLayout.render('main', { center: 'roomNotFound' });
+						return;
 					});
 				} else {
 					Meteor.call('getRoomByTypeAndName', type, name, function(error, record) {
 						if (error) {
 							Session.set('roomNotFound', { type, name, error });
 							return BlazeLayout.render('main', { center: 'roomNotFound' });
-						} else {
-							Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
-							RoomManager.close(type + name);
-							return openRoom(type, name);
 						}
+						Rooms.upsert({ _id: record._id }, _.omit(record, '_id'));
+						RoomManager.close(type + name);
+						return openRoom(type, name);
 					});
 				}
 				return;
@@ -123,6 +121,6 @@ export const openRoom = function(type, name) {
 			}
 
 			return callbacks.run('enter-room', sub);
-		})
-	);
+		});
+	});
 };

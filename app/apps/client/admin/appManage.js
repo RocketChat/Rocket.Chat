@@ -194,7 +194,7 @@ Template.apps.onDestroyed(function() {
 Template.appManage.helpers({
 	isEmail,
 	_(key, ...args) {
-		const options = (args.pop()).hash;
+		const options = args.pop().hash;
 		if (!_.isEmpty(args)) {
 			options.sprintf = args;
 		}
@@ -300,7 +300,7 @@ Template.appManage.helpers({
 	parseDescription(i18nDescription) {
 		const item = Markdown.parseMessageNotEscaped({ html: Template.instance().__(i18nDescription) });
 
-		item.tokens.forEach((t) => item.html = item.html.replace(t.token, t.text));
+		item.tokens.forEach((t) => { item.html = item.html.replace(t.token, t.text); });
 
 		return item.html;
 	},
@@ -439,20 +439,19 @@ Template.appManage.events({
 			const result = await APIClient.post(`apps/${ t.id.get() }/settings`, undefined, { settings: toSave });
 			console.log('Updating results:', result);
 			result.updated.forEach((setting) => {
-				settings[setting.id].value = settings[setting.id].oldValue = setting.value;
+				settings[setting.id].value = setting.value;
+				settings[setting.id].oldValue = setting.value;
 			});
 			Object.keys(settings).forEach((k) => {
 				const setting = settings[k];
 				setting.hasChanged = false;
 			});
 			t.settings.set(settings);
-
 		} catch (e) {
 			console.log(e);
 		} finally {
 			t.loading.set(false);
 		}
-
 	},
 
 	'change input[type="checkbox"]': (e, t) => {
@@ -470,7 +469,7 @@ Template.appManage.events({
 		}
 	},
 
-	'change .rc-select__element' : (e, t) => {
+	'change .rc-select__element': (e, t) => {
 		const labelFor = $(e.currentTarget).attr('name');
 		const value = $(e.currentTarget).val();
 

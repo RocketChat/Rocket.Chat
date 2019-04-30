@@ -8,7 +8,7 @@ Template.livechatTriggerAction.helpers({
 		if (this.name === undefined && Template.instance().firstAction) {
 			Template.instance().firstAction = false;
 			return '';
-		} else if (this.name !== current) {
+		} if (this.name !== current) {
 			return 'hidden';
 		}
 	},

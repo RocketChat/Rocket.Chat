@@ -210,7 +210,6 @@ Template.visitorInfo.events({
 			}
 
 			return closeRoom(inputValue);
-
 		});
 	},
 

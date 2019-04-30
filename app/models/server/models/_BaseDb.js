@@ -60,7 +60,6 @@ export class BaseDb extends EventEmitter {
 	}
 
 	setUpdatedAt(record = {}) {
-
 		// TODO: Check if this can be deleted, Rodrigo does not rememebr WHY he added it. So he removed it to fix issue #5541
 		// setUpdatedAt(record = {}, checkQuery = false, query) {
 		// if (checkQuery === true) {
@@ -244,9 +243,8 @@ export class BaseDb extends EventEmitter {
 
 			this.upsert(...args);
 			return _id;
-		} else {
-			return this.insert(...args);
 		}
+		return this.insert(...args);
 	}
 
 	allow(...args) {

@@ -25,7 +25,6 @@ Template.textareaAutocomplete.events(acEvents);
 
 const attributes = function() {
 	return _.omit(this, 'settings'); // Render all but the settings parameter
-
 };
 
 const autocompleteHelpers = {

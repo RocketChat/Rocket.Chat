@@ -6,8 +6,6 @@ import s from 'underscore.string';
 import katex from 'katex';
 
 class Boundary {
-	constructor() {}
-
 	length() {
 		return this.end - this.start;
 	}
@@ -148,7 +146,8 @@ class Katex {
 			// Set what comes after the latex block to be examined next
 			str = parts.after;
 		}
-		return result += str;
+		result += str;
+		return result;
 	}
 
 	renderMessage = (message) => {

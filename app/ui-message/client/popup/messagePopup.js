@@ -25,7 +25,7 @@ function getCursorPosition(input) {
 	}
 	if (input.selectionStart != null) {
 		return input.selectionStart;
-	} else if (document.selection != null) {
+	} if (document.selection != null) {
 		input.focus();
 		const sel = document.selection.createRange();
 		const selLen = document.selection.createRange().text.length;
@@ -41,7 +41,7 @@ function setCursorPosition(input, caretPos) {
 	if (input.selectionStart != null) {
 		input.focus();
 		return input.setSelectionRange(caretPos, caretPos);
-	} else if (document.selection != null) {
+	} if (document.selection != null) {
 		const range = input.createTextRange();
 		range.move('character', caretPos);
 		return range.select();
@@ -51,9 +51,8 @@ function setCursorPosition(input, caretPos) {
 function val(v, d) {
 	if (v != null) {
 		return v;
-	} else {
-		return d;
 	}
+	return d;
 }
 
 Template.messagePopup.onCreated(function() {
@@ -109,9 +108,8 @@ Template.messagePopup.onCreated(function() {
 			if (first != null) {
 				first.className += ' selected sidebar-item__popup-active';
 				return template.value.set(first.getAttribute('data-id'));
-			} else {
-				return template.value.set(null);
 			}
+			return template.value.set(null);
 		}
 	};
 	template.onInputKeydown = (event) => {
@@ -186,9 +184,8 @@ Template.messagePopup.onCreated(function() {
 			return Meteor.defer(function() {
 				return template.verifySelection();
 			});
-		} else {
-			return template.open.set(false);
 		}
+		return template.open.set(false);
 	};
 
 	template.onBlur = () => {
@@ -293,7 +290,7 @@ Template.messagePopup.events({
 	},
 	'mousedown .popup-item, touchstart .popup-item'() {
 		const template = Template.instance();
-		return template.clickingItem = true;
+		template.clickingItem = true;
 	},
 	'mouseup .popup-item, touchend .popup-item'() {
 		const template = Template.instance();

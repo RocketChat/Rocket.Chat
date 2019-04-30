@@ -9,7 +9,7 @@ Meteor.startup(function() {
 	Tracker.autorun(function() {
 		TabBar.removeButton('livestream');
 		if (settings.get('Livestream_enabled')) {
-			const live = Rooms.findOne({ _id: Session.get('openedRoom'), 'streamingOptions.type': 'livestream', 'streamingOptions.id': { $exists :1 } }, { fields: { streamingOptions: 1 } });
+			const live = Rooms.findOne({ _id: Session.get('openedRoom'), 'streamingOptions.type': 'livestream', 'streamingOptions.id': { $exists: 1 } }, { fields: { streamingOptions: 1 } });
 			TabBar.size = live ? 5 : 4;
 			return TabBar.addButton({
 				groups: ['channel', 'group'],

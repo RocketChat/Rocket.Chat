@@ -48,9 +48,8 @@ Template.permissions.events({
 
 		if (instance.permissionByRole[permission].indexOf(role) === -1) {
 			return Meteor.call('authorization:addPermissionToRole', permission, role);
-		} else {
-			return Meteor.call('authorization:removeRoleFromPermission', permission, role);
 		}
+		return Meteor.call('authorization:removeRoleFromPermission', permission, role);
 	},
 });
 

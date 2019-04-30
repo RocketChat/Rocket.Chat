@@ -80,11 +80,10 @@ Template.integrationsOutgoingHistory.helpers({
 	iconClass(history) {
 		if (typeof history.error !== 'undefined' && history.error) {
 			return 'icon-cancel-circled error-color';
-		} else if (history.finished) {
+		} if (history.finished) {
 			return 'icon-ok-circled success-color';
-		} else {
-			return 'icon-help-circled';
 		}
+		return 'icon-help-circled';
 	},
 
 	statusI18n(error) {
@@ -106,11 +105,10 @@ Template.integrationsOutgoingHistory.helpers({
 	jsonStringify(data) {
 		if (!data) {
 			return '';
-		} else if (typeof data === 'object') {
+		} if (typeof data === 'object') {
 			return hljs.highlight('json', JSON.stringify(data, null, 2)).value;
-		} else {
-			return hljs.highlight('json', data).value;
 		}
+		return hljs.highlight('json', data).value;
 	},
 
 	integrationId() {

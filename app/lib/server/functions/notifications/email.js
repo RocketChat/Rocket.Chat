@@ -137,7 +137,6 @@ export function shouldNotifyEmail({
 	hasReplyToThread,
 	roomType,
 }) {
-
 	// use connected (don't need to send him an email)
 	if (statusConnection === 'online') {
 		return false;

@@ -42,7 +42,6 @@ Meteor.methods({
 		Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
 
 		try {
-
 			Accounts.emailTemplates.resetPassword.subject = function(/* userModel*/) {
 				return subject; // TODO check a better way to do this
 			};

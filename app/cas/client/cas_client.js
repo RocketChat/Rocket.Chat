@@ -4,18 +4,17 @@ import { Random } from 'meteor/random';
 import { settings } from '../../settings';
 
 const openCenteredPopup = function(url, width, height) {
-
 	const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
 	const screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
 	const outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
-	const outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+	const outerHeight = typeof window.outerHeight !== 'undefined' ? window.outerHeight : document.body.clientHeight - 22;
 	// XXX what is the 22?
 
 	// Use `outerWidth - width` and `outerHeight - height` for help in
 	// positioning the popup centered relative to the current window
 	const left = screenX + (outerWidth - width) / 2;
 	const top = screenY + (outerHeight - height) / 2;
-	const features = (`width=${ width },height=${ height },left=${ left },top=${ top },scrollbars=yes`);
+	const features = `width=${ width },height=${ height },left=${ left },top=${ top },scrollbars=yes`;
 
 	const newwindow = window.open(url, 'Login', features);
 	if (newwindow.focus) {
@@ -39,7 +38,7 @@ Meteor.loginWithCas = function(options, callback) {
 
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	// check if the provided CAS URL already has some parameters
-	const delim = (login_url.split('?').length > 1) ? '&' : '?';
+	const delim = login_url.split('?').length > 1 ? '&' : '?';
 	const loginUrl = `${ login_url }${ delim }service=${ appUrl }/_cas/${ credentialToken }`;
 
 	const popup = openCenteredPopup(

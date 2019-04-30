@@ -56,7 +56,7 @@ export class E2ERoom {
 		}
 
 		if (this.establishing.get()) {
-			return await this.readyPromise;
+			return this.readyPromise;
 		}
 
 		console.log('E2E -> Initiating handshake');

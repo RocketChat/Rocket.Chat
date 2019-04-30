@@ -26,9 +26,8 @@ export const AccountBox = (function() {
 	function toggle() {
 		if (status) {
 			return close();
-		} else {
-			return open();
 		}
+		return open();
 	}
 	function openFlex() {
 		status = 0;

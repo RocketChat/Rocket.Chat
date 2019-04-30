@@ -15,7 +15,7 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 		if (this.roomTypes[roomType] == null) {
 			this.roomTypes[roomType] = {};
 		}
-		return this.roomTypes[roomType].publish = callback;
+		this.roomTypes[roomType].publish = callback;
 	}
 
 	setRoomFind(roomType, callback) {
@@ -25,7 +25,7 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 		if (this.roomTypes[roomType] == null) {
 			this.roomTypes[roomType] = {};
 		}
-		return this.roomTypes[roomType].roomFind = callback;
+		this.roomTypes[roomType].roomFind = callback;
 	}
 
 	getRoomFind(roomType) {
@@ -46,5 +46,4 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 	runPublish(scope, roomType, identifier) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].publish && this.roomTypes[roomType].publish.call(scope, identifier);
 	}
-
 };

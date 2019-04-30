@@ -58,11 +58,11 @@ export class Base {
 	 */
 	static getBSONSafeArraysFromAnArray(theArray) {
 		const BSONSize = Base.getBSONSize(theArray);
-		const maxSize = Math.floor(theArray.length / (Math.ceil(BSONSize / Base.getMaxBSONSize())));
+		const maxSize = Math.floor(theArray.length / Math.ceil(BSONSize / Base.getMaxBSONSize()));
 		const safeArrays = [];
 		let i = 0;
 		while (i < theArray.length) {
-			safeArrays.push(theArray.slice(i, (i += maxSize)));
+			safeArrays.push(theArray.slice(i, i += maxSize));
 		}
 		return safeArrays;
 	}

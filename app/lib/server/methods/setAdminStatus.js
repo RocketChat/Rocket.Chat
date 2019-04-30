@@ -4,7 +4,6 @@ import { hasPermission } from '../../../authorization';
 
 Meteor.methods({
 	setAdminStatus(userId, admin) {
-
 		check(userId, String);
 		check(admin, Match.Optional(Boolean));
 
@@ -20,8 +19,7 @@ Meteor.methods({
 
 		if (admin) {
 			return Meteor.call('authorization:addUserToRole', 'admin', user.username);
-		} else {
-			return Meteor.call('authorization:removeUserFromRole', 'admin', user.username);
 		}
+		return Meteor.call('authorization:removeUserFromRole', 'admin', user.username);
 	},
 });

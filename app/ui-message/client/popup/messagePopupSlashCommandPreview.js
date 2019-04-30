@@ -24,7 +24,7 @@ function getCursorPosition(input) {
 
 	if (input.selectionStart) {
 		return input.selectionStart;
-	} else if (document.selection) {
+	} if (document.selection) {
 		input.focus();
 		const sel = document.selection.createRange();
 		const selLen = document.selection.createRange().text.length;

@@ -15,8 +15,7 @@ Meteor.methods({
 
 		if (refresh) {
 			return statistics.save();
-		} else {
-			return Statistics.findLast();
 		}
+		return Statistics.findLast();
 	},
 });

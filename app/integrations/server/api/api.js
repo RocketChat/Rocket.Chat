@@ -80,7 +80,8 @@ function buildSandbox(store = {}) {
 		Livechat,
 		Store: {
 			set(key, val) {
-				return store[key] = val;
+				store[key] = val;
+				return val;
 			},
 			get(key) {
 				return store[key];
@@ -98,7 +99,7 @@ function buildSandbox(store = {}) {
 			}
 		},
 	};
-	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => sandbox[k] = Models[k]);
+	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => { sandbox[k] = Models[k]; });
 	return { store, sandbox	};
 }
 
@@ -264,7 +265,7 @@ function executeIntegrationRest() {
 			if (!result) {
 				logger.incoming.debug('[Process Incoming Request result of Trigger', this.integration.name, ':] No data');
 				return API.v1.success();
-			} else if (result && result.error) {
+			} if (result && result.error) {
 				return API.v1.failure(result.error);
 			}
 

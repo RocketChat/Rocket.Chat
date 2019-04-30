@@ -16,10 +16,10 @@ Meteor.methods({
 
 		// For all subscriptions without E2E key, get the rooms that have encryption enabled
 		const query = {
-			e2eKeyId : {
+			e2eKeyId: {
 				$exists: true,
 			},
-			_id : {
+			_id: {
 				$in: roomIds,
 			},
 		};

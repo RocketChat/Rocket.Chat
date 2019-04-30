@@ -155,10 +155,9 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		if (historyId) {
 			Models.IntegrationHistory.update({ _id: historyId }, { $set: history });
 			return historyId;
-		} else {
-			history._createdAt = new Date();
-			return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
 		}
+		history._createdAt = new Date();
+		return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
@@ -220,7 +219,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			Fiber,
 			Promise,
 			Store: {
-				set: (key, val) => store[key] = val,
+				set: (key, val) => { store[key] = val; },
 				get: (key) => store[key],
 			},
 			HTTP: (method, url, options) => {

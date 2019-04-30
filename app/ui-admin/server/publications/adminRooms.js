@@ -42,11 +42,10 @@ Meteor.publish('adminRooms', function(filter, types, limit) {
 	if (filter && types.length) {
 		// CACHE: can we stop using publications here?
 		return Rooms.findByNameContainingAndTypes(filter, types, options);
-	} else if (types.length) {
+	} if (types.length) {
 		// CACHE: can we stop using publications here?
 		return Rooms.findByTypes(types, options);
-	} else {
-		// CACHE: can we stop using publications here?
-		return Rooms.findByNameContaining(filter, options);
 	}
+	// CACHE: can we stop using publications here?
+	return Rooms.findByNameContaining(filter, options);
 });

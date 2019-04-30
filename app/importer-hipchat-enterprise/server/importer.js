@@ -277,7 +277,7 @@ export class HipChatEnterpriseImporter extends Base {
 			if (m.UserMessage) {
 				const newId = `hipchatenterprise-${ id }-user-${ m.UserMessage.id }`;
 				const skipMessage = this._checkIfMessageExists(newId);
-				const skipAttachment = (skipMessage && (m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true));
+				const skipAttachment = skipMessage && (m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
 
 				if (!skipMessage || !skipAttachment) {
 					roomMsgs.push({
@@ -385,7 +385,7 @@ export class HipChatEnterpriseImporter extends Base {
 				await this.prepareRoomsFile(file);
 				break;
 			case 'history.json':
-				return await this.prepareMessagesFile(file, info);
+				return this.prepareMessagesFile(file, info);
 			case 'emoticons.json':
 				this.logger.error('HipChat Enterprise importer doesn\'t import emoticons.', info);
 				break;
@@ -1125,7 +1125,6 @@ export class HipChatEnterpriseImporter extends Base {
 				super.addCountCompleted(msgCount);
 			}
 		});
-
 	}
 
 	async _importMessages(startedByUserId) {

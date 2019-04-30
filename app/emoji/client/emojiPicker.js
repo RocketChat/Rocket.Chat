@@ -143,9 +143,8 @@ Template.emojiPicker.helpers({
 
 		if (searchTerm.length > 0) {
 			return getEmojisBySearchTerm(searchTerm);
-		} else {
-			return getEmojisByCategory(category);
 		}
+		return getEmojisByCategory(category);
 	},
 	currentTone() {
 		return `tone-${ Template.instance().tone }`;
@@ -172,9 +171,8 @@ Template.emojiPicker.helpers({
 
 		if (searchTerm.length > 0) {
 			return TAPi18n.__('Search');
-		} else {
-			return categoryName(hash);
 		}
+		return categoryName(hash);
 	},
 });
 

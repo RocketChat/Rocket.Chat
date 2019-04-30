@@ -73,7 +73,6 @@ Template.threads.onCreated(async function() {
 
 
 	this.incLimit = () => {
-
 		const { rid, limit } = Tracker.nonreactive(() => this.state.all());
 
 		const count = this.Threads.find({ rid }).count();
@@ -98,7 +97,6 @@ Template.threads.onCreated(async function() {
 		upsert(this.Threads, threads);
 		// threads.forEach(({ _id, ...msg }) => this.Threads.upsert({ _id }, msg));
 		this.state.set('loading', false);
-
 	}, 500);
 
 	Tracker.afterFlush(() => {

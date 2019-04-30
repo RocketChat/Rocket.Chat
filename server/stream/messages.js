@@ -22,7 +22,6 @@ msgStream.allowRead(function(eventName, args) {
 
 		return true;
 	} catch (error) {
-
 		/* error*/
 		return false;
 	}
@@ -43,7 +42,6 @@ msgStream.allowEmit(MY_MESSAGE, function(eventName, msg) {
 			roomType: room.t,
 			roomName: room.name,
 		};
-
 	} catch (error) {
 		/* error*/
 		return false;

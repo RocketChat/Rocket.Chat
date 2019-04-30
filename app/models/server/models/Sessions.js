@@ -117,9 +117,9 @@ export class Sessions extends Base {
 			}, {
 				$group: {
 					_id: {
-						type : '$devices.type',
-						name : '$devices.name',
-						version : '$devices.version',
+						type: '$devices.type',
+						name: '$devices.name',
+						version: '$devices.version',
 					},
 					count: {
 						$sum: '$count',
@@ -164,8 +164,8 @@ export class Sessions extends Base {
 			}, {
 				$group: {
 					_id: {
-						name : '$devices.os.name',
-						version : '$devices.os.version',
+						name: '$devices.os.name',
+						version: '$devices.os.version',
 					},
 					count: {
 						$sum: '$count',

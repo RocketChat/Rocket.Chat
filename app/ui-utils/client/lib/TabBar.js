@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-export const TabBar = new (class TabBar {
+export const TabBar = new class TabBar {
 	get size() {
 		return this._size.get();
 	}
@@ -31,7 +31,7 @@ export const TabBar = new (class TabBar {
 		btns[config.id] = config;
 
 		if (this.extraGroups[config.id]) {
-			btns[config.id].groups = _.union((btns[config.id].groups || []), this.extraGroups[config.id]);
+			btns[config.id].groups = _.union(btns[config.id].groups || [], this.extraGroups[config.id]);
 		}
 
 		this.buttons.set(btns);
@@ -64,20 +64,20 @@ export const TabBar = new (class TabBar {
 	addGroup(id, groups) {
 		const btns = this.buttons.curValue;
 		if (btns[id]) {
-			btns[id].groups = _.union((btns[id].groups || []), groups);
+			btns[id].groups = _.union(btns[id].groups || [], groups);
 			this.buttons.set(btns);
 		} else {
-			this.extraGroups[id] = _.union((this.extraGroups[id] || []), groups);
+			this.extraGroups[id] = _.union(this.extraGroups[id] || [], groups);
 		}
 	}
 
 	removeGroup(id, groups) {
 		const btns = this.buttons.curValue;
 		if (btns[id]) {
-			btns[id].groups = _.difference((btns[id].groups || []), groups);
+			btns[id].groups = _.difference(btns[id].groups || [], groups);
 			this.buttons.set(btns);
 		} else {
-			this.extraGroups[id] = _.difference((this.extraGroups[id] || []), groups);
+			this.extraGroups[id] = _.difference(this.extraGroups[id] || [], groups);
 		}
 	}
-});
+};

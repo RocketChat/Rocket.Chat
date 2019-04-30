@@ -4,7 +4,6 @@ import { saveUser } from '../functions';
 
 Meteor.methods({
 	insertOrUpdateUser(userData) {
-
 		check(userData, Object);
 
 		if (!Meteor.userId()) {

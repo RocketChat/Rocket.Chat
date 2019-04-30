@@ -54,4 +54,3 @@ export function getCredentials(done = function() {}) {
 		})
 		.end(done);
 }
-

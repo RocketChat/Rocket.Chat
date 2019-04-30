@@ -76,9 +76,7 @@ Meteor.methods({
 
 		if (response && response.statusCode && response.statusCode === 200) {
 			return true;
-		} else {
-			throw new Meteor.Error('error-invalid-webhook-response');
 		}
+		throw new Meteor.Error('error-invalid-webhook-response');
 	},
 });
-

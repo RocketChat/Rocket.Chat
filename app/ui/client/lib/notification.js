@@ -31,7 +31,7 @@ export const KonchatNotification = {
 
 	notify(notification) {
 		if (window.Notification && Notification.permission === 'granted') {
-			const message = { rid: (notification.payload != null ? notification.payload.rid : undefined), msg: notification.text, notification: true };
+			const message = { rid: notification.payload != null ? notification.payload.rid : undefined, msg: notification.text, notification: true };
 			return promises.run('onClientMessageReceived', message).then(function(message) {
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
@@ -43,7 +43,7 @@ export const KonchatNotification = {
 
 				const notificationDuration = notification.duration - 0 || getUserPreference(Meteor.userId(), 'desktopNotificationDuration') - 0;
 				if (notificationDuration > 0) {
-					setTimeout((() => n.close()), notificationDuration * 1000);
+					setTimeout(() => n.close(), notificationDuration * 1000);
 				}
 
 				if (notification.payload && notification.payload.rid) {

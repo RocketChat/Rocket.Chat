@@ -147,7 +147,8 @@ const debounce = (fn, delay) => {
 		if (timer != null) {
 			Meteor.clearTimeout(timer);
 		}
-		return timer = Meteor.setTimeout(fn, delay);
+		timer = Meteor.setTimeout(fn, delay);
+		return timer;
 	};
 };
 const serviceName = 'saml';

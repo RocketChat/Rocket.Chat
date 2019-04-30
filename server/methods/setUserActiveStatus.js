@@ -61,6 +61,5 @@ Meteor.methods({
 
 
 		return true;
-
 	},
 });

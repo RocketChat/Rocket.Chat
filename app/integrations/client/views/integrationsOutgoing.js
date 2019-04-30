@@ -326,8 +326,8 @@ Template.integrationsOutgoing.events({
 			scriptEnabled: scriptEnabled === '1',
 			impersonateUser: impersonateUser === '1',
 			retryFailedCalls: retryFailedCalls === '1',
-			retryCount: retryCount ? retryCount : 6,
-			retryDelay: retryDelay ? retryDelay : 'powers-of-ten',
+			retryCount: retryCount || 6,
+			retryDelay: retryDelay || 'powers-of-ten',
 			triggerWordAnywhere: triggerWordAnywhere === '1',
 			runOnEdits: runOnEdits === '1',
 		};
@@ -360,4 +360,3 @@ Template.integrationsOutgoing.onRendered(() => {
 		SideNav.openFlex();
 	});
 });
-

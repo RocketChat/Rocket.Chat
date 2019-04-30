@@ -18,7 +18,7 @@ const resolver = {
 				return avatar.url;
 			}
 		},
-		channels: Meteor.bindEnvironment(async ({ _id }) => await Rooms.findBySubscriptionUserId(_id).fetch()),
+		channels: Meteor.bindEnvironment(({ _id }) => Rooms.findBySubscriptionUserId(_id).fetch()),
 		directMessages: ({ username }) => Rooms.findDirectRoomContainingUsername(username).fetch(),
 	},
 };

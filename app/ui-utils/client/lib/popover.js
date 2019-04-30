@@ -54,7 +54,6 @@ Template.popover.onRendered(function() {
 	const { activeElement } = this.data;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
-
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';

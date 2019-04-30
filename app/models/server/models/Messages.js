@@ -30,7 +30,6 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
-
 	}
 
 	setReactions(messageId, reactions) {
@@ -695,8 +694,8 @@ export class Messages extends Base {
 			$set: {
 				alias: newNameAlias,
 				'u._id': newUserId,
-				'u.username' : newUsername,
-				'u.name' : undefined,
+				'u.username': newUsername,
+				'u.name': undefined,
 			},
 		};
 

@@ -21,7 +21,6 @@ const closePopup = function(res) {
 };
 
 const casTicket = function(req, token, callback) {
-
 	// get configuration
 	if (!settings.get('CAS_enabled')) {
 		logger.error('Got ticket validation request, but CAS is not enabled');
@@ -90,7 +89,6 @@ const middleware = function(req, res, next) {
 		casTicket(req, credentialToken, function() {
 			closePopup(res);
 		});
-
 	} catch (err) {
 		logger.error(`Unexpected error : ${ err.message }`);
 		closePopup(res);
@@ -112,7 +110,6 @@ WebApp.connectHandlers.use(function(req, res, next) {
  *
  */
 Accounts.registerLoginHandler(function(options) {
-
 	if (!options.cas) {
 		return undefined;
 	}
@@ -153,7 +150,6 @@ Accounts.registerLoginHandler(function(options) {
 
 	// Source internal attributes
 	if (syncUserDataFieldMap) {
-
 		// Our mapping table: key(int_attr) -> value(ext_attr)
 		// Spoken: Source this internal attribute from these external attributes
 		const attr_map = JSON.parse(syncUserDataFieldMap);
@@ -206,7 +202,6 @@ Accounts.registerLoginHandler(function(options) {
 			}
 		}
 	} else {
-
 		// Define new user
 		const newUser = {
 			username: result.username,
@@ -267,7 +262,6 @@ Accounts.registerLoginHandler(function(options) {
 				}
 			});
 		}
-
 	}
 
 	return { userId: user._id };

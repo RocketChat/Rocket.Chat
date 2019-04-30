@@ -56,7 +56,7 @@ SAML.prototype.generateUniqueID = function() {
 	const chars = 'abcdef0123456789';
 	let uniqueID = 'id-';
 	for (let i = 0; i < 20; i++) {
-		uniqueID += chars.substr(Math.floor((Math.random() * 15)), 1);
+		uniqueID += chars.substr(Math.floor(Math.random() * 15), 1);
 	}
 	return uniqueID;
 };
@@ -126,7 +126,6 @@ SAML.prototype.generateLogoutResponse = function() {
 		response,
 		id,
 	};
-
 };
 
 SAML.prototype.generateLogoutRequest = function(options) {
@@ -246,10 +245,8 @@ SAML.prototype.requestToUrl = function(request, operation, callback) {
 		if (operation === 'logout') {
 			// in case of logout we want to be redirected back to the Meteor app.
 			return callback(null, target);
-
-		} else {
-			callback(null, target);
 		}
+		callback(null, target);
 	});
 };
 
@@ -290,7 +287,6 @@ SAML.prototype.validateStatus = function(doc) {
 	const statusNodes = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusCode');
 
 	if (statusNodes.length) {
-
 		const statusNode = statusNodes[0];
 		const statusMessage = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage')[0];
 
@@ -360,7 +356,6 @@ SAML.prototype.validateLogoutRequest = function(samlRequest, callback) {
 			const nameID = nameIdNode.childNodes[0].nodeValue;
 
 			return callback(null, { idpSession, nameID });
-
 		} catch (e) {
 			debugLog(`Caught error: ${ e }`);
 
@@ -459,7 +454,6 @@ SAML.prototype.mapAttributes = function(attributeStatement, profile) {
 	if (!profile.cn && profile['urn:oid:2.5.4.3']) {
 		profile.cn = profile['urn:oid:2.5.4.3'];
 	}
-
 };
 
 SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
@@ -550,7 +544,6 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 	if (authnStatement) {
 		if (authnStatement.hasAttribute('SessionIndex')) {
-
 			profile.sessionIndex = authnStatement.getAttribute('SessionIndex');
 			debugLog(`Session Index: ${ profile.sessionIndex }`);
 		} else {
@@ -587,7 +580,6 @@ SAML.prototype.validateResponse = function(samlResponse, relayState, callback) {
 
 let decryptionCert;
 SAML.prototype.generateServiceProviderMetadata = function(callbackUrl) {
-
 	if (!decryptionCert) {
 		decryptionCert = this.options.privateCert;
 	}

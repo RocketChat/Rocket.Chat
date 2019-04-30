@@ -15,7 +15,7 @@ export class PushNotification {
 
 		while (i) {
 			hash = ((hash << 5) - hash) + str.charCodeAt(--i);
-			hash = hash & hash; // Convert to 32bit integer
+			hash &= hash; // Convert to 32bit integer
 		}
 		return hash;
 	}

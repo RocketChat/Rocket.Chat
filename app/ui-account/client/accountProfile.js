@@ -209,7 +209,7 @@ Template.accountProfile.onCreated(function() {
 		const instance = this;
 		if (!newPassword) {
 			return callback();
-		} else if (!settings.get('Accounts_AllowPasswordChange')) {
+		} if (!settings.get('Accounts_AllowPasswordChange')) {
 			toastr.remove();
 			toastr.error(t('Password_Change_Disabled'));
 			instance.clearForm();
@@ -250,9 +250,8 @@ Template.accountProfile.onCreated(function() {
 				toastr.error(t('RealName_Change_Disabled'));
 				instance.clearForm();
 				return cb && cb();
-			} else {
-				data.realname = s.trim(self.realname.get());
 			}
+			data.realname = s.trim(self.realname.get());
 		}
 		if (s.trim(self.username.get()) !== user.username) {
 			if (!settings.get('Accounts_AllowUsernameChange')) {
@@ -260,9 +259,8 @@ Template.accountProfile.onCreated(function() {
 				toastr.error(t('Username_Change_Disabled'));
 				instance.clearForm();
 				return cb && cb();
-			} else {
-				data.username = s.trim(self.username.get());
 			}
+			data.username = s.trim(self.username.get());
 		}
 		if (s.trim(self.email.get()) !== getUserEmailAddress(user)) {
 			if (!settings.get('Accounts_AllowEmailChange')) {
@@ -270,9 +268,8 @@ Template.accountProfile.onCreated(function() {
 				toastr.error(t('Email_Change_Disabled'));
 				instance.clearForm();
 				return cb && cb();
-			} else {
-				data.email = s.trim(self.email.get());
 			}
+			data.email = s.trim(self.email.get());
 		}
 		const customFields = {};
 		$('[data-customfield=true]').each(function() {
@@ -317,7 +314,7 @@ const checkAvailability = _.debounce((username, { usernameAvaliable }) => {
 }, 300);
 
 Template.accountProfile.events({
-	'change [data-customfield="true"], input [data-customfield="true"]':_.debounce((e, i) => {
+	'change [data-customfield="true"], input [data-customfield="true"]': _.debounce((e, i) => {
 		i.dep.changed();
 	}, 300),
 	'click .js-select-avatar-initials'() {
@@ -432,7 +429,6 @@ Template.accountProfile.events({
 				}
 
 				$(e.target).removeClass('loading');
-
 			}, 1000);
 		});
 	},
@@ -507,7 +503,7 @@ Template.accountProfile.events({
 				handleError(error);
 			}
 			e.currentTarget.innerHTML = e.currentTarget.innerHTML.replace(' ...', '');
-			return e.currentTarget.disabled = false;
+			e.currentTarget.disabled = false;
 		});
 	},
 	'change .js-select-avatar-upload [type=file]'(event, template) {

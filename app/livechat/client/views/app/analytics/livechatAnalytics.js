@@ -172,9 +172,7 @@ Template.livechatAnalytics.onRendered(() => {
 			updateAnalyticsOverview();
 			updateAnalyticsChart();
 		}
-
 	});
-
 });
 
 Template.livechatAnalytics.events({

@@ -197,7 +197,6 @@ export const RoomHistoryManager = new class {
 
 		if (ts) {
 			return Meteor.call('loadNextMessages', rid, ts, limit, function(err, result) {
-
 				upsertMessageBulk({
 					msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 					subscription,
@@ -239,65 +238,64 @@ export const RoomHistoryManager = new class {
 
 			setTimeout(function() {
 				const messages = wrapper[0];
-				return instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
+				instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
 			});
 
 			return setTimeout(() => msgElement.removeClass('highlight'), 500);
+		}
+		const room = this.getRoom(message.rid);
+		room.isLoading.set(true);
+		ChatMessage.remove({ rid: message.rid });
+
+		let typeName = undefined;
+
+		const subscription = ChatSubscription.findOne({ rid: message.rid });
+		if (subscription) {
+			// const { ls } = subscription;
+			typeName = subscription.t + subscription.name;
 		} else {
-			const room = this.getRoom(message.rid);
-			room.isLoading.set(true);
-			ChatMessage.remove({ rid: message.rid });
+			const curRoomDoc = ChatRoom.findOne({ _id: message.rid });
+			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
+		}
 
-			let typeName = undefined;
-
-			const subscription = ChatSubscription.findOne({ rid: message.rid });
-			if (subscription) {
-				// const { ls } = subscription;
-				typeName = subscription.t + subscription.name;
-			} else {
-				const curRoomDoc = ChatRoom.findOne({ _id: message.rid });
-				typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
+		return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
+			if (!result || !result.messages) {
+				return;
+			}
+			for (const msg of Array.from(result.messages)) {
+				if (msg.t !== 'command') {
+					upsertMessage({ msg, subscription });
+				}
 			}
 
-			return Meteor.call('loadSurroundingMessages', message, limit, function(err, result) {
-				if (!result || !result.messages) {
-					return;
-				}
-				for (const msg of Array.from(result.messages)) {
-					if (msg.t !== 'command') {
-						upsertMessage({ msg, subscription });
-					}
-				}
+			Meteor.defer(function() {
+				readMessage.refreshUnreadMark(message.rid, true);
+				RoomManager.updateMentionsMarksOfRoom(typeName);
+				const wrapper = $('.messages-box .wrapper');
+				const msgElement = $(`#${ message._id }`, wrapper);
+				const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
+				wrapper.animate({
+					scrollTop: pos,
+				}, 500);
 
-				Meteor.defer(function() {
-					readMessage.refreshUnreadMark(message.rid, true);
-					RoomManager.updateMentionsMarksOfRoom(typeName);
-					const wrapper = $('.messages-box .wrapper');
-					const msgElement = $(`#${ message._id }`, wrapper);
-					const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
-					wrapper.animate({
-						scrollTop: pos,
-					}, 500);
+				msgElement.addClass('highlight');
 
-					msgElement.addClass('highlight');
-
-					setTimeout(function() {
-						room.isLoading.set(false);
-						const messages = wrapper[0];
-						instance.atBottom = !result.moreAfter && (messages.scrollTop >= (messages.scrollHeight - messages.clientHeight));
-						return 500;
-					});
-
-					return setTimeout(() => msgElement.removeClass('highlight'), 500);
+				setTimeout(function() {
+					room.isLoading.set(false);
+					const messages = wrapper[0];
+					instance.atBottom = !result.moreAfter && (messages.scrollTop >= (messages.scrollHeight - messages.clientHeight));
+					return 500;
 				});
-				if (!room.loaded) {
-					room.loaded = 0;
-				}
-				room.loaded += result.messages.length;
-				room.hasMore.set(result.moreBefore);
-				return room.hasMoreNext.set(result.moreAfter);
+
+				return setTimeout(() => msgElement.removeClass('highlight'), 500);
 			});
-		}
+			if (!room.loaded) {
+				room.loaded = 0;
+			}
+			room.loaded += result.messages.length;
+			room.hasMore.set(result.moreBefore);
+			return room.hasMoreNext.set(result.moreAfter);
+		});
 	}
 
 	hasMore(rid) {
@@ -330,7 +328,7 @@ export const RoomHistoryManager = new class {
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);
-			return this.histories[rid].loaded = undefined;
+			this.histories[rid].loaded = undefined;
 		}
 	}
 };

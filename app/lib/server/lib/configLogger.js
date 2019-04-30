@@ -3,11 +3,11 @@ import { LoggerManager } from '../../../logger';
 import { settings } from '../../../settings';
 
 settings.get('Log_Package', function(key, value) {
-	return LoggerManager.showPackage = value;
+	LoggerManager.showPackage = value;
 });
 
 settings.get('Log_File', function(key, value) {
-	return LoggerManager.showFileAndLine = value;
+	LoggerManager.showFileAndLine = value;
 });
 
 settings.get('Log_Level', function(key, value) {

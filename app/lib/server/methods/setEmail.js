@@ -6,8 +6,7 @@ import { RateLimiter } from '../lib';
 
 Meteor.methods({
 	setEmail(email) {
-
-		check (email, String);
+		check(email, String);
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setEmail' });

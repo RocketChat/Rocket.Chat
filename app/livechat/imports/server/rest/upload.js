@@ -52,7 +52,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 				});
 			});
 
-			busboy.on('field', (fieldname, value) => fields[fieldname] = value);
+			busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
 
 			busboy.on('finish', Meteor.bindEnvironment(() => callback()));
 

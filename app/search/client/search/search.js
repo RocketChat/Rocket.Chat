@@ -7,7 +7,6 @@ import toastr from 'toastr';
 import _ from 'underscore';
 
 Template.RocketSearch.onCreated(function() {
-
 	this.provider = new ReactiveVar();
 	this.isActive = new ReactiveVar(false);
 	this.error = new ReactiveVar();
@@ -25,14 +24,12 @@ Template.RocketSearch.onCreated(function() {
 	});
 
 	const _search = () => {
-
 		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
 
 		if (this.scope.text.get()) {
-
 			this.scope.searching.set(true);
 
-			Meteor.call('rocketchatSearch.search', this.scope.text.get(), { rid:Session.get('openedRoom'), uid:Meteor.userId() }, _p, (err, result) => {
+			Meteor.call('rocketchatSearch.search', this.scope.text.get(), { rid: Session.get('openedRoom'), uid: Meteor.userId() }, _p, (err, result) => {
 				if (err) {
 					toastr.error(TAPi18n.__('Search_message_search_failed'));
 					this.scope.searching.set(false);
@@ -66,7 +63,7 @@ Template.RocketSearch.onCreated(function() {
 
 		const _p = Object.assign({}, this.scope.parentPayload, this.scope.payload);
 
-		Meteor.call('rocketchatSearch.suggest', value, { rid:Session.get('openedRoom'), uid:Meteor.userId() }, this.scope.parentPayload, _p, (err, result) => {
+		Meteor.call('rocketchatSearch.suggest', value, { rid: Session.get('openedRoom'), uid: Meteor.userId() }, this.scope.parentPayload, _p, (err, result) => {
 			if (err) {
 				// TODO what should happen
 			} else {
@@ -77,7 +74,6 @@ Template.RocketSearch.onCreated(function() {
 			}
 		});
 	};
-
 });
 
 Template.RocketSearch.events = {
@@ -104,17 +100,16 @@ Template.RocketSearch.events = {
 		const suggestionActive = t.suggestionActive.get();
 
 		if (evt.keyCode === 40 && suggestions) {
-			t.suggestionActive.set((suggestionActive !== undefined && suggestionActive < suggestions.length - 1) ? suggestionActive + 1 : 0);
+			t.suggestionActive.set(suggestionActive !== undefined && suggestionActive < suggestions.length - 1 ? suggestionActive + 1 : 0);
 			return;
 		}
 
 		if (evt.keyCode === 38 && suggestions) {
-			t.suggestionActive.set((suggestionActive !== undefined && suggestionActive === 0) ? suggestions.length - 1 : suggestionActive - 1);
+			t.suggestionActive.set(suggestionActive !== undefined && suggestionActive === 0 ? suggestions.length - 1 : suggestionActive - 1);
 			return;
 		}
 	},
 	'keyup #message-search': _.debounce(function(evt, t) {
-
 		if (evt.keyCode === 13) {
 			return evt.preventDefault();
 		}
@@ -189,4 +184,3 @@ Template.RocketSearch.onRendered(function() {
 Template.RocketSearch.onDestroyed(function() {
 	$(document).off(`click.suggestionclose.${ this.data.rid }`);
 });
-

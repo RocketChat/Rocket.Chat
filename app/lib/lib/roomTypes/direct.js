@@ -52,7 +52,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	roomName(roomData) {
-
 		// this function can receive different types of data
 		// if it doesn't have fname and name properties, should be a Room object
 		// so, need to find the related subscription

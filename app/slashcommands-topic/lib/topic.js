@@ -15,9 +15,8 @@ function Topic(command, params, item) {
 				if (err) {
 					if (Meteor.isClient) {
 						return handleError(err);
-					} else {
-						throw err;
 					}
+					throw err;
 				}
 
 				if (Meteor.isClient) {

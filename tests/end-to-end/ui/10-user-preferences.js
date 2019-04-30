@@ -52,7 +52,6 @@ describe('[User Preferences]', () => {
 			it('it should show the submit button', () => {
 				preferencesMainContent.submitBtn.isVisible().should.be.true;
 			});
-
 		});
 
 		describe('user info change:', () => {

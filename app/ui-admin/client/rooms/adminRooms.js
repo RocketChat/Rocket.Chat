@@ -51,9 +51,8 @@ Template.adminRooms.helpers({
 	'default'() {
 		if (this.default) {
 			return t('True');
-		} else {
-			return t('False');
 		}
+		return t('False');
 	},
 	flexData() {
 		return {

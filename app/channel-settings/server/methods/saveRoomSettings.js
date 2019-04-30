@@ -34,7 +34,7 @@ Meteor.methods({
 
 		if (typeof settings !== 'object') {
 			settings = {
-				[settings] : value,
+				[settings]: value,
 			};
 		}
 

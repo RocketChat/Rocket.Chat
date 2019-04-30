@@ -7,7 +7,7 @@ import { settings } from '../../../settings';
 
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {
-	if (!'WebSocket' in window) { // eslint-disable-line no-negated-in-lhs
+	if (!('WebSocket' in window)) { // eslint-disable-line no-negated-in-lhs
 		return false;
 	}
 
@@ -124,7 +124,6 @@ Template.broadcastView.onRendered(async function() {
 		await call('setLivestreamStatus', { broadcastId: this.data.broadcast.id, status: 'testing' });
 		await waitForBroadcastStatus(this.data.broadcast.id, 'testing');
 		document.querySelector('.streaming-popup').dispatchEvent(new Event('broadcastStreamReady'));
-
 	} catch (e) {
 		console.log(e);
 	}

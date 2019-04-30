@@ -24,14 +24,14 @@ export const fileUploadIsValidContentType = function(type) {
 
 	if (_.contains(list, type)) {
 		return true;
-	} else {
-		const wildCardGlob = '/*';
-		const wildcards = _.filter(list, function(item) {
-			return item.indexOf(wildCardGlob) > 0;
-		});
-		if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {
-			return true;
-		}
 	}
+	const wildCardGlob = '/*';
+	const wildcards = _.filter(list, function(item) {
+		return item.indexOf(wildCardGlob) > 0;
+	});
+	if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {
+		return true;
+	}
+
 	return false;
 };

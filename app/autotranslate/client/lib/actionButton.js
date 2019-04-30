@@ -21,7 +21,7 @@ Meteor.startup(function() {
 				action() {
 					const { msg: message } = messageArgs(this);
 					const language = AutoTranslate.getLanguage(message.rid);
-					if ((!message.translations || !message.translations[language])) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+					if (!message.translations || !message.translations[language]) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						AutoTranslate.messageIdsToWait[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
@@ -45,7 +45,7 @@ Meteor.startup(function() {
 				action() {
 					const { msg: message } = messageArgs(this);
 					const language = AutoTranslate.getLanguage(message.rid);
-					if ((!message.translations || !message.translations[language])) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
+					if (!message.translations || !message.translations[language]) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						AutoTranslate.messageIdsToWait[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
@@ -55,7 +55,6 @@ Meteor.startup(function() {
 				},
 				condition(message) {
 					return message && message.u && message.u._id !== Meteor.userId() && message.translations && message.translations.original;
-
 				},
 				order: 90,
 			});

@@ -82,7 +82,7 @@ Template.toolbar.helpers({
 
 		if (!Meteor.Device.isDesktop()) {
 			return placeholder;
-		} else if (window.navigator.platform.toLowerCase().includes('mac')) {
+		} if (window.navigator.platform.toLowerCase().includes('mac')) {
 			placeholder = `${ placeholder } (\u2318+K)`;
 		} else {
 			placeholder = `${ placeholder } (\u2303+K)`;
@@ -135,7 +135,7 @@ Template.toolbar.helpers({
 					query.t = 'd';
 				}
 
-				const searchQuery = new RegExp((RegExp.escape(filterText)), 'i');
+				const searchQuery = new RegExp(RegExp.escape(filterText), 'i');
 				query.$or = [
 					{ name: searchQuery },
 					{ fname: searchQuery },
@@ -144,7 +144,7 @@ Template.toolbar.helpers({
 				resultsFromClient = collection.find(query, { limit: 20, sort: { unread: -1, ls: -1 } }).fetch();
 
 				const resultsFromClientLength = resultsFromClient.length;
-				const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username:1 } });
+				const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username: 1 } });
 				if (user) {
 					usernamesFromClient = [user];
 				}

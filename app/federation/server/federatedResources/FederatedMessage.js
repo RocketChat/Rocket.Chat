@@ -57,7 +57,6 @@ export class FederatedMessage extends FederatedResource {
 
 			// Prepare mentions
 			for (const mention of message.mentions) {
-
 				mention.federation = mention.federation || {};
 
 				if (mention.username.indexOf('@') === -1) {

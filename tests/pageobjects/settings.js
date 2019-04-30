@@ -44,4 +44,3 @@ export async function getSettingValue(name) {
 
 	return responseGetSetting.body.value;
 }
-

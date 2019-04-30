@@ -6,7 +6,6 @@ import { unarchiveRoom } from '../functions';
 
 Meteor.methods({
 	unarchiveRoom(rid) {
-
 		check(rid, String);
 
 		if (!Meteor.userId()) {

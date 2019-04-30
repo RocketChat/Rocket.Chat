@@ -85,13 +85,15 @@ Template.sidebarItem.onCreated(function() {
 		}
 
 		if (!currentData.lastMessage._id) {
-			return this.renderedMessage = currentData.lastMessage.msg;
+			this.renderedMessage = currentData.lastMessage.msg;
+			return;
 		}
 
 		setLastMessageTs(this, currentData.lastMessage.ts);
 
 		if (currentData.lastMessage.t === 'e2e' && currentData.lastMessage.e2e !== 'done') {
-			return this.renderedMessage = '******';
+			this.renderedMessage = '******';
+			return;
 		}
 
 		const otherUser = settings.get('UI_Use_Real_Name') ? currentData.lastMessage.u.name || currentData.lastMessage.u.username : currentData.lastMessage.u.username;
@@ -122,7 +124,7 @@ Template.sidebarItem.events({
 			if (roomData.t === 'c' && !hasAtLeastOnePermission('leave-c')) { return false; }
 			if (roomData.t === 'p' && !hasAtLeastOnePermission('leave-p')) { return false; }
 
-			return !(((roomData.cl != null) && !roomData.cl) || (['d', 'l'].includes(roomData.t)));
+			return !(((roomData.cl != null) && !roomData.cl) || ['d', 'l'].includes(roomData.t));
 		};
 
 		const canFavorite = settings.get('Favorite_Rooms') && ChatSubscription.find({ rid: this.rid }).count() > 0;

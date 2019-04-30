@@ -69,9 +69,8 @@ export class LivechatDepartmentAgents extends Base {
 				agentId: agent.value.agentId,
 				username: agent.value.username,
 			};
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	getOnlineForDepartment(departmentId) {

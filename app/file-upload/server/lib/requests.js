@@ -3,7 +3,6 @@ import { Uploads } from '../../../models';
 import { FileUpload } from './FileUpload';
 
 WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
-
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match && match[1]) {

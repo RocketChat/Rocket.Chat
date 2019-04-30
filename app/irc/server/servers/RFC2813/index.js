@@ -20,7 +20,6 @@ class RFC2813 {
 
 		// Hold the buffer while receiving
 		this.receiveBuffer = new Buffer('');
-
 	}
 
 	/**
@@ -90,7 +89,8 @@ class RFC2813 {
 		});
 
 		this.write({
-			command: 'SERVER', parameters: [this.config.server.name],
+			command: 'SERVER',
+			parameters: [this.config.server.name],
 			trailer: this.config.server.description,
 		});
 	}
@@ -123,7 +123,7 @@ class RFC2813 {
 	 *
 	 */
 	onReceiveFromPeer(chunk) {
-		if (typeof (chunk) === 'string') {
+		if (typeof chunk === 'string') {
 			this.receiveBuffer += chunk;
 		} else {
 			this.receiveBuffer = Buffer.concat([this.receiveBuffer, chunk]);
@@ -171,7 +171,6 @@ class RFC2813 {
 			this.log(`Handling local command: ${ command }`);
 
 			localCommandHandlers[command].call(this, parameters);
-
 		} else {
 			this.log(`Unhandled local command: ${ JSON.stringify(command) }`);
 		}

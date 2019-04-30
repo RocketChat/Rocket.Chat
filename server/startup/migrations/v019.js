@@ -35,7 +35,7 @@ Migrations.add({
 
 		let usernames = _.pluck(admins, 'username').join(', ');
 
-		console.log((`Migrate ${ usernames } from admin field to 'admin' role`).green);
+		console.log(`Migrate ${ usernames } from admin field to 'admin' role`.green);
 
 		// Add 'user' role to all users
 		const users = Meteor.users.find().fetch();
@@ -44,7 +44,7 @@ Migrations.add({
 		});
 
 		usernames = _.pluck(users, 'username').join(', ');
-		console.log((`Add ${ usernames } to 'user' role`).green);
+		console.log(`Add ${ usernames } to 'user' role`.green);
 
 		// Add 'moderator' role to channel/group creators
 		const rooms = Rooms.findByTypes(['c', 'p']).fetch();
@@ -56,11 +56,10 @@ Migrations.add({
 					_id: creator,
 				})) {
 					return addUserRoles(creator, ['moderator'], room._id);
-				} else {
-					Subscriptions.removeByRoomId(room._id);
-					Messages.removeByRoomId(room._id);
-					return Rooms.removeById(room._id);
 				}
+				Subscriptions.removeByRoomId(room._id);
+				Messages.removeByRoomId(room._id);
+				return Rooms.removeById(room._id);
 			}
 		});
 	},

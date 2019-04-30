@@ -23,7 +23,7 @@ Template.chatRoomItem.helpers({
 			...this,
 			icon,
 			avatar: roomType.getAvatarPath(this),
-			username : this.name,
+			username: this.name,
 			route: roomTypes.getRouteLink(this.t, this),
 			name: roomType.roomName(this),
 			unread,

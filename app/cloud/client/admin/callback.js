@@ -44,4 +44,3 @@ Template.cloudCallback.onRendered(() => {
 		SideNav.openFlex();
 	});
 });
-

@@ -6,8 +6,6 @@ OAuth._redirectUri = _.wrap(OAuth._redirectUri, function(func, serviceName, ...a
 	const proxy = settings.get('Accounts_OAuth_Proxy_services').replace(/\s/g, '').split(',');
 	if (proxy.includes(serviceName)) {
 		return `${ settings.get('Accounts_OAuth_Proxy_host') }/oauth_redirect`;
-	} else {
-		return func(serviceName, ...args);
 	}
-
+	return func(serviceName, ...args);
 });

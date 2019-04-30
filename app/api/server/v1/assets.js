@@ -10,7 +10,7 @@ API.v1.addRoute('assets.setAsset', { authRequired: true }, {
 		let asset = {};
 
 		Meteor.wrapAsync((callback) => {
-			busboy.on('field', (fieldname, value) => fields[fieldname] = value);
+			busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
 			busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
 				const isValidAsset = Object.keys(RocketChatAssets.assets).includes(fieldname);
 				if (!isValidAsset) {

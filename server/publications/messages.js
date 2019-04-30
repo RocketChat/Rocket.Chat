@@ -93,6 +93,5 @@ Meteor.methods({
 		}
 
 		return Meteor.call('getChannelHistory', { rid, latest: latestDate, oldest: oldestDate, inclusive, count, unreads });
-
 	},
 });

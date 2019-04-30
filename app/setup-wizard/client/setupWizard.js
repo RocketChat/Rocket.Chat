@@ -36,7 +36,7 @@ const cannotSetup = () => {
 const registerAdminUser = (state, callback) => {
 	const registrationData = Object.entries(state)
 		.filter(([key]) => /registration-/.test(key))
-		.map(([key, value]) => ([key.replace('registration-', ''), value]))
+		.map(([key, value]) => [key.replace('registration-', ''), value])
 		.reduce((o, [key, value]) => ({ ...o, [key]: value }), {});
 
 	Meteor.call('registerUser', registrationData, (error) => {
@@ -50,9 +50,8 @@ const registerAdminUser = (state, callback) => {
 				if (error.error === 'error-invalid-email') {
 					toastr.success(t('We_have_sent_registration_email'));
 					return false;
-				} else {
-					return handleError(error);
 				}
+				return handleError(error);
 			}
 
 			Session.set('forceLogin', false);
@@ -349,14 +348,14 @@ Template.setupWizard.helpers({
 						values.map(({ i18nLabel, key }) => ({ optionLabel: i18nLabel, optionValue: key }))
 					) || (
 						type === 'language' &&
-						([{
+						[{
 							optionLabel: 'Default',
 							optionValue: '',
 						}].concat(
 							Object.entries(TAPi18n.getLanguages())
 								.map(([key, { name }]) => ({ optionLabel: name, optionValue: key }))
 								.sort((a, b) => a.key - b.key)
-						))
+						)
 					),
 					isValueSelected: (value) => value === t.state.get(_id),
 				})),

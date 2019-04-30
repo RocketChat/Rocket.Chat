@@ -41,7 +41,7 @@ API.v1.addRoute('rooms.get', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('rooms/get', updatedSinceDate));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('rooms/get', updatedSinceDate); });
 
 		if (Array.isArray(result)) {
 			result = {
@@ -83,7 +83,7 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 				});
 			});
 
-			busboy.on('field', (fieldname, value) => fields[fieldname] = value);
+			busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
 
 			busboy.on('finish', Meteor.bindEnvironment(() => callback()));
 
@@ -255,7 +255,7 @@ API.v1.addRoute('rooms.getDiscussions', { authRequired: true }, {
 		const ourQuery = Object.assign(query, { prid: room._id });
 
 		const discussions = Rooms.find(ourQuery, {
-			sort: sort ? sort : { fname: 1 },
+			sort: sort || { fname: 1 },
 			skip: offset,
 			limit: count,
 			fields,

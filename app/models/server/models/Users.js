@@ -165,9 +165,8 @@ export class Users extends Base {
 				agentId: user.value._id,
 				username: user.value.username,
 			};
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	setLivechatStatus(userId, status) {
@@ -389,7 +388,7 @@ export class Users extends Base {
 	findOneByIdAndLoginToken(_id, token, options) {
 		const query = {
 			_id,
-			'services.resume.loginTokens.hashedToken' : Accounts._hashLoginToken(token),
+			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token),
 		};
 
 		return this.findOne(query, options);
@@ -800,7 +799,7 @@ export class Users extends Base {
 	unsetLoginTokens(_id) {
 		const update = {
 			$set: {
-				'services.resume.loginTokens' : [],
+				'services.resume.loginTokens': [],
 			},
 		};
 
@@ -810,8 +809,8 @@ export class Users extends Base {
 	unsetRequirePasswordChange(_id) {
 		const update = {
 			$unset: {
-				requirePasswordChange : true,
-				requirePasswordChangeReason : true,
+				requirePasswordChange: true,
+				requirePasswordChangeReason: true,
 			},
 		};
 

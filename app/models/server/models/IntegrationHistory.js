@@ -40,4 +40,3 @@ export class IntegrationHistory extends Base {
 }
 
 export default new IntegrationHistory();
-

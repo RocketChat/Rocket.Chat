@@ -5,7 +5,6 @@ import 'photoswipe/dist/photoswipe.css';
 import s from 'underscore.string';
 
 Meteor.startup(() => {
-
 	let currentGallery = null;
 	const initGallery = (items, options) => {
 		if (!currentGallery) {

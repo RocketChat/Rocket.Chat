@@ -108,4 +108,3 @@ Template.oauthApp.onRendered(() => {
 		SideNav.openFlex();
 	});
 });
-

@@ -27,7 +27,7 @@ Meteor.startup(function() {
 	if (_.isString(cdnValue) && cdnValue.trim()) {
 		if (useForAll) {
 			return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(cdnValue));
-		} else if (_.isString(cdnJsCss) && cdnJsCss.trim()) {
+		} if (_.isString(cdnJsCss) && cdnJsCss.trim()) {
 			return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(cdnJsCss));
 		}
 	}

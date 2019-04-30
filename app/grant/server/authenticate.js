@@ -11,9 +11,9 @@ const setAvatarFromUrl = (userId, url) => new Promise((resolve, reject) => {
 		Meteor.call('setAvatarFromService', url, '', 'url', (err) => {
 			if (err) {
 				if (err.details && err.details.timeToReset) {
-					reject((t('error-too-many-requests', {
+					reject(t('error-too-many-requests', {
 						seconds: parseInt(err.details.timeToReset / 1000),
-					})));
+					}));
 				} else {
 					reject(t('Avatar_url_invalid_or_error'));
 				}

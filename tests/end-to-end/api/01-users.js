@@ -324,7 +324,6 @@ describe('[Users]', function() {
 					userCredentials['X-User-Id'] = res.body.data.userId;
 				})
 				.end(done);
-
 		});
 		before((done) => {
 			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
@@ -1112,7 +1111,6 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-
 	});
 
 	describe('[/users.deleteOwnAccount]', () => {
@@ -1177,7 +1175,6 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-
 	});
 
 	describe('[/users.delete]', () => {
@@ -1464,7 +1461,6 @@ describe('[Users]', function() {
 					userCredentials['X-User-Id'] = res.body.data.userId;
 				})
 				.end(done);
-
 		});
 		before((done) => {
 			updatePermission('edit-other-user-active-status', ['admin', 'user']).then(done);

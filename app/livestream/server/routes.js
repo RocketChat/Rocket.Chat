@@ -21,7 +21,8 @@ API.v1.addRoute('livestream/oauth', {
 			statusCode: 302,
 			headers: {
 				Location: url,
-			}, body: 'Oauth redirect',
+			},
+			body: 'Oauth redirect',
 		};
 	},
 });
@@ -37,13 +38,14 @@ API.v1.addRoute('livestream/oauth/callback', {
 		const ret = Meteor.wrapAsync(clientAuth.getToken.bind(clientAuth))(code);
 
 		Users.update({ _id: userId }, { $set: {
-			'settings.livestream' : ret,
+			'settings.livestream': ret,
 		} });
 
 		return {
 			headers: {
-				'content-type' : 'text/html',
-			}, body: '<script>window.close()</script>',
+				'content-type': 'text/html',
+			},
+			body: '<script>window.close()</script>',
 		};
 	},
 });

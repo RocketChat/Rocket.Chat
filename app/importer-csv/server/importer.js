@@ -252,7 +252,7 @@ export class CsvImporter extends Base {
 								this.channels.channels.push({
 									id: cname.replace('.', '_'),
 									name: cname,
-									rocketId: (cname.toUpperCase() === 'GENERAL' ? 'GENERAL' : existantRoom._id),
+									rocketId: cname.toUpperCase() === 'GENERAL' ? 'GENERAL' : existantRoom._id,
 									do_import: true,
 								});
 							}

@@ -21,9 +21,8 @@ function _getLink(attachment) {
 
 	if (url.match(/^(https?:)?\/\//i)) {
 		return url;
-	} else {
-		return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 	}
+	return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 }
 
 smarsh.generateEml = () => {

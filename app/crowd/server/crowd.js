@@ -40,7 +40,7 @@ export class CROWD {
 
 		this.options = {
 			crowd: {
-				base: (!/\/$/.test(url) ? url += '/' : url),
+				base: !/\/$/.test(url) ? url += '/' : url,
 			},
 			application: {
 				name: settings.get('CROWD_APP_USERNAME'),
@@ -149,7 +149,7 @@ export class CROWD {
 			username: self.cleanUsername(crowdUser.username),
 			crowd_username: crowdUser.crowd_username,
 			emails: [{
-				address : crowdUser.email,
+				address: crowdUser.email,
 				verified: true,
 			}],
 			active: crowdUser.active,

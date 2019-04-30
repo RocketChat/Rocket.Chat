@@ -8,7 +8,6 @@ import { undoReply } from '../functions';
 
 Meteor.startup(function() {
 	const fn = function(message) {
-
 		// is a reply from a thread
 		if (message.tmid) {
 			undoReply(message);
@@ -29,5 +28,4 @@ Meteor.startup(function() {
 		}
 		callbacks.add('afterDeleteMessage', fn, callbacks.priority.LOW, 'threads-after-delete-message');
 	});
-
 });

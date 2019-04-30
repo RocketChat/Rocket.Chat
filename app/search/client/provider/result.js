@@ -64,7 +64,6 @@ Template.DefaultSearchResultTemplate.events({
 		t.data.payload.limit = t.pageSize;
 		t.data.result.set(undefined);
 		t.data.search();
-
 	},
 	'scroll .rocket-default-search-results': _.throttle(function(e, t) {
 		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight) && t.hasMore.get()) {

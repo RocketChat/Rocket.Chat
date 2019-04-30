@@ -186,4 +186,3 @@ FlowRouter.notFound = {
 		BlazeLayout.render('pageNotFound');
 	},
 };
-

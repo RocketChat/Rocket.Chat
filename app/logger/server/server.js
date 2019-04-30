@@ -21,7 +21,7 @@ const LoggerManager = new class extends EventEmitter {
 		this.logLevel = 0;
 	}
 	register(logger) {
-		if (!logger instanceof Logger) {
+		if (!(logger instanceof Logger)) {
 			return;
 		}
 		this.loggers[logger.name] = logger;
@@ -46,7 +46,7 @@ const LoggerManager = new class extends EventEmitter {
 
 	enable(dispatchQueue = false) {
 		this.enabled = true;
-		return (dispatchQueue === true) ? this.dispatchQueue() : this.clearQueue();
+		return dispatchQueue === true ? this.dispatchQueue() : this.clearQueue();
 	}
 };
 
@@ -293,7 +293,6 @@ class _Logger {
 			box.forEach((line) => {
 				console.log(subPrefix, color ? line[color] : line);
 			});
-
 		} else {
 			options.arguments.unshift(prefix);
 			console.log.apply(console, options.arguments);

@@ -12,7 +12,6 @@ import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
 
 slashCommands.add('join', function Join(command, params, item) {
-
 	if (command !== 'join' || !Match.test(params, String)) {
 		return;
 	}

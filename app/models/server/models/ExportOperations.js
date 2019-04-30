@@ -22,7 +22,7 @@ export class ExportOperations extends Base {
 			fullExport,
 		};
 
-		options.sort = { createdAt : -1 };
+		options.sort = { createdAt: -1 };
 		return this.findOne(query, options);
 	}
 

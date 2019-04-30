@@ -50,7 +50,6 @@ Meteor.methods({
 		}
 
 		Tracker.nonreactive(function() {
-
 			if (isNaN(TimeSync.serverOffset())) {
 				message.editedAt = new Date();
 			} else {
@@ -73,7 +72,7 @@ Meteor.methods({
 			ChatMessage.update({
 				_id: message._id,
 				'u._id': Meteor.userId(),
-			}, { $set : messageObject });
+			}, { $set: messageObject });
 		});
 	},
 });

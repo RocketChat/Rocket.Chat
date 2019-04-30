@@ -184,7 +184,7 @@ const assets = {
 	},
 };
 
-export const RocketChatAssets = new (class {
+export const RocketChatAssets = new class {
 	get mime() {
 		return mime;
 	}
@@ -290,7 +290,7 @@ export const RocketChatAssets = new (class {
 		const hash = crypto.createHash('sha1').update(file.buffer).digest('hex');
 		const extension = settingValue.url.split('.').pop();
 
-		return assetValue.cache = {
+		assetValue.cache = {
 			path: `assets/${ assetKey }.${ extension }`,
 			cacheable: false,
 			sourceMapUrl: undefined,
@@ -304,6 +304,8 @@ export const RocketChatAssets = new (class {
 			contentType: file.contentType,
 			hash,
 		};
+
+		return assetValue.cache;
 	}
 
 	getURL(assetName, options = { cdn: false, full: true }) {
@@ -312,7 +314,7 @@ export const RocketChatAssets = new (class {
 
 		return getURL(url, options);
 	}
-});
+};
 
 settings.addGroup('Assets');
 

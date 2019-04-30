@@ -197,12 +197,12 @@ Template.messagePopupConfig.helpers({
 					.find(
 						{
 							ts: { $exists: true },
-							...(filterRegex && {
+							...filterRegex && {
 								$or: [
 									{ username: filterRegex },
 									{ name: filterRegex },
 								],
-							}),
+							},
 						},
 						{
 							limit: 5,
@@ -221,12 +221,12 @@ Template.messagePopupConfig.helpers({
 									t: 'd',
 									$and: [
 										{
-											...(filterRegex && {
+											...filterRegex && {
 												$or: [
 													{ name: filterRegex },
 													{ fname: filterRegex },
 												],
-											}),
+											},
 										},
 										{
 											name: { $nin: usernamesAlreadyFetched },
@@ -269,12 +269,12 @@ Template.messagePopupConfig.helpers({
 						const newItems = Meteor.users.find({
 							$and: [
 								{
-									...(filterRegex && {
+									...filterRegex && {
 										$or: [
 											{ username: filterRegex },
 											{ name: filterRegex },
 										],
-									}),
+									},
 								},
 								{
 									username: {

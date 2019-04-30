@@ -3,7 +3,6 @@ import { Subscriptions } from '../../../app/models';
 import { ReadReceipt } from './lib/ReadReceipt';
 
 callbacks.add('afterSaveMessage', (message, room) => {
-
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;

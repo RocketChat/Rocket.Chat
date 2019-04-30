@@ -191,14 +191,14 @@ Template.userInfo.events({
 		const others = actions.filter((action) => !action.group);
 		const channel = actions.filter((actions) => actions.group === 'channel');
 		if (others.length) {
-			groups.push({ items:others });
+			groups.push({ items: others });
 		}
 		if (channel.length) {
-			groups.push({ items:channel });
+			groups.push({ items: channel });
 		}
 
 		if (admin.length) {
-			groups.push({ items:admin });
+			groups.push({ items: admin });
 		}
 		columns[0] = { groups };
 
@@ -218,7 +218,7 @@ Template.userInfo.events({
 		popover.open(config);
 	},
 	'click .js-action'(e) {
-		return this.action && this.action.apply(this, [e, { instance : Template.instance() }]);
+		return this.action && this.action.apply(this, [e, { instance: Template.instance() }]);
 	},
 	'click .js-close-info'(e, instance) {
 		return instance.clear();
@@ -268,7 +268,7 @@ Template.userInfo.onCreated(function() {
 	this.autorun(() => {
 		const data = Template.currentData();
 		if (data.clear != null) {
-			return this.clear = data.clear;
+			this.clear = data.clear;
 		}
 	});
 

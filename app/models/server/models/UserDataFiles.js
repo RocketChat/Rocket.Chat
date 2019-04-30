@@ -19,7 +19,7 @@ export class UserDataFiles extends Base {
 			userId,
 		};
 
-		options.sort = { _updatedAt : -1 };
+		options.sort = { _updatedAt: -1 };
 		return this.findOne(query, options);
 	}
 

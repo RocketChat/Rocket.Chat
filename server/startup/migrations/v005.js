@@ -40,11 +40,11 @@ Migrations.add({
 		}).forEach((user) => {
 			let newUserName = user.emails[0].address.split('@')[0];
 			if (Users.findOneByUsername(newUserName)) {
-				newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
+				newUserName += Math.floor((Math.random() * 10) + 1);
 				if (Users.findOneByUsername(newUserName)) {
-					newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
+					newUserName += Math.floor((Math.random() * 10) + 1);
 					if (Users.findOneByUsername(newUserName)) {
-						newUserName = newUserName + Math.floor((Math.random() * 10) + 1);
+						newUserName += Math.floor((Math.random() * 10) + 1);
 					}
 				}
 			}

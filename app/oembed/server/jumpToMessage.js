@@ -12,7 +12,7 @@ const recursiveRemove = (message, deep = 1) => {
 		if ('attachments' in message && message.attachments !== null && deep < settings.get('Message_QuoteChainLimit')) {
 			message.attachments.map((msg) => recursiveRemove(msg, deep + 1));
 		} else {
-			delete(message.attachments);
+			delete message.attachments;
 		}
 	}
 	return message;

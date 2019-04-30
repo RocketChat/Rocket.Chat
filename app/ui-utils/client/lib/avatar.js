@@ -9,7 +9,6 @@ export const getAvatarAsPng = function(username, cb) {
 	const image = new Image;
 	image.src = getUserAvatarURL(username);
 	image.onload = function() {
-
 		const canvas = document.createElement('canvas');
 		canvas.width = image.width;
 		canvas.height = image.height;
@@ -21,9 +20,10 @@ export const getAvatarAsPng = function(username, cb) {
 			return cb('');
 		}
 	};
-	return image.onerror = function() {
+	image.onerror = function() {
 		return cb('');
 	};
+	return image.onerror;
 };
 
 export const updateAvatarOfUsername = function(username) {

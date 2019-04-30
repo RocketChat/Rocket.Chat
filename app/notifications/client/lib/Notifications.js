@@ -9,7 +9,7 @@ class Notifications {
 			if (Meteor.userId() !== null && this.logged === false) {
 				this.loginCb.forEach((cb) => cb());
 			}
-			return this.logged = Meteor.userId() !== null;
+			this.logged = Meteor.userId() !== null;
 		});
 		this.debug = false;
 		this.streamAll = new Meteor.Streamer('notify-all');

@@ -4,7 +4,8 @@ export const MessageTypes = new class {
 	}
 
 	registerType(options) {
-		return this.types[options.id] = options;
+		this.types[options.id] = options;
+		return options;
 	}
 
 	getType(message) {
@@ -15,5 +16,4 @@ export const MessageTypes = new class {
 		const type = this.types[message && message.t];
 		return type && type.system;
 	}
-
 };

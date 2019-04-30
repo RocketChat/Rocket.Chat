@@ -6,7 +6,6 @@ import { RateLimiter } from '../lib';
 
 Meteor.methods({
 	setRealName(name) {
-
 		check(name, String);
 
 		if (!Meteor.userId()) {

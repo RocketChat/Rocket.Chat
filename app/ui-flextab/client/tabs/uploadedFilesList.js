@@ -152,7 +152,7 @@ Template.uploadedFilesList.events({
 								},
 							],
 						},
-						...(canDelete ? [{
+						...canDelete ? [{
 							items: [
 								{
 									icon: 'trash',
@@ -186,12 +186,12 @@ Template.uploadedFilesList.events({
 									},
 								},
 							],
-						}] : []),
+						}] : [],
 					],
 				},
 			],
 			currentTarget: e.currentTarget,
-			onDestroyed:() => {
+			onDestroyed: () => {
 				e.currentTarget.parentElement.classList.remove('active');
 			},
 		};

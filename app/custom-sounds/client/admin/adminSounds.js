@@ -96,13 +96,13 @@ Template.adminSounds.onCreated(function() {
 	});
 
 	this.autorun(function() {
-		const limit = (instance.limit != null) ? instance.limit.get() : 0;
+		const limit = instance.limit != null ? instance.limit.get() : 0;
 		const subscription = instance.subscribe('customSounds', '', limit);
 		instance.ready.set(subscription.ready());
 	});
 
 	this.customsounds = function() {
-		const filter = (instance.filter != null) ? s.trim(instance.filter.get()) : '';
+		const filter = instance.filter != null ? s.trim(instance.filter.get()) : '';
 
 		let query = {};
 
@@ -111,7 +111,7 @@ Template.adminSounds.onCreated(function() {
 			query = { name: filterReg };
 		}
 
-		const limit = (instance.limit != null) ? instance.limit.get() : 0;
+		const limit = instance.limit != null ? instance.limit.get() : 0;
 
 		return CustomSounds.find(query, { limit, sort: { name: 1 } }).fetch();
 	};

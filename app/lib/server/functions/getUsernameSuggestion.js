@@ -25,7 +25,6 @@ export function generateUsernameSuggestion(user) {
 	let usernames = [];
 
 	if (user.name) {
-
 		usernames.push(name(user.name));
 
 		const nameParts = user.name.split(' ');

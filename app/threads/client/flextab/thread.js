@@ -57,7 +57,7 @@ Template.thread.helpers({
 			settings: {
 				...result.settings,
 				showReplyButton: false,
-				showreply:false,
+				showreply: false,
 			},
 		};
 	},
@@ -164,8 +164,6 @@ Template.thread.onCreated(async function() {
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
 		});
-
-
 	}, 500);
 });
 

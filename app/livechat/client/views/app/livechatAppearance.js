@@ -109,16 +109,14 @@ Template.livechatAppearance.helpers({
 	sampleColor() {
 		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
 			return Template.instance().colorOffline.get();
-		} else {
-			return Template.instance().color.get();
 		}
+		return Template.instance().color.get();
 	},
 	sampleTitle() {
 		if (Template.instance().previewState.get().indexOf('offline') !== -1) {
 			return Template.instance().titleOffline.get();
-		} else {
-			return Template.instance().title.get();
 		}
+		return Template.instance().title.get();
 	},
 	sampleData() {
 		return {
@@ -330,7 +328,6 @@ Template.livechatAppearance.events({
 
 		const settingRegistrationFormMessage = LivechatAppearance.findOne('Livechat_registration_form_message');
 		instance.registrationFormMessage.set(settingRegistrationFormMessage && settingRegistrationFormMessage.value);
-
 	},
 	'submit .rocket-form'(e, instance) {
 		e.preventDefault();

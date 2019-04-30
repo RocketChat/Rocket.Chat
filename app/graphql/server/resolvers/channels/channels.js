@@ -18,7 +18,7 @@ const resolver = {
 			// Filter
 			if (typeof args.filter !== 'undefined') {
 				// nameFilter
-				if (typeof args.filter.nameFilter !== undefined) {
+				if (typeof args.filter.nameFilter !== 'undefined') {
 					query.name = {
 						$regex: new RegExp(args.filter.nameFilter, 'i'),
 					};

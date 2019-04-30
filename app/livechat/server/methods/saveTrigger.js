@@ -21,8 +21,7 @@ Meteor.methods({
 
 		if (trigger._id) {
 			return LivechatTrigger.updateById(trigger._id, trigger);
-		} else {
-			return LivechatTrigger.insert(trigger);
 		}
+		return LivechatTrigger.insert(trigger);
 	},
 });

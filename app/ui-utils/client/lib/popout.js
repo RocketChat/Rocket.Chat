@@ -36,7 +36,7 @@ export const popout = {
 		if (this.timer) {
 			clearTimeout(this.timer);
 		}
-		if (typeof(this.onCloseCallback) === 'function') {
+		if (typeof this.onCloseCallback === 'function') {
 			this.onCloseCallback();
 		}
 	},

@@ -39,7 +39,7 @@ Template.sideNav.helpers({
 
 	sidebarViewMode() {
 		const viewMode = getUserPreference(Meteor.userId(), 'sidebarViewMode');
-		return viewMode ? viewMode : 'condensed';
+		return viewMode || 'condensed';
 	},
 
 	sidebarHideAvatar() {
@@ -102,6 +102,6 @@ Template.sideNav.onCreated(function() {
 			},
 		});
 		const userPref = getUserPreference(user, 'sidebarGroupByType');
-		this.groupedByType.set(userPref ? userPref : settings.get('UI_Group_Channels_By_Type'));
+		this.groupedByType.set(userPref || settings.get('UI_Group_Channels_By_Type'));
 	});
 });

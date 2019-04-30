@@ -119,7 +119,6 @@ export const theme = new class {
 			};
 			return settings.add(`theme-${ type }-${ name }`, value, config);
 		}
-
 	}
 
 	addPublicColor(name, value, section, editor = 'color', property) {

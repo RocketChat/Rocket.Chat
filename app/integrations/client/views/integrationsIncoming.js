@@ -13,7 +13,7 @@ import hljs from 'highlight.js';
 import toastr from 'toastr';
 
 Template.integrationsIncoming.onCreated(function _incomingIntegrationsOnCreated() {
-	return this.record = new ReactiveVar({
+	this.record = new ReactiveVar({
 		username: 'rocket.cat',
 	});
 });
@@ -157,17 +157,16 @@ Template.integrationsIncoming.events({
 			Meteor.call('deleteIncomingIntegration', params.id, (err) => {
 				if (err) {
 					return handleError(err);
-				} else {
-					modal.open({
-						title: t('Deleted'),
-						text: t('Your_entry_has_been_deleted'),
-						type: 'success',
-						timer: 1000,
-						showConfirmButton: false,
-					});
-
-					FlowRouter.go('admin-integrations');
 				}
+				modal.open({
+					title: t('Deleted'),
+					text: t('Your_entry_has_been_deleted'),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false,
+				});
+
+				FlowRouter.go('admin-integrations');
 			});
 		});
 	},

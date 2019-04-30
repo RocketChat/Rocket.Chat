@@ -11,7 +11,6 @@ import { Notifications } from '../../notifications';
 */
 
 slashCommands.add('unmute', function Unmute(command, params, item) {
-
 	if (command !== 'unmute' || !Match.test(params, String)) {
 		return;
 	}

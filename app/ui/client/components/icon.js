@@ -5,5 +5,5 @@ import { isChrome, isFirefox } from '../../../utils';
 const baseUrlFix = () => `${ document.baseURI }${ FlowRouter.current().path.substring(1) }`;
 
 Template.icon.helpers({
-	baseUrl: ((isFirefox && isFirefox[1] < 55) || (isChrome && isChrome[1] < 55)) ? baseUrlFix : undefined,
+	baseUrl: (isFirefox && isFirefox[1] < 55) || (isChrome && isChrome[1] < 55) ? baseUrlFix : undefined,
 });

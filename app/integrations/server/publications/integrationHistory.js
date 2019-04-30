@@ -9,9 +9,8 @@ Meteor.publish('integrationHistory', function _integrationHistoryPublication(int
 
 	if (hasPermission(this.userId, 'manage-integrations')) {
 		return IntegrationHistory.findByIntegrationId(integrationId, { sort: { _updatedAt: -1 }, limit });
-	} else if (hasPermission(this.userId, 'manage-own-integrations')) {
+	} if (hasPermission(this.userId, 'manage-own-integrations')) {
 		return IntegrationHistory.findByIntegrationIdAndCreatedBy(integrationId, this.userId, { sort: { _updatedAt: -1 }, limit });
-	} else {
-		throw new Meteor.Error('not-authorized');
 	}
+	throw new Meteor.Error('not-authorized');
 });

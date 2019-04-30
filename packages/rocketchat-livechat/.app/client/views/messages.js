@@ -23,16 +23,14 @@ Template.messages.helpers({
 	showOptions() {
 		if (Template.instance().showOptions.get()) {
 			return 'show';
-		} else {
-			return '';
 		}
+		return '';
 	},
 	optionsLink() {
 		if (Template.instance().showOptions.get()) {
 			return t('Close_menu');
-		} else {
-			return t('Options');
 		}
+		return t('Options');
 	},
 	videoCallEnabled() {
 		return Livechat.videoCall;

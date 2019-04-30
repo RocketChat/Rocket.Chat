@@ -13,7 +13,7 @@ Meteor.methods({
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
 			message: {
-				docs:[],
+				docs: [],
 			},
 		};
 

@@ -32,7 +32,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	}
 
 	if (!ignoreDiscussion) {
-		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { fields: { drid: 1 }, ...(limit && { limit }) }).fetch()
+		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { fields: { drid: 1 }, ...limit && { limit } }).fetch()
 			.forEach(({ drid }) => deleteRoom(drid));
 	}
 

@@ -93,7 +93,6 @@ describe('GraphQL Tests', function() {
 				user.accessToken = data.tokens.accessToken;
 				expect(data.user).to.have.property('username', user.username);
 				expect(data.user).to.have.property('email', user.email);
-
 			})
 			.end(done);
 	});

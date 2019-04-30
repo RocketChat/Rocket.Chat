@@ -50,7 +50,7 @@ Meteor.methods({
 		}
 
 		const exportOperation = {
-			userId : currentUserData._id,
+			userId: currentUserData._id,
 			roomList: null,
 			status: 'pending',
 			exportPath: folderName,

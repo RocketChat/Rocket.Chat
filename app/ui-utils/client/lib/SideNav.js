@@ -75,9 +75,8 @@ export const SideNav = new class {
 	toggleCurrent() {
 		if (this.flexNav && this.flexNav.opened) {
 			return this.closeFlex();
-		} else {
-			return AccountBox.toggle();
 		}
+		return AccountBox.toggle();
 	}
 	focusInput() {
 		const sideNavDivs = Array.from(this.sideNav[0].children).filter((el) => el.tagName === 'DIV' && !el.classList.contains('hidden'));
@@ -133,7 +132,7 @@ export const SideNav = new class {
 				this.setFlex(item.config.template, item.config.data);
 				return this.openFlex(item.callback);
 			});
-			return this.openQueue = [];
+			this.openQueue = [];
 		}
 	}
 };

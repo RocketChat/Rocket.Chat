@@ -140,7 +140,6 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 				}));
 				this.request.pipe(busboy);
 			})();
-
 		});
 	},
 });

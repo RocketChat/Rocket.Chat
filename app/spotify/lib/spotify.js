@@ -15,7 +15,7 @@ const process = function(message, source, callback) {
 			// Verify if this part is code
 			const part = msgParts[index];
 
-			if (((part != null ? part.length > 0 : undefined) != null)) {
+			if ((part != null ? part.length > 0 : undefined) != null) {
 				const codeMatch = part.match(/(?:```(\w*)[\n ]?([\s\S]*?)```+?)|(?:`(?:[^`]+)`)/);
 				if (codeMatch == null) {
 					callback(message, msgParts, index, part);
@@ -37,14 +37,13 @@ class Spotify {
 			const re = /(?:^|\s)spotify:([^:\s]+):([^:\s]+)(?::([^:\s]+))?(?::(\S+))?(?:\s|$)/g;
 
 			let match;
-			while ((match = re.exec(part))) {
+			while (match = re.exec(part)) {
 				const data = _.filter(match.slice(1), (value) => value != null);
 				const path = _.map(data, (value) => _.escape(value)).join('/');
 				const url = `https://open.spotify.com/${ path }`;
 				urls.push({ url, source: `spotify:${ data.join(':') }` });
 				changed = true;
 			}
-
 		});
 
 		// Re-mount message
@@ -65,7 +64,8 @@ class Spotify {
 						msgParts[index] = part.replace(re, `$1<a href="${ item.url }" target="_blank">${ item.source }</a>$2`);
 					}
 				}
-				return message.html = msgParts.join('');
+				message.html = msgParts.join('');
+				return message.html;
 			}
 		});
 

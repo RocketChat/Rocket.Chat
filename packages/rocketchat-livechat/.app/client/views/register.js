@@ -68,34 +68,33 @@ Template.register.events({
 
 		if (!instance.validateForm(form, fields)) {
 			return instance.showError(TAPi18n.__('You_must_complete_all_fields'));
-		} else {
-			let departmentId = instance.$('select[name=department]').val();
-			if (!departmentId) {
-				const department = Department.findOne({ showOnRegistration: true });
-				if (department) {
-					departmentId = department._id;
-				}
-			}
-
-			Livechat.department = departmentId;
-
-			const guest = {
-				token: visitor.getToken(),
-				name,
-				email,
-				department: Livechat.department,
-			};
-
-			Meteor.call('livechat:registerGuest', guest, function(error, result) {
-				if (error != null) {
-					return instance.showError(error.reason);
-				}
-				parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
-				visitor.setId(result.userId);
-				visitor.setData(result.visitor);
-				start();
-			});
 		}
+		let departmentId = instance.$('select[name=department]').val();
+		if (!departmentId) {
+			const department = Department.findOne({ showOnRegistration: true });
+			if (department) {
+				departmentId = department._id;
+			}
+		}
+
+		Livechat.department = departmentId;
+
+		const guest = {
+			token: visitor.getToken(),
+			name,
+			email,
+			department: Livechat.department,
+		};
+
+		Meteor.call('livechat:registerGuest', guest, function(error, result) {
+			if (error != null) {
+				return instance.showError(error.reason);
+			}
+			parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
+			visitor.setId(result.userId);
+			visitor.setData(result.visitor);
+			start();
+		});
 	},
 	'click .error'(e, instance) {
 		return instance.hideError();

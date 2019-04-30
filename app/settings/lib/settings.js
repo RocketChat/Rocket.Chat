@@ -27,24 +27,23 @@ export const settings = {
 				});
 			}
 			return Meteor.settings[_id] != null && callback(_id, Meteor.settings[_id]);
-		} else {
-			if (!Meteor.settings) {
-				return;
-			}
-			if (_.isRegExp(_id)) {
-				return Object.keys(Meteor.settings).reduce((items, key) => {
-					const value = Meteor.settings[key];
-					if (_id.test(key)) {
-						items.push({
-							key,
-							value,
-						});
-					}
-					return items;
-				}, []);
-			}
-			return Meteor.settings && Meteor.settings[_id];
 		}
+		if (!Meteor.settings) {
+			return;
+		}
+		if (_.isRegExp(_id)) {
+			return Object.keys(Meteor.settings).reduce((items, key) => {
+				const value = Meteor.settings[key];
+				if (_id.test(key)) {
+					items.push({
+						key,
+						value,
+					});
+				}
+				return items;
+			}, []);
+		}
+		return Meteor.settings && Meteor.settings[_id];
 	},
 	set(_id, value, callback) {
 		return Meteor.call('saveSetting', _id, value, callback);

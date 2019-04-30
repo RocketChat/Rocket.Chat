@@ -42,7 +42,7 @@ Template.message.helpers({
 			case 'wm':
 				return t('Welcome', { user: this.u.username });
 			case 'livechat-close':
-				return (Livechat.conversationFinishedMessage) ? Livechat.conversationFinishedMessage : t('Conversation_finished');
+				return Livechat.conversationFinishedMessage ? Livechat.conversationFinishedMessage : t('Conversation_finished');
 			//  case 'rtc': return RocketChat.callbacks.run('renderRtcMessage', this);
 			default:
 				this.html = this.msg;

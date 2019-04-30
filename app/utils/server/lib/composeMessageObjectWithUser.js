@@ -20,7 +20,7 @@ export const composeMessageObjectWithUser = function(message, userId) {
 				message.u.name = getNameOfUser(message.u.username);
 			}
 			if (message.mentions && message.mentions.length) {
-				message.mentions.forEach((mention) => mention.name = getNameOfUser(mention.username));
+				message.mentions.forEach((mention) => { mention.name = getNameOfUser(mention.username); });
 			}
 			if (message.reactions && Object.keys(message.reactions).length) {
 				Object.keys(message.reactions).forEach((reaction) => {

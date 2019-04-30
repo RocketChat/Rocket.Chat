@@ -326,5 +326,4 @@ export class Base {
 	// 		remove: this.dinamicTrashFindAfter(method, updatedAt, ...args).fetch()
 	// 	};
 	// }
-
 }

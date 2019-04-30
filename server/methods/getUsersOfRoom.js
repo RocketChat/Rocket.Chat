@@ -23,14 +23,14 @@ function findUsers({ rid, status, skip, limit }) {
 				'u.status': 1,
 			},
 		},
-		...(status ? [{ $match: { 'u.status': status } }] : []),
+		...status ? [{ $match: { 'u.status': status } }] : [],
 		{
 			$sort: {
 				[settings.get('UI_Use_Real_Name') ? 'u.name' : 'u.username']: 1,
 			},
 		},
-		...(skip > 0 ? [{ $skip: skip }] : []),
-		...(limit > 0 ? [{ $limit: limit }] : []),
+		...skip > 0 ? [{ $skip: skip }] : [],
+		...limit > 0 ? [{ $limit: limit }] : [],
 		{
 			$project: {
 				_id: { $arrayElemAt: ['$u._id', 0] },

@@ -122,7 +122,6 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
-
 	},
 });
 
@@ -191,7 +190,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const { sort, fields, query } = this.parseJsonQuery();
 
 		const users = Users.find(query, {
-			sort: sort ? sort : { username: 1 },
+			sort: sort || { username: 1 },
 			skip: offset,
 			limit: count,
 			fields,
@@ -409,9 +408,8 @@ API.v1.addRoute('users.getPreferences', { authRequired: true }, {
 			return API.v1.success({
 				preferences,
 			});
-		} else {
-			return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		}
+		return API.v1.failure(TAPi18n.__('Accounts_Default_User_Preferences_not_available').toUpperCase());
 	},
 });
 

@@ -34,7 +34,7 @@ Meteor.methods({
 		};
 
 		Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
-			return Mailer.replace(html, { Verification_Url:url, name: user.name });
+			return Mailer.replace(html, { Verification_Url: url, name: user.name });
 		};
 
 		try {
@@ -45,6 +45,5 @@ Meteor.methods({
 				message: error.message,
 			});
 		}
-
 	},
 });

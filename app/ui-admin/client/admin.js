@@ -188,11 +188,10 @@ Template.admin.helpers({
 		});
 		if (found === enableQuery.length) {
 			return {};
-		} else {
-			return {
-				disabled: 'disabled',
-			};
 		}
+		return {
+			disabled: 'disabled',
+		};
 	},
 	isReadonly() {
 		if (this.readonly === true) {
@@ -444,7 +443,6 @@ Template.admin.events({
 			}
 			toastr.success(TAPi18n.__('Settings_updated'));
 		});
-
 	},
 	'click .rc-header__section-button .refresh-clients'() {
 		Meteor.call('refreshClients', function() {
@@ -480,9 +478,8 @@ Template.admin.events({
 		return Meteor.call('refreshOAuthService', function(err) {
 			if (err) {
 				return handleError(err);
-			} else {
-				return toastr.success(TAPi18n.__('Done'));
 			}
+			return toastr.success(TAPi18n.__('Done'));
 		});
 	},
 	'click .remove-custom-oauth'() {

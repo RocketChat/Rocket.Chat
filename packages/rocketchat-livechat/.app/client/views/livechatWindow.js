@@ -30,7 +30,7 @@ Template.livechatWindow.helpers({
 		if (Session.get('triggered') || visitor.getId()) {
 			return false;
 		}
-		return (Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments()));
+		return Livechat.registrationForm && (Livechat.nameFieldRegistrationForm || Livechat.emailFieldRegistrationForm || showDepartments());
 	},
 	showSwitchDepartmentForm() {
 		return Livechat.showSwitchDepartmentForm;
@@ -78,7 +78,8 @@ Template.livechatWindow.events({
 			parentCall('stopDragWindow');
 			window.removeEventListener('mousemove', this.onDrag);
 			window.removeEventListener('mousedown', this.onDragStop);
-			this.onDrag = this.onDragStop = null;
+			this.onDrag = null;
+			this.onDragStop = null;
 		};
 
 		window.addEventListener('mousemove', this.onDrag);

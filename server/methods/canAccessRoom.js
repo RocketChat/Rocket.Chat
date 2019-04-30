@@ -37,7 +37,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'canAccessRoom',
 			});
-
 		}
 
 		if (canAccessRoom.call(this, room, user, extraData)) {

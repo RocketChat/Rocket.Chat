@@ -23,7 +23,7 @@ callbacks.runItem = function({ callback, result, constant, hook, time }) {
 
 	const newResult = originalRunItem({ callback, result, constant });
 
-	StatsTracker.timing('callbacks.time', (Date.now() - time), [`hook:${ hook }`, `callback:${ callback.id }`]);
+	StatsTracker.timing('callbacks.time', Date.now() - time, [`hook:${ hook }`, `callback:${ callback.id }`]);
 
 	rocketchatCallbacksEnd();
 

@@ -52,7 +52,6 @@ describe('The AppMessagesConverter instance', function() {
 	const updatedAt = new Date('2019-03-30T01:22:08.412Z');
 
 	describe('when converting a message from Rocket.Chat to the Engine schema', function() {
-
 		it('should return `undefined` when `msgObj` is falsy', function() {
 			const appMessage = messagesConverter.convertMessage(undefined);
 
@@ -84,17 +83,17 @@ describe('The AppMessagesConverter instance', function() {
 			messagesConverter.convertMessage(rocketchatMessageMock);
 
 			expect(rocketchatMessageMock).to.deep.equal({
-				_id : 'SimpleMessageMock',
-				t : 'uj',
-				rid : 'GENERAL',
-				ts : new Date('2019-03-30T01:22:08.389Z'),
-				msg : 'rocket.cat',
-				u : {
-					_id : 'rocket.cat',
-					username : 'rocket.cat',
+				_id: 'SimpleMessageMock',
+				t: 'uj',
+				rid: 'GENERAL',
+				ts: new Date('2019-03-30T01:22:08.389Z'),
+				msg: 'rocket.cat',
+				u: {
+					_id: 'rocket.cat',
+					username: 'rocket.cat',
 				},
-				groupable : false,
-				_updatedAt : new Date('2019-03-30T01:22:08.412Z'),
+				groupable: false,
+				_updatedAt: new Date('2019-03-30T01:22:08.412Z'),
 			});
 		});
 
@@ -110,15 +109,14 @@ describe('The AppMessagesConverter instance', function() {
 			const appMessage = messagesConverter.convertMessage(messagesMock.findOneById('LivechatGuestMessageMock'));
 
 			expect(appMessage).to.have.property('sender').which.includes({
-				id : 'guest1234',
+				id: 'guest1234',
 				username: 'guest1234',
-				name : 'Livechat Guest',
+				name: 'Livechat Guest',
 			});
 		});
 	});
 
 	describe('when converting a message from the Engine schema back to Rocket.Chat', function() {
-
 		it('should return `undefined` when `message` is falsy', function() {
 			const rocketchatMessage = messagesConverter.convertAppMessage(undefined);
 

@@ -6,7 +6,7 @@ import './livechatAnalyticsDaterange.html';
 
 Template.livechatAnalyticsDaterange.helpers({
 	bold(prop) {
-		return (prop === Template.currentData().daterange.get().value) ? 'rc-popover__item--bold' : '';
+		return prop === Template.currentData().daterange.get().value ? 'rc-popover__item--bold' : '';
 	},
 });
 

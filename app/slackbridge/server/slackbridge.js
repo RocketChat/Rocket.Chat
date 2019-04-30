@@ -7,7 +7,6 @@ import { logger } from './logger';
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.
  */
 class SlackBridgeClass {
-
 	constructor() {
 		this.slackAdapters = [];
 		this.rocket = new RocketAdapter(this);

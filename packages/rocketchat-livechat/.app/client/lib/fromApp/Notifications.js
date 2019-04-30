@@ -10,7 +10,7 @@ this.Notifications = new class {
 			if (visitor.getId() !== null && this.logged === false) {
 				this.loginCb.forEach((cb) => cb());
 			}
-			return this.logged = visitor.getId() !== null;
+			this.logged = visitor.getId() !== null;
 		});
 		this.debug = false;
 		this.streamAll = new Meteor.Streamer('notify-all');
@@ -77,5 +77,4 @@ this.Notifications = new class {
 	unUser(eventName, callback) {
 		return this.streamUser.removeListener(`${ visitor.getId() }/${ eventName }`, callback);
 	}
-
 };

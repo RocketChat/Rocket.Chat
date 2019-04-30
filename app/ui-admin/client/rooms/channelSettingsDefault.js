@@ -25,9 +25,8 @@ Template.channelSettingsDefault.helpers({
 		const room = AdminChatRoom.findOne(this.rid, { fields: { default: 1 } });
 		if (room && room.default) {
 			return t('True');
-		} else {
-			return t('False');
 		}
+		return t('False');
 	},
 });
 

@@ -38,7 +38,7 @@ Template.adminRoomInfo.helpers({
 		const roomType = room && room.t;
 		if (roomType === 'c') {
 			return t('Channel');
-		} else if (roomType === 'p') {
+		} if (roomType === 'p') {
 			return t('Private_Group');
 		}
 	},
@@ -63,9 +63,8 @@ Template.adminRoomInfo.helpers({
 		const archivationState = room && room.archived;
 		if (archivationState === true) {
 			return t('Room_archivation_state_true');
-		} else {
-			return t('Room_archivation_state_false');
 		}
+		return t('Room_archivation_state_false');
 	},
 	canDeleteRoom() {
 		const room = AdminChatRoom.findOne(this.rid, { fields: { t: 1 } });
@@ -82,9 +81,8 @@ Template.adminRoomInfo.helpers({
 
 		if (readOnly === true) {
 			return t('True');
-		} else {
-			return t('False');
 		}
+		return t('False');
 	},
 });
 
@@ -125,9 +123,9 @@ Template.adminRoomInfo.events({
 	'click [data-edit]'(e, t) {
 		e.preventDefault();
 		t.editing.set($(e.currentTarget).data('edit'));
-		return setTimeout((function() {
+		return setTimeout(function() {
 			t.$('input.editing').focus().select();
-		}), 100);
+		}, 100);
 	},
 	'click .cancel'(e, t) {
 		e.preventDefault();
@@ -214,9 +212,8 @@ Template.adminRoomInfo.onCreated(function() {
 						Meteor.call('saveRoomSettings', rid, 'roomType', val, function(err) {
 							if (err) {
 								return handleError(err);
-							} else {
-								toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 							}
+							toastr.success(TAPi18n.__('Room_type_changed_successfully'));
 						});
 					};
 					if (!AdminChatRoom.findOne(rid, { fields: { default: 1 } }).default) {

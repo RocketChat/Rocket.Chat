@@ -17,7 +17,7 @@ API.v1.addRoute('subscriptions.get', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => result = Meteor.call('subscriptions/get', updatedSinceDate));
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('subscriptions/get', updatedSinceDate); });
 
 		if (Array.isArray(result)) {
 			result = {
@@ -82,5 +82,3 @@ API.v1.addRoute('subscriptions.unread', { authRequired: true }, {
 		return API.v1.success();
 	},
 });
-
-

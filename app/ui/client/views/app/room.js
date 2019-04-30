@@ -276,7 +276,7 @@ Template.room.helpers({
 		const viewMode = getUserPreference(Meteor.userId(), 'messageViewMode');
 		const query = {
 			rid,
-			...((ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } }),
+			...(ignoreReplies || modes[viewMode] === 'compact') && { tmid: { $exists: 0 } },
 		};
 
 		if (hideMessagesOfType.length > 0) {
@@ -319,7 +319,7 @@ Template.room.helpers({
 			const leader = Users.findOne({ _id: roles.u._id }, { fields: { status: 1 } }) || {};
 			return {
 				...roles.u,
-				name: settings.get('UI_Use_Real_Name') ? (roles.u.name || roles.u.username) : roles.u.username,
+				name: settings.get('UI_Use_Real_Name') ? roles.u.name || roles.u.username : roles.u.username,
 				status: leader.status || 'offline',
 				statusDisplay: ((status) => status.charAt(0).toUpperCase() + status.slice(1))(leader.status || 'offline'),
 			};
@@ -561,7 +561,6 @@ export const dropzoneEvents = {
 	},
 
 	'dropped .dropzone-overlay'(event, instance) {
-
 		event.currentTarget.parentNode.classList.remove('over');
 
 		const e = event.originalEvent || event;
@@ -719,7 +718,7 @@ Template.room.events({
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		} else {
 			const subscription = Subscriptions.findOne({ rid: _id });
-			message = ChatMessage.find({ rid: _id, ts: { $gt: (subscription != null ? subscription.ls : undefined) } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
+			message = ChatMessage.find({ rid: _id, ts: { $gt: subscription != null ? subscription.ls : undefined } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		}
 	},
@@ -784,7 +783,6 @@ Template.room.events({
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
-
 		const { msg: message, context: ctx } = messageArgs(this);
 
 		const context = ctx || message.actionContext || 'message';
@@ -803,7 +801,7 @@ Template.room.events({
 		const [items, alertsItem] = allItems.reduce((result, value) => (result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value), result), [[], []]);
 		const groups = [{ items }];
 
-		if (alertsItem .length) {
+		if (alertsItem.length) {
 			groups.push({ items: alertsItem });
 		}
 		const config = {
@@ -876,7 +874,7 @@ Template.room.events({
 		}
 	},
 	'load img'(e, template) {
-		return (typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined);
+		return typeof template.sendToBottomIfNecessary === 'function' ? template.sendToBottomIfNecessary() : undefined;
 	},
 
 	'click .jump-recent button'(e, template) {
@@ -915,16 +913,15 @@ Template.room.events({
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return callbacks.run(roomData.announcementDetails.callback, this._id);
-		} else {
-			modal.open({
-				title: t('Announcement'),
-				text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
-				html: true,
-				showConfirmButton: false,
-				showCancelButton: true,
-				cancelButtonText: t('Close'),
-			});
 		}
+		modal.open({
+			title: t('Announcement'),
+			text: callbacks.run('renderMessage', { html: roomData.announcement }).html,
+			html: true,
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonText: t('Close'),
+		});
 	},
 	'click .toggle-hidden'(e) {
 		const id = e.currentTarget.dataset.message;
@@ -1165,9 +1162,7 @@ Template.room.onRendered(function() {
 	// observer.disconnect()
 
 	template.onWindowResize = () =>
-		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced())
-	;
-
+		Meteor.defer(() => template.sendToBottomIfNecessaryDebounced());
 	window.addEventListener('resize', template.onWindowResize);
 
 	wrapper.addEventListener('mousewheel', function() {
@@ -1180,7 +1175,7 @@ Template.room.onRendered(function() {
 		Meteor.defer(() => template.checkIfScrollIsAtBottom());
 	});
 
-	wrapper.addEventListener('touchstart', () => template.atBottom = false);
+	wrapper.addEventListener('touchstart', () => { template.atBottom = false; });
 
 	wrapper.addEventListener('touchend', function() {
 		template.checkIfScrollIsAtBottom();
@@ -1265,7 +1260,6 @@ Template.room.onRendered(function() {
 	});
 
 	this.autorun(function() {
-
 		if (template.data._id !== RoomManager.openedRoom) {
 			return;
 		}
@@ -1275,7 +1269,6 @@ Template.room.onRendered(function() {
 			FlowRouter.go('home');
 		}
 	});
-
 });
 
 callbacks.add('enter-room', (sub) => {

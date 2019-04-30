@@ -41,7 +41,7 @@ function runAgentLeaveAction(userId) {
 	const action = settings.get('Livechat_agent_leave_action');
 	if (action === 'close') {
 		return Livechat.closeOpenChats(userId, settings.get('Livechat_agent_leave_comment'));
-	} else if (action === 'forward') {
+	} if (action === 'forward') {
 		return Livechat.forwardOpenChats(userId);
 	}
 }

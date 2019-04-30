@@ -219,4 +219,3 @@ Template.cloud.onRendered(() => {
 		SideNav.openFlex();
 	});
 });
-

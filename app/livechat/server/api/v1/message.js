@@ -95,7 +95,6 @@ API.v1.addRoute('livechat/message/:_id', {
 			}
 
 			return API.v1.success({ message });
-
 		} catch (e) {
 			return API.v1.failure(e.error);
 		}

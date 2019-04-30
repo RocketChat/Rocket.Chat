@@ -17,5 +17,4 @@ Meteor.publish('livechat:customFields', function(_id) {
 	}
 
 	return LivechatCustomField.find();
-
 });

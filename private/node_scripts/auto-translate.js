@@ -25,9 +25,8 @@ googleTranslate.getSupportedLanguages(function(err, langs) {
 		_.keys(enUnsorted).sort(function(a, b) {
 			if (a.toLowerCase() !== b.toLowerCase()) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
-			} else {
-				return a.localeCompare(b);
 			}
+			return a.localeCompare(b);
 		}).forEach(function(key) {
 			en[key] = enUnsorted[key];
 		});

@@ -31,7 +31,7 @@ export function setReaction(room, user, message, reaction, shouldReact) {
 			msg: TAPi18n.__('You_have_been_muted', {}, user.language),
 		});
 		return false;
-	} else if (!Subscriptions.findOne({ rid: message.rid })) {
+	} if (!Subscriptions.findOne({ rid: message.rid })) {
 		return false;
 	}
 

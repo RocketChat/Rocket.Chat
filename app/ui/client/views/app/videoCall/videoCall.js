@@ -6,7 +6,7 @@ import { t } from '../../../../../utils';
 import { WebRTC } from '../../../../../webrtc/client';
 
 Template.videoCall.onCreated(function() {
-	return this.mainVideo = new ReactiveVar('$auto');
+	this.mainVideo = new ReactiveVar('$auto');
 });
 
 Template.videoCall.helpers({
@@ -66,9 +66,8 @@ Template.videoCall.helpers({
 		}
 		if (webrtc.remoteItemsById.get()[template.mainVideo.get()] != null) {
 			return webrtc.remoteItemsById.get()[template.mainVideo.get()].url;
-		} else {
-			template.mainVideo.set('$auto');
 		}
+		template.mainVideo.set('$auto');
 	},
 	mainVideoUsername() {
 		const template = Template.instance();
@@ -87,9 +86,8 @@ Template.videoCall.helpers({
 		if (webrtc.remoteItemsById.get()[template.mainVideo.get()] != null) {
 			const user = Meteor.users.findOne(webrtc.remoteItemsById.get()[template.mainVideo.get()].id);
 			return user != null ? user.username : undefined;
-		} else {
-			template.mainVideo.set('$auto');
 		}
+		template.mainVideo.set('$auto');
 	},
 	usernameByUserId(userId) {
 		const user = Meteor.users.findOne(userId);
@@ -130,7 +128,7 @@ Template.videoCall.events({
 	},
 	'loadstart video[muted]'(e) {
 		e.currentTarget.muted = true;
-		return e.currentTarget.volume = 0;
+		e.currentTarget.volume = 0;
 	},
 });
 

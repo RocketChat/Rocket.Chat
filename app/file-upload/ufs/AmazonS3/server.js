@@ -11,7 +11,6 @@ import stream from 'stream';
  * @constructor
  */
 export class AmazonS3Store extends UploadFS.Store {
-
 	constructor(options) {
 		// Default options
 		// options.secretAccessKey,

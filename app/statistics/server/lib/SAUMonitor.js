@@ -147,13 +147,13 @@ export class SAUMonitorClass {
 			const beforeDateTime = new Date(this._today.year, this._today.month - 1, this._today.day, 23, 59, 59, 999);
 			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
 
-			const createSessions = ((objects, ids) => {
+			const createSessions = (objects, ids) => {
 				Sessions.createBatch(objects);
 
 				Meteor.defer(() => {
 					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
 				});
-			});
+			};
 			this._applyAllServerSessionsBatch(createSessions, { createdAt: nextDateTime, lastActivityAt: nextDateTime, ...currentDay });
 			this._today = currentDay;
 			return;

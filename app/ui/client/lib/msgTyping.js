@@ -64,14 +64,15 @@ export const MsgTyping = (function() {
 	const start = function(room) {
 		if (!renew) { return; }
 
-		setTimeout(() => renew = true, renewTimeout);
+		setTimeout(() => { renew = true, renewTimeout; });
 
 		renew = false;
 		selfTyping.set(true);
 		const user = Meteor.user();
 		Notifications.notifyRoom(room, 'typing', shownName(user), true);
 		clearTimeout(timeouts[room]);
-		return timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
+		timeouts[room] = Meteor.setTimeout(() => stop(room), timeout);
+		return timeouts[room];
 	};
 
 

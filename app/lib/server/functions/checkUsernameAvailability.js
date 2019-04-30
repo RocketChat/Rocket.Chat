@@ -14,7 +14,6 @@ const usernameIsBlocked = (username, usernameBlackList) => usernameBlackList.len
 	&& usernameBlackList.some((restrictedUsername) => restrictedUsername.test(s.trim(s.escapeRegExp(username))));
 
 export const checkUsernameAvailability = function(username) {
-
 	if (usernameIsBlocked(username, usernameBlackList)) {
 		return false;
 	}

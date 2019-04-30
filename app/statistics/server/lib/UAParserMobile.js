@@ -1,4 +1,4 @@
-const mergeDeep = ((target, source) => {
+const mergeDeep = (target, source) => {
 	if (!(typeof target === 'object' && typeof source === 'object')) {
 		return target;
 	}
@@ -18,7 +18,7 @@ const mergeDeep = ((target, source) => {
 	}
 
 	return target;
-});
+};
 
 const UAParserMobile = {
 	appName: 'RC Mobile',

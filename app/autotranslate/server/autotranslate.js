@@ -146,7 +146,7 @@ class AutoTranslate {
 	deTokenize(message) {
 		if (message.tokens && message.tokens.length > 0) {
 			for (const { token, text, noHtml } of message.tokens) {
-				message.msg = message.msg.replace(token, () => (noHtml ? noHtml : text));
+				message.msg = message.msg.replace(token, () => noHtml || text);
 			}
 		}
 		return message.msg;
@@ -251,10 +251,9 @@ class AutoTranslate {
 			} finally {
 				if (this.supportedLanguages[target]) {
 					return this.supportedLanguages[target];
-				} else {
-					this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
-					return this.supportedLanguages[target || 'en'];
 				}
+				this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
+				return this.supportedLanguages[target || 'en'];
 			}
 		}
 	}

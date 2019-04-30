@@ -156,8 +156,6 @@ const toolbarButtons = (user) => [{
 	icon: 'edit-rounded',
 	condition: () => hasAtLeastOnePermission(['create-c', 'create-p']),
 	action: (e) => {
-
-
 		const createChannel = (e) => {
 			e.preventDefault();
 			modal.open({

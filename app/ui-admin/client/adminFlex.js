@@ -54,9 +54,8 @@ Template.adminFlex.helpers({
 		}).sort(function(a, b) {
 			if (a.label.toLowerCase() >= b.label.toLowerCase()) {
 				return 1;
-			} else {
-				return -1;
 			}
+			return -1;
 		});
 	},
 	label,

@@ -70,10 +70,8 @@ export const RoomManager = new function() {
 							msgStream.on(openedRooms[typeName].rid, (msg) =>
 
 								promises.run('onClientMessageReceived', msg).then(function(msg) {
-
 									// Should not send message to room if room has not loaded all the current messages
 									if (RoomHistoryManager.hasMoreNext(openedRooms[typeName].rid) === false) {
-
 										// Do not load command messages into channel
 										if (msg.t !== 'command') {
 											const subscription = ChatSubscription.findOne({ rid: openedRooms[typeName].rid });
@@ -110,7 +108,7 @@ export const RoomManager = new function() {
 
 		getDomOfRoom(typeName, rid) {
 			const room = openedRooms[typeName];
-			if ((room == null)) {
+			if (room == null) {
 				return;
 			}
 
@@ -172,7 +170,7 @@ export const RoomManager = new function() {
 
 
 		open(typeName) {
-			if ((openedRooms[typeName] == null)) {
+			if (openedRooms[typeName] == null) {
 				openedRooms[typeName] = {
 					typeName,
 					active: false,
@@ -188,7 +186,6 @@ export const RoomManager = new function() {
 			}
 
 			if (CachedChatSubscription.ready.get() === true) {
-
 				if (openedRooms[typeName].active !== true) {
 					openedRooms[typeName].active = true;
 					if (this.computation) {
@@ -207,7 +204,7 @@ export const RoomManager = new function() {
 
 		existsDomOfRoom(typeName) {
 			const room = openedRooms[typeName];
-			return ((room != null ? room.dom : undefined) != null);
+			return (room != null ? room.dom : undefined) != null;
 		}
 
 		updateUserStatus(user, status, utcOffset) {
@@ -266,9 +263,8 @@ const loadMissedMessages = function(rid) {
 	return Meteor.call('loadMissedMessages', rid, lastMessage.ts, (err, result) => {
 		if (result) {
 			return Array.from(result).map((item) => promises.run('onClientMessageReceived', item).then((msg) => upsertMessage({ msg, subscription })));
-		} else {
-			return [];
 		}
+		return [];
 	});
 };
 
@@ -284,11 +280,10 @@ Tracker.autorun(function() {
 			}
 		});
 	}
-	return connectionWasOnline = connected;
+	connectionWasOnline = connected;
 });
 
 Meteor.startup(() => {
-
 	// Reload rooms after login
 	let currentUsername = undefined;
 	Tracker.autorun(() => {
@@ -338,9 +333,9 @@ callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), callbacks
 
 CachedCollectionManager.onLogin(() => {
 	Notifications.onUser('subscriptions-changed', (action, sub) => {
-		ChatMessage.update({ rid: sub.rid }, { $unset : { ignored : '' } }, { multi : true });
+		ChatMessage.update({ rid: sub.rid }, { $unset: { ignored: '' } }, { multi: true });
 		if (sub && sub.ignored) {
-			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in : sub.ignored } }, { $set: { ignored : true } }, { multi : true });
+			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in: sub.ignored } }, { $set: { ignored: true } }, { multi: true });
 		}
 	});
 });

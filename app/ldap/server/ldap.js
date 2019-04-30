@@ -379,11 +379,12 @@ export default class LDAP {
 			logger.search.info(title);
 			// Force LDAP idle to wait the record processing
 			this.client._updateIdle(true);
-			page(null, entries, { end, next: () => {
+			page(null, entries, { end,
+				next: () => {
 				// Reset idle timer
-				this.client._updateIdle();
-				next && next();
-			} });
+					this.client._updateIdle();
+					next && next();
+				} });
 		};
 
 		this.client.search(BaseDN, options, (error, res) => {

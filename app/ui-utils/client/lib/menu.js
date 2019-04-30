@@ -24,7 +24,7 @@ export const menu = new class extends EventEmitter {
 					showTop = true;
 				}
 				if ($(this).offset().top > listOffset.top + listHeight) {
-					return showBottom = true;
+					showBottom = true;
 				}
 			});
 			if (showTop === true) {
@@ -34,9 +34,8 @@ export const menu = new class extends EventEmitter {
 			}
 			if (showBottom === true) {
 				return $('.bottom-unread-rooms').removeClass('hidden');
-			} else {
-				return $('.bottom-unread-rooms').addClass('hidden');
 			}
+			return $('.bottom-unread-rooms').addClass('hidden');
 		}, 200);
 		this.sideNavW = sideNavW;
 	}
@@ -116,11 +115,11 @@ export const menu = new class extends EventEmitter {
 		this.sidebarWrap.css('width', '100%');
 		this.wrapper.css('overflow', 'hidden');
 		this.sidebarWrap.css('background-color', '#000');
-		this.sidebarWrap.css('opacity', map((Math.abs(diff) / width), 0, 1, -.1, .8).toFixed(2));
+		this.sidebarWrap.css('opacity', map(Math.abs(diff) / width, 0, 1, -0.1, 0.8).toFixed(2));
 		this.isRtl ? this.sidebar.css('transform', `translate3d(${ (sideNavW + diff).toFixed(3) }px, 0 , 0)`) : this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0)`);
 	}
 	touchend() {
-		const [max, min] = [sideNavW * .76, sideNavW * .24];
+		const [max, min] = [sideNavW * 0.76, sideNavW * 0.24];
 		if (this.movestarted !== true) {
 			return;
 		}
@@ -128,7 +127,7 @@ export const menu = new class extends EventEmitter {
 		if (this.isRtl) {
 			if (this.isOpen()) {
 				return this.diff >= -max ? this.close() : this.open();
-			} else if (this.diff <= -min) {
+			} if (this.diff <= -min) {
 				return this.open();
 			}
 			return this.close();
@@ -145,7 +144,8 @@ export const menu = new class extends EventEmitter {
 		return this.close();
 	}
 	init() {
-		this.sidebar = this.menu = $('.sidebar');
+		this.sidebar = $('.sidebar');
+		this.sidebar = this.menu;
 		this.sidebarWrap = $('.sidebar-wrap');
 		this.wrapper = $('.messages-box > .wrapper');
 		const ignore = (fn) => (event) => document.body.clientWidth <= 780 && fn(event);

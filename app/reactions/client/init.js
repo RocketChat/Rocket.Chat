@@ -13,7 +13,7 @@ Template.room.events({
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
-		const { msg:{ rid, _id: mid } } = messageArgs(data);
+		const { msg: { rid, _id: mid } } = messageArgs(data);
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
@@ -30,7 +30,7 @@ Template.room.events({
 		event.preventDefault();
 
 		const data = Blaze.getData(event.currentTarget);
-		const { msg:{ _id: mid } } = messageArgs(data);
+		const { msg: { _id: mid } } = messageArgs(data);
 		Meteor.call('setReaction', $(event.currentTarget).data('emoji'), mid, () => {
 			tooltip.hide();
 		});
@@ -67,11 +67,11 @@ Meteor.startup(function() {
 
 			if (!room) {
 				return false;
-			} else if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
+			} if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1 && !room.reactWhenReadOnly) {
 				return false;
-			} else if (!Subscriptions.findOne({ rid: message.rid })) {
+			} if (!Subscriptions.findOne({ rid: message.rid })) {
 				return false;
-			} else if (message.private) {
+			} if (message.private) {
 				return false;
 			}
 

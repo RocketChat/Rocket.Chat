@@ -242,8 +242,8 @@ export class Rooms extends Base {
 		}
 
 		// livechat analytics : update last message timestamps
-		const visitorLastQuery = (room.metrics && room.metrics.v) ? room.metrics.v.lq : room.ts;
-		const agentLastReply = (room.metrics && room.metrics.servedBy) ? room.metrics.servedBy.lr : room.ts;
+		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
+		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
 
 		if (message.token) {	// update visitor timestamp, only if its new inquiry and not continuing message
 			if (agentLastReply >= visitorLastQuery) {		// if first query, not continuing query from visitor

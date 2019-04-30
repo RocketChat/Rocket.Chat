@@ -54,4 +54,3 @@ Template.registerHelper('hasPermission', function(permission, scope) {
 export const hasAllPermission = (permissions, scope) => _hasPermission(permissions, scope, all);
 export const hasAtLeastOnePermission = (permissions, scope) => _hasPermission(permissions, scope, atLeastOne);
 export const hasPermission = hasAllPermission;
-

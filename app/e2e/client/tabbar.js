@@ -11,7 +11,7 @@ Meteor.startup(() => {
 		i18nTitle: 'E2E',
 		icon: 'key',
 		class: () => (ChatRoom.findOne(Session.get('openedRoom')) || {}).encrypted && 'enabled',
-		action:() => {
+		action: () => {
 			const room = ChatRoom.findOne(Session.get('openedRoom'));
 			call('saveRoomSettings', room._id, 'encrypted', !room.encrypted);
 		},
