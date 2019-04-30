@@ -217,7 +217,7 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleThreadByRoomId(tmid, options) {
+	findVisibleThreadByThreadId(tmid, options) {
 		const query = {
 			_hidden: {
 				$ne: true,
