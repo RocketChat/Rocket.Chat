@@ -150,7 +150,7 @@ export const menu = new class extends EventEmitter {
 	}
 
 	init() {
-		this.sidebar = $('.sidebar');
+		this.menu = $('.sidebar');
 		this.sidebar = this.menu;
 		this.sidebarWrap = $('.sidebar-wrap');
 		this.wrapper = $('.messages-box > .wrapper');
