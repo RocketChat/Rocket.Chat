@@ -1,8 +1,9 @@
 /* eslint-env mocha */
 
 import supertest from 'supertest';
-import { adminEmail, adminUsername, adminPassword } from '../../data/user.js';
-import { credentials } from './00-preparation.js';
+import { adminEmail, adminUsername, adminPassword } from '../../data/user';
+// eslint-disable-next-line import/no-useless-path-segments
+import { credentials } from '../ui_smarti/00-preparation'; // directly address the folder to support continued testing
 import { checkIfUserIsAdmin } from '../../data/checks';
 import sideNav from '../../pageobjects/side-nav.page';
 import assistify from '../../pageobjects/assistify.page';
@@ -12,8 +13,8 @@ import mainContent from '../../pageobjects/main-content.page';
 export const clientname = 'syncclient';
 export const smarti_url_active = 'http://localhost:8080/';
 export const smarti_url_inactive = 'http://localhost:8081/';
-export const request = supertest.agent(smarti_url_active);
-export const rcrequest = supertest.agent('http://localhost:3000');
+export const smarti = supertest.agent(smarti_url_active);
+export const rocketchat = supertest.agent('http://localhost:3000');
 
 
 let auto_token;
@@ -22,7 +23,8 @@ describe('[Smarti Configuration]', function() {
 	describe('[Smarti Configuration]', function() {
 		describe('[Client]', () => {
 			it('check if client already exists', function(done) {
-				request.get('/client')
+				JSON.stringify(smarti.get('/client'), '', 2);
+				smarti.get('/client')
 					.auth(credentials.username, credentials.password)
 					.expect(200)
 					.expect(function(res) {
@@ -39,7 +41,7 @@ describe('[Smarti Configuration]', function() {
 			it('delete client if exists', function(done) {
 				if (typeof auto_clientId !== 'undefined') {
 					console.log('client was alread there', auto_clientId);
-					request.del(`/client/${ auto_clientId }`)
+					smarti.del(`/client/${ auto_clientId }`)
 						.expect(204)
 						.end(done);
 				} else {
@@ -48,7 +50,7 @@ describe('[Smarti Configuration]', function() {
 			});
 
 			it('create new client', function(done) {
-				request.post('/client')
+				smarti.post('/client')
 					.send({
 						defaultClient: true,
 						description: '',
@@ -64,7 +66,7 @@ describe('[Smarti Configuration]', function() {
 			});
 
 			it('check if right client was picked', function(done) {
-				request.get('/client')
+				smarti.get('/client')
 					.expect(200)
 					.expect(function(res) {
 						for (const cl in res.body) {
@@ -79,7 +81,7 @@ describe('[Smarti Configuration]', function() {
 
 			it('post access token', function(done) {
 				const code = `/client/${ auto_clientId }/token`;
-				request.post(code)
+				smarti.post(code)
 					.set('Content-Type', 'application/json')
 					.send({})
 					.end(function(err, res) {
@@ -97,7 +99,7 @@ describe('[Smarti Configuration]', function() {
 		let userId;
 
 		it('Login to Rocket.Chat api', function(done) {
-			rcrequest.post('/api/v1/login')
+			rocketchat.post('/api/v1/login')
 				.set('Content-Type', 'application/json')
 				.send({
 					username: adminUsername,
@@ -116,7 +118,7 @@ describe('[Smarti Configuration]', function() {
 		it('Update access token in Rocket.Chat', function(done) {
 			// console.log('authToken-o', authToken);
 			// console.log('userId-o', userId);
-			rcrequest.post('/api/v1/settings/Assistify_AI_Smarti_Auth_Token')
+			rocketchat.post('/api/v1/settings/Assistify_AI_Smarti_Auth_Token')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
@@ -129,7 +131,7 @@ describe('[Smarti Configuration]', function() {
 		it('Rocket.Chat Settings: enable Knowledgebase', function(done) {
 			// console.log('authToken-o', authToken);
 			// console.log('userId-o', userId);
-			rcrequest.post('/api/v1/settings/Assistify_AI_Enabled')
+			rocketchat.post('/api/v1/settings/Assistify_AI_Enabled')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
@@ -142,7 +144,7 @@ describe('[Smarti Configuration]', function() {
 		it('Rocket.Chat Settings: activate Smarti', function(done) {
 			// console.log('authToken-o', authToken);
 			// console.log('userId-o', userId);
-			rcrequest.post('/api/v1/settings/Assistify_AI_Source')
+			rocketchat.post('/api/v1/settings/Assistify_AI_Source')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
@@ -155,7 +157,7 @@ describe('[Smarti Configuration]', function() {
 		it('Rocket.Chat Settings: set Smarti client', function(done) {
 			// console.log('authToken-o', authToken);
 			// console.log('userId-o', userId);
-			rcrequest.post('/api/v1/settings/Assistify_AI_Smarti_Domain')
+			rocketchat.post('/api/v1/settings/Assistify_AI_Smarti_Domain')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
@@ -168,7 +170,7 @@ describe('[Smarti Configuration]', function() {
 		it('Rocket.Chat Settings: set Rocket.Chat Weebhook token', function(done) {
 			// console.log('authToken-o', authToken);
 			// console.log('userId-o', userId);
-			rcrequest.post('/api/v1/settings/Assistify_AI_RocketChat_Webhook_Token')
+			rocketchat.post('/api/v1/settings/Assistify_AI_RocketChat_Webhook_Token')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
@@ -181,7 +183,7 @@ describe('[Smarti Configuration]', function() {
 		it('Rocket.Chat Settings: set Smarti base url', function(done) {
 			// console.log('authToken-o', authToken);
 			// console.log('userId-o', userId);
-			rcrequest.post('/api/v1/settings/Assistify_AI_Smarti_Base_URL')
+			rocketchat.post('/api/v1/settings/Assistify_AI_Smarti_Base_URL')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.send({
@@ -192,7 +194,7 @@ describe('[Smarti Configuration]', function() {
 		});
 
 		it('Check Assistify_AI_Smarti_Domain', function(done) {
-			rcrequest.get('/api/v1/settings/Assistify_AI_Smarti_Domain')
+			rocketchat.get('/api/v1/settings/Assistify_AI_Smarti_Domain')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.expect(200)
@@ -205,7 +207,7 @@ describe('[Smarti Configuration]', function() {
 		});
 
 		it('Check Assistify_AI_Source', function(done) {
-			rcrequest.get('/api/v1/settings/Assistify_AI_Source')
+			rocketchat.get('/api/v1/settings/Assistify_AI_Source')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.expect(200)
@@ -218,7 +220,7 @@ describe('[Smarti Configuration]', function() {
 		});
 
 		it('Check Assistify_AI_Enabled', function(done) {
-			rcrequest.get('/api/v1/settings/Assistify_AI_Enabled')
+			rocketchat.get('/api/v1/settings/Assistify_AI_Enabled')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.expect(200)
@@ -231,7 +233,7 @@ describe('[Smarti Configuration]', function() {
 		});
 
 		it('Check Assistify_AI_RocketChat_Webhook_Token', function(done) {
-			rcrequest.get('/api/v1/settings/Assistify_AI_RocketChat_Webhook_Token')
+			rocketchat.get('/api/v1/settings/Assistify_AI_RocketChat_Webhook_Token')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.expect(200)
@@ -244,7 +246,7 @@ describe('[Smarti Configuration]', function() {
 		});
 
 		it('Check Assistify_AI_Smarti_Base_URL', function(done) {
-			rcrequest.get('/api/v1/settings/Assistify_AI_Smarti_Base_URL')
+			rocketchat.get('/api/v1/settings/Assistify_AI_Smarti_Base_URL')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.expect(200)
@@ -259,7 +261,7 @@ describe('[Smarti Configuration]', function() {
 		it('Logout from Rocketchat api', function(done) {
 			console.log('authToken-o', authToken);
 			console.log('userId-o', userId);
-			rcrequest.post('/api/v1/logout')
+			rocketchat.post('/api/v1/logout')
 				.set('X-Auth-Token', authToken)
 				.set('X-User-Id', userId)
 				.expect(200)
@@ -285,7 +287,7 @@ const autosync_request1 = `autosync_request1-${ Date.now() }`;
 
 function loginRC() {
 	return new Promise((resolve) => {
-		rcrequest.post('/api/v1/login')
+		rocketchat.post('/api/v1/login')
 			.set('Content-Type', 'application/json')
 			.send({
 				username: adminUsername,
@@ -304,14 +306,14 @@ function loginRC() {
 async function changeSmartiStatus(status, done) {
 	const login_credentials = await loginRC();
 
-	await rcrequest.post('/api/v1/settings/Assistify_AI_Smarti_Base_URL')
+	await rocketchat.post('/api/v1/settings/Assistify_AI_Smarti_Base_URL')
 		.set('X-Auth-Token', login_credentials[0])
 		.set('X-User-Id', login_credentials[1])
 		.send({
 			value: status,
 		})
 		.expect(200)
-		.then(rcrequest.post('/api/v1/logout')
+		.then(rocketchat.post('/api/v1/logout')
 			.set('X-Auth-Token', login_credentials[0])
 			.set('X-User-Id', login_credentials[1])
 			.expect(200)
@@ -332,7 +334,7 @@ describe('[Test Sync]', function() {
 			let conversationId;
 
 			after((done) => {
-				request.del(`/conversation/${ conversationId }`)
+				smarti.del(`/conversation/${ conversationId }`)
 					.auth(credentials.username, credentials.password)
 					.expect(204)
 					.end(done);
@@ -342,7 +344,7 @@ describe('[Test Sync]', function() {
 				sideNav.createChannel(sync_request1, false, false);
 				mainContent.sendMessage(messages[1]);
 				browser.pause(500);
-				request.get('/conversation/')
+				smarti.get('/conversation/')
 					.auth(credentials.username, credentials.password)
 					.query({ client: auto_clientId })
 					.expect(200)
@@ -373,7 +375,7 @@ describe('[Test Sync]', function() {
 				sideNav.createChannel(unsync_request1, false, false);
 				mainContent.sendMessage(messages[2]);
 				browser.pause(500);
-				request.get('/conversation/')
+				smarti.get('/conversation/')
 					.auth(credentials.username, credentials.password)
 					.query({ client: auto_clientId })
 					.expect(200)
@@ -387,7 +389,7 @@ describe('[Test Sync]', function() {
 			it('Send second unsynced message in Request', (done) => {
 				mainContent.sendMessage(messages[3]);
 				browser.pause(500);
-				request.get('/conversation/')
+				smarti.get('/conversation/')
 					.auth(credentials.username, credentials.password)
 					.query({ client: auto_clientId })
 					.expect(200)
@@ -402,7 +404,7 @@ describe('[Test Sync]', function() {
 				sideNav.createChannel(unsync_request2, false, false);
 				mainContent.sendMessage(messages[4]);
 				browser.pause(500);
-				request.get('/conversation/')
+				smarti.get('/conversation/')
 					.auth(credentials.username, credentials.password)
 					.query({ client: auto_clientId })
 					.expect(200)
@@ -435,7 +437,7 @@ describe('[Test Sync]', function() {
 			it('shall find the conversation in Smarti', (done) => {
 				const { roomId } = assistify;
 				roomId.should.not.be.empty;
-				request.get('/conversation')
+				smarti.get('/conversation')
 					.set('X-Auth-Token', auto_token)
 					.set('Accept', 'application/json')
 					.expect((res) => {
@@ -459,14 +461,14 @@ describe('[Test Sync]', function() {
 
 		describe('[Cleanup Full Sync Test', () => {
 			it('Cleanup all Conversations in Smarti', (done) => {
-				request.get('/conversation/')
+				smarti.get('/conversation/')
 					.auth(credentials.username, credentials.password)
 					.query({ client: auto_clientId })
 					.expect(200)
 					.expect(function(res) {
 						const msgs = res.body.content;
 						for (let i = 0; i < msgs.length; i++) {
-							request.del(`/conversation/${ msgs[i].id }`)
+							smarti.del(`/conversation/${ msgs[i].id }`)
 								.auth(credentials.username, credentials.password)
 								.expect(204)
 								.end();
@@ -484,7 +486,7 @@ describe('[Test Sync]', function() {
 			sideNav.createChannel(autosync_request1, false, false);
 			mainContent.sendMessage(messages[5]);
 			browser.pause(500);
-			request.get('/conversation/')
+			smarti.get('/conversation/')
 				.auth(credentials.username, credentials.password)
 				.query({ client: auto_clientId })
 				.expect(200)
@@ -510,7 +512,7 @@ describe('[Test Sync]', function() {
 		it('Send unsynced message in Request', (done) => {
 			mainContent.sendMessage(messages[6]);
 			browser.pause(500);
-			request.get('/conversation/')
+			smarti.get('/conversation/')
 				.auth(credentials.username, credentials.password)
 				.query({ client: auto_clientId })
 				.expect(200)
@@ -530,7 +532,7 @@ describe('[Test Sync]', function() {
 		it('Send last synced message in Request', (done) => {
 			mainContent.sendMessage(messages[7]);
 			browser.pause(2000);
-			request.get('/conversation/')
+			smarti.get('/conversation/')
 				.auth(credentials.username, credentials.password)
 				.query({ client: auto_clientId })
 				.expect(200)
