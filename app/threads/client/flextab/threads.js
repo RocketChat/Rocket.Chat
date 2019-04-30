@@ -125,7 +125,7 @@ Template.threads.onCreated(async function() {
 	this.autorun(() => {
 		const rid = this.state.get('rid');
 		this.threadsObserve && this.threadsObserve.stop();
-		this.threadsObserve = Messages.find({ rid, _updatedAt: { $gt: new Date() }, tcount: { $exists: true } }).observe({
+		this.threadsObserve = Messages.find({ rid, _updatedAt: { $gt: new Date() }, tcount: { $exists: true }, _hidden: { $ne: true } }).observe({
 			added: ({ _id, ...message }) => {
 				this.Threads.upsert({ _id }, message);
 			}, // Update message to re-render DOM
