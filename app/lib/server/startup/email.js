@@ -209,6 +209,20 @@ settings.addGroup('Email', function() {
 				value: 'IMAP',
 			},
 		});
+		this.add('Direct_Reply_Method', false, {
+			type: 'select',
+			values: [
+				{
+					key: 'subject',
+					i18nLabel: 'subject',
+				}, {
+					key: 'to',
+					i18nLabel: 'to',
+				},
+			],
+			env: true,
+			i18nLabel: 'Direct_Reply_Method',
+		});
 		this.add('Direct_Reply_Separator', '+', {
 			type: 'select',
 			values: [

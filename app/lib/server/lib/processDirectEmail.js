@@ -112,12 +112,24 @@ export const processDirectEmail = function(email) {
 		email.headers.from = email.headers.from.split('<')[1].split('>')[0];
 	}
 
-	// 'To' email format "username+messageId@domain"
-	if (email.headers.to.indexOf('+') >= 0) {
-		// Valid 'To' format
-		email.headers.mid = email.headers.to.split('@')[0].split('+')[1];
-		sendMessage(email);
+	if (settings.get('Direct_Reply_Method') && settings.get('Direct_Reply_Method') === 'subject') {
+		// message id to reply to is encoded by email 'subject'
+		const ind = email.headers.subject.indexOf('reply:');
+		if (ind > 0) {
+			email.headers.mid = email.headers.subject.substring(ind + 6, ind + 23);
+		}
+	} else if (settings.get('Direct_Reply_Method') && settings.get('Direct_Reply_Method') === 'to') {
+		// message id to reply to is encoded by email 'to'
+		// 'To' email format "username+messageId@domain"
+		if (email.headers.to.indexOf('+') >= 0) {
+			// Valid 'To' format
+			email.headers.mid = email.headers.to.split('@')[0].split('+')[1];
+		}
+	}
+	if (email.headers.mid) {
+		return sendMessage(email);
 	} else {
 		console.log('Invalid Email....If not. Please report it.');
+		return false;
 	}
 };

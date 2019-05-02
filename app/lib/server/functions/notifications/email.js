@@ -91,10 +91,14 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 		subjectKey = 'Offline_Mention_Email';
 	}
 
-	const emailSubject = Mailer.replace(settings.get(subjectKey), {
+	let emailSubject = Mailer.replace(settings.get(subjectKey), {
 		user: username,
 		room: roomTypes.getRoomName(room.t, room),
 	});
+	if (settings.get('Direct_Reply_Method') && settings.get('Direct_Reply_Method') === 'subject') {
+		emailSubject = `${ emailSubject } reply:${ message._id }`;
+	}
+
 	const content = getEmailContent({
 		message,
 		user,
@@ -116,10 +120,13 @@ export function sendEmail({ message, user, subscription, room, emailAddress, has
 
 	// If direct reply enabled, email content with headers
 	if (settings.get('Direct_Reply_Enable')) {
-		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
-		email.headers = {
+		let replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
+		if (settings.get('Direct_Reply_Method') && settings.get('Direct_Reply_Method') === 'to') {
 			// Reply-To header with format "username+messageId@domain"
-			'Reply-To': `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,
+			replyto = `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`;
+		}
+		email.headers = {
+			'Reply-To': replyto,
 		};
 	}
 
