@@ -90,7 +90,7 @@
 					{{#if $gt msg.dcount 0}}
 						<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
 							<!-- {{> icon icon="discussion"}} -->
-							<span class='reply-counter'>{{msg.dcount}}</span>&nbsp;{{_ i18nKeyMessage}}
+							<span>{{{_ 'message_counter' counter=i18nDiscussionCounter count=msg.dcount }}}</span>
 						</button>
 					{{else}}
 						<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small no-replies" data-rid={{roomId}}>
@@ -105,7 +105,7 @@
 				<div class="message-discussion">
 					<button class="js-open-thread rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
 						{{> icon icon="thread"}}
-						<span class='reply-counter'>{{msg.tcount}}</span>&nbsp;{{_ i18nKeyReply}}
+						<span>{{{_ 'reply_counter' counter=i18nReplyCounter count=msg.tcount }}}</span>
 					</button>
 					<span class="discussion-reply-lm">{{ formatDateAndTime msg.tlm}}</span>
 				</div>
