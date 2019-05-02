@@ -17,8 +17,8 @@ function api(path) {
 
 export async function getSettingValue(name) {
 	let credentials = {
-		['X-Auth-Token']: undefined,
-		['X-User-Id']: undefined,
+		'X-Auth-Token': undefined,
+		'X-User-Id': undefined,
 	};
 
 	// login
@@ -28,8 +28,8 @@ export async function getSettingValue(name) {
 		.expect(200);
 
 	credentials = {
-		['X-Auth-Token']: reponseLogin.body.data.authToken,
-		['X-User-Id']: reponseLogin.body.data.userId,
+		'X-Auth-Token': reponseLogin.body.data.authToken,
+		'X-User-Id': reponseLogin.body.data.userId,
 	};
 
 	const responseGetSetting = await request.get(api(`settings/${ name }`))

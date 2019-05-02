@@ -16,8 +16,8 @@ function api(path) {
 }
 
 const credentials = {
-	['X-Auth-Token']: undefined,
-	['X-User-Id']: undefined,
+	'X-Auth-Token': undefined,
+	'X-User-Id': undefined,
 };
 
 const login = {

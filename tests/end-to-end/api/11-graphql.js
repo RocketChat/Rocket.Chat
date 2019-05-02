@@ -11,8 +11,8 @@ const message = { content: 'Test Message GraphQL', modifiedContent: 'Test Messag
 const { expect } = require('chai');
 
 const credentials = {
-	['X-Auth-Token']: undefined,
-	['X-User-Id']: undefined,
+	'X-Auth-Token': undefined,
+	'X-User-Id': undefined,
 };
 
 const login = {

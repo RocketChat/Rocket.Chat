@@ -25,8 +25,8 @@ export const message = {};
 export const directMessage = {};
 export const integration = {};
 export const credentials = {
-	['X-Auth-Token']: undefined,
-	['X-User-Id']: undefined,
+	'X-Auth-Token': undefined,
+	'X-User-Id': undefined,
 };
 export const login = {
 	user: adminUsername,

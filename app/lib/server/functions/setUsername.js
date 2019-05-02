@@ -89,7 +89,7 @@ export const _setUsername = function(userId, u) {
 };
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
-	[0]() {
+	0() {
 		return !Meteor.userId() || !hasPermission(Meteor.userId(), 'edit-other-user-info');
 	},
 });
