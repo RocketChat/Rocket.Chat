@@ -338,7 +338,11 @@ callbacks.add('afterLogoutCleanUp', () => RoomManager.closeAllRooms(), callbacks
 
 CachedCollectionManager.onLogin(() => {
 	Notifications.onUser('subscriptions-changed', (action, sub) => {
-		ChatMessage.update({ rid: sub.rid, ignored: { $nin: sub.ignored } }, { $unset : { ignored : true } }, { multi : true });
+
+		const ignored = sub && sub.ignored ? { $nin: sub.ignored } : { $exists: true };
+
+		ChatMessage.update({ rid: sub.rid, ignored }, { $unset : { ignored : true } }, { multi : true });
+
 		if (sub && sub.ignored) {
 			ChatMessage.update({ rid: sub.rid, t: { $ne: 'command' }, 'u._id': { $in : sub.ignored } }, { $set: { ignored : true } }, { multi : true });
 		}
