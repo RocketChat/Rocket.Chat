@@ -151,7 +151,7 @@ export const theme = new class {
 	getCss() {
 		return settings.get('css') || '';
 	}
-};
+}();
 
 settings.get('css', (key, value = '') => {
 	currentHash = crypto.createHash('sha1').update(value).digest('hex');

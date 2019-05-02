@@ -427,7 +427,7 @@ export class ChatMessages {
 					const invalidCommandMsg = {
 						_id: Random.id(),
 						rid: msgObject.rid,
-						ts: new Date,
+						ts: new Date(),
 						msg: TAPi18n.__('No_such_command', { command: match[1] }),
 						u: {
 							username: settings.get('InternalHubot_Username'),

@@ -4,7 +4,7 @@ import _ from 'underscore';
 export const settings = {
 	callbacks: {},
 	regexCallbacks: {},
-	ts: new Date,
+	ts: new Date(),
 	get(_id, callback) {
 		if (callback != null) {
 			settings.onload(_id, callback);

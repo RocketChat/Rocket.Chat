@@ -94,7 +94,7 @@ Meteor.methods({
 			Notifications.notifyUser(uid, 'message', {
 				_id: Random.id(),
 				rid: message.rid,
-				ts: new Date,
+				ts: new Date(),
 				msg: TAPi18n.__(error, {}, user.language),
 			});
 		}

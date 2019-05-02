@@ -21,8 +21,8 @@ export const VideoRecorder = new class VideoRecorder {
 			cb && cb.call(this, false);
 		};
 
-		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia ||
-			navigator.msGetUserMedia;
+		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+			|| navigator.msGetUserMedia;
 
 		if (navigator.mediaDevices) {
 			navigator.mediaDevices.getUserMedia({ audio: true, video: true })
@@ -117,4 +117,4 @@ export const VideoRecorder = new class VideoRecorder {
 		this.recording.set(false);
 		delete this.mediaRecorder;
 	}
-};
+}();

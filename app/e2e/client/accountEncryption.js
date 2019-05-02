@@ -54,8 +54,8 @@ Template.accountEncryption.events({
 Template.accountEncryption.onCreated(function() {
 	const self = this;
 
-	this.encryptionKey = new ReactiveVar;
-	this.confirmationEncryptionKey = new ReactiveVar;
+	this.encryptionKey = new ReactiveVar();
+	this.confirmationEncryptionKey = new ReactiveVar();
 
 	this.save = function(cb) {
 		const instance = this;

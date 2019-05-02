@@ -265,13 +265,13 @@ Template.membersList.events({
 Template.membersList.onCreated(function() {
 	this.showAllUsers = new ReactiveVar(false);
 	this.usersLimit = new ReactiveVar(100);
-	this.userDetail = new ReactiveVar;
+	this.userDetail = new ReactiveVar();
 	this.showDetail = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
 
 
 	this.users = new ReactiveVar([]);
-	this.total = new ReactiveVar;
+	this.total = new ReactiveVar();
 	this.loading = new ReactiveVar(true);
 	this.loadingMore = new ReactiveVar(false);
 

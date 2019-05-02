@@ -160,4 +160,4 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 
 		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
 	}
-};
+}();

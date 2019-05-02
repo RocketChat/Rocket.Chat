@@ -33,9 +33,9 @@ export function updateUsersSubscriptions(message, room, users) {
 
 		const highlightOptions = { fields: { userHighlights: 1, 'u._id': 1 } };
 
-		const highlights = users ?
-			Subscriptions.findByRoomAndUsersWithUserHighlights(room._id, users, highlightOptions).fetch() :
-			Subscriptions.findByRoomWithUserHighlights(room._id, highlightOptions).fetch();
+		const highlights = users
+			? Subscriptions.findByRoomAndUsersWithUserHighlights(room._id, users, highlightOptions).fetch()
+			: Subscriptions.findByRoomWithUserHighlights(room._id, highlightOptions).fetch();
 
 		if (message.mentions != null) {
 			message.mentions.forEach(function(mention) {

@@ -22,4 +22,4 @@ export const AdminBox = new class {
 			}
 		});
 	}
-};
+}();

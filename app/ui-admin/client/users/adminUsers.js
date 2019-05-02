@@ -46,8 +46,8 @@ Template.adminUsers.helpers({
 		const instance = Template.instance();
 		return function(currentTarget) {
 			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
 			) {
 				return instance.limit.set(instance.limit.get() + 50);
 			}
@@ -71,7 +71,7 @@ Template.adminUsers.onCreated(function() {
 	this.ready = new ReactiveVar(true);
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
-	this.tabBarData = new ReactiveVar;
+	this.tabBarData = new ReactiveVar();
 	TabBar.addButton({
 		groups: ['admin-users'],
 		id: 'invite-user',

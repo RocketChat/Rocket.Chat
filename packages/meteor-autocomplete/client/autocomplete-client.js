@@ -101,9 +101,9 @@ export default class AutoComplete {
 		this.loaded = true;
 
 		// Reactive dependencies for current matching rule and filter
-		this.ruleDep = new Deps.Dependency;
-		this.filterDep = new Deps.Dependency;
-		this.loadingDep = new Deps.Dependency;
+		this.ruleDep = new Deps.Dependency();
+		this.filterDep = new Deps.Dependency();
+		this.loadingDep = new Deps.Dependency();
 
 		// Autosubscribe to the record set published by the server based on the filter
 		// This will tear down server subscriptions when they are no longer being used.

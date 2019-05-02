@@ -25,7 +25,7 @@ describe('[Rooms]', function() {
 		request.get(api('rooms.get'))
 			.set(credentials)
 			.query({
-				updatedSince: new Date,
+				updatedSince: new Date(),
 			})
 			.expect(200)
 			.expect((res) => {

@@ -7,7 +7,7 @@ import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 Blaze.registerHelper('avatarUrlFromUsername', getUserAvatarURL);
 
 export const getAvatarAsPng = function(username, cb) {
-	const image = new Image;
+	const image = new Image();
 	image.src = getUserAvatarURL(username);
 	image.onload = function() {
 		const canvas = document.createElement('canvas');

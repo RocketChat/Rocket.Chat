@@ -40,4 +40,4 @@ export const RateLimiterClass = new class {
 		});
 		return DDPRateLimiter.addRule(match, numRequests, timeInterval);
 	}
-};
+}();

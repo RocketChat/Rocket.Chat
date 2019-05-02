@@ -82,4 +82,4 @@ export const TabBar = new class TabBar {
 			this.extraGroups[id] = _.difference(this.extraGroups[id] || [], groups);
 		}
 	}
-};
+}();

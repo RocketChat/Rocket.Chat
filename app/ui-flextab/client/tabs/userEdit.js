@@ -163,7 +163,7 @@ Template.userEdit.events({
 Template.userEdit.onCreated(function() {
 	this.user = this.data != null ? this.data.user : undefined;
 	this.roles = this.user ? new ReactiveVar(this.user.roles) : new ReactiveVar([]);
-	this.avatar = new ReactiveVar;
+	this.avatar = new ReactiveVar();
 	this.url = new ReactiveVar('');
 	Notifications.onLogged('updateAvatar', () => this.avatar.set());
 

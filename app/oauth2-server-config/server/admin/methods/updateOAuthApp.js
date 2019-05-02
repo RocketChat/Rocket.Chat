@@ -27,7 +27,7 @@ Meteor.methods({
 				name: application.name,
 				active: application.active,
 				redirectUri: application.redirectUri,
-				_updatedAt: new Date,
+				_updatedAt: new Date(),
 				_updatedBy: Users.findOne(this.userId, {
 					fields: {
 						username: 1,

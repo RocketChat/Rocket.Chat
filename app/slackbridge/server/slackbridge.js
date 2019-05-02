@@ -104,4 +104,4 @@ class SlackBridgeClass {
 	}
 }
 
-export const SlackBridge = new SlackBridgeClass;
+export const SlackBridge = new SlackBridgeClass();

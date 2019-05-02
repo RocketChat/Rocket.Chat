@@ -812,4 +812,4 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 
 		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
 	}
-};
+}();

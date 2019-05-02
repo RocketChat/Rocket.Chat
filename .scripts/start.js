@@ -117,9 +117,9 @@ function startChimp() {
 		// params: ['2'],
 		options: {
 			env: Object.assign({}, process.env, {
-				NODE_PATH: `${ process.env.NODE_PATH +
-					path.delimiter + srcDir +
-					path.delimiter + srcDir }/node_modules`,
+				NODE_PATH: `${ process.env.NODE_PATH
+					+ path.delimiter + srcDir
+					+ path.delimiter + srcDir }/node_modules`,
 			}),
 		},
 	});

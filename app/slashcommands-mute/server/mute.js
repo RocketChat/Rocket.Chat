@@ -26,7 +26,7 @@ slashCommands.add('mute', function Mute(command, params, item) {
 		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [username],
@@ -40,7 +40,7 @@ slashCommands.add('mute', function Mute(command, params, item) {
 		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Username_is_not_in_this_room', {
 				postProcess: 'sprintf',
 				sprintf: [username],

@@ -33,7 +33,7 @@ function Invite(command, params, item) {
 		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('User_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [usernames.join(' @')],
@@ -49,7 +49,7 @@ function Invite(command, params, item) {
 		Notifications.notifyUser(userId, 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Username_is_already_in_here', {
 				postProcess: 'sprintf',
 				sprintf: [user.username],
@@ -69,14 +69,14 @@ function Invite(command, params, item) {
 				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
-					ts: new Date,
+					ts: new Date(),
 					msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', null, currentUser.language),
 				});
 			} else {
 				Notifications.notifyUser(userId, 'message', {
 					_id: Random.id(),
 					rid: item.rid,
-					ts: new Date,
+					ts: new Date(),
 					msg: TAPi18n.__(error, null, currentUser.language),
 				});
 			}

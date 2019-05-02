@@ -145,8 +145,7 @@ export const readMessage = new class extends EventEmitter {
 		});
 
 		if ((lastReadRecord == null) && (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() === 0)) {
-			lastReadRecord =
-				{ ts: new Date(0) };
+			lastReadRecord =				{ ts: new Date(0) };
 		}
 
 		if ((lastReadRecord != null) || (RoomHistoryManager.getRoom(room.rid).unreadNotLoaded.get() > 0)) {
@@ -177,7 +176,7 @@ export const readMessage = new class extends EventEmitter {
 			}
 		}
 	}
-};
+}();
 
 
 Meteor.startup(function() {

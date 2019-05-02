@@ -79,4 +79,4 @@ export const VRecDialog = new class {
 		}
 		return VideoRecorder.start(this.video);
 	}
-};
+}();

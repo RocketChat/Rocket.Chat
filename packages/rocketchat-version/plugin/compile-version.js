@@ -8,7 +8,7 @@ import async from 'async';
 
 class VersionCompiler {
 	processFilesForTarget(files) {
-		const future = new Future;
+		const future = new Future();
 		const processFile = function(file, cb) {
 			if (!file.getDisplayPath().match(/rocketchat\.info$/)) {
 				return cb();

@@ -18,9 +18,9 @@ import './message.html';
 import './messageThread.html';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
-	const isSafari = /constructor/i.test(window.HTMLElement) ||
-		((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari ||
-			(typeof window.safari !== 'undefined' && window.safari.pushNotification));
+	const isSafari = /constructor/i.test(window.HTMLElement)
+		|| ((p) => p.toString() === '[object SafariRemoteNotification]')(!window.safari
+			|| (typeof window.safari !== 'undefined' && window.safari.pushNotification));
 
 	if (isSafari) {
 		const [, version] = /Version\/([0-9]+)/.exec(navigator.userAgent) || [null, 0];

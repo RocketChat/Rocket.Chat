@@ -42,7 +42,7 @@ slashCommands.add('help', function Help(command, params, item) {
 		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__(Object.keys(key)[0], {
 				postProcess: 'sprintf',
 				sprintf: [key[Object.keys(key)[0]]],

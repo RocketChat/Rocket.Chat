@@ -194,7 +194,7 @@ class WebRTCClass {
 		this.videoEnabled = new ReactiveVar(true);
 		this.overlayEnabled = new ReactiveVar(false);
 		this.screenShareEnabled = new ReactiveVar(false);
-		this.localUrl = new ReactiveVar;
+		this.localUrl = new ReactiveVar();
 		this.active = false;
 		this.remoteMonitoring = false;
 		this.monitor = false;
@@ -405,7 +405,7 @@ class WebRTCClass {
 	_getUserMedia(media, onSuccess, onError) {
 		const onSuccessLocal = (stream) => {
 			if (AudioContext && stream.getAudioTracks().length > 0) {
-				const audioContext = new AudioContext;
+				const audioContext = new AudioContext();
 				const source = audioContext.createMediaStreamSource(stream);
 				const volume = audioContext.createGain();
 				source.connect(volume);
@@ -984,7 +984,7 @@ const WebRTC = new class {
 		}
 		return this.instancesByRoomId[roomId];
 	}
-};
+}();
 
 Meteor.startup(function() {
 	Tracker.autorun(function() {

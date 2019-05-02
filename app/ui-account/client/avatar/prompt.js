@@ -15,8 +15,8 @@ import { fileUploadHandler } from '../../../file-upload';
 
 Template.avatarPrompt.onCreated(function() {
 	const self = this;
-	self.suggestions = new ReactiveVar;
-	self.upload = new ReactiveVar;
+	self.suggestions = new ReactiveVar();
+	self.upload = new ReactiveVar();
 	self.getSuggestions = function() {
 		self.suggestions.set(undefined);
 		Meteor.call('getAvatarSuggestion', function(error, avatars) {

@@ -30,16 +30,16 @@ function canShowAddUsersButton(rid) {
 		'add-user-to-joined-room', rid
 	);
 	if (
-		!canAddToJoinedRoom &&
-		!canAddToChannel &&
-		Template.instance().tabBar.currentGroup() === 'channel'
+		!canAddToJoinedRoom
+		&& !canAddToChannel
+		&& Template.instance().tabBar.currentGroup() === 'channel'
 	) {
 		return false;
 	}
 	if (
-		!canAddToJoinedRoom &&
-		!canAddToGroup &&
-		Template.instance().tabBar.currentGroup() === 'group'
+		!canAddToJoinedRoom
+		&& !canAddToGroup
+		&& Template.instance().tabBar.currentGroup() === 'group'
 	) {
 		return false;
 	}

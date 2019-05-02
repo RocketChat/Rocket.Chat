@@ -208,7 +208,7 @@ export const menu = new class extends EventEmitter {
 	toggle() {
 		return this.isOpen() ? this.close() : this.open();
 	}
-};
+}();
 
 
 let passClosePopover = false;

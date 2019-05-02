@@ -62,9 +62,9 @@ export class MentionsParser {
 				return `${ prefix }<a class="${ className }" data-group="${ mention }">${ mention }</a>`;
 			}
 
-			const label = temp ?
-				mention && s.escapeHTML(mention) :
-				(mentions || [])
+			const label = temp
+				? mention && s.escapeHTML(mention)
+				: (mentions || [])
 					.filter(({ username }) => username === mention)
 					.map(({ name, username }) => (this.useRealName ? name : username))
 					.map((label) => label && s.escapeHTML(label))[0];

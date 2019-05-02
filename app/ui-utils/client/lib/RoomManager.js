@@ -180,7 +180,7 @@ export const RoomManager = new function() {
 				};
 			}
 
-			openedRooms[typeName].lastSeen = new Date;
+			openedRooms[typeName].lastSeen = new Date();
 
 			if (openedRooms[typeName].ready) {
 				this.closeOlderRooms();
@@ -252,8 +252,8 @@ export const RoomManager = new function() {
 		}
 	};
 	Cls.initClass();
-	return new Cls;
-};
+	return new Cls();
+}();
 
 const loadMissedMessages = function(rid) {
 	const lastMessage = ChatMessage.findOne({ rid, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
@@ -307,12 +307,12 @@ Meteor.startup(() => {
 			if (RoomManager.getOpenedRoomByRid(record.rid) != null) {
 				const recordBefore = ChatMessage.findOne({ ts: { $lt: record.ts } }, { sort: { ts: -1 } });
 				if (recordBefore != null) {
-					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date } });
+					ChatMessage.update({ _id: recordBefore._id }, { $set: { tick: new Date() } });
 				}
 
 				const recordAfter = ChatMessage.findOne({ ts: { $gt: record.ts } }, { sort: { ts: 1 } });
 				if (recordAfter != null) {
-					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date } });
+					return ChatMessage.update({ _id: recordAfter._id }, { $set: { tick: new Date() } });
 				}
 			}
 		},

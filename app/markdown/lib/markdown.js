@@ -78,7 +78,7 @@ class MarkdownClass {
 	}
 }
 
-export const Markdown = new MarkdownClass;
+export const Markdown = new MarkdownClass();
 
 // renderMessage already did html escape
 const MarkdownMessage = (message) => {

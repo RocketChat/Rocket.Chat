@@ -24,13 +24,13 @@ Template.messageBoxNotSubscribed.helpers({
 		return room && room.joinCodeRequired;
 	},
 	isAnonymousReadAllowed() {
-		return (Meteor.userId() == null) &&
-			settings.get('Accounts_AllowAnonymousRead') === true;
+		return (Meteor.userId() == null)
+			&& settings.get('Accounts_AllowAnonymousRead') === true;
 	},
 	isAnonymousWriteAllowed() {
-		return (Meteor.userId() == null) &&
-			settings.get('Accounts_AllowAnonymousRead') === true &&
-			settings.get('Accounts_AllowAnonymousWrite') === true;
+		return (Meteor.userId() == null)
+			&& settings.get('Accounts_AllowAnonymousRead') === true
+			&& settings.get('Accounts_AllowAnonymousWrite') === true;
 	},
 });
 

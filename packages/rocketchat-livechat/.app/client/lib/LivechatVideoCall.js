@@ -68,6 +68,6 @@ LivechatVideoCall = new class LivechatVideoCall {
 	isLive() {
 		return this.live.get();
 	}
-};
+}();
 
 /* exported LivechatVideoCall */

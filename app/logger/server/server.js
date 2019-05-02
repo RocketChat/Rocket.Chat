@@ -54,7 +54,7 @@ const LoggerManager = new class extends EventEmitter {
 		this.enabled = true;
 		return dispatchQueue === true ? this.dispatchQueue() : this.clearQueue();
 	}
-};
+}();
 
 const defaultTypes = {
 	debug: {
@@ -345,7 +345,7 @@ const StdOut = new class extends EventEmitter {
 		this.queue = [];
 		process.stdout.write = (...args) => {
 			write.apply(process.stdout, args);
-			const date = new Date;
+			const date = new Date();
 			const string = processString(args[0], date);
 			const item = {
 				id: Random.id(),
@@ -363,7 +363,7 @@ const StdOut = new class extends EventEmitter {
 			this.emit('write', string, item);
 		};
 	}
-};
+}();
 
 
 Meteor.publish('stdout', function() {

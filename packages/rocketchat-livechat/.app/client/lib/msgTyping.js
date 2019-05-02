@@ -13,7 +13,7 @@ export const MsgTyping = (function() {
 	const renewTimeout = 10000;
 	const selfTyping = new ReactiveVar(false);
 	const usersTyping = {};
-	const dep = new Tracker.Dependency;
+	const dep = new Tracker.Dependency();
 	let oldRoom;
 
 	const addStream = function(room) {

@@ -62,7 +62,7 @@ Template.messagePopup.onCreated(function() {
 	template.textFilterDelay = val(template.data.textFilterDelay, 0);
 	template.open = val(template.data.open, new ReactiveVar(false));
 	template.hasData = new ReactiveVar(false);
-	template.value = new ReactiveVar;
+	template.value = new ReactiveVar();
 	template.trigger = val(template.data.trigger, '');
 	template.triggerAnywhere = val(template.data.triggerAnywhere, true);
 	template.closeOnEsc = val(template.data.closeOnEsc, true);

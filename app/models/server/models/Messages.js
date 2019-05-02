@@ -227,8 +227,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t =			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -340,8 +339,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t =			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -360,8 +358,7 @@ export class Messages extends Base {
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
-			query.t =
-			{ $nin: types };
+			query.t =			{ $nin: types };
 		}
 
 		return this.find(query, options);
@@ -495,7 +492,7 @@ export class Messages extends Base {
 		const record = this.findOneById(_id);
 		record._hidden = true;
 		record.parent = record._id;
-		record.editedAt = new Date;
+		record.editedAt = new Date();
 		record.editedBy = {
 			_id: user._id,
 			username: user.username,
@@ -548,7 +545,7 @@ export class Messages extends Base {
 		const update = {
 			$set: {
 				pinned,
-				pinnedAt: pinnedAt || new Date,
+				pinnedAt: pinnedAt || new Date(),
 				pinnedBy,
 			},
 		};
@@ -567,7 +564,7 @@ export class Messages extends Base {
 			$set: {
 				msg,
 				snippeted,
-				snippetedAt: snippetedAt || new Date,
+				snippetedAt: snippetedAt || new Date(),
 				snippetedBy,
 				snippetName,
 			},
@@ -712,7 +709,7 @@ export class Messages extends Base {
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date,
+			ts: new Date(),
 			msg: message,
 			u: {
 				_id: user._id,
@@ -741,7 +738,7 @@ export class Messages extends Base {
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date,
+			ts: new Date(),
 			msg: message,
 			u: {
 				_id: user._id,

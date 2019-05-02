@@ -24,7 +24,7 @@ const mention = new MentionsServer({
 		Notifications.notifyUser(sender._id, 'message', {
 			_id: Random.id(),
 			rid,
-			ts: new Date,
+			ts: new Date(),
 			msg,
 			groupable: false,
 		});

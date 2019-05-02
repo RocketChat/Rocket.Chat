@@ -189,7 +189,7 @@ export class Sessions extends Base {
 			return;
 		}
 
-		const now = new Date;
+		const now = new Date();
 
 		return this.upsert({ instanceId, sessionId, year, month, day }, {
 			$set: data,

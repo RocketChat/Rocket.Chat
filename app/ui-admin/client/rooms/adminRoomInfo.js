@@ -139,8 +139,8 @@ Template.adminRoomInfo.events({
 });
 
 Template.adminRoomInfo.onCreated(function() {
-	this.editing = new ReactiveVar;
-	this.roomOwner = new ReactiveVar;
+	this.editing = new ReactiveVar();
+	this.roomOwner = new ReactiveVar();
 	this.validateRoomType = () => {
 		const type = this.$('input[name=roomType]:checked').val();
 		if (type !== 'c' && type !== 'p') {

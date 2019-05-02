@@ -226,9 +226,9 @@ Template.permissionsRole.events({
 });
 
 Template.permissionsRole.onCreated(function() {
-	this.searchRoom = new ReactiveVar;
-	this.searchUsername = new ReactiveVar;
-	this.usersInRole = new ReactiveVar;
+	this.searchRoom = new ReactiveVar();
+	this.searchUsername = new ReactiveVar();
+	this.usersInRole = new ReactiveVar();
 	this.limit = new ReactiveVar(50);
 	this.ready = new ReactiveVar(true);
 	this.subscribe('roles', FlowRouter.getParam('name'));

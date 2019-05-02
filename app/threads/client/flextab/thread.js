@@ -79,7 +79,7 @@ Template.thread.onRendered(function() {
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 
-	this.chatMessages = new ChatMessages;
+	this.chatMessages = new ChatMessages();
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 

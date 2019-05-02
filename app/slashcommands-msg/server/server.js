@@ -22,7 +22,7 @@ function Msg(command, params, item) {
 		return	Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Username_and_message_must_not_be_empty', null, user.language),
 		});
 	}
@@ -34,7 +34,7 @@ function Msg(command, params, item) {
 		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [targetUsernameOrig],

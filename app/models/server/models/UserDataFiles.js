@@ -27,7 +27,7 @@ export class UserDataFiles extends Base {
 	// INSERT
 	create(data) {
 		const userDataFile = {
-			createdAt: new Date,
+			createdAt: new Date(),
 		};
 
 		_.extend(userDataFile, data);

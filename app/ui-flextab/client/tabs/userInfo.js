@@ -231,8 +231,8 @@ Template.userInfo.events({
 
 Template.userInfo.onCreated(function() {
 	this.now = new ReactiveVar(moment());
-	this.user = new ReactiveVar;
-	this.actions = new ReactiveVar;
+	this.user = new ReactiveVar();
+	this.actions = new ReactiveVar();
 
 	this.autorun(() => {
 		const user = this.user.get();
@@ -247,9 +247,9 @@ Template.userInfo.onCreated(function() {
 		});
 		this.actions.set(actions);
 	});
-	this.editingUser = new ReactiveVar;
+	this.editingUser = new ReactiveVar();
 	this.loadingUserInfo = new ReactiveVar(true);
-	this.loadedUsername = new ReactiveVar;
+	this.loadedUsername = new ReactiveVar();
 	this.tabBar = Template.currentData().tabBar;
 	this.nowInterval = setInterval(() => this.now.set(moment()), 30000);
 

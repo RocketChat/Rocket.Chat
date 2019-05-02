@@ -85,7 +85,7 @@ export const RoomHistoryManager = new class {
 				hasMoreNext: new ReactiveVar(false),
 				isLoading: new ReactiveVar(false),
 				unreadNotLoaded: new ReactiveVar(0),
-				firstUnread: new ReactiveVar,
+				firstUnread: new ReactiveVar(),
 				loaded: undefined,
 			};
 		}
@@ -332,4 +332,4 @@ export const RoomHistoryManager = new class {
 			this.histories[rid].loaded = undefined;
 		}
 	}
-};
+}();

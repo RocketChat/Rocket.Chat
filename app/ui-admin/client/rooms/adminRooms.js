@@ -64,8 +64,8 @@ Template.adminRooms.helpers({
 		const instance = Template.instance();
 		return function(currentTarget) {
 			if (
-				currentTarget.offsetHeight + currentTarget.scrollTop >=
-				currentTarget.scrollHeight - 100
+				currentTarget.offsetHeight + currentTarget.scrollTop
+				>= currentTarget.scrollHeight - 100
 			) {
 				return instance.limit.set(instance.limit.get() + 50);
 			}

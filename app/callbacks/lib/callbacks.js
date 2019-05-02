@@ -45,7 +45,7 @@ callbacks.add = function(hook, callback, priority, id = Random.id()) {
 	callbacks[hook] = getHooks(hook);
 
 	if (callbacks.showTime === true) {
-		const err = new Error;
+		const err = new Error();
 		callback.stack = err.stack;
 	}
 

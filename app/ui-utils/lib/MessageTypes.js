@@ -16,4 +16,4 @@ export const MessageTypes = new class {
 		const type = this.types[message && message.t];
 		return type && type.system;
 	}
-};
+}();

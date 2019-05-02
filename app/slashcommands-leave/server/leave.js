@@ -20,7 +20,7 @@ function Leave(command, params, item) {
 		Notifications.notifyUser(Meteor.userId(), 'message', {
 			_id: Random.id(),
 			rid: item.rid,
-			ts: new Date,
+			ts: new Date(),
 			msg: TAPi18n.__(error, null, Meteor.user().language),
 		});
 	}

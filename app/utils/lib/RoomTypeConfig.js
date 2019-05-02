@@ -175,18 +175,18 @@ export class RoomTypeConfig {
 		if (!hasPermission && typeof hasPermission !== 'function') {
 			throw new Error('You MUST provide the "hasPermission" to canBeCreated function');
 		}
-		return Meteor.isServer ?
-			hasPermission(Meteor.userId(), `create-${ this._identifier }`) :
-			hasPermission([`create-${ this._identifier }`]);
+		return Meteor.isServer
+			? hasPermission(Meteor.userId(), `create-${ this._identifier }`)
+			: hasPermission([`create-${ this._identifier }`]);
 	}
 
 	canBeDeleted(hasPermission, room) {
 		if (!hasPermission && typeof hasPermission !== 'function') {
 			throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 		}
-		return Meteor.isServer ?
-			hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id) :
-			hasPermission(`delete-${ room.t }`, room._id);
+		return Meteor.isServer
+			? hasPermission(Meteor.userId(), `delete-${ room.t }`, room._id)
+			: hasPermission(`delete-${ room.t }`, room._id);
 	}
 
 	supportMembersList(/* room */) {

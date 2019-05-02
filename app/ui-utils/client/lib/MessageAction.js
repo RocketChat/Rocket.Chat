@@ -141,7 +141,7 @@ export const MessageAction = new class {
 		const roomURL = roomTypes.getURL(roomData.t, subData || roomData);
 		return `${ roomURL }?msg=${ msgId }`;
 	}
-};
+}();
 
 Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');

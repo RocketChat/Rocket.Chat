@@ -21,7 +21,7 @@ Meteor.methods({
 		}
 		application.clientId = Random.id();
 		application.clientSecret = Random.secret();
-		application._createdAt = new Date;
+		application._createdAt = new Date();
 		application._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 		application._id = OAuthApps.insert(application);
 		return application;

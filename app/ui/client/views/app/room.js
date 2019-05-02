@@ -233,9 +233,9 @@ Template.room.helpers({
 	},
 	isTranslated() {
 		const { state } = Template.instance();
-		return settings.get('AutoTranslate_Enabled') &&
-			(state.get('autoTranslate') === true) &&
-			!!state.get('autoTranslateLanguage');
+		return settings.get('AutoTranslate_Enabled')
+			&& (state.get('autoTranslate') === true)
+			&& !!state.get('autoTranslateLanguage');
 	},
 
 	embeddedVersion() {
@@ -279,8 +279,7 @@ Template.room.helpers({
 		};
 
 		if (hideMessagesOfType.length > 0) {
-			query.t =
-				{ $nin: hideMessagesOfType };
+			query.t =				{ $nin: hideMessagesOfType };
 		}
 
 		const options = {
@@ -396,8 +395,7 @@ Template.room.helpers({
 	},
 
 	unreadData() {
-		const data =
-			{ count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
+		const data =			{ count: RoomHistoryManager.getRoom(this._id).unreadNotLoaded.get() + Template.instance().unreadCount.get() };
 
 		const room = RoomManager.getOpenedRoomByRid(this._id);
 		if (room) {
@@ -994,7 +992,7 @@ Template.room.onCreated(function() {
 	this.selectedRange = [];
 	this.selectablePointer = null;
 
-	this.flexTemplate = new ReactiveVar;
+	this.flexTemplate = new ReactiveVar();
 
 	this.userDetail = new ReactiveVar(FlowRouter.getParam('username'));
 	this.groupDetail = new ReactiveVar();
@@ -1106,7 +1104,7 @@ Template.room.onRendered(function() {
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {
-		chatMessages[rid] = new ChatMessages;
+		chatMessages[rid] = new ChatMessages();
 	}
 	chatMessages[rid].initializeWrapper(this.find('.wrapper'));
 	chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
@@ -1231,7 +1229,7 @@ Template.room.onRendered(function() {
 
 	wrapper.addEventListener('scroll', () => updateUnreadCount());
 	// salva a data da renderização para exibir alertas de novas mensagens
-	$.data(this.firstNode, 'renderedAt', new Date);
+	$.data(this.firstNode, 'renderedAt', new Date());
 
 	const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
 	if (webrtc) {

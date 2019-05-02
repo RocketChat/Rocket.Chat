@@ -966,8 +966,8 @@ describe('[Users]', function() {
 				.set(credentials)
 				.send({ username: user.username })
 				.expect('Content-Type', 'application/json')
-				.end((err, res) => (err ? done() :
-					request.get(api('me'))
+				.end((err, res) => (err ? done()
+					: request.get(api('me'))
 						.set({ 'X-Auth-Token': `${ res.body.data.authToken }`, 'X-User-Id': res.body.data.userId })
 						.expect(200)
 						.expect((res) => {

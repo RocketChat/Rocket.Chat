@@ -142,4 +142,4 @@ export const SideNav = new class {
 			this.openQueue = [];
 		}
 	}
-};
+}();

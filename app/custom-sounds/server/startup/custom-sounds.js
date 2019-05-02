@@ -35,8 +35,7 @@ Meteor.startup(function() {
 	});
 
 	return WebApp.connectHandlers.use('/custom-sounds/', Meteor.bindEnvironment(function(req, res/* , next*/) {
-		const params =
-			{ sound: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
+		const params =			{ sound: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
 		if (_.isEmpty(params.sound)) {
 			res.writeHead(403);

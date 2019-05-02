@@ -17,8 +17,8 @@ callbacks.add('beforeSaveMessage', function(message) {
 	}
 
 	// Test if the message mentions include @all.
-	if (message.mentions != null &&
-		_.pluck(message.mentions, '_id').some((item) => item === 'all')) {
+	if (message.mentions != null
+		&& _.pluck(message.mentions, '_id').some((item) => item === 'all')) {
 		// Check if the user has permissions to use @all in both global and room scopes.
 		if (!hasPermission(message.u._id, 'mention-all') && !hasPermission(message.u._id, 'mention-all', message.rid)) {
 			// Get the language of the user for the error notification.
@@ -30,7 +30,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 			Notifications.notifyUser(message.u._id, 'message', {
 				_id: Random.id(),
 				rid: message.rid,
-				ts: new Date,
+				ts: new Date(),
 				msg: TAPi18n.__('error-action-not-allowed', { action }, language),
 			});
 

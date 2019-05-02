@@ -177,14 +177,14 @@ Template.accountProfile.helpers({
 Template.accountProfile.onCreated(function() {
 	const self = this;
 	const user = Meteor.user();
-	self.dep = new Tracker.Dependency;
+	self.dep = new Tracker.Dependency();
 	self.realname = new ReactiveVar(user.name);
 	self.email = new ReactiveVar(getUserEmailAddress(user));
 	self.username = new ReactiveVar(user.username);
-	self.password = new ReactiveVar;
-	self.confirmationPassword = new ReactiveVar;
-	self.suggestions = new ReactiveVar;
-	self.avatar = new ReactiveVar;
+	self.password = new ReactiveVar();
+	self.confirmationPassword = new ReactiveVar();
+	self.suggestions = new ReactiveVar();
+	self.avatar = new ReactiveVar();
 	self.url = new ReactiveVar('');
 	self.usernameAvaliable = new ReactiveVar(true);
 

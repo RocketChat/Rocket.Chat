@@ -316,7 +316,7 @@ export const RocketChatAssets = new class {
 
 		return getURL(url, options);
 	}
-};
+}();
 
 settings.addGroup('Assets');
 

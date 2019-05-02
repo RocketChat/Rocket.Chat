@@ -667,7 +667,7 @@ export class Users extends Base {
 	updateLastLoginById(_id) {
 		const update = {
 			$set: {
-				lastLogin: new Date,
+				lastLogin: new Date(),
 			},
 		};
 
@@ -675,8 +675,7 @@ export class Users extends Base {
 	}
 
 	setServiceId(_id, serviceName, serviceId) {
-		const update =
-		{ $set: {} };
+		const update =		{ $set: {} };
 
 		const serviceIdKey = `services.${ serviceName }.id`;
 		update.$set[serviceIdKey] = serviceId;
@@ -685,8 +684,7 @@ export class Users extends Base {
 	}
 
 	setUsername(_id, username) {
-		const update =
-		{ $set: { username } };
+		const update =		{ $set: { username } };
 
 		return this.update(_id, update);
 	}
@@ -1022,7 +1020,7 @@ export class Users extends Base {
 	// INSERT
 	create(data) {
 		const user = {
-			createdAt: new Date,
+			createdAt: new Date(),
 			avatarOrigin: 'none',
 		};
 

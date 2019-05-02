@@ -18,7 +18,7 @@ class Settings extends Storage {
 	constructor() {
 		super();
 
-		this.apps = new Apps;
+		this.apps = new Apps();
 	}
 
 	add(settings) {
@@ -38,6 +38,6 @@ class Settings extends Storage {
 	}
 }
 
-const settings = new Settings;
+const settings = new Settings();
 
 export default settings;

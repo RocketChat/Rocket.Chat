@@ -16,7 +16,7 @@ import { getAvatarAsPng } from '../../../ui-utils';
 import { promises } from '../../../promises/client';
 
 export const KonchatNotification = {
-	notificationStatus: new ReactiveVar,
+	notificationStatus: new ReactiveVar(),
 
 	// notificacoes HTML5
 	getDesktopPermission() {

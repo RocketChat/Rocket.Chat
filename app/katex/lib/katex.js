@@ -71,8 +71,8 @@ class Katex {
 			return null;
 		}
 
-		const inner = new Boundary;
-		const outer = new Boundary;
+		const inner = new Boundary();
+		const outer = new Boundary();
 
 		inner.start = pos + closer.length;
 		inner.end = inner.start + closerIndex;
@@ -127,8 +127,8 @@ class Katex {
 				},
 			});
 		} catch ({ message }) {
-			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">` +
-				`${ s.escapeHTML(message) }</div>`;
+			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">`
+				+ `${ s.escapeHTML(message) }</div>`;
 		}
 	}
 
@@ -187,7 +187,7 @@ class Katex {
 	isParenthesisSyntaxEnabled = () => settings.get('Katex_Parenthesis_Syntax')
 }
 
-const instance = new Katex;
+const instance = new Katex();
 
 callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH - 1, 'katex');
 

@@ -130,7 +130,7 @@ Template.livechatCurrentChats.events({
 Template.livechatCurrentChats.onCreated(function() {
 	this.limit = new ReactiveVar(20);
 	this.filter = new ReactiveVar({});
-	this.selectedAgent = new ReactiveVar;
+	this.selectedAgent = new ReactiveVar();
 	this.autorun(() => {
 		this.subscribe('livechat:rooms', this.filter.get(), 0, this.limit.get());
 	});

@@ -29,7 +29,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 			Notifications.notifyUser(message.u._id, 'message', {
 				_id: Random.id(),
 				rid: message.rid,
-				ts: new Date,
+				ts: new Date(),
 				msg: TAPi18n.__('error-action-not-allowed', { action }, language),
 			});
 

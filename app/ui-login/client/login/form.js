@@ -166,7 +166,7 @@ Template.loginForm.events({
 
 Template.loginForm.onCreated(function() {
 	const instance = this;
-	this.customFields = new ReactiveVar;
+	this.customFields = new ReactiveVar();
 	this.loading = new ReactiveVar(false);
 	Tracker.autorun(() => {
 		const Accounts_CustomFields = settings.get('Accounts_CustomFields');

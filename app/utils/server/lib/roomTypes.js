@@ -47,4 +47,4 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 	runPublish(scope, roomType, identifier) {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].publish && this.roomTypes[roomType].publish.call(scope, identifier);
 	}
-};
+}();

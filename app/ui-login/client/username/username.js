@@ -9,7 +9,7 @@ import { callbacks } from '../../../callbacks';
 
 Template.username.onCreated(function() {
 	const self = this;
-	self.username = new ReactiveVar;
+	self.username = new ReactiveVar();
 
 	return Meteor.call('getUsernameSuggestion', function(error, username) {
 		self.username.set({

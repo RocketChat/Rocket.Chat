@@ -56,5 +56,5 @@ class MessageBoxActions {
 }
 
 export const messageBox = {
-	actions: new MessageBoxActions,
+	actions: new MessageBoxActions(),
 };

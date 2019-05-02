@@ -191,7 +191,7 @@ export class CustomOAuth {
 				_OAuthCustom: true,
 				accessToken: response.access_token,
 				idToken: response.id_token,
-				expiresAt: +new Date + (1000 * parseInt(response.expires_in, 10)),
+				expiresAt: +new Date() + (1000 * parseInt(response.expires_in, 10)),
 			};
 
 			// only set the token in serviceData if it's there. this ensures
@@ -413,7 +413,7 @@ export class CustomOAuth {
 
 			const serviceData = {
 				accessToken: options.accessToken,
-				expiresAt: +new Date + (1000 * parseInt(options.expiresIn, 10)),
+				expiresAt: +new Date() + (1000 * parseInt(options.expiresIn, 10)),
 			};
 
 			const fields = _.pick(identity, whitelisted);

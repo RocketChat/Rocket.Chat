@@ -4,8 +4,7 @@ import { Template } from 'meteor/templating';
 import './lazyloadImage.html';
 import { addImage } from '.';
 
-const emptyImageEncoded =
-	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==';
+const emptyImageEncoded =	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==';
 
 const imgsrcs = new Set();
 

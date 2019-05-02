@@ -72,4 +72,4 @@ class ErrorHandler {
 	}
 }
 
-export default new ErrorHandler;
+export default new ErrorHandler();

@@ -476,7 +476,7 @@ export class Rooms extends Base {
 			$set: {
 				'lastMessage.msg': msg,
 				'lastMessage.snippeted': snippeted,
-				'lastMessage.snippetedAt': snippetedAt || new Date,
+				'lastMessage.snippetedAt': snippetedAt || new Date(),
 				'lastMessage.snippetedBy': snippetedBy,
 				'lastMessage.snippetName': snippetName,
 			},
@@ -491,7 +491,7 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				'lastMessage.pinned': pinned,
-				'lastMessage.pinnedAt': pinnedAt || new Date,
+				'lastMessage.pinnedAt': pinnedAt || new Date(),
 				'lastMessage.pinnedBy': pinnedBy,
 			},
 		};

@@ -88,4 +88,4 @@ this.Notifications = new class {
 	unUser(eventName, callback) {
 		return this.streamUser.removeListener(`${ visitor.getId() }/${ eventName }`, callback);
 	}
-};
+}();

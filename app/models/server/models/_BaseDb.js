@@ -71,9 +71,9 @@ export class BaseDb extends EventEmitter {
 
 		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
 			record.$set = record.$set || {};
-			record.$set._updatedAt = new Date;
+			record.$set._updatedAt = new Date();
 		} else {
-			record._updatedAt = new Date;
+			record._updatedAt = new Date();
 		}
 
 		return record;
@@ -222,7 +222,7 @@ export class BaseDb extends EventEmitter {
 		for (const record of records) {
 			ids.push(record._id);
 
-			record._deletedAt = new Date;
+			record._deletedAt = new Date();
 			record.__collection__ = this.name;
 
 			trash.upsert({ _id: record._id }, _.omit(record, '_id'));

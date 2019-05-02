@@ -76,8 +76,8 @@ settings.get('Assets_SvgFavicon_Enable', (key, value) => {
 
 settings.get('theme-color-sidebar-background', (key, value) => {
 	const escapedValue = s.escapeHTML(value);
-	Inject.rawHead(key, `<meta name="msapplication-TileColor" content="${ escapedValue }" />` +
-						`<meta name="theme-color" content="${ escapedValue }" />`);
+	Inject.rawHead(key, `<meta name="msapplication-TileColor" content="${ escapedValue }" />`
+						+ `<meta name="theme-color" content="${ escapedValue }" />`);
 });
 
 settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
@@ -100,16 +100,16 @@ settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
 settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key,
-		`<title>${ escapedValue }</title>` +
-		`<meta name="application-name" content="${ escapedValue }">` +
-		`<meta name="apple-mobile-web-app-title" content="${ escapedValue }">`);
+		`<title>${ escapedValue }</title>`
+		+ `<meta name="application-name" content="${ escapedValue }">`
+		+ `<meta name="apple-mobile-web-app-title" content="${ escapedValue }">`);
 });
 
 settings.get('Meta_language', (key, value = '') => {
 	const escapedValue = s.escapeHTML(value);
 	Inject.rawHead(key,
-		`<meta http-equiv="content-language" content="${ escapedValue }">` +
-		`<meta name="language" content="${ escapedValue }">`);
+		`<meta http-equiv="content-language" content="${ escapedValue }">`
+		+ `<meta name="language" content="${ escapedValue }">`);
 });
 
 settings.get('Meta_robots', (key, value = '') => {

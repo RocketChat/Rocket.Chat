@@ -344,12 +344,12 @@ Template.setupWizard.helpers({
 					label: i18nLabel,
 					value: t.state.get(_id),
 					options: (
-						type === 'select' &&
-						values &&
-						values.map(({ i18nLabel, key }) => ({ optionLabel: i18nLabel, optionValue: key }))
+						type === 'select'
+						&& values
+						&& values.map(({ i18nLabel, key }) => ({ optionLabel: i18nLabel, optionValue: key }))
 					) || (
-						type === 'language' &&
-						[{
+						type === 'language'
+						&& [{
 							optionLabel: 'Default',
 							optionValue: '',
 						}].concat(

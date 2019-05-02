@@ -64,7 +64,7 @@ export class ExportOperations extends Base {
 	// INSERT
 	create(data) {
 		const exportOperation = {
-			createdAt: new Date,
+			createdAt: new Date(),
 		};
 
 		_.extend(exportOperation, data);

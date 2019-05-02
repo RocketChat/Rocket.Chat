@@ -11,4 +11,4 @@ export const Layout = new class RocketChatLayout {
 	isEmbedded() {
 		return this.layout === 'embedded';
 	}
-};
+}();
