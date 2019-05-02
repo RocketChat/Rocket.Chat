@@ -74,17 +74,13 @@ Template.message.helpers({
 	and(a, b) {
 		return a && b;
 	},
-	i18nKeyMessage() {
+	i18nReplyCounter() {
 		const { msg } = this;
-		return msg.dcount > 1
-			? 'messages'
-			: 'message';
+		return `<span class='reply-counter'>${ msg.tcount }</span>`;
 	},
-	i18nKeyReply() {
+	i18nDiscussionCounter() {
 		const { msg } = this;
-		return msg.tcount > 1
-			? 'replies'
-			: 'reply';
+		return `<span class='reply-counter'>${ msg.dcount }</span>`;
 	},
 	formatDateAndTime,
 	encodeURI(text) {
@@ -111,8 +107,8 @@ Template.message.helpers({
 		return msg.bot && 'bot';
 	},
 	roleTags() {
-		const { msg, hideRoles } = this;
-		if (hideRoles) {
+		const { msg, hideRoles, settings } = this;
+		if (settings.hideRoles || hideRoles) {
 			return [];
 		}
 

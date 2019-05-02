@@ -59,6 +59,57 @@ Reason for this quite unusual behavior is that we wanted to return closer to the
 
 Assistify.Chat is now based on Rocket.Chat 0.68.5!
 
+# 1.0.2
+`2019-04-30  ·  2 🚀  ·  8 🐛  ·  5 🔍  ·  10 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🚀 Improvements
+
+- i18n of threads and discussion buttons ([#14334](https://github.com/RocketChat/Rocket.Chat/pull/14334))
+- Better error message when not able to get MongoDB Version ([#14320](https://github.com/RocketChat/Rocket.Chat/pull/14320))
+
+### 🐛 Bug fixes
+
+- Unread line and new day separator were not aligned  ([#14338](https://github.com/RocketChat/Rocket.Chat/pull/14338))
+- Audio notification for messages on DM ([#14336](https://github.com/RocketChat/Rocket.Chat/pull/14336))
+- Duplicate thread message after editing ([#14330](https://github.com/RocketChat/Rocket.Chat/pull/14330))
+- New day separator rendered over thread reply ([#14328](https://github.com/RocketChat/Rocket.Chat/pull/14328))
+- Missing i18n for some new Permissions ([#14011](https://github.com/RocketChat/Rocket.Chat/pull/14011) by [@lolimay](https://github.com/lolimay))
+- View Logs admin page was broken and not rendering color logs ([#14316](https://github.com/RocketChat/Rocket.Chat/pull/14316))
+- show roles on message ([#14313](https://github.com/RocketChat/Rocket.Chat/pull/14313))
+- Remove reference to inexistent field when deleting message in thread ([#14311](https://github.com/RocketChat/Rocket.Chat/pull/14311))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+- Add cross-browser select arrow positioning ([#14318](https://github.com/RocketChat/Rocket.Chat/pull/14318))
+- i18n: Update German strings ([#14182](https://github.com/RocketChat/Rocket.Chat/pull/14182) by [@AnBo83](https://github.com/AnBo83))
+- [Regression] Anonymous user fix ([#14301](https://github.com/RocketChat/Rocket.Chat/pull/14301) by [@knrt10](https://github.com/knrt10))
+- Coerces the MongoDB version string ([#14299](https://github.com/RocketChat/Rocket.Chat/pull/14299) by [@thaiphv](https://github.com/thaiphv))
+- [Fix] group name appears instead of the room id ([#14075](https://github.com/RocketChat/Rocket.Chat/pull/14075) by [@mohamedar97](https://github.com/mohamedar97))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@AnBo83](https://github.com/AnBo83)
+- [@knrt10](https://github.com/knrt10)
+- [@lolimay](https://github.com/lolimay)
+- [@mohamedar97](https://github.com/mohamedar97)
+- [@thaiphv](https://github.com/thaiphv)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 1.0.1
 `2019-04-28  ·  7 🐛  ·  4 👩‍💻👨‍💻`
 
