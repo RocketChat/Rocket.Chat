@@ -147,7 +147,7 @@ export class CROWD {
 
 				const response = self.crowdClient.searchSync('user', `email=" ${ email } "`);
 				if (!response || response.users.length === 0) {
-					logger.warning('Could not find user in CROWD with username or email:', username, email);
+					logger.warn('Could not find user in CROWD with username or email:', username, email);
 					return;
 				}
 				username = response.users[0].name;
