@@ -262,7 +262,10 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 					} else if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
 						userChannels.push(room._id);
 					}	else if (syncUserRolesEnforceAutoChannels) {
-						removeUserFromRoom(room._id, user);
+						const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+						if (subscription) {
+							removeUserFromRoom(room._id, user);
+						}
 					}
 				});
 			} else {
@@ -274,7 +277,10 @@ export function mapLDAPGroupsToChannels(ldapUser, user) {
 				if (isUserInLDAPGroup(ldapUser, user, ldapField)) {
 					userChannels.push(room._id);
 				}	else if (syncUserRolesEnforceAutoChannels) {
-					removeUserFromRoom(room._id, user);
+					const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+					if (subscription) {
+						removeUserFromRoom(room._id, user);
+					}
 				}
 			}
 		});
