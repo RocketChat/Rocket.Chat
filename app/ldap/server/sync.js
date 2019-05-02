@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications';
-import { Users, Roles, Rooms } from '../../models';
+import { Users, Roles, Rooms, Subscriptions } from '../../models';
 import { Logger } from '../../logger';
 import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
