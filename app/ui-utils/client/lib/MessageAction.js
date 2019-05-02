@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
@@ -9,11 +10,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
-import { t, handleError, roomTypes, canDeleteMessage } from '../../../utils/client';
+import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { messageArgs } from './messageArgs';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { settings } from '../../../settings/client';
+import { modal } from './modal';
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err, data) {
@@ -24,18 +25,7 @@ const call = (method, ...args) => new Promise((resolve, reject) => {
 	});
 });
 
-const success = function success(fn) {
-	return function(error, result) {
-		if (error) {
-			return handleError(error);
-		}
-		if (result) {
-			fn.call(this, result);
-		}
-	};
-};
-
-const addMessageToList = (messagesList, message) => {
+export const addMessageToList = (messagesList, message) => {
 	// checks if the message is not already on the list
 	if (!messagesList.find(({ _id }) => _id === message._id)) {
 		messagesList.push(message);
@@ -155,20 +145,47 @@ export const MessageAction = new class {
 Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
 	MessageAction.addButton({
-		id: 'reply-message',
-		icon: 'reply',
-		label: 'Reply',
+		id: 'reply-directly',
+		icon: 'reply-directly',
+		label: 'Reply_in_direct_message',
+		context: ['message', 'message-mobile'],
+		action() {
+			const { msg } = messageArgs(this);
+			roomTypes.openRouteLink('d', { name: msg.u.username }, {
+				...FlowRouter.current().queryParams,
+				reply: msg._id,
+			});
+		},
+		condition({ subscription, room }) {
+			if (subscription == null) {
+				return false;
+			}
+			if (room.t === 'd') {
+				return false;
+			}
+			return true;
+		},
+		order: 2,
+		group: 'menu',
+	});
+
+	MessageAction.addButton({
+		id: 'quote-message',
+		icon: 'quote',
+		label: 'Quote',
 		context: ['message', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			const { input } = chatMessages[message.rid];
 			const $input = $(input);
 
-			const messages = addMessageToList($input.data('reply') || [], message, input);
+			let messages = $input.data('reply') || [];
 
-			$(input)
+			messages = addMessageToList(messages, message, input);
+
+			$input
 				.focus()
-				.data('mention-user', true)
+				.data('mention-user', false)
 				.data('reply', messages)
 				.trigger('dataChange');
 		},
@@ -179,69 +196,6 @@ Meteor.startup(async function() {
 
 			return true;
 		},
-		order: 1,
-		group: 'menu',
-	});
-
-	MessageAction.addButton({
-		id: 'edit-message',
-		icon: 'edit',
-		label: 'Edit',
-		context: ['message', 'message-mobile'],
-		action() {
-			const { msg } = messageArgs(this);
-			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
-		},
-		condition({ msg: message, subscription, u }) {
-			if (subscription == null) {
-				return false;
-			}
-			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
-			const isEditAllowed = settings.get('Message_AllowEditing');
-			const editOwn = message.u && message.u._id === u._id;
-			if (!(hasPermission || (isEditAllowed && editOwn))) {
-				return;
-			}
-			const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-			if (blockEditInMinutes) {
-				let msgTs;
-				if (message.ts != null) {
-					msgTs = moment(message.ts);
-				}
-				let currentTsDiff;
-				if (msgTs != null) {
-					currentTsDiff = moment().diff(msgTs, 'minutes');
-				}
-				return currentTsDiff < blockEditInMinutes;
-			} else {
-				return true;
-			}
-		},
-		order: 2,
-		group: 'menu',
-	});
-
-	MessageAction.addButton({
-		id: 'delete-message',
-		icon: 'trash',
-		label: 'Delete',
-		context: ['message', 'message-mobile'],
-		color: 'alert',
-		action() {
-			const { msg: message } = messageArgs(this);
-			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
-		},
-		condition({ msg: message, subscription }) {
-			if (subscription == null) {
-				return false;
-			}
-
-			return canDeleteMessage({
-				rid: message.rid,
-				ts: message.ts,
-				uid: message.u._id,
-			});
-		},
 		order: 3,
 		group: 'menu',
 	});
@@ -249,7 +203,7 @@ Meteor.startup(async function() {
 	MessageAction.addButton({
 		id: 'permalink',
 		icon: 'permalink',
-		label: 'Permalink',
+		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile'],
 		async action(event) {
@@ -292,69 +246,112 @@ Meteor.startup(async function() {
 	});
 
 	MessageAction.addButton({
-		id: 'quote-message',
-		icon: 'quote',
-		label: 'Quote',
+		id: 'edit-message',
+		icon: 'edit',
+		label: 'Edit',
 		context: ['message', 'message-mobile'],
 		action() {
-			const { msg: message } = messageArgs(this);
-			const { input } = chatMessages[message.rid];
-			const $input = $(input);
-
-			let messages = $input.data('reply') || [];
-
-			messages = addMessageToList(messages, message, input);
-
-			$input
-				.focus()
-				.data('mention-user', false)
-				.data('reply', messages)
-				.trigger('dataChange');
+			const { msg } = messageArgs(this);
+			chatMessages[Session.get('openedRoom')].edit(document.getElementById(msg._id));
 		},
-		condition({ subscription }) {
+		condition({ msg: message, subscription, settings }) {
 			if (subscription == null) {
 				return false;
 			}
-
-			return true;
+			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+			const isEditAllowed = settings.Message_AllowEditing;
+			const editOwn = message.u && message.u._id === Meteor.userId();
+			if (!(hasPermission || (isEditAllowed && editOwn))) {
+				return;
+			}
+			const blockEditInMinutes = settings.Message_AllowEditing_BlockEditInMinutes;
+			if (blockEditInMinutes) {
+				let msgTs;
+				if (message.ts != null) {
+					msgTs = moment(message.ts);
+				}
+				let currentTsDiff;
+				if (msgTs != null) {
+					currentTsDiff = moment().diff(msgTs, 'minutes');
+				}
+				return currentTsDiff < blockEditInMinutes;
+			} else {
+				return true;
+			}
 		},
 		order: 6,
 		group: 'menu',
 	});
 
-
 	MessageAction.addButton({
-		id: 'ignore-user',
-		icon: 'ban',
-		label: t('Ignore'),
+		id: 'delete-message',
+		icon: 'trash',
+		label: 'Delete',
 		context: ['message', 'message-mobile'],
+		color: 'alert',
 		action() {
-			const { msg: { rid, u: { _id } } } = messageArgs(this);
-			Meteor.call('ignoreUser', { rid, userId:_id, ignore: true }, success(() => toastr.success(t('User_has_been_ignored'))));
+			const { msg: message } = messageArgs(this);
+			chatMessages[Session.get('openedRoom')].confirmDeleteMsg(message);
 		},
-		condition({ msg: message, subscription, u }) {
-			return u._id !== message.u._id && !(subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1);
+		condition({ msg:message, subscription }) {
+			if (!subscription) {
+				return false;
+			}
+
+			return canDeleteMessage({
+				rid: message.rid,
+				ts: message.ts,
+				uid: message.u._id,
+			});
 		},
-		order: 20,
+		order: 18,
 		group: 'menu',
 	});
 
 	MessageAction.addButton({
-		id: 'unignore-user',
-		icon: 'ban',
-		label: t('Unignore'),
+		id: 'report-message',
+		icon: 'report',
+		label: 'Report',
 		context: ['message', 'message-mobile'],
+		color: 'alert',
 		action() {
-			const { msg: { rid, u: { _id } } } = messageArgs(this);
-			Meteor.call('ignoreUser', { rid, userId:_id, ignore: false }, success(() => toastr.success(t('User_has_been_unignored'))));
+			const { msg: message } = messageArgs(this);
+			modal.open({
+				title: TAPi18n.__('Report_this_message_question_mark'),
+				text: message.msg,
+				inputPlaceholder: TAPi18n.__('Why_do_you_want_to_report_question_mark'),
+				type: 'input',
+				showCancelButton: true,
+				confirmButtonColor: '#DD6B55',
+				confirmButtonText: TAPi18n.__('Report_exclamation_mark'),
+				cancelButtonText: TAPi18n.__('Cancel'),
+				closeOnConfirm: false,
+				html: false,
+			}, (inputValue) => {
+				if (inputValue === false) {
+					return false;
+				}
 
+				if (inputValue === '') {
+					modal.showInputError(TAPi18n.__('You_need_to_write_something'));
+					return false;
+				}
+
+				Meteor.call('reportMessage', message._id, inputValue);
+
+				modal.open({
+					title: TAPi18n.__('Report_sent'),
+					text: TAPi18n.__('Thank_you_exclamation_mark '),
+					type: 'success',
+					timer: 1000,
+					showConfirmButton: false,
+				});
+			});
 		},
-		condition({ msg: message, subscription, u }) {
-			return u._id !== message.u._id && subscription && subscription.ignored && subscription.ignored.indexOf(message.u._id) > -1;
+		condition({ subscription }) {
+			return Boolean(subscription);
 		},
-		order: 20,
+		order: 17,
 		group: 'menu',
 	});
-
-
 });

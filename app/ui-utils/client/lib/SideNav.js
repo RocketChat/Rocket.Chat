@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { roomTypes } from '../../../utils';
+import { roomTypes } from '../../../utils/client/lib/roomTypes';
 import { Subscriptions } from '../../../models';
 import { AccountBox } from './AccountBox';
 
@@ -41,16 +41,10 @@ export const SideNav = new class {
 		}, 500);
 	}
 	closeFlex(callback = null) {
-		let subscription;
-		if (!roomTypes.getTypes().filter(function(i) {
-			return i.route;
-		}).map(function(i) {
-			return i.route.name;
-		}).includes(FlowRouter.current().route.name)) {
-			subscription = Subscriptions.findOne({
-				rid: Session.get('openedRoom'),
-			});
-			if (subscription != null) {
+		const routesNamesForRooms = roomTypes.getTypes().filter((i) => i.route).map((i) => i.route.name);
+		if (!routesNamesForRooms.includes(FlowRouter.current().route.name)) {
+			const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') });
+			if (subscription) {
 				roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 			} else {
 				FlowRouter.go('home');
@@ -59,7 +53,7 @@ export const SideNav = new class {
 		if (this.animating === true) {
 			return;
 		}
-		return this.toggleFlex(-1, callback);
+		this.toggleFlex(-1, callback);
 	}
 	flexStatus() {
 		return this.flexNav.opened;
@@ -97,7 +91,7 @@ export const SideNav = new class {
 			}
 		});
 		setTimeout(() => {
-			const ref = highestZidxElem.querySelector('input');
+			const ref = highestZidxElem && highestZidxElem.querySelector('input');
 			return ref && ref.focus();
 		}, 200);
 	}

@@ -45,7 +45,7 @@ Template.threads.helpers({
 		const { tabBar } = data;
 		return () => (state.get('close') ? tabBar.close() : state.set('mid', null));
 	},
-	message() {
+	msg() {
 		return Template.instance().state.get('thread');
 	},
 	isLoading() {
@@ -114,6 +114,9 @@ Template.threads.onCreated(async function() {
 	});
 
 	this.autorun(() => {
+		if (mid) {
+			return;
+		}
 		const rid = this.state.get('rid');
 		this.rid = rid;
 		this.state.set({
@@ -125,7 +128,7 @@ Template.threads.onCreated(async function() {
 	this.autorun(() => {
 		const rid = this.state.get('rid');
 		this.threadsObserve && this.threadsObserve.stop();
-		this.threadsObserve = Messages.find({ rid, _updatedAt: { $gt: new Date() }, tcount: { $exists: true } }).observe({
+		this.threadsObserve = Messages.find({ rid, tcount: { $exists: true }, _hidden: { $ne: true } }).observe({
 			added: ({ _id, ...message }) => {
 				this.Threads.upsert({ _id }, message);
 			}, // Update message to re-render DOM
@@ -135,9 +138,9 @@ Template.threads.onCreated(async function() {
 			removed: ({ _id }) => {
 				this.Threads.remove(_id);
 
-				const { _id: mid } = this.mid.get() || {};
+				const mid = this.state.get('mid');
 				if (_id === mid) {
-					this.mid.set(null);
+					this.state.set('mid', null);
 				}
 			},
 		});
@@ -157,7 +160,7 @@ Template.threads.onCreated(async function() {
 
 	this.autorun(async () => {
 		const mid = this.state.get('mid');
-		return this.state.set('thread', mid && this.Threads.findOne({ _id: mid }, { fields: { tcount: 0, tlm: 0, replies: 0, _updatedAt: 0 } }));
+		return this.state.set('thread', mid && (Messages.findOne({ _id: mid }, { fields: { tcount: 0, tlm: 0, replies: 0, _updatedAt: 0 } }) || this.Threads.findOne({ _id: mid }, { fields: { tcount: 0, tlm: 0, replies: 0, _updatedAt: 0 } })));
 	});
 });
 

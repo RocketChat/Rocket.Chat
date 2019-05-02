@@ -6,7 +6,7 @@ WebApp.connectHandlers.use('/file-upload/',	function(req, res, next) {
 
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
-	if (match[1]) {
+	if (match && match[1]) {
 		const file = Uploads.findOneById(match[1]);
 
 		if (file) {

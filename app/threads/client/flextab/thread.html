@@ -16,10 +16,16 @@
 		<div class="thread-list js-scroll-thread">
 			<ul class="thread">
 				{{# with messageContext}}
-					{{> nrr nrrargs 'message' groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u}}
-					{{#each msg in messages}}
-						{{> nrr nrrargs 'message' hideRoles=true msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u}}
-					{{/each}}
+				{{#if isLoading}}
+				<li class="load-more">
+					{{> loading}}
+				</li>
+				{{else}}
+						{{> message groupable=false hideRoles=true msg=mainMessage room=room subscription=subscription settings=settings customClass="thread-message" templatePrefix='thread-' customClass="thread-main" u=u}}
+						{{#each msg in messages}}
+							{{> message hideRoles=true msg=msg room=room subscription=subscription settings=settings templatePrefix='thread-' u=u}}
+						{{/each}}
+					{{/if}}
 				{{/with}}
 			</ul>
 		</div>

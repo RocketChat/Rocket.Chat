@@ -5,6 +5,15 @@
 	border-bottom: 1px solid var(--color-gray-light);
 }
 
+.message.sequential[data-tmid] > .thread-replied > .thumb,
+.message.sequential.system[data-tmid] > .thumb {
+	display: block;
+}
+
+.message.sequential[data-tmid] > .message-body-wrapper > .title {
+	display: none;
+}
+
 .message.thread-message {
 	padding-top: 16px;
 	padding-bottom: 8px;
@@ -29,9 +38,8 @@
 	& .thread-replied {
 
 		display: inline-flex;
-		overflow: hidden;
 
-		margin-left: 3px;
+		display: flex;
 
 		cursor: pointer;
 
@@ -42,30 +50,70 @@
 
 		align-items: baseline;
 		flex-flow: row nowrap;
+	}
 
-		& .rc-icon {
-			position: relative;
-			bottom: -0.15rem;
+	.thread-icons {
+		display: block;
+		flex: 0 0 20px;
 
-			min-width: 18px;
+		width: 20px;
+
+		&--thread {
+			position: absolute;
+			left: 40px;
+
+			width: 20px;
+			height: 20px;
+
+			color: var(--rc-color-alert-message-primary);
 		}
 
-		& .thread-quote {
+		&--bell,
+		&--bell-off {
+			cursor: pointer;
+
+			color: #a0a0a0;
+
+			font-size: 1rem;
+		}
+	}
+
+	& > .thread-quote {
+
+		display: flex;
+
+		margin: calc((var(--default-padding) /2) - 6px) 0 7px 0;
+		align-items: center;
+	}
+
+	.thread-quote__message {
+
+		display: flex;
+
+		overflow: hidden;
+
+		cursor: pointer;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		color: var(--rc-color-alert-message-primary);
+
+		align-items: center;
+
+		> .message-body--unstyled {
 			overflow: hidden;
 
-			max-width: 200px;
-
-			white-space: nowrap;
 			text-overflow: ellipsis;
 		}
+	}
 
-		& .thread-reply-preview {
-			display: none;
-			overflow: hidden;
+	& .thread-reply-preview {
+		display: none;
+		overflow: hidden;
 
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	&.collapsed .thread-reply-preview {
@@ -73,13 +121,30 @@
 	}
 }
 
-.compact .message.collapsed {
-	& .thread-replied {
-		& .thread-reply-switch,
-		& .thread-reply-preview {
-			display: none;
-		}
+.message.collapsed + .message.system:not(.collapsed) {
+	margin-top: calc(var(--default-padding) / 2);
+	margin-bottom: calc(var(--default-padding) / 2);
+}
+
+.message.collapsed + .message:not(.collapsed):not(.new-day) {
+	margin-top: calc(var(--default-padding) / 2);
+}
+
+.message.collapsed > .thread-replied > .thumb {
+	left: 40px;
+
+	width: 20px;
+	height: 20px;
+	margin-left: 0;
+
+	& .avatar {
+		width: 20px;
+		height: 20px;
 	}
+}
+
+.message.sequential .thread-quote {
+	display: none;
 }
 
 @media (width < 500px) {
@@ -92,10 +157,6 @@
 			flex-basis: 100%;
 		}
 	}
-}
-
-.message.sequential > .body > .thread-replied {
-	display: none;
 }
 
 .contextual-bar__content.thread,
