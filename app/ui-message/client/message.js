@@ -2,7 +2,6 @@ import _ from 'underscore';
 
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/tap:i18n';
 
@@ -70,7 +69,35 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	canvas.style.display = 'block';
 }
 
+const renderBody = (msg, settings) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
+
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.template) {
+		// render template
+	} else if (messageType.message) {
+		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+		msg.html = msg.msg;
+		msg = callbacks.run('renderMentions', msg);
+		msg = msg.html;
+	} else {
+		msg = renderMessageBody(msg);
+	}
+
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
+	}
+	return msg;
+};
+
 Template.message.helpers({
+	body() {
+		const { msg, settings } = this;
+		return Tracker.nonreactive(() => renderBody(msg, settings));
+	},
 	and(a, b) {
 		return a && b;
 	},
@@ -199,9 +226,6 @@ Template.message.helpers({
 		if (msg.temp === true) {
 			return 'temp';
 		}
-	},
-	body() {
-		return Template.instance().body;
 	},
 	threadMessage() {
 		const { msg } = this;
@@ -454,39 +478,14 @@ const findParentMessage = (() => {
 	};
 })();
 
-
-const renderBody = (msg, settings) => {
-	const isSystemMessage = MessageTypes.isSystemMessage(msg);
-	const messageType = MessageTypes.getType(msg) || {};
-
-	if (messageType.render) {
-		msg = messageType.render(msg);
-	} else if (messageType.template) {
-		// render template
-	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
-	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
-		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
-		msg = msg.html;
-	} else {
-		msg = renderMessageBody(msg);
-	}
-
-	if (isSystemMessage) {
-		msg.html = Markdown.parse(msg.html);
-	}
-	return msg;
-};
-
 Template.message.onCreated(function() {
-	const { msg, settings } = Template.currentData();
+	const { msg } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	if (msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = Tracker.nonreactive(() => renderBody(msg, settings));
+
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
@@ -601,18 +600,6 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		} else {
 			nextNode.classList.remove('new-day');
 		}
-	} else {
-		const [el] = $(`#chat-window-${ msg.rid }`);
-		const view = el && Blaze.getView(el);
-		const templateInstance = view && view.templateInstance();
-		if (!templateInstance) {
-			return;
-		}
-
-		if (currentNode.classList.contains('own') === true) {
-			templateInstance.atBottom = true;
-		}
-		templateInstance.sendToBottomIfNecessary();
 	}
 };
 
