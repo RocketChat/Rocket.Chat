@@ -480,10 +480,10 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.onCreated(function() {
-	const { msg, settings } = Template.currentData();
+	const { msg, settings, shouldCollapseReplies } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.threadMsg) {
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
 	return this.body = Tracker.nonreactive(() => renderBody(msg, settings));
