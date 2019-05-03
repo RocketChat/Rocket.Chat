@@ -121,7 +121,7 @@
 	}
 }
 
-.message.collapsed + .message.system:not(.collapsed) {
+.message.collapsed + .message.system:not(.collapsed):not(.new-day) {
 	margin-top: calc(var(--default-padding) / 2);
 	margin-bottom: calc(var(--default-padding) / 2);
 }
