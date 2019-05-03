@@ -8,6 +8,7 @@ import { getConfig } from '../config';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
+
 export const normalizeThreadMessage = (message) => {
 
 	if (message.msg) {
