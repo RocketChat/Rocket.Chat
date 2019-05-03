@@ -37,7 +37,7 @@ Meteor.startup(function() {
 				if (drid || !isNaN(dcount)) {
 					return false;
 				}
-				if (subscription) {
+				if (!subscription) {
 					return false;
 				}
 
