@@ -346,7 +346,7 @@
   "Apply": "Anwenden",
   "Apply_and_refresh_all_clients": "Anwenden und alle Clients aktualisieren",
   "Apps": "Apps",
-  "Apps_Engine_Version": "Version er Anwendungsumgebung",
+  "Apps_Engine_Version": "Version der Anwendungsumgebung",
   "Apps_Framework_Development_Mode": "Entwicklungsmodus aktivieren",
   "Apps_Framework_Development_Mode_Description": "Im Entwicklungsmodus können Apps installiert werden, die nicht vom Rocketchat Marketplace stammen.",
   "Apps_Framework_enabled": "Das App Framework aktivieren",
