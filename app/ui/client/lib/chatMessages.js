@@ -147,6 +147,9 @@ export class ChatMessages {
 	}
 
 	toNextMessage() {
+		if (!this.editing.id) {
+			return;
+		}
 		const { index } = this.editing;
 		if (!this.editByIndex(index + 1)) {
 			this.clearEditing();
