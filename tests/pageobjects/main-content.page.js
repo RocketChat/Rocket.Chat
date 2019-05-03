@@ -107,10 +107,9 @@ class MainContent extends Page {
 	}
 
 	waitForLastMessageTextAttachmentEqualsText(text) {
-		browser.waitUntil(function() {
-			browser.waitForVisible('.message:last-child .attachment-text', 5000);
-			return browser.getText('.message:last-child .attachment-text') === text;
-		}, 5000);
+
+		browser.waitForVisible('.message:last-child .attachment-text', 5000);
+		return browser.getText('.message:last-child .attachment-text').trim() === text.trim();
 	}
 
 	// Wait for the last message author username to equal the provided text
