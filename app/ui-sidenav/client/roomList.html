@@ -15,8 +15,8 @@
 						{{/if}}
 					</h3>
 					<ul class="rooms-list__list {{ roomType ..}}">
-						{{#each room in this}}
-							{{> chatRoomItem room }}
+						{{#each subscription in this}}
+							{{> chatRoomItem subscription=subscription context=.. }}
 						{{else}}
 							<p class="rooms-list__empty-room">{{_ noSubscriptionText }}</p>
 						{{/each}}

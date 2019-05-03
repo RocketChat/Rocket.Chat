@@ -4,7 +4,7 @@
 			{{_ "Discussion"}}
 		</h3>
 		<ul class="rooms-list__list">
-			{{#each room in rooms}} {{> chatRoomItem room }} {{/each}}
+			{{#each subscription in rooms}} {{> chatRoomItem subscription=subscription context=. }} {{/each}}
 		</ul>
 	{{/if}}
 </template>

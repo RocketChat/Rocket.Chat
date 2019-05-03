@@ -1,15 +1,14 @@
-import { Meteor } from 'meteor/meteor';
+
 import { Template } from 'meteor/templating';
 
 import { ChatSubscription } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
-import { settings } from '../../../settings/client';
 
 import './DiscussionList.html';
 
 Template.DiscussionList.helpers({
 	rooms() {
-		const user = Meteor.userId();
+		const { user, settings } = this;
 		const sortBy = getUserPreference(user, 'sidebarSortby') || 'alphabetical';
 		const query = {
 			open: true,
@@ -20,7 +19,7 @@ Template.DiscussionList.helpers({
 		if (sortBy === 'activity') {
 			sort.lm = -1;
 		} else { // alphabetical
-			sort[this.identifier === 'd' && settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
+			sort[this.identifier === 'd' && settings.UI_Use_Real_Name ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
 		}
 
 		query.prid = { $exists: true };

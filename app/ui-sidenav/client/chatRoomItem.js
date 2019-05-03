@@ -1,40 +1,41 @@
 import { Template } from 'meteor/templating';
 
 import { t, roomTypes } from '../../utils/client';
-import { settings } from '../../settings/client';
 
 import { Rooms } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 
 Template.chatRoomItem.helpers({
 	roomData() {
-		const unread = this.unread > 0 ? this.unread : false;
-		// if (this.unread > 0 && (!hasFocus || openedRoom !== this.rid)) {
-		// 	unread = this.unread;
+		const { context, context: { settings } = {}, subscription } = this;
+		const unread = subscription.unread > 0 ? subscription.unread : false;
+		// if (subscription.unread > 0 && (!hasFocus || openedRoom !== subscription.rid)) {
+		// 	unread = subscription.unread;
 		// }
 
-		const roomType = roomTypes.getConfig(this.t);
+		const roomType = roomTypes.getConfig(subscription.t);
 
-		const archivedClass = this.archived ? 'archived' : false;
+		const archivedClass = subscription.archived ? 'archived' : false;
 
-		const icon = this.t !== 'd' && roomTypes.getIcon(this);
+		const icon = subscription.t !== 'd' && roomTypes.getIcon(subscription);
 
 		const roomData = {
-			...this,
+			...subscription,
 			icon,
-			avatar: roomType.getAvatarPath(this),
-			username : this.name,
-			route: roomTypes.getRouteLink(this.t, this),
-			name: roomType.roomName(this),
+			avatar: roomType.getAvatarPath(subscription),
+			username : subscription.name,
+			route: roomTypes.getRouteLink(subscription.t, subscription),
+			name: roomType.roomName(subscription),
 			unread,
 			active: false,
 			archivedClass,
-			status: this.t === 'd' || this.t === 'l',
+			status: subscription.t === 'd' || subscription.t === 'l',
+			context,
 		};
 		roomData.username = roomData.username || roomData.name;
 
-		if (!this.lastMessage && settings.get('Store_Last_Message')) {
-			const room = Rooms.findOne(this.rid || this._id, { fields: { lastMessage: 1 } });
+		if (!subscription.lastMessage && settings.Store_Last_Message) {
+			const room = Rooms.findOne(subscription.rid || subscription._id, { fields: { lastMessage: 1 } });
 			roomData.lastMessage = (room && room.lastMessage) || { msg: t('No_messages_yet') };
 		}
 		return roomData;

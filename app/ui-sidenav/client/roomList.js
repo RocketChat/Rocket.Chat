@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../callbacks';
 import { Template } from 'meteor/templating';
-import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
-import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
-import { settings } from '../../settings';
+import { ChatSubscription, Rooms, Subscriptions } from '../../models';
+import { UiTextContext, roomTypes } from '../../utils';
 
 Template.roomList.helpers({
 	rooms() {
@@ -14,22 +12,13 @@ Template.roomList.helpers({
 				show favorites
 				show unread
 		*/
+
+		const { user, settings } = this;
 		if (this.anonymous) {
 			return Rooms.find({ t: 'c' }, { sort: { name: 1 } });
 		}
 
-		const user = Users.findOne(Meteor.userId(), {
-			fields: {
-				'settings.preferences.sidebarSortby': 1,
-				'settings.preferences.sidebarShowFavorites': 1,
-				'settings.preferences.sidebarShowUnread': 1,
-				'settings.preferences.sidebarShowDiscussion': 1,
-				'services.tokenpass': 1,
-				messageViewMode: 1,
-			},
-		});
-
-		const sortBy = getUserPreference(user, 'sidebarSortby') || 'alphabetical';
+		const sortBy = settings.sidebarSortby || 'alphabetical';
 		const query = {
 			open: true,
 		};
@@ -39,7 +28,7 @@ Template.roomList.helpers({
 		if (sortBy === 'activity') {
 			sort.lm = -1;
 		} else { // alphabetical
-			sort[this.identifier === 'd' && settings.get('UI_Use_Real_Name') ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
+			sort[this.identifier === 'd' && settings.UI_Use_Real_Name ? 'lowerCaseFName' : 'lowerCaseName'] = /descending/.test(sortBy) ? -1 : 1;
 		}
 
 		if (this.identifier === 'unread') {
@@ -52,7 +41,7 @@ Template.roomList.helpers({
 			return ChatSubscription.find(query, { sort });
 		}
 
-		const favoritesEnabled = !!(settings.get('Favorite_Rooms') && getUserPreference(user, 'sidebarShowFavorites'));
+		const favoritesEnabled = !!(settings.Favorite_Rooms && settings.sidebarShowFavorites);
 
 		if (this.identifier === 'f') {
 			query.f = favoritesEnabled;
@@ -79,11 +68,11 @@ Template.roomList.helpers({
 			}
 
 			// if we display discussions as a separate group, we should hide them from the other lists
-			if (getUserPreference(user, 'sidebarShowDiscussion')) {
+			if (settings.sidebarShowDiscussion) {
 				query.prid = { $exists: false };
 			}
 
-			if (getUserPreference(user, 'sidebarShowUnread')) {
+			if (settings.sidebarShowUnread) {
 				query.$or = [
 					{ alert: { $ne: true } },
 					{
@@ -128,7 +117,8 @@ Template.roomList.helpers({
 	},
 
 	showRoomCounter() {
-		return getUserPreference(Meteor.userId(), 'roomCounterSidebar');
+		const { settings } = Template.instance().data;
+		return settings.roomCounterSidebar;
 	},
 });
 

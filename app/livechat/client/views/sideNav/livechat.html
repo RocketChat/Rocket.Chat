@@ -14,7 +14,7 @@
 				</h3>
 				<ul class="rooms-list__list inquiries">
 					{{#each room in inquiries}}
-						{{> chatRoomItem room }}
+						{{> chatRoomItem subscription=room context=.}}
 					{{/each}}
 				</ul>
 			{{/if}}
@@ -29,7 +29,7 @@
 				{{> sidebarItem active=activeLivechatQueue pathSection="livechat-queue" icon="queue" name="Queue"}}
 			{{/if}}
 			{{#each room in rooms}}
-				{{> chatRoomItem room }}
+				{{> chatRoomItem subscription=room context=. }}
 			{{/each}}
 		</ul>
 	</div>

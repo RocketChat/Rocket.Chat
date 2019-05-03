@@ -7,7 +7,6 @@ import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';
 import { Users } from '../../models';
-
 Template.sideNav.helpers({
 	flexTemplate() {
 		return SideNav.getFlex().template;
@@ -22,6 +21,30 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
+		const user = Users.findOne(Meteor.userId(), {
+			fields: {
+				'settings.preferences.sidebarSortby': 1,
+				'settings.preferences.sidebarShowFavorites': 1,
+				'settings.preferences.sidebarShowUnread': 1,
+				'settings.preferences.sidebarShowDiscussion': 1,
+				'services.tokenpass': 1,
+				'settings.preferences.roomCounterSidebar': 1,
+				'settings.preferences.messageViewMode': 1,
+				'settings.preferences.sidebarViewMode': 1,
+				username: 1,
+			},
+		});
+		const s = {
+			Favorite_Rooms: settings.get('Favorite_Rooms'),
+			UI_Use_Real_Name: settings.get('UI_Use_Real_Name'),
+			Store_Last_Message: settings.get('Store_Last_Message'),
+			sidebarViewMode: getUserPreference(user, 'sidebarViewMode'),
+			messageViewMode: getUserPreference(user, 'messageViewMode'),
+			roomCounterSidebar: getUserPreference(user, 'roomCounterSidebar'),
+			sidebarShowFavorites: getUserPreference(user, 'sidebarShowFavorites'),
+			sidebarShowDiscussion: getUserPreference(user, 'sidebarShowDiscussion'),
+			sidebarShowUnread: getUserPreference(user, 'sidebarShowUnread'),
+		};
 		return roomTypes.getTypes().map((roomType) => ({
 			template: roomType.customTemplate || 'roomList',
 			data: {
@@ -29,6 +52,8 @@ Template.sideNav.helpers({
 				identifier: roomType.identifier,
 				isCombined: roomType.isCombined,
 				label: roomType.label,
+				user,
+				settings: s,
 			},
 		}));
 	},
