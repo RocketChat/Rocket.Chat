@@ -235,11 +235,7 @@ Meteor.startup(async function() {
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition({ subscription }) {
-			if (subscription) {
-				return false;
-			}
-
-			return true;
+			return !!subscription;
 		},
 		order: 5,
 		group: 'menu',
