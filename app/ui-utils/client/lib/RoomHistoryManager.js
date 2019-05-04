@@ -1,4 +1,3 @@
-import mem from 'mem';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -10,7 +9,8 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from './renderMessageBody';
 
-export const normalizeThreadMessage = mem((message) => {
+export const normalizeThreadMessage = (message) => {
+
 	if (message.msg) {
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}
@@ -26,7 +26,7 @@ export const normalizeThreadMessage = mem((message) => {
 			return s.escapeHTML(attachment.title);
 		}
 	}
-}, { maxAge: 1000 });
+};
 
 export const upsertMessage = ({ msg: { _id, ...msg }, subscription }) => {
 	const userId = msg.u && msg.u._id;
