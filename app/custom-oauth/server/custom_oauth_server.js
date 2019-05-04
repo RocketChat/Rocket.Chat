@@ -333,7 +333,7 @@ export class CustomOAuth {
 			return prev ? prev[curr] : undefined;
 		}, data);
 
-		if(!customName) {
+		if (!customName) {
 			return this.getName(data);
 		}
 
