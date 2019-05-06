@@ -66,6 +66,11 @@ providers.registerProvider({
 	endPoint: 'https://www.dailymotion.com/services/oembed?maxheight=200',
 });
 
+providers.registerProvider({
+	urls: [new RegExp('https?://[^\/]+.withkoji.com')],
+	endPoint: 'https://embeds.withkoji.com/oembed?format=json',
+});
+
 export const oembed = {};
 
 oembed.providers = providers;
