@@ -167,6 +167,13 @@ Template.membersList.events({
 
 		Template.parentData(0).tabBar.open();
 	},
+	'keydown .js-filter'(e, instance) {
+		const ENTER = 13;
+		if (e.keyCode === ENTER) {
+			return e.preventDefault();
+		}
+		instance.filter.set(e.target.value.trim());
+	},
 	'input .js-filter'(e, instance) {
 		instance.filter.set(e.target.value.trim());
 	},
