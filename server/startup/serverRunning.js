@@ -8,16 +8,9 @@ import path from 'path';
 import semver from 'semver';
 
 Meteor.startup(function() {
-	let oplogState = 'Disabled';
-
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	if (mongo._oplogHandle && mongo._oplogHandle.onOplogEntry) {
-		oplogState = 'Enabled';
-		if (settings.get('Force_Disable_OpLog_For_Cache') === true) {
-			oplogState += ' (Disabled for Cache Sync)';
-		}
-	}
+	const isOplogEnabled = Boolean(mongo._oplogHandle && mongo._oplogHandle.onOplogEntry);
 
 	let mongoDbVersion;
 	let mongoDbEngine;
@@ -27,7 +20,19 @@ Meteor.startup(function() {
 		mongoDbEngine = storageEngine.name;
 	} catch (e) {
 		mongoDbVersion = 'Error getting version';
-		console.error('Error getting MongoDB version');
+
+		console.error('=== Error getting MongoDB info ===');
+		console.error(e && e.toString());
+		console.error('----------------------------------');
+		console.error('Without mongodb version we can\'t ensure you are running a compatible version.');
+		console.error('If you are running your mongodb with auth enabled and an user different from admin');
+		console.error('you may need to grant permissions for this user to check cluster data.');
+		console.error('You can do it via mongo shell running the following command replacing');
+		console.error('the string YOUR_USER by the correct user\'s name:');
+		console.error('');
+		console.error('   db.runCommand({ grantRolesToUser: "YOUR_USER" , roles: [{role: "clusterMonitor", db: "admin"}]})');
+		console.error('');
+		console.error('==================================');
 	}
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
@@ -42,7 +47,7 @@ Meteor.startup(function() {
 			`           Platform: ${ process.platform }`,
 			`       Process Port: ${ process.env.PORT }`,
 			`           Site URL: ${ settings.get('Site_Url') }`,
-			`   ReplicaSet OpLog: ${ oplogState }`,
+			`   ReplicaSet OpLog: ${ isOplogEnabled ? 'Enabled' : 'Disabled' }`,
 		];
 
 		if (Info.commit && Info.commit.hash) {
@@ -55,18 +60,25 @@ Meteor.startup(function() {
 
 		msg = msg.join('\n');
 
+		if (!isOplogEnabled) {
+			msg += ['', '', 'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:', 'https://go.rocket.chat/i/oplog-required'].join('\n');
+			SystemLogger.error_box(msg, 'SERVER ERROR');
+
+			return process.exit(1);
+		}
+
 		if (!semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
 			msg += ['', '', 'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,', `PLEASE UPGRADE / DOWNGRADE TO VERSION ${ desiredNodeVersionMajor }.X.X`].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-			return process.exit();
+			return process.exit(1);
 		}
 
-		if (!semver.satisfies(mongoDbVersion, '>=3.2.0')) {
+		if (!semver.satisfies(semver.coerce(mongoDbVersion), '>=3.2.0')) {
 			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 3.2 OR LATER'].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
-			return process.exit();
+			return process.exit(1);
 		}
 
 		return SystemLogger.startup_box(msg, 'SERVER RUNNING');

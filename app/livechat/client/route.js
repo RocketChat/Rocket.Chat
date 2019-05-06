@@ -1,5 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { AccountBox } from '../../ui-utils';
+import './views/app/livechatDashboard.html';
 
 const livechatManagerRoutes = FlowRouter.group({
 	prefix: '/livechat-manager',
