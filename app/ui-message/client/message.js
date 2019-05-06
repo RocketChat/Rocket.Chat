@@ -1,5 +1,6 @@
 import _ from 'underscore';
 
+import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
@@ -442,13 +443,7 @@ const findParentMessage = (() => {
 				},
 			}, { multi: true });
 			if (!Messages.findOne({ _id })) {
-				/**
-				 * Delete rid from message to not render it and to not be considred in last message
-				 * find from load history method what was preveting the load of some messages in
-				 * between the reals last loaded message and this one if this one is older than
-				 * the real last loaded message.
-				 */
-				delete msg.rid;
+				msg._hidden = true;
 				Messages.upsert({ _id }, msg);
 			}
 		});
@@ -597,6 +592,18 @@ const processSequentials = ({ currentNode, settings, forceDate, showDateSeparato
 		} else {
 			nextNode.classList.remove('new-day');
 		}
+	} else if (shouldCollapseReplies) {
+		const [el] = $(`#chat-window-${ msg.rid }`);
+		const view = el && Blaze.getView(el);
+		const templateInstance = view && view.templateInstance();
+		if (!templateInstance) {
+			return;
+		}
+
+		if (currentNode.classList.contains('own') === true) {
+			templateInstance.atBottom = true;
+		}
+		templateInstance.sendToBottomIfNecessary();
 	}
 };
 
