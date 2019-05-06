@@ -91,6 +91,7 @@ export function settings() {
 	const triggers = findTriggers();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
+	const emojis = Meteor.call('listEmojiCustom');
 
 	return {
 		enabled: initSettings.Livechat_enabled,
@@ -135,6 +136,7 @@ export function settings() {
 		departments,
 		resources: {
 			sound,
+			emojis,
 		},
 	};
 }
