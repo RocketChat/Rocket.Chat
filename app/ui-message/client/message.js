@@ -70,7 +70,35 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	canvas.style.display = 'block';
 }
 
+const renderBody = (msg, settings) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
+
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.template) {
+		// render template
+	} else if (messageType.message) {
+		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+		msg.html = msg.msg;
+		msg = callbacks.run('renderMentions', msg);
+		msg = msg.html;
+	} else {
+		msg = renderMessageBody(msg);
+	}
+
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
+	}
+	return msg;
+};
+
 Template.message.helpers({
+	body() {
+		const { msg, settings } = this;
+		return Tracker.nonreactive(() => renderBody(msg, settings));
+	},
 	and(a, b) {
 		return a && b;
 	},
@@ -199,9 +227,6 @@ Template.message.helpers({
 		if (msg.temp === true) {
 			return 'temp';
 		}
-	},
-	body() {
-		return Template.instance().body;
 	},
 	threadMessage() {
 		const { msg } = this;
@@ -454,39 +479,13 @@ const findParentMessage = (() => {
 	};
 })();
 
-
-const renderBody = (msg, settings) => {
-	const isSystemMessage = MessageTypes.isSystemMessage(msg);
-	const messageType = MessageTypes.getType(msg) || {};
-
-	if (messageType.render) {
-		msg = messageType.render(msg);
-	} else if (messageType.template) {
-		// render template
-	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
-	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
-		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
-		msg = msg.html;
-	} else {
-		msg = renderMessageBody(msg);
-	}
-
-	if (isSystemMessage) {
-		msg.html = Markdown.parse(msg.html);
-	}
-	return msg;
-};
-
 Template.message.onCreated(function() {
-	const { msg, settings, shouldCollapseReplies } = Template.currentData();
+	const { msg, shouldCollapseReplies } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
 	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = Tracker.nonreactive(() => renderBody(msg, settings));
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
