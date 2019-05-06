@@ -1,4 +1,32 @@
 
+# 1.0.1
+`2019-04-28  ·  7 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- MongoDB: `3.2, 3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+- Popup cloud console in new window ([#14296](https://github.com/RocketChat/Rocket.Chat/pull/14296))
+- Switch oplog required doc link to more accurate link ([#14288](https://github.com/RocketChat/Rocket.Chat/pull/14288))
+- Optional exit on Unhandled Promise Rejection ([#14291](https://github.com/RocketChat/Rocket.Chat/pull/14291))
+- Error when accessing avatar with no token ([#14293](https://github.com/RocketChat/Rocket.Chat/pull/14293))
+- Startup error in registration check ([#14286](https://github.com/RocketChat/Rocket.Chat/pull/14286))
+- Wrong header at Apps admin section ([#14290](https://github.com/RocketChat/Rocket.Chat/pull/14290))
+- Error when accessing an invalid file upload url ([#14282](https://github.com/RocketChat/Rocket.Chat/pull/14282) by [@wreiske](https://github.com/wreiske))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@wreiske](https://github.com/wreiske)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@rodrigok](https://github.com/rodrigok)
+
 # 1.0.0
 `2019-04-28  ·  4 ️️️⚠️  ·  30 🎉  ·  32 🚀  ·  97 🐛  ·  173 🔍  ·  60 👩‍💻👨‍💻`
 

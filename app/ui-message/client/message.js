@@ -70,21 +70,45 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	canvas.style.display = 'block';
 }
 
+const renderBody = (msg, settings) => {
+	const isSystemMessage = MessageTypes.isSystemMessage(msg);
+	const messageType = MessageTypes.getType(msg) || {};
+
+	if (messageType.render) {
+		msg = messageType.render(msg);
+	} else if (messageType.template) {
+		// render template
+	} else if (messageType.message) {
+		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
+	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
+		msg.html = msg.msg;
+		msg = callbacks.run('renderMentions', msg);
+		msg = msg.html;
+	} else {
+		msg = renderMessageBody(msg);
+	}
+
+	if (isSystemMessage) {
+		msg.html = Markdown.parse(msg.html);
+	}
+	return msg;
+};
+
 Template.message.helpers({
+	body() {
+		const { msg, settings } = this;
+		return Tracker.nonreactive(() => renderBody(msg, settings));
+	},
 	and(a, b) {
 		return a && b;
 	},
-	i18nKeyMessage() {
+	i18nReplyCounter() {
 		const { msg } = this;
-		return msg.dcount > 1
-			? 'messages'
-			: 'message';
+		return `<span class='reply-counter'>${ msg.tcount }</span>`;
 	},
-	i18nKeyReply() {
+	i18nDiscussionCounter() {
 		const { msg } = this;
-		return msg.tcount > 1
-			? 'replies'
-			: 'reply';
+		return `<span class='reply-counter'>${ msg.dcount }</span>`;
 	},
 	formatDateAndTime,
 	encodeURI(text) {
@@ -111,8 +135,8 @@ Template.message.helpers({
 		return msg.bot && 'bot';
 	},
 	roleTags() {
-		const { msg, hideRoles } = this;
-		if (hideRoles) {
+		const { msg, hideRoles, settings } = this;
+		if (settings.hideRoles || hideRoles) {
 			return [];
 		}
 
@@ -203,9 +227,6 @@ Template.message.helpers({
 		if (msg.temp === true) {
 			return 'temp';
 		}
-	},
-	body() {
-		return Template.instance().body;
 	},
 	threadMessage() {
 		const { msg } = this;
@@ -458,39 +479,13 @@ const findParentMessage = (() => {
 	};
 })();
 
-
-const renderBody = (msg, settings) => {
-	const isSystemMessage = MessageTypes.isSystemMessage(msg);
-	const messageType = MessageTypes.getType(msg) || {};
-
-	if (messageType.render) {
-		msg = messageType.render(msg);
-	} else if (messageType.template) {
-		// render template
-	} else if (messageType.message) {
-		msg = TAPi18n.__(messageType.message, { ... typeof messageType.data === 'function' && messageType.data(msg) });
-	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
-		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
-		msg = msg.html;
-	} else {
-		msg = renderMessageBody(msg);
-	}
-
-	if (isSystemMessage) {
-		msg.html = Markdown.parse(msg.html);
-	}
-	return msg;
-};
-
 Template.message.onCreated(function() {
-	const { msg, settings } = Template.currentData();
+	const { msg, shouldCollapseReplies } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.threadMsg) {
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
-	return this.body = Tracker.nonreactive(() => renderBody(msg, settings));
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
