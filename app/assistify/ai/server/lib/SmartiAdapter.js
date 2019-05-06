@@ -208,7 +208,7 @@ export class SmartiAdapter {
 		SystemLogger.debug('Trying Smarti legacy service to retrieve conversation...');
 		const conversation = SmartiProxy.propagateToSmarti(verbs.get, `legacy/rocket.chat?channel_id=${ roomId }`, null, null, (error) => {
 			// 404 is expected if no mapping exists in Smarti
-			if (error.response.statusCode === 404) {
+			if (error && error.response && error.response.statusCode === 404) {
 				SystemLogger.warn(`No Smarti conversationId found (Server Error 404) for room: ${ roomId }`);
 			} else {
 				// some other error occurred
