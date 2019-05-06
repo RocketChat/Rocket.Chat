@@ -27,6 +27,6 @@ export const saveRoomName = function(rid, displayName, user, sendMessage = true)
 	if (sendMessage) {
 		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
 	}
-	callbacks.run('afterRoomNameChange', { rid, name: displayName });
+	callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
 	return displayName;
 };
