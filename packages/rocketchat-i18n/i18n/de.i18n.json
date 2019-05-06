@@ -1995,6 +1995,7 @@
   "Message_AudioRecorderEnabled_Description": "Benötigt \"Audio / MP3\" -Dateien als akzeptierter Medientyp innerhalb der \"Datei-Upload\" -Einstellungen.",
   "Message_BadWordsFilterList": "Wörter zur Blacklist hinzufügen",
   "Message_BadWordsFilterListDescription": "Kommaseparierte Liste zu filternder Worte",
+  "message_counter": "__counter__ Nachrichten",
   "Message_DateFormat": "Datumsformat",
   "Message_DateFormat_Description": "Für mögliche Formate s. <a href=\"http://momentjs.com/docs/#/displaying/format/\" target=\"momemt\">Dokumentation von Moment.js</a>",
   "Message_deleting_blocked": "Diese Nachricht kann nicht mehr gelöscht werden",
