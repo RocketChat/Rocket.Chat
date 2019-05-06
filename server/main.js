@@ -67,6 +67,7 @@ import './methods/userSetUtcOffset';
 import './publications/activeUsers';
 import './publications/channelAndPrivateAutocomplete';
 import './publications/fullUserData';
+import './publications/reports';
 import './publications/messages';
 import './publications/room';
 import './publications/roomFiles';

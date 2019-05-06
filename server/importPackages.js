@@ -116,3 +116,4 @@ import '../app/ui-utils';
 import '../app/action-links';
 import '../app/reactions/server';
 import '../app/livechat/server';
+import '../app/reports/server';

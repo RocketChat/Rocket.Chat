@@ -1,0 +1,71 @@
+<template name="reports">
+	<div class="main-content-flex">
+		<section class="page-container page-list flex-tab-main-content">
+			{{> header sectionName="Reports"}}
+			<div class="content">
+				{{#unless hasPermission 'view-user-administration'}}
+				<p>{{_ "You_are_not_authorized_to_view_this_page"}}</p>
+				{{else}}
+				{{#table fixed='true' onItemClick=onTableItemClick onScroll=onTableScroll onResize=onTableResize}}
+				<thead>
+					<tr>
+						<th width="34%">
+							<div class="table-fake-th">{{_ "Username"}}</div>
+						</th>
+						<th width="33%">
+							<div class="table-fake-th">{{_ "Reported_Message"}}</div>
+						</th>
+						<th width="33%">
+							<div class="table-fake-th">{{_ "Report_Description"}}</div>
+						</th>
+						<th width="33%">
+							<div class="table-fake-th">{{_ "Status"}}</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#each reportsList}}
+					<tr class='user-info'>
+						<td width="30%">
+							<div class="rc-table-wrapper">
+								<div class="rc-table-avatar">
+									{{> avatar username=message.u.username}}
+								</div>
+								<div class="rc-table-info">
+									<span class="rc-table-title">{{message.u.username}}</span>
+								</div>
+							</div>
+						</td>
+						<td width="20%">
+							<div class="rc-table-wrapper">
+								<div class="rc-table-info">
+									<span class="rc-table-title">{{message.msg}}</span>
+								</div>
+							</div>
+						</td>
+						<td width="20%">
+							<div class="rc-table-wrapper">
+								<div class="rc-table-info">
+									<span class="rc-table-title">{{description}}</span>
+								</div>
+							</div>
+						</td>
+						<td width="10%">
+							<div class="rc-table-wrapper">
+								<div class="rc-table-info">
+									<span class="rc-table-title">{{status}}</span>
+								</div>
+							</div>
+						</td>
+					</tr>
+					{{/each}}
+				</tbody>
+				{{/table}}
+				{{/unless}}
+			</div>
+		</section>
+		{{#with flexData}}
+		{{> flexTabBar}}
+	{{/with}}
+	</div>
+</template>
