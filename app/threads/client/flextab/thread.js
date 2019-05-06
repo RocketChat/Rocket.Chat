@@ -104,7 +104,7 @@ Template.thread.onRendered(function() {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
 
-		this.threadsObserve = Messages.find({ tmid, _updatedAt: { $gt: new Date() }, _hidden: { $ne: true } }, {
+		this.threadsObserve = Messages.find({ tmid, _hidden: { $ne: true } }, {
 			fields: {
 				collapsed: 0,
 				threadMsg: 0,
