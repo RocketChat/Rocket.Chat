@@ -477,10 +477,10 @@ const findParentMessage = (() => {
 })();
 
 Template.message.onCreated(function() {
-	const { msg } = Template.currentData();
+	const { msg, shouldCollapseReplies } = Template.currentData();
 
 	this.wasEdited = msg.editedAt && !MessageTypes.isSystemMessage(msg);
-	if (msg.tmid && !msg.threadMsg) {
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
 		findParentMessage(msg.tmid);
 	}
 
