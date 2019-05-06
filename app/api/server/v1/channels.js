@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { composeMessageObjectWithUser } from '../../../utils/server/lib/composeMessageObjectWithUser';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import _ from 'underscore';
 
@@ -578,7 +579,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 		const messages = cursor.fetch();
 
 		return API.v1.success({
-			messages: messages.map((record) => composeMessageObjectWithUser(record, this.userId)),
+			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
 			total,

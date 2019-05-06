@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Messages } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
-import { composeMessageObjectWithUser } from '../../../utils';
+import { composeMessageObjectWithUser } from '../../../utils/server/lib/composeMessageObjectWithUser';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib';
 import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
@@ -68,8 +69,8 @@ API.v1.addRoute('chat.syncMessages', { authRequired: true }, {
 
 		return API.v1.success({
 			result: {
-				updated: result.updated.map((message) => composeMessageObjectWithUser(message, this.userId)),
-				deleted: result.deleted.map((message) => composeMessageObjectWithUser(message, this.userId)),
+				updated: normalizeMessagesForUser(result.updated, this.userId),
+				deleted: normalizeMessagesForUser(result.deleted, this.userId),
 			},
 		});
 	},
@@ -150,7 +151,7 @@ API.v1.addRoute('chat.search', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => result = Meteor.call('messageSearch', searchText, roomId, count).message.docs);
 
 		return API.v1.success({
-			messages: result.map((message) => composeMessageObjectWithUser(message, this.userId)),
+			messages: normalizeMessagesForUser(result, this.userId),
 		});
 	},
 });
