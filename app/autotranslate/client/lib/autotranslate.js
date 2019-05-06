@@ -9,7 +9,7 @@ import _ from 'underscore';
 import mem from 'mem';
 
 let userLanguage = 'en';
-let username = 'g1';
+let username = '';
 
 Meteor.startup(() => Tracker.autorun(() => {
 	const user = Meteor.user();
